@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.cholesky &mdash; Data Parallel Extension for NumPy 0.13.1dev1+73.g5aab1c6e2c documentation</title>
+  <title>dpnp.linalg.cholesky &mdash; Data Parallel Extension for NumPy 0.13.1dev1+23.gd469a12e52 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=900dfae6"></script>
+        <script src="../../_static/documentation_options.js?v=7183143b"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+73.g5aab1c6e2c
+                0.13.1dev1+23.gd469a12e52
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -127,28 +127,54 @@
 <h1>dpnp.linalg.cholesky<a class="headerlink" href="#dpnp-linalg-cholesky" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.linalg.cholesky">
-<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">cholesky</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#cholesky"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.cholesky" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">cholesky</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#cholesky"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.cholesky" title="Link to this definition"></a></dt>
 <dd><p>Cholesky decomposition.</p>
-<p>Return the Cholesky decomposition, <cite>L * L.H</cite>, of the square matrix <cite>input</cite>,
+<p>Return the Cholesky decomposition, <cite>L * L.H</cite>, of the square matrix <cite>a</cite>,
 where <cite>L</cite> is lower-triangular and .H is the conjugate transpose operator
-(which is the ordinary transpose if <cite>input</cite> is real-valued).  <cite>input</cite> must be
+(which is the ordinary transpose if <cite>a</cite> is real-valued).  <cite>a</cite> must be
 Hermitian (symmetric if real-valued) and positive-definite. No
 checking is performed to verify whether <cite>a</cite> is Hermitian or not.
-In addition, only the lower-triangular and diagonal elements of <cite>input</cite>
+In addition, only the lower-triangular and diagonal elements of <cite>a</cite>
 are used. Only <cite>L</cite> is actually returned.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.cholesky.html#numpy.linalg.cholesky" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.cholesky</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>input</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>array_like</em>) – Hermitian (symmetric if all elements are real), positive-definite
+<dd class="field-odd"><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>dpnp.ndarray</em>) – Hermitian (symmetric if all elements are real), positive-definite
 input matrix.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>L</strong> – Upper or lower-triangular Cholesky factor of <cite>input</cite>.  Returns a
-matrix object if <cite>input</cite> is a matrix object.</p>
+<dd class="field-even"><p><strong>L</strong> – Lower-triangular Cholesky factor of <cite>a</cite>.  Returns <cite>a</cite>
+matrix object if <cite>a</cite> is a matrix object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(…, M, M) array_like</p>
+<dd class="field-odd"><p>(…, M, M) dpnp.ndarray</p>
 </dd>
 </dl>
+<p class="rubric">Limitations</p>
+<p>Parameter <cite>a</cite> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
+Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.cholesky.html#scipy.linalg.cholesky" title="(in SciPy v1.11.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.linalg.cholesky</span></code></a></dt><dd><p>Similar function in SciPy.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span>
+<span class="go">array([[1., 2.],</span>
+<span class="go">       [2., 5.]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">L</span>
+<span class="go">array([[1., 0.],</span>
+<span class="go">       [2., 1.]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">conj</span><span class="p">())</span> <span class="c1"># verify that L * L.H = A</span>
+<span class="go">array([[1., 2.],</span>
+<span class="go">       [2., 5.]])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
