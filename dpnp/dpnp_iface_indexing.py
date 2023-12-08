@@ -550,17 +550,24 @@ def put_along_axis(a, indices, values, axis):
 
     For full documentation refer to :obj:`numpy.put_along_axis`.
 
-    Limitations
-    -----------
-    Parameters `a` and `indices` are supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter `values` is supported either as scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise ``TypeError`` exception will be raised.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}, (Ni..., M, Nk...)
+        Destination array.
+    indices : {dpnp.ndarray, usm_ndarray}, (Ni..., J, Nk...)
+        Indices to change along each 1d slice of `a`. This must match the
+        dimension of input array, but dimensions in ``Ni`` and ``Nj``
+        may be 1 to broadcast against `a`.
+    values : {scalar, array_like}, (Ni..., J, Nk...)
+        Values to insert at those indices. Its shape and dimension are
+        broadcast to match that of `indices`.
+    axis : int
+        The axis to take 1d slices along. If axis is ``None``, the destination
+        array is treated as if a flattened 1d view had been created of it.
 
     See Also
     --------
-    :obj:`dpnp.put`  : Put values along an axis, using the same indices for every 1d slice.
+    :obj:`dpnp.put` : Put values along an axis, using the same indices for every 1d slice.
     :obj:`dpnp.take_along_axis` : Take values from the input array by matching 1d index and data slices.
 
     Examples
@@ -736,16 +743,23 @@ def take_along_axis(a, indices, axis):
 
     For full documentation refer to :obj:`numpy.take_along_axis`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}, (Ni..., M, Nk...)
+        Source array
+    indices : {dpnp.ndarray, usm_ndarray}, (Ni..., J, Nk...)
+        Indices to take along each 1d slice of `a`. This must match the
+        dimension of the input array, but dimensions ``Ni`` and ``Nj``
+        only need to broadcast against `a`.
+    axis : int
+        The axis to take 1d slices along. If axis is ``None``, the input
+        array is treated as if it had first been flattened to 1d,
+        for consistency with `sort` and `argsort`.
+
     Returns
     -------
     out : dpnp.ndarray
         The indexed result.
-
-    Limitations
-    -----------
-    Parameters `a` and `indices` are supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise ``TypeError`` exception will be raised.
 
     See Also
     --------

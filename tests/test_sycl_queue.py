@@ -1299,6 +1299,32 @@ def test_asarray(device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        pytest.param({"prepend": 7}),
+        pytest.param({"append": -2}),
+        pytest.param({"prepend": -4, "append": 5}),
+    ],
+)
+def test_diff_scalar_append(device, kwargs):
+    numpy_data = numpy.arange(7)
+    dpnp_data = dpnp.array(numpy_data, device=device)
+
+    expected = numpy.diff(numpy_data, **kwargs)
+    result = dpnp.diff(dpnp_data, **kwargs)
+    assert_allclose(expected, result)
+
+    expected_queue = dpnp_data.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
 @pytest.mark.parametrize("func", ["take", "take_along_axis"])
 @pytest.mark.parametrize(
     "device",
@@ -1318,7 +1344,6 @@ def test_take(func, device):
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
-
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
