@@ -320,11 +320,6 @@ def dpnp_solve(a, b):
     b_shape = b.shape
 
     res_usm_type, exec_q = get_usm_allocations([a, b])
-    if exec_q is None:
-        raise ValueError(
-            "Execution placement can not be unambiguously inferred "
-            "from input arguments."
-        )
 
     res_type = _common_type(a, b)
     if b.size == 0:
