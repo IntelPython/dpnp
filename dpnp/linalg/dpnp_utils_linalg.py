@@ -38,6 +38,56 @@ _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
 
 
+def _dpnp_cholesky_batch(a, res_type):
+    """
+    _dpnp_cholesky_batch(a, res_type)
+
+    Batched Cholesky decomposition.
+
+    """
+
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+
+    n = a.shape[-2]
+
+    orig_shape = a.shape
+    # get 3d input arrays by reshape
+    a = a.reshape(-1, n, n)
+    batch_size = a.shape[0]
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+
+    # oneMKL LAPACK potrf overwrites `a`
+    a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
+
+    # use DPCTL tensor function to fill the сopy of the input array
+    # from the input array
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+    )
+
+    a_stride = a_h.strides[0]
+
+    # Call the LAPACK extension function _potrf_batch
+    # to perform the Cholesky factorization of a batch of
+    # symmetric positive-definite matrix
+    ht_lapack_ev, _ = li._potrf_batch(
+        a_sycl_queue,
+        a_h.get_array(),
+        n,
+        a_stride,
+        batch_size,
+        [a_copy_ev],
+    )
+
+    ht_lapack_ev.wait()
+    a_ht_copy_ev.wait()
+
+    a_h = dpnp.tril(a_h.reshape(orig_shape))
+
+    return a_h
+
+
 def dpnp_cholesky(a):
     """
     dpnp_cholesky(a)
@@ -46,8 +96,8 @@ def dpnp_cholesky(a):
 
     """
 
-    a_usm_type = a.usm_type
     a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
     a_shape = a.shape
 
     n = a.shape[-2]
@@ -73,72 +123,42 @@ def dpnp_cholesky(a):
         )
 
     if a.size == 0:
-        return dpnp.empty(a_shape, dtype=res_type, usm_type=a_usm_type)
+        return dpnp.empty(
+            a_shape,
+            dtype=res_type,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
 
     if a.ndim > 2:
-        # orig_shape = a.shape
-        # get 3d input arrays by reshape
-        a = a.reshape(-1, n, n)
-        batch_size = a.shape[0]
-        a_usm_arr = dpnp.get_usm_ndarray(a)
+        return _dpnp_cholesky_batch(a, res_type)
 
-        # oneMKL LAPACK potrf overwrites `a`
-        a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
+    a_usm_arr = dpnp.get_usm_ndarray(a)
 
-        # use DPCTL tensor function to fill the сopy of the input array
-        # from the input array
-        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
-        )
+    # oneMKL LAPACK potrf overwrites `a`
+    a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
 
-        a_stride = a_h.strides[0]
+    # use DPCTL tensor function to fill the сopy of the input array
+    # from the input array
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+    )
 
-        # Call the LAPACK extension function _potrf_batch
-        # to perform the Cholesky factorization of a batch of
-        # symmetric positive-definite matrix
-        ht_lapack_ev, _ = li._potrf_batch(
-            a_sycl_queue,
-            a_h.get_array(),
-            n,
-            a_stride,
-            batch_size,
-            [a_copy_ev],
-        )
+    # Call the LAPACK extension function _potrf
+    # to computes the Cholesky factorization
+    ht_lapack_ev, _ = li._potrf(
+        a_sycl_queue,
+        n,
+        a_h.get_array(),
+        [a_copy_ev],
+    )
 
-        ht_lapack_ev.wait()
-        a_ht_copy_ev.wait()
+    ht_lapack_ev.wait()
+    a_ht_copy_ev.wait()
 
-        a_h = dpnp.tril(a_h)
+    a_h = dpnp.tril(a_h)
 
-        return a_h
-
-    else:
-        a_usm_arr = dpnp.get_usm_ndarray(a)
-
-        # oneMKL LAPACK potrf overwrites `a`
-        a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
-
-        # use DPCTL tensor function to fill the сopy of the input array
-        # from the input array
-        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
-        )
-
-        # Call the LAPACK extension function _potrf
-        # to computes the Cholesky factorization
-        ht_lapack_ev, _ = li._potrf(
-            a_sycl_queue,
-            n,
-            a_h.get_array(),
-            [a_copy_ev],
-        )
-
-        ht_lapack_ev.wait()
-        a_ht_copy_ev.wait()
-
-        a_h = dpnp.tril(a_h)
-
-        return a_h
+    return a_h
 
 
 def dpnp_eigh(a, UPLO):
