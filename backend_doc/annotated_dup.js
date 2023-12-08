@@ -3,17 +3,17 @@ var annotated_dup =
     [ "dpnp", null, [
       [ "backend", null, [
         [ "ext", null, [
-          [ "blas", null, [
-            [ "types", null, [
-              [ "GemmBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
-              [ "GemmTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ]
-            ] ]
-          ] ],
           [ "lapack", null, [
+            [ "helper", null, [
+              [ "value_type_of", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of.html", null ],
+              [ "value_type_of< std::complex< T > >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ]
+            ] ],
             [ "types", null, [
+              [ "GesvTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_gesv_type_pair_support_factory.html", null ],
               [ "HeevdTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
               [ "SyevdTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ]
-            ] ]
+            ] ],
+            [ "LinAlgError", "classdpnp_1_1backend_1_1ext_1_1lapack_1_1_lin_alg_error.html", null ]
           ] ],
           [ "sycl_ext", null, [
             [ "cartesian_product", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product.html", null ],
