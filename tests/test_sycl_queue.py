@@ -884,18 +884,30 @@ def test_fft_rfft(type, shape, device):
 
 
 @pytest.mark.parametrize(
+    "data, is_empty",
+    [
+        ([[1, -2], [2, 5]], False),
+        ([[[1, -2], [2, 5]], [[1, -2], [2, 5]]], False),
+        ((0, 0), True),
+        ((3, 0, 0), True),
+    ],
+    ids=["2D", "3D", "Empty_2D", "Empty_3D"],
+)
+@pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_cholesky(device):
-    data = [[[1.0, -2.0], [2.0, 5.0]], [[1.0, -2.0], [2.0, 5.0]]]
-    numpy_data = numpy.array(data)
-    dpnp_data = dpnp.array(data, device=device)
+def test_cholesky(data, is_empty, device):
+    if is_empty:
+        numpy_data = numpy.empty(data, dtype=dpnp.default_float_type(device))
+    else:
+        numpy_data = numpy.array(data, dtype=dpnp.default_float_type(device))
+    dpnp_data = dpnp.array(numpy_data, device=device)
 
     result = dpnp.linalg.cholesky(dpnp_data)
     expected = numpy.linalg.cholesky(numpy_data)
-    assert_array_equal(expected, result)
+    assert_dtype_allclose(result, expected)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
