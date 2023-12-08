@@ -70,7 +70,7 @@ def amax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
     Return the maximum of an array or maximum along an axis.
 
-    `amax` is an alias of `~dpnp.max`.
+    `amax` is an alias of :obj:`dpnp.max`.
 
     See Also
     --------
@@ -88,7 +88,7 @@ def amin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
     Return the minimum of an array or minimum along an axis.
 
-    `amin` is an alias of `~dpnp.min`.
+    `amin` is an alias of :obj:`dpnp.min`.
 
     See Also
     --------
