@@ -129,15 +129,6 @@ void (*dpnp_cholesky_default_c)(void *, void *, const size_t, const size_t) =
     dpnp_cholesky_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_cholesky_ext_c)(DPCTLSyclQueueRef,
-                                         void *,
-                                         void *,
-                                         const size_t,
-                                         const size_t,
-                                         const DPCTLEventVectorRef) =
-    dpnp_cholesky_c<_DataType>;
-
-template <typename _DataType>
 DPCTLSyclEventRef dpnp_det_c(DPCTLSyclQueueRef q_ref,
                              void *array1_in,
                              void *result1,
