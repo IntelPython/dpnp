@@ -61,19 +61,14 @@ class TestSolve(unittest.TestCase):
             with pytest.raises(error_type):
                 xp.linalg.solve(a, b)
 
-    def test_solve_singular_empty(self):
-        for xp in (numpy, cupy):
-            a = xp.zeros((3, 3))  # singular
-            b = xp.empty((3, 0))  # nrhs = 0
-            # Different behavior of numpy and dpnp in this case
-            # numpy raises LinAlgError when b.size == 0 and a is a singular matrix
-            # dpnp returns an empty array
-            if xp == numpy:
-                with pytest.raises(numpy.linalg.LinAlgError):
-                    xp.linalg.solve(a, b)
-            else:
-                result = xp.linalg.solve(a, b)
-                assert result.size == 0
+    # Undefined behavior is implementation-dependent:
+    # Numpy with OpenBLAS returns an empty array while numpy with MKL raises LinAlgError
+    @pytest.mark.skip("Undefined behavior")
+    def test_solve_singular_empty(self, xp):
+        a = xp.zeros((3, 3))  # singular
+        b = xp.empty((3, 0))  # nrhs = 0
+        # LinAlgError("Singular matrix") is not raised
+        return xp.linalg.solve(a, b)
 
     def test_invalid_shape(self):
         linalg_errors = {
