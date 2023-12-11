@@ -53,8 +53,19 @@ jobs:
           conda list
 
       - name: Build dpnp with coverage
+        id: build_coverage
+        uses: nick-fields/retry@v2.9.0
+        with:
+          max_attempts: 5
+          retry_on: error
+          command: |
+            python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py"
+          on_retry_command: |
+            git clean -fxd
+
+      - name: Total number of coverage attempts
         run: |
-          python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py"
+          echo "Total number of coverage attempts made: ${{ steps.build_coverage.outputs.total_attempts }}"
 
       - name: Install coverall dependencies
         run: |
