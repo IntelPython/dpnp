@@ -52,7 +52,7 @@ repos:
     rev: 24.4.0
     hooks:
     -   id: black
-        args: ["--check", "--diff", "--color"]
+        args: ["--color"]
 -   repo: https://github.com/pycqa/isort
     rev: 5.13.2
     hooks:

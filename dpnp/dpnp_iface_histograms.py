@@ -1,0 +1,302 @@
+import operator
+import warnings
+
+import dpctl.utils as dpu
+import numpy
+
+import dpnp
+
+__all__ = [
+    "histogram",
+]
+
+# range is a keyword argument to many functions, so save the builtin so they can
+# use it.
+_range = range
+
+
+def _ravel_check_a_and_weights(a, weights):
+    """Check input `a` and `weights` arrays, and ravel both."""
+
+    # ensure that `a` array has supported type
+    dpnp.check_supported_arrays_type(a)
+
+    # ensure that the array is a "subtractable" dtype
+    if a.dtype == dpnp.bool:
+        warnings.warn(
+            "Converting input from {} to {} for compatibility.".format(
+                a.dtype, dpnp.uint8
+            ),
+            RuntimeWarning,
+            stacklevel=3,
+        )
+        a = a.astype(dpnp.uint8)
+
+    if weights is not None:
+        # check that `weights` array has supported type
+        dpnp.check_supported_arrays_type(weights)
+
+        # check that arrays have the same allocation queue
+        if dpu.get_execution_queue([a.sycl_queue, weights.sycl_queue]) is None:
+            raise ValueError(
+                "a and weights must be allocated on the same SYCL queue"
+            )
+
+        if weights.shape != a.shape:
+            raise ValueError("weights should have the same shape as a.")
+        weights = weights.ravel()
+    a = a.ravel()
+    return a, weights
+
+
+def _get_outer_edges(a, range):
+    """
+    Determine the outer bin edges to use, from either the data or the range
+    argument.
+
+    """
+
+    if range is not None:
+        first_edge, last_edge = range
+        if first_edge > last_edge:
+            raise ValueError("max must be larger than min in range parameter.")
+
+        if not (numpy.isfinite(first_edge) and numpy.isfinite(last_edge)):
+            raise ValueError(
+                "supplied range of [{}, {}] is not finite".format(
+                    first_edge, last_edge
+                )
+            )
+
+    elif a.size == 0:
+        # handle empty arrays. Can't determine range, so use 0-1.
+        first_edge, last_edge = 0, 1
+
+    else:
+        first_edge, last_edge = a.min(), a.max()
+        if not (dpnp.isfinite(first_edge) and dpnp.isfinite(last_edge)):
+            raise ValueError(
+                "autodetected range of [{}, {}] is not finite".format(
+                    first_edge, last_edge
+                )
+            )
+
+    # expand empty range to avoid divide by zero
+    if first_edge == last_edge:
+        first_edge = first_edge - 0.5
+        last_edge = last_edge + 0.5
+
+    return first_edge, last_edge
+
+
+def _get_bin_edges(a, bins, range):
+    """Computes the bins used internally by `histogram`."""
+
+    # parse the overloaded bins argument
+    n_equal_bins = None
+    bin_edges = None
+
+    if isinstance(bins, str):
+        raise NotImplementedError("only integer and array bins are implemented")
+
+    elif numpy.ndim(bins) == 0:
+        try:
+            n_equal_bins = operator.index(bins)
+        except TypeError as e:
+            raise TypeError("`bins` must be an integer or an array") from e
+        if n_equal_bins < 1:
+            raise ValueError("`bins` must be positive, when an integer")
+
+        first_edge, last_edge = _get_outer_edges(a, range)
+
+    elif numpy.ndim(bins) == 1:
+        if dpnp.is_supported_array_type(bins):
+            if dpu.get_execution_queue([a.sycl_queue, bins.sycl_queue]) is None:
+                raise ValueError(
+                    "a and bins must be allocated on the same SYCL queue"
+                )
+
+            bin_edges = bins
+        else:
+            bin_edges = dpnp.asarray(
+                bins, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+            )
+
+        if dpnp.any(bin_edges[:-1] > bin_edges[1:]):
+            raise ValueError(
+                "`bins` must increase monotonically, when an array"
+            )
+
+    else:
+        raise ValueError("`bins` must be 1d, when an array")
+
+    if n_equal_bins is not None:
+        # numpy's gh-10322 means that type resolution rules are dependent on
+        # array shapes. To avoid this causing problems, we pick a type now and
+        # stick with it throughout.
+        bin_type = dpnp.result_type(first_edge, last_edge, a)
+        if dpnp.issubdtype(bin_type, dpnp.integer):
+            bin_type = dpnp.result_type(
+                bin_type, dpnp.default_float_type(sycl_queue=a.sycl_queue), a
+            )
+
+        # bin edges must be computed
+        bin_edges = dpnp.linspace(
+            first_edge,
+            last_edge,
+            n_equal_bins + 1,
+            endpoint=True,
+            dtype=bin_type,
+            sycl_queue=a.sycl_queue,
+            usm_type=a.usm_type,
+        )
+        return bin_edges, (first_edge, last_edge, n_equal_bins)
+    else:
+        return bin_edges, None
+
+
+def _search_sorted_inclusive(a, v):
+    """
+    Like :obj:`dpnp.searchsorted`, but where the last item in `v` is placed
+    on the right.
+    In the context of a histogram, this makes the last bin edge inclusive
+
+    """
+
+    return dpnp.concatenate(
+        (a.searchsorted(v[:-1], "left"), a.searchsorted(v[-1:], "right"))
+    )
+
+
+def histogram(a, bins=10, range=None, density=None, weights=None):
+    """
+    Compute the histogram of a dataset.
+
+    For full documentation refer to :obj:`numpy.histogram`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input data. The histogram is computed over the flattened array.
+    bins : {int, dpnp.ndarray, usm_ndarray, sequence of scalars}, optional
+        If `bins` is an int, it defines the number of equal-width bins in the
+        given range (``10``, by default).
+        If `bins` is a sequence, it defines a monotonically increasing array
+        of bin edges, including the rightmost edge, allowing for non-uniform
+        bin widths.
+        If `bins` is a string, it defines the method used to calculate the
+        optimal bin width, as defined by :obj:`dpnp.histogram_bin_edges`.
+    range : {2-tuple of float}, optional
+        The lower and upper range of the bins. If not provided, range is simply
+        ``(a.min(), a.max())``. Values outside the range are ignored. The first
+        element of the range must be less than or equal to the second. `range`
+        affects the automatic bin computation as well. While bin width is
+        computed to be optimal based on the actual data within `range`, the bin
+        count will fill the entire range including portions containing no data.
+    weights : {dpnp.ndarray, usm_ndarray}, optional
+        An array of weights, of the same shape as `a`. Each value in `a` only
+        contributes its associated weight towards the bin count (instead of 1).
+        If `density` is ``True``, the weights are normalized, so that the
+        integral of the density over the range remains ``1``.
+        Please note that the ``dtype`` of `weights` will also become the
+        ``dtype`` of the returned accumulator (`hist`), so it must be large
+        enough to hold accumulated values as well.
+    density : {bool}, optional
+        If ``False``, the result will contain the number of samples in each bin.
+        If ``True``, the result is the value of the probability *density*
+        function at the bin, normalized such that the *integral* over the range
+        is ``1``. Note that the sum of the histogram values will not be equal
+        to ``1`` unless bins of unity width are chosen; it is not a probability
+        *mass* function.
+
+    Returns
+    -------
+    hist : {dpnp.ndarray}
+        The values of the histogram. See `density` and `weights` for a
+        description of the possible semantics. If `weights` are given,
+        ``hist.dtype`` will be taken from `weights`.
+    bin_edges : {dpnp.ndarray of floating data type}
+        Return the bin edges ``(length(hist) + 1)``.
+
+    See Also
+    --------
+    :obj:`dpnp.histogramdd` : TODO
+    :obj:`dpnp.bincount` : TODO
+    :obj:`dpnp.searchsorted` : TODO
+    :obj:`dpnp.digitize` : TODO
+    :obj:`dpnp.histogram_bin_edges` : TODO
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.histogram(np.array([1, 2, 1]), bins=[0, 1, 2, 3])
+    (array([0, 2, 1]), array([0, 1, 2, 3]))
+    >>> np.histogram(np.arange(4), bins=np.arange(5), density=True)
+    (array([0.25, 0.25, 0.25, 0.25]), array([0, 1, 2, 3, 4]))
+    >>> np.histogram(np.array([[1, 2, 1], [1, 0, 1]]), bins=[0, 1, 2, 3])
+    (array([1, 4, 1]), array([0, 1, 2, 3]))
+
+    >>> a = np.arange(5)
+    >>> hist, bin_edges = np.histogram(a, density=True)
+    >>> hist
+    array([0.5, 0. , 0.5, 0. , 0. , 0.5, 0. , 0.5, 0. , 0.5])
+    >>> hist.sum()
+    array(2.5)
+    >>> np.sum(hist * np.diff(bin_edges))
+    array(1.)
+
+    """
+
+    a, weights = _ravel_check_a_and_weights(a, weights)
+
+    bin_edges, uniform_bins = _get_bin_edges(a, bins, range)
+
+    # Histogram is an integer or a float array depending on the weights.
+    if weights is None:
+        ntype = dpnp.dtype(dpnp.intp)
+    else:
+        ntype = weights.dtype
+
+    # We set a block size, as this allows us to iterate over chunks when
+    # computing histograms, to minimize memory usage.
+    BLOCK = 65536
+
+    # The fast path uses bincount, but that only works for certain types
+    # of weight
+    # simple_weights = (
+    #     weights is None or
+    #     np.can_cast(weights.dtype, np.double) or
+    #     np.can_cast(weights.dtype, complex)
+    # )
+    # TODO: implement a fast path
+    simple_weights = False
+
+    if uniform_bins is not None and simple_weights:
+        # TODO: implement fast algorithm for equal bins
+        pass
+    else:
+        # Compute via cumulative histogram
+        cum_n = dpnp.zeros_like(bin_edges, dtype=ntype)
+        if weights is None:
+            for i in _range(0, len(a), BLOCK):
+                sa = dpnp.sort(a[i : i + BLOCK])
+                cum_n += _search_sorted_inclusive(sa, bin_edges)
+        else:
+            zero = dpnp.zeros(1, dtype=ntype)
+            for i in _range(0, len(a), BLOCK):
+                tmp_a = a[i : i + BLOCK]
+                tmp_w = weights[i : i + BLOCK]
+                sorting_index = dpnp.argsort(tmp_a)
+                sa = tmp_a[sorting_index]
+                sw = tmp_w[sorting_index]
+                cw = dpnp.concatenate((zero, sw.cumsum()))
+                bin_index = _search_sorted_inclusive(sa, bin_edges)
+                cum_n += cw[bin_index]
+
+        n = dpnp.diff(cum_n)
+
+    if density:
+        db = dpnp.diff(bin_edges)
+        return n / db / n.sum(), bin_edges
+
+    return n, bin_edges
