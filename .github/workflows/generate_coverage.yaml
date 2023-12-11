@@ -56,13 +56,15 @@ jobs:
         id: build_coverage
         uses: nick-fields/retry@v2.9.0
         with:
+          shell: bash
           timeout_minutes: 60
           max_attempts: 5
           retry_on: error
           command: |
-            python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py"
-          on_retry_command: |
+            . $CONDA/etc/profile.d/conda.sh
+            conda activate coverage
             git clean -fxd
+            python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py"
 
       - name: Total number of coverage attempts
         run: |
