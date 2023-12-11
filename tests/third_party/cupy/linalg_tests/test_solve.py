@@ -65,9 +65,10 @@ class TestSolve(unittest.TestCase):
         for xp in (numpy, cupy):
             a = xp.zeros((3, 3))  # singular
             b = xp.empty((3, 0))  # nrhs = 0
-            # numpy <= 1.24.* raises LinAlgError when b.size == 0
-            # numpy >= 1.25 returns an empty array
-            if xp == numpy and testing.numpy_satisfies("<1.25.0"):
+            # Different behavior of numpy and dpnp in this case
+            # numpy raises LinAlgError when b.size == 0 and a is a singular matrix
+            # dpnp returns an empty array
+            if xp == numpy:
                 with pytest.raises(numpy.linalg.LinAlgError):
                     xp.linalg.solve(a, b)
             else:
