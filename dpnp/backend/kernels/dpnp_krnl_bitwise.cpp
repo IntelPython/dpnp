@@ -32,6 +32,12 @@
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
+// dpctl tensor headers
+#include "kernels/alignment.hpp"
+
+using dpctl::tensor::kernels::alignment_utils::is_aligned;
+using dpctl::tensor::kernels::alignment_utils::required_alignment;
+
 template <typename _KernelNameSpecialization>
 class dpnp_invert_c_kernel;
 
@@ -67,7 +73,10 @@ DPCTLSyclEventRef dpnp_invert_c(DPCTLSyclQueueRef q_ref,
             vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +
                       sg.get_group_id()[0] * max_sg_size);
 
-        if (start + static_cast<size_t>(vec_sz) * max_sg_size < size) {
+        if (is_aligned<required_alignment>(input_data) &&
+            is_aligned<required_alignment>(result) &&
+            (start + static_cast<size_t>(vec_sz) * max_sg_size < size))
+        {
             auto input_multi_ptr = sycl::address_space_cast<
                 sycl::access::address_space::global_space,
                 sycl::access::decorated::yes>(&input_data[start]);

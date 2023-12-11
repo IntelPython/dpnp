@@ -107,6 +107,8 @@ target_compile_definitions(${_trgt} PUBLIC PSTL_USE_PARALLEL_POLICIES=0)
 target_compile_definitions(${_trgt} PUBLIC ONEDPL_USE_PREDEFINED_POLICIES=0)
 
 target_include_directories(${_trgt} PUBLIC ${Dpctl_INCLUDE_DIR})
+target_include_directories(${_trgt} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})
+
 target_link_directories(${_trgt} PUBLIC "${Dpctl_INCLUDE_DIR}/..")
 target_link_libraries(${_trgt} PUBLIC DPCTLSyclInterface)
 
