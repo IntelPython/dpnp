@@ -390,7 +390,9 @@ def dpnp_solve(a, b):
             a_ht_copy_ev[i].wait()
 
         # combine the list of solutions into a single array
-        out_v = dpnp.array(val_vecs, order=b_order, usm_type=res_usm_type)
+        out_v = dpnp.array(
+            val_vecs, order=b_order, dtype=res_type, usm_type=res_usm_type
+        )
         if reshape:
             # shape of the out_v must be equal to the shape of the array of
             # dependent variables
