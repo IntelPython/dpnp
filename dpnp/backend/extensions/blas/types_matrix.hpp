@@ -73,6 +73,14 @@ struct GemmTypePairSupportFactory
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
 
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL BLAS library provides support in
+ * oneapi::mkl::blas::gemm_batch<Tab, Tc> function.
+ *
+ * @tparam Tab Type of arrays containing input matrices A and B.
+ * @tparam Tc Type of array containing output matrix C.
+ */
 template <typename Tab, typename Tc>
 struct GemmBatchTypePairSupportFactory
 {

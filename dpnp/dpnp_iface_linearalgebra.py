@@ -285,17 +285,16 @@ def matmul(
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> a = np.ones([9, 5, 7, 4])
-    >>> c = np.ones([9, 5, 4, 3])
-    >>> np.matmul(a, c).shape
-    (9, 5, 7, 3)
+    For 2-D arrays it is the matrix product:
 
+    >>> import dpnp as np
     >>> a = np.array([[1, 0], [0, 1]])
     >>> b = np.array([[4, 1], [2, 2]])
     >>> np.matmul(a, b)
     array([[4, 1],
            [2, 2]])
+
+    For 2-D mixed with 1-D, the result is the usual.
 
     >>> a = np.array([[1, 0], [0, 1]])
     >>> b = np.array([1, 2])
@@ -303,6 +302,8 @@ def matmul(
     array([1, 2])
     >>> np.matmul(b, a)
     array([1, 2])
+
+    Broadcasting is conventional for stacks of arrays
 
     >>> a = np.arange(2 * 2 * 4).reshape((2, 2, 4))
     >>> b = np.arange(2 * 2 * 4).reshape((2, 4, 2))
@@ -313,11 +314,16 @@ def matmul(
     >>> np.sum(a[0, 1, :] * b[0 , :, 1])
     array(98)
 
-    The ``@`` operator can be used as a shorthand for ``matmul`` on
-    :class:`dpnp.ndarray`.
+    Vector, vector returns the scalar inner product, but neither argument is complex-conjugated:
 
     >>> x1 = np.array([2j, 3j])
     >>> x2 = np.array([2j, 3j])
+    >>> np.matmul(x1, x2)
+    array(-13+0j)
+
+    The ``@`` operator can be used as a shorthand for ``matmul`` on
+    :class:`dpnp.ndarray`.
+
     >>> x1 @ x2
     array(-13+0j)
 
@@ -590,27 +596,52 @@ def dpnp_matmul_batch(
 
 
 def _gemm_res_dtype(*arrays, casting):
-    dtype = dpnp.result_type(*arrays)
-    default = dpnp.default_float_type(device=arrays[0].device)
-    if dpnp.issubdtype(dtype, dpnp.complexfloating):
-        default = dpnp.complex64 if default == dpnp.float32 else dpnp.complex128
+    """
+    Determines the data types for matmul operation and the output array of matmul operation.
 
-    if dpnp.can_cast(dtype, default, casting):
-        if dtype in [
+    The output array data type is determined based on the Promotion Type Rule
+    and device capibilities. The data type used in matmul operation is an 'inexact' data type
+    determined based on the output data type and device capabilities.
+    Both data types are determined based on the fact that the output array data type can be cast
+    to the other data type according to casting rule specified, otherwise a ``TypeError`` is raised.
+
+    Parameters
+    ----------
+    arrays : {dpnp_array, usm_ndarray}
+        Input arrays.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur.
+
+    Returns
+    -------
+    gemm_dtype, res_dtype :
+        The appropriate data types for performing matmul operation and presenting output array.
+
+    """
+
+    res_dtype = dpnp.result_type(*arrays)
+    gemm_dtype = dpnp.default_float_type(device=arrays[0].device)
+    if dpnp.issubdtype(res_dtype, dpnp.complexfloating):
+        gemm_dtype = (
+            dpnp.complex64 if gemm_dtype == dpnp.float32 else dpnp.complex128
+        )
+
+    if dpnp.can_cast(res_dtype, gemm_dtype, casting):
+        if res_dtype in [
             dpnp.float64,
             dpnp.complex128,
-        ]:  # in case device does not support fp64 (default)
-            return default, default
-        elif dtype in [
+        ]:  # in case device does not support fp64
+            return gemm_dtype, gemm_dtype
+        elif res_dtype in [
             dpnp.float32,
             dpnp.complex64,
-        ]:  # needed dtype is fp32 but device supports fp64 (default)
-            return dtype, dtype
+        ]:  # needed dtype is fp32 but device supports fp64
+            return res_dtype, res_dtype
         else:
-            return default, dtype
+            return gemm_dtype, res_dtype
     else:
         raise TypeError(
-            f"Cannot cast ufunc 'matmul' output from dtype({dtype}) to dtype({default}) with casting rule {casting}"
+            f"Cannot cast ufunc 'matmul' output from dtype({res_dtype}) to dtype({gemm_dtype}) with casting rule {casting}"
         )
 
 

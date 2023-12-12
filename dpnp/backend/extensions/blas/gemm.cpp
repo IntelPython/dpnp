@@ -93,9 +93,9 @@ static sycl::event gemm_impl(sycl::queue exec_q,
     try {
         gemm_event = mkl_blas::row_major::gemm(
             exec_q,
-            transA, // Parameter indicating whether matrix A is not
-                    // transposed ('N'), transposed ('T'),
-                    // or conjugate transposed ('C').
+            transA, // Defines the transpose operation for matrix A:
+                    // 'N' indicates no transpose, 'T' for transpose,
+                    // or 'C' for a conjugate transpose.
             transB, // Same as transA but for matrix B.
             m,      // Number of rows in matrices A and C.
             n,      // Number of columns in matrices B and C.
@@ -106,7 +106,7 @@ static sycl::event gemm_impl(sycl::queue exec_q,
                     // stride between successive rows (for row major
                     // layout).
             b,      // Pointer to matrix B.
-            ldb,    // Leading dimension of matrix B, similar to lda
+            ldb,    // Leading dimension of matrix B, similar to lda.
             Tab(0), // Scaling factor for matrix C.
             res,    // Pointer to matrix C, where the result is stored.
             ldc,    // Leading dimension of matrix C.
@@ -198,7 +198,8 @@ std::pair<sycl::event, sycl::event>
     gemm_impl_fn_ptr_t gemm_fn =
         gemm_dispatch_table[matrixAB_type_id][resultC_type_id];
     if (gemm_fn == nullptr) {
-        throw py::value_error("Type dispatch ran into trouble.");
+        throw py::value_error(
+            "Types of input matrices and result matrix are mismatched.");
     }
 
     char *a_typeless_ptr = matrixA.get_data();

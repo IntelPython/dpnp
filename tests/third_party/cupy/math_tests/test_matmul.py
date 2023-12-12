@@ -57,7 +57,6 @@ from tests.third_party.cupy import testing
         }
     )
 )
-@testing.gpu
 class TestMatmul(unittest.TestCase):
     @testing.for_all_dtypes(name="dtype1")
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
@@ -93,7 +92,6 @@ class TestMatmul(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestMatmulLarge(unittest.TestCase):
     # Avoid overflow
     skip_dtypes = {
@@ -149,7 +147,6 @@ class TestMatmulLarge(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestMatmulInvalidShape(unittest.TestCase):
     def test_invalid_shape(self):
         for xp in (numpy, dpnp):

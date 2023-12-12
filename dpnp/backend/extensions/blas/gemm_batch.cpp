@@ -100,7 +100,7 @@ static sycl::event gemm_batch_impl(sycl::queue exec_q,
 
     sycl::event gemm_batch_event;
     try {
-        gemm_batch_event = oneapi::mkl::blas::row_major::gemm_batch(
+        gemm_batch_event = mkl_blas::row_major::gemm_batch(
             exec_q, transA, transB, m, n, k, Tab(1), a, ld_array_1, stridea, b,
             ld_array_2, strideb, Tab(0), res, ld_result, stridec, batch_size,
             depends);
@@ -171,7 +171,8 @@ std::pair<sycl::event, sycl::event>
     gemm_batch_impl_fn_ptr_t gemm_batch_fn =
         gemm_batch_dispatch_table[matrixAB_type_id][resultC_type_id];
     if (gemm_batch_fn == nullptr) {
-        throw py::value_error("Type dispatch ran into trouble.");
+        throw py::value_error(
+            "Types of input matrices and result matrix are mismatched.");
     }
 
     char *a_typeless_ptr = matrixA.get_data();

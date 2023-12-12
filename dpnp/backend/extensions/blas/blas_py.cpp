@@ -38,8 +38,8 @@ namespace py = pybind11;
 // populate dispatch tables
 void init_dispatch_tables(void)
 {
-    blas_ext::init_gemm_dispatch_table();
     blas_ext::init_gemm_batch_dispatch_table();
+    blas_ext::init_gemm_dispatch_table();
 }
 
 PYBIND11_MODULE(_blas_impl, m)
@@ -51,12 +51,18 @@ PYBIND11_MODULE(_blas_impl, m)
               "Call `gemm` from OneMKL LAPACK library to return "
               "the matrix-matrix product with 2-D matrices.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
-              py::arg("matrixC"), py::arg("depends") = py::list());
+              py::arg("result"), py::arg("depends") = py::list());
     }
 
     {
         m.def("_gemm_batch", &blas_ext::gemm_batch,
               "Call `gemm_batch` from OneMKL LAPACK library to return "
-              "the matrix-matrix product with general matrices.");
+              "the matrix-matrix product with general matrices.",
+              py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
+              py::arg("result"), py::arg("m"), py::arg("n"), py::arg("k"),
+              py::arg("batch_size"), py::arg("ld_array_1"),
+              py::arg("ld_array_2"), py::arg("ld_result"), py::arg("stridea"),
+              py::arg("strideb"), py::arg("stridec"), py::arg("transA_int"),
+              py::arg("transB_int"), py::arg("depends") = py::list());
     }
 }
