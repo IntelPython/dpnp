@@ -82,7 +82,7 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     --------
     :obj:`dpnp.ndarray.argmax` : Equivalent function.
     :obj:`dpnp.argmin` : Returns the indices of the minimum values along an axis.
-    :obj:`dpnp.amax` : The maximum value along a given axis.
+    :obj:`dpnp.max` : The maximum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
     :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``
                                   from argmax to an array as if by calling max.
@@ -162,7 +162,7 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     --------
     :obj:`dpnp.ndarray.argmin` : Equivalent function.
     :obj:`dpnp.argmax` : Returns the indices of the maximum values along an axis.
-    :obj:`dpnp.amin` : The minimum value along a given axis.
+    :obj:`dpnp.min` : The minimum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
     :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``
                                   from argmin to an array as if by calling min.
