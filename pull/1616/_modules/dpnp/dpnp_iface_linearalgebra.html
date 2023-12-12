@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.13.1dev1+21.gd482ebca3a documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.13.1dev1+26.gd7453ea9de documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=01b2b41b"></script>
+        <script src="../../_static/documentation_options.js?v=8a139cef"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+21.gd482ebca3a
+                0.13.1dev1+26.gd7453ea9de
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -392,17 +392,16 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.ones([9, 5, 7, 4])</span>
-<span class="sd">    &gt;&gt;&gt; c = np.ones([9, 5, 4, 3])</span>
-<span class="sd">    &gt;&gt;&gt; np.matmul(a, c).shape</span>
-<span class="sd">    (9, 5, 7, 3)</span>
+<span class="sd">    For 2-D arrays it is the matrix product:</span>
 
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; a = np.array([[1, 0], [0, 1]])</span>
 <span class="sd">    &gt;&gt;&gt; b = np.array([[4, 1], [2, 2]])</span>
 <span class="sd">    &gt;&gt;&gt; np.matmul(a, b)</span>
 <span class="sd">    array([[4, 1],</span>
 <span class="sd">           [2, 2]])</span>
+
+<span class="sd">    For 2-D mixed with 1-D, the result is the usual.</span>
 
 <span class="sd">    &gt;&gt;&gt; a = np.array([[1, 0], [0, 1]])</span>
 <span class="sd">    &gt;&gt;&gt; b = np.array([1, 2])</span>
@@ -410,6 +409,8 @@
 <span class="sd">    array([1, 2])</span>
 <span class="sd">    &gt;&gt;&gt; np.matmul(b, a)</span>
 <span class="sd">    array([1, 2])</span>
+
+<span class="sd">    Broadcasting is conventional for stacks of arrays</span>
 
 <span class="sd">    &gt;&gt;&gt; a = np.arange(2 * 2 * 4).reshape((2, 2, 4))</span>
 <span class="sd">    &gt;&gt;&gt; b = np.arange(2 * 2 * 4).reshape((2, 4, 2))</span>
@@ -420,11 +421,16 @@
 <span class="sd">    &gt;&gt;&gt; np.sum(a[0, 1, :] * b[0 , :, 1])</span>
 <span class="sd">    array(98)</span>
 
-<span class="sd">    The ``@`` operator can be used as a shorthand for ``matmul`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
+<span class="sd">    Vector, vector returns the scalar inner product, but neither argument is complex-conjugated:</span>
 
 <span class="sd">    &gt;&gt;&gt; x1 = np.array([2j, 3j])</span>
 <span class="sd">    &gt;&gt;&gt; x2 = np.array([2j, 3j])</span>
+<span class="sd">    &gt;&gt;&gt; np.matmul(x1, x2)</span>
+<span class="sd">    array(-13+0j)</span>
+
+<span class="sd">    The ``@`` operator can be used as a shorthand for ``matmul`` on</span>
+<span class="sd">    :class:`dpnp.ndarray`.</span>
+
 <span class="sd">    &gt;&gt;&gt; x1 @ x2</span>
 <span class="sd">    array(-13+0j)</span>
 
@@ -698,27 +704,52 @@
 
 
 <span class="k">def</span> <span class="nf">_gemm_res_dtype</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">,</span> <span class="n">casting</span><span class="p">):</span>
-    <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">)</span>
-    <span class="n">default</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
-        <span class="n">default</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complex64</span> <span class="k">if</span> <span class="n">default</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines the data types for matmul operation and the output array of matmul operation.</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">casting</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span>
+<span class="sd">    The output array data type is determined based on the Promotion Type Rule</span>
+<span class="sd">    and device capibilities. The data type used in matmul operation is an &#39;inexact&#39; data type</span>
+<span class="sd">    determined based on the output data type and device capabilities.</span>
+<span class="sd">    Both data types are determined based on the fact that the output array data type can be cast</span>
+<span class="sd">    to the other data type according to casting rule specified, otherwise a ``TypeError`` is raised.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arrays : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        Input arrays.</span>
+<span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
+<span class="sd">        Controls what kind of data casting may occur.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gemm_dtype, res_dtype :</span>
+<span class="sd">        The appropriate data types for performing matmul operation and presenting output array.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">)</span>
+    <span class="n">gemm_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">res_dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="n">gemm_dtype</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">complex64</span> <span class="k">if</span> <span class="n">gemm_dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">res_dtype</span><span class="p">,</span> <span class="n">gemm_dtype</span><span class="p">,</span> <span class="n">casting</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">res_dtype</span> <span class="ow">in</span> <span class="p">[</span>
             <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
             <span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span>
-        <span class="p">]:</span>  <span class="c1"># in case device does not support fp64 (default)</span>
-            <span class="k">return</span> <span class="n">default</span><span class="p">,</span> <span class="n">default</span>
-        <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="p">]:</span>  <span class="c1"># in case device does not support fp64</span>
+            <span class="k">return</span> <span class="n">gemm_dtype</span><span class="p">,</span> <span class="n">gemm_dtype</span>
+        <span class="k">elif</span> <span class="n">res_dtype</span> <span class="ow">in</span> <span class="p">[</span>
             <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
             <span class="n">dpnp</span><span class="o">.</span><span class="n">complex64</span><span class="p">,</span>
-        <span class="p">]:</span>  <span class="c1"># needed dtype is fp32 but device supports fp64 (default)</span>
-            <span class="k">return</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span>
+        <span class="p">]:</span>  <span class="c1"># needed dtype is fp32 but device supports fp64</span>
+            <span class="k">return</span> <span class="n">res_dtype</span><span class="p">,</span> <span class="n">res_dtype</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">default</span><span class="p">,</span> <span class="n">dtype</span>
+            <span class="k">return</span> <span class="n">gemm_dtype</span><span class="p">,</span> <span class="n">res_dtype</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Cannot cast ufunc &#39;matmul&#39; output from dtype(</span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">) to dtype(</span><span class="si">{</span><span class="n">default</span><span class="si">}</span><span class="s2">) with casting rule </span><span class="si">{</span><span class="n">casting</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Cannot cast ufunc &#39;matmul&#39; output from dtype(</span><span class="si">{</span><span class="n">res_dtype</span><span class="si">}</span><span class="s2">) to dtype(</span><span class="si">{</span><span class="n">gemm_dtype</span><span class="si">}</span><span class="s2">) with casting rule </span><span class="si">{</span><span class="n">casting</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
 
