@@ -66,63 +66,40 @@ __all__ = [
 ]
 
 
-def amax(input, axis=None, out=None):
+def amax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
     Return the maximum of an array or maximum along an axis.
 
-    For full documentation refer to :obj:`numpy.amax`.
+    `amax` is an alias of :obj:`dpnp.max`.
 
     See Also
     --------
-    :obj:`dpnp.amin` : The minimum value of an array along a given axis,
-                       propagating any NaNs.
-    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,
-                         ignoring any NaNs.
-    :obj:`dpnp.maximum` : Element-wise maximum of two arrays,
-                          propagating any NaNs.
-    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignoring any NaNs.
-    :obj:`dpnp.argmax` : Return the indices of the maximum values.
-    :obj:`dpnp.nanmin` : Return minimum of an array or minimum along an axis,
-                         ignoring any NaNs.
-    :obj:`dpnp.minimum` : Element-wise minimum of array elements.
-    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
-
-    Notes
-    -----
-    This function works exactly the same as :obj:`dpnp.max`.
+    :obj:`dpnp.max` : alias of this function
+    :obj:`dpnp.ndarray.max` : equivalent method
 
     """
-    return max(input, axis=axis, out=out)
+
+    return max(
+        a, axis=axis, out=out, keepdims=keepdims, initial=initial, where=where
+    )
 
 
-def amin(input, axis=None, out=None):
+def amin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
     Return the minimum of an array or minimum along an axis.
 
-    For full documentation refer to :obj:`numpy.amin`.
+    `amin` is an alias of :obj:`dpnp.min`.
 
     See Also
     --------
-    :obj:`dpnp.amax` : The maximum value of an array along a given axis,
-                       propagating any NaNs.
-    :obj:`dpnp.nanmin` : Return minimum of an array or minimum along an axis,
-                         ignoring any NaNs.
-    :obj:`dpnp.minimum` : Element-wise minimum of array elements.
-    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
-    :obj:`dpnp.argmin` : Return the indices of the minimum values.
-    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,
-                         ignoring any NaNs.
-    :obj:`dpnp.maximum` : Element-wise maximum of two arrays,
-                          propagating any NaNs.
-    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignoring any NaNs.
-
-    Notes
-    -----
-    This function works exactly the same as :obj:`dpnp.min`.
+    :obj:`dpnp.min` : alias of this function
+    :obj:`dpnp.ndarray.min` : equivalent method
 
     """
 
-    return min(input, axis=axis, out=out)
+    return min(
+        a, axis=axis, out=out, keepdims=keepdims, initial=initial, where=where
+    )
 
 
 def average(x1, axis=None, weights=None, returned=False):

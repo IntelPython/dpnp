@@ -366,10 +366,10 @@ axes = [0, 1, 2]
 
 @testing.parameterize(*testing.product({"axis": axes}))
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
+# TODO: remove "type_check=False" once leveraged on dpctl call
 class TestCumsum(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_cumsum(self, xp, dtype):
         a = testing.shaped_arange((5,), xp, dtype)
         return xp.cumsum(a)
@@ -391,7 +391,7 @@ class TestCumsum(unittest.TestCase):
         return out
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=False)
     def test_cumsum_2dim(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return xp.cumsum(a)
@@ -575,8 +575,7 @@ class TestCumprod(unittest.TestCase):
             return cupy.cumprod(a_numpy)
 
 
-@testing.gpu
-class TestDiff(unittest.TestCase):
+class TestDiff:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_diff_1dim(self, xp, dtype):
@@ -623,7 +622,6 @@ class TestDiff(unittest.TestCase):
         b = testing.shaped_arange((1, 5), xp, dtype)
         return xp.diff(a, axis=0, append=b, n=2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.16")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
@@ -631,7 +629,6 @@ class TestDiff(unittest.TestCase):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return xp.diff(a, prepend=1, append=0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.16")
     def test_diff_invalid_axis(self):
         for xp in (numpy, cupy):
