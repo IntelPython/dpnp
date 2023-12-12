@@ -220,6 +220,18 @@ using dpnp_remove_cvref_t =
     typename std::remove_cv_t<typename std::remove_reference_t<_Tp>>;
 
 /**
+ * A helper alias template to return true value for complex types and false
+ * otherwise.
+ */
+template <typename _Tp>
+struct is_complex : public std::integral_constant<
+                        bool,
+                        std::is_same_v<_Tp, std::complex<float>> ||
+                            std::is_same_v<_Tp, std::complex<double>>>
+{
+};
+
+/**
  * @brief "<" comparison with complex types support.
  *
  * @note return a result of lexicographical "<" comparison for complex types.

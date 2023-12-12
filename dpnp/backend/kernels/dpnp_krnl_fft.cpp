@@ -414,7 +414,7 @@ DPCTLSyclEventRef dpnp_fft_fft_c(DPCTLSyclQueueRef q_ref,
                                  const size_t norm,
                                  const DPCTLEventVectorRef dep_event_vec_ref)
 {
-    static_assert(sycl::detail::is_complex<_DataType_output>::value,
+    static_assert(is_complex<_DataType_output>::value,
                   "Output data type must be a complex type.");
 
     DPCTLSyclEventRef event_ref = nullptr;
@@ -584,7 +584,7 @@ DPCTLSyclEventRef dpnp_fft_rfft_c(DPCTLSyclQueueRef q_ref,
                                   const size_t norm,
                                   const DPCTLEventVectorRef dep_event_vec_ref)
 {
-    static_assert(sycl::detail::is_complex<_DataType_output>::value,
+    static_assert(is_complex<_DataType_output>::value,
                   "Output data type must be a complex type.");
     DPCTLSyclEventRef event_ref = nullptr;
 
