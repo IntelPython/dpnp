@@ -177,6 +177,12 @@ class TestSumprod(unittest.TestCase):
         else:
             return a.sum(axis=(0, 2, 3))
 
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose()
+    def test_sum_empty_axis(self, xp, dtype):
+        a = testing.shaped_arange((2, 3, 4, 5), xp, dtype)
+        return a.sum(axis=())
+
     @testing.for_all_dtypes_combination(names=["src_dtype", "dst_dtype"])
     @testing.numpy_cupy_allclose()
     def test_sum_dtype(self, xp, src_dtype, dst_dtype):

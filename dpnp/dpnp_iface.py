@@ -69,7 +69,6 @@ __all__ = [
     "get_usm_ndarray_or_scalar",
     "is_supported_array_or_scalar",
     "is_supported_array_type",
-    "_replace_nan",
 ]
 
 from dpnp import float64, isscalar
@@ -91,6 +90,8 @@ from dpnp.dpnp_iface_manipulation import *
 from dpnp.dpnp_iface_manipulation import __all__ as __all__manipulation
 from dpnp.dpnp_iface_mathematical import *
 from dpnp.dpnp_iface_mathematical import __all__ as __all__mathematical
+from dpnp.dpnp_iface_nanfunctions import *
+from dpnp.dpnp_iface_nanfunctions import __all__ as __all__nanfunctions
 from dpnp.dpnp_iface_searching import *
 from dpnp.dpnp_iface_searching import __all__ as __all__searching
 from dpnp.dpnp_iface_sorting import *
@@ -109,6 +110,7 @@ __all__ += __all__linearalgebra
 __all__ += __all__logic
 __all__ += __all__manipulation
 __all__ += __all__mathematical
+__all__ += __all__nanfunctions
 __all__ += __all__searching
 __all__ += __all__sorting
 __all__ += __all__statistics
@@ -599,39 +601,3 @@ def is_supported_array_type(a):
     """
 
     return isinstance(a, (dpnp_array, dpt.usm_ndarray))
-
-
-def _replace_nan(a, val):
-    """
-    If `a` is of inexact type, make a copy of `a`, replace NaNs with
-    the `val` value, and return the copy together with a boolean mask
-    marking the locations where NaNs were present. If `a` is not of
-    inexact type, do nothing and return `a` together with a mask of None.
-    Note that scalars will end up as array scalars, which is important
-    for using the result as the value of the out argument in some
-    operations.
-    Parameters
-    ----------
-    a : {dpnp_array, usm_ndarray}
-        Input array.
-    val : float
-        NaN values are set to val before doing the operation.
-    Returns
-    -------
-    out : {dpnp_array}
-        If `a` is of inexact type, return a copy of `a` with the NaNs
-        replaced by the fill value, otherwise return `a`.
-    mask: {bool, None}
-        If `a` is of inexact type, return a boolean mask marking locations of
-        NaNs, otherwise return None.
-    """
-
-    dpnp.check_supported_arrays_type(a)
-    if issubclass(a.dtype.type, dpnp.inexact):
-        mask = dpnp.isnan(a)
-        a = dpnp.array(a, copy=True)
-        dpnp.copyto(a, val, where=mask)
-    else:
-        mask = None
-
-    return a, mask
