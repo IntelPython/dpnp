@@ -59,6 +59,9 @@ var hierarchy =
       [ "mcg59_struct", "structmcg59__struct.html", null ],
       [ "mt19937_struct", "structmt19937__struct.html", null ]
     ] ],
+    [ "std::exception", null, [
+      [ "dpnp::backend::ext::lapack::LinAlgError", "classdpnp_1_1backend_1_1ext_1_1lapack_1_1_lin_alg_error.html", null ]
+    ] ],
     [ "dpnp::backend::ext::vm::Exp2ContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp2_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::Exp2OutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_exp2_output_type.html", null ],
     [ "dpnp::backend::ext::vm::ExpContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp_contig_factory.html", null ],
@@ -70,6 +73,7 @@ var hierarchy =
     [ "dpnp::backend::ext::vm::FloorContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_floor_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::FloorOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_floor_output_type.html", null ],
     [ "func_type_pair_t< FuncType, T >", "structfunc__type__pair__t.html", null ],
+    [ "dpnp::backend::ext::lapack::types::GesvTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_gesv_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< std::tuple< T, Axis... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id_3_01std_1_1tuple_3_01_t_00_01_axis_8_8_8_01_4_01_4.html", null ],
@@ -79,9 +83,6 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::index_on_axis< idx, DispatchT, Matcher, Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis.html", null ],
     [ "dpnp::backend::ext::sycl_ext::index_on_axis< idx, DispatchT, Matcher, std::tuple< AxisData... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis_3_01idx_00_01_dispatch_t_00_01_matc014615cac12293ef2d15243fdee2c449.html", null ],
     [ "dpnp::backend::ext::sycl_ext::index_on_axis< idx, DispatchT, Matcher, std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis_3_01idx_00_01_dispatch_t_00_01_matcafd2cf8593c2aa4d8a9103f019cc37b1.html", null ],
-    [ "std::integral_constant", null, [
-      [ "is_complex< _Tp >", "structis__complex.html", null ]
-    ] ],
     [ "dpnp::backend::ext::vm::LnContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ln_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::LnOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ln_output_type.html", null ],
     [ "dpnp::backend::ext::vm::Log10ContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_log10_contig_factory.html", null ],
@@ -134,6 +135,8 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::tuple_of_tuples< std::tuple< Args... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::tuple_of_tuples< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::UsmArrayMatcher", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_usm_array_matcher.html", null ],
+    [ "dpnp::backend::ext::lapack::helper::value_type_of< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of.html", null ],
+    [ "dpnp::backend::ext::lapack::helper::value_type_of< std::complex< T > >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
     [ "Ps", null, [
       [ "func_type_map_factory_t< Ps >", "structfunc__type__map__factory__t.html", null ]
     ] ]

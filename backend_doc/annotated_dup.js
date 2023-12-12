@@ -4,10 +4,16 @@ var annotated_dup =
       [ "backend", null, [
         [ "ext", null, [
           [ "lapack", null, [
+            [ "helper", null, [
+              [ "value_type_of", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of.html", null ],
+              [ "value_type_of< std::complex< T > >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ]
+            ] ],
             [ "types", null, [
+              [ "GesvTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_gesv_type_pair_support_factory.html", null ],
               [ "HeevdTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
               [ "SyevdTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ]
-            ] ]
+            ] ],
+            [ "LinAlgError", "classdpnp_1_1backend_1_1ext_1_1lapack_1_1_lin_alg_error.html", null ]
           ] ],
           [ "sycl_ext", null, [
             [ "cartesian_product", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product.html", null ],
@@ -140,7 +146,6 @@ var annotated_dup =
     [ "func_type_map_factory_t", "structfunc__type__map__factory__t.html", null ],
     [ "func_type_pair_t", "structfunc__type__pair__t.html", null ],
     [ "is_any", "structis__any.html", null ],
-    [ "is_complex", "structis__complex.html", null ],
     [ "mcg59_struct", "structmcg59__struct.html", null ],
     [ "mt19937_struct", "structmt19937__struct.html", null ],
     [ "python_constants", "structpython__constants.html", null ]
