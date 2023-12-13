@@ -26,6 +26,7 @@
 
 import os
 import sys
+import warnings
 
 import dpctl
 import numpy
@@ -123,7 +124,30 @@ def suppress_invalid_numpy_warnings():
 
 
 @pytest.fixture
+def suppress_dof_numpy_warning():
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", r"Degrees of freedom <= 0 for slice")
+        yield
+
+
+@pytest.fixture
 def suppress_divide_invalid_numpy_warnings(
     suppress_divide_numpy_warnings, suppress_invalid_numpy_warnings
+):
+    yield
+
+
+@pytest.fixture
+def suppress_dof_invalid_numpy_warnings(
+    suppress_dof_numpy_warning, suppress_invalid_numpy_warnings
+):
+    yield
+
+
+@pytest.fixture
+def suppress_divide_invalid_dof_numpy_warnings(
+    suppress_divide_numpy_warnings,
+    suppress_invalid_numpy_warnings,
+    suppress_dof_numpy_warning,
 ):
     yield

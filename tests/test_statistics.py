@@ -161,29 +161,41 @@ class TestMean:
 
 
 class TestVar:
-    @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
+    @pytest.mark.usefixtures("suppress_divide_invalid_dof_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
     @pytest.mark.parametrize("keepdims", [True, False])
-    @pytest.mark.parametrize("ddof", [0, 1, 2])
-    def test_var_out(self, dtype, axis, keepdims, ddof):
+    @pytest.mark.parametrize("ddof", [0, 0.5, 1, 1.5, 2])
+    def test_var(self, dtype, axis, keepdims, ddof):
         dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
         np_array = dpnp.asnumpy(dp_array)
 
         expected = numpy.var(np_array, axis=axis, keepdims=keepdims, ddof=ddof)
-        if has_support_aspect64():
-            res_dtype = expected.dtype
-        else:
-            res_dtype = dpnp.default_float_type(dp_array.device)
-        result = dpnp.empty(expected.shape, dtype=res_dtype)
-        dpnp.var(dp_array, axis=axis, out=result, keepdims=keepdims, ddof=ddof)
+        result = dpnp.var(dp_array, axis=axis, keepdims=keepdims, ddof=ddof)
 
         if axis == 0 and ddof == 2:
             assert dpnp.all(dpnp.isnan(result))
         else:
             assert_dtype_allclose(result, expected)
 
-    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.usefixtures("suppress_divide_invalid_dof_numpy_warnings")
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("axis", [None, 0, 1])
+    @pytest.mark.parametrize("ddof", [0, 1])
+    def test_var_out(self, dtype, axis, ddof):
+        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
+        np_array = dpnp.asnumpy(dp_array)
+
+        expected = numpy.var(np_array, axis=axis, ddof=ddof)
+        if has_support_aspect64():
+            res_dtype = expected.dtype
+        else:
+            res_dtype = dpnp.default_float_type(dp_array.device)
+        result = dpnp.empty(expected.shape, dtype=res_dtype)
+        dpnp.var(dp_array, axis=axis, out=result, ddof=ddof)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.usefixtures("suppress_dof_invalid_numpy_warnings")
     @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
     @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
     def test_var_empty(self, axis, shape):
@@ -207,6 +219,7 @@ class TestVar:
         expected = numpy.var(np_array[::2])
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize("dt_in", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("dt_out", get_float_complex_dtypes())
     def test_var_dtype(self, dt_in, dt_out):
@@ -215,6 +228,7 @@ class TestVar:
 
         expected = numpy.var(np_array, dtype=dt_out)
         result = dpnp.var(dp_array, dtype=dt_out)
+        assert expected.dtype == result.dtype
         assert_allclose(result, expected, rtol=1e-06)
 
     def test_var_scalar(self):
@@ -225,36 +239,52 @@ class TestVar:
         expected = np_array.var()
         assert_allclose(expected, result)
 
-    def test_var_NotImplemented(self):
+    def test_var_error(self):
         ia = dpnp.arange(5)
         # where keyword is not implemented
         with pytest.raises(NotImplementedError):
             dpnp.var(ia, where=False)
 
+        # ddof should be an integer
+        with pytest.raises(TypeError):
+            dpnp.var(ia, ddof="1")
+
 
 class TestStd:
-    @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
+    @pytest.mark.usefixtures("suppress_divide_invalid_dof_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
     @pytest.mark.parametrize("keepdims", [True, False])
-    @pytest.mark.parametrize("ddof", [0, 1, 2])
-    def test_std_out(self, dtype, axis, keepdims, ddof):
+    @pytest.mark.parametrize("ddof", [0, 0.5, 1, 1.5, 2])
+    def test_std(self, dtype, axis, keepdims, ddof):
         dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
         np_array = dpnp.asnumpy(dp_array)
 
         expected = numpy.std(np_array, axis=axis, keepdims=keepdims, ddof=ddof)
-        if has_support_aspect64():
-            res_dtype = expected.dtype
-        else:
-            res_dtype = dpnp.default_float_type(dp_array.device)
-        result = dpnp.empty(expected.shape, dtype=res_dtype)
-        dpnp.std(dp_array, axis=axis, out=result, keepdims=keepdims, ddof=ddof)
+        result = dpnp.std(dp_array, axis=axis, keepdims=keepdims, ddof=ddof)
         if axis == 0 and ddof == 2:
             assert dpnp.all(dpnp.isnan(result))
         else:
             assert_dtype_allclose(result, expected)
 
-    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.usefixtures("suppress_divide_invalid_dof_numpy_warnings")
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("axis", [0, 1])
+    @pytest.mark.parametrize("ddof", [0, 1])
+    def test_std_out(self, dtype, axis, ddof):
+        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
+        np_array = dpnp.asnumpy(dp_array)
+
+        expected = numpy.std(np_array, axis=axis, ddof=ddof)
+        if has_support_aspect64():
+            res_dtype = expected.dtype
+        else:
+            res_dtype = dpnp.default_float_type(dp_array.device)
+        result = dpnp.empty(expected.shape, dtype=res_dtype)
+        dpnp.std(dp_array, axis=axis, out=result, ddof=ddof)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.usefixtures("suppress_dof_invalid_numpy_warnings")
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
     @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
     def test_std_empty(self, axis, shape):
@@ -278,6 +308,7 @@ class TestStd:
         expected = numpy.std(np_array[::2])
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize("dt_in", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("dt_out", get_float_complex_dtypes())
     def test_std_dtype(self, dt_in, dt_out):
@@ -286,6 +317,7 @@ class TestStd:
 
         expected = numpy.std(np_array, dtype=dt_out)
         result = dpnp.std(dp_array, dtype=dt_out)
+        assert expected.dtype == result.dtype
         assert_allclose(result, expected, rtol=1e-6)
 
     def test_std_scalar(self):
@@ -296,11 +328,15 @@ class TestStd:
         expected = np_array.std()
         assert_dtype_allclose(result, expected)
 
-    def test_std_NotImplemented(self):
+    def test_std_error(self):
         ia = dpnp.arange(5)
         # where keyword is not implemented
         with pytest.raises(NotImplementedError):
             dpnp.std(ia, where=False)
+
+        # ddof should be an integer
+        with pytest.raises(TypeError):
+            dpnp.std(ia, ddof="1")
 
 
 class TestNanVar:
@@ -339,7 +375,7 @@ class TestNanVar:
             "[[np.nan, np.nan], [np.inf, np.nan]]",
         ],
     )
-    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.usefixtures("suppress_dof_invalid_numpy_warnings")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
@@ -354,10 +390,11 @@ class TestNanVar:
             result = dpnp.nanvar(ia, ddof=ddof)
             assert_dtype_allclose(result, expected)
 
+    @pytest.mark.usefixtures("suppress_dof_numpy_warning")
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("axis", [None, 0, 1, 2, (0, 1), (1, 2)])
     @pytest.mark.parametrize("keepdims", [True, False])
-    @pytest.mark.parametrize("ddof", [0, 1, 2, 3])
+    @pytest.mark.parametrize("ddof", [0, 0.5, 1, 1.5, 2, 3])
     def test_nanvar_out(self, dtype, axis, keepdims, ddof):
         a = numpy.arange(4 * 3 * 5, dtype=dtype)
         a[::2] = numpy.nan
@@ -373,6 +410,7 @@ class TestNanVar:
         dpnp.nanvar(ia, out=result, axis=axis, ddof=ddof, keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize("dt_in", get_float_complex_dtypes())
     @pytest.mark.parametrize("dt_out", get_float_complex_dtypes())
     def test_nanvar_dtype(self, dt_in, dt_out):
@@ -400,6 +438,10 @@ class TestNanVar:
         res = dpnp.empty((1,), dtype=dpnp.int32)
         with pytest.raises(TypeError):
             dpnp.nanvar(ia, out=res)
+
+        # ddof should be an integer
+        with pytest.raises(TypeError):
+            dpnp.nanvar(ia, ddof="1")
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")

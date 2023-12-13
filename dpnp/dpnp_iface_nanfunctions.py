@@ -286,7 +286,7 @@ def nanvar(
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
-    ddof : int, optional
+    ddof : {int, float}, optional
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` corresponds to the total
         number of elements over which the variance is calculated.
@@ -319,6 +319,7 @@ def nanvar(
     See Also
     --------
     :obj:`dpnp.var` : Compute the variance along the specified axis.
+    :obj:`dpnp.std` : Compute the standard deviation along the specified axis.
     :obj:`dpnp.nanmean` : Compute the arithmetic mean along the specified axis,
                           ignoring NaNs.
     :obj:`dpnp.nanstd` : Compute the standard deviation along
@@ -341,62 +342,68 @@ def nanvar(
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
+    elif not isinstance(ddof, (int, float)):
+        raise TypeError(
+            "An integer or float is required, but got {}".format(type(ddof))
+        )
+    else:
+        arr, mask = _replace_nan(a, 0)
+        if mask is None:
+            return dpnp.var(
+                arr,
+                axis=axis,
+                dtype=dtype,
+                out=out,
+                ddof=ddof,
+                keepdims=keepdims,
+                where=where,
+            )
 
-    arr, mask = _replace_nan(a, 0)
-    if mask is None:
-        return dpnp.var(
-            arr,
+        if dtype is not None:
+            dtype = dpnp.dtype(dtype)
+            if not issubclass(dtype.type, dpnp.inexact):
+                raise TypeError(
+                    "If input is inexact, then dtype must be inexact."
+                )
+        if out is not None and not issubclass(out.dtype.type, dpnp.inexact):
+            raise TypeError("If input is inexact, then out must be inexact.")
+
+        # Compute mean
+        cnt = dpnp.sum(
+            ~mask, axis=axis, dtype=dpnp.intp, keepdims=True, where=where
+        )
+        avg = dpnp.sum(arr, axis=axis, dtype=dtype, keepdims=True, where=where)
+        avg = dpnp.divide(avg, cnt)
+
+        # Compute squared deviation from mean.
+        arr = dpnp.subtract(arr, avg)
+        dpnp.copyto(arr, 0.0, where=mask, casting="safe")
+        if dpnp.issubdtype(arr.dtype, dpnp.complexfloating):
+            sqr = dpnp.multiply(arr, arr.conj(), out=arr).real
+        else:
+            sqr = dpnp.multiply(arr, arr, out=arr)
+
+        # Compute variance
+        var_dtype = a.real.dtype if dtype is None else dtype
+        var = dpnp.sum(
+            sqr,
             axis=axis,
-            dtype=dtype,
+            dtype=var_dtype,
             out=out,
-            ddof=ddof,
             keepdims=keepdims,
             where=where,
         )
 
-    if dtype is not None:
-        dtype = dpnp.dtype(dtype)
-        if not issubclass(dtype.type, dpnp.inexact):
-            raise TypeError("If input is inexact, then dtype must be inexact")
-    if out is not None and not issubclass(out.dtype.type, dpnp.inexact):
-        raise TypeError("If input is inexact, then out must be inexact")
+        if var.ndim < cnt.ndim:
+            cnt = cnt.squeeze(axis)
+        cnt = cnt.astype(var.dtype, casting="same_kind")
+        cnt -= ddof
+        dpnp.divide(var, cnt, out=var)
 
-    # Compute mean
-    cnt = dpnp.sum(
-        ~mask, axis=axis, dtype=dpnp.intp, keepdims=True, where=where
-    )
-    avg = dpnp.sum(arr, axis=axis, dtype=dtype, keepdims=True, where=where)
-    avg = dpnp.divide(avg, cnt)
+        isbad = cnt <= 0
+        if dpnp.any(isbad):
+            # NaN, inf, or negative numbers are all possible bad
+            # values, so explicitly replace them with NaN.
+            dpnp.copyto(var, dpnp.nan, where=isbad, casting="same_kind")
 
-    # Compute squared deviation from mean.
-    arr = dpnp.subtract(arr, avg, where=where)
-    dpnp.copyto(arr, 0.0, where=mask, casting="safe")
-    if issubclass(arr.dtype.type, dpnp.complexfloating):
-        sqr = dpnp.multiply(arr, arr.conj(), out=arr, where=where).real
-    else:
-        sqr = dpnp.multiply(arr, arr, out=arr, where=where)
-
-    # Compute variance
-    var = dpnp.sum(sqr, axis=axis, dtype=dtype, keepdims=keepdims, where=where)
-
-    if var.ndim < cnt.ndim:
-        cnt = cnt.squeeze(axis)
-    dof = cnt - ddof
-
-    var = dpnp.divide(var, dof)
-
-    isbad = dof <= 0
-    if dpnp.any(isbad):
-        # NaN, inf, or negative numbers are all possible bad
-        # values, so explicitly replace them with NaN.
-        dpnp.copyto(var, dpnp.nan, where=isbad, casting="safe")
-
-    res = dpnp.get_result_array(var, out, casting="same_kind")
-
-    if out is None:
-        if dtype is not None:
-            res = res.astype(dtype, casting="same_kind")
-        elif res.dtype != a.real.dtype:
-            res = res.astype(a.real.dtype, casting="same_kind")
-
-    return res
+        return var

@@ -198,7 +198,6 @@ class TestMeanVar(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_var_all(self, xp, dtype):
-        print(dtype)
         a = testing.shaped_arange((2, 3), xp, dtype)
         return a.var()
 
@@ -374,10 +373,9 @@ class TestNanMeanAdditional(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestNanVarStd(unittest.TestCase):
     @ignore_runtime_warnings
-    @testing.for_all_dtypes(no_float16=True, no_complex=True)
+    @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6, type_check=has_support_aspect64())
     def test_nanvar(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype=dtype)
@@ -388,7 +386,7 @@ class TestNanVarStd(unittest.TestCase):
         )
 
     @ignore_runtime_warnings
-    @testing.for_all_dtypes(no_float16=True, no_complex=True)
+    @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_nanstd(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype=dtype)
@@ -401,7 +399,7 @@ class TestNanVarStd(unittest.TestCase):
 
 class TestNanVarStdAdditional(unittest.TestCase):
     @ignore_runtime_warnings
-    @testing.for_all_dtypes(no_float16=True, no_complex=True)
+    @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6, type_check=has_support_aspect64())
     def test_nanvar_out(self, xp, dtype):
         a = testing.shaped_random((10, 20, 30), xp, dtype)
@@ -415,7 +413,7 @@ class TestNanVarStdAdditional(unittest.TestCase):
         return z
 
     @testing.slow
-    @testing.for_all_dtypes(no_float16=True, no_complex=True)
+    @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6, type_check=has_support_aspect64())
     def test_nanvar_huge(self, xp, dtype):
         a = testing.shaped_random((1024, 512), xp, dtype)
@@ -428,14 +426,14 @@ class TestNanVarStdAdditional(unittest.TestCase):
     @pytest.mark.skipif(
         not has_support_aspect16(), reason="No fp16 support by device"
     )
-    @testing.numpy_cupy_allclose(rtol=1e-3, type_check=has_support_aspect64())
+    @testing.numpy_cupy_allclose(rtol=1e-3)
     def test_nanvar_float16(self, xp):
         a = testing.shaped_arange((4, 5), xp, numpy.float16)
         a[0][0] = xp.nan
         return xp.nanvar(a, axis=0)
 
     @ignore_runtime_warnings
-    @testing.for_all_dtypes(no_float16=True, no_complex=True)
+    @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_nanstd_out(self, xp, dtype):
         a = testing.shaped_random((10, 20, 30), xp, dtype)
@@ -449,7 +447,7 @@ class TestNanVarStdAdditional(unittest.TestCase):
         return z
 
     @testing.slow
-    @testing.for_all_dtypes(no_float16=True, no_complex=True)
+    @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_nanstd_huge(self, xp, dtype):
         a = testing.shaped_random((1024, 512), xp, dtype)
@@ -481,8 +479,7 @@ class TestNanVarStdAdditional(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
-@testing.gpu
+@pytest.mark.usefixtures("suppress_dof_invalid_numpy_warnings")
 class TestProductZeroLength(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())

@@ -66,6 +66,47 @@ __all__ = [
 ]
 
 
+def _count_reduce_items(arr, axis, where=True):
+    """
+    Calculates the number of items used in a reduction operation along the specified axis or axes
+
+    Parameters
+    ----------
+    arr : {dpnp_array, usm_ndarray}
+        Input array.
+    axis : int or tuple of ints, optional
+        axis or axes along which the number of items used in a reduction operation must be counted.
+        If a tuple of unique integers is given, the items are counted over multiple axes.
+        If ``None``, the variance is computed over the entire array.
+        Default: `None`.
+
+    Returns
+    -------
+    out : int
+        The number of items should be used in a reduction operation.
+
+    Limitations
+    -----------
+    Parameters `where` is only supported with its default value.
+
+    """
+    if where is True:
+        # no boolean mask given, calculate items according to axis
+        if axis is None:
+            axis = tuple(range(arr.ndim))
+        elif not isinstance(axis, tuple):
+            axis = (axis,)
+        items = 1
+        for ax in axis:
+            items *= arr.shape[normalize_axis_index(ax, arr.ndim)]
+        items = dpnp.intp(items)
+    else:
+        raise NotImplementedError(
+            "where keyword argument is only supported with its default value."
+        )
+    return items
+
+
 def amax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
     Return the maximum of an array or maximum along an axis.
@@ -636,7 +677,7 @@ def std(
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
-    ddof : int, optional
+    ddof : {int, float}, optional
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` corresponds to the total
         number of elements over which the variance is calculated.
@@ -697,21 +738,27 @@ def std(
 
     """
 
+    dpnp.check_supported_arrays_type(a)
     if where is not True:
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
+    elif not isinstance(ddof, (int, float)):
+        raise TypeError(
+            "An integer or float is required, but got {}".format(type(ddof))
+        )
     else:
-        if issubclass(a.dtype.type, dpnp.complexfloating):
-            var = dpnp.var(
+        if dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+            result = dpnp.var(
                 a,
                 axis=axis,
-                dtype=dtype,
+                dtype=None,
+                out=out,
                 ddof=ddof,
                 keepdims=keepdims,
                 where=where,
             )
-            res = dpnp.sqrt(var, out=out, where=where)
+            dpnp.sqrt(result, out=result)
         else:
             dpt_array = dpnp.get_usm_ndarray(a)
             result = dpnp_array._create_from_usm_ndarray(
@@ -719,11 +766,11 @@ def std(
                     dpt_array, axis=axis, correction=ddof, keepdims=keepdims
                 )
             )
-            res = dpnp.get_result_array(result, out)
+            result = dpnp.get_result_array(result, out)
 
         if dtype is not None and out is None:
-            res = res.astype(dtype, casting="same_kind")
-        return res
+            result = result.astype(dtype, casting="same_kind")
+        return result
 
 
 def var(
@@ -751,7 +798,7 @@ def var(
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
-    ddof : int, optional
+    ddof : {int, float}, optional
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` corresponds to the total
         number of elements over which the variance is calculated.
@@ -811,37 +858,40 @@ def var(
 
     """
 
+    dpnp.check_supported_arrays_type(a)
     if where is not True:
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
+    elif not isinstance(ddof, (int, float)):
+        raise TypeError(
+            "An integer or float is required, but got {}".format(type(ddof))
+        )
     else:
-        if issubclass(a.dtype.type, dpnp.complexfloating):
+        if dpnp.issubdtype(a.dtype, dpnp.complexfloating):
             # Note that if dtype is not of inexact type then arrmean will not be either.
             arrmean = dpnp.mean(
                 a, axis=axis, dtype=dtype, keepdims=True, where=where
             )
-            x = dpnp.subtract(a, arrmean, where=where)
-            x = dpnp.multiply(x, x.conj(), where=where).real
-            res = dpnp.sum(
-                x, axis=axis, dtype=dtype, keepdims=keepdims, where=where
+            x = dpnp.subtract(a, arrmean)
+            x = dpnp.multiply(x, x.conj(), out=x).real
+            result = dpnp.sum(
+                x,
+                axis=axis,
+                dtype=a.real.dtype,
+                out=out,
+                keepdims=keepdims,
+                where=where,
             )
-            if dtype is None and a.real.dtype != res.dtype:
-                res = res.astype(a.real.dtype, casting="same_kind")
 
             cnt = _count_reduce_items(a, axis, where)
-            dof = dpnp.max(
-                dpnp.array(
-                    [cnt - ddof, 0],
-                    dtype=res.dtype,
-                    sycl_queue=res.sycl_queue,
-                    device=res.device,
-                )
+            cnt = numpy.max(cnt - ddof, 0).astype(
+                result.dtype, casting="same_kind"
             )
-            if not dof:
-                dof = dpnp.nan
+            if not cnt:
+                cnt = dpnp.nan
 
-            res = dpnp.divide(res, dof, out=out)
+            dpnp.divide(result, cnt, out=result)
         else:
             dpt_array = dpnp.get_usm_ndarray(a)
             result = dpnp_array._create_from_usm_ndarray(
@@ -849,49 +899,8 @@ def var(
                     dpt_array, axis=axis, correction=ddof, keepdims=keepdims
                 )
             )
-            res = dpnp.get_result_array(result, out)
+            result = dpnp.get_result_array(result, out)
 
-        if dtype is not None and out is None:
-            res = res.astype(dtype, casting="same_kind")
-        return res
-
-
-def _count_reduce_items(arr, axis, where=True):
-    """
-    Calculates the number of items used in a reduction operation along the specified axis or axes
-
-    Parameters
-    ----------
-    arr : {dpnp_array, usm_ndarray}
-        Input array.
-    axis : int or tuple of ints, optional
-        axis or axes along which the number of items used in a reduction operation must be counted.
-        If a tuple of unique integers is given, the items are counted over multiple axes.
-        If ``None``, the variance is computed over the entire array.
-        Default: `None`.
-
-    Returns
-    -------
-    out : int
-        The number of items should be used in a reduction operation.
-
-    Limitations
-    -----------
-    Parameters `where` is only supported with its default value.
-
-    """
-    if where is True:
-        # no boolean mask given, calculate items according to axis
-        if axis is None:
-            axis = tuple(range(arr.ndim))
-        elif not isinstance(axis, tuple):
-            axis = (axis,)
-        items = 1
-        for ax in axis:
-            items *= arr.shape[normalize_axis_index(ax, arr.ndim)]
-        items = dpnp.intp(items)
-    else:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
-    return items
+        if out is None and dtype is not None:
+            result = result.astype(dtype, casting="same_kind")
+        return result
