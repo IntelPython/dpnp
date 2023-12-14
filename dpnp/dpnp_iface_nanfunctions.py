@@ -338,6 +338,7 @@ def nanvar(
 
     """
 
+    dpnp.check_supported_arrays_type(a)
     if where is not True:
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
@@ -365,26 +366,32 @@ def nanvar(
                 raise TypeError(
                     "If input is inexact, then dtype must be inexact."
                 )
-        if out is not None and not issubclass(out.dtype.type, dpnp.inexact):
-            raise TypeError("If input is inexact, then out must be inexact.")
+        if out is not None:
+            dpnp.check_supported_arrays_type(out)
+            if not dpnp.issubdtype(out.dtype, dpnp.inexact):
+                raise TypeError(
+                    "If input is inexact, then out must be inexact."
+                )
 
         # Compute mean
+        var_dtype = a.real.dtype if dtype is None else dtype
         cnt = dpnp.sum(
-            ~mask, axis=axis, dtype=dpnp.intp, keepdims=True, where=where
+            ~mask, axis=axis, dtype=var_dtype, keepdims=True, where=where
         )
-        avg = dpnp.sum(arr, axis=axis, dtype=dtype, keepdims=True, where=where)
-        avg = dpnp.divide(avg, cnt)
+        avg = dpnp.sum(
+            arr, axis=axis, dtype=var_dtype, keepdims=True, where=where
+        )
+        avg = dpnp.divide(avg, cnt, out=avg)
 
         # Compute squared deviation from mean.
         arr = dpnp.subtract(arr, avg)
-        dpnp.copyto(arr, 0.0, where=mask, casting="safe")
+        dpnp.copyto(arr, 0.0, where=mask)
         if dpnp.issubdtype(arr.dtype, dpnp.complexfloating):
             sqr = dpnp.multiply(arr, arr.conj(), out=arr).real
         else:
             sqr = dpnp.multiply(arr, arr, out=arr)
 
         # Compute variance
-        var_dtype = a.real.dtype if dtype is None else dtype
         var = dpnp.sum(
             sqr,
             axis=axis,
@@ -396,7 +403,6 @@ def nanvar(
 
         if var.ndim < cnt.ndim:
             cnt = cnt.squeeze(axis)
-        cnt = cnt.astype(var.dtype, casting="same_kind")
         cnt -= ddof
         dpnp.divide(var, cnt, out=var)
 
@@ -404,6 +410,6 @@ def nanvar(
         if dpnp.any(isbad):
             # NaN, inf, or negative numbers are all possible bad
             # values, so explicitly replace them with NaN.
-            dpnp.copyto(var, dpnp.nan, where=isbad, casting="same_kind")
+            dpnp.copyto(var, dpnp.nan, where=isbad)
 
         return var

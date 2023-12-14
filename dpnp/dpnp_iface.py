@@ -484,6 +484,7 @@ def get_result_array(a, out=None, casting="safe"):
     if out is None:
         return a
     else:
+        dpnp.check_supported_arrays_type(out)
         if out.shape != a.shape:
             raise ValueError(
                 f"Output array of shape {a.shape} is needed, got {out.shape}."

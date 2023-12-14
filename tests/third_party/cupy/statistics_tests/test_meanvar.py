@@ -374,7 +374,7 @@ class TestNanMeanAdditional(unittest.TestCase):
     )
 )
 class TestNanVarStd(unittest.TestCase):
-    @ignore_runtime_warnings
+    @pytest.mark.usefixtures("suppress_dof_numpy_warnings")
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6, type_check=has_support_aspect64())
     def test_nanvar(self, xp, dtype):
@@ -385,7 +385,6 @@ class TestNanVarStd(unittest.TestCase):
             a, axis=self.axis, ddof=self.ddof, keepdims=self.keepdims
         )
 
-    @ignore_runtime_warnings
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_nanstd(self, xp, dtype):
@@ -398,7 +397,7 @@ class TestNanVarStd(unittest.TestCase):
 
 
 class TestNanVarStdAdditional(unittest.TestCase):
-    @ignore_runtime_warnings
+    @pytest.mark.usefixtures("suppress_dof_numpy_warnings")
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6, type_check=has_support_aspect64())
     def test_nanvar_out(self, xp, dtype):
@@ -432,7 +431,6 @@ class TestNanVarStdAdditional(unittest.TestCase):
         a[0][0] = xp.nan
         return xp.nanvar(a, axis=0)
 
-    @ignore_runtime_warnings
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_nanstd_out(self, xp, dtype):
@@ -479,7 +477,11 @@ class TestNanVarStdAdditional(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("suppress_dof_invalid_numpy_warnings")
+@pytest.mark.usefixtures(
+    "suppress_invalid_numpy_warnings",
+    "suppress_dof_numpy_warnings",
+    "suppress_mean_empty_slice_numpy_warnings",
+)
 class TestProductZeroLength(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())

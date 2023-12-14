@@ -739,6 +739,7 @@ def std(
     """
 
     dpnp.check_supported_arrays_type(a)
+
     if where is not True:
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."

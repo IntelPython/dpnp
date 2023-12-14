@@ -123,7 +123,10 @@ class TestMean:
         result = dpnp.mean(dp_array, dtype=dtype)
         assert_allclose(expected, result)
 
-    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.usefixtures(
+        "suppress_invalid_numpy_warnings",
+        "suppress_mean_empty_slice_numpy_warnings",
+    )
     @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
     @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
     def test_mean_empty(self, axis, shape):
@@ -161,7 +164,9 @@ class TestMean:
 
 
 class TestVar:
-    @pytest.mark.usefixtures("suppress_divide_invalid_dof_numpy_warnings")
+    @pytest.mark.usefixtures(
+        "suppress_divide_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
+    )
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
     @pytest.mark.parametrize("keepdims", [True, False])
@@ -178,7 +183,9 @@ class TestVar:
         else:
             assert_dtype_allclose(result, expected)
 
-    @pytest.mark.usefixtures("suppress_divide_invalid_dof_numpy_warnings")
+    @pytest.mark.usefixtures(
+        "suppress_divide_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
+    )
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axis", [None, 0, 1])
     @pytest.mark.parametrize("ddof", [0, 1])
@@ -195,7 +202,9 @@ class TestVar:
         dpnp.var(dp_array, axis=axis, out=result, ddof=ddof)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.usefixtures("suppress_dof_invalid_numpy_warnings")
+    @pytest.mark.usefixtures(
+        "suppress_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
+    )
     @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
     @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
     def test_var_empty(self, axis, shape):
@@ -251,7 +260,9 @@ class TestVar:
 
 
 class TestStd:
-    @pytest.mark.usefixtures("suppress_divide_invalid_dof_numpy_warnings")
+    @pytest.mark.usefixtures(
+        "suppress_divide_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
+    )
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
     @pytest.mark.parametrize("keepdims", [True, False])
@@ -267,7 +278,9 @@ class TestStd:
         else:
             assert_dtype_allclose(result, expected)
 
-    @pytest.mark.usefixtures("suppress_divide_invalid_dof_numpy_warnings")
+    @pytest.mark.usefixtures(
+        "suppress_divide_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
+    )
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axis", [0, 1])
     @pytest.mark.parametrize("ddof", [0, 1])
@@ -284,7 +297,9 @@ class TestStd:
         dpnp.std(dp_array, axis=axis, out=result, ddof=ddof)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.usefixtures("suppress_dof_invalid_numpy_warnings")
+    @pytest.mark.usefixtures(
+        "suppress_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
+    )
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
     @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
     def test_std_empty(self, axis, shape):
@@ -375,7 +390,9 @@ class TestNanVar:
             "[[np.nan, np.nan], [np.inf, np.nan]]",
         ],
     )
-    @pytest.mark.usefixtures("suppress_dof_invalid_numpy_warnings")
+    @pytest.mark.usefixtures(
+        "suppress_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
+    )
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
@@ -390,7 +407,7 @@ class TestNanVar:
             result = dpnp.nanvar(ia, ddof=ddof)
             assert_dtype_allclose(result, expected)
 
-    @pytest.mark.usefixtures("suppress_dof_numpy_warning")
+    @pytest.mark.usefixtures("suppress_dof_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("axis", [None, 0, 1, 2, (0, 1), (1, 2)])
     @pytest.mark.parametrize("keepdims", [True, False])

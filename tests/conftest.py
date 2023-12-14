@@ -124,30 +124,21 @@ def suppress_invalid_numpy_warnings():
 
 
 @pytest.fixture
-def suppress_dof_numpy_warning():
+def suppress_dof_numpy_warnings():
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", r"Degrees of freedom <= 0 for slice")
         yield
 
 
 @pytest.fixture
+def suppress_mean_empty_slice_numpy_warnings():
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", r"Mean of empty slice")
+        yield
+
+
+@pytest.fixture
 def suppress_divide_invalid_numpy_warnings(
     suppress_divide_numpy_warnings, suppress_invalid_numpy_warnings
-):
-    yield
-
-
-@pytest.fixture
-def suppress_dof_invalid_numpy_warnings(
-    suppress_dof_numpy_warning, suppress_invalid_numpy_warnings
-):
-    yield
-
-
-@pytest.fixture
-def suppress_divide_invalid_dof_numpy_warnings(
-    suppress_divide_numpy_warnings,
-    suppress_invalid_numpy_warnings,
-    suppress_dof_numpy_warning,
 ):
     yield
