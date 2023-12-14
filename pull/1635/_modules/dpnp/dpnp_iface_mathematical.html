@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.13.1dev1+25.gafac000867 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.13.1dev1+30.gbeb6f65c45 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=0b5f9613"></script>
+        <script src="../../_static/documentation_options.js?v=58eefab8"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+25.gafac000867
+                0.13.1dev1+30.gbeb6f65c45
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -342,6 +342,10 @@
 <span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Equivalent to `x1` + `x2` in terms of array broadcasting.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -902,6 +906,13 @@
 <span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Equivalent to `x1` / `x2` in terms of array-broadcasting.</span>
+
+<span class="sd">    The ``true_divide(x1, x2)`` function is an alias for</span>
+<span class="sd">    ``divide(x1, x2)``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1878,6 +1889,10 @@
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Equivalent to `x1` * `x2` in terms of array broadcasting.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
@@ -2709,6 +2724,10 @@
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Equivalent to `x1` - `x2` in terms of array broadcasting.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
@@ -2931,26 +2950,7 @@
 
 
 
-<div class="viewcode-block" id="true_divide">
-<a class="viewcode-back" href="../../reference/generated/dpnp.true_divide.html#dpnp.true_divide">[docs]</a>
-<span class="k">def</span> <span class="nf">true_divide</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Provide a true division of the inputs, element-wise.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.true_divide`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.divide` : Standard division.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This function works the same as :obj:`dpnp.divide`.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-
+<span class="n">true_divide</span> <span class="o">=</span> <span class="n">divide</span>
 
 
 <div class="viewcode-block" id="trunc">

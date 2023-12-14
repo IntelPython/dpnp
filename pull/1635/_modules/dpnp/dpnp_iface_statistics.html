@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.13.1dev1+25.gafac000867 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.13.1dev1+30.gbeb6f65c45 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=0b5f9613"></script>
+        <script src="../../_static/documentation_options.js?v=58eefab8"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+25.gafac000867
+                0.13.1dev1+30.gbeb6f65c45
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -154,6 +154,47 @@
     <span class="s2">&quot;std&quot;</span><span class="p">,</span>
     <span class="s2">&quot;var&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_count_reduce_items</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the number of items used in a reduction operation along the specified axis or axes</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arr : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        axis or axes along which the number of items used in a reduction operation must be counted.</span>
+<span class="sd">        If a tuple of unique integers is given, the items are counted over multiple axes.</span>
+<span class="sd">        If ``None``, the variance is computed over the entire array.</span>
+<span class="sd">        Default: `None`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : int</span>
+<span class="sd">        The number of items should be used in a reduction operation.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `where` is only supported with its default value.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># no boolean mask given, calculate items according to axis</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="p">(</span><span class="n">axis</span><span class="p">,)</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">:</span>
+            <span class="n">items</span> <span class="o">*=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">items</span>
 
 
 <div class="viewcode-block" id="amax">
@@ -764,7 +805,7 @@
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        the same shape as the expected output but the type (of the calculated</span>
 <span class="sd">        values) will be cast if necessary.</span>
-<span class="sd">    ddof : int, optional</span>
+<span class="sd">    ddof : {int, float}, optional</span>
 <span class="sd">        Means Delta Degrees of Freedom.  The divisor used in calculations</span>
 <span class="sd">        is ``N - ddof``, where ``N`` corresponds to the total</span>
 <span class="sd">        number of elements over which the variance is calculated.</span>
@@ -825,21 +866,27 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
         <span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ddof</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;An integer or float is required, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ddof</span><span class="p">))</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
-            <span class="n">var</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">var</span><span class="p">(</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">var</span><span class="p">(</span>
                 <span class="n">a</span><span class="p">,</span>
                 <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
-                <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
                 <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span>
                 <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
                 <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
@@ -847,11 +894,11 @@
                     <span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">correction</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">res</span></div>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 
 
@@ -882,7 +929,7 @@
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        the same shape as the expected output but the type (of the calculated</span>
 <span class="sd">        values) will be cast if necessary.</span>
-<span class="sd">    ddof : int, optional</span>
+<span class="sd">    ddof : {int, float}, optional</span>
 <span class="sd">        Means Delta Degrees of Freedom.  The divisor used in calculations</span>
 <span class="sd">        is ``N - ddof``, where ``N`` corresponds to the total</span>
 <span class="sd">        number of elements over which the variance is calculated.</span>
@@ -942,37 +989,40 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
         <span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ddof</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;An integer or float is required, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ddof</span><span class="p">))</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
             <span class="c1"># Note that if dtype is not of inexact type then arrmean will not be either.</span>
             <span class="n">arrmean</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
                 <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
             <span class="p">)</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">arrmean</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">conj</span><span class="p">(),</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
-                <span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">arrmean</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">conj</span><span class="p">(),</span> <span class="n">out</span><span class="o">=</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+                <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+                <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">res</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-                <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span>
 
             <span class="n">cnt</span> <span class="o">=</span> <span class="n">_count_reduce_items</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
-            <span class="n">dof</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span>
-                <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">cnt</span> <span class="o">-</span> <span class="n">ddof</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                    <span class="n">dtype</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-                    <span class="n">device</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-                <span class="p">)</span>
+            <span class="n">cnt</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">cnt</span> <span class="o">-</span> <span class="n">ddof</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">dof</span><span class="p">:</span>
-                <span class="n">dof</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nan</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">cnt</span><span class="p">:</span>
+                <span class="n">cnt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nan</span>
 
-            <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">dof</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">cnt</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
@@ -980,53 +1030,12 @@
                     <span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">correction</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">res</span></div>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
-
-
-<span class="k">def</span> <span class="nf">_count_reduce_items</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the number of items used in a reduction operation along the specified axis or axes</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    arr : {dpnp_array, usm_ndarray}</span>
-<span class="sd">        Input array.</span>
-<span class="sd">    axis : int or tuple of ints, optional</span>
-<span class="sd">        axis or axes along which the number of items used in a reduction operation must be counted.</span>
-<span class="sd">        If a tuple of unique integers is given, the items are counted over multiple axes.</span>
-<span class="sd">        If ``None``, the variance is computed over the entire array.</span>
-<span class="sd">        Default: `None`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : int</span>
-<span class="sd">        The number of items should be used in a reduction operation.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `where` is only supported with its default value.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="c1"># no boolean mask given, calculate items according to axis</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axis</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-            <span class="n">axis</span> <span class="o">=</span> <span class="p">(</span><span class="n">axis</span><span class="p">,)</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">:</span>
-            <span class="n">items</span> <span class="o">*=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
-        <span class="p">)</span>
-    <span class="k">return</span> <span class="n">items</span>
 </pre></div>
 
            </div>
