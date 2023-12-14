@@ -248,6 +248,10 @@ def add(
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
+    Notes
+    -----
+    Equivalent to `x1` + `x2` in terms of array broadcasting.
+
     Examples
     --------
     >>> import dpnp as np
@@ -777,6 +781,13 @@ def divide(
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Notes
+    -----
+    Equivalent to `x1` / `x2` in terms of array-broadcasting.
+
+    The ``true_divide(x1, x2)`` function is an alias for
+    ``divide(x1, x2)``.
 
     Examples
     --------
@@ -1711,6 +1722,10 @@ def multiply(
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
+    Notes
+    -----
+    Equivalent to `x1` * `x2` in terms of array broadcasting.
+
     Examples
     --------
     >>> import dpnp as np
@@ -2506,6 +2521,10 @@ def subtract(
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
+    Notes
+    -----
+    Equivalent to `x1` - `x2` in terms of array broadcasting.
+
     Examples
     --------
     >>> import dpnp as np
@@ -2721,23 +2740,7 @@ def trapz(y1, x1=None, dx=1.0, axis=-1):
     return call_origin(numpy.trapz, y1, x1, dx, axis)
 
 
-def true_divide(*args, **kwargs):
-    """
-    Provide a true division of the inputs, element-wise.
-
-    For full documentation refer to :obj:`numpy.true_divide`.
-
-    See Also
-    --------
-    :obj:`dpnp.divide` : Standard division.
-
-    Notes
-    -----
-    This function works the same as :obj:`dpnp.divide`.
-
-    """
-
-    return dpnp.divide(*args, **kwargs)
+true_divide = divide
 
 
 def trunc(

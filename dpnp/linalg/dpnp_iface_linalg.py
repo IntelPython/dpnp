@@ -47,7 +47,12 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.linalg.dpnp_algo_linalg import *
 
-from .dpnp_utils_linalg import dpnp_eigh
+from .dpnp_utils_linalg import (
+    check_stacked_2d,
+    check_stacked_square,
+    dpnp_eigh,
+    dpnp_solve,
+)
 
 __all__ = [
     "cholesky",
@@ -62,6 +67,7 @@ __all__ = [
     "multi_dot",
     "norm",
     "qr",
+    "solve",
     "svd",
 ]
 
@@ -497,6 +503,59 @@ def qr(x1, mode="reduced"):
             return result_tup
 
     return call_origin(numpy.linalg.qr, x1, mode)
+
+
+def solve(a, b):
+    """
+    Solve a linear matrix equation, or system of linear scalar equations.
+
+    For full documentation refer to :obj:`numpy.linalg.solve`.
+
+    Returns
+    -------
+    out : {(…, M,), (…, M, K)} dpnp.ndarray
+        Solution to the system ax = b. Returned shape is identical to b.
+
+    Limitations
+    -----------
+    Parameters `a` and `b` are supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.dot` : Returns the dot product of two arrays.
+
+    Examples
+    --------
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 5]])
+    >>> b = dp.array([1, 2])
+    >>> x = dp.linalg.solve(a, b)
+    >>> x
+    array([-1.,  1.])
+
+    Check that the solution is correct:
+
+    >>> dp.allclose(dp.dot(a, x), b)
+    array([ True])
+
+    """
+
+    dpnp.check_supported_arrays_type(a, b)
+    check_stacked_2d(a)
+    check_stacked_square(a)
+
+    if not (
+        (a.ndim == b.ndim or a.ndim == b.ndim + 1)
+        and a.shape[:-1] == b.shape[: a.ndim - 1]
+    ):
+        raise dpnp.linalg.LinAlgError(
+            "a must have (..., M, M) shape and b must have (..., M) "
+            "or (..., M, K)"
+        )
+
+    return dpnp_solve(a, b)
 
 
 def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):

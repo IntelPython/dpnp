@@ -489,3 +489,41 @@ def test_take(func, usm_type_x, usm_type_ind):
     assert x.usm_type == usm_type_x
     assert ind.usm_type == usm_type_ind
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
+
+
+@pytest.mark.parametrize(
+    "usm_type_matrix", list_of_usm_types, ids=list_of_usm_types
+)
+@pytest.mark.parametrize(
+    "usm_type_vector", list_of_usm_types, ids=list_of_usm_types
+)
+@pytest.mark.parametrize(
+    "matrix, vector",
+    [
+        ([[1, 2], [3, 5]], dp.empty((2, 0))),
+        ([[1, 2], [3, 5]], [1, 2]),
+        (
+            [
+                [[1, 1, 1], [0, 2, 5], [2, 5, -1]],
+                [[3, -1, 1], [1, 2, 3], [2, 3, 1]],
+                [[1, 4, 1], [1, 2, -2], [4, 1, 2]],
+            ],
+            [[6, -4, 27], [9, -6, 15], [15, 1, 11]],
+        ),
+    ],
+    ids=[
+        "2D_Matrix_Empty_Vector",
+        "2D_Matrix_1D_Vector",
+        "3D_Matrix_and_Vectors",
+    ],
+)
+def test_solve(matrix, vector, usm_type_matrix, usm_type_vector):
+    x = dp.array(matrix, usm_type=usm_type_matrix)
+    y = dp.array(vector, usm_type=usm_type_vector)
+    z = dp.linalg.solve(x, y)
+
+    assert x.usm_type == usm_type_matrix
+    assert y.usm_type == usm_type_vector
+    assert z.usm_type == du.get_coerced_usm_type(
+        [usm_type_matrix, usm_type_vector]
+    )
