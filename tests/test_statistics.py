@@ -245,7 +245,7 @@ class TestVar:
         with pytest.raises(NotImplementedError):
             dpnp.var(ia, where=False)
 
-        # ddof should be an integer
+        # ddof should be an integer or float
         with pytest.raises(TypeError):
             dpnp.var(ia, ddof="1")
 
@@ -334,7 +334,7 @@ class TestStd:
         with pytest.raises(NotImplementedError):
             dpnp.std(ia, where=False)
 
-        # ddof should be an integer
+        # ddof should be an integer or float
         with pytest.raises(TypeError):
             dpnp.std(ia, ddof="1")
 
@@ -439,7 +439,7 @@ class TestNanVar:
         with pytest.raises(TypeError):
             dpnp.nanvar(ia, out=res)
 
-        # ddof should be an integer
+        # ddof should be an integer or float
         with pytest.raises(TypeError):
             dpnp.nanvar(ia, ddof="1")
 
