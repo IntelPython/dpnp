@@ -1393,11 +1393,11 @@ def test_solve(device):
 )
 def test_slogdet(shape, is_empty, device):
     if is_empty:
-        numpy_x = numpy.empty(shape, dtype=dpnp.default_float_type())
+        numpy_x = numpy.empty(shape, dtype=dpnp.default_float_type(device))
     else:
         count_elem = numpy.prod(shape)
         numpy_x = numpy.arange(
-            1, count_elem + 1, dtype=dpnp.default_float_type()
+            1, count_elem + 1, dtype=dpnp.default_float_type(device)
         ).reshape(shape)
 
     dpnp_x = dpnp.array(numpy_x, device=device)

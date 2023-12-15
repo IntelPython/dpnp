@@ -72,7 +72,7 @@ static sycl::event getrf_impl(sycl::queue exec_q,
     T *a = reinterpret_cast<T *>(in_a);
 
     const std::int64_t scratchpad_size =
-        oneapi::mkl::lapack::getrf_scratchpad_size<T>(exec_q, n, n, lda);
+        mkl_lapack::getrf_scratchpad_size<T>(exec_q, n, n, lda);
     T *scratchpad = nullptr;
 
     std::stringstream error_msg;
@@ -82,13 +82,16 @@ static sycl::event getrf_impl(sycl::queue exec_q,
     try {
         scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
 
-        getrf_event = oneapi::mkl::lapack::getrf(
+        getrf_event = mkl_lapack::getrf(
             exec_q,
-            n,          // Order of the square matrix; (0 ≤ n).
-            n,          // Order of the square matrix; (0 ≤ n).
-            a,          // Pointer to the n-by-n matrix.
-            lda,        // The leading dimension of `a`.
-            ipiv,       // Pointer to the array of pivot indices.
+            n,    // The order of the square matrix A (0 ≤ n).
+                  // It must be a non-negative integer.
+            n,    // The number of columns in the square matrix A (0 ≤ n).
+                  // It must be a non-negative integer.
+            a,    // Pointer to the square matrix A (n x n).
+            lda,  // The leading dimension of matrix A.
+                  // It must be at least max(1, n).
+            ipiv, // Pointer to the output array of pivot indices.
             scratchpad, // Pointer to scratchpad memory to be used by MKL
                         // routine for storing intermediate results.
             scratchpad_size, depends);
@@ -132,10 +135,10 @@ static sycl::event getrf_impl(sycl::queue exec_q,
 
 std::pair<sycl::event, sycl::event>
     getrf(sycl::queue q,
-          const std::int64_t n,
           dpctl::tensor::usm_ndarray a_array,
           dpctl::tensor::usm_ndarray ipiv_array,
           dpctl::tensor::usm_ndarray dev_info_array,
+          const std::int64_t n,
           const std::vector<sycl::event> &depends)
 {
 
@@ -152,8 +155,6 @@ std::pair<sycl::event, sycl::event>
 
     char *a_array_data = a_array.get_data();
     const std::int64_t lda = std::max<size_t>(1UL, n);
-
-    // check valid ipiv
 
     char *ipiv_array_data = ipiv_array.get_data();
     std::int64_t *d_ipiv = reinterpret_cast<std::int64_t *>(ipiv_array_data);

@@ -80,8 +80,8 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
     T *a = reinterpret_cast<T *>(in_a);
 
     const std::int64_t scratchpad_size =
-        oneapi::mkl::lapack::getrf_batch_scratchpad_size<T>(
-            exec_q, n, n, lda, stride_a, stride_ipiv, batch_size);
+        mkl_lapack::getrf_batch_scratchpad_size<T>(exec_q, n, n, lda, stride_a,
+                                                   stride_ipiv, batch_size);
     T *scratchpad = nullptr;
 
     std::stringstream error_msg;
@@ -91,19 +91,20 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
     try {
         scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
 
-        getrf_batch_event = oneapi::mkl::lapack::getrf_batch(
+        getrf_batch_event = mkl_lapack::getrf_batch(
             exec_q,
-            n,           // Order of each square matrix in the batch; (0 ≤ n).
-            n,           // Order of each square matrix in the batch; (0 ≤ n).
-            a,           // Pointer to the batch of matrices.
-            lda,         // The leading dimension of `a`.
-            stride_a,    // Stride between matrices: Element spacing between
-                         // matrices in `a`.
-            ipiv,        // Pivot indices: Pointer to the pivot indices for each
-                         // matrix.
+            n, // The order of each square matrix in the batch; (0 ≤ n).
+               // It must be a non-negative integer.
+            n, // The number of columns in each matrix in the batch; (0 ≤ n).
+               // It must be a non-negative integer.
+            a, // Pointer to the batch of square matrices, each of size (n x n).
+            lda,      // The leading dimension of each matrix in the batch.
+            stride_a, // Stride between consecutive matrices in the batch.
+            ipiv, // Pointer to the array of pivot indices for each matrix in
+                  // the batch.
             stride_ipiv, // Stride between pivot indices: Spacing between pivot
                          // arrays in 'ipiv'.
-            batch_size,  // Total number of matrices in the batch.
+            batch_size,  // Stride between pivot index arrays in the batch.
             scratchpad,  // Pointer to scratchpad memory to be used by MKL
                          // routine for storing intermediate results.
             scratchpad_size, depends);
@@ -171,8 +172,6 @@ std::pair<sycl::event, sycl::event>
 
     char *a_array_data = a_array.get_data();
     const std::int64_t lda = std::max<size_t>(1UL, n);
-
-    // check valid ipiv
 
     char *ipiv_array_data = ipiv_array.get_data();
     std::int64_t *d_ipiv = reinterpret_cast<std::int64_t *>(ipiv_array_data);

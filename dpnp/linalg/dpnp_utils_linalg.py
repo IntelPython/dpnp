@@ -305,10 +305,10 @@ def _lu_factor(a, res_type):
                 # to perform LU decomposition on each batch in 'a_vecs[i]'
                 ht_lapack_ev[i], _ = li._getrf(
                     a_sycl_queue,
-                    n,
                     a_vecs[i].get_array(),
                     ipiv_vecs[i].get_array(),
                     dev_info_vecs[i].get_array(),
+                    n,
                     [a_copy_ev],
                 )
 
@@ -345,10 +345,10 @@ def _lu_factor(a, res_type):
         # to perform LU decomposition on the input matrix
         ht_lapack_ev, _ = li._getrf(
             a_sycl_queue,
-            n,
             a_h.get_array(),
             ipiv_h.get_array(),
             dev_info_h.get_array(),
+            n,
             [a_copy_ev],
         )
 
