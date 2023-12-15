@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.13.1dev1+37.gf0bfa1333 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.13.1dev1+51.g19d96a8e24 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=fe8279da"></script>
+        <script src="../../_static/documentation_options.js?v=1a500261"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+37.gf0bfa1333
+                0.13.1dev1+51.g19d96a8e24
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -158,66 +158,43 @@
 
 <div class="viewcode-block" id="amax">
 <a class="viewcode-back" href="../../reference/generated/dpnp.amax.html#dpnp.amax">[docs]</a>
-<span class="k">def</span> <span class="nf">amax</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">amax</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the maximum of an array or maximum along an axis.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.amax`.</span>
+<span class="sd">    `amax` is an alias of :obj:`dpnp.max`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.amin` : The minimum value of an array along a given axis,</span>
-<span class="sd">                       propagating any NaNs.</span>
-<span class="sd">    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,</span>
-<span class="sd">                         ignoring any NaNs.</span>
-<span class="sd">    :obj:`dpnp.maximum` : Element-wise maximum of two arrays,</span>
-<span class="sd">                          propagating any NaNs.</span>
-<span class="sd">    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignoring any NaNs.</span>
-<span class="sd">    :obj:`dpnp.argmax` : Return the indices of the maximum values.</span>
-<span class="sd">    :obj:`dpnp.nanmin` : Return minimum of an array or minimum along an axis,</span>
-<span class="sd">                         ignoring any NaNs.</span>
-<span class="sd">    :obj:`dpnp.minimum` : Element-wise minimum of array elements.</span>
-<span class="sd">    :obj:`dpnp.fmin` : Element-wise minimum of array elements.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This function works exactly the same as :obj:`dpnp.max`.</span>
+<span class="sd">    :obj:`dpnp.max` : alias of this function</span>
+<span class="sd">    :obj:`dpnp.ndarray.max` : equivalent method</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
+    <span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="amin">
 <a class="viewcode-back" href="../../reference/generated/dpnp.amin.html#dpnp.amin">[docs]</a>
-<span class="k">def</span> <span class="nf">amin</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">amin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the minimum of an array or minimum along an axis.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.amin`.</span>
+<span class="sd">    `amin` is an alias of :obj:`dpnp.min`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.amax` : The maximum value of an array along a given axis,</span>
-<span class="sd">                       propagating any NaNs.</span>
-<span class="sd">    :obj:`dpnp.nanmin` : Return minimum of an array or minimum along an axis,</span>
-<span class="sd">                         ignoring any NaNs.</span>
-<span class="sd">    :obj:`dpnp.minimum` : Element-wise minimum of array elements.</span>
-<span class="sd">    :obj:`dpnp.fmin` : Element-wise minimum of array elements.</span>
-<span class="sd">    :obj:`dpnp.argmin` : Return the indices of the minimum values.</span>
-<span class="sd">    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,</span>
-<span class="sd">                         ignoring any NaNs.</span>
-<span class="sd">    :obj:`dpnp.maximum` : Element-wise maximum of two arrays,</span>
-<span class="sd">                          propagating any NaNs.</span>
-<span class="sd">    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignoring any NaNs.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This function works exactly the same as :obj:`dpnp.min`.</span>
+<span class="sd">    :obj:`dpnp.min` : alias of this function</span>
+<span class="sd">    :obj:`dpnp.ndarray.min` : equivalent method</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="nb">min</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
+    <span class="p">)</span></div>
 
 
 
