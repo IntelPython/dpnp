@@ -194,6 +194,8 @@ def _lu_factor(a, res_type):
         piv (dpnp.ndarray):
             1-origin pivot indices with dimension
             ``(..., N)``.
+        dev_info (dpnp.ndarray):
+            ``getrf`` or `getrf_batch` info with dimension ``(...)``.
 
     See Also
     --------
@@ -201,17 +203,7 @@ def _lu_factor(a, res_type):
 
     """
 
-    # TODO: use dpnp.linalg.LinAlgError
-    if a.ndim < 2:
-        raise ValueError(
-            f"{a.ndim}-dimensional array given. The input "
-            "array must be at least two-dimensional"
-        )
-
-    n, m = a.shape[-2:]
-    # TODO: use dpnp.linalg.LinAlgError
-    if m != n:
-        raise ValueError("Last 2 dimensions of the input array must be square")
+    n = a.shape[-2]
 
     a_sycl_queue = a.sycl_queue
     a_usm_type = a.usm_type
