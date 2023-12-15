@@ -25,9 +25,11 @@ var NAVTREEINDEX0 =
 "class_d_p_n_p_c__ptr__adapter.html":[0,4,2],
 "classbackend__sycl.html":[1,0,2],
 "classbackend__sycl.html#a30a828cca8de39d1b782696819820566":[1,0,2,0],
+"classdpnp_1_1backend_1_1ext_1_1lapack_1_1_lin_alg_error.html":[1,0,0,0,0,1,2],
 "classdpnp__less__comp.html":[1,0,3],
 "classes.html":[1,1],
 "common_8hpp_source.html":[2,0,0,3,11],
+"common__helpers_8hpp_source.html":[2,0,0,1,0],
 "conj_8hpp_source.html":[2,0,0,3,12],
 "constants_8hpp_source.html":[2,0,2,0],
 "cos_8hpp_source.html":[2,0,0,3,13],
@@ -68,6 +70,7 @@ var NAVTREEINDEX0 =
 "functions_rela.html":[1,3,3],
 "functions_vars.html":[1,3,2],
 "gemm_8hpp_source.html":[2,0,0,0,0],
+"gesv_8hpp_source.html":[2,0,0,1,1],
 "group___b_a_c_k_e_n_d___a_p_i.html":[0,0],
 "group___b_a_c_k_e_n_d___a_p_i.html#ga0012cc550b32281f446cb1a73e7c614a":[0,0,29],
 "group___b_a_c_k_e_n_d___a_p_i.html#ga015fbc0a319fc7348ca07cf784298a21":[0,0,26],
@@ -246,8 +249,5 @@ var NAVTREEINDEX0 =
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1beebad63439e4d24242fad6185d1ffd":[0,2,2,163],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1cffd235f788463d6e4e57768fa7de18":[0,2,2,232],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1d17f8b62bec77729d3be9fac1cc8aa0":[0,2,2,74],
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1d29beee5d3424e6aca222ed56e3f707":[0,2,2,193],
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1ee2503a88e2f0fb7735e6f2b2390ed6":[0,2,2,130],
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1f02e752405381ab74767a4b0b42cbaa":[0,2,2,195],
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1f6a218028310b6ac4faf172e919f8cb":[0,2,2,136]
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1d29beee5d3424e6aca222ed56e3f707":[0,2,2,193]
 };
