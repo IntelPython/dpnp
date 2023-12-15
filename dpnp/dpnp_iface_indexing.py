@@ -41,6 +41,7 @@ it contains:
 
 import dpctl.tensor as dpt
 import numpy
+from numpy.core.numeric import normalize_axis_index
 
 import dpnp
 from dpnp.dpnp_algo import *
@@ -70,6 +71,52 @@ __all__ = [
 ]
 
 
+def _build_along_axis_index(a, indices, axis):
+    """
+    Build a fancy index used by a family of `_along_axis` functions.
+
+    The fancy index consists of orthogonal arranges, with the
+    requested index inserted at the right location.
+
+    The resulting index is going to be used inside `dpnp.put_along_axis`
+    and `dpnp.take_along_axis` implementations.
+
+    """
+
+    if not dpnp.issubdtype(indices.dtype, dpnp.integer):
+        raise IndexError("`indices` must be an integer array")
+
+    # normalize array shape and input axis
+    if axis is None:
+        a_shape = (a.size,)
+        axis = 0
+    else:
+        a_shape = a.shape
+        axis = normalize_axis_index(axis, a.ndim)
+
+    if len(a_shape) != indices.ndim:
+        raise ValueError(
+            "`indices` and `a` must have the same number of dimensions"
+        )
+
+    # compute dimensions to iterate over
+    dest_dims = list(range(axis)) + [None] + list(range(axis + 1, indices.ndim))
+    shape_ones = (1,) * indices.ndim
+
+    # build the index
+    fancy_index = []
+    for dim, n in zip(dest_dims, a_shape):
+        if dim is None:
+            fancy_index.append(indices)
+        else:
+            ind_shape = shape_ones[:dim] + (-1,) + shape_ones[dim + 1 :]
+            fancy_index.append(
+                dpnp.arange(n, dtype=indices.dtype).reshape(ind_shape)
+            )
+
+    return tuple(fancy_index)
+
+
 def choose(x1, choices, out=None, mode="raise"):
     """
     Construct an array from an index array and a set of arrays to choose from.
@@ -78,7 +125,8 @@ def choose(x1, choices, out=None, mode="raise"):
 
     See also
     --------
-    :obj:`take_along_axis` : Preferable if choices is an array.
+    :obj:`dpnp.take_along_axis` : Preferable if choices is an array.
+
     """
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
 
@@ -247,7 +295,7 @@ def extract(condition, x):
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         Rank 1 array of values from `x` where `condition` is True.
 
     Limitations
@@ -411,7 +459,7 @@ def nonzero(x, /):
 
     Returns
     -------
-    y : tuple[dpnp.ndarray]
+    out : tuple[dpnp.ndarray]
         Indices of elements that are non-zero.
 
     Limitations
@@ -565,39 +613,62 @@ def put(a, indices, vals, /, *, axis=None, mode="wrap"):
     return call_origin(numpy.put, a, indices, vals, mode, dpnp_inplace=True)
 
 
-def put_along_axis(x1, indices, values, axis):
+def put_along_axis(a, indices, values, axis):
     """
     Put values into the destination array by matching 1d index and data slices.
 
     For full documentation refer to :obj:`numpy.put_along_axis`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}, (Ni..., M, Nk...)
+        Destination array.
+    indices : {dpnp.ndarray, usm_ndarray}, (Ni..., J, Nk...)
+        Indices to change along each 1d slice of `a`. This must match the
+        dimension of input array, but dimensions in ``Ni`` and ``Nj``
+        may be 1 to broadcast against `a`.
+    values : {scalar, array_like}, (Ni..., J, Nk...)
+        Values to insert at those indices. Its shape and dimension are
+        broadcast to match that of `indices`.
+    axis : int
+        The axis to take 1d slices along. If axis is ``None``, the destination
+        array is treated as if a flattened 1d view had been created of it.
+
     See Also
     --------
-    :obj:`take_along_axis` : Take values from the input array by matching 1d index and data slices.
+    :obj:`dpnp.put` : Put values along an axis, using the same indices for every 1d slice.
+    :obj:`dpnp.take_along_axis` : Take values from the input array by matching 1d index and data slices.
+
+    Examples
+    --------
+    For this sample array
+
+    >>> import dpnp as np
+    >>> a = np.array([[10, 30, 20], [60, 40, 50]])
+
+    We can replace the maximum values with:
+
+    >>> ai = np.argmax(a, axis=1, keepdims=True)
+    >>> ai
+    array([[1],
+           [0]])
+    >>> np.put_along_axis(a, ai, 99, axis=1)
+    >>> a
+    array([[10, 99, 20],
+           [99, 40, 50]])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    indices_desc = dpnp.get_dpnp_descriptor(
-        indices, copy_when_nondefault_queue=False
-    )
-    values_desc = dpnp.get_dpnp_descriptor(
-        values, copy_when_nondefault_queue=False
-    )
-    if x1_desc and indices_desc and values_desc:
-        if x1_desc.ndim != indices_desc.ndim:
-            pass
-        elif not isinstance(axis, int):
-            pass
-        elif axis >= x1_desc.ndim:
-            pass
-        elif indices_desc.size != values_desc.size:
-            pass
-        else:
-            return dpnp_put_along_axis(x1_desc, indices_desc, values_desc, axis)
+    dpnp.check_supported_arrays_type(a, indices)
 
-    return call_origin(
-        numpy.put_along_axis, x1, indices, values, axis, dpnp_inplace=True
-    )
+    # TODO: remove when #1382(dpctl) is resolved
+    if dpnp.is_supported_array_type(values) and a.dtype != values.dtype:
+        values = values.astype(a.dtype)
+
+    if axis is None:
+        a = a.ravel()
+
+    a[_build_along_axis_index(a, indices, axis)] = values
 
 
 def putmask(x1, mask, values):
@@ -665,7 +736,7 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
 
     Returns
     -------
-    dpnp.ndarray
+    out : dpnp.ndarray
         An array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]
         filled with elements from `x`.
 
@@ -682,7 +753,7 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     See Also
     --------
     :obj:`dpnp.compress` : Take elements using a boolean mask.
-    :obj:`take_along_axis` : Take elements by matching the array and the index arrays.
+    :obj:`dpnp.take_along_axis` : Take elements by matching the array and the index arrays.
 
     Notes
     -----
@@ -735,44 +806,90 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     return call_origin(numpy.take, x, indices, axis, out, mode)
 
 
-def take_along_axis(x1, indices, axis):
+def take_along_axis(a, indices, axis):
     """
     Take values from the input array by matching 1d index and data slices.
 
     For full documentation refer to :obj:`numpy.take_along_axis`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}, (Ni..., M, Nk...)
+        Source array
+    indices : {dpnp.ndarray, usm_ndarray}, (Ni..., J, Nk...)
+        Indices to take along each 1d slice of `a`. This must match the
+        dimension of the input array, but dimensions ``Ni`` and ``Nj``
+        only need to broadcast against `a`.
+    axis : int
+        The axis to take 1d slices along. If axis is ``None``, the input
+        array is treated as if it had first been flattened to 1d,
+        for consistency with `sort` and `argsort`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The indexed result.
+
     See Also
     --------
     :obj:`dpnp.take` : Take along an axis, using the same indices for every 1d slice.
-    :obj:`put_along_axis` : Put values into the destination array by matching 1d index and data slices.
+    :obj:`dpnp.put_along_axis` : Put values into the destination array by matching 1d index and data slices.
+
+    Examples
+    --------
+    For this sample array
+
+    >>> import dpnp as np
+    >>> a = np.array([[10, 30, 20], [60, 40, 50]])
+
+    We can sort either by using sort directly, or argsort and this function
+
+    >>> np.sort(a, axis=1)
+    array([[10, 20, 30],
+           [40, 50, 60]])
+    >>> ai = np.argsort(a, axis=1)
+    >>> ai
+    array([[0, 2, 1],
+           [1, 2, 0]])
+    >>> np.take_along_axis(a, ai, axis=1)
+    array([[10, 20, 30],
+           [40, 50, 60]])
+
+    The same works for max and min, if you maintain the trivial dimension
+    with ``keepdims``:
+
+    >>> np.max(a, axis=1, keepdims=True)
+    array([[30],
+           [60]])
+    >>> ai = np.argmax(a, axis=1, keepdims=True)
+    >>> ai
+    array([[1],
+           [0]])
+    >>> np.take_along_axis(a, ai, axis=1)
+    array([[30],
+           [60]])
+
+    If we want to get the max and min at the same time, we can stack the
+    indices first
+
+    >>> ai_min = np.argmin(a, axis=1, keepdims=True)
+    >>> ai_max = np.argmax(a, axis=1, keepdims=True)
+    >>> ai = np.concatenate([ai_min, ai_max], axis=1)
+    >>> ai
+    array([[0, 1],
+           [1, 0]])
+    >>> np.take_along_axis(a, ai, axis=1)
+    array([[10, 30],
+           [40, 60]])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    indices_desc = dpnp.get_dpnp_descriptor(
-        indices, copy_when_nondefault_queue=False
-    )
-    if x1_desc and indices_desc:
-        if x1_desc.ndim != indices_desc.ndim:
-            pass
-        elif not isinstance(axis, int):
-            pass
-        elif axis >= x1_desc.ndim:
-            pass
-        elif x1_desc.ndim == indices_desc.ndim:
-            val_list = []
-            for i in list(indices_desc.shape)[:-1]:
-                if i == 1:
-                    val_list.append(True)
-                else:
-                    val_list.append(False)
-            if not all(val_list):
-                pass
-            else:
-                return dpnp_take_along_axis(x1, indices, axis)
-        else:
-            return dpnp_take_along_axis(x1, indices, axis)
+    dpnp.check_supported_arrays_type(a, indices)
 
-    return call_origin(numpy.take_along_axis, x1, indices, axis)
+    if axis is None:
+        a = a.ravel()
+
+    return a[_build_along_axis_index(a, indices, axis)]
 
 
 def tril_indices(n, k=0, m=None):

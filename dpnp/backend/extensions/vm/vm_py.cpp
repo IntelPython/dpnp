@@ -39,6 +39,7 @@
 #include "atan.hpp"
 #include "atan2.hpp"
 #include "atanh.hpp"
+#include "cbrt.hpp"
 #include "ceil.hpp"
 #include "common.hpp"
 #include "conj.hpp"
@@ -46,6 +47,7 @@
 #include "cosh.hpp"
 #include "div.hpp"
 #include "exp.hpp"
+#include "exp2.hpp"
 #include "expm1.hpp"
 #include "floor.hpp"
 #include "hypot.hpp"
@@ -81,12 +83,14 @@ static unary_impl_fn_ptr_t asinh_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t atan_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t atan2_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t atanh_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t cbrt_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t ceil_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t conj_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t cos_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t cosh_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t exp_dispatch_vector[dpctl_td_ns::num_types];
+static unary_impl_fn_ptr_t exp2_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t expm1_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t floor_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t hypot_dispatch_vector[dpctl_td_ns::num_types];
@@ -366,6 +370,34 @@ PYBIND11_MODULE(_vm_impl, m)
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }
 
+    // UnaryUfunc: ==== Cbrt(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::CbrtContigFactory>(
+            cbrt_dispatch_vector);
+
+        auto cbrt_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                              const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       cbrt_dispatch_vector);
+        };
+        m.def("_cbrt", cbrt_pyapi,
+              "Call `cbrt` function from OneMKL VM library to compute "
+              "the element-wise cube root of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto cbrt_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                           arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    cbrt_dispatch_vector);
+        };
+        m.def("_mkl_cbrt_to_call", cbrt_need_to_call_pyapi,
+              "Check input arguments to answer if `cbrt` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
     // UnaryUfunc: ==== Ceil(x) ====
     {
         vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
@@ -532,6 +564,34 @@ PYBIND11_MODULE(_vm_impl, m)
         };
         m.def("_mkl_exp_to_call", exp_need_to_call_pyapi,
               "Check input arguments to answer if `exp` function from "
+              "OneMKL VM library can be used",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+    }
+
+    // UnaryUfunc: ==== exp2(x) ====
+    {
+        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
+                                           vm_ext::Exp2ContigFactory>(
+            exp2_dispatch_vector);
+
+        auto exp2_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+                              const event_vecT &depends = {}) {
+            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
+                                       exp2_dispatch_vector);
+        };
+        m.def("_exp2", exp2_pyapi,
+              "Call `exp2` function from OneMKL VM library to compute "
+              "the element-wise base-2 exponential of vector elements",
+              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
+              py::arg("depends") = py::list());
+
+        auto exp2_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+                                           arrayT dst) {
+            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
+                                                    exp2_dispatch_vector);
+        };
+        m.def("_mkl_exp2_to_call", exp2_need_to_call_pyapi,
+              "Check input arguments to answer if `exp2` function from "
               "OneMKL VM library can be used",
               py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
     }

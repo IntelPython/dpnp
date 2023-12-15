@@ -577,6 +577,167 @@ class TestExp:
             dpnp.exp(dp_array, out=dp_out)
 
 
+class TestExp2:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    def test_exp2(self, dtype):
+        np_array = numpy.arange(7, dtype=dtype)
+        np_out = numpy.empty(7, dtype=numpy.float64)
+
+        # DPNP
+        dp_out_dtype = dpnp.float32
+        if has_support_aspect64() and dtype != dpnp.float32:
+            dp_out_dtype = dpnp.float64
+
+        dp_array = dpnp.array(np_array, dtype=dp_out_dtype)
+        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
+        result = dpnp.exp2(dp_array, out=dp_out)
+
+        # original
+        expected = numpy.exp2(np_array, out=np_out)
+
+        tol = dpnp.finfo(dtype=result.dtype).resolution
+        assert_allclose(expected, result.asnumpy(), rtol=tol)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_exp2_complex(self, dtype):
+        x1 = numpy.linspace(0, 8, num=10)
+        x2 = numpy.linspace(0, 6, num=10)
+        Xnp = x1 + 1j * x2
+        np_array = numpy.asarray(Xnp, dtype=dtype)
+        np_out = numpy.empty(10, dtype=numpy.complex128)
+
+        # DPNP
+        dp_out_dtype = dpnp.complex64
+        if has_support_aspect64() and dtype != dpnp.complex64:
+            dp_out_dtype = dpnp.complex128
+
+        dp_array = dpnp.array(np_array, dtype=dp_out_dtype)
+        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
+        result = dpnp.exp2(dp_array, out=dp_out)
+
+        # original
+        expected = numpy.exp2(np_array, out=np_out)
+
+        tol = dpnp.finfo(dtype=result.dtype).resolution
+        assert_allclose(expected, result.asnumpy(), rtol=tol)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
+    )
+    def test_invalid_dtype(self, dtype):
+        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
+        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(TypeError):
+            dpnp.exp2(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.parametrize(
+        "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
+    )
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.exp2(dp_array, out=dp_out)
+
+
+class TestCbrt:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    def test_cbrt(self, dtype):
+        np_array = numpy.arange(7, dtype=dtype)
+        np_out = numpy.empty(7, dtype=numpy.float64)
+
+        # DPNP
+        dp_out_dtype = dpnp.float32
+        if has_support_aspect64() and dtype != dpnp.float32:
+            dp_out_dtype = dpnp.float64
+
+        dp_array = dpnp.array(np_array, dtype=dp_out_dtype)
+        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
+        result = dpnp.cbrt(dp_array, out=dp_out)
+
+        # original
+        expected = numpy.cbrt(np_array, out=np_out)
+
+        tol = dpnp.finfo(dtype=result.dtype).resolution
+        assert_allclose(expected, result.asnumpy(), rtol=tol)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
+    )
+    def test_invalid_dtype(self, dtype):
+        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
+        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(TypeError):
+            dpnp.cbrt(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.parametrize(
+        "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
+    )
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.cbrt(dp_array, out=dp_out)
+
+
+class TestRsqrt:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    def test_rsqrt(self, dtype):
+        np_array = numpy.arange(1, 10, dtype=dtype)
+        np_out = numpy.empty(9, dtype=numpy.float64)
+
+        # DPNP
+        dp_out_dtype = dpnp.float32
+        if has_support_aspect64() and dtype != dpnp.float32:
+            dp_out_dtype = dpnp.float64
+
+        dp_array = dpnp.array(np_array, dtype=dp_out_dtype)
+        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
+        result = dpnp.rsqrt(dp_array, out=dp_out)
+
+        # original
+        expected = numpy.reciprocal(numpy.sqrt(np_array), out=np_out)
+
+        tol = dpnp.finfo(dtype=result.dtype).resolution
+        assert_allclose(expected, result.asnumpy(), rtol=tol)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
+    )
+    def test_invalid_dtype(self, dtype):
+        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
+        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(TypeError):
+            dpnp.rsqrt(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.parametrize(
+        "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
+    )
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.rsqrt(dp_array, out=dp_out)
+
+
 class TestArccos:
     @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
@@ -915,6 +1076,55 @@ class TestArctan2:
 
         with pytest.raises(ValueError):
             dpnp.arctan2(dp_array, dp_array, out=dp_out)
+
+
+class TestCopySign:
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_copysign(self, dtype):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=dtype)
+
+        # DPNP
+        dp_array = dpnp.array(array_data, dtype=dtype)
+        dp_out = dpnp.array(out, dtype=dtype)
+        result = dpnp.copysign(dp_array, -dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=dtype)
+        expected = numpy.copysign(np_array, -np_array, out=out)
+
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
+    )
+    def test_out_dtypes(self, dtype):
+        if has_support_aspect64() and dtype != numpy.float32:
+            dtype_out = numpy.float64
+        else:
+            dtype_out = numpy.float32
+        size = 2 if dtype == dpnp.bool else 10
+
+        np_array = numpy.arange(size, dtype=dtype)
+        np_out = numpy.empty(size, dtype=dtype_out)
+        expected = numpy.copysign(np_array, -np_array, out=np_out)
+
+        dp_array = dpnp.arange(size, dtype=dtype)
+        dp_out = dpnp.empty(size, dtype=dtype_out)
+        result = dpnp.copysign(dp_array, -dp_array, out=dp_out)
+
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.parametrize(
+        "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
+    )
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.copysign(dp_array, dp_array, out=dp_out)
 
 
 class TestSqrt:
