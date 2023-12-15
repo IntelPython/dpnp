@@ -35,11 +35,11 @@ import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations
 
 __all__ = [
-    "_lu_factor",
     "check_stacked_2d",
     "check_stacked_square",
     "dpnp_eigh",
     "dpnp_solve",
+    "dpnp_slogdet",
 ]
 
 _jobz = {"N": 0, "V": 1}
@@ -619,3 +619,68 @@ def dpnp_solve(a, b):
         a_ht_copy_ev.wait()
 
         return b_f
+
+
+def dpnp_slogdet(a):
+    """
+    dpnp_slogdet(a)
+
+    Returns sign and logarithm of the determinant of `a` array.
+
+    """
+
+    a_usm_type = a.usm_type
+    a_sycl_queue = a.sycl_queue
+
+    res_type = _common_type(a)
+    logdet_dtype = dpnp.dtype(res_type.char.lower())
+
+    a_shape = a.shape
+    shape = a_shape[:-2]
+    n = a_shape[-2]
+
+    if a.size == 0:
+        # empty batch (result is empty, too) or empty matrices det([[]]) == 1
+        sign = dpnp.ones(
+            shape, dtype=res_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+        )
+        logdet = dpnp.zeros(
+            shape,
+            dtype=logdet_dtype,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+        return sign, logdet
+
+    lu, ipiv, dev_info = _lu_factor(a, res_type)
+
+    # Transposing 'lu' to swap the last two axes for compatibility
+    # with 'dpnp.diagonal' as it does not support 'axis1' and 'axis2' arguments.
+    # TODO: Replace with 'dpnp.diagonal(lu, axis1=-2, axis2=-1)' when supported.
+    lu_transposed = lu.transpose(-2, -1, *range(lu.ndim - 2))
+    diag = dpnp.diagonal(lu_transposed)
+
+    logdet = dpnp.log(dpnp.abs(diag)).sum(axis=-1)
+
+    # ipiv is 1-origin
+    non_zero = dpnp.count_nonzero(
+        ipiv
+        != dpnp.arange(
+            1, n + 1, usm_type=ipiv.usm_type, sycl_queue=ipiv.sycl_queue
+        ),
+        axis=-1,
+    )
+    if res_type.kind == "f":
+        non_zero += dpnp.count_nonzero(diag < 0, axis=-1)
+
+    sign = (non_zero % 2) * -2 + 1
+    if res_type.kind == "c":
+        sign = sign * dpnp.prod(diag / dpnp.abs(diag), axis=-1)
+
+    sign = sign.astype(res_type)
+    logdet = logdet.astype(logdet_dtype, copy=False)
+    singular = dpnp.array([dev_info > 0])
+    return (
+        dpnp.where(singular, res_type.type(0), sign).reshape(shape),
+        dpnp.where(singular, logdet_dtype.type("-inf"), logdet).reshape(shape),
+    )

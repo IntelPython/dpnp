@@ -48,10 +48,10 @@ from dpnp.dpnp_utils import *
 from dpnp.linalg.dpnp_algo_linalg import *
 
 from .dpnp_utils_linalg import (
-    _lu_factor,
     check_stacked_2d,
     check_stacked_square,
     dpnp_eigh,
+    dpnp_slogdet,
     dpnp_solve,
 )
 
@@ -721,92 +721,8 @@ def slogdet(a):
 
     """
 
-    if not dpnp.is_supported_array_type(a):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(a))
-        )
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-    # TODO: use dpnp.linalg.LinAlgError
-    if a.ndim < 2:
-        raise ValueError(
-            f"{a.ndim}-dimensional array given. The input "
-            "array must be at least two-dimensional"
-        )
-
-    n, m = a.shape[-2:]
-    # TODO: use dpnp.linalg.LinAlgError
-    if m != n:
-        raise ValueError("Last 2 dimensions of the input array must be square")
-
-    exec_q = a.sycl_queue
-    a_usm_type = a.usm_type
-    a_sycl_queue = a.sycl_queue
-    # dtype, sign_dtype = _util.linalg_common_type(a)
-    # TODO: Use linalg_common_type from #1598
-    if dpnp.issubdtype(a.dtype, dpnp.floating):
-        res_type = (
-            a.dtype if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
-        )
-    elif dpnp.issubdtype(a.dtype, dpnp.complexfloating):
-        res_type = (
-            a.dtype if exec_q.sycl_device.has_aspect_fp64 else dpnp.complex64
-        )
-    else:
-        res_type = (
-            dpnp.float64 if exec_q.sycl_device.has_aspect_fp64 else dpnp.float32
-        )
-
-    res_type = dpnp.dtype(res_type)
-    logdet_dtype = dpnp.dtype(res_type.char.lower())
-
-    a_shape = a.shape
-    shape = a_shape[:-2]
-    n = a_shape[-2]
-
-    if a.size == 0:
-        # empty batch (result is empty, too) or empty matrices det([[]]) == 1
-        sign = dpnp.ones(
-            shape, dtype=res_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
-        )
-        logdet = dpnp.zeros(
-            shape,
-            dtype=logdet_dtype,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
-        )
-        return sign, logdet
-
-    lu, ipiv, dev_info = _lu_factor(a, res_type)
-
-    # return lu, ipiv, dev_info
-
-    # Transposing 'lu' to swap the last two axes for compatibility
-    # with 'dpnp.diagonal' as it does not support 'axis1' and 'axis2' arguments.
-    # TODO: Replace with 'dpnp.diagonal(lu, axis1=-2, axis2=-1)' when supported.
-    lu_transposed = lu.transpose(-2, -1, *range(lu.ndim - 2))
-    diag = dpnp.diagonal(lu_transposed)
-
-    logdet = dpnp.log(dpnp.abs(diag)).sum(axis=-1)
-
-    # ipiv is 1-origin
-    non_zero = dpnp.count_nonzero(
-        ipiv
-        != dpnp.arange(
-            1, n + 1, usm_type=ipiv.usm_type, sycl_queue=ipiv.sycl_queue
-        ),
-        axis=-1,
-    )
-    if res_type.kind == "f":
-        non_zero += dpnp.count_nonzero(diag < 0, axis=-1)
-
-    sign = (non_zero % 2) * -2 + 1
-    if res_type.kind == "c":
-        sign = sign * dpnp.prod(diag / dpnp.abs(diag), axis=-1)
-
-    sign = sign.astype(res_type)
-    logdet = logdet.astype(logdet_dtype, copy=False)
-    singular = dpnp.array([dev_info > 0])
-    return (
-        dpnp.where(singular, res_type.type(0), sign).reshape(shape),
-        dpnp.where(singular, logdet_dtype.type("-inf"), logdet).reshape(shape),
-    )
+    return dpnp_slogdet(a)
