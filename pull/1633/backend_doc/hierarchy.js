@@ -26,6 +26,8 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::cartesian_product_impl< std::tuple< std::tuple< T > >, std::tuple< SecondTupleArgs... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_17b2e4d9f422d6a255a67e036ce4e46b3.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product_impl< std::tuple< std::tuple< T >, FirstTupleArgs... >, std::tuple< SecondTupleArgs... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_1eacc8a58f076baec98f1eb11bc1030e3.html", null ],
     [ "dpnp::backend::ext::sycl_ext::CartesianDispatcher< C, FnT, DispatchT, Matcher, Axis >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_cartesian_dispatcher.html", null ],
+    [ "dpnp::backend::ext::vm::CbrtContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_cbrt_contig_factory.html", null ],
+    [ "dpnp::backend::ext::vm::types::CbrtOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_cbrt_output_type.html", null ],
     [ "dpnp::backend::ext::vm::CeilContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ceil_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::CeilOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ceil_output_type.html", null ],
     [ "dpnp::backend::ext::vm::ConjContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_conj_contig_factory.html", null ],
@@ -57,6 +59,11 @@ var hierarchy =
       [ "mcg59_struct", "structmcg59__struct.html", null ],
       [ "mt19937_struct", "structmt19937__struct.html", null ]
     ] ],
+    [ "std::exception", null, [
+      [ "dpnp::backend::ext::lapack::LinAlgError", "classdpnp_1_1backend_1_1ext_1_1lapack_1_1_lin_alg_error.html", null ]
+    ] ],
+    [ "dpnp::backend::ext::vm::Exp2ContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp2_contig_factory.html", null ],
+    [ "dpnp::backend::ext::vm::types::Exp2OutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_exp2_output_type.html", null ],
     [ "dpnp::backend::ext::vm::ExpContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::Expm1ContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_expm1_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::Expm1OutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_expm1_output_type.html", null ],
@@ -66,6 +73,7 @@ var hierarchy =
     [ "dpnp::backend::ext::vm::FloorContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_floor_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::FloorOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_floor_output_type.html", null ],
     [ "func_type_pair_t< FuncType, T >", "structfunc__type__pair__t.html", null ],
+    [ "dpnp::backend::ext::lapack::types::GesvTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_gesv_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< std::tuple< T, Axis... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id_3_01std_1_1tuple_3_01_t_00_01_axis_8_8_8_01_4_01_4.html", null ],
@@ -127,6 +135,8 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::tuple_of_tuples< std::tuple< Args... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::tuple_of_tuples< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::UsmArrayMatcher", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_usm_array_matcher.html", null ],
+    [ "dpnp::backend::ext::lapack::helper::value_type_of< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of.html", null ],
+    [ "dpnp::backend::ext::lapack::helper::value_type_of< std::complex< T > >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
     [ "Ps", null, [
       [ "func_type_map_factory_t< Ps >", "structfunc__type__map__factory__t.html", null ]
     ] ]

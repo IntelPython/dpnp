@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ogrid &mdash; Data Parallel Extension for NumPy 0.13.1dev0+85.g9a87ce17c documentation</title>
+  <title>dpnp.ogrid &mdash; Data Parallel Extension for NumPy 0.13.1dev1+26.g35f1220a6b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=5d4effd0"></script>
+        <script src="../../_static/documentation_options.js?v=8f92a85b"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev0+85.g9a87ce17c
+                0.13.1dev1+26.g35f1220a6b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -126,24 +126,21 @@
 <h1>dpnp.ogrid<a class="headerlink" href="#dpnp-ogrid" title="Link to this heading"></a></h1>
 <dl class="py data">
 <dt class="sig sig-object py" id="dpnp.ogrid">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">ogrid</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;dpnp.dpnp_algo.dpnp_arraycreation.nd_grid</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#dpnp.ogrid" title="Link to this definition"></a></dt>
-<dd><p>Construct a multi-dimensional “meshgrid”.</p>
-<p><code class="docutils literal notranslate"><span class="pre">grid</span> <span class="pre">=</span> <span class="pre">nd_grid()</span></code> creates an instance which will return a mesh-grid
-when indexed. The dimension and number of the output arrays are equal
-to the number of indexing dimensions.  If the step length is not a
-complex number, then the stop is not inclusive.</p>
-<p>However, if the step length is a complex number (e.g. 5j), then the
-integer part of its magnitude is interpreted as specifying the
-number of points to create between the start and stop values, where
-the stop value is inclusive.</p>
-<p>If instantiated with an argument of <code class="docutils literal notranslate"><span class="pre">sparse=True</span></code>, the mesh-grid is
-open (or not fleshed out) so that only one-dimension of each returned
-argument is greater than 1.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>sparse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the grid is sparse or not. Default is False.</p>
-</dd>
-</dl>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">ogrid</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;dpnp.dpnp_iface_arraycreation.OGridClass</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#dpnp.ogrid" title="Link to this definition"></a></dt>
+<dd><p>Construct an open multi-dimensional “meshgrid”.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ogrid.html#numpy.ogrid" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ogrid</span></code></a>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">ogrid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="n">j</span><span class="p">]</span>
+<span class="go">array([-1. , -0.5,  0. ,  0.5,  1. ])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">ogrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+<span class="go">[array([[0],</span>
+<span class="go">        [1],</span>
+<span class="go">        [2],</span>
+<span class="go">        [3],</span>
+<span class="go">        [4]]), array([[0, 1, 2, 3, 4]])]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
