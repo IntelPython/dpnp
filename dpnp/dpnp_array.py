@@ -926,10 +926,16 @@ class dpnp_array:
 
         return dpnp.max(self, axis, out, keepdims, initial, where)
 
-    def mean(self, axis=None, **kwargs):
-        """Returns the average of the array elements."""
+    def mean(
+        self, axis=None, dtype=None, out=None, keepdims=False, *, where=True
+    ):
+        """
+        Returns the average of the array elements.
 
-        return dpnp.mean(self, axis=axis, **kwargs)
+        Refer to :obj:`dpnp.mean` for full documentation.
+        """
+
+        return dpnp.mean(self, axis, dtype, out, keepdims, where=where)
 
     def min(
         self,

@@ -796,19 +796,6 @@ void (*dpnp_put_along_axis_default_c)(void *,
                                       size_t) =
     dpnp_put_along_axis_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_put_along_axis_ext_c)(DPCTLSyclQueueRef,
-                                               void *,
-                                               long *,
-                                               void *,
-                                               size_t,
-                                               const shape_elem_type *,
-                                               size_t,
-                                               size_t,
-                                               size_t,
-                                               const DPCTLEventVectorRef) =
-    dpnp_put_along_axis_c<_DataType>;
-
 template <typename _DataType, typename _IndecesType>
 class dpnp_take_c_kernel;
 
@@ -1004,15 +991,6 @@ void func_map_init_indexing_func(func_map_t &fmap)
         eft_FLT, (void *)dpnp_put_along_axis_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_put_along_axis_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_put_along_axis_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_put_along_axis_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_put_along_axis_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_put_along_axis_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_BLN][eft_INT] = {
         eft_BLN, (void *)dpnp_take_default_c<bool, int32_t>};
