@@ -36,22 +36,14 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ALLCLOSE
         DPNP_FN_ALLCLOSE_EXT
         DPNP_FN_ARANGE
-        DPNP_FN_ARGMAX
-        DPNP_FN_ARGMAX_EXT
-        DPNP_FN_ARGMIN
-        DPNP_FN_ARGMIN_EXT
         DPNP_FN_ARGSORT
         DPNP_FN_ARGSORT_EXT
-        DPNP_FN_CBRT
-        DPNP_FN_CBRT_EXT
         DPNP_FN_CHOLESKY
         DPNP_FN_CHOLESKY_EXT
         DPNP_FN_CHOOSE
         DPNP_FN_CHOOSE_EXT
         DPNP_FN_COPY
         DPNP_FN_COPY_EXT
-        DPNP_FN_COPYSIGN
-        DPNP_FN_COPYSIGN_EXT
         DPNP_FN_CORRELATE
         DPNP_FN_CORRELATE_EXT
         DPNP_FN_CROSS
@@ -64,8 +56,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_DEGREES_EXT
         DPNP_FN_DET
         DPNP_FN_DET_EXT
-        DPNP_FN_DIAG
-        DPNP_FN_DIAG_EXT
         DPNP_FN_DIAG_INDICES
         DPNP_FN_DIAG_INDICES_EXT
         DPNP_FN_DIAGONAL
@@ -82,8 +72,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ERF_EXT
         DPNP_FN_EYE
         DPNP_FN_EYE_EXT
-        DPNP_FN_EXP2
-        DPNP_FN_EXP2_EXT
         DPNP_FN_FABS
         DPNP_FN_FABS_EXT
         DPNP_FN_FFT_FFT
@@ -92,8 +80,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FFT_RFFT_EXT
         DPNP_FN_FILL_DIAGONAL
         DPNP_FN_FILL_DIAGONAL_EXT
-        DPNP_FN_FLATTEN
-        DPNP_FN_FLATTEN_EXT
         DPNP_FN_FMOD
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
@@ -122,16 +108,12 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_PARTITION
         DPNP_FN_PARTITION_EXT
         DPNP_FN_PLACE
-        DPNP_FN_PTP
-        DPNP_FN_PTP_EXT
         DPNP_FN_QR
         DPNP_FN_QR_EXT
         DPNP_FN_RADIANS
         DPNP_FN_RADIANS_EXT
         DPNP_FN_RECIP
         DPNP_FN_RECIP_EXT
-        DPNP_FN_REPEAT
-        DPNP_FN_REPEAT_EXT
         DPNP_FN_RNG_BETA
         DPNP_FN_RNG_BETA_EXT
         DPNP_FN_RNG_BINOMIAL
@@ -174,8 +156,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_POISSON_EXT
         DPNP_FN_RNG_POWER
         DPNP_FN_RNG_POWER_EXT
-        DPNP_FN_PUT_ALONG_AXIS
-        DPNP_FN_PUT_ALONG_AXIS_EXT
         DPNP_FN_RNG_RAYLEIGH
         DPNP_FN_RNG_RAYLEIGH_EXT
         DPNP_FN_RNG_SHUFFLE
@@ -222,8 +202,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TRIL_EXT
         DPNP_FN_TRIU
         DPNP_FN_TRIU_EXT
-        DPNP_FN_VANDER
-        DPNP_FN_VANDER_EXT
         DPNP_FN_VAR
         DPNP_FN_VAR_EXT
         DPNP_FN_ZEROS
@@ -323,8 +301,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*dpnp_reduction_c_t)(c_dpctl.DPCTLSyclQueueRe
                                                         const long*,
                                                         const c_dpctl.DPCTLEventVectorRef)
 
-cpdef dpnp_descriptor dpnp_flatten(dpnp_descriptor x1)
-
 
 """
 Internal functions
@@ -359,10 +335,6 @@ cpdef dpnp_descriptor dpnp_fmax(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, 
                                    dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_fmin(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
                                    dpnp_descriptor out=*, object where=*)
-"""
-Array manipulation routines
-"""
-cpdef dpnp_descriptor dpnp_repeat(dpnp_descriptor array1, repeats, axes=*)
 
 
 """
@@ -372,16 +344,8 @@ cpdef dpnp_descriptor dpnp_argsort(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_sort(dpnp_descriptor array1)
 
 """
-Searching functions
-"""
-cpdef dpnp_descriptor dpnp_argmax(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_argmin(dpnp_descriptor array1)
-
-"""
 Trigonometric functions
 """
-cpdef dpnp_descriptor dpnp_cbrt(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_degrees(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_exp2(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_radians(dpnp_descriptor array1)
 cpdef dpnp_descriptor dpnp_recip(dpnp_descriptor array1)

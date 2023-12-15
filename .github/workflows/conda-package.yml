@@ -25,11 +25,13 @@ env:
       test_random_state.py
       test_sort.py
       test_special.py
+      test_statistics.py
       test_sycl_queue.py
       test_umath.py
       test_usm_type.py
       third_party/cupy/core_tests
       third_party/cupy/linalg_tests/test_product.py
+      third_party/cupy/linalg_tests/test_solve.py
       third_party/cupy/logic_tests/test_comparison.py
       third_party/cupy/logic_tests/test_truth.py
       third_party/cupy/manipulation_tests/test_basic.py
@@ -37,16 +39,10 @@ env:
       third_party/cupy/manipulation_tests/test_join.py
       third_party/cupy/manipulation_tests/test_rearrange.py
       third_party/cupy/manipulation_tests/test_transpose.py
-      third_party/cupy/math_tests/test_arithmetic.py
-      third_party/cupy/math_tests/test_explog.py
-      third_party/cupy/math_tests/test_floating.py
-      third_party/cupy/math_tests/test_hyperbolic.py
-      third_party/cupy/math_tests/test_matmul.py
-      third_party/cupy/math_tests/test_misc.py
-      third_party/cupy/math_tests/test_rounding.py
-      third_party/cupy/math_tests/test_trigonometric.py
+      third_party/cupy/math_tests
       third_party/cupy/sorting_tests/test_sort.py
       third_party/cupy/sorting_tests/test_count.py
+      third_party/cupy/statistics_tests/test_meanvar.py
   VER_JSON_NAME: 'version.json'
   VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
@@ -423,7 +419,7 @@ jobs:
         run: conda install anaconda-client
 
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.5.2
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0

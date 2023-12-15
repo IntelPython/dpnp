@@ -1,11 +1,14 @@
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from numpy.testing import assert_allclose
+from numpy.testing import (
+    assert_allclose,
+    assert_array_equal,
+)
 
 import dpnp
 
-from .helper import get_all_dtypes
+from .helper import assert_dtype_allclose, get_all_dtypes
 
 
 @pytest.mark.parametrize(
@@ -83,6 +86,73 @@ def test_max_min_NotImplemented(func):
         getattr(dpnp, func)(ia, where=False)
     with pytest.raises(NotImplementedError):
         getattr(dpnp, func)(ia, initial=6)
+
+
+class TestMean:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_mean_axis_tuple(self, dtype):
+        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dpnp.mean(dp_array, axis=(0, 1))
+        expected = numpy.mean(np_array, axis=(0, 1))
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
+    def test_mean_out(self, dtype, axis):
+        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
+        np_array = dpnp.asnumpy(dp_array)
+
+        expected = numpy.mean(np_array, axis=axis)
+        result = dpnp.empty_like(dpnp.asarray(expected))
+        dpnp.mean(dp_array, axis=axis, out=result)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_mean_dtype(self, dtype):
+        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype="i4")
+        np_array = dpnp.asnumpy(dp_array)
+
+        expected = numpy.mean(np_array, dtype=dtype)
+        result = dpnp.mean(dp_array, dtype=dtype)
+        assert_allclose(expected, result)
+
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
+    @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
+    def test_mean_empty(self, axis, shape):
+        dp_array = dpnp.empty(shape, dtype=dpnp.int64)
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dpnp.mean(dp_array, axis=axis)
+        expected = numpy.mean(np_array, axis=axis)
+        assert_allclose(expected, result)
+
+    def test_mean_strided(self):
+        dp_array = dpnp.array([-2, -1, 0, 1, 0, 2], dtype="f4")
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dpnp.mean(dp_array[::-1])
+        expected = numpy.mean(np_array[::-1])
+        assert_allclose(expected, result)
+
+        result = dpnp.mean(dp_array[::2])
+        expected = numpy.mean(np_array[::2])
+        assert_allclose(expected, result)
+
+    def test_mean_scalar(self):
+        dp_array = dpnp.array(5)
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dp_array.mean()
+        expected = np_array.mean()
+        assert_allclose(expected, result)
+
+    def test_mean_NotImplemented(func):
+        ia = dpnp.arange(5)
+        with pytest.raises(NotImplementedError):
+            dpnp.mean(ia, where=False)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -190,3 +260,64 @@ def test_cov_1D_rowvar(dtype):
     a = dpnp.array([[0, 1, 2]], dtype=dtype)
     b = numpy.array([[0, 1, 2]], dtype=dtype)
     assert_allclose(numpy.cov(b, rowvar=False), dpnp.cov(a, rowvar=False))
+
+
+@pytest.mark.parametrize(
+    "axis",
+    [None, 0, 1],
+    ids=["None", "0", "1"],
+)
+@pytest.mark.parametrize(
+    "v",
+    [
+        [[0, 0], [0, 0]],
+        [[1, 2], [1, 2]],
+        [[1, 2], [3, 4]],
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+    ],
+    ids=[
+        "[[0, 0], [0, 0]]",
+        "[[1, 2], [1, 2]]",
+        "[[1, 2], [3, 4]]",
+        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
+        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
+    ],
+)
+def test_ptp(v, axis):
+    a = numpy.array(v)
+    ia = dpnp.array(a)
+    expected = numpy.ptp(a, axis)
+    result = dpnp.ptp(ia, axis)
+    assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize(
+    "axis",
+    [None, 0, 1],
+    ids=["None", "0", "1"],
+)
+@pytest.mark.parametrize(
+    "v",
+    [
+        [[0, 0], [0, 0]],
+        [[1, 2], [1, 2]],
+        [[1, 2], [3, 4]],
+        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+    ],
+    ids=[
+        "[[0, 0], [0, 0]]",
+        "[[1, 2], [1, 2]]",
+        "[[1, 2], [3, 4]]",
+        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
+        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
+    ],
+)
+def test_ptp_out(v, axis):
+    a = numpy.array(v)
+    ia = dpnp.array(a)
+    expected = numpy.ptp(a, axis)
+    result = dpnp.array(numpy.empty_like(expected))
+    dpnp.ptp(ia, axis, out=result)
+    assert_array_equal(expected, result)

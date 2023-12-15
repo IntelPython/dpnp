@@ -40,10 +40,8 @@ __all__ += [
     "dpnp_diag_indices",
     "dpnp_diagonal",
     "dpnp_fill_diagonal",
-    "dpnp_put_along_axis",
     "dpnp_putmask",
     "dpnp_select",
-    "dpnp_take_along_axis",
     "dpnp_tril_indices",
     "dpnp_tril_indices_from",
     "dpnp_triu_indices",
@@ -68,16 +66,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_2in_1out_func_ptr_t_)(c_dpct
 ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_2in_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                     void *, void * , shape_elem_type * , const size_t,
                                                                     const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_3in_with_axis_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                              void * ,
-                                                                              void * ,
-                                                                              void * ,
-                                                                              const size_t,
-                                                                              shape_elem_type * ,
-                                                                              const size_t,
-                                                                              const size_t,
-                                                                              const size_t,
-                                                                              const c_dpctl.DPCTLEventVectorRef)
 
 
 cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor x1, list choices1):
@@ -248,35 +236,6 @@ cpdef dpnp_fill_diagonal(dpnp_descriptor x1, val):
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
 
-cpdef dpnp_put_along_axis(dpnp_descriptor arr, dpnp_descriptor indices, dpnp_descriptor values, int axis):
-    cdef shape_type_c arr_shape = arr.shape
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PUT_ALONG_AXIS_EXT, param1_type, param1_type)
-
-    utils.get_common_usm_allocation(arr, indices)  # check USM allocation is common
-    _, _, result_sycl_queue = utils.get_common_usm_allocation(arr, values)
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_indexing_3in_with_axis_func_ptr_t func = <custom_indexing_3in_with_axis_func_ptr_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    arr.get_data(),
-                                                    indices.get_data(),
-                                                    values.get_data(),
-                                                    axis,
-                                                    arr_shape.data(),
-                                                    arr.ndim,
-                                                    indices.size,
-                                                    values.size,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-
 cpdef dpnp_putmask(utils.dpnp_descriptor arr, utils.dpnp_descriptor mask, utils.dpnp_descriptor values):
     cdef int values_size = values.size
 
@@ -304,94 +263,6 @@ cpdef utils.dpnp_descriptor dpnp_select(list condlist, list choicelist, default)
         res_array.get_pyobj()[ind] = val
 
     return res_array
-
-
-cpdef object dpnp_take_along_axis(object arr, object indices, int axis):
-    cdef long size_arr = arr.size
-    cdef shape_type_c shape_arr = arr.shape
-    cdef shape_type_c output_shape
-    cdef long size_indices = indices.size
-    res_type = arr.dtype
-
-    if axis != arr.ndim - 1:
-        res_shape_list = list(shape_arr)
-        res_shape_list[axis] = 1
-        res_shape = tuple(res_shape_list)
-
-        output_shape = (0,) * (len(shape_arr) - 1)
-        ind = 0
-        for id, shape_axis in enumerate(shape_arr):
-            if id != axis:
-                output_shape[ind] = shape_axis
-                ind += 1
-
-        prod = 1
-        for i in range(len(output_shape)):
-            if output_shape[i] != 0:
-                prod *= output_shape[i]
-
-        result_array = dpnp.empty((prod, ), dtype=res_type)
-        ind_array = [None] * prod
-        arr_shape_offsets = [None] * len(shape_arr)
-        acc = 1
-
-        for i in range(len(shape_arr)):
-            ind = len(shape_arr) - 1 - i
-            arr_shape_offsets[ind] = acc
-            acc *= shape_arr[ind]
-
-        output_shape_offsets = [None] * len(shape_arr)
-        acc = 1
-
-        for i in range(len(output_shape)):
-            ind = len(output_shape) - 1 - i
-            output_shape_offsets[ind] = acc
-            acc *= output_shape[ind]
-            result_offsets = arr_shape_offsets[:]  # need copy. not a reference
-        result_offsets[axis] = 0
-
-        for source_idx in range(size_arr):
-
-            # reconstruct x,y,z from linear source_idx
-            xyz = []
-            remainder = source_idx
-            for i in arr_shape_offsets:
-                quotient, remainder = divmod(remainder, i)
-                xyz.append(quotient)
-
-            # extract result axis
-            result_axis = []
-            for idx, offset in enumerate(xyz):
-                if idx != axis:
-                    result_axis.append(offset)
-
-            # Construct result offset
-            result_offset = 0
-            for i, result_axis_val in enumerate(result_axis):
-                result_offset += (output_shape_offsets[i] * result_axis_val)
-
-            arr_elem = arr.item(source_idx)
-            if ind_array[result_offset] is None:
-                ind_array[result_offset] = 0
-            else:
-                ind_array[result_offset] += 1
-
-            if ind_array[result_offset] % size_indices == indices.item(result_offset % size_indices):
-                result_array[result_offset] = arr_elem
-
-        dpnp_result_array = dpnp.reshape(result_array, res_shape)
-        return dpnp_result_array
-
-    else:
-        result_array = utils_py.create_output_descriptor_py(shape_arr, res_type, None).get_pyobj()
-
-        result_array_flatiter = result_array.flat
-
-        for i in range(size_arr):
-            ind = size_indices * (i // size_indices) + indices.item(i % size_indices)
-            result_array_flatiter[i] = arr.item(ind)
-
-        return result_array
 
 
 cpdef tuple dpnp_tril_indices(n, k=0, m=None):

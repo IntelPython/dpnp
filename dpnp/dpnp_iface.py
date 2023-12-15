@@ -58,6 +58,7 @@ __all__ = [
     "array_equal",
     "asnumpy",
     "astype",
+    "check_supported_arrays_type",
     "convert_single_elem_array_to_scalar",
     "default_float_type",
     "dpnp_queue_initialize",
@@ -65,6 +66,7 @@ __all__ = [
     "get_dpnp_descriptor",
     "get_include",
     "get_normalized_queue_device",
+    "get_result_array",
     "get_usm_ndarray",
     "get_usm_ndarray_or_scalar",
     "is_supported_array_or_scalar",
@@ -200,6 +202,42 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True):
         return x1
 
     return dpnp_array._create_from_usm_ndarray(array_obj)
+
+
+def check_supported_arrays_type(*arrays, scalar_type=False):
+    """
+    Return ``True`` if each array has either type of scalar,
+    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    But if any array has unsupported type, ``TypeError`` will be raised.
+
+    Parameters
+    ----------
+    arrays : {dpnp_array, usm_ndarray}
+        Input arrays to check for supported types.
+    scalar_type : {bool}, optional
+        A scalar type is also considered as supported if flag is True.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if each type of input `arrays` is supported type,
+        ``False`` otherwise.
+
+    Raises
+    ------
+    TypeError
+        If any input array from `arrays` is of unsupported array type.
+
+    """
+
+    for a in arrays:
+        if scalar_type and dpnp.isscalar(a) or is_supported_array_type(a):
+            continue
+
+        raise TypeError(
+            "An array must be any of supported type, but got {}".format(type(a))
+        )
+    return True
 
 
 def convert_single_elem_array_to_scalar(obj, keepdims=False):
@@ -416,6 +454,51 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
     return dpt._device.normalize_queue_device(
         sycl_queue=sycl_queue, device=device
     )
+
+
+def get_result_array(a, out=None):
+    """
+    If `out` is provided, value of `a` array will be copied into the
+    `out` array according to ``safe`` casting rule.
+    Otherwise, the input array `a` is returned.
+
+    Parameters
+    ----------
+    a : {dpnp_array}
+        Input array.
+
+    out : {dpnp_array, usm_ndarray}
+        If provided, value of `a` array will be copied into it
+        according to ``safe`` casting rule.
+        It should be of the appropriate shape.
+
+    Returns
+    -------
+    out : {dpnp_array}
+        Return `out` if provided, otherwise return `a`.
+
+    """
+
+    if out is None:
+        return a
+    else:
+        if out.shape != a.shape:
+            raise ValueError(
+                f"Output array of shape {a.shape} is needed, got {out.shape}."
+            )
+        elif not isinstance(out, dpnp_array):
+            if isinstance(out, dpt.usm_ndarray):
+                out = dpnp_array._create_from_usm_ndarray(out)
+            else:
+                raise TypeError(
+                    "Output array must be any of supported type, but got {}".format(
+                        type(out)
+                    )
+                )
+
+        dpnp.copyto(out, a, casting="safe")
+
+        return out
 
 
 def get_usm_ndarray(a):

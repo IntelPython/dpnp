@@ -40,7 +40,6 @@ it contains:
 
 import dpctl.tensor as dpt
 import numpy
-from numpy.core.numeric import normalize_axis_tuple
 
 import dpnp
 from dpnp.dpnp_algo import *
@@ -60,69 +59,47 @@ __all__ = [
     "mean",
     "median",
     "min",
+    "ptp",
     "nanvar",
     "std",
     "var",
 ]
 
 
-def amax(input, axis=None, out=None):
+def amax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
     Return the maximum of an array or maximum along an axis.
 
-    For full documentation refer to :obj:`numpy.amax`.
+    `amax` is an alias of :obj:`dpnp.max`.
 
     See Also
     --------
-    :obj:`dpnp.amin` : The minimum value of an array along a given axis,
-                       propagating any NaNs.
-    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,
-                         ignoring any NaNs.
-    :obj:`dpnp.maximum` : Element-wise maximum of two arrays,
-                          propagating any NaNs.
-    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignoring any NaNs.
-    :obj:`dpnp.argmax` : Return the indices of the maximum values.
-    :obj:`dpnp.nanmin` : Return minimum of an array or minimum along an axis,
-                         ignoring any NaNs.
-    :obj:`dpnp.minimum` : Element-wise minimum of array elements.
-    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
-
-    Notes
-    -----
-    This function works exactly the same as :obj:`dpnp.max`.
+    :obj:`dpnp.max` : alias of this function
+    :obj:`dpnp.ndarray.max` : equivalent method
 
     """
-    return max(input, axis=axis, out=out)
+
+    return max(
+        a, axis=axis, out=out, keepdims=keepdims, initial=initial, where=where
+    )
 
 
-def amin(input, axis=None, out=None):
+def amin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
     Return the minimum of an array or minimum along an axis.
 
-    For full documentation refer to :obj:`numpy.amin`.
+    `amin` is an alias of :obj:`dpnp.min`.
 
     See Also
     --------
-    :obj:`dpnp.amax` : The maximum value of an array along a given axis,
-                       propagating any NaNs.
-    :obj:`dpnp.nanmin` : Return minimum of an array or minimum along an axis,
-                         ignoring any NaNs.
-    :obj:`dpnp.minimum` : Element-wise minimum of array elements.
-    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
-    :obj:`dpnp.argmin` : Return the indices of the minimum values.
-    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,
-                         ignoring any NaNs.
-    :obj:`dpnp.maximum` : Element-wise maximum of two arrays,
-                          propagating any NaNs.
-    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignoring any NaNs.
-
-    Notes
-    -----
-    This function works exactly the same as :obj:`dpnp.min`.
+    :obj:`dpnp.min` : alias of this function
+    :obj:`dpnp.ndarray.min` : equivalent method
 
     """
 
-    return min(input, axis=axis, out=out)
+    return min(
+        a, axis=axis, out=out, keepdims=keepdims, initial=initial, where=where
+    )
 
 
 def average(x1, axis=None, weights=None, returned=False):
@@ -409,46 +386,14 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
-        if dpt_array.size == 0:
-            # TODO: get rid of this if condition when dpctl supports it
-            axis = (axis,) if isinstance(axis, int) else axis
-            for i in range(a.ndim):
-                if a.shape[i] == 0:
-                    if axis is None or i in axis:
-                        raise ValueError(
-                            "reduction does not support zero-size arrays"
-                        )
-                    else:
-                        indices = [i for i in range(a.ndim) if i not in axis]
-                        res_shape = tuple([a.shape[i] for i in indices])
-                        result = dpnp.empty(res_shape, dtype=a.dtype)
-        else:
-            result = dpnp_array._create_from_usm_ndarray(
-                dpt.max(dpt_array, axis=axis, keepdims=keepdims)
-            )
-        if out is None:
-            return result
-        else:
-            if out.shape != result.shape:
-                raise ValueError(
-                    f"Output array of shape {result.shape} is needed, got {out.shape}."
-                )
-            elif not isinstance(out, dpnp_array):
-                if isinstance(out, dpt.usm_ndarray):
-                    out = dpnp_array._create_from_usm_ndarray(out)
-                else:
-                    raise TypeError(
-                        "Output array must be any of supported type, but got {}".format(
-                            type(out)
-                        )
-                    )
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.max(dpt_array, axis=axis, keepdims=keepdims)
+        )
 
-            dpnp.copyto(out, result, casting="safe")
-
-            return out
+        return dpnp.get_result_array(result, out)
 
 
-def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
+def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
     """
     Compute the arithmetic mean along the specified axis.
 
@@ -456,16 +401,16 @@ def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         an array containing the mean values of the elements along the specified axis(axes).
-        If the input array is empty, an array containing a single NaN value is returned.
+        If the input is a zero-size array, an array containing NaN values is returned.
 
     Limitations
     -----------
-    Parameters `x` is supported as either :class:`dpnp.ndarray`
+    Parameters `a` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `keepdims`, `out` and `where` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameter `where` is supported only with their default values.
+    Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -490,59 +435,21 @@ def mean(x, /, *, axis=None, dtype=None, keepdims=False, out=None, where=True):
     array([2., 3.])
     >>> np.mean(a, axis=1)
     array([1.5, 3.5])
+
     """
 
-    if keepdims is not False:
-        pass
-    elif out is not None:
-        pass
-    elif where is not True:
-        pass
+    if where is not True:
+        raise NotImplementedError(
+            "where keyword argument is only supported by its default value."
+        )
     else:
-        if dtype is None and dpnp.issubdtype(x.dtype, dpnp.inexact):
-            dtype = x.dtype
+        dpt_array = dpnp.get_usm_ndarray(a)
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.mean(dpt_array, axis=axis, keepdims=keepdims)
+        )
+        result = result.astype(dtype) if dtype is not None else result
 
-        if axis is None:
-            if x.size == 0:
-                return dpnp.array(dpnp.nan, dtype=dtype)
-            else:
-                result = dpnp.sum(x, dtype=dtype) / x.size
-                return result.astype(dtype) if result.dtype != dtype else result
-
-        if not isinstance(axis, (tuple, list)):
-            axis = (axis,)
-
-        axis = normalize_axis_tuple(axis, x.ndim, "axis")
-        res_sum = dpnp.sum(x, axis=axis, dtype=dtype)
-
-        del_ = 1.0
-        for axis_value in axis:
-            del_ *= x.shape[axis_value]
-
-        # performing an inplace operation on arrays of bool or integer types
-        # is not possible due to incompatible data types because
-        # it returns a floating value
-        if dpnp.issubdtype(res_sum.dtype, dpnp.inexact):
-            res_sum /= del_
-        else:
-            new_res_sum = res_sum / del_
-            return (
-                new_res_sum.astype(dtype)
-                if new_res_sum.dtype != dtype
-                else new_res_sum
-            )
-
-        return res_sum.astype(dtype) if res_sum.dtype != dtype else res_sum
-
-    return call_origin(
-        numpy.mean,
-        x,
-        axis=axis,
-        dtype=dtype,
-        out=out,
-        keepdims=keepdims,
-        where=where,
-    )
+        return dpnp.get_result_array(result, out)
 
 
 def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
@@ -650,46 +557,58 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         )
     elif where is not True:
         raise NotImplementedError(
-            "where keyword argument is only supported by its default values."
+            "where keyword argument is only supported by its default value."
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
-        if dpt_array.size == 0:
-            # TODO: get rid of this if condition when dpctl supports it
-            for i in range(a.ndim):
-                if a.shape[i] == 0:
-                    if axis is None or i in axis:
-                        raise ValueError(
-                            "reduction does not support zero-size arrays"
-                        )
-                    else:
-                        indices = [i for i in range(a.ndim) if i not in axis]
-                        res_shape = tuple([a.shape[i] for i in indices])
-                        result = dpnp.empty(res_shape, dtype=a.dtype)
-        else:
-            result = dpnp_array._create_from_usm_ndarray(
-                dpt.min(dpt_array, axis=axis, keepdims=keepdims)
-            )
-        if out is None:
-            return result
-        else:
-            if out.shape != result.shape:
-                raise ValueError(
-                    f"Output array of shape {result.shape} is needed, got {out.shape}."
-                )
-            elif not isinstance(out, dpnp_array):
-                if isinstance(out, dpt.usm_ndarray):
-                    out = dpnp_array._create_from_usm_ndarray(out)
-                else:
-                    raise TypeError(
-                        "Output array must be any of supported type, but got {}".format(
-                            type(out)
-                        )
-                    )
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.min(dpt_array, axis=axis, keepdims=keepdims)
+        )
 
-            dpnp.copyto(out, result, casting="safe")
+        return dpnp.get_result_array(result, out)
 
-            return out
+
+def ptp(
+    a,
+    /,
+    axis=None,
+    out=None,
+    keepdims=False,
+):
+    """
+    Range of values (maximum - minimum) along an axis.
+
+    For full documentation refer to :obj:`numpy.ptp`.
+
+    Returns
+    -------
+    ptp : dpnp.ndarray
+        The range of a given array.
+
+    Limitations
+    -----------
+    Input array is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([[4, 9, 2, 10],[6, 9, 7, 12]])
+    >>> np.ptp(x, axis=1)
+    array([8, 6])
+
+    >>> np.ptp(x, axis=0)
+    array([2, 0, 5, 2])
+
+    >>> np.ptp(x)
+    array(10)
+
+    """
+
+    return dpnp.subtract(
+        dpnp.max(a, axis=axis, keepdims=keepdims, out=out),
+        dpnp.min(a, axis=axis, keepdims=keepdims),
+        out=out,
+    )
 
 
 def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
