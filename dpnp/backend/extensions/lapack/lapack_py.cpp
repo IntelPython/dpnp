@@ -71,20 +71,6 @@ PYBIND11_MODULE(_lapack_impl, m)
           py::arg("sycl_queue"), py::arg("coeff_matrix"),
           py::arg("dependent_vals"), py::arg("depends") = py::list());
 
-    m.def("_heevd", &lapack_ext::heevd,
-          "Call `heevd` from OneMKL LAPACK library to return "
-          "the eigenvalues and eigenvectors of a complex Hermitian matrix",
-          py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
-          py::arg("eig_vecs"), py::arg("eig_vals"),
-          py::arg("depends") = py::list());
-
-    m.def("_syevd", &lapack_ext::syevd,
-          "Call `syevd` from OneMKL LAPACK library to return "
-          "the eigenvalues and eigenvectors of a real symmetric matrix",
-          py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
-          py::arg("eig_vecs"), py::arg("eig_vals"),
-          py::arg("depends") = py::list());
-
     m.def("_getrf", &lapack_ext::getrf,
           "Call `getrf` from OneMKL LAPACK library to return "
           "the LU factorization of a general n x n matrix",
@@ -98,5 +84,19 @@ PYBIND11_MODULE(_lapack_impl, m)
           py::arg("sycl_queue"), py::arg("a_array"), py::arg("ipiv_array"),
           py::arg("dev_info_array"), py::arg("n"), py::arg("stride_a"),
           py::arg("stride_ipiv"), py::arg("batch_size"),
+          py::arg("depends") = py::list());
+
+    m.def("_heevd", &lapack_ext::heevd,
+          "Call `heevd` from OneMKL LAPACK library to return "
+          "the eigenvalues and eigenvectors of a complex Hermitian matrix",
+          py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
+          py::arg("eig_vecs"), py::arg("eig_vals"),
+          py::arg("depends") = py::list());
+
+    m.def("_syevd", &lapack_ext::syevd,
+          "Call `syevd` from OneMKL LAPACK library to return "
+          "the eigenvalues and eigenvectors of a real symmetric matrix",
+          py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
+          py::arg("eig_vecs"), py::arg("eig_vals"),
           py::arg("depends") = py::list());
 }
