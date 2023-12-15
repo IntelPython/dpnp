@@ -2044,3 +2044,31 @@ def test_inplace_remainder(dtype):
     dp_a %= 4
 
     assert_allclose(dp_a, np_a)
+
+
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+)
+def test_clip(dtype):
+    dp_array = dpnp.asarray([1, 2, 8, 1, 6, 4, 1], dtype=dtype)
+    np_array = dpnp.asnumpy(dp_array)
+
+    result = dpnp.clip(dp_array, 2, 6)
+    expected = numpy.clip(np_array, 2, 6)
+    assert_allclose(expected, result)
+
+
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+)
+def test_clip_arrays(dtype):
+    dp_array = dpnp.asarray([1, 2, 8, 1, 6, 4, 1], dtype=dtype)
+    np_array = dpnp.asnumpy(dp_array)
+
+    min_v = dpnp.asarray(2, dtype=dtype)
+    max_v = dpnp.asarray(6, dtype=dtype)
+
+    result = dpnp.clip(dp_array, min_v, max_v)
+    expected = numpy.clip(np_array, min_v.asnumpy(), max_v.asnumpy())
+
+    assert_allclose(expected, result)

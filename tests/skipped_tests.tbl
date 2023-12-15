@@ -412,8 +412,6 @@ tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_ldexp
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_combination
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_float
 
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip_min_max_none
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip4
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fmax_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fmin_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num
@@ -435,14 +433,6 @@ tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid_param_1_{mod
 tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid_param_2_{mode='full'}::test_convolve_empty
 tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid_param_2_{mode='full'}::test_convolve_ndim
 
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip1
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip3
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip_min_none
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip_max_none
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip1
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip2
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip3
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip2
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fabs
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fabs_negative
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_scalar_nan
