@@ -2152,13 +2152,16 @@ def test_inplace_remainder(dtype):
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
 )
-def test_clip(dtype):
-    dp_array = dpnp.asarray([1, 2, 8, 1, 6, 4, 1], dtype=dtype)
+@pytest.mark.parametrize("order", ["C", "F", "A", "K", None])
+def test_clip(dtype, order):
+    dp_array = dpnp.asarray([[1, 2, 8], [1, 6, 4], [9, 5, 1]], dtype=dtype)
     np_array = dpnp.asnumpy(dp_array)
 
-    result = dpnp.clip(dp_array, 2, 6)
-    expected = numpy.clip(np_array, 2, 6)
+    result = dpnp.clip(dp_array, 2, 6, order=order)
+    expected = numpy.clip(np_array, 2, 6, order=order)
     assert_allclose(expected, result)
+    assert expected.flags.c_contiguous == result.flags.c_contiguous
+    assert expected.flags.f_contiguous == result.flags.f_contiguous
 
 
 @pytest.mark.parametrize(
@@ -2175,3 +2178,32 @@ def test_clip_arrays(dtype):
     expected = numpy.clip(np_array, min_v.asnumpy(), max_v.asnumpy())
 
     assert_allclose(expected, result)
+
+
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+)
+def test_clip_out(dtype):
+    dp_array = dpnp.asarray([[1, 2, 8], [1, 6, 4], [9, 5, 1]], dtype=dtype)
+    np_array = dpnp.asnumpy(dp_array)
+
+    out = dpnp.zeros_like(dp_array)
+
+    result = dpnp.clip(dp_array, 2, 6, out=out)
+    expected = numpy.clip(np_array, 2, 6)
+    assert_allclose(expected, out)
+    assert result is out
+
+
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+)
+def test_clip_out_dpt(dtype):
+    dp_array = dpnp.asarray([[1, 2, 8], [1, 6, 4], [9, 5, 1]], dtype=dtype)
+    np_array = dpnp.asnumpy(dp_array)
+
+    out = dpt.zeros_like(dpnp.get_usm_ndarray(dp_array))
+
+    dpnp.clip(dp_array, 2, 6, out=out)
+    expected = numpy.clip(np_array, 2, 6)
+    assert_allclose(expected, out)

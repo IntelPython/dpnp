@@ -1369,3 +1369,14 @@ def test_solve(device):
 
     assert_sycl_queue_equal(result_queue, dpnp_x.sycl_queue)
     assert_sycl_queue_equal(result_queue, dpnp_y.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_clip(device):
+    x = dpnp.arange(10, device=device)
+    y = dpnp.clip(x, 3, 7)
+    assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)

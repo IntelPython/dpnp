@@ -388,7 +388,7 @@ def ceil(
     )
 
 
-def clip(a, a_min, a_max, *, out=None, order="K"):
+def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     """
     Clip (limit) the values in an array.
 
@@ -399,17 +399,24 @@ def clip(a, a_min, a_max, *, out=None, order="K"):
     a : {dpnp_array, usm_ndarray}
         Array containing elements to clip.
     a_min, a_max : {dpnp_array, usm_ndarray, None}
-        Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge
-        Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against a.
-    out : dpnp_array, optional
+        Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.
+        Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.
+    ut : {dpnp_array, usm_ndarray}, optional
         The results will be placed in this array. It may be the input array for in-place clipping.
         `out` must be of the right shape to hold the output. Its type is preserved.
+    order : ("C","F","A","K", optional)
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
 
     Returns
     -------
     out : dpnp_array
         An array with the elements of `a`, but where values < `a_min` are replaced with `a_min`,
         and those > `a_max` with `a_max`.
+
+    Limitations
+    -----------
+    Keyword argument `kwargs` is currently unsupported.
 
     Examples
     --------
@@ -435,18 +442,27 @@ def clip(a, a_min, a_max, *, out=None, order="K"):
 
     """
 
+    if len(kwargs) != 0:
+        raise NotImplementedError(f"kwargs={kwargs} is currently not supported")
+
+    if order is None:
+        order = "K"
+
     usm_arr = dpnp.get_usm_ndarray(a)
     usm_min = (
-        dpnp.get_usm_ndarray(a_min) if isinstance(a_min, dpnp_array) else a_min
+        dpnp.get_usm_ndarray_or_scalar(a_min) if a_min is not None else a_min
     )
     usm_max = (
-        dpnp.get_usm_ndarray(a_max) if isinstance(a_max, dpnp_array) else a_max
+        dpnp.get_usm_ndarray_or_scalar(a_max) if a_max is not None else a_max
     )
 
     if out is not None:
         usm_out = dpnp.get_usm_ndarray(out)
-        dpt.clip(usm_arr, usm_min, usm_max, out=usm_out, order=order)
-        return out
+        usm_res = dpt.clip(usm_arr, usm_min, usm_max, out=usm_out, order=order)
+        if isinstance(out, dpnp_array):
+            return out
+        else:
+            return dpnp_array._create_from_usm_ndarray(usm_res)
 
     return dpnp_array._create_from_usm_ndarray(
         dpt.clip(usm_arr, usm_min, usm_max, order=order)

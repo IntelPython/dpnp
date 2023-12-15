@@ -524,3 +524,10 @@ def test_solve(matrix, vector, usm_type_matrix, usm_type_vector):
     assert z.usm_type == du.get_coerced_usm_type(
         [usm_type_matrix, usm_type_vector]
     )
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_clip(usm_type):
+    x = dp.arange(10, usm_type=usm_type)
+    y = dp.clip(x, 2, 7)
+    assert x.usm_type == y.usm_type
