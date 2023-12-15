@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.13.1dev1+19.g28844c476e documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.13.1dev1+20.gc35d8b6fda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=d1bd07a4"></script>
+        <script src="../../_static/documentation_options.js?v=e64bcc3b"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+19.g28844c476e
+                0.13.1dev1+20.gc35d8b6fda
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -492,7 +492,7 @@
 
 <div class="viewcode-block" id="clip">
 <a class="viewcode-back" href="../../reference/generated/dpnp.clip.html#dpnp.clip">[docs]</a>
-<span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">a_min</span><span class="p">,</span> <span class="n">a_max</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">a_min</span><span class="p">,</span> <span class="n">a_max</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Clip (limit) the values in an array.</span>
 
@@ -503,17 +503,24 @@
 <span class="sd">    a : {dpnp_array, usm_ndarray}</span>
 <span class="sd">        Array containing elements to clip.</span>
 <span class="sd">    a_min, a_max : {dpnp_array, usm_ndarray, None}</span>
-<span class="sd">        Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge</span>
-<span class="sd">        Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against a.</span>
-<span class="sd">    out : dpnp_array, optional</span>
+<span class="sd">        Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.</span>
+<span class="sd">        Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.</span>
+<span class="sd">    ut : {dpnp_array, usm_ndarray}, optional</span>
 <span class="sd">        The results will be placed in this array. It may be the input array for in-place clipping.</span>
 <span class="sd">        `out` must be of the right shape to hold the output. Its type is preserved.</span>
+<span class="sd">    order : (&quot;C&quot;,&quot;F&quot;,&quot;A&quot;,&quot;K&quot;, optional)</span>
+<span class="sd">        Memory layout of the newly output array, if parameter `out` is `None`.</span>
+<span class="sd">        Default: &quot;K&quot;.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp_array</span>
 <span class="sd">        An array with the elements of `a`, but where values &lt; `a_min` are replaced with `a_min`,</span>
 <span class="sd">        and those &gt; `a_max` with `a_max`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -539,18 +546,27 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;kwargs=</span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2"> is currently not supported&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span>
+
     <span class="n">usm_arr</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">usm_min</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a_min</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a_min</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">a_min</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">a_min</span><span class="p">)</span> <span class="k">if</span> <span class="n">a_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">a_min</span>
     <span class="p">)</span>
     <span class="n">usm_max</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a_max</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a_max</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">a_max</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">a_max</span><span class="p">)</span> <span class="k">if</span> <span class="n">a_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">a_max</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">usm_out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-        <span class="n">dpt</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">usm_arr</span><span class="p">,</span> <span class="n">usm_min</span><span class="p">,</span> <span class="n">usm_max</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">usm_out</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">out</span>
+        <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">usm_arr</span><span class="p">,</span> <span class="n">usm_min</span><span class="p">,</span> <span class="n">usm_max</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">usm_out</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">out</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
         <span class="n">dpt</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">usm_arr</span><span class="p">,</span> <span class="n">usm_min</span><span class="p">,</span> <span class="n">usm_max</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
