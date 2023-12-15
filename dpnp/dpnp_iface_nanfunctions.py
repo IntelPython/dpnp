@@ -384,7 +384,10 @@ def nanvar(
         avg = dpnp.divide(avg, cnt, out=avg)
 
         # Compute squared deviation from mean.
-        arr = dpnp.subtract(arr, avg)
+        if arr.dtype == avg.dtype:
+            arr = dpnp.subtract(arr, avg, out=arr)
+        else:
+            arr = dpnp.subtract(arr, avg)
         dpnp.copyto(arr, 0.0, where=mask)
         if dpnp.issubdtype(arr.dtype, dpnp.complexfloating):
             sqr = dpnp.multiply(arr, arr.conj(), out=arr).real

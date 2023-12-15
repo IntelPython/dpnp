@@ -66,29 +66,35 @@ def test_max_min_out(func):
     ia = dpnp.array(a)
 
     np_res = getattr(numpy, func)(a, axis=0)
+    # output is dpnp array
     dpnp_res = dpnp.array(numpy.empty_like(np_res))
     getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
     assert_allclose(dpnp_res, np_res)
 
+    # output is usm array
     dpnp_res = dpt.asarray(numpy.empty_like(np_res))
     getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
     assert_allclose(dpnp_res, np_res)
 
+    # output is numpy array -> Error
     dpnp_res = numpy.empty_like(np_res)
     with pytest.raises(TypeError):
         getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
 
+    # output has incorrect shape -> Error
     dpnp_res = dpnp.array(numpy.empty((2, 3)))
     with pytest.raises(ValueError):
         getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
 
 
 @pytest.mark.parametrize("func", ["max", "min"])
-def test_max_min_NotImplemented(func):
+def test_max_min_error(func):
     ia = dpnp.arange(5)
-
+    # where is not supported
     with pytest.raises(NotImplementedError):
         getattr(dpnp, func)(ia, where=False)
+
+    # initial is not supported
     with pytest.raises(NotImplementedError):
         getattr(dpnp, func)(ia, initial=6)
 

@@ -489,15 +489,8 @@ def get_result_array(a, out=None, casting="safe"):
             raise ValueError(
                 f"Output array of shape {a.shape} is needed, got {out.shape}."
             )
-        elif not isinstance(out, dpnp_array):
-            if isinstance(out, dpt.usm_ndarray):
-                out = dpnp_array._create_from_usm_ndarray(out)
-            else:
-                raise TypeError(
-                    "Output array must be any of supported type, but got {}".format(
-                        type(out)
-                    )
-                )
+        elif isinstance(out, dpt.usm_ndarray):
+            out = dpnp_array._create_from_usm_ndarray(out)
 
         dpnp.copyto(out, a, casting=casting)
 
