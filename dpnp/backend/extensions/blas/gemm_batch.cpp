@@ -74,8 +74,8 @@ static sycl::event gemm_batch_impl(sycl::queue exec_q,
                                    const std::int64_t n,
                                    const std::int64_t k,
                                    const std::int64_t batch_size,
-                                   const std::int64_t ld_array_1,
-                                   const std::int64_t ld_array_2,
+                                   const std::int64_t lda,
+                                   const std::int64_t ldb,
                                    const std::int64_t ld_result,
                                    size_t stridea,
                                    size_t strideb,
@@ -101,17 +101,39 @@ static sycl::event gemm_batch_impl(sycl::queue exec_q,
     sycl::event gemm_batch_event;
     try {
         gemm_batch_event = mkl_blas::row_major::gemm_batch(
-            exec_q, transA, transB, m, n, k, Tab(1), a, ld_array_1, stridea, b,
-            ld_array_2, strideb, Tab(0), res, ld_result, stridec, batch_size,
+            exec_q,
+            transA,     // Defines the transpose operation for matrix A:
+                        // 'N' indicates no transpose, 'T' for transpose,
+                        // or 'C' for a conjugate transpose.
+            transB,     // Same as transA but for matrix B.
+            m,          // Number of rows in matrices A and C.
+            n,          // Number of columns in matrices B and C.
+            k,          // Number of columns in matrix A and rows in matrix B.
+            Tab(1),     // Scaling factor for the product of matrices A and B.
+            a,          // Pointer to matrix A.
+            lda,        // Leading dimension of matrix A, which is the
+                        // stride between successive rows (for row major
+                        // layout).
+            stridea,    // Stride between different A matrices.
+            b,          // Pointer to matrix B.
+            ldb,        // Leading dimension of matrix B, similar to lda.
+            strideb,    // Stride between different B matrices.
+            Tab(0),     // Scaling factor for matrix C.
+            res,        // Pointer to matrix C, where the result is stored.
+            ld_result,  // Leading dimension of matrix C.
+            stridec,    // Stride between different C matrices.
+            batch_size, // Specifies the number of matrix multiply operations to
+                        // perform.
             depends);
     } catch (oneapi::mkl::exception const &e) {
-        error_msg
-            << "Unexpected MKL exception caught during gemm() call:\nreason: "
-            << e.what();
+        error_msg << "Unexpected MKL exception caught during gemm_batch() "
+                     "call:\nreason: "
+                  << e.what();
         mkl_exception_caught = true;
     } catch (sycl::exception const &e) {
-        error_msg << "Unexpected SYCL exception caught during gemm() call:\n"
-                  << e.what();
+        error_msg
+            << "Unexpected SYCL exception caught during gemm_batch() call:\n"
+            << e.what();
         info = -1;
     }
 
@@ -132,8 +154,8 @@ std::pair<sycl::event, sycl::event>
                const std::int64_t n,
                const std::int64_t k,
                const std::int64_t batch_size,
-               const std::int64_t ld_array_1,
-               const std::int64_t ld_array_2,
+               const std::int64_t lda,
+               const std::int64_t ldb,
                const std::int64_t ld_result,
                size_t stridea,
                size_t strideb,
@@ -146,7 +168,7 @@ std::pair<sycl::event, sycl::event>
             exec_q,
             {matrixA.get_queue(), matrixB.get_queue(), resultC.get_queue()}))
     {
-        throw std::runtime_error(
+        throw py::value_error(
             "USM allocations are not compatible with the execution queue.");
     }
 
@@ -181,9 +203,9 @@ std::pair<sycl::event, sycl::event>
 
     std::vector<sycl::event> host_task_events;
     sycl::event gemm_batch_ev =
-        gemm_batch_fn(exec_q, m, n, k, batch_size, ld_array_1, ld_array_2,
-                      ld_result, stridea, strideb, stridec, transA, transB,
-                      a_typeless_ptr, b_typeless_ptr, r_typeless_ptr, depends);
+        gemm_batch_fn(exec_q, m, n, k, batch_size, lda, ldb, ld_result, stridea,
+                      strideb, stridec, transA, transB, a_typeless_ptr,
+                      b_typeless_ptr, r_typeless_ptr, depends);
 
     host_task_events.push_back(gemm_batch_ev);
     sycl::event args_batch_ev = dpctl::utils::keep_args_alive(

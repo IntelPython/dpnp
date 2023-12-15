@@ -150,7 +150,7 @@ std::pair<sycl::event, sycl::event>
             exec_q,
             {matrixA.get_queue(), matrixB.get_queue(), resultC.get_queue()}))
     {
-        throw std::runtime_error(
+        throw py::value_error(
             "USM allocations are not compatible with the execution queue.");
     }
 

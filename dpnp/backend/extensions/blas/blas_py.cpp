@@ -57,7 +57,7 @@ PYBIND11_MODULE(_blas_impl, m)
     {
         m.def("_gemm_batch", &blas_ext::gemm_batch,
               "Call `gemm_batch` from OneMKL LAPACK library to return "
-              "the matrix-matrix product with general matrices.",
+              "the matrix-matrix product for a batch of 2-D matrices.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
               py::arg("result"), py::arg("m"), py::arg("n"), py::arg("k"),
               py::arg("batch_size"), py::arg("ld_array_1"),

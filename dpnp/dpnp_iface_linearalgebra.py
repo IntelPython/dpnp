@@ -43,7 +43,6 @@ it contains:
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
-import dpctl.utils as du
 import numpy
 
 import dpnp
@@ -268,11 +267,9 @@ def matmul(
 
     Limitations
     -----------
-    Input arrays are supported are supported as either :class:`dpnp.ndarray`
+    Input arrays and parameter `out` are supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter `out` is supported as as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
+    Keyword argument `subok` is currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -331,7 +328,6 @@ def matmul(
 
     dpnp.check_supported_arrays_type(x1)
     dpnp.check_supported_arrays_type(x2)
-
     if subok is False:
         raise NotImplementedError(
             "subok keyword argument is only supported by its default value."
@@ -345,33 +341,7 @@ def matmul(
                 "matmul: Input operand does not have enough dimensions"
             )
 
-        exec_q = dpctl.utils.get_execution_queue((x1.sycl_queue, x2.sycl_queue))
-        if exec_q is None:
-            raise ValueError(
-                "Execution placement can not be unambiguously inferred "
-                "from input arguments."
-            )
-
-        # input arrays should be C_CONTIGUOUS or F_CONTIGUOUS
-        if not x1.flags["C_CONTIGUOUS"] and not x1.flags["F_CONTIGUOUS"]:
-            v = dpnp.empty_like(x1, order="C")
-            ht_copy_ev_x1, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=dpnp.get_usm_ndarray(x1),
-                dst=v.get_array(),
-                sycl_queue=x1.sycl_queue,
-            )
-            x1 = v
-            ht_copy_ev_x1.wait()
-
-        if not x2.flags["C_CONTIGUOUS"] and not x2.flags["F_CONTIGUOUS"]:
-            v = dpnp.empty_like(x2, order="C")
-            ht_copy_ev_x2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=dpnp.get_usm_ndarray(x2),
-                dst=v.get_array(),
-                sycl_queue=x2.sycl_queue,
-            )
-            x2 = v
-            ht_copy_ev_x2.wait()
+        res_usm_type, exec_q = get_usm_allocations([x1, x2])
 
         squeeze_flag = x1_ndim == 1 or x2_ndim == 1
         if x1_ndim == 1:
@@ -397,19 +367,13 @@ def matmul(
             gemm_dtype, _ = _gemm_res_dtype(x1, x2, casting=casting)
         else:
             gemm_dtype, res_dtype = _gemm_res_dtype(x1, x2, casting=casting)
-        if x1.dtype != gemm_dtype:
-            x1 = dpnp.astype(x1, gemm_dtype, casting=casting)
-        if x2.dtype != gemm_dtype:
-            x2 = dpnp.astype(x2, gemm_dtype, casting=casting)
 
         # find the result shape
-        x1_is_2D = False
-        x1_is_2D = False
         if x1_ndim == 2 and x2_ndim == 2:
             res_shape = (x1.shape[0], x2.shape[1])
         else:
-            x1_is_2D = dpnp.all(dpnp.array(x1_shape[:-2]) == 1)  # inherently 2D
-            x2_is_2D = dpnp.all(dpnp.array(x2_shape[:-2]) == 1)
+            x1_is_2D = numpy.prod(x1_shape[:-2]) == 1  # inherently 2D
+            x2_is_2D = numpy.prod(x2_shape[:-2]) == 1
 
             # makes the dimension of input the same by adding new axis
             if x1_ndim != x2_ndim:
@@ -423,13 +387,16 @@ def matmul(
                     x2_ndim = x2.ndim
                     x2_shape = x2.shape
 
-            # examining the option to align inputs when their shapes differ but they are 1-D in some dimensions.
+            # examining the option to align inputs
+            # when their shapes differ but they are 1-D in some dimensions.
             tmp_shape = list(x1_shape[:-2])
             for i in range(x1_ndim - 2):
                 if x1_shape[i] != x2_shape[i]:
                     if x1_shape[i] == 1:
                         tmp_shape[i] = x2_shape[i]
-                        # If the `x1` array is inherently 2D, there's no need to duplicate the data for the 1-D dimension; GEMM handles it automatically.
+                        # If the `x1` array is inherently 2D, there's no need to
+                        # duplicate the data for the 1-D dimension;
+                        # GEMM handles it automatically.
                         if not x1_is_2D:
                             x1 = dpnp.repeat(x1, x2_shape[i], axis=i)
                     elif x2_shape[i] == 1:
@@ -444,8 +411,36 @@ def matmul(
             x2_shape = x2.shape
             res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
 
+        is_x1_c_f_contig = x1.flags.c_contiguous or x1.flags.f_contiguous
+        is_x2_c_f_contig = x2.flags.c_contiguous or x2.flags.f_contiguous
+        list_of_events = []
+
+        # input arrays should be C_CONTIGUOUS or F_CONTIGUOUS
+        if not is_x1_c_f_contig or x1.dtype != gemm_dtype:
+            x1_copy = dpnp.empty_like(x1, dtype=gemm_dtype, order="C")
+            ht_copy_ev_x1, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=dpnp.get_usm_ndarray(x1),
+                dst=x1_copy.get_array(),
+                sycl_queue=x1.sycl_queue,
+            )
+            x1 = x1_copy
+            list_of_events.append(ht_copy_ev_x1)
+
+        if not is_x2_c_f_contig or x2.dtype != gemm_dtype:
+            x2_copy = dpnp.empty_like(x2, dtype=gemm_dtype, order="C")
+            ht_copy_ev_x2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=dpnp.get_usm_ndarray(x2),
+                dst=x2_copy.get_array(),
+                sycl_queue=x2.sycl_queue,
+            )
+            x2 = x2_copy
+            list_of_events.append(ht_copy_ev_x2)
+
+        if list_of_events:
+            for ev in list_of_events:
+                ev.wait()
+
         # calculate results
-        res_usm_type = du.get_coerced_usm_type([x1.usm_type, x2.usm_type])
         result = dpnp.empty(
             res_shape,
             dtype=gemm_dtype,
@@ -457,7 +452,10 @@ def matmul(
         else:
             if x1.size == 0 or x2.size == 0:
                 result = dpnp.zeros(
-                    res_shape, dtype=gemm_dtype, sycl_queue=exec_q
+                    res_shape,
+                    dtype=gemm_dtype,
+                    usm_type=res_usm_type,
+                    sycl_queue=exec_q,
                 )
             else:
                 ht_copy_ev_x1 = dpctl.SyclEvent()
@@ -496,16 +494,16 @@ def matmul(
 
         if gemm_dtype != res_dtype:
             result = dpnp.astype(result, res_dtype)
-        if out is None and order not in ["k", "K"]:
-            v = dpnp.empty_like(result, order=order)
-            ht_copy_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=dpnp.get_usm_ndarray(result),
-                dst=v.get_array(),
-                sycl_queue=result.sycl_queue,
-            )
-            ht_copy_ev.wait()
-            result = v
-        return dpnp.get_result_array(result, out, casting=casting)
+
+        if out is not None:
+            return dpnp.get_result_array(result, out, casting=casting)
+
+        # If `order` was not passed as default
+        # we must copy `result` to match the passed `order`.
+        if order not in ["k", "K"]:
+            return dpnp.copy(result, order=order)
+
+        return result
 
 
 def dpnp_matmul_batch(
