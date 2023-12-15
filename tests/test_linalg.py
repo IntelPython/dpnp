@@ -5,7 +5,12 @@ from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp as inp
 
-from .helper import get_all_dtypes, has_support_aspect64, is_cpu_device
+from .helper import (
+    assert_dtype_allclose,
+    get_all_dtypes,
+    has_support_aspect64,
+    is_cpu_device,
+)
 
 
 def vvsort(val, vec, size, xp):
@@ -507,6 +512,111 @@ def test_svd(type, shape):
         )
         assert_allclose(
             inp.asnumpy(dpnp_vt)[i, :], np_vt[i, :], rtol=tol, atol=tol
+        )
+
+
+class TestSolve:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_solve(self, dtype):
+        a_np = numpy.array([[1, 0.5], [0.5, 1]], dtype=dtype)
+        a_dp = inp.array(a_np)
+
+        expected = numpy.linalg.solve(a_np, a_np)
+        result = inp.linalg.solve(a_dp, a_dp)
+
+        assert_allclose(expected, result, rtol=1e-06)
+
+    @pytest.mark.parametrize("a_dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("b_dtype", get_all_dtypes(no_bool=True))
+    def test_solve_diff_type(self, a_dtype, b_dtype):
+        a_np = numpy.array([[1, 2], [3, -5]], dtype=a_dtype)
+        b_np = numpy.array([4, 1], dtype=b_dtype)
+
+        a_dp = inp.array(a_np)
+        b_dp = inp.array(b_np)
+
+        expected = numpy.linalg.solve(a_np, b_np)
+        result = inp.linalg.solve(a_dp, b_dp)
+
+        assert_dtype_allclose(result, expected)
+
+    def test_solve_strides(self):
+        a_np = numpy.array(
+            [
+                [2, 3, 1, 4, 5],
+                [5, 6, 7, 8, 9],
+                [9, 7, 7, 2, 3],
+                [1, 4, 5, 1, 8],
+                [8, 9, 8, 5, 3],
+            ]
+        )
+        b_np = numpy.array([5, 8, 9, 2, 1])
+
+        a_dp = inp.array(a_np)
+        b_dp = inp.array(b_np)
+
+        # positive strides
+        expected = numpy.linalg.solve(a_np[::2, ::2], b_np[::2])
+        result = inp.linalg.solve(a_dp[::2, ::2], b_dp[::2])
+        assert_allclose(expected, result, rtol=1e-05)
+
+        # negative strides
+        expected = numpy.linalg.solve(a_np[::-2, ::-2], b_np[::-2])
+        result = inp.linalg.solve(a_dp[::-2, ::-2], b_dp[::-2])
+        assert_allclose(expected, result, rtol=1e-05)
+
+    # TODO: remove skipif when MKLD-16626 is resolved
+    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
+    @pytest.mark.parametrize(
+        "matrix, vector",
+        [
+            ([[1, 2], [2, 4]], [1, 2]),
+            ([[0, 0], [0, 0]], [0, 0]),
+            ([[1, 1], [1, 1]], [2, 2]),
+            ([[2, 4], [1, 2]], [3, 1.5]),
+            ([[1, 2], [0, 0]], [3, 0]),
+            ([[1, 0], [2, 0]], [3, 4]),
+        ],
+        ids=[
+            "Linearly dependent rows",
+            "Zero matrix",
+            "Identical rows",
+            "Linearly dependent columns",
+            "Zero row",
+            "Zero column",
+        ],
+    )
+    def test_solve_singular_matrix(self, matrix, vector):
+        a_np = numpy.array(matrix, dtype="float32")
+        b_np = numpy.array(vector, dtype="float32")
+
+        a_dp = inp.array(a_np)
+        b_dp = inp.array(b_np)
+
+        assert_raises(numpy.linalg.LinAlgError, numpy.linalg.solve, a_np, b_np)
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.solve, a_dp, b_dp)
+
+    def test_solve_errors(self):
+        a_dp = inp.array([[1, 0.5], [0.5, 1]], dtype="float32")
+        b_dp = inp.array(a_dp, dtype="float32")
+
+        # diffetent queue
+        a_queue = dpctl.SyclQueue()
+        b_queue = dpctl.SyclQueue()
+        a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
+        b_dp_q = inp.array(b_dp, sycl_queue=b_queue)
+        assert_raises(ValueError, inp.linalg.solve, a_dp_q, b_dp_q)
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        b_np = inp.asnumpy(b_dp)
+        assert_raises(TypeError, inp.linalg.solve, a_np, b_dp)
+        assert_raises(TypeError, inp.linalg.solve, a_dp, b_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(
+            inp.linalg.LinAlgError, inp.linalg.solve, a_dp_ndim_1, b_dp
         )
 
 

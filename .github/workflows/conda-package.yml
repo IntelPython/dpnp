@@ -32,6 +32,7 @@ env:
       third_party/cupy/core_tests
       third_party/cupy/linalg_tests/test_norms.py
       third_party/cupy/linalg_tests/test_product.py
+      third_party/cupy/linalg_tests/test_solve.py
       third_party/cupy/logic_tests/test_comparison.py
       third_party/cupy/logic_tests/test_truth.py
       third_party/cupy/manipulation_tests/test_basic.py
@@ -39,14 +40,7 @@ env:
       third_party/cupy/manipulation_tests/test_join.py
       third_party/cupy/manipulation_tests/test_rearrange.py
       third_party/cupy/manipulation_tests/test_transpose.py
-      third_party/cupy/math_tests/test_arithmetic.py
-      third_party/cupy/math_tests/test_explog.py
-      third_party/cupy/math_tests/test_floating.py
-      third_party/cupy/math_tests/test_hyperbolic.py
-      third_party/cupy/math_tests/test_matmul.py
-      third_party/cupy/math_tests/test_misc.py
-      third_party/cupy/math_tests/test_rounding.py
-      third_party/cupy/math_tests/test_trigonometric.py
+      third_party/cupy/math_tests
       third_party/cupy/sorting_tests/test_sort.py
       third_party/cupy/sorting_tests/test_count.py
       third_party/cupy/statistics_tests/test_meanvar.py

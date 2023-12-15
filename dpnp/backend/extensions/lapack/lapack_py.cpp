@@ -30,8 +30,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "gesv.hpp"
 #include "getrf.hpp"
 #include "heevd.hpp"
+#include "linalg_exceptions.hpp"
 #include "syevd.hpp"
 
 namespace lapack_ext = dpnp::backend::ext::lapack;
@@ -40,6 +42,7 @@ namespace py = pybind11;
 // populate dispatch vectors
 void init_dispatch_vectors(void)
 {
+    lapack_ext::init_gesv_dispatch_vector();
     lapack_ext::init_getrf_batch_dispatch_vector();
     lapack_ext::init_getrf_dispatch_vector();
     lapack_ext::init_syevd_dispatch_vector();
@@ -53,8 +56,20 @@ void init_dispatch_tables(void)
 
 PYBIND11_MODULE(_lapack_impl, m)
 {
+    // Register a custom LinAlgError exception in the dpnp.linalg submodule
+    py::module_ linalg_module = py::module_::import("dpnp.linalg");
+    py::register_exception<lapack_ext::LinAlgError>(
+        linalg_module, "LinAlgError", PyExc_ValueError);
+
     init_dispatch_vectors();
     init_dispatch_tables();
+
+    m.def("_gesv", &lapack_ext::gesv,
+          "Call `gesv` from OneMKL LAPACK library to return "
+          "the solution of a system of linear equations with "
+          "a square coefficient matrix A and multiple dependent variables",
+          py::arg("sycl_queue"), py::arg("coeff_matrix"),
+          py::arg("dependent_vals"), py::arg("depends") = py::list());
 
     m.def("_heevd", &lapack_ext::heevd,
           "Call `heevd` from OneMKL LAPACK library to return "
