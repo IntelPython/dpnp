@@ -135,10 +135,10 @@ $(document).ready(function(){initNavTree('getrf_8hpp_source.html',''); initResiz
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>{</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">extern</span> std::pair&lt;sycl::event, sycl::event&gt;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    getrf(sycl::queue exec_q,</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>          <span class="keyword">const</span> std::int64_t n,</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>          dpctl::tensor::usm_ndarray a_array,</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>          dpctl::tensor::usm_ndarray ipiv_array,</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>          dpctl::tensor::usm_ndarray dev_info_array,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>          dpctl::tensor::usm_ndarray a_array,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>          dpctl::tensor::usm_ndarray ipiv_array,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>          dpctl::tensor::usm_ndarray dev_info_array,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>          <span class="keyword">const</span> std::int64_t n,</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>          <span class="keyword">const</span> std::vector&lt;sycl::event&gt; &amp;depends = {});</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">extern</span> std::pair&lt;sycl::event, sycl::event&gt;</div>
