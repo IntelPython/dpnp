@@ -378,24 +378,23 @@ def indices(
     dimensions = tuple(dimensions)
     N = len(dimensions)
     shape = (1,) * N
-    sycl_queue_normalized = dpnp.get_normalized_queue_device(
-        sycl_queue=sycl_queue, device=device
-    )
     if sparse:
         res = ()
     else:
         res = dpnp.empty(
             (N,) + dimensions,
             dtype=dtype,
+            device=device,
             usm_type=usm_type,
-            sycl_queue=sycl_queue_normalized,
+            sycl_queue=sycl_queue,
         )
     for i, dim in enumerate(dimensions):
         idx = dpnp.arange(
             dim,
             dtype=dtype,
+            device=device,
             usm_type=usm_type,
-            sycl_queue=sycl_queue_normalized,
+            sycl_queue=sycl_queue,
         ).reshape(shape[:i] + (dim,) + shape[i + 1 :])
         if sparse:
             res = res + (idx,)

@@ -1239,9 +1239,8 @@ def test_take(device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_indices(device):
-    dpnp_array = dpnp.indices((2,), device=device)
-    numpy_array = numpy.indices((2,))
-
-    assert_allclose(numpy_array, dpnp_array)
-    assert dpnp_array.sycl_device == device
+@pytest.mark.parametrize("sparse", [True, False], ids=["True", "False"])
+def test_indices(device, sparse):
+    dpnp_array = dpnp.indices((2, 3), sparse=sparse, device=device)
+    for i in dpnp_array:
+        assert i.sycl_device == device
