@@ -54,7 +54,7 @@ from .dpnp_algo.dpnp_arraycreation import (
     dpnp_geomspace,
     dpnp_linspace,
     dpnp_logspace,
-    nd_grid,
+    dpnp_nd_grid,
 )
 
 __all__ = [
@@ -84,9 +84,7 @@ __all__ = [
     "logspace",
     "meshgrid",
     "mgrid",
-    "mgrid_device",
     "ogrid",
-    "ogrid_device",
     "ones",
     "ones_like",
     "ptp",
@@ -1372,22 +1370,76 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     return call_origin(numpy.meshgrid, xi, copy, sparse, indexing)
 
 
-def mgrid_device(*, device=None, usm_type="device", sycl_queue=None):
-    return nd_grid(
-        sparse=False, device=device, usm_type=usm_type, sycl_queue=sycl_queue
-    )
+class MGridClass:
+    """
+    Construct a dense multi-dimensional "meshgrid".
+
+    For full documentation refer to :obj:`numpy.mgrid`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.mgrid[0:5,0:5]
+    array([[[0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1],
+            [2, 2, 2, 2, 2],
+            [3, 3, 3, 3, 3],
+            [4, 4, 4, 4, 4]],
+           [[0, 1, 2, 3, 4],
+            [0, 1, 2, 3, 4],
+            [0, 1, 2, 3, 4],
+            [0, 1, 2, 3, 4],
+            [0, 1, 2, 3, 4]]])
+    >>> np.mgrid[-1:1:5j]
+    array([-1. , -0.5,  0. ,  0.5,  1. ])
+
+    """
+
+    def __getitem__(self, key):
+        return dpnp_nd_grid(sparse=False)[key]
+
+    def __call__(self, device=None, usm_type="device", sycl_queue=None):
+        return dpnp_nd_grid(
+            sparse=False,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
 
-mgrid = nd_grid(sparse=False)
+mgrid = MGridClass()
 
 
-def ogrid_device(*, device=None, usm_type="device", sycl_queue=None):
-    return nd_grid(
-        sparse=True, device=device, usm_type=usm_type, sycl_queue=sycl_queue
-    )
+class OGridClass:
+    """
+    Construct an open multi-dimensional "meshgrid".
+
+    For full documentation refer to :obj:`numpy.ogrid`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.ogrid[-1:1:5j]
+    array([-1. , -0.5,  0. ,  0.5,  1. ])
+    >>> np.ogrid[0:5,0:5]
+    [array([[0],
+            [1],
+            [2],
+            [3],
+            [4]]), array([[0, 1, 2, 3, 4]])]
+
+    """
+
+    def __getitem__(self, key):
+        return dpnp_nd_grid(sparse=True)[key]
+
+    def __call__(self, device=None, usm_type="device", sycl_queue=None):
+        return dpnp_nd_grid(
+            sparse=True, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+        )
 
 
-ogrid = nd_grid(sparse=True)
+ogrid = OGridClass()
 
 
 def ones(

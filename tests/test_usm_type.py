@@ -489,6 +489,6 @@ def test_indices(usm_type):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_grid(usm_type):
-    assert dp.mgrid_device(usm_type=usm_type)[0:4].usm_type == usm_type
-    assert dp.ogrid_device(usm_type=usm_type)[0:4].usm_type == usm_type
+@pytest.mark.parametrize("func", ["mgrid", "ogrid"])
+def test_grid(usm_type, func):
+    assert getattr(dp, func)(usm_type=usm_type)[0:4].usm_type == usm_type

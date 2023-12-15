@@ -12,7 +12,7 @@ __all__ = [
     "dpnp_geomspace",
     "dpnp_linspace",
     "dpnp_logspace",
-    "nd_grid",
+    "dpnp_nd_grid",
 ]
 
 
@@ -261,11 +261,11 @@ def dpnp_logspace(
     return dpnp.power(base, res).astype(dtype, copy=False)
 
 
-class nd_grid:
+class dpnp_nd_grid:
     """
     Construct a multi-dimensional "meshgrid".
 
-    ``grid = nd_grid()`` creates an instance which will return a mesh-grid
+    ``grid = dpnp_nd_grid()`` creates an instance which will return a mesh-grid
     when indexed. The dimension and number of the output arrays are equal
     to the number of indexing dimensions.  If the step length is not a
     complex number, then the stop is not inclusive.
