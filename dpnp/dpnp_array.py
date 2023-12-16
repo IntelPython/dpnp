@@ -628,7 +628,16 @@ class dpnp_array:
 
         return dpnp.choose(input, choices, out, mode)
 
-    # 'clip',
+    def clip(self, min=None, max=None, out=None, **kwargs):
+        """
+        Clip (limit) the values in an array.
+
+        Refer to :obj:`dpnp.clip` for full documentation.
+
+        """
+
+        return dpnp.clip(self, min, max, out=out, **kwargs)
+
     # 'compress',
 
     def conj(self):
