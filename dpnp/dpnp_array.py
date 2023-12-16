@@ -1176,15 +1176,23 @@ class dpnp_array:
 
         return dpnp.squeeze(self, axis)
 
-    def std(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
-        """Returns the variance of the array elements, along given axis.
+    def std(
+        self,
+        axis=None,
+        dtype=None,
+        out=None,
+        ddof=0,
+        keepdims=False,
+        *,
+        where=True,
+    ):
+        """
+        Returns the standard deviation of the array elements, along given axis.
 
-        .. seealso::
-           :obj:`dpnp.var` for full documentation,
-
+        Refer to :obj:`dpnp.std` for full documentation.
         """
 
-        return dpnp.std(self, axis, dtype, out, ddof, keepdims)
+        return dpnp.std(self, axis, dtype, out, ddof, keepdims, where=where)
 
     @property
     def strides(self):
@@ -1216,10 +1224,7 @@ class dpnp_array:
         """
         Returns the sum along a given axis.
 
-        .. seealso::
-           :obj:`dpnp.sum` for full documentation,
-           :meth:`dpnp.dparray.sum`
-
+        For full documentation refer to :obj:`dpnp.sum`.
         """
 
         return dpnp.sum(
@@ -1316,23 +1321,22 @@ class dpnp_array:
             res._array_obj = dpt.permute_dims(self._array_obj, axes)
         return res
 
-    def var(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
+    def var(
+        self,
+        axis=None,
+        dtype=None,
+        out=None,
+        ddof=0,
+        keepdims=False,
+        *,
+        where=True,
+    ):
         """
-        Returns the variance of the array elements along given axis.
+        Returns the variance of the array elements, along given axis.
 
-        Masked entries are ignored, and result elements which are not
-        finite will be masked.
-
-        Refer to `numpy.var` for full documentation.
-
-        See Also
-        --------
-        :obj:`numpy.ndarray.var` : corresponding function for ndarrays
-        :obj:`numpy.var` : Equivalent function
-
+        Refer to :obj:`dpnp.var` for full documentation.
         """
-
-        return dpnp.var(self, axis, dtype, out, ddof, keepdims)
+        return dpnp.var(self, axis, dtype, out, ddof, keepdims, where=where)
 
 
 # 'view'

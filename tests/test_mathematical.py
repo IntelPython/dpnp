@@ -2175,11 +2175,10 @@ def test_sum_empty(dtype, axis):
     assert_array_equal(numpy_res, dpnp_res.asnumpy())
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True, no_bool=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 def test_sum_empty_out(dtype):
     a = dpnp.empty((1, 2, 0, 4), dtype=dtype)
-    out = dpnp.ones(())
+    out = dpnp.ones((), dtype=dtype)
     res = a.sum(out=out)
     assert_array_equal(out.asnumpy(), res.asnumpy())
     assert_array_equal(out.asnumpy(), numpy.array(0, dtype=dtype))
