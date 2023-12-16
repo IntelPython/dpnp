@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2023, Intel Corporation
@@ -92,6 +90,8 @@ from dpnp.dpnp_iface_manipulation import *
 from dpnp.dpnp_iface_manipulation import __all__ as __all__manipulation
 from dpnp.dpnp_iface_mathematical import *
 from dpnp.dpnp_iface_mathematical import __all__ as __all__mathematical
+from dpnp.dpnp_iface_nanfunctions import *
+from dpnp.dpnp_iface_nanfunctions import __all__ as __all__nanfunctions
 from dpnp.dpnp_iface_searching import *
 from dpnp.dpnp_iface_searching import __all__ as __all__searching
 from dpnp.dpnp_iface_sorting import *
@@ -110,6 +110,7 @@ __all__ += __all__linearalgebra
 __all__ += __all__logic
 __all__ += __all__manipulation
 __all__ += __all__mathematical
+__all__ += __all__nanfunctions
 __all__ += __all__searching
 __all__ += __all__sorting
 __all__ += __all__statistics
@@ -456,7 +457,7 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
     )
 
 
-def get_result_array(a, out=None):
+def get_result_array(a, out=None, casting="safe"):
     """
     If `out` is provided, value of `a` array will be copied into the
     `out` array according to ``safe`` casting rule.
@@ -466,11 +467,12 @@ def get_result_array(a, out=None):
     ----------
     a : {dpnp_array}
         Input array.
-
     out : {dpnp_array, usm_ndarray}
         If provided, value of `a` array will be copied into it
         according to ``safe`` casting rule.
         It should be of the appropriate shape.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur.
 
     Returns
     -------
@@ -482,21 +484,15 @@ def get_result_array(a, out=None):
     if out is None:
         return a
     else:
+        dpnp.check_supported_arrays_type(out)
         if out.shape != a.shape:
             raise ValueError(
                 f"Output array of shape {a.shape} is needed, got {out.shape}."
             )
-        elif not isinstance(out, dpnp_array):
-            if isinstance(out, dpt.usm_ndarray):
-                out = dpnp_array._create_from_usm_ndarray(out)
-            else:
-                raise TypeError(
-                    "Output array must be any of supported type, but got {}".format(
-                        type(out)
-                    )
-                )
+        elif isinstance(out, dpt.usm_ndarray):
+            out = dpnp_array._create_from_usm_ndarray(out)
 
-        dpnp.copyto(out, a, casting="safe")
+        dpnp.copyto(out, a, casting=casting)
 
         return out
 
