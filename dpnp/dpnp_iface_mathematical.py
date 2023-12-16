@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2023, Intel Corporation
@@ -109,10 +107,6 @@ __all__ = [
     "mod",
     "modf",
     "multiply",
-    "nancumprod",
-    "nancumsum",
-    "nanprod",
-    "nansum",
     "negative",
     "positive",
     "power",
@@ -1769,179 +1763,6 @@ def multiply(
     )
 
 
-def nancumprod(x1, **kwargs):
-    """
-    Return the cumulative product of array elements over a given axis treating Not a Numbers (NaNs) as one.
-
-    For full documentation refer to :obj:`numpy.nancumprod`.
-
-    Limitations
-    -----------
-    Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    .. seealso:: :obj:`dpnp.cumprod` : Return the cumulative product of elements along a given axis.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([1., np.nan])
-    >>> result = np.nancumprod(a)
-    >>> [x for x in result]
-    [1.0, 1.0]
-    >>> b = np.array([[1., 2., np.nan], [4., np.nan, 6.]])
-    >>> result = np.nancumprod(b)
-    >>> [x for x in result]
-    [1.0, 2.0, 2.0, 8.0, 8.0, 48.0]
-
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_nancumprod(x1_desc).get_pyobj()
-
-    return call_origin(numpy.nancumprod, x1, **kwargs)
-
-
-def nancumsum(x1, **kwargs):
-    """
-    Return the cumulative sum of the elements along a given axis.
-
-    For full documentation refer to :obj:`numpy.nancumsum`.
-
-    Limitations
-    -----------
-    Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along a given axis.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([1., np.nan])
-    >>> result = np.nancumsum(a)
-    >>> [x for x in result]
-    [1.0, 1.0]
-    >>> b = np.array([[1., 2., np.nan], [4., np.nan, 6.]])
-    >>> result = np.nancumprod(b)
-    >>> [x for x in result]
-    [1.0, 3.0, 3.0, 7.0, 7.0, 13.0]
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_nancumsum(x1_desc).get_pyobj()
-
-    return call_origin(numpy.nancumsum, x1, **kwargs)
-
-
-def nanprod(
-    a,
-    axis=None,
-    dtype=None,
-    out=None,
-    keepdims=False,
-    initial=None,
-    where=True,
-):
-    """
-    Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
-
-    For full documentation refer to :obj:`numpy.nanprod`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        A new array holding the result is returned unless `out` is specified, in which case it is returned.
-
-    See Also
-    --------
-    :obj:`dpnp.prod` : Returns product across array propagating NaNs.
-    :obj:`dpnp.isnan` : Test element-wise for NaN and return result as a boolean array.
-
-    Limitations
-    -----------
-    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `initial`, and `where` are only supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.nanprod(np.array(1))
-    array(1)
-    >>> np.nanprod(np.array([1]))
-    array(1)
-    >>> np.nanprod(np.array([1, np.nan]))
-    array(1.0)
-    >>> a = np.array([[1, 2], [3, np.nan]])
-    >>> np.nanprod(a)
-    array(6.0)
-    >>> np.nanprod(a, axis=0)
-    array([3., 2.])
-
-    """
-
-    dpnp.check_supported_arrays_type(a)
-
-    if issubclass(a.dtype.type, dpnp.inexact):
-        mask = dpnp.isnan(a)
-        a = dpnp.array(a, copy=True)
-        dpnp.copyto(a, 1, where=mask)
-
-    return dpnp.prod(
-        a,
-        axis=axis,
-        dtype=dtype,
-        out=out,
-        keepdims=keepdims,
-        initial=initial,
-        where=where,
-    )
-
-
-def nansum(x1, **kwargs):
-    """
-    Calculate sum() function treating 'Not a Numbers' (NaN) as zero.
-
-    For full documentation refer to :obj:`numpy.nansum`.
-
-    Limitations
-    -----------
-    Parameter `x1` is supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.nansum(np.array([1, 2]))
-    3
-    >>> np.nansum(np.array([[1, 2], [3, 4]]))
-    10
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        result_obj = dpnp_nansum(x1_desc).get_pyobj()
-        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
-        return result
-
-    return call_origin(numpy.nansum, x1, **kwargs)
-
-
 def negative(
     x,
     /,
@@ -2233,11 +2054,11 @@ def prod(
         )
     elif initial is not None:
         raise NotImplementedError(
-            "initial keyword argument is only supported by its default value."
+            "initial keyword argument is only supported with its default value."
         )
     elif where is not True:
         raise NotImplementedError(
-            "where keyword argument is only supported by its default value."
+            "where keyword argument is only supported with its default value."
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
@@ -2768,8 +2589,8 @@ def sum(
     -----------
     Parameters `x` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `out`, `initial` and `where` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters `initial` and `where` are supported with their default values.
+    Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -2790,12 +2611,14 @@ def sum(
 
         axis = normalize_axis_tuple(axis, x.ndim, "axis")
 
-    if out is not None:
-        pass
-    elif initial != 0:
-        pass
+    if initial != 0:
+        raise NotImplementedError(
+            "initial keyword argument is only supported with its default value."
+        )
     elif where is not True:
-        pass
+        raise NotImplementedError(
+            "where keyword argument is only supported with its default value."
+        )
     else:
         if (
             len(x.shape) == 2
@@ -2853,18 +2676,8 @@ def sum(
         y = dpt.sum(
             dpnp.get_usm_ndarray(x), axis=axis, dtype=dtype, keepdims=keepdims
         )
-        return dpnp_array._create_from_usm_ndarray(y)
-
-    return call_origin(
-        numpy.sum,
-        x,
-        axis=axis,
-        dtype=dtype,
-        out=out,
-        keepdims=keepdims,
-        initial=initial,
-        where=where,
-    )
+        result = dpnp_array._create_from_usm_ndarray(y)
+        return dpnp.get_result_array(result, out, casting="same_kind")
 
 
 def trapz(y1, x1=None, dx=1.0, axis=-1):

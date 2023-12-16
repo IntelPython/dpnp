@@ -395,6 +395,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param("log1p", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("log2", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("nanprod", [1.0, 2.0, dp.nan]),
+        pytest.param("nanvar", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("max", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("mean", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("min", [1.0, 2.0, 4.0, 7.0]),
@@ -414,11 +415,13 @@ def test_meshgrid(usm_type_x, usm_type_y):
         ),
         pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
+        pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
         pytest.param(
             "tan", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
         pytest.param("tanh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
     ],
 )
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
