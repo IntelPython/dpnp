@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.13.1dev1+21.gd90c97e213 documentation</title>
+  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.13.1dev1+24.g62cdff047f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=34f7b579"></script>
+        <script src="../../_static/documentation_options.js?v=8c6470fc"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+21.gd90c97e213
+                0.13.1dev1+24.g62cdff047f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -303,6 +303,13 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.choose">
 <span class="sig-name descname"><span class="pre">choose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">choices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.choose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.choose" title="Link to this definition"></a></dt>
 <dd><p>Construct an array from an index array and a set of arrays to choose from.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.clip">
+<span class="sig-name descname"><span class="pre">clip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.clip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.clip" title="Link to this definition"></a></dt>
+<dd><p>Clip (limit) the values in an array.</p>
+<p>Refer to <a class="reference internal" href="dpnp.clip.html#dpnp.clip" title="dpnp.clip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.clip</span></code></a> for full documentation.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -599,23 +606,16 @@ For example, <code class="docutils literal notranslate"><span class="pre">a.resh
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.std">
-<span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.std" title="Link to this definition"></a></dt>
-<dd><p>Returns the variance of the array elements, along given axis.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.var.html#dpnp.var" title="dpnp.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.var</span></code></a> for full documentation,</p>
-</div>
+<span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.std" title="Link to this definition"></a></dt>
+<dd><p>Returns the standard deviation of the array elements, along given axis.</p>
+<p>Refer to <a class="reference internal" href="dpnp.std.html#dpnp.std" title="dpnp.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.std</span></code></a> for full documentation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.sum">
 <span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.sum" title="Link to this definition"></a></dt>
 <dd><p>Returns the sum along a given axis.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.sum.html#dpnp.sum" title="dpnp.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sum</span></code></a> for full documentation,
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.dparray.sum()</span></code></p>
-</div>
+<p>For full documentation refer to <a class="reference internal" href="dpnp.sum.html#dpnp.sum" title="dpnp.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sum</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -687,20 +687,9 @@ For example, <code class="docutils literal notranslate"><span class="pre">a.resh
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.var">
-<span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.var" title="Link to this definition"></a></dt>
-<dd><p>Returns the variance of the array elements along given axis.</p>
-<p>Masked entries are ignored, and result elements which are not
-finite will be masked.</p>
-<p>Refer to <cite>numpy.var</cite> for full documentation.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.var.html#numpy.ndarray.var" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.var</span></code></a></dt><dd><p>corresponding function for ndarrays</p>
-</dd>
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.var.html#numpy.var" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.var</span></code></a></dt><dd><p>Equivalent function</p>
-</dd>
-</dl>
-</div>
+<span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.var" title="Link to this definition"></a></dt>
+<dd><p>Returns the variance of the array elements, along given axis.</p>
+<p>Refer to <a class="reference internal" href="dpnp.var.html#dpnp.var" title="dpnp.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.var</span></code></a> for full documentation.</p>
 </dd></dl>
 
 <dl class="py method">
