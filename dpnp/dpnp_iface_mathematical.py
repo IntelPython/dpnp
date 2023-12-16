@@ -401,12 +401,12 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     a_min, a_max : {dpnp_array, usm_ndarray, None}
         Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.
         Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.
-    ut : {dpnp_array, usm_ndarray}, optional
+    out : {dpnp_array, usm_ndarray}, optional
         The results will be placed in this array. It may be the input array for in-place clipping.
         `out` must be of the right shape to hold the output. Its type is preserved.
-    order : ("C","F","A","K", optional)
+    order : {"C", "F", "A", "K", None}, optional
         Memory layout of the newly output array, if parameter `out` is `None`.
-        Default: "K".
+        If `order` is ``None``, the default value "K" will be used.
 
     Returns
     -------
@@ -417,6 +417,7 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     Limitations
     -----------
     Keyword argument `kwargs` is currently unsupported.
+    Otherwise ``NotImplementedError`` exception will be raised.
 
     Examples
     --------
@@ -442,31 +443,21 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
     """
 
-    if len(kwargs) != 0:
+    if kwargs:
         raise NotImplementedError(f"kwargs={kwargs} is currently not supported")
 
     if order is None:
         order = "K"
 
     usm_arr = dpnp.get_usm_ndarray(a)
-    usm_min = (
-        dpnp.get_usm_ndarray_or_scalar(a_min) if a_min is not None else a_min
-    )
-    usm_max = (
-        dpnp.get_usm_ndarray_or_scalar(a_max) if a_max is not None else a_max
-    )
+    usm_min = None if a_min is None else dpnp.get_usm_ndarray_or_scalar(a_min)
+    usm_max = None if a_max is None else dpnp.get_usm_ndarray_or_scalar(a_max)
 
-    if out is not None:
-        usm_out = dpnp.get_usm_ndarray(out)
-        usm_res = dpt.clip(usm_arr, usm_min, usm_max, out=usm_out, order=order)
-        if isinstance(out, dpnp_array):
-            return out
-        else:
-            return dpnp_array._create_from_usm_ndarray(usm_res)
-
-    return dpnp_array._create_from_usm_ndarray(
-        dpt.clip(usm_arr, usm_min, usm_max, order=order)
-    )
+    usm_out = None if out is None else dpnp.get_usm_ndarray(out)
+    usm_res = dpt.clip(usm_arr, usm_min, usm_max, out=usm_out, order=order)
+    if out is not None and isinstance(out, dpnp_array):
+        return out
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def conjugate(

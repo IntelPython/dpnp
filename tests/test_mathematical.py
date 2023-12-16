@@ -13,6 +13,7 @@ from numpy.testing import (
 )
 
 import dpnp
+from dpnp.dpnp_array import dpnp_array
 
 from .helper import (
     assert_dtype_allclose,
@@ -25,6 +26,98 @@ from .helper import (
     is_cpu_device,
     is_win_platform,
 )
+
+
+class TestClip:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("order", ["C", "F", "A", "K", None])
+    def test_clip(self, dtype, order):
+        dp_a = dpnp.asarray([[1, 2, 8], [1, 6, 4], [9, 5, 1]], dtype=dtype)
+        np_a = dpnp.asnumpy(dp_a)
+
+        result = dpnp.clip(dp_a, 2, 6, order=order)
+        expected = numpy.clip(np_a, 2, 6, order=order)
+        assert_allclose(expected, result)
+        assert expected.flags.c_contiguous == result.flags.c_contiguous
+        assert expected.flags.f_contiguous == result.flags.f_contiguous
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+    )
+    def test_clip_arrays(self, dtype):
+        dp_a = dpnp.asarray([1, 2, 8, 1, 6, 4, 1], dtype=dtype)
+        np_a = dpnp.asnumpy(dp_a)
+
+        min_v = dpnp.asarray(2, dtype=dtype)
+        max_v = dpnp.asarray(6, dtype=dtype)
+
+        result = dpnp.clip(dp_a, min_v, max_v)
+        expected = numpy.clip(np_a, min_v.asnumpy(), max_v.asnumpy())
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("in_dp", [dpnp, dpt])
+    @pytest.mark.parametrize("out_dp", [dpnp, dpt])
+    def test_clip_out(self, dtype, in_dp, out_dp):
+        np_a = numpy.array([[1, 2, 8], [1, 6, 4], [9, 5, 1]], dtype=dtype)
+        dp_a = in_dp.asarray(np_a)
+
+        dp_out = out_dp.ones(dp_a.shape, dtype=dtype)
+        np_out = numpy.ones(np_a.shape, dtype=dtype)
+
+        result = dpnp.clip(dp_a, 2, 6, out=dp_out)
+        expected = numpy.clip(np_a, 2, 6, out=np_out)
+        assert_allclose(expected, result)
+        assert_allclose(np_out, dp_out)
+        assert isinstance(result, dpnp_array)
+
+    def test_input_nan(self):
+        np_a = numpy.array([-2.0, numpy.nan, 0.5, 3.0, 0.25, numpy.nan])
+        dp_a = dpnp.array(np_a)
+
+        result = dpnp.clip(dp_a, -1, 1)
+        expected = numpy.clip(np_a, -1, 1)
+        assert_array_equal(result, expected)
+
+    # TODO: unmute the test once dpctl resolves the issue
+    @pytest.mark.skip(reason="dpctl-1489 issue")
+    @pytest.mark.parametrize(
+        "kwargs",
+        [
+            {"min": numpy.nan},
+            {"max": numpy.nan},
+            {"min": numpy.nan, "max": numpy.nan},
+            {"min": -2, "max": numpy.nan},
+            {"min": numpy.nan, "max": 10},
+        ],
+    )
+    def test_nan_edges(self, kwargs):
+        np_a = numpy.arange(7)
+        dp_a = dpnp.asarray(np_a)
+
+        result = dp_a.clip(**kwargs)
+        expected = np_a.clip(**kwargs)
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize(
+        "kwargs",
+        [
+            {"casting": "same_kind"},
+            {"dtype": "i8"},
+            {"subok": True},
+            {"where": True},
+        ],
+    )
+    def test_not_implemented_kwargs(self, kwargs):
+        a = dpnp.arange(8, dtype="i4")
+
+        numpy.clip(a.asnumpy(), 1, 5, **kwargs)
+        with pytest.raises(NotImplementedError):
+            dpnp.clip(a, 1, 5, **kwargs)
 
 
 class TestDiff:
@@ -2147,63 +2240,3 @@ def test_inplace_remainder(dtype):
     dp_a %= 4
 
     assert_allclose(dp_a, np_a)
-
-
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
-)
-@pytest.mark.parametrize("order", ["C", "F", "A", "K", None])
-def test_clip(dtype, order):
-    dp_array = dpnp.asarray([[1, 2, 8], [1, 6, 4], [9, 5, 1]], dtype=dtype)
-    np_array = dpnp.asnumpy(dp_array)
-
-    result = dpnp.clip(dp_array, 2, 6, order=order)
-    expected = numpy.clip(np_array, 2, 6, order=order)
-    assert_allclose(expected, result)
-    assert expected.flags.c_contiguous == result.flags.c_contiguous
-    assert expected.flags.f_contiguous == result.flags.f_contiguous
-
-
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
-)
-def test_clip_arrays(dtype):
-    dp_array = dpnp.asarray([1, 2, 8, 1, 6, 4, 1], dtype=dtype)
-    np_array = dpnp.asnumpy(dp_array)
-
-    min_v = dpnp.asarray(2, dtype=dtype)
-    max_v = dpnp.asarray(6, dtype=dtype)
-
-    result = dpnp.clip(dp_array, min_v, max_v)
-    expected = numpy.clip(np_array, min_v.asnumpy(), max_v.asnumpy())
-
-    assert_allclose(expected, result)
-
-
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
-)
-def test_clip_out(dtype):
-    dp_array = dpnp.asarray([[1, 2, 8], [1, 6, 4], [9, 5, 1]], dtype=dtype)
-    np_array = dpnp.asnumpy(dp_array)
-
-    out = dpnp.zeros_like(dp_array)
-
-    result = dpnp.clip(dp_array, 2, 6, out=out)
-    expected = numpy.clip(np_array, 2, 6)
-    assert_allclose(expected, out)
-    assert result is out
-
-
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
-)
-def test_clip_out_dpt(dtype):
-    dp_array = dpnp.asarray([[1, 2, 8], [1, 6, 4], [9, 5, 1]], dtype=dtype)
-    np_array = dpnp.asnumpy(dp_array)
-
-    out = dpt.zeros_like(dpnp.get_usm_ndarray(dp_array))
-
-    dpnp.clip(dp_array, 2, 6, out=out)
-    expected = numpy.clip(np_array, 2, 6)
-    assert_allclose(expected, out)
