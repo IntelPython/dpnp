@@ -58,6 +58,9 @@
    .. automethod:: choose
 
 
+   .. automethod:: clip
+
+
    .. automethod:: conj
 
 
