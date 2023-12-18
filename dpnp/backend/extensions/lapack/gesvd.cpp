@@ -66,7 +66,7 @@ static gesvd_impl_fn_ptr_t gesvd_dispatch_table[dpctl_td_ns::num_types]
 
 // Converts a given character code (ord) to the corresponding
 // oneapi::mkl::jobsvd enumeration value
-oneapi::mkl::jobsvd process_job(std::int8_t job_val)
+static oneapi::mkl::jobsvd process_job(std::int8_t job_val)
 {
     switch (job_val) {
     case 'A':

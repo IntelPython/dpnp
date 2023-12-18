@@ -646,6 +646,8 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     check_stacked_2d(a)
 
     if hermitian is True:
-        raise ValueError("The hermitian argument is only supported as False")
+        raise NotImplementedError(
+            "hermitian keyword argument is only supported with its default value."
+        )
 
     return dpnp_svd(a, full_matrices, compute_uv)

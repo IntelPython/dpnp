@@ -595,36 +595,29 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
             )
             if compute_uv:
                 if full_matrices:
-                    u = dpnp.eye(
-                        n,
-                        dtype=uv_type,
-                        usm_type=a_usm_type,
-                        sycl_queue=a_sycl_queue,
-                    )
-                    vt = dpnp.eye(
-                        m,
-                        dtype=uv_type,
-                        usm_type=a_usm_type,
-                        sycl_queue=a_sycl_queue,
-                    )
+                    u_shape = (n,)
+                    vt_shape = (m,)
                 else:
-                    u = dpnp.empty(
-                        (n, 0),
-                        dtype=uv_type,
-                        usm_type=a_usm_type,
-                        sycl_queue=a_sycl_queue,
-                    )
-                    vt = dpnp.empty(
-                        (0, m),
-                        dtype=uv_type,
-                        usm_type=a_usm_type,
-                        sycl_queue=a_sycl_queue,
-                    )
+                    u_shape = (n, 0)
+                    vt_shape = (0, m)
+
+                u = dpnp.eye(
+                    *u_shape,
+                    dtype=uv_type,
+                    usm_type=a_usm_type,
+                    sycl_queue=a_sycl_queue,
+                )
+                vt = dpnp.eye(
+                    *vt_shape,
+                    dtype=uv_type,
+                    usm_type=a_usm_type,
+                    sycl_queue=a_sycl_queue,
+                )
                 return u, s, vt
             else:
                 return s
 
-        # `a`` must be copied because gesvd destroys the input matrix
+        # `a` must be copied because gesvd destroys the input matrix
         # `a` must be traspotted if m < n
         if m >= n:
             x = a
@@ -647,46 +640,32 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
         k = n  # = min(m, n) where m >= n is ensured above
         if compute_uv:
             if full_matrices:
-                u_h = dpnp.empty(
-                    (m, m),
-                    dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
-                )
-                vt_h = dpnp.empty(
-                    (n, n),
-                    dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
-                )
+                u_shape = (m, m)
+                vt_shape = (n, n)
                 jobu = ord("A")
                 jobvt = ord("A")
             else:
-                u_h = dpnp.empty_like(x, dtype=uv_type)
-                vt_h = dpnp.empty(
-                    (k, n),
-                    dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
-                )
+                u_shape = x.shape
+                vt_shape = (k, n)
                 jobu = ord("S")
                 jobvt = ord("S")
         else:
-            u_h = dpnp.empty(
-                [],
-                dtype=uv_type,
-                usm_type=a_usm_type,
-                sycl_queue=a_sycl_queue,
-            )
-            vt_h = dpnp.empty(
-                [],
-                dtype=uv_type,
-                usm_type=a_usm_type,
-                sycl_queue=a_sycl_queue,
-            )
+            u_shape = vt_shape = ()
             jobu = ord("N")
             jobvt = ord("N")
 
+        u_h = dpnp.empty(
+            u_shape,
+            dtype=uv_type,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+        vt_h = dpnp.empty(
+            vt_shape,
+            dtype=uv_type,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
         s_h = dpnp.empty(
             k, dtype=s_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
         )
