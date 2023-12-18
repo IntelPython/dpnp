@@ -676,7 +676,7 @@ class TestSlogdet:
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
 
     # TODO: remove skipif when MKLD-16626 is resolved
-    @pytest.mark.skipif(is_cpu_device(), reason="MKL bug MKLD-16626")
+    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
     @pytest.mark.parametrize(
         "matrix",
         [
