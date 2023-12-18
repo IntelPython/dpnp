@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.13.1dev1+58.g963ba66d7f documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.13.1dev1+20.g86a7fd5fd2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9205264c"></script>
+        <script src="../../_static/documentation_options.js?v=d0eb33ed"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+58.g963ba66d7f
+                0.13.1dev1+20.g86a7fd5fd2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -487,10 +487,32 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.max`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a :  {dpnp_array, usm_ndarray}</span>
+<span class="sd">        input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        axis or axes along which maximum values must be computed. By default,</span>
+<span class="sd">        the maximum value must be computed over the entire array. If a tuple of integers,</span>
+<span class="sd">        maximum values must be computed over multiple axes.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    out :  {dpnp_array, usm_ndarray}, optional</span>
+<span class="sd">        if provided, the result will be inserted into this array. It should</span>
+<span class="sd">        be of the appropriate shape and dtype.</span>
+<span class="sd">    keepdims : bool</span>
+<span class="sd">        if ``True``, the reduced axes (dimensions) must be included in the</span>
+<span class="sd">        result as singleton dimensions, and, accordingly, the result must be</span>
+<span class="sd">        compatible with the input array. Otherwise, if ``False``, the reduced</span>
+<span class="sd">        axes (dimensions) must not be included in the result.</span>
+<span class="sd">        Default: ``False``.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Maximum of `a`.</span>
+<span class="sd">        if the maximum value was computed over the entire array, a zero-dimensional array</span>
+<span class="sd">        containing the maximum value ignoring NaNs; otherwise, a non-zero-dimensional array</span>
+<span class="sd">        containing the maximum values ignoring NaNs. The returned array must have</span>
+<span class="sd">        the same data type as `a`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -671,10 +693,32 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.min`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a :  {dpnp_array, usm_ndarray}</span>
+<span class="sd">        input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        axis or axes along which minimum values must be computed. By default,</span>
+<span class="sd">        the minimum value must be computed over the entire array. If a tuple of integers,</span>
+<span class="sd">        minimum values must be computed over multiple axes.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    out :  {dpnp_array, usm_ndarray}, optional</span>
+<span class="sd">        if provided, the result will be inserted into this array. It should</span>
+<span class="sd">        be of the appropriate shape and dtype.</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        if ``True``, the reduced axes (dimensions) must be included in the</span>
+<span class="sd">        result as singleton dimensions, and, accordingly, the result must be</span>
+<span class="sd">        compatible with the input array. Otherwise, if ``False``, the reduced</span>
+<span class="sd">        axes (dimensions) must not be included in the result.</span>
+<span class="sd">        Default: ``False``.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Minimum of `a`.</span>
+<span class="sd">        if the minimum value was computed over the entire array, a zero-dimensional array</span>
+<span class="sd">        containing the minimum value ignoring NaNs; otherwise, a non-zero-dimensional array</span>
+<span class="sd">        containing the minimum values ignoring NaNs. The returned array must have</span>
+<span class="sd">        the same data type as `a`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
