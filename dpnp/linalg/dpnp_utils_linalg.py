@@ -578,13 +578,7 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
     a_sycl_queue = a.sycl_queue
 
     uv_type = _common_type(a)
-
-    s_type = (
-        dpnp.float64
-        if a_sycl_queue.sycl_device.has_aspect_fp64
-        and (uv_type == dpnp.float64 or uv_type == dpnp.complex128)
-        else dpnp.float32
-    )
+    s_type = uv_type.char.lower()
 
     if a.ndim > 2:
         return _dpnp_svd_batch(a, uv_type, s_type, full_matrices, compute_uv)
