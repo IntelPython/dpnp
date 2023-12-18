@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2023, Intel Corporation
@@ -799,10 +797,7 @@ def fliplr(m):
 
     """
 
-    if not dpnp.is_supported_array_type(m):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(m))
-        )
+    dpnp.check_supported_arrays_type(m)
 
     if m.ndim < 2:
         raise ValueError(f"Input must be >= 2-d, but got {m.ndim}")
@@ -857,10 +852,7 @@ def flipud(m):
 
     """
 
-    if not dpnp.is_supported_array_type(m):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(m))
-        )
+    dpnp.check_supported_arrays_type(m)
 
     if m.ndim < 1:
         raise ValueError(f"Input must be >= 1-d, but got {m.ndim}")
@@ -1049,7 +1041,7 @@ def repeat(a, repeats, axis=None):
     >>> np.repeat(x, 4)
     array([3, 3, 3, 3])
 
-    >>> x = np.array([[1,2], [3,4]])
+    >>> x = np.array([[1, 2], [3, 4]])
     >>> np.repeat(x, 2)
     array([1, 1, 2, 2, 3, 3, 4, 4])
     >>> np.repeat(x, 3, axis=1)

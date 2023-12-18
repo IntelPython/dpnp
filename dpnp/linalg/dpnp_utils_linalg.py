@@ -28,12 +28,19 @@
 
 
 import dpctl.tensor._tensor_impl as ti
-from numpy import prod
+from numpy import issubdtype, prod
 
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
+from dpnp.dpnp_utils import get_usm_allocations
 
-__all__ = ["dpnp_eigh"]
+__all__ = [
+    "check_stacked_2d",
+    "check_stacked_square",
+    "dpnp_eigh",
+    "dpnp_solve",
+    "dpnp_svd",
+]
 
 _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
@@ -45,6 +52,135 @@ def _stacked_identity(batch_shape, n, dtype, usm_type=None, sycl_queue=None):
     x = dpnp.zeros(shape, dtype=dtype, usm_type=usm_type, sycl_queue=sycl_queue)
     x[..., idx, idx] = 1
     return x
+
+
+def check_stacked_2d(*arrays):
+    """
+    Return ``True`` if each array in `arrays` has at least two dimensions.
+
+    If any array is less than two-dimensional, `dpnp.linalg.LinAlgError` will be raised.
+
+    Parameters
+    ----------
+    arrays : {dpnp_array, usm_ndarray}
+        A sequence of input arrays to check for dimensionality.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if each array in `arrays` is at least two-dimensional.
+
+    Raises
+    ------
+    dpnp.linalg.LinAlgError
+        If any array in `arrays` is less than two-dimensional.
+
+    """
+
+    for a in arrays:
+        if a.ndim < 2:
+            raise dpnp.linalg.LinAlgError(
+                f"{a.ndim}-dimensional array given. The input "
+                "array must be at least two-dimensional"
+            )
+
+
+def check_stacked_square(*arrays):
+    """
+    Return ``True`` if each array in `arrays` is a square matrix.
+
+    If any array does not form a square matrix, `dpnp.linalg.LinAlgError` will be raised.
+
+    Precondition: `arrays` are at least 2d. The caller should assert it
+    beforehand. For example,
+
+    >>> def solve(a):
+    ...     check_stacked_2d(a)
+    ...     check_stacked_square(a)
+    ...     ...
+
+    Parameters
+    ----------
+    arrays : {dpnp_array, usm_ndarray}
+        A sequence of input arrays to check for square matrix shape.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if each array in `arrays` forms a square matrix.
+
+    Raises
+    ------
+    dpnp.linalg.LinAlgError
+        If any array in `arrays` does not form a square matrix.
+
+    """
+
+    for a in arrays:
+        m, n = a.shape[-2:]
+        if m != n:
+            raise dpnp.linalg.LinAlgError(
+                "Last 2 dimensions of the input array must be square"
+            )
+
+
+def _common_type(*arrays):
+    """
+    _common_type(*arrays)
+
+    Common type for linear algebra operations.
+
+    This function determines the common data type for linalg operations.
+    It's designed to be similar in logic to `numpy.linalg.linalg._commonType`.
+
+    Key differences from `numpy.common_type`:
+    - It accepts ``bool_`` arrays.
+    - The default floating-point data type is determined by the capabilities of the device
+      on which `arrays` are created, as indicated by `dpnp.default_float_type()`.
+
+    Args:
+        *arrays (dpnp.ndarray): Input arrays.
+
+    Returns:
+        dtype_common (dtype): The common data type for linalg operations.
+
+        This returned value is applicable both as the precision to be used
+        in linalg calls and as the dtype of (possibly complex) output(s).
+
+    """
+
+    dtypes = [arr.dtype for arr in arrays]
+
+    default = dpnp.default_float_type(device=arrays[0].device)
+    dtype_common = _common_inexact_type(default, *dtypes)
+
+    return dtype_common
+
+
+def _common_inexact_type(default_dtype, *dtypes):
+    """
+    _common_inexact_type(default_dtype, *dtypes)
+
+    Determines the common 'inexact' data type for linear algebra operations.
+
+    This function selects an 'inexact' data type appropriate for the device's capabilities.
+    It defaults to `default_dtype` when provided types are not 'inexact'.
+
+    Args:
+        default_dtype: The default data type. This is determined by the capabilities of
+        the device and is used when none of the provided types are 'inexact'.
+        *dtypes: A variable number of data types to be evaluated to find
+        the common 'inexact' type.
+
+    Returns:
+        dpnp.result_type (dtype) : The resultant 'inexact' data type for linalg operations,
+        ensuring computational compatibility.
+
+    """
+    inexact_dtypes = [
+        dt if issubdtype(dt, dpnp.inexact) else default_dtype for dt in dtypes
+    ]
+    return dpnp.result_type(*inexact_dtypes)
 
 
 def dpnp_eigh(a, UPLO):
@@ -173,6 +309,138 @@ def dpnp_eigh(a, UPLO):
         ht_copy_ev.wait()
 
         return w, out_v
+
+
+def dpnp_solve(a, b):
+    """
+    dpnp_solve(a, b)
+
+    Return the solution to the system of linear equations with
+    a square coefficient matrix `a` and multiple dependent variables
+    array `b`.
+
+    """
+
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+    b_usm_arr = dpnp.get_usm_ndarray(b)
+
+    b_order = "C" if b.flags.c_contiguous else "F"
+    a_shape = a.shape
+    b_shape = b.shape
+
+    res_usm_type, exec_q = get_usm_allocations([a, b])
+
+    res_type = _common_type(a, b)
+    if b.size == 0:
+        return dpnp.empty_like(b, dtype=res_type, usm_type=res_usm_type)
+
+    if a.ndim > 2:
+        reshape = False
+        orig_shape_b = b_shape
+        if a.ndim > 3:
+            # get 3d input arrays by reshape
+            if a.ndim == b.ndim:
+                b = b.reshape(-1, b_shape[-2], b_shape[-1])
+            else:
+                b = b.reshape(-1, b_shape[-1])
+
+            a = a.reshape(-1, a_shape[-2], a_shape[-1])
+
+            a_usm_arr = dpnp.get_usm_ndarray(a)
+            b_usm_arr = dpnp.get_usm_ndarray(b)
+            reshape = True
+
+        batch_size = a.shape[0]
+
+        coeff_vecs = [None] * batch_size
+        val_vecs = [None] * batch_size
+        a_ht_copy_ev = [None] * batch_size
+        b_ht_copy_ev = [None] * batch_size
+        ht_lapack_ev = [None] * batch_size
+
+        for i in range(batch_size):
+            # oneMKL LAPACK assumes fortran-like array as input, so
+            # allocate a memory with 'F' order for dpnp array of coefficient matrix
+            # and multiple dependent variables array
+            coeff_vecs[i] = dpnp.empty_like(
+                a[i], order="F", dtype=res_type, usm_type=res_usm_type
+            )
+            val_vecs[i] = dpnp.empty_like(
+                b[i], order="F", dtype=res_type, usm_type=res_usm_type
+            )
+
+            # use DPCTL tensor function to fill the coefficient matrix array
+            # and the array of multiple dependent variables with content
+            # from the input arrays
+            a_ht_copy_ev[i], a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_usm_arr[i],
+                dst=coeff_vecs[i].get_array(),
+                sycl_queue=a.sycl_queue,
+            )
+            b_ht_copy_ev[i], b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=b_usm_arr[i],
+                dst=val_vecs[i].get_array(),
+                sycl_queue=b.sycl_queue,
+            )
+
+            # Call the LAPACK extension function _gesv to solve the system of linear
+            # equations using a portion of the coefficient square matrix and a
+            # corresponding portion of the dependent variables array.
+            ht_lapack_ev[i], _ = li._gesv(
+                exec_q,
+                coeff_vecs[i].get_array(),
+                val_vecs[i].get_array(),
+                depends=[a_copy_ev, b_copy_ev],
+            )
+
+        for i in range(batch_size):
+            ht_lapack_ev[i].wait()
+            b_ht_copy_ev[i].wait()
+            a_ht_copy_ev[i].wait()
+
+        # combine the list of solutions into a single array
+        out_v = dpnp.array(
+            val_vecs, order=b_order, dtype=res_type, usm_type=res_usm_type
+        )
+        if reshape:
+            # shape of the out_v must be equal to the shape of the array of
+            # dependent variables
+            out_v = out_v.reshape(orig_shape_b)
+        return out_v
+    else:
+        # oneMKL LAPACK gesv overwrites `a` and `b` and assumes fortran-like array as input.
+        # Allocate 'F' order memory for dpnp arrays to comply with these requirements.
+        a_f = dpnp.empty_like(
+            a, order="F", dtype=res_type, usm_type=res_usm_type
+        )
+
+        # use DPCTL tensor function to fill the coefficient matrix array
+        # with content from the input array `a`
+        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a.sycl_queue
+        )
+
+        b_f = dpnp.empty_like(
+            b, order="F", dtype=res_type, usm_type=res_usm_type
+        )
+
+        # use DPCTL tensor function to fill the array of multiple dependent variables
+        # with content from the input array `b`
+        b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=b_usm_arr, dst=b_f.get_array(), sycl_queue=b.sycl_queue
+        )
+
+        # Call the LAPACK extension function _gesv to solve the system of linear
+        # equations with the coefficient square matrix and the dependent variables array.
+        ht_lapack_ev, _ = li._gesv(
+            exec_q, a_f.get_array(), b_f.get_array(), [a_copy_ev, b_copy_ev]
+        )
+
+        ht_lapack_ev.wait()
+        b_ht_copy_ev.wait()
+        a_ht_copy_ev.wait()
+
+        return b_f
 
 
 def _dpnp_svd_batch(

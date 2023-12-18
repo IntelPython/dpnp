@@ -36,11 +36,9 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_copysign",
     "dpnp_cross",
     "dpnp_cumprod",
     "dpnp_cumsum",
-    "dpnp_diff",
     "dpnp_ediff1d",
     "dpnp_fabs",
     "dpnp_fmod",
@@ -62,14 +60,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_2out_t)(c_dpctl.DPCTLSyclQueueRef,
 ctypedef c_dpctl.DPCTLSyclEventRef(*ftpr_custom_trapz_2in_1out_with_2size_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                              void *, void * , void * , double, size_t, size_t,
                                                                              const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef utils.dpnp_descriptor dpnp_copysign(utils.dpnp_descriptor x1_obj,
-                                          utils.dpnp_descriptor x2_obj,
-                                          object dtype=None,
-                                          utils.dpnp_descriptor out=None,
-                                          object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_COPYSIGN_EXT, x1_obj, x2_obj, dtype, out, where)
 
 
 cpdef utils.dpnp_descriptor dpnp_cross(utils.dpnp_descriptor x1_obj,
@@ -102,35 +92,6 @@ cpdef utils.dpnp_descriptor dpnp_cumsum(utils.dpnp_descriptor x1):
     # (4,)
 
     return call_fptr_1in_1out(DPNP_FN_CUMSUM_EXT, x1, (x1.size,))
-
-
-cpdef utils.dpnp_descriptor dpnp_diff(utils.dpnp_descriptor x1, int n):
-    cdef utils.dpnp_descriptor res
-
-    x1_obj = x1.get_array()
-
-    if x1.size - n < 1:
-        res_obj = dpnp_container.empty(0,
-                                       dtype=x1.dtype,
-                                       device=x1_obj.sycl_device,
-                                       usm_type=x1_obj.usm_type,
-                                       sycl_queue=x1_obj.sycl_queue)
-        res = utils.dpnp_descriptor(res_obj)
-        return res
-
-    res_obj = dpnp_container.empty(x1.size - 1,
-                                   dtype=x1.dtype,
-                                   device=x1_obj.sycl_device,
-                                   usm_type=x1_obj.usm_type,
-                                   sycl_queue=x1_obj.sycl_queue)
-    res = utils.dpnp_descriptor(res_obj)
-    for i in range(res.size):
-        res.get_pyobj()[i] = x1.get_pyobj()[i + 1] - x1.get_pyobj()[i]
-
-    if n == 1:
-        return res
-
-    return dpnp_diff(res, n - 1)
 
 
 cpdef utils.dpnp_descriptor dpnp_ediff1d(utils.dpnp_descriptor x1):

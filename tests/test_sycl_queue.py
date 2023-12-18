@@ -338,6 +338,9 @@ def test_meshgrid(device_x, device_y):
         pytest.param("arcsinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("arctan", [-1.0, 0.0, 1.0]),
         pytest.param("arctanh", [-0.5, 0.0, 0.5]),
+        pytest.param("argmax", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("argmin", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("cbrt", [1.0, 8.0, 27.0]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
         pytest.param("copy", [1.0, 2.0, 3.0]),
@@ -351,6 +354,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
@@ -363,11 +367,13 @@ def test_meshgrid(device_x, device_y):
         pytest.param("log1p", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("log2", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("max", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("mean", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("min", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("nancumprod", [1.0, dpnp.nan]),
         pytest.param("nancumsum", [1.0, dpnp.nan]),
         pytest.param("nanprod", [1.0, dpnp.nan]),
         pytest.param("nansum", [1.0, dpnp.nan]),
+        pytest.param("nanvar", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("negative", [1.0, 0.0, -1.0]),
         pytest.param("positive", [1.0, 0.0, -1.0]),
         pytest.param("prod", [1.0, 2.0]),
@@ -382,6 +388,7 @@ def test_meshgrid(device_x, device_y):
         ),
         pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
+        pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("sum", [1.0, 2.0]),
         pytest.param(
             "tan", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
@@ -389,6 +396,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("tanh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("trapz", [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
     ],
 )
 @pytest.mark.parametrize(
@@ -442,6 +450,23 @@ def test_proj(device):
 
 
 @pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_rsqrt(device):
+    X = [1.0, 8.0, 27.0]
+    x = dpnp.array(X, device=device)
+    result = dpnp.rsqrt(x)
+    expected = 1 / numpy.sqrt(x.asnumpy())
+    assert_allclose(result, expected)
+
+    expected_queue = x.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
     "func,data1,data2",
     [
         pytest.param(
@@ -450,15 +475,9 @@ def test_proj(device):
             [0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0],
         ),
         pytest.param(
-            "allclose",
-            [1.0, dpnp.inf, -dpnp.inf],
-            [1.0, dpnp.inf, -dpnp.inf],
+            "allclose", [1.0, dpnp.inf, -dpnp.inf], [1.0, dpnp.inf, -dpnp.inf]
         ),
-        pytest.param(
-            "arctan2",
-            [[-1, +1, +1, -1]],
-            [[-1, -1, +1, +1]],
-        ),
+        pytest.param("arctan2", [[-1, +1, +1, -1]], [[-1, -1, +1, +1]]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param(
@@ -480,15 +499,9 @@ def test_proj(device):
             [2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
         ),
         pytest.param(
-            "hypot",
-            [[1.0, 2.0, 3.0, 4.0]],
-            [[-1.0, -2.0, -4.0, -5.0]],
+            "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),
-        pytest.param(
-            "logaddexp",
-            [[-1, 2, 5, 9]],
-            [[4, -3, 2, -8]],
-        ),
+        pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param(
             "matmul", [[1.0, 0.0], [0.0, 1.0]], [[4.0, 1.0], [1.0, 2.0]]
         ),
@@ -865,7 +878,7 @@ def test_fft_rfft(type, shape, device):
     np_res = numpy.fft.rfft(np_data)
     dpnp_res = dpnp.fft.rfft(dpnp_data)
 
-    assert_dtype_allclose(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = dpnp_res.get_array().sycl_queue
@@ -1294,18 +1307,79 @@ def test_asarray(device_x, device_y):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_take(device):
-    numpy_data = numpy.arange(5)
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        pytest.param({"prepend": 7}),
+        pytest.param({"append": -2}),
+        pytest.param({"prepend": -4, "append": 5}),
+    ],
+)
+def test_diff_scalar_append(device, kwargs):
+    numpy_data = numpy.arange(7)
     dpnp_data = dpnp.array(numpy_data, device=device)
 
-    ind = [0, 2, 4]
-    dpnp_ind = dpnp.array(ind, device=device)
-
-    result = dpnp.take(dpnp_data, dpnp_ind)
-    expected = numpy.take(numpy_data, ind)
+    expected = numpy.diff(numpy_data, **kwargs)
+    result = dpnp.diff(dpnp_data, **kwargs)
     assert_allclose(expected, result)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
-
     assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize("func", ["take", "take_along_axis"])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_take(func, device):
+    numpy_data = numpy.arange(5)
+    dpnp_data = dpnp.array(numpy_data, device=device)
+
+    dpnp_ind = dpnp.array([0, 2, 4], device=device)
+    np_ind = dpnp_ind.asnumpy()
+
+    result = getattr(dpnp, func)(dpnp_data, dpnp_ind, axis=None)
+    expected = getattr(numpy, func)(numpy_data, np_ind, axis=None)
+    assert_allclose(expected, result)
+
+    expected_queue = dpnp_data.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_solve(device):
+    x = [[1.0, 2.0], [3.0, 5.0]]
+    y = [1.0, 2.0]
+
+    numpy_x = numpy.array(x)
+    numpy_y = numpy.array(y)
+    dpnp_x = dpnp.array(x, device=device)
+    dpnp_y = dpnp.array(y, device=device)
+
+    result = dpnp.linalg.solve(dpnp_x, dpnp_y)
+    expected = numpy.linalg.solve(numpy_x, numpy_y)
+    assert_dtype_allclose(result, expected)
+
+    result_queue = result.sycl_queue
+
+    assert_sycl_queue_equal(result_queue, dpnp_x.sycl_queue)
+    assert_sycl_queue_equal(result_queue, dpnp_y.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_clip(device):
+    x = dpnp.arange(10, device=device)
+    y = dpnp.clip(x, 3, 7)
+    assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)

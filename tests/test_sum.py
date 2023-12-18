@@ -7,6 +7,7 @@ from numpy.testing import (
 import dpnp
 from tests.helper import (
     assert_dtype_allclose,
+    get_all_dtypes,
     get_float_dtypes,
     has_support_aspect64,
 )
@@ -27,10 +28,16 @@ def test_sum_float(dtype):
     )
     ia = dpnp.array(a)
 
+    # Flag for type check in special cases
+    # Use only type kinds checks when dpnp handles float32 arrays
+    # as `dpnp.sum()` and `numpy.sum()` return different dtypes
+    check_type_kind = dtype == dpnp.float32
     for axis in range(len(a)):
         result = dpnp.sum(ia, axis=axis)
         expected = numpy.sum(a, axis=axis)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(
+            result, expected, check_only_type_kind=check_type_kind
+        )
 
 
 def test_sum_int():
@@ -59,3 +66,24 @@ def test_sum_axis():
     else:
         expected = numpy.sum(a, axis=1)
     assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize("axis", [0, 1, (0, 1)])
+def test_sum_out(dtype, axis):
+    a = dpnp.arange(2 * 4, dtype=dtype).reshape(2, 4)
+    a_np = dpnp.asnumpy(a)
+
+    expected = numpy.sum(a_np, axis=axis)
+    res = dpnp.empty(expected.shape, dtype=dtype)
+    a.sum(axis=axis, out=res)
+    assert_array_equal(expected, res.asnumpy())
+
+
+def test_sum_NotImplemented():
+    ia = dpnp.arange(5)
+    with pytest.raises(NotImplementedError):
+        dpnp.sum(ia, where=False)
+
+    with pytest.raises(NotImplementedError):
+        dpnp.sum(ia, initial=1)

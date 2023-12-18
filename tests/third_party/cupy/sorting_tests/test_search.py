@@ -29,35 +29,30 @@ class TestSearch(unittest.TestCase):
         a = xp.array([float("nan"), -1, 1], dtype)
         return a.argmax()
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_argmax_axis_large(self, xp, dtype):
         a = testing.shaped_random((3, 1000), xp, dtype)
         return a.argmax(axis=0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_external_argmax_axis_large(self, xp, dtype):
         a = testing.shaped_random((3, 1000), xp, dtype)
         return xp.argmax(a, axis=0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_argmax_axis0(self, xp, dtype):
         a = testing.shaped_random((2, 3, 4), xp, dtype)
         return a.argmax(axis=0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_argmax_axis1(self, xp, dtype):
         a = testing.shaped_random((2, 3, 4), xp, dtype)
         return a.argmax(axis=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_argmax_axis2(self, xp, dtype):
@@ -77,7 +72,6 @@ class TestSearch(unittest.TestCase):
             with pytest.raises(ValueError):
                 a.argmax()
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     def test_argmax_zero_size_axis0(self, dtype):
         for xp in (numpy, cupy):
@@ -85,7 +79,6 @@ class TestSearch(unittest.TestCase):
             with pytest.raises(ValueError):
                 a.argmax(axis=0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_argmax_zero_size_axis1(self, xp, dtype):
@@ -98,8 +91,8 @@ class TestSearch(unittest.TestCase):
         a = testing.shaped_random((2, 3), xp, dtype)
         return a.argmin()
 
-    @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(accept_error=ValueError)
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
     def test_argmin_nan(self, xp, dtype):
         a = xp.array([float("nan"), -1, 1], dtype)
         return a.argmin()
@@ -110,35 +103,30 @@ class TestSearch(unittest.TestCase):
         a = testing.shaped_random((2, 3), xp, dtype)
         return xp.argmin(a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_argmin_axis_large(self, xp, dtype):
         a = testing.shaped_random((3, 1000), xp, dtype)
         return a.argmin(axis=0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_external_argmin_axis_large(self, xp, dtype):
         a = testing.shaped_random((3, 1000), xp, dtype)
         return xp.argmin(a, axis=0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_argmin_axis0(self, xp, dtype):
         a = testing.shaped_random((2, 3, 4), xp, dtype)
         return a.argmin(axis=0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_argmin_axis1(self, xp, dtype):
         a = testing.shaped_random((2, 3, 4), xp, dtype)
         return a.argmin(axis=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_argmin_axis2(self, xp, dtype):
@@ -158,7 +146,6 @@ class TestSearch(unittest.TestCase):
             with pytest.raises(ValueError):
                 return a.argmin()
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     def test_argmin_zero_size_axis0(self, dtype):
         for xp in (numpy, cupy):
@@ -166,7 +153,6 @@ class TestSearch(unittest.TestCase):
             with pytest.raises(ValueError):
                 a.argmin(axis=0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_argmin_zero_size_axis1(self, xp, dtype):
