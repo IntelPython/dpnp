@@ -209,7 +209,10 @@ def _lu_factor(a, res_type):
     a_usm_type = a.usm_type
 
     # TODO: Find out at which array sizes the best performance is obtained
-    use_batch = True
+    # getrf_batch implementation shows slow results with large arrays on GPU.
+    # Use getrf_batch only on CPU.
+    # On GPU call getrf for each two-dimensional array by loop
+    use_batch = a.sycl_device.has_aspect_cpu
 
     if a.ndim > 2:
         orig_shape = a.shape
