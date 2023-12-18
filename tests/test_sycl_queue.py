@@ -373,6 +373,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("nancumsum", [1.0, dpnp.nan]),
         pytest.param("nanprod", [1.0, dpnp.nan]),
         pytest.param("nansum", [1.0, dpnp.nan]),
+        pytest.param("nanvar", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("negative", [1.0, 0.0, -1.0]),
         pytest.param("positive", [1.0, 0.0, -1.0]),
         pytest.param("prod", [1.0, 2.0]),
@@ -387,6 +388,7 @@ def test_meshgrid(device_x, device_y):
         ),
         pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
+        pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("sum", [1.0, 2.0]),
         pytest.param(
             "tan", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
@@ -394,6 +396,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("tanh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("trapz", [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
     ],
 )
 @pytest.mark.parametrize(
@@ -1323,6 +1326,17 @@ def test_diff_scalar_append(device, kwargs):
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_clip(device):
+    x = dpnp.arange(10, device=device)
+    y = dpnp.clip(x, 3, 7)
+    assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
 
 
 @pytest.mark.parametrize("func", ["take", "take_along_axis"])
