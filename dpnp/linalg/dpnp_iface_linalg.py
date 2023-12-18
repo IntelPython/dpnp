@@ -642,18 +642,10 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
 
     """
 
-    if not dpnp.is_supported_array_type(a):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(a))
-        )
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
 
     if hermitian is True:
         raise ValueError("The hermitian argument is only supported as False")
-
-    # TODO: use dpnp.linalg.LinAlgError
-    if a.ndim < 2:
-        raise ValueError(
-            f"{a.ndim}-dimensional array given. Array must be at least two-dimensional"
-        )
 
     return dpnp_svd(a, full_matrices, compute_uv)

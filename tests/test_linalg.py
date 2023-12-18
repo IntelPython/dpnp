@@ -647,6 +647,5 @@ class TestSvd:
         assert_raises(ValueError, inp.linalg.svd, a_dp, hermitian=True)
 
         # a.ndim < 2
-        # TODO: use inp.linalg.LinAlgError
         a_dp_ndim_1 = a_dp.flatten()
-        assert_raises(ValueError, inp.linalg.svd, a_dp_ndim_1)
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.svd, a_dp_ndim_1)

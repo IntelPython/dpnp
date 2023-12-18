@@ -443,9 +443,7 @@ def dpnp_solve(a, b):
         return b_f
 
 
-def _dpnp_svd_batch(
-    a, res_type, res_type_s, full_matrices=True, compute_uv=True
-):
+def _dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
     a_usm_type = a.usm_type
     a_sycl_queue = a.sycl_queue
     reshape = False
@@ -464,7 +462,7 @@ def _dpnp_svd_batch(
         k = min(m, n)
         s = dpnp.empty(
             batch_shape_orig + (k,),
-            dtype=res_type_s,
+            dtype=s_type,
             usm_type=a_usm_type,
             sycl_queue=a_sycl_queue,
         )
@@ -472,26 +470,26 @@ def _dpnp_svd_batch(
             if full_matrices:
                 u = dpnp.empty(
                     batch_shape_orig + (n, n),
-                    dtype=res_type,
+                    dtype=uv_type,
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
                 vt = dpnp.empty(
                     batch_shape_orig + (m, m),
-                    dtype=res_type,
+                    dtype=uv_type,
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
             else:
                 u = dpnp.empty(
                     batch_shape_orig + (n, k),
-                    dtype=res_type,
+                    dtype=uv_type,
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
                 vt = dpnp.empty(
                     batch_shape_orig + (k, m),
-                    dtype=res_type,
+                    dtype=uv_type,
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
@@ -501,7 +499,7 @@ def _dpnp_svd_batch(
     elif m == 0 or n == 0:
         s = dpnp.empty(
             batch_shape_orig + (0,),
-            dtype=res_type_s,
+            dtype=s_type,
             usm_type=a_usm_type,
             sycl_queue=a_sycl_queue,
         )
@@ -510,27 +508,27 @@ def _dpnp_svd_batch(
                 u = _stacked_identity(
                     batch_shape_orig,
                     n,
-                    dtype=res_type,
+                    dtype=uv_type,
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
                 vt = _stacked_identity(
                     batch_shape_orig,
                     m,
-                    dtype=res_type,
+                    dtype=uv_type,
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
             else:
                 u = dpnp.empty(
                     batch_shape_orig + (n, 0),
-                    dtype=res_type,
+                    dtype=uv_type,
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
                 vt = dpnp.empty(
                     batch_shape_orig + (0, m),
-                    dtype=res_type,
+                    dtype=uv_type,
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
@@ -579,37 +577,17 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
     a_usm_type = a.usm_type
     a_sycl_queue = a.sycl_queue
 
-    # TODO: Use linalg_common_type from #1598
-    if dpnp.issubdtype(a.dtype, dpnp.floating):
-        res_type = (
-            a.dtype
-            if a_sycl_queue.sycl_device.has_aspect_fp64
-            else dpnp.float32
-        )
-    elif dpnp.issubdtype(a.dtype, dpnp.complexfloating):
-        res_type = (
-            a.dtype
-            if a_sycl_queue.sycl_device.has_aspect_fp64
-            else dpnp.complex64
-        )
-    else:
-        res_type = (
-            dpnp.float64
-            if a_sycl_queue.sycl_device.has_aspect_fp64
-            else dpnp.float32
-        )
+    uv_type = _common_type(a)
 
-    res_type_s = (
+    s_type = (
         dpnp.float64
         if a_sycl_queue.sycl_device.has_aspect_fp64
-        and (res_type == dpnp.float64 or res_type == dpnp.complex128)
+        and (uv_type == dpnp.float64 or uv_type == dpnp.complex128)
         else dpnp.float32
     )
 
     if a.ndim > 2:
-        return _dpnp_svd_batch(
-            a, res_type, res_type_s, full_matrices, compute_uv
-        )
+        return _dpnp_svd_batch(a, uv_type, s_type, full_matrices, compute_uv)
 
     else:
         n, m = a.shape
@@ -617,7 +595,7 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
         if m == 0 or n == 0:
             s = dpnp.empty(
                 (0,),
-                dtype=res_type_s,
+                dtype=s_type,
                 usm_type=a_usm_type,
                 sycl_queue=a_sycl_queue,
             )
@@ -625,26 +603,26 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
                 if full_matrices:
                     u = dpnp.eye(
                         n,
-                        dtype=res_type,
+                        dtype=uv_type,
                         usm_type=a_usm_type,
                         sycl_queue=a_sycl_queue,
                     )
                     vt = dpnp.eye(
                         m,
-                        dtype=res_type,
+                        dtype=uv_type,
                         usm_type=a_usm_type,
                         sycl_queue=a_sycl_queue,
                     )
                 else:
                     u = dpnp.empty(
                         (n, 0),
-                        dtype=res_type,
+                        dtype=uv_type,
                         usm_type=a_usm_type,
                         sycl_queue=a_sycl_queue,
                     )
                     vt = dpnp.empty(
                         (0, m),
-                        dtype=res_type,
+                        dtype=uv_type,
                         usm_type=a_usm_type,
                         sycl_queue=a_sycl_queue,
                     )
@@ -656,12 +634,12 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
         # `a` must be traspotted if m < n
         if m >= n:
             x = a
-            a_h = dpnp.empty_like(a, order="C", dtype=res_type)
+            a_h = dpnp.empty_like(a, order="C", dtype=uv_type)
             trans_flag = False
         else:
             m, n = a.shape
             x = a.transpose()
-            a_h = dpnp.empty_like(x, order="C", dtype=res_type)
+            a_h = dpnp.empty_like(x, order="C", dtype=uv_type)
             trans_flag = True
 
         a_usm_arr = dpnp.get_usm_ndarray(x)
@@ -677,23 +655,23 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
             if full_matrices:
                 u_h = dpnp.empty(
                     (m, m),
-                    dtype=res_type,
+                    dtype=uv_type,
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
                 vt_h = dpnp.empty(
                     (n, n),
-                    dtype=res_type,
+                    dtype=uv_type,
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
                 jobu = ord("A")
                 jobvt = ord("A")
             else:
-                u_h = dpnp.empty_like(x, dtype=res_type)
+                u_h = dpnp.empty_like(x, dtype=uv_type)
                 vt_h = dpnp.empty(
                     (k, n),
-                    dtype=res_type,
+                    dtype=uv_type,
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
@@ -702,13 +680,13 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
         else:
             u_h = dpnp.empty(
                 [],
-                dtype=res_type,
+                dtype=uv_type,
                 usm_type=a_usm_type,
                 sycl_queue=a_sycl_queue,
             )
             vt_h = dpnp.empty(
                 [],
-                dtype=res_type,
+                dtype=uv_type,
                 usm_type=a_usm_type,
                 sycl_queue=a_sycl_queue,
             )
@@ -716,7 +694,7 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
             jobvt = ord("N")
 
         s_h = dpnp.empty(
-            k, dtype=res_type_s, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+            k, dtype=s_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
         )
 
         ht_lapack_ev, _ = li._gesvd(
