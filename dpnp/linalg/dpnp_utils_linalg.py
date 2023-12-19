@@ -46,7 +46,43 @@ _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
 
 
-def _stacked_identity(batch_shape, n, dtype, usm_type=None, sycl_queue=None):
+def _stacked_identity(
+    batch_shape, n, dtype, usm_type="device", sycl_queue=None
+):
+    """
+    Create stacked identity matrices of size `n x n`.
+
+    Forms multiple identity matrices based on `batch_shape`.
+
+    Parameters
+    ----------
+    batch_shape : tuple
+        Shape of the batch determining the stacking of identity matrices.
+    n : int
+        Dimension of each identity matrix.
+    dtype : dtype
+        Data type of the matrix element.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of stacked `n x n` identity matrices as per `batch_shape`.
+
+    Example
+    -------
+    >>> _stacked_identity((2,), 2, dtype=dpnp.int64)
+    array([[[1, 0],
+            [0, 1]],
+
+           [[1, 0],
+            [0, 1]]])
+
+    """
+
     shape = batch_shape + (n, n)
     idx = dpnp.arange(n, usm_type=usm_type, sycl_queue=sycl_queue)
     x = dpnp.zeros(shape, dtype=dtype, usm_type=usm_type, sycl_queue=sycl_queue)
