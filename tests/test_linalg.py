@@ -582,6 +582,7 @@ class TestSvd:
             assert dpnp_u.dtype == np_u.dtype
             assert dpnp_s.dtype == np_s.dtype
             assert dpnp_vt.dtype == np_vt.dtype
+
         assert dpnp_u.shape == np_u.shape
         assert dpnp_s.shape == np_s.shape
         assert dpnp_vt.shape == np_vt.shape
