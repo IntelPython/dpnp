@@ -763,13 +763,15 @@ def test_prod_nanprod_out(func):
 
     # output is dpnp_array
     np_res = getattr(numpy, func)(a, axis=0)
-    dpnp_res = dpnp.empty(np_res.shape, dtype=np_res.dtype)
-    getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
-    assert_dtype_allclose(dpnp_res, np_res)
+    dpnp_out = dpnp.empty(np_res.shape, dtype=np_res.dtype)
+    dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpnp_out)
+    assert dpnp_out is dpnp_res
+    assert_allclose(dpnp_res, np_res)
 
     # output is usm_ndarray
-    dpnp_res = dpt.empty(np_res.shape, dtype=np_res.dtype)
-    getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+    dpt_out = dpt.empty(np_res.shape, dtype=np_res.dtype)
+    dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpt_out)
+    assert dpt_out is dpnp_res.get_array()
     assert_allclose(dpnp_res, np_res)
 
     # out is a numpy array -> TypeError

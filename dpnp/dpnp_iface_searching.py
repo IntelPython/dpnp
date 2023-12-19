@@ -58,16 +58,16 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     Parameters
     ----------
     a :  {dpnp_array, usm_ndarray}
-        input array.
+        Input array.
     axis : int, optional
-        axis along which to search. If ``None``, the function must return
+        Axis along which to search. If ``None``, the function must return
         the index of the maximum value of the flattened array.
         Default: ``None``.
     out :  {dpnp_array, usm_ndarray}, optional
-        if provided, the result will be inserted into this array. It should
+        If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
-        if ``True``, the reduced axes (dimensions) must be included in the
+        If ``True``, the reduced axes (dimensions) must be included in the
         result as singleton dimensions, and, accordingly, the result must be
         compatible with the input array. Otherwise, if ``False``, the reduced
         axes (dimensions) must not be included in the result.
@@ -76,7 +76,7 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     Returns
     -------
     out : dpnp.ndarray
-        if axis is ``None``, a zero-dimensional array containing the index of
+        If `axis` is ``None``, a zero-dimensional array containing the index of
         the first occurrence of the maximum value; otherwise, a non-zero-dimensional
         array containing the indices of the minimum values. The returned array
         must have the default array index data type.
@@ -142,16 +142,16 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     Parameters
     ----------
     a : {dpnp_array, usm_ndarray}
-        input array.
+        Input array.
     axis : int, optional
-        axis along which to search. If ``None``, the function must return
+        Axis along which to search. If ``None``, the function must return
         the index of the minimum value of the flattened array.
         Default: ``None``.
     out : {dpnp_array, usm_ndarray}, optional
-        if provided, the result will be inserted into this array. It should
+        If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool, optional
-        if ``True``, the reduced axes (dimensions) must be included in the
+        If ``True``, the reduced axes (dimensions) must be included in the
         result as singleton dimensions, and, accordingly, the result must be
         compatible with the input array. Otherwise, if ``False``, the reduced
         axes (dimensions) must not be included in the result.
@@ -160,7 +160,7 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     Returns
     -------
     out : dpnp.ndarray
-        if axis is ``None``, a zero-dimensional array containing the index of
+        If `axis` is ``None``, a zero-dimensional array containing the index of
         the first occurrence of the minimum value; otherwise, a non-zero-dimensional
         array containing the indices of the minimum values. The returned array
         must have the default array index data type.

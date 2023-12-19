@@ -1132,7 +1132,9 @@ def fmax(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     See Also
     --------
     :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.
-    :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignore NaNs.
+    :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignores NaNs.
+    :obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs..
+    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
     :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
@@ -1237,7 +1239,9 @@ def fmin(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     See Also
     --------
     :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.
-    :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignore NaNs.
+    :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignores NaNs.
+    :obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
+    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
     :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 

@@ -366,39 +366,39 @@ class TestArgwhere(unittest.TestCase):
 # return cupy.nonzero(self.array)
 
 
-class TestNanArgMin(unittest.TestCase):
+class TestNanArgMin:
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_nanargmin_all(self, xp, dtype):
         a = testing.shaped_random((2, 3), xp, dtype)
         return xp.nanargmin(a)
 
-    @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(accept_error=ValueError)
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
     def test_nanargmin_nan(self, xp, dtype):
         a = xp.array([float("nan"), -1, 1], dtype)
         return xp.nanargmin(a)
 
-    @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(accept_error=ValueError)
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
     def test_nanargmin_nan2(self, xp, dtype):
         a = xp.array([float("nan"), float("nan"), -1, 1], dtype)
         return xp.nanargmin(a)
 
-    @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(accept_error=ValueError)
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
     def test_nanargmin_nan3(self, xp, dtype):
         a = xp.array([float("nan"), float("nan"), -1, 1, 1.0, -2.0], dtype)
         return xp.nanargmin(a)
 
-    @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(accept_error=ValueError)
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
     def test_nanargmin_nan4(self, xp, dtype):
         a = xp.array([-1, 1, 1.0, -2.0, float("nan"), float("nan")], dtype)
         return xp.nanargmin(a)
 
-    @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(accept_error=ValueError)
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
     def test_nanargmin_nan5(self, xp, dtype):
         a = xp.array(
             [-1, 1, 1.0, -2.0, float("nan"), float("nan"), -1, 1], dtype
@@ -456,39 +456,39 @@ class TestNanArgMin(unittest.TestCase):
         return xp.nanargmin(a, axis=1)
 
 
-class TestNanArgMax(unittest.TestCase):
+class TestNanArgMax:
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_nanargmax_all(self, xp, dtype):
         a = testing.shaped_random((2, 3), xp, dtype)
         return xp.nanargmax(a)
 
-    @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(accept_error=ValueError)
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
     def test_nanargmax_nan(self, xp, dtype):
         a = xp.array([float("nan"), -1, 1], dtype)
         return xp.nanargmax(a)
 
-    @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(accept_error=ValueError)
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
     def test_nanargmax_nan2(self, xp, dtype):
         a = xp.array([float("nan"), float("nan"), -1, 1], dtype)
         return xp.nanargmax(a)
 
-    @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(accept_error=ValueError)
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
     def test_nanargmax_nan3(self, xp, dtype):
         a = xp.array([float("nan"), float("nan"), -1, 1, 1.0, -2.0], dtype)
         return xp.nanargmax(a)
 
-    @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(accept_error=ValueError)
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
     def test_nanargmax_nan4(self, xp, dtype):
         a = xp.array([-1, 1, 1.0, -2.0, float("nan"), float("nan")], dtype)
         return xp.nanargmax(a)
 
-    @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(accept_error=ValueError)
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
     def test_nanargmax_nan5(self, xp, dtype):
         a = xp.array(
             [-1, 1, 1.0, -2.0, float("nan"), float("nan"), -1, 1], dtype

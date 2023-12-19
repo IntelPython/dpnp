@@ -109,16 +109,16 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
     Parameters
     ----------
     a :  {dpnp_array, usm_ndarray}
-        input array.
+        Input array.
     axis : int, optional
-        axis along which to search. If ``None``, the function must return
+        Axis along which to search. If ``None``, the function must return
         the index of the maximum value of the flattened array.
         Default: ``None``.
     out :  {dpnp_array, usm_ndarray}, optional
-        if provided, the result will be inserted into this array. It should
+        If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
-        if ``True``, the reduced axes (dimensions) must be included in the
+        If ``True``, the reduced axes (dimensions) must be included in the
         result as singleton dimensions, and, accordingly, the result must be
         compatible with the input array. Otherwise, if ``False``, the reduced
         axes (dimensions) must not be included in the result.
@@ -127,16 +127,16 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
     Returns
     -------
     out : dpnp.ndarray
-        if axis is ``None``, a zero-dimensional array containing the index of
-        the first occurrence of the maximum value; otherwise, a non-zero-dimensional
-        array containing the indices of the minimum values. The returned array
+        If `axis` is ``None``, a zero-dimensional array containing the index of
+        the first occurrence of the maximum value ignoring NaNs; otherwise, a non-zero-dimensional
+        array containing the indices of the minimum values ignoring NaNs. The returned array
         must have the default array index data type.
         For all-NaN slices ``ValueError`` is raised.
         Warning: the results cannot be trusted if a slice contains only NaNs and -Infs.
 
     Limitations
     -----------
-    Input and output arrays are only supported as either :class:`dpnp.ndarray`
+    Input array is only supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -177,16 +177,16 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
     Parameters
     ----------
     a : {dpnp_array, usm_ndarray}
-        input array.
+        Input array.
     axis : int, optional
-        axis along which to search. If ``None``, the function must return
+        Axis along which to search. If ``None``, the function must return
         the index of the minimum value of the flattened array.
         Default: ``None``.
     out : {dpnp_array, usm_ndarray}, optional
-        if provided, the result will be inserted into this array. It should
+        If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
-        if ``True``, the reduced axes (dimensions) must be included in the
+        If ``True``, the reduced axes (dimensions) must be included in the
         result as singleton dimensions, and, accordingly, the result must be
         compatible with the input array. Otherwise, if ``False``, the reduced
         axes (dimensions) must not be included in the result.
@@ -195,9 +195,9 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
     Returns
     -------
     out : dpnp.ndarray
-        if axis is ``None``, a zero-dimensional array containing the index of
-        the first occurrence of the minimum value; otherwise, a non-zero-dimensional
-        array containing the indices of the minimum values. The returned array
+        If `axis` is ``None``, a zero-dimensional array containing the index of
+        the first occurrence of the minimum value ignoring NaNs; otherwise, a non-zero-dimensional
+        array containing the indices of the minimum values ignoring NaNs. The returned array
         must have the default array index data type.
         For all-NaN slices ``ValueError`` is raised.
         Warning: the results cannot be trusted if a slice contains only NaNs and Infs.
@@ -319,17 +319,17 @@ def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     Parameters
     ----------
     a :  {dpnp_array, usm_ndarray}
-        input array.
+        Input array.
     axis : int or tuple of ints, optional
-        axis or axes along which maximum values must be computed. By default,
+        Axis or axes along which maximum values must be computed. By default,
         the maximum value must be computed over the entire array. If a tuple of integers,
         maximum values must be computed over multiple axes.
         Default: ``None``.
     out :  {dpnp_array, usm_ndarray}, optional
-        if provided, the result will be inserted into this array. It should
+        If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
-        if ``True``, the reduced axes (dimensions) must be included in the
+        If ``True``, the reduced axes (dimensions) must be included in the
         result as singleton dimensions, and, accordingly, the result must be
         compatible with the input array. Otherwise, if ``False``, the reduced
         axes (dimensions) must not be included in the result.
@@ -338,7 +338,7 @@ def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     Returns
     -------
     out : dpnp.ndarray
-        if the maximum value was computed over the entire array, a zero-dimensional array
+        If the maximum value was computed over the entire array, a zero-dimensional array
         containing the maximum value ignoring NaNs; otherwise, a non-zero-dimensional array
         containing the maximum values ignoring NaNs. The returned array must have
         the same data type as `a`.
@@ -347,7 +347,7 @@ def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Limitations
     -----------
-    Input and output arrays are only supported as either :class:`dpnp.ndarray`
+    Input array is only supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, and `initial` are only supported with their default values.
     Otherwise ``NotImplementedError`` exception will be raised.
@@ -414,17 +414,17 @@ def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     Parameters
     ----------
     a :  {dpnp_array, usm_ndarray}
-        input array.
+        Input array.
     axis : int or tuple of ints, optional
-        axis or axes along which minimum values must be computed. By default,
+        Axis or axes along which minimum values must be computed. By default,
         the minimum value must be computed over the entire array. If a tuple of integers,
         minimum values must be computed over multiple axes.
         Default: ``None``.
     out :  {dpnp_array, usm_ndarray}, optional
-        if provided, the result will be inserted into this array. It should
+        If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool, optional
-        if ``True``, the reduced axes (dimensions) must be included in the
+        If ``True``, the reduced axes (dimensions) must be included in the
         result as singleton dimensions, and, accordingly, the result must be
         compatible with the input array. Otherwise, if ``False``, the reduced
         axes (dimensions) must not be included in the result.
@@ -433,7 +433,7 @@ def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     Returns
     -------
     out : dpnp.ndarray
-        if the minimum value was computed over the entire array, a zero-dimensional array
+        If the minimum value was computed over the entire array, a zero-dimensional array
         containing the minimum value ignoring NaNs; otherwise, a non-zero-dimensional array
         containing the minimum values ignoring NaNs. The returned array must have
         the same data type as `a`.
@@ -442,7 +442,7 @@ def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Limitations
     -----------
-    Input and output arrays are only supported as either :class:`dpnp.ndarray`
+    Input array is only supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, and `initial` are only supported with their default values.
     Otherwise ``NotImplementedError`` exception will be raised.

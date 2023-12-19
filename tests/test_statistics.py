@@ -67,15 +67,17 @@ def test_max_min_out(func):
         a[1, 0, 2] = numpy.nan
     ia = dpnp.array(a)
 
+    # out is dpnp_array
     np_res = getattr(numpy, func)(a, axis=0)
-    # output is dpnp array
-    dpnp_res = dpnp.array(numpy.empty_like(np_res))
-    getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
-    assert_dtype_allclose(dpnp_res, np_res)
+    dpnp_out = dpnp.empty(np_res.shape, dtype=np_res.dtype)
+    dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpnp_out)
+    assert dpnp_out is dpnp_res
+    assert_allclose(dpnp_res, np_res)
 
-    # output is usm array
-    dpnp_res = dpt.asarray(numpy.empty_like(np_res))
-    getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+    # out is usm_ndarray
+    dpt_out = dpt.empty(np_res.shape, dtype=np_res.dtype)
+    dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpt_out)
+    assert dpt_out is dpnp_res.get_array()
     assert_allclose(dpnp_res, np_res)
 
     # output is numpy array -> Error
@@ -113,16 +115,18 @@ def test_nanmax_nanmin_no_NaN(func, dtype):
 
 
 @pytest.mark.parametrize("func", ["nanmax", "nanmin"])
-def test_nanmax_nanmin_all_NaN(func):
+def test_nanmax_nanmin_all_NaN(recwarn, func):
     a = numpy.arange(12, dtype=numpy.float32).reshape((2, 2, 3))
     a[:, :, 2] = numpy.nan
     ia = dpnp.array(a)
 
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        np_res = getattr(numpy, func)(a, axis=0)
-        dpnp_res = getattr(dpnp, func)(ia, axis=0)
+    np_res = getattr(numpy, func)(a, axis=0)
+    dpnp_res = getattr(dpnp, func)(ia, axis=0)
     assert_dtype_allclose(dpnp_res, np_res)
+
+    assert len(recwarn) == 2
+    assert all("All-NaN slice encountered" in str(r.message) for r in recwarn)
+    assert all(r.category is RuntimeWarning for r in recwarn)
 
 
 class TestMean:
