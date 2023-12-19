@@ -479,7 +479,7 @@ def dpnp_solve(a, b):
         return b_f
 
 
-def _dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
+def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
     a_usm_type = a.usm_type
     a_sycl_queue = a.sycl_queue
     reshape = False
@@ -490,8 +490,7 @@ def _dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
         a = a.reshape(prod(a.shape[:-2]), a.shape[-2], a.shape[-1])
         reshape = True
 
-    batch_shape = a.shape[:-2]
-    batch_size = prod(batch_shape)
+    batch_size = a.shape[0]
     n, m = a.shape[-2:]
 
     if batch_size == 0:
@@ -504,31 +503,24 @@ def _dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
         )
         if compute_uv:
             if full_matrices:
-                u = dpnp.empty(
-                    batch_shape_orig + (n, n),
-                    dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
-                )
-                vt = dpnp.empty(
-                    batch_shape_orig + (m, m),
-                    dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
-                )
+                u_shape = batch_shape_orig + (n, n)
+                vt_shape = batch_shape_orig + (m, m)
             else:
-                u = dpnp.empty(
-                    batch_shape_orig + (n, k),
-                    dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
-                )
-                vt = dpnp.empty(
-                    batch_shape_orig + (k, m),
-                    dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
-                )
+                u_shape = batch_shape_orig + (n, k)
+                vt_shape = batch_shape_orig + (k, m)
+
+            u = dpnp.empty(
+                u_shape,
+                dtype=uv_type,
+                usm_type=a_usm_type,
+                sycl_queue=a_sycl_queue,
+            )
+            vt = dpnp.empty(
+                vt_shape,
+                dtype=uv_type,
+                usm_type=a_usm_type,
+                sycl_queue=a_sycl_queue,
+            )
             return u, s, vt
         else:
             return s
@@ -617,7 +609,7 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
     s_type = uv_type.char.lower()
 
     if a.ndim > 2:
-        return _dpnp_svd_batch(a, uv_type, s_type, full_matrices, compute_uv)
+        return dpnp_svd_batch(a, uv_type, s_type, full_matrices, compute_uv)
 
     else:
         n, m = a.shape
