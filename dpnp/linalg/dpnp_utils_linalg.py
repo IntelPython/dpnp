@@ -46,6 +46,65 @@ _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
 
 
+def _common_type(*arrays):
+    """
+    _common_type(*arrays)
+
+    Common type for linear algebra operations.
+
+    This function determines the common data type for linalg operations.
+    It's designed to be similar in logic to `numpy.linalg.linalg._commonType`.
+
+    Key differences from `numpy.common_type`:
+    - It accepts ``bool_`` arrays.
+    - The default floating-point data type is determined by the capabilities of the device
+      on which `arrays` are created, as indicated by `dpnp.default_float_type()`.
+
+    Args:
+        *arrays (dpnp.ndarray): Input arrays.
+
+    Returns:
+        dtype_common (dtype): The common data type for linalg operations.
+
+        This returned value is applicable both as the precision to be used
+        in linalg calls and as the dtype of (possibly complex) output(s).
+
+    """
+
+    dtypes = [arr.dtype for arr in arrays]
+
+    default = dpnp.default_float_type(device=arrays[0].device)
+    dtype_common = _common_inexact_type(default, *dtypes)
+
+    return dtype_common
+
+
+def _common_inexact_type(default_dtype, *dtypes):
+    """
+    _common_inexact_type(default_dtype, *dtypes)
+
+    Determines the common 'inexact' data type for linear algebra operations.
+
+    This function selects an 'inexact' data type appropriate for the device's capabilities.
+    It defaults to `default_dtype` when provided types are not 'inexact'.
+
+    Args:
+        default_dtype: The default data type. This is determined by the capabilities of
+        the device and is used when none of the provided types are 'inexact'.
+        *dtypes: A variable number of data types to be evaluated to find
+        the common 'inexact' type.
+
+    Returns:
+        dpnp.result_type (dtype) : The resultant 'inexact' data type for linalg operations,
+        ensuring computational compatibility.
+
+    """
+    inexact_dtypes = [
+        dt if issubdtype(dt, dpnp.inexact) else default_dtype for dt in dtypes
+    ]
+    return dpnp.result_type(*inexact_dtypes)
+
+
 def _stacked_identity(
     batch_shape, n, dtype, usm_type="device", sycl_queue=None
 ):
@@ -158,65 +217,6 @@ def check_stacked_square(*arrays):
             raise dpnp.linalg.LinAlgError(
                 "Last 2 dimensions of the input array must be square"
             )
-
-
-def _common_type(*arrays):
-    """
-    _common_type(*arrays)
-
-    Common type for linear algebra operations.
-
-    This function determines the common data type for linalg operations.
-    It's designed to be similar in logic to `numpy.linalg.linalg._commonType`.
-
-    Key differences from `numpy.common_type`:
-    - It accepts ``bool_`` arrays.
-    - The default floating-point data type is determined by the capabilities of the device
-      on which `arrays` are created, as indicated by `dpnp.default_float_type()`.
-
-    Args:
-        *arrays (dpnp.ndarray): Input arrays.
-
-    Returns:
-        dtype_common (dtype): The common data type for linalg operations.
-
-        This returned value is applicable both as the precision to be used
-        in linalg calls and as the dtype of (possibly complex) output(s).
-
-    """
-
-    dtypes = [arr.dtype for arr in arrays]
-
-    default = dpnp.default_float_type(device=arrays[0].device)
-    dtype_common = _common_inexact_type(default, *dtypes)
-
-    return dtype_common
-
-
-def _common_inexact_type(default_dtype, *dtypes):
-    """
-    _common_inexact_type(default_dtype, *dtypes)
-
-    Determines the common 'inexact' data type for linear algebra operations.
-
-    This function selects an 'inexact' data type appropriate for the device's capabilities.
-    It defaults to `default_dtype` when provided types are not 'inexact'.
-
-    Args:
-        default_dtype: The default data type. This is determined by the capabilities of
-        the device and is used when none of the provided types are 'inexact'.
-        *dtypes: A variable number of data types to be evaluated to find
-        the common 'inexact' type.
-
-    Returns:
-        dpnp.result_type (dtype) : The resultant 'inexact' data type for linalg operations,
-        ensuring computational compatibility.
-
-    """
-    inexact_dtypes = [
-        dt if issubdtype(dt, dpnp.inexact) else default_dtype for dt in dtypes
-    ]
-    return dpnp.result_type(*inexact_dtypes)
 
 
 def dpnp_eigh(a, UPLO):
