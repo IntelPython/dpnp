@@ -45,6 +45,36 @@ __all__ = [
 _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
 
+_real_types_map = {
+    "float32": "float32",  # single : single
+    "float64": "float64",  # double : double
+    "complex64": "float32",  # csingle : csingle
+    "complex128": "float64",  # cdouble : cdouble
+}
+
+
+def _real_type(dtype, device=None):
+    """
+    Returns the real data type corresponding to a given dpnp data type.
+
+    Parameters
+    ----------
+    dtype : dpnp.dtype
+        The dtype for which to find the corresponding real data type.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where an array of default floating type might be created.
+
+    Returns
+    -------
+    out : str
+        The name of the real data type.
+
+    """
+
+    default = dpnp.default_float_type(device)
+    real_type = _real_types_map.get(dtype.name, default)
+    return dpnp.dtype(real_type)
+
 
 def check_stacked_2d(*arrays):
     """
@@ -629,7 +659,7 @@ def dpnp_slogdet(a):
     a_sycl_queue = a.sycl_queue
 
     res_type = _common_type(a)
-    logdet_dtype = dpnp.dtype(res_type.char.lower())
+    logdet_dtype = _real_type(res_type)
 
     a_shape = a.shape
     shape = a_shape[:-2]
