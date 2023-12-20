@@ -9,6 +9,7 @@ import dpnp
 from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
+    get_float_complex_dtypes,
     get_float_dtypes,
     has_support_aspect16,
     has_support_aspect64,
@@ -263,14 +264,46 @@ class TestCbrt:
         with pytest.raises(ValueError):
             dpnp.cbrt(dp_array, out=dp_out)
 
+
+class TestReciprocal:
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_reciprocal(self, dtype):
+        np_array = numpy.arange(1, 7, dtype=dtype)
+        expected = numpy.reciprocal(np_array)
+
+        dp_out_dtype = (
+            dtype
+            if has_support_aspect64()
+            else dpnp.complex64
+            if numpy.iscomplexobj(np_array)
+            else dpnp.float32
+        )
+        dp_array = dpnp.array(np_array)
+        dp_out = dpnp.empty(6, dtype=dp_out_dtype)
+        result = dpnp.reciprocal(dp_array, out=dp_out)
+
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes()[:-1])
+    def test_invalid_dtype(self, dtype):
+        dpnp_dtype = get_float_complex_dtypes()[-1]
+        dp_array = dpnp.arange(1, 10, dtype=dpnp_dtype)
+        dp_out = dpnp.empty(9, dtype=dtype)
+
+        with pytest.raises(TypeError):
+            dpnp.reciprocal(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize(
-        "out",
-        [4, (), [], (3, 7), [2, 4]],
-        ids=["4", "()", "[]", "(3, 7)", "[2, 4]"],
+        "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
-    def test_invalid_out(self, out):
-        a = dpnp.arange(10)
-        numpy.testing.assert_raises(TypeError, dpnp.cbrt, a, out)
+    def test_invalid_shape(self, shape, dtype):
+        dp_array = dpnp.arange(10, dtype=dtype)
+        dp_out = dpnp.empty(shape, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.reciprocal(dp_array, out=dp_out)
 
 
 class TestRsqrt:

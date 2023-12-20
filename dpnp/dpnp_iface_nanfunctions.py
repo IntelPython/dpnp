@@ -72,14 +72,14 @@ def _replace_nan(a, val):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.array, usm_ndarray}
         Input array.
     val : float
         NaN values are set to `val` before doing the operation.
 
     Returns
     -------
-    out : {dpnp_array}
+    out : {dpnp.array}
         If `a` is of inexact type, return a copy of `a` with the NaNs
         replaced by the fill value, otherwise return `a`.
     mask: {bool, None}
@@ -110,13 +110,13 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
 
     Parameters
     ----------
-    a :  {dpnp_array, usm_ndarray}
+    a :  {dpnp.array, usm_ndarray}
         Input array.
     axis : int, optional
         Axis along which to search. If ``None``, the function must return
         the index of the maximum value of the flattened array.
         Default: ``None``.
-    out :  {dpnp_array, usm_ndarray}, optional
+    out :  {dpnp.array, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
@@ -178,13 +178,13 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.array, usm_ndarray}
         Input array.
     axis : int, optional
         Axis along which to search. If ``None``, the function must return
         the index of the minimum value of the flattened array.
         Default: ``None``.
-    out : {dpnp_array, usm_ndarray}, optional
+    out : {dpnp.array, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
@@ -320,14 +320,14 @@ def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Parameters
     ----------
-    a :  {dpnp_array, usm_ndarray}
+    a :  {dpnp.array, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which maximum values must be computed. By default,
         the maximum value must be computed over the entire array. If a tuple of integers,
         maximum values must be computed over multiple axes.
         Default: ``None``.
-    out :  {dpnp_array, usm_ndarray}, optional
+    out :  {dpnp.array, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
@@ -531,14 +531,14 @@ def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Parameters
     ----------
-    a :  {dpnp_array, usm_ndarray}
+    a :  {dpnp.array, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which minimum values must be computed. By default,
         the minimum value must be computed over the entire array. If a tuple of integers,
         minimum values must be computed over multiple axes.
         Default: ``None``.
-    out :  {dpnp_array, usm_ndarray}, optional
+    out :  {dpnp.array, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool, optional
@@ -908,7 +908,7 @@ def nanvar(
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}:
+    a : {dpnp.array, usm_ndarray}:
         Input array.
     axis : int or tuple of ints, optional
         axis or axes along which the variances must be computed. If a tuple

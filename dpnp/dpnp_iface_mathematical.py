@@ -54,6 +54,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     check_nd_call_func,
     dpnp_abs,
     dpnp_add,
+    dpnp_angle,
     dpnp_ceil,
     dpnp_conj,
     dpnp_copysign,
@@ -82,6 +83,7 @@ __all__ = [
     "abs",
     "absolute",
     "add",
+    "angle",
     "around",
     "ceil",
     "clip",
@@ -291,6 +293,62 @@ def add(
     )
 
 
+def angle(z, deg=False):
+    """
+    Return the angle of the complex argument.
+
+    For full documentation refer to :obj:`numpy.angle`.
+
+    Parameters
+    ----------
+    x : {dpnp.array, usm_ndarray}
+        Input array, expected to have a complex-valued floating-point data type.
+    deg : bool, optional
+        Return angle in degrees if True, radians if False (default).
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The counterclockwise angle from the positive real axis on
+        the complex plane in the range `(-pi, pi]`.
+        The returned array has a floating-point data type determined
+        by the Type Promotion Rules.
+
+    Notes
+    -----
+    Although the angle of the complex number 0 is undefined, `dpnp.angle(0)` returns the value 0.
+
+    See Also
+    --------
+    :obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
+    :obj:`dpnp.absolute` : Calculate the absolute value element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1.0, 1.0j, 1+1j])
+    >>> np.angle(a) # in radians
+    array([0.        , 1.57079633, 0.78539816]) # may vary
+
+    >>> np.angle(a, deg=True) # in degrees
+    array([ 0., 90., 45.])
+
+    """
+
+    if not dpnp.isscalar(z):
+        dpnp.check_supported_arrays_type(z)
+        res = dpnp_angle(z)
+        if deg is True:
+            res = res * (180 / dpnp.pi)
+        return res
+    else:
+        return call_origin(
+            numpy.angle,
+            z,
+            deg=deg,
+        )
+
+
 def around(x, /, decimals=0, out=None):
     """
     Round an array to the given number of decimals.
@@ -390,12 +448,12 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.array, usm_ndarray}
         Array containing elements to clip.
-    a_min, a_max : {dpnp_array, usm_ndarray, None}
+    a_min, a_max : {dpnp.array, usm_ndarray, None}
         Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.
         Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.
-    out : {dpnp_array, usm_ndarray}, optional
+    out : {dpnp.array, usm_ndarray}, optional
         The results will be placed in this array. It may be the input array for in-place clipping.
         `out` must be of the right shape to hold the output. Its type is preserved.
     order : {"C", "F", "A", "K", None}, optional
@@ -404,7 +462,7 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
     Returns
     -------
-    out : dpnp_array
+    out : dpnp.array
         An array with the elements of `a`, but where values < `a_min` are replaced with `a_min`,
         and those > `a_max` with `a_max`.
 

@@ -29,6 +29,47 @@ from .helper import (
 )
 
 
+class TestAngle:
+    @pytest.mark.parametrize("deg", [True, False])
+    def test_angle_bool(self, deg):
+        dp_a = dpnp.array([True, False])
+        np_a = dp_a.asnumpy()
+
+        expected = numpy.angle(np_a, deg=deg)
+        result = dpnp.angle(dp_a, deg=deg)
+
+        # In Numpy, for boolean arguments the output data type is always default floating data type.
+        # while data type of output in DPNP is determined by Type Promotion Rules.
+        # data type should not be compared
+        assert_allclose(result.asnumpy(), expected)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("deg", [True, False])
+    def test_angle(self, dtype, deg):
+        dp_a = dpnp.arange(10, dtype=dtype)
+        np_a = dp_a.asnumpy()
+
+        expected = numpy.angle(np_a, deg=deg)
+        result = dpnp.angle(dp_a, deg=deg)
+
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize("deg", [True, False])
+    def test_angle_complex(self, dtype, deg):
+        a = numpy.random.rand(10)
+        b = numpy.random.rand(10)
+        np_a = numpy.array(a + 1j * b, dtype=dtype)
+        dp_a = dpnp.array(np_a)
+
+        expected = numpy.angle(np_a, deg=deg)
+        result = dpnp.angle(dp_a, deg=deg)
+
+        assert_dtype_allclose(result, expected)
+
+
 class TestClip:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)

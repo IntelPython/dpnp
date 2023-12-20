@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2024, Intel Corporation
@@ -69,6 +67,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_log2,
     dpnp_log10,
     dpnp_logaddexp,
+    dpnp_reciprocal,
     dpnp_rsqrt,
     dpnp_sin,
     dpnp_sinh,
@@ -1415,36 +1414,64 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
     return dpnp.get_result_array(result, out, casting="same_kind")
 
 
-def reciprocal(x1, **kwargs):
+def reciprocal(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Return the reciprocal of the argument, element-wise.
 
     For full documentation refer to :obj:`numpy.reciprocal`.
 
+    Parameters
+    ----------
+    x : {dpnp.array, usm_ndarray}
+        Input array.
+    out : {None, dpnp.ndarray}, optional
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, if parameter `out` is ``None``.
+        Default: "K".
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array containing the element-wise reciprocals.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([1, 2., 3.33])
-    >>> out = np.reciprocal(x)
-    >>> [i for i in out]
-    [1.0, 0.5, 0.3003003]
+    >>> np.reciprocal(x)
+    array([1.0, 0.5, 0.3003003])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.reciprocal,
+        dpnp_reciprocal,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc and not kwargs:
-        return dpnp_recip(x1_desc).get_pyobj()
-
-    return call_origin(numpy.reciprocal, x1, **kwargs)
 
 
 def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):

@@ -333,6 +333,7 @@ def test_meshgrid(device_x, device_y):
     [
         pytest.param("average", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("abs", [-1.2, 1.2]),
+        pytest.param("angle", [[1.0 + 1.0j, 2.0 + 3.0j]]),
         pytest.param("arccos", [-0.5, 0.0, 0.5]),
         pytest.param("arccosh", [1.5, 3.5, 5.0]),
         pytest.param("arcsin", [-0.5, 0.0, 0.5]),
@@ -388,6 +389,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
+        pytest.param("reciprocal", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("sign", [-5.0, 0.0, 4.5]),
         pytest.param("signbit", [-5.0, 0.0, 4.5]),
         pytest.param(

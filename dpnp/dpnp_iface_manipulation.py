@@ -1174,7 +1174,7 @@ def ravel(a, order="C"):
 
     Parameters
     ----------
-    x : {dpnp_array, usm_ndarray}
+    x : {dpnp.array, usm_ndarray}
         Input array. The elements in `a` are read in the order specified by order,
         and packed as a 1-D array.
     order : {'C', 'F'}, optional
@@ -1187,7 +1187,7 @@ def ravel(a, order="C"):
 
     Returns
     -------
-    out : dpnp_array
+    out : dpnp.array
         A contiguous 1-D array of the same subtype as `a`, with shape (a.size,).
 
     See Also
@@ -1220,7 +1220,7 @@ def repeat(a, repeats, axis=None):
 
     Parameters
     ----------
-    x : {dpnp_array, usm_ndarray}
+    x : {dpnp.array, usm_ndarray}
         Input array.
     repeat : int or array of int
         The number of repetitions for each element. `repeats` is broadcasted to fit
@@ -1231,7 +1231,7 @@ def repeat(a, repeats, axis=None):
 
     Returns
     -------
-    out : dpnp_array
+    out : dpnp.array
         Output array which has the same shape as `a`, except along the given axis.
 
     See Also
