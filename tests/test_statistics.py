@@ -1,3 +1,5 @@
+import warnings
+
 import dpctl.tensor as dpt
 import numpy
 import pytest
@@ -30,50 +32,52 @@ def test_median(dtype, size):
     assert_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("func", ["max", "min"])
+@pytest.mark.parametrize("func", ["max", "min", "nanmax", "nanmin"])
 @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
 @pytest.mark.parametrize("keepdims", [False, True])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 def test_max_min(func, axis, keepdims, dtype):
     a = numpy.arange(768, dtype=dtype).reshape((4, 4, 6, 8))
+    if func in ["nanmax", "nanmin"] and dpnp.issubdtype(a.dtype, dpnp.inexact):
+        a[2:3, 2, 3:4, 4] = numpy.nan
     ia = dpnp.array(a)
 
     np_res = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
     dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
-
-    assert dpnp_res.shape == np_res.shape
-    assert_allclose(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res)
 
 
 @pytest.mark.parametrize("func", ["max", "min"])
 @pytest.mark.parametrize("axis", [None, 0, 1, -1])
 @pytest.mark.parametrize("keepdims", [False, True])
 def test_max_min_bool(func, axis, keepdims):
-    a = numpy.arange(2, dtype=dpnp.bool)
+    a = numpy.arange(2, dtype=numpy.bool_)
     a = numpy.tile(a, (2, 2))
     ia = dpnp.array(a)
 
     np_res = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
     dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
-
-    assert dpnp_res.shape == np_res.shape
-    assert_allclose(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("func", ["max", "min"])
+@pytest.mark.parametrize("func", ["max", "min", "nanmax", "nanmin"])
 def test_max_min_out(func):
-    a = numpy.arange(6).reshape((2, 3))
+    a = numpy.arange(12, dtype=numpy.float32).reshape((2, 2, 3))
+    if func in ["nanmax", "nanmin"]:
+        a[1, 0, 2] = numpy.nan
     ia = dpnp.array(a)
 
+    # out is dpnp_array
     np_res = getattr(numpy, func)(a, axis=0)
-    # output is dpnp array
-    dpnp_res = dpnp.array(numpy.empty_like(np_res))
-    getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+    dpnp_out = dpnp.empty(np_res.shape, dtype=np_res.dtype)
+    dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpnp_out)
+    assert dpnp_out is dpnp_res
     assert_allclose(dpnp_res, np_res)
 
-    # output is usm array
-    dpnp_res = dpt.asarray(numpy.empty_like(np_res))
-    getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+    # out is usm_ndarray
+    dpt_out = dpt.empty(np_res.shape, dtype=np_res.dtype)
+    dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpt_out)
+    assert dpt_out is dpnp_res.get_array()
     assert_allclose(dpnp_res, np_res)
 
     # output is numpy array -> Error
@@ -82,12 +86,12 @@ def test_max_min_out(func):
         getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
 
     # output has incorrect shape -> Error
-    dpnp_res = dpnp.array(numpy.empty((2, 3)))
+    dpnp_res = dpnp.array(numpy.empty((4, 2)))
     with pytest.raises(ValueError):
         getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
 
 
-@pytest.mark.parametrize("func", ["max", "min"])
+@pytest.mark.parametrize("func", ["max", "min", "nanmax", "nanmin"])
 def test_max_min_error(func):
     ia = dpnp.arange(5)
     # where is not supported
@@ -97,6 +101,32 @@ def test_max_min_error(func):
     # initial is not supported
     with pytest.raises(NotImplementedError):
         getattr(dpnp, func)(ia, initial=6)
+
+
+@pytest.mark.parametrize("func", ["nanmax", "nanmin"])
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+def test_nanmax_nanmin_no_NaN(func, dtype):
+    a = numpy.arange(768, dtype=dtype).reshape((4, 4, 6, 8))
+    ia = dpnp.array(a)
+
+    np_res = getattr(numpy, func)(a, axis=0)
+    dpnp_res = getattr(dpnp, func)(ia, axis=0)
+    assert_dtype_allclose(dpnp_res, np_res)
+
+
+@pytest.mark.parametrize("func", ["nanmax", "nanmin"])
+def test_nanmax_nanmin_all_NaN(recwarn, func):
+    a = numpy.arange(12, dtype=numpy.float32).reshape((2, 2, 3))
+    a[:, :, 2] = numpy.nan
+    ia = dpnp.array(a)
+
+    np_res = getattr(numpy, func)(a, axis=0)
+    dpnp_res = getattr(dpnp, func)(ia, axis=0)
+    assert_dtype_allclose(dpnp_res, np_res)
+
+    assert len(recwarn) == 2
+    assert all("All-NaN slice encountered" in str(r.message) for r in recwarn)
+    assert all(r.category is RuntimeWarning for r in recwarn)
 
 
 class TestMean:

@@ -37,6 +37,8 @@ it contains:
 
 """
 
+import warnings
+
 import numpy
 
 import dpnp
@@ -45,8 +47,12 @@ from .dpnp_algo import *
 from .dpnp_utils import *
 
 __all__ = [
+    "nanargmax",
+    "nanargmin",
     "nancumprod",
     "nancumsum",
+    "nanmax",
+    "nanmin",
     "nanprod",
     "nansum",
     "nanvar",
@@ -92,6 +98,142 @@ def _replace_nan(a, val):
         mask = None
 
     return a, mask
+
+
+def nanargmax(a, axis=None, out=None, *, keepdims=False):
+    """
+    Returns the indices of the maximum values along an axis ignoring NaNs.
+
+    For full documentation refer to :obj:`numpy.nanargmax`.
+
+    Parameters
+    ----------
+    a :  {dpnp_array, usm_ndarray}
+        Input array.
+    axis : int, optional
+        Axis along which to search. If ``None``, the function must return
+        the index of the maximum value of the flattened array.
+        Default: ``None``.
+    out :  {dpnp_array, usm_ndarray}, optional
+        If provided, the result will be inserted into this array. It should
+        be of the appropriate shape and dtype.
+    keepdims : bool
+        If ``True``, the reduced axes (dimensions) must be included in the
+        result as singleton dimensions, and, accordingly, the result must be
+        compatible with the input array. Otherwise, if ``False``, the reduced
+        axes (dimensions) must not be included in the result.
+        Default: ``False``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        If `axis` is ``None``, a zero-dimensional array containing the index of
+        the first occurrence of the maximum value ignoring NaNs; otherwise, a non-zero-dimensional
+        array containing the indices of the minimum values ignoring NaNs. The returned array
+        must have the default array index data type.
+        For all-NaN slices ``ValueError`` is raised.
+        Warning: the results cannot be trusted if a slice contains only NaNs and -Infs.
+
+    Limitations
+    -----------
+    Input array is only supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.nanargmin` : Returns the indices of the minimum values along an axis, igonring NaNs.
+    :obj:`dpnp.argmax` : Returns the indices of the maximum values along an axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[np.nan, 4], [2, 3]])
+    >>> np.argmax(a)
+    array(0)
+    >>> np.nanargmax(a)
+    array(1)
+    >>> np.nanargmax(a, axis=0)
+    array([1, 0])
+    >>> np.nanargmax(a, axis=1)
+    array([1, 1])
+
+    """
+
+    a, mask = _replace_nan(a, -dpnp.inf)
+    if mask is not None:
+        mask = dpnp.all(mask, axis=axis)
+        if dpnp.any(mask):
+            raise ValueError("All-NaN slice encountered")
+    return dpnp.argmax(a, axis=axis, out=out, keepdims=keepdims)
+
+
+def nanargmin(a, axis=None, out=None, *, keepdims=False):
+    """
+    Returns the indices of the minimum values along an axis ignoring NaNs.
+
+    For full documentation refer to :obj:`numpy.nanargmin`.
+
+    Parameters
+    ----------
+    a : {dpnp_array, usm_ndarray}
+        Input array.
+    axis : int, optional
+        Axis along which to search. If ``None``, the function must return
+        the index of the minimum value of the flattened array.
+        Default: ``None``.
+    out : {dpnp_array, usm_ndarray}, optional
+        If provided, the result will be inserted into this array. It should
+        be of the appropriate shape and dtype.
+    keepdims : bool
+        If ``True``, the reduced axes (dimensions) must be included in the
+        result as singleton dimensions, and, accordingly, the result must be
+        compatible with the input array. Otherwise, if ``False``, the reduced
+        axes (dimensions) must not be included in the result.
+        Default: ``False``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        If `axis` is ``None``, a zero-dimensional array containing the index of
+        the first occurrence of the minimum value ignoring NaNs; otherwise, a non-zero-dimensional
+        array containing the indices of the minimum values ignoring NaNs. The returned array
+        must have the default array index data type.
+        For all-NaN slices ``ValueError`` is raised.
+        Warning: the results cannot be trusted if a slice contains only NaNs and Infs.
+
+    Limitations
+    -----------
+    Input and output arrays are only supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.nanargmax` : Returns the indices of the maximum values along an axis, igonring NaNs.
+    :obj:`dpnp.argmin` : Returns the indices of the minimum values along an axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[np.nan, 4], [2, 3]])
+    >>> np.argmin(a)
+    array(0)
+    >>> np.nanargmin(a)
+    array(2)
+    >>> np.nanargmin(a, axis=0)
+    array([1, 1])
+    >>> np.nanargmin(a, axis=1)
+    array([1, 0])
+
+    """
+
+    a, mask = _replace_nan(a, dpnp.inf)
+    if mask is not None:
+        mask = dpnp.all(mask, axis=axis)
+        if dpnp.any(mask):
+            raise ValueError("All-NaN slice encountered")
+    return dpnp.argmin(a, axis=axis, out=out, keepdims=keepdims)
 
 
 def nancumprod(x1, **kwargs):
@@ -168,36 +310,194 @@ def nancumsum(x1, **kwargs):
     return call_origin(numpy.nancumsum, x1, **kwargs)
 
 
-def nansum(x1, **kwargs):
+def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
-    Calculate sum() function treating 'Not a Numbers' (NaN) as zero.
+    Return the maximum of an array or maximum along an axis, ignoring any NaNs.
 
-    For full documentation refer to :obj:`numpy.nansum`.
+    For full documentation refer to :obj:`numpy.nanmax`.
+
+    Parameters
+    ----------
+    a :  {dpnp_array, usm_ndarray}
+        Input array.
+    axis : int or tuple of ints, optional
+        Axis or axes along which maximum values must be computed. By default,
+        the maximum value must be computed over the entire array. If a tuple of integers,
+        maximum values must be computed over multiple axes.
+        Default: ``None``.
+    out :  {dpnp_array, usm_ndarray}, optional
+        If provided, the result will be inserted into this array. It should
+        be of the appropriate shape and dtype.
+    keepdims : bool
+        If ``True``, the reduced axes (dimensions) must be included in the
+        result as singleton dimensions, and, accordingly, the result must be
+        compatible with the input array. Otherwise, if ``False``, the reduced
+        axes (dimensions) must not be included in the result.
+        Default: ``False``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        If the maximum value was computed over the entire array, a zero-dimensional array
+        containing the maximum value ignoring NaNs; otherwise, a non-zero-dimensional array
+        containing the maximum values ignoring NaNs. The returned array must have
+        the same data type as `a`.
+        When all-NaN slices are encountered a ``RuntimeWarning`` is raised and NaN is
+        returned for that slice.
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
+    Input array is only supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, and `initial` are only supported with their default values.
+    Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignoring any NaNs.
+    :obj:`dpnp.max` : The maximum value of an array along a given axis, propagating any NaNs.
+    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignoring any NaNs.
+    :obj:`dpnp.maximum` : Element-wise maximum of two arrays, propagating any NaNs.
+    :obj:`dpnp.isnan` : Shows which elements are Not a Number (NaN).
+    :obj:`dpnp.isfinite` : Shows which elements are neither NaN nor infinity.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> np.nansum(np.array([1, 2]))
-    3
-    >>> np.nansum(np.array([[1, 2], [3, 4]]))
-    10
+    >>> a = np.array([[1, 2], [3, np.nan]])
+    >>> np.nanmax(a)
+    array(3.)
+    >>> np.nanmax(a, axis=0)
+    array([3.,  2.])
+    >>> np.nanmax(a, axis=1)
+    array([2.,  3.])
+
+    When positive infinity and negative infinity are present:
+
+    >>> np.nanmax(np.array([1, 2, np.nan, np.NINF]))
+    array(2.)
+    >>> np.nanmax(np.array([1, 2, np.nan, np.inf]))
+    array(inf)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        result_obj = dpnp_nansum(x1_desc).get_pyobj()
-        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
-        return result
+    if initial is not None:
+        raise NotImplementedError(
+            "initial keyword argument is only supported with its default value."
+        )
+    elif where is not True:
+        raise NotImplementedError(
+            "where keyword argument is only supported with its default value."
+        )
+    else:
+        a, mask = _replace_nan(a, -dpnp.inf)
+        res = dpnp.max(a, axis=axis, out=out, keepdims=keepdims)
+        if mask is None:
+            return res
+        else:
+            mask = dpnp.all(mask, axis=axis)
+            if dpnp.any(mask):
+                dpnp.copyto(res, dpnp.nan, where=mask)
+                warnings.warn(
+                    "All-NaN slice encountered", RuntimeWarning, stacklevel=2
+                )
+        return res
 
-    return call_origin(numpy.nansum, x1, **kwargs)
+
+def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
+    """
+    Return the minimum of an array or minimum along an axis, ignoring any NaNs.
+
+    For full documentation refer to :obj:`numpy.nanmin`.
+
+    Parameters
+    ----------
+    a :  {dpnp_array, usm_ndarray}
+        Input array.
+    axis : int or tuple of ints, optional
+        Axis or axes along which minimum values must be computed. By default,
+        the minimum value must be computed over the entire array. If a tuple of integers,
+        minimum values must be computed over multiple axes.
+        Default: ``None``.
+    out :  {dpnp_array, usm_ndarray}, optional
+        If provided, the result will be inserted into this array. It should
+        be of the appropriate shape and dtype.
+    keepdims : bool, optional
+        If ``True``, the reduced axes (dimensions) must be included in the
+        result as singleton dimensions, and, accordingly, the result must be
+        compatible with the input array. Otherwise, if ``False``, the reduced
+        axes (dimensions) must not be included in the result.
+        Default: ``False``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        If the minimum value was computed over the entire array, a zero-dimensional array
+        containing the minimum value ignoring NaNs; otherwise, a non-zero-dimensional array
+        containing the minimum values ignoring NaNs. The returned array must have
+        the same data type as `a`.
+        When all-NaN slices are encountered a ``RuntimeWarning`` is raised and NaN is
+        returned for that slice.
+
+    Limitations
+    -----------
+    Input array is only supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, and `initial` are only supported with their default values.
+    Otherwise ``NotImplementedError`` exception will be raised.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignoring any NaNs.
+    :obj:`dpnp.min` : The minimum value of an array along a given axis, propagating any NaNs.
+    :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignoring any NaNs.
+    :obj:`dpnp.minimum` : Element-wise minimum of two arrays, propagating any NaNs.
+    :obj:`dpnp.isnan` : Shows which elements are Not a Number (NaN).
+    :obj:`dpnp.isfinite` : Shows which elements are neither NaN nor infinity.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, 2], [3, np.nan]])
+    >>> np.nanmin(a)
+    array(1.)
+    >>> np.nanmin(a, axis=0)
+    array([1.,  2.])
+    >>> np.nanmin(a, axis=1)
+    array([1.,  3.])
+
+    When positive infinity and negative infinity are present:
+
+    >>> np.nanmin(np.array([1, 2, np.nan, np.inf]))
+    array(1.)
+    >>> np.nanmin(np.array([1, 2, np.nan, np.NINF]))
+    array(-inf)
+
+    """
+
+    if initial is not None:
+        raise NotImplementedError(
+            "initial keyword argument is only supported with its default value."
+        )
+    elif where is not True:
+        raise NotImplementedError(
+            "where keyword argument is only supported with its default value."
+        )
+    else:
+        a, mask = _replace_nan(a, +dpnp.inf)
+        res = dpnp.min(a, axis=axis, out=out, keepdims=keepdims)
+        if mask is None:
+            return res
+        else:
+            mask = dpnp.all(mask, axis=axis)
+            if dpnp.any(mask):
+                dpnp.copyto(res, dpnp.nan, where=mask)
+                warnings.warn(
+                    "All-NaN slice encountered", RuntimeWarning, stacklevel=2
+                )
+        return res
 
 
 def nanprod(
@@ -259,6 +559,38 @@ def nanprod(
         initial=initial,
         where=where,
     )
+
+
+def nansum(x1, **kwargs):
+    """
+    Calculate sum() function treating 'Not a Numbers' (NaN) as zero.
+
+    For full documentation refer to :obj:`numpy.nansum`.
+
+    Limitations
+    -----------
+    Parameter `x1` is supported as :class:`dpnp.ndarray`.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.nansum(np.array([1, 2]))
+    3
+    >>> np.nansum(np.array([[1, 2], [3, 4]]))
+    10
+
+    """
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    if x1_desc and not kwargs:
+        result_obj = dpnp_nansum(x1_desc).get_pyobj()
+        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+        return result
+
+    return call_origin(numpy.nansum, x1, **kwargs)
 
 
 def nanvar(
