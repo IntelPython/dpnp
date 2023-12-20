@@ -595,12 +595,39 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
             return out_s
 
 
-def dpnp_svd(a, full_matrices=True, compute_uv=True):
+def dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     """
     dpnp_svd(a)
 
     Return the singular value decomposition (SVD).
     """
+
+    if hermitian:
+        check_stacked_square(a)
+
+        # _gesvd returns eigenvalues with s ** 2 sorted descending,
+        # but dpnp.linalg.eigh returns s sorted ascending so we re-order the eigenvalues
+        # and related arrays to have the correct order
+        if compute_uv:
+            s, u = dpnp.linalg.eigh(a)
+            sgn = dpnp.sign(s)
+            s = dpnp.absolute(s)
+            sidx = dpnp.argsort(s)[..., ::-1]
+            # Rearrange the signs according to sorted indices
+            sgn = dpnp.take_along_axis(sgn, sidx, axis=-1)
+            # Sort the singular values in descending order
+            s = dpnp.take_along_axis(s, sidx, axis=-1)
+            # Rearrange the eigenvectors according to sorted indices
+            u = dpnp.take_along_axis(u, sidx[..., None, :], axis=-1)
+            # Singular values are unsigned, move the sign into v
+            # Compute V^T adjusting for the sign and conjugating
+            vt = dpnp.transpose(u * sgn[..., None, :]).conjugate()
+            return u, s, vt
+        else:
+            # TODO: use dpnp.linalg.eighvals when it is updated
+            s, _ = dpnp.linalg.eigh(a)
+            s = dpnp.abs(s)
+            return dpnp.sort(s)[..., ::-1]
 
     a_usm_type = a.usm_type
     a_sycl_queue = a.sycl_queue
@@ -611,113 +638,112 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True):
     if a.ndim > 2:
         return dpnp_svd_batch(a, uv_type, s_type, full_matrices, compute_uv)
 
-    else:
-        n, m = a.shape
+    n, m = a.shape
 
-        if m == 0 or n == 0:
-            s = dpnp.empty(
-                (0,),
-                dtype=s_type,
+    if m == 0 or n == 0:
+        s = dpnp.empty(
+            (0,),
+            dtype=s_type,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+        if compute_uv:
+            if full_matrices:
+                u_shape = (n,)
+                vt_shape = (m,)
+            else:
+                u_shape = (n, 0)
+                vt_shape = (0, m)
+
+            u = dpnp.eye(
+                *u_shape,
+                dtype=uv_type,
                 usm_type=a_usm_type,
                 sycl_queue=a_sycl_queue,
             )
-            if compute_uv:
-                if full_matrices:
-                    u_shape = (n,)
-                    vt_shape = (m,)
-                else:
-                    u_shape = (n, 0)
-                    vt_shape = (0, m)
-
-                u = dpnp.eye(
-                    *u_shape,
-                    dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
-                )
-                vt = dpnp.eye(
-                    *vt_shape,
-                    dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
-                )
-                return u, s, vt
-            else:
-                return s
-
-        # `a` must be copied because gesvd destroys the input matrix
-        # `a` must be traspotted if m < n
-        if m >= n:
-            x = a
-            a_h = dpnp.empty_like(a, order="C", dtype=uv_type)
-            trans_flag = False
+            vt = dpnp.eye(
+                *vt_shape,
+                dtype=uv_type,
+                usm_type=a_usm_type,
+                sycl_queue=a_sycl_queue,
+            )
+            return u, s, vt
         else:
-            m, n = a.shape
-            x = a.transpose()
-            a_h = dpnp.empty_like(x, order="C", dtype=uv_type)
-            trans_flag = True
+            return s
 
-        a_usm_arr = dpnp.get_usm_ndarray(x)
+    # `a` must be copied because gesvd destroys the input matrix
+    # `a` must be traspotted if m < n
+    if m >= n:
+        x = a
+        a_h = dpnp.empty_like(a, order="C", dtype=uv_type)
+        trans_flag = False
+    else:
+        m, n = a.shape
+        x = a.transpose()
+        a_h = dpnp.empty_like(x, order="C", dtype=uv_type)
+        trans_flag = True
 
-        # use DPCTL tensor function to fill the сopy of the input array
-        # from the input array
-        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
-        )
+    a_usm_arr = dpnp.get_usm_ndarray(x)
 
-        k = n  # = min(m, n) where m >= n is ensured above
-        if compute_uv:
-            if full_matrices:
-                u_shape = (m, m)
-                vt_shape = (n, n)
-                jobu = ord("A")
-                jobvt = ord("A")
-            else:
-                u_shape = x.shape
-                vt_shape = (k, n)
-                jobu = ord("S")
-                jobvt = ord("S")
+    # use DPCTL tensor function to fill the сopy of the input array
+    # from the input array
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+    )
+
+    k = n  # = min(m, n) where m >= n is ensured above
+    if compute_uv:
+        if full_matrices:
+            u_shape = (m, m)
+            vt_shape = (n, n)
+            jobu = ord("A")
+            jobvt = ord("A")
         else:
-            u_shape = vt_shape = ()
-            jobu = ord("N")
-            jobvt = ord("N")
+            u_shape = x.shape
+            vt_shape = (k, n)
+            jobu = ord("S")
+            jobvt = ord("S")
+    else:
+        u_shape = vt_shape = ()
+        jobu = ord("N")
+        jobvt = ord("N")
 
-        u_h = dpnp.empty(
-            u_shape,
-            dtype=uv_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
-        )
-        vt_h = dpnp.empty(
-            vt_shape,
-            dtype=uv_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
-        )
-        s_h = dpnp.empty(
-            k, dtype=s_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
-        )
+    u_h = dpnp.empty(
+        u_shape,
+        dtype=uv_type,
+        usm_type=a_usm_type,
+        sycl_queue=a_sycl_queue,
+    )
+    vt_h = dpnp.empty(
+        vt_shape,
+        dtype=uv_type,
+        usm_type=a_usm_type,
+        sycl_queue=a_sycl_queue,
+    )
+    s_h = dpnp.empty(
+        k, dtype=s_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+    )
 
-        ht_lapack_ev, _ = li._gesvd(
-            a_sycl_queue,
-            jobu,
-            jobvt,
-            m,
-            n,
-            a_h.get_array(),
-            s_h.get_array(),
-            u_h.get_array(),
-            vt_h.get_array(),
-            [a_copy_ev],
-        )
+    ht_lapack_ev, _ = li._gesvd(
+        a_sycl_queue,
+        jobu,
+        jobvt,
+        m,
+        n,
+        a_h.get_array(),
+        s_h.get_array(),
+        u_h.get_array(),
+        vt_h.get_array(),
+        [a_copy_ev],
+    )
 
-        ht_lapack_ev.wait()
-        a_ht_copy_ev.wait()
+    ht_lapack_ev.wait()
+    a_ht_copy_ev.wait()
 
-        if compute_uv:
-            if trans_flag:
-                return u_h.transpose(), s_h, vt_h.transpose()
-            else:
-                return vt_h, s_h, u_h
+    if compute_uv:
+        if trans_flag:
+            return u_h.transpose(), s_h, vt_h.transpose()
         else:
-            return s_h
+            return vt_h, s_h, u_h
+    else:
+        return s_h
