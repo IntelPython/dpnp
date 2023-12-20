@@ -6,7 +6,7 @@ from numpy.testing import assert_allclose
 
 import dpnp
 
-from .helper import get_all_dtypes, assert_dtype_allclose
+from .helper import assert_dtype_allclose, get_all_dtypes
 
 
 def _getattr(ex, str_):

@@ -403,7 +403,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param("nanmax", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanmin", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanprod", [1.0, 2.0, dp.nan]),
-        pytest.param("nanvar", [1.0, 2.0, 4.0, dp.nan]),        
+        pytest.param("nanvar", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("negative", [1.0, 0.0, -1.0]),
         pytest.param("positive", [1.0, 0.0, -1.0]),
         pytest.param("prod", [1.0, 2.0]),

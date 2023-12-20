@@ -45,8 +45,8 @@ import numpy
 
 import dpnp
 from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
 from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import *
 
 from .dpnp_algo.dpnp_elementwise_common import (
     check_nd_call_func,
@@ -1342,8 +1342,7 @@ def logaddexp(
 
 def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
     """
-    Calculates the logarithm of the sum of exponentials of elements in the
-    input array `x`.
+    Calculates the logarithm of the sum of exponentials of elements in the input array.
 
     Parameters
     ----------
@@ -1356,7 +1355,7 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
         Default: ``None``.
     out :  {dpnp_array, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.        
+        be of the appropriate shape and dtype.
     dtype : data type, optional
         Data type of the returned array. If ``None``, the default data
         type is inferred from the "kind" of the input array data type.
@@ -1397,7 +1396,7 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
     --------
     :obj:`dpnp.log` : Natural logarithm, element-wise.
     :obj:`dpnp.exp` : Exponential, element-wise.
-    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponentiations of the inputs, element-wise.    
+    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponentiations of the inputs, element-wise.
 
     Examples
     --------
@@ -1452,8 +1451,7 @@ def reciprocal(x1, **kwargs):
 
 def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
     """
-    Calculates the square root of the sum of squares of elements in the input
-    array `x`.
+    Calculates the square root of the sum of squares of elements in the input array.
 
     Parameters
     ----------
@@ -1466,7 +1464,7 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
         Default: ``None``.
     out :  {dpnp_array, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.        
+        be of the appropriate shape and dtype.
     dtype : data type, optional
             Data type of the returned array. If ``None``, the default data
             type is inferred from the "kind" of the input array data type.
