@@ -38,8 +38,8 @@ __all__ = [
     "check_stacked_2d",
     "check_stacked_square",
     "dpnp_eigh",
-    "dpnp_solve",
     "dpnp_slogdet",
+    "dpnp_solve",
 ]
 
 _jobz = {"N": 0, "V": 1}
@@ -176,30 +176,30 @@ def _common_inexact_type(default_dtype, *dtypes):
 
 
 def _lu_factor(a, res_type):
-    """Compute pivoted LU decomposition.
+    """
+    Compute pivoted LU decomposition.
 
     Decompose a given batch of square matrices. Inputs and outputs are
     transposed.
 
-    Args:
-        a (dpnp.ndarray): The input matrix with dimension ``(..., N, N)``.
-           The dimension condition is not checked.
-        res_type (dpnp.dtype): float32, float64, complex64 or complex128.
+    Parameters
+    ----------
+        a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+            Input array containing the matrices to be decomposed.
+        res_type : dpnp.dtype
+            Specifies the data type of the result.
+            Acceptable data types are float32, float64, complex64, or complex128.
 
-    Returns:
+    Returns
+    -------
         tuple:
-        lu_t (dpnp.ndarray):
-            ``L`` without its unit diagonal and ``U`` with
-            dimension ``(..., N, N)``.
-        piv (dpnp.ndarray):
-            1-origin pivot indices with dimension
-            ``(..., N)``.
-        dev_info (dpnp.ndarray):
-            ``getrf`` or `getrf_batch` info with dimension ``(...)``.
-
-    See Also
-    --------
-    :obj:`scipy.linalg.lu_factor`
+        lu_t : (..., N, N) {dpnp.ndarray, usm_ndarray}
+            Combined 'L' and 'U' matrices from LU decomposition
+            excluding the diagonal of 'L'.
+        piv : (..., N) {dpnp.ndarray, usm_ndarray}
+            1-origin pivot indices indicating row permutations during decomposition.
+        dev_info : (...) {dpnp.ndarray, usm_ndarray}
+            Information on `getrf` or `getrf_batch` computation success (0 for success).
 
     """
 
@@ -312,28 +312,29 @@ def _lu_factor(a, res_type):
                 a_ht_copy_ev[i].wait()
 
             # Reshape the results back to their original shape
-            out_v = dpnp.array(a_vecs, order="C").reshape(orig_shape)
+            out_a = dpnp.array(a_vecs, order="C").reshape(orig_shape)
             out_ipiv = dpnp.array(ipiv_vecs).reshape(orig_shape[:-1])
             out_dev_info = dpnp.array(dev_info_vecs).reshape(orig_shape[:-2])
 
-            return (out_v, out_ipiv, out_dev_info)
+            return (out_a, out_ipiv, out_dev_info)
 
     else:
         a_usm_arr = dpnp.get_usm_ndarray(a)
 
         # `a` must be copied because getrf destroys the input matrix
         a_h = dpnp.empty_like(a, order="C", dtype=res_type)
-        ipiv_h = dpnp.empty(
-            n, dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
-        )
-        dev_info_h = dpnp.empty(
-            1, dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
-        )
 
         # use DPCTL tensor function to fill the сopy of the input array
         # from the input array
         a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+        )
+
+        ipiv_h = dpnp.empty(
+            n, dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+        )
+        dev_info_h = dpnp.empty(
+            1, dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
         )
 
         # Call the LAPACK extension function _getrf
@@ -665,11 +666,11 @@ def dpnp_slogdet(a):
         ),
         axis=-1,
     )
-    if res_type.kind == "f":
+    if dpnp.issubdtype(res_type, dpnp.floating):
         non_zero += dpnp.count_nonzero(diag < 0, axis=-1)
 
     sign = (non_zero % 2) * -2 + 1
-    if res_type.kind == "c":
+    if dpnp.issubdtype(res_type, dpnp.complexfloating):
         sign = sign * dpnp.prod(diag / dpnp.abs(diag), axis=-1)
 
     sign = sign.astype(res_type)

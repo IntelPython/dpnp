@@ -158,7 +158,7 @@ def det(a):
 
     Parameters
     ----------
-    a : (..., M, M) dpnp.ndarray
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         Input array to compute determinants for.
 
     Returns
@@ -194,10 +194,7 @@ def det(a):
 
     """
 
-    if not dpnp.is_supported_array_type(a):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(a))
-        )
+    dpnp.check_supported_arrays_type(a)
 
     sign, logdet = slogdet(a)
     return sign * dpnp.exp(logdet)
@@ -664,28 +661,23 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
 
 def slogdet(a):
     """
-    Returns sign and logarithm of the determinant of an array.
-
-    It calculates the natural logarithm of the determinant of a given value.
+    Compute the sign and (natural) logarithm of the determinant of an array.
 
     For full documentation refer to :obj:`numpy.linalg.slogdet`.
 
-    Args
-    ----
-        a (dpnp.ndarray): The input matrix with dimension ``(..., N, N)``.
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Input array, has to be a square 2-D array.
 
     Returns
     -------
-        out : tuple of :class:`~dpnp.ndarray`:
-            It returns a tuple ``(sign, logdet)``.
-            ``sign`` represents each sign of the determinant as a real number
-            ``0``, ``1`` or ``-1``.
-            ``logdet`` represents the natural logarithm of the absolute of the
-            determinant.
-            If the determinant is zero, ``sign`` will be ``0`` and ``logdet``
-            will be ``-inf``.
-            The shapes of both ``sign`` and ``logdet`` are equal to
-            ``a.shape[:-2]``.
+        sign : (...) dpnp.ndarray
+            A number representing the sign of the determinant. For a real matrix,
+            this is 1, 0, or -1. For a complex matrix, this is a complex number
+            with absolute value 1 (i.e., it is on the unit circle), or else 0.
+        logabsdet : (...) dpnp.ndarray
+            The natural log of the absolute value of the determinant.
 
     Limitations
     -----------

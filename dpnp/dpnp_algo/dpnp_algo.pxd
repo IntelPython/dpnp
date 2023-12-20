@@ -54,7 +54,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CUMSUM_EXT
         DPNP_FN_DEGREES
         DPNP_FN_DEGREES_EXT
-        DPNP_FN_DET
         DPNP_FN_DIAG_INDICES
         DPNP_FN_DIAG_INDICES_EXT
         DPNP_FN_DIAGONAL
