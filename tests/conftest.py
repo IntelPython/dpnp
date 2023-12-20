@@ -138,6 +138,13 @@ def suppress_mean_empty_slice_numpy_warnings():
 
 
 @pytest.fixture
+def suppress_overflow_encountered_in_cast_numpy_warnings():
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", r"overflow encountered in cast")
+        yield
+
+
+@pytest.fixture
 def suppress_divide_invalid_numpy_warnings(
     suppress_divide_numpy_warnings, suppress_invalid_numpy_warnings
 ):
