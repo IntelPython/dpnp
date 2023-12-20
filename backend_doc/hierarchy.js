@@ -73,8 +73,6 @@ var hierarchy =
     [ "dpnp::backend::ext::vm::FloorContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_floor_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::FloorOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_floor_output_type.html", null ],
     [ "func_type_pair_t< FuncType, T >", "structfunc__type__pair__t.html", null ],
-    [ "dpnp::backend::ext::blas::types::GemmBatchTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
-    [ "dpnp::backend::ext::blas::types::GemmTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::lapack::types::GesvTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_gesv_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
