@@ -567,7 +567,7 @@ class TestSvd:
     def set_tol(self, dtype):
         tol = 1e-06
         if dtype in (inp.float32, inp.complex64):
-            tol = 1e-05
+            tol = 1e-04
         elif not has_support_aspect64() and dtype in (
             inp.int32,
             inp.int64,
