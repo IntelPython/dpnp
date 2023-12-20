@@ -374,14 +374,36 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     For full documentation refer to :obj:`numpy.max`.
 
+    Parameters
+    ----------
+    a :  {dpnp_array, usm_ndarray}
+        Input array.
+    axis : int or tuple of ints, optional
+        Axis or axes along which maximum values must be computed. By default,
+        the maximum value must be computed over the entire array. If a tuple of integers,
+        maximum values must be computed over multiple axes.
+        Default: ``None``.
+    out :  {dpnp_array, usm_ndarray}, optional
+        If provided, the result will be inserted into this array. It should
+        be of the appropriate shape and dtype.
+    keepdims : bool
+        If ``True``, the reduced axes (dimensions) must be included in the
+        result as singleton dimensions, and, accordingly, the result must be
+        compatible with the input array. Otherwise, if ``False``, the reduced
+        axes (dimensions) must not be included in the result.
+        Default: ``False``.
+
     Returns
     -------
     out : dpnp.ndarray
-        Maximum of `a`.
+        If the maximum value was computed over the entire array, a zero-dimensional array
+        containing the maximum value; otherwise, a non-zero-dimensional array
+        containing the maximum values. The returned array must have
+        the same data type as `a`.
 
     Limitations
     -----------
-    Input and output arrays are only supported as either :class:`dpnp.ndarray`
+    Input array is only supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, and `initial` are only supported with their default values.
     Otherwise ``NotImplementedError`` exception will be raised.
@@ -549,14 +571,36 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     For full documentation refer to :obj:`numpy.min`.
 
+    Parameters
+    ----------
+    a :  {dpnp_array, usm_ndarray}
+        Input array.
+    axis : int or tuple of ints, optional
+        Axis or axes along which minimum values must be computed. By default,
+        the minimum value must be computed over the entire array. If a tuple of integers,
+        minimum values must be computed over multiple axes.
+        Default: ``None``.
+    out :  {dpnp_array, usm_ndarray}, optional
+        If provided, the result will be inserted into this array. It should
+        be of the appropriate shape and dtype.
+    keepdims : bool, optional
+        If ``True``, the reduced axes (dimensions) must be included in the
+        result as singleton dimensions, and, accordingly, the result must be
+        compatible with the input array. Otherwise, if ``False``, the reduced
+        axes (dimensions) must not be included in the result.
+        Default: ``False``.
+
     Returns
     -------
     out : dpnp.ndarray
-        Minimum of `a`.
+        If the minimum value was computed over the entire array, a zero-dimensional array
+        containing the minimum value; otherwise, a non-zero-dimensional array
+        containing the minimum values. The returned array must have
+        the same data type as `a`.
 
     Limitations
     -----------
-    Input and output arrays are only supported as either :class:`dpnp.ndarray`
+    Input array is only supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, and `initial` are only supported with their default values.
     Otherwise ``NotImplementedError`` exception will be raised.
