@@ -85,6 +85,16 @@ __all__ = [
 ]
 
 
+def _check_stack_arrays(arrays):
+    """Validate a sequence type of arrays to stack."""
+
+    if not hasattr(arrays, "__getitem__"):
+        raise TypeError(
+            'arrays to stack must be passed as a "sequence" type '
+            "such as list or tuple."
+        )
+
+
 def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
     """
     Return an array converted to a float type.
@@ -551,6 +561,8 @@ def column_stack(tup):
 
     """
 
+    _check_stack_arrays(tup)
+
     arrays = []
     for v in tup:
         dpnp.check_supported_arrays_type(v)
@@ -563,7 +575,7 @@ def column_stack(tup):
             )
 
         arrays.append(v)
-    return dpnp.concatenate(arrays, 1)
+    return dpnp.concatenate(arrays, axis=1)
 
 
 def concatenate(
@@ -777,6 +789,8 @@ def dstack(tup):
            [[3, 4]]])
 
     """
+
+    _check_stack_arrays(tup)
 
     arrs = atleast_3d(*tup)
     if not isinstance(arrs, list):
@@ -1078,27 +1092,26 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array((1,2,3))
-    >>> b = np.array((4,5,6))
-    >>> np.hstack((a,b))
+    >>> a = np.array((1, 2, 3))
+    >>> b = np.array((4, 5, 6))
+    >>> np.hstack((a, b))
     array([1, 2, 3, 4, 5, 6])
 
-    >>> a = np.array([[1],[2],[3]])
-    >>> b = np.array([[4],[5],[6]])
-    >>> np.hstack((a,b))
+    >>> a = np.array([[1], [2], [3]])
+    >>> b = np.array([[4], [5], [6]])
+    >>> np.hstack((a, b))
     array([[1, 4],
            [2, 5],
            [3, 6]])
 
     """
 
-    if not hasattr(tup, "__getitem__"):
-        raise TypeError(
-            "Arrays to stack must be passed as a sequence type such as list or tuple."
-        )
+    _check_stack_arrays(tup)
+
     arrs = dpnp.atleast_1d(*tup)
     if not isinstance(arrs, list):
         arrs = [arrs]
+
     # As a special case, dimension 0 of 1-dimensional arrays is "horizontal"
     if arrs and arrs[0].ndim == 1:
         return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
@@ -1646,6 +1659,8 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
 
     """
 
+    _check_stack_arrays(arrays)
+
     if dtype is not None and out is not None:
         raise TypeError(
             "stack() only takes `out` or `dtype` as an argument, but both were provided."
@@ -1887,6 +1902,9 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     """
     Stack arrays in sequence vertically (row wise).
 
+    :obj:`dpnp.row_stack` is an alias for :obj:`dpnp.vstack`.
+    They are the same function.
+
     For full documentation refer to :obj:`numpy.vstack`.
 
     Parameters
@@ -1935,10 +1953,8 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
 
     """
 
-    if not hasattr(tup, "__getitem__"):
-        raise TypeError(
-            "Arrays to stack must be passed as a sequence type such as list or tuple."
-        )
+    _check_stack_arrays(tup)
+
     arrs = dpnp.atleast_2d(*tup)
     if not isinstance(arrs, list):
         arrs = [arrs]
