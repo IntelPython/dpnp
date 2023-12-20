@@ -753,6 +753,7 @@ def test_prod_nanprod_dtype(func, in_dtype, out_dtype):
     assert_dtype_allclose(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("suppress_overflow_encountered_in_cast_numpy_warnings")
 @pytest.mark.parametrize("func", ["prod", "nanprod"])
 def test_prod_nanprod_out(func):
     ia = dpnp.arange(1, 7).reshape((2, 3))
