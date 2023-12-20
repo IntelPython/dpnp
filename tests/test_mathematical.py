@@ -2257,6 +2257,32 @@ class TestMatmul:
         expected = numpy.matmul(a1, a2)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((2, 4), (4, 3)),
+            ((4, 2, 3), (4, 3, 5)),
+            ((6, 7, 4, 3), (6, 7, 3, 5)),
+        ],
+        ids=[
+            "((2, 4), (4, 3))",
+            "((4, 2, 3), (4, 3, 5))",
+            "((6, 7, 4, 3), (6, 7, 3, 5))",
+        ],
+    )
+    def test_matmul_dtype(self, dtype, shape_pair):
+        shape1, shape2 = shape_pair
+        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        result = dpnp.matmul(b1, b2, dtype=dtype)
+        expected = numpy.matmul(a1, a2, dtype=dtype)
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("dtype2", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
@@ -2272,7 +2298,7 @@ class TestMatmul:
             "((6, 7, 4, 3), (6, 7, 3, 5))",
         ],
     )
-    def test_matmul_dtype(self, dtype1, dtype2, shape_pair):
+    def test_matmul_dtype_matrix(self, dtype1, dtype2, shape_pair):
         shape1, shape2 = shape_pair
         a1 = numpy.arange(numpy.prod(shape1), dtype=dtype1).reshape(shape1)
         a2 = numpy.arange(numpy.prod(shape2), dtype=dtype2).reshape(shape2)
@@ -2284,7 +2310,6 @@ class TestMatmul:
         expected = numpy.matmul(a1, a2)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("order", ["C", "F", "K", "A"])
     @pytest.mark.parametrize(
         "shape_pair",
@@ -2301,8 +2326,8 @@ class TestMatmul:
     )
     def test_matmul_order(self, order, shape_pair):
         shape1, shape2 = shape_pair
-        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
-        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+        a1 = numpy.arange(numpy.prod(shape1), dtype=numpy.float32).reshape(shape1)
+        a2 = numpy.arange(numpy.prod(shape2), dtype=numpy.float32).reshape(shape2)
 
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
@@ -2345,9 +2370,10 @@ class TestMatmul:
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
 
-        result = dpnp.empty((5, 7), dtype=dtype)
-        dpnp.matmul(b1, b2, out=result)
+        dpnp_out = dpnp.empty((5, 7), dtype=dtype)
+        result = dpnp.matmul(b1, b2, out=dpnp_out)
         expected = numpy.matmul(a1, a2)
+        assert result is dpnp_out
         assert_dtype_allclose(result, expected)
 
 

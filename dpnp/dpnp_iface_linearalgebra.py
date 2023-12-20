@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2023, Intel Corporation
@@ -62,6 +60,56 @@ __all__ = [
     "vdot",
 ]
 
+
+def _gemm_res_dtype(*arrays, casting):
+    """
+    Determines the data types for matmul operation and the output array of matmul operation.
+
+    The output array data type is determined based on the Promotion Type Rule
+    and device capibilities. The data type used in matmul operation is an 'inexact' data type
+    determined based on the output data type and device capabilities.
+    Both data types are determined based on the fact that the output array data type can be cast
+    to the other data type according to casting rule specified, otherwise a ``TypeError`` is raised.
+
+    Parameters
+    ----------
+    arrays : {dpnp_array, usm_ndarray}
+        Input arrays.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur.
+
+    Returns
+    -------
+    gemm_dtype, res_dtype :
+        The appropriate data types for performing matmul operation and presenting output array.
+
+    """
+
+    res_dtype = dpnp.result_type(*arrays)
+    gemm_dtype = dpnp.default_float_type(device=arrays[0].device)
+    if dpnp.issubdtype(res_dtype, dpnp.complexfloating):
+        gemm_dtype = (
+            dpnp.complex64 if gemm_dtype == dpnp.float32 else dpnp.complex128
+        )
+
+    if dpnp.can_cast(res_dtype, gemm_dtype, casting):
+        if res_dtype in [
+            dpnp.float64,
+            dpnp.complex128,
+        ]:  # in case device does not support fp64
+            return gemm_dtype, gemm_dtype
+        elif res_dtype in [
+            dpnp.float32,
+            dpnp.complex64,
+        ]:  # needed dtype is fp32 but device supports fp64
+            return res_dtype, res_dtype
+        else:
+            return gemm_dtype, res_dtype
+    else:
+        raise TypeError(
+            f"Cannot cast ufunc 'matmul' output from dtype({res_dtype}) to dtype({gemm_dtype}) with casting rule {casting}"
+        )
+    
 
 def dot(x1, x2, out=None, **kwargs):
     """
@@ -415,7 +463,8 @@ def matmul(
         is_x2_c_f_contig = x2.flags.c_contiguous or x2.flags.f_contiguous
         list_of_events = []
 
-        # input arrays should be C_CONTIGUOUS or F_CONTIGUOUS
+        # input arrays should have the proper data type
+        # and be C_CONTIGUOUS or F_CONTIGUOUS
         if not is_x1_c_f_contig or x1.dtype != gemm_dtype:
             x1_copy = dpnp.empty_like(x1, dtype=gemm_dtype, order="C")
             ht_copy_ev_x1, _ = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -509,36 +558,45 @@ def matmul(
 def dpnp_matmul_batch(
     exec_q, x1, x2, res, x1_is_2D, x2_is_2D, ht_copy_ev_x1, ht_copy_ev_x2
 ):
+    # If input array is F-contiguous, we need to change the order to C-contiguous.
+    # because mkl::gemm_bacth needs each 2D array to be F-contiguous but 
+    # when the input array is F-contiguous, the data of 2D array 
+    # that needs to be called in mkl::gemm_batch are not contiguous.
     copy_ev_x1 = dpctl.SyclEvent()
-    if not x1.flags["C_CONTIGUOUS"]:
-        v = dpnp.empty_like(x1, order="C")
+    if not x1.flags.c_contiguous:
+        x1_copy  = dpnp.empty_like(x1, order="C")
         (
             ht_copy_ev_x1,
             copy_ev_x1,
         ) = ti._copy_usm_ndarray_into_usm_ndarray(
             src=dpnp.get_usm_ndarray(x1),
-            dst=v.get_array(),
+            dst=x1_copy.get_array(),
             sycl_queue=x1.sycl_queue,
         )
-        x1 = v
+        x1 = x1_copy 
 
     copy_ev_x2 = dpctl.SyclEvent()
-    if not x2.flags["C_CONTIGUOUS"]:
-        v = dpnp.empty_like(x2, order="C")
+    if not x2.flags.c_contiguous:
+        x2_copy  = dpnp.empty_like(x2, order="C")
         (
             ht_copy_ev_x2,
             copy_ev_x2,
         ) = ti._copy_usm_ndarray_into_usm_ndarray(
             src=dpnp.get_usm_ndarray(x2),
-            dst=v.get_array(),
+            dst=x2_copy.get_array(),
             sycl_queue=x2.sycl_queue,
         )
-        x2 = v
+        x2 = x2_copy
 
     x1_strides = x1.strides
     x2_strides = x2.strides
     res_strides = res.strides
 
+    # When shape along any particular dimension is 1,
+    # the stride along that dimension is not a 
+    # meaningful number and is undefined. Here, we 
+    # standardizing strides before continuing,
+    # setting stride to 0 if the shape along that axis is <=1
     if x1_is_2D:
         x1_strides = tuple(
             str_i if sh_i > 1 else 0
@@ -591,56 +649,6 @@ def dpnp_matmul_batch(
     )
 
     return ht_blas_ev, ht_copy_ev_x1, ht_copy_ev_x2, res
-
-
-def _gemm_res_dtype(*arrays, casting):
-    """
-    Determines the data types for matmul operation and the output array of matmul operation.
-
-    The output array data type is determined based on the Promotion Type Rule
-    and device capibilities. The data type used in matmul operation is an 'inexact' data type
-    determined based on the output data type and device capabilities.
-    Both data types are determined based on the fact that the output array data type can be cast
-    to the other data type according to casting rule specified, otherwise a ``TypeError`` is raised.
-
-    Parameters
-    ----------
-    arrays : {dpnp_array, usm_ndarray}
-        Input arrays.
-    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
-        Controls what kind of data casting may occur.
-
-    Returns
-    -------
-    gemm_dtype, res_dtype :
-        The appropriate data types for performing matmul operation and presenting output array.
-
-    """
-
-    res_dtype = dpnp.result_type(*arrays)
-    gemm_dtype = dpnp.default_float_type(device=arrays[0].device)
-    if dpnp.issubdtype(res_dtype, dpnp.complexfloating):
-        gemm_dtype = (
-            dpnp.complex64 if gemm_dtype == dpnp.float32 else dpnp.complex128
-        )
-
-    if dpnp.can_cast(res_dtype, gemm_dtype, casting):
-        if res_dtype in [
-            dpnp.float64,
-            dpnp.complex128,
-        ]:  # in case device does not support fp64
-            return gemm_dtype, gemm_dtype
-        elif res_dtype in [
-            dpnp.float32,
-            dpnp.complex64,
-        ]:  # needed dtype is fp32 but device supports fp64
-            return res_dtype, res_dtype
-        else:
-            return gemm_dtype, res_dtype
-    else:
-        raise TypeError(
-            f"Cannot cast ufunc 'matmul' output from dtype({res_dtype}) to dtype({gemm_dtype}) with casting rule {casting}"
-        )
 
 
 def outer(x1, x2, out=None):
