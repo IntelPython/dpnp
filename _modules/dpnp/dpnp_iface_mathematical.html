@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.13.1dev1+22.g5f6b27f46e documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.13.1dev1+24.g1f2b0a421a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7a728466"></script>
+        <script src="../../_static/documentation_options.js?v=cd63a87b"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+22.g5f6b27f46e
+                0.13.1dev1+24.g1f2b0a421a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -223,8 +223,8 @@
 
 <span class="sd">    Scalar value (including case with 0d array) is expanded to an array</span>
 <span class="sd">    with length=1 in the direction of axis and the shape of the input array `a`</span>
-<span class="sd">    along all other axes.</span>
-<span class="sd">    Note, if `values` is a scalar, then it is converted to 0d array allocating</span>
+<span class="sd">    in along all other axes.</span>
+<span class="sd">    Note, if `values` is a scalar. then it is converted to 0d array allocating</span>
 <span class="sd">    on the same SYCL queue as the input array `a` and with the same USM type.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1275,9 +1275,7 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.</span>
-<span class="sd">    :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignores NaNs.</span>
-<span class="sd">    :obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs..</span>
-<span class="sd">    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.</span>
+<span class="sd">    :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignore NaNs.</span>
 <span class="sd">    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.</span>
 <span class="sd">    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.</span>
 
@@ -1385,9 +1383,7 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.</span>
-<span class="sd">    :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignores NaNs.</span>
-<span class="sd">    :obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.</span>
-<span class="sd">    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.</span>
+<span class="sd">    :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignore NaNs.</span>
 <span class="sd">    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.</span>
 <span class="sd">    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.</span>
 
