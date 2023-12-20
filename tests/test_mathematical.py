@@ -2421,8 +2421,12 @@ class TestMatmul:
     )
     def test_matmul_order(self, order, shape_pair):
         shape1, shape2 = shape_pair
-        a1 = numpy.arange(numpy.prod(shape1), dtype=numpy.float32).reshape(shape1)
-        a2 = numpy.arange(numpy.prod(shape2), dtype=numpy.float32).reshape(shape2)
+        a1 = numpy.arange(numpy.prod(shape1), dtype=numpy.float32).reshape(
+            shape1
+        )
+        a2 = numpy.arange(numpy.prod(shape2), dtype=numpy.float32).reshape(
+            shape2
+        )
 
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)

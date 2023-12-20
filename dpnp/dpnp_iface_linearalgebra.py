@@ -109,7 +109,7 @@ def _gemm_res_dtype(*arrays, casting):
         raise TypeError(
             f"Cannot cast ufunc 'matmul' output from dtype({res_dtype}) to dtype({gemm_dtype}) with casting rule {casting}"
         )
-    
+
 
 def dot(x1, x2, out=None, **kwargs):
     """
@@ -559,12 +559,12 @@ def dpnp_matmul_batch(
     exec_q, x1, x2, res, x1_is_2D, x2_is_2D, ht_copy_ev_x1, ht_copy_ev_x2
 ):
     # If input array is F-contiguous, we need to change the order to C-contiguous.
-    # because mkl::gemm_bacth needs each 2D array to be F-contiguous but 
-    # when the input array is F-contiguous, the data of 2D array 
+    # because mkl::gemm_bacth needs each 2D array to be F-contiguous but
+    # when the input array is F-contiguous, the data of 2D array
     # that needs to be called in mkl::gemm_batch are not contiguous.
     copy_ev_x1 = dpctl.SyclEvent()
     if not x1.flags.c_contiguous:
-        x1_copy  = dpnp.empty_like(x1, order="C")
+        x1_copy = dpnp.empty_like(x1, order="C")
         (
             ht_copy_ev_x1,
             copy_ev_x1,
@@ -573,11 +573,11 @@ def dpnp_matmul_batch(
             dst=x1_copy.get_array(),
             sycl_queue=x1.sycl_queue,
         )
-        x1 = x1_copy 
+        x1 = x1_copy
 
     copy_ev_x2 = dpctl.SyclEvent()
     if not x2.flags.c_contiguous:
-        x2_copy  = dpnp.empty_like(x2, order="C")
+        x2_copy = dpnp.empty_like(x2, order="C")
         (
             ht_copy_ev_x2,
             copy_ev_x2,
@@ -593,8 +593,8 @@ def dpnp_matmul_batch(
     res_strides = res.strides
 
     # When shape along any particular dimension is 1,
-    # the stride along that dimension is not a 
-    # meaningful number and is undefined. Here, we 
+    # the stride along that dimension is not a
+    # meaningful number and is undefined. Here, we
     # standardizing strides before continuing,
     # setting stride to 0 if the shape along that axis is <=1
     if x1_is_2D:
