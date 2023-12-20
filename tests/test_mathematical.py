@@ -2381,6 +2381,9 @@ class TestMatmul:
     @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("dtype2", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
+        "order_pair", [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")]
+    )
+    @pytest.mark.parametrize(
         "shape_pair",
         [
             ((2, 4), (4, 3)),
@@ -2393,10 +2396,13 @@ class TestMatmul:
             "((6, 7, 4, 3), (6, 7, 3, 5))",
         ],
     )
-    def test_matmul_dtype_matrix(self, dtype1, dtype2, shape_pair):
+    def test_matmul_dtype_matrix(self, dtype1, dtype2, order_pair, shape_pair):
+        order1, order2 = order_pair
         shape1, shape2 = shape_pair
         a1 = numpy.arange(numpy.prod(shape1), dtype=dtype1).reshape(shape1)
         a2 = numpy.arange(numpy.prod(shape2), dtype=dtype2).reshape(shape2)
+        a1 = numpy.array(a1, order=order1)
+        a2 = numpy.array(a2, order=order2)
 
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
@@ -2421,12 +2427,8 @@ class TestMatmul:
     )
     def test_matmul_order(self, order, shape_pair):
         shape1, shape2 = shape_pair
-        a1 = numpy.arange(numpy.prod(shape1), dtype=numpy.float32).reshape(
-            shape1
-        )
-        a2 = numpy.arange(numpy.prod(shape2), dtype=numpy.float32).reshape(
-            shape2
-        )
+        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
 
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
