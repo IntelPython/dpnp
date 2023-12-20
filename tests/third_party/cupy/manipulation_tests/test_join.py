@@ -107,6 +107,7 @@ class TestJoin:
         e = testing.shaped_arange((2, 3, 2), xp, dtype)
         return xp.concatenate((a, b, c, d, e) * 2, axis=-1)
 
+    @pytest.mark.skip(reason="lead to crash due to reported issue in OCL RT")
     @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_concatenate_many_multi_dtype(self, xp):
         a = testing.shaped_arange((2, 1), xp, "i")
