@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.argmin &mdash; Data Parallel Extension for NumPy 0.13.1dev1+30.g8e69a072b4 documentation</title>
+  <title>dpnp.argmin &mdash; Data Parallel Extension for NumPy 0.13.1dev1+36.gdfd4dbc624 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,14 +24,14 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7292bd40"></script>
+        <script src="../../_static/documentation_options.js?v=d3b23706"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.searchsorted" href="dpnp.searchsorted.html" />
-    <link rel="prev" title="dpnp.argmax" href="dpnp.argmax.html" /> 
+    <link rel="next" title="dpnp.nanargmin" href="dpnp.nanargmin.html" />
+    <link rel="prev" title="dpnp.nanargmax" href="dpnp.nanargmax.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+30.g8e69a072b4
+                0.13.1dev1+36.gdfd4dbc624
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -132,20 +132,23 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>{dpnp_array</em><em>, </em><em>usm_ndarray}</em>) – Input array.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – By default, the index is into the flattened array, otherwise
-along the specified axis.</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Axis along which to search. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the function must return
+the index of the minimum value of the flattened array.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>out</strong> (<em>{dpnp_array</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) – If provided, the result will be inserted into this array. It should
 be of the appropriate shape and dtype.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – If this is set to True, the axes which are reduced are left
-in the result as dimensions with size one. With this option,
-the result will broadcast correctly against the array.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) must be included in the
+result as singleton dimensions, and, accordingly, the result must be
+compatible with the input array. Otherwise, if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the reduced
+axes (dimensions) must not be included in the result.
+Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – Indices of minimum value of <cite>a</cite>. It has the same shape as <cite>a.shape</cite>
-with the dimension along <cite>axis</cite> removed. If <cite>keepdims</cite> is set to True,
-then the size of <cite>axis</cite> will be 1 with the resulting array having same
-shape as <cite>a.shape</cite>.</p>
+<dd class="field-even"><p><strong>out</strong> – If <cite>axis</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, a zero-dimensional array containing the index of
+the first occurrence of the minimum value; otherwise, a non-zero-dimensional
+array containing the indices of the minimum values. The returned array
+must have the default array index data type.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
@@ -155,6 +158,8 @@ shape as <cite>a.shape</cite>.</p>
 <p class="admonition-title">See also</p>
 <dl class="simple">
 <dt><a class="reference internal" href="dpnp.ndarray.argmin.html#dpnp.ndarray.argmin" title="dpnp.ndarray.argmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.argmin</span></code></a></dt><dd><p>Equivalent function.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.nanargmin.html#dpnp.nanargmin" title="dpnp.nanargmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanargmin</span></code></a></dt><dd><p>Returns the indices of the minimum values along an axis, igonring NaNs.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.argmax.html#dpnp.argmax" title="dpnp.argmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.argmax</span></code></a></dt><dd><p>Returns the indices of the maximum values along an axis.</p>
 </dd>
@@ -207,8 +212,8 @@ corresponding to the first occurrence are returned.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.argmax.html" class="btn btn-neutral float-left" title="dpnp.argmax" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.searchsorted.html" class="btn btn-neutral float-right" title="dpnp.searchsorted" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.nanargmax.html" class="btn btn-neutral float-left" title="dpnp.nanargmax" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.nanargmin.html" class="btn btn-neutral float-right" title="dpnp.nanargmin" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

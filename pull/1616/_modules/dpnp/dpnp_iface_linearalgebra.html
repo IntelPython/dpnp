@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.13.1dev1+30.g8e69a072b4 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.13.1dev1+36.gdfd4dbc624 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7292bd40"></script>
+        <script src="../../_static/documentation_options.js?v=d3b23706"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+30.g8e69a072b4
+                0.13.1dev1+36.gdfd4dbc624
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -88,9 +88,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dpnp.dpnp_iface_linearalgebra</h1><div class="highlight"><pre>
-<span></span><span class="c1"># cython: language_level=3</span>
-<span class="c1"># distutils: language = c++</span>
-<span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
 <span class="c1"># Copyright (c) 2016-2023, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
@@ -151,6 +149,56 @@
     <span class="s2">&quot;tensordot&quot;</span><span class="p">,</span>
     <span class="s2">&quot;vdot&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_gemm_res_dtype</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">,</span> <span class="n">casting</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines the data types for matmul operation and the output array of matmul operation.</span>
+
+<span class="sd">    The output array data type is determined based on the Promotion Type Rule</span>
+<span class="sd">    and device capibilities. The data type used in matmul operation is an &#39;inexact&#39; data type</span>
+<span class="sd">    determined based on the output data type and device capabilities.</span>
+<span class="sd">    Both data types are determined based on the fact that the output array data type can be cast</span>
+<span class="sd">    to the other data type according to casting rule specified, otherwise a ``TypeError`` is raised.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arrays : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        Input arrays.</span>
+<span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
+<span class="sd">        Controls what kind of data casting may occur.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gemm_dtype, res_dtype :</span>
+<span class="sd">        The appropriate data types for performing matmul operation and presenting output array.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">)</span>
+    <span class="n">gemm_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">res_dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="n">gemm_dtype</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">complex64</span> <span class="k">if</span> <span class="n">gemm_dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">res_dtype</span><span class="p">,</span> <span class="n">gemm_dtype</span><span class="p">,</span> <span class="n">casting</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">res_dtype</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span>
+        <span class="p">]:</span>  <span class="c1"># in case device does not support fp64</span>
+            <span class="k">return</span> <span class="n">gemm_dtype</span><span class="p">,</span> <span class="n">gemm_dtype</span>
+        <span class="k">elif</span> <span class="n">res_dtype</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">complex64</span><span class="p">,</span>
+        <span class="p">]:</span>  <span class="c1"># needed dtype is fp32 but device supports fp64</span>
+            <span class="k">return</span> <span class="n">res_dtype</span><span class="p">,</span> <span class="n">res_dtype</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">gemm_dtype</span><span class="p">,</span> <span class="n">res_dtype</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Cannot cast ufunc &#39;matmul&#39; output from dtype(</span><span class="si">{</span><span class="n">res_dtype</span><span class="si">}</span><span class="s2">) to dtype(</span><span class="si">{</span><span class="n">gemm_dtype</span><span class="si">}</span><span class="s2">) with casting rule </span><span class="si">{</span><span class="n">casting</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
 
 <div class="viewcode-block" id="dot">
@@ -522,7 +570,8 @@
         <span class="n">is_x2_c_f_contig</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
         <span class="n">list_of_events</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="c1"># input arrays should be C_CONTIGUOUS or F_CONTIGUOUS</span>
+        <span class="c1"># input arrays should have the proper data type</span>
+        <span class="c1"># and be C_CONTIGUOUS or F_CONTIGUOUS</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_x1_c_f_contig</span> <span class="ow">or</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">gemm_dtype</span><span class="p">:</span>
             <span class="n">x1_copy</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">gemm_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
             <span class="n">ht_copy_ev_x1</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
@@ -617,36 +666,45 @@
 <span class="k">def</span> <span class="nf">dpnp_matmul_batch</span><span class="p">(</span>
     <span class="n">exec_q</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">x1_is_2D</span><span class="p">,</span> <span class="n">x2_is_2D</span><span class="p">,</span> <span class="n">ht_copy_ev_x1</span><span class="p">,</span> <span class="n">ht_copy_ev_x2</span>
 <span class="p">):</span>
+    <span class="c1"># If input array is F-contiguous, we need to change the order to C-contiguous.</span>
+    <span class="c1"># because mkl::gemm_bacth needs each 2D array to be F-contiguous but</span>
+    <span class="c1"># when the input array is F-contiguous, the data of 2D array</span>
+    <span class="c1"># that needs to be called in mkl::gemm_batch are not contiguous.</span>
     <span class="n">copy_ev_x1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">()</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">x1</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;C_CONTIGUOUS&quot;</span><span class="p">]:</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">x1</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
+        <span class="n">x1_copy</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
         <span class="p">(</span>
             <span class="n">ht_copy_ev_x1</span><span class="p">,</span>
             <span class="n">copy_ev_x1</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
             <span class="n">src</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x1</span><span class="p">),</span>
-            <span class="n">dst</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
+            <span class="n">dst</span><span class="o">=</span><span class="n">x1_copy</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x1</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">x1</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">x1_copy</span>
 
     <span class="n">copy_ev_x2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">()</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">x2</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;C_CONTIGUOUS&quot;</span><span class="p">]:</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">x2</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
+        <span class="n">x2_copy</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
         <span class="p">(</span>
             <span class="n">ht_copy_ev_x2</span><span class="p">,</span>
             <span class="n">copy_ev_x2</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
             <span class="n">src</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x2</span><span class="p">),</span>
-            <span class="n">dst</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
+            <span class="n">dst</span><span class="o">=</span><span class="n">x2_copy</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x2</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">x2</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">x2_copy</span>
 
     <span class="n">x1_strides</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">strides</span>
     <span class="n">x2_strides</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">strides</span>
     <span class="n">res_strides</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">strides</span>
 
+    <span class="c1"># When shape along any particular dimension is 1,</span>
+    <span class="c1"># the stride along that dimension is not a</span>
+    <span class="c1"># meaningful number and is undefined. Here, we</span>
+    <span class="c1"># standardizing strides before continuing,</span>
+    <span class="c1"># setting stride to 0 if the shape along that axis is &lt;=1</span>
     <span class="k">if</span> <span class="n">x1_is_2D</span><span class="p">:</span>
         <span class="n">x1_strides</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
             <span class="n">str_i</span> <span class="k">if</span> <span class="n">sh_i</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span>
@@ -699,56 +757,6 @@
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">ht_blas_ev</span><span class="p">,</span> <span class="n">ht_copy_ev_x1</span><span class="p">,</span> <span class="n">ht_copy_ev_x2</span><span class="p">,</span> <span class="n">res</span>
-
-
-<span class="k">def</span> <span class="nf">_gemm_res_dtype</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">,</span> <span class="n">casting</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Determines the data types for matmul operation and the output array of matmul operation.</span>
-
-<span class="sd">    The output array data type is determined based on the Promotion Type Rule</span>
-<span class="sd">    and device capibilities. The data type used in matmul operation is an &#39;inexact&#39; data type</span>
-<span class="sd">    determined based on the output data type and device capabilities.</span>
-<span class="sd">    Both data types are determined based on the fact that the output array data type can be cast</span>
-<span class="sd">    to the other data type according to casting rule specified, otherwise a ``TypeError`` is raised.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    arrays : {dpnp_array, usm_ndarray}</span>
-<span class="sd">        Input arrays.</span>
-<span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
-<span class="sd">        Controls what kind of data casting may occur.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    gemm_dtype, res_dtype :</span>
-<span class="sd">        The appropriate data types for performing matmul operation and presenting output array.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">)</span>
-    <span class="n">gemm_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">res_dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
-        <span class="n">gemm_dtype</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">complex64</span> <span class="k">if</span> <span class="n">gemm_dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span>
-        <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">res_dtype</span><span class="p">,</span> <span class="n">gemm_dtype</span><span class="p">,</span> <span class="n">casting</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">res_dtype</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span>
-        <span class="p">]:</span>  <span class="c1"># in case device does not support fp64</span>
-            <span class="k">return</span> <span class="n">gemm_dtype</span><span class="p">,</span> <span class="n">gemm_dtype</span>
-        <span class="k">elif</span> <span class="n">res_dtype</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">complex64</span><span class="p">,</span>
-        <span class="p">]:</span>  <span class="c1"># needed dtype is fp32 but device supports fp64</span>
-            <span class="k">return</span> <span class="n">res_dtype</span><span class="p">,</span> <span class="n">res_dtype</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">gemm_dtype</span><span class="p">,</span> <span class="n">res_dtype</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Cannot cast ufunc &#39;matmul&#39; output from dtype(</span><span class="si">{</span><span class="n">res_dtype</span><span class="si">}</span><span class="s2">) to dtype(</span><span class="si">{</span><span class="n">gemm_dtype</span><span class="si">}</span><span class="s2">) with casting rule </span><span class="si">{</span><span class="n">casting</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
 
 
 <div class="viewcode-block" id="outer">
