@@ -694,9 +694,6 @@ class TestSvd:
         a_np = inp.asnumpy(a_dp)
         assert_raises(TypeError, inp.linalg.svd, a_np)
 
-        # unsupported hermitian argument
-        assert_raises(NotImplementedError, inp.linalg.svd, a_dp, hermitian=True)
-
         # a.ndim < 2
         a_dp_ndim_1 = a_dp.flatten()
         assert_raises(inp.linalg.LinAlgError, inp.linalg.svd, a_dp_ndim_1)
