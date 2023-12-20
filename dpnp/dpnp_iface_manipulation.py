@@ -57,8 +57,10 @@ __all__ = [
     "broadcast_arrays",
     "broadcast_to",
     "can_cast",
+    "column_stack",
     "concatenate",
     "copyto",
+    "dstack",
     "expand_dims",
     "flip",
     "fliplr",
@@ -71,6 +73,7 @@ __all__ = [
     "result_type",
     "roll",
     "rollaxis",
+    "row_stack",
     "shape",
     "squeeze",
     "stack",
@@ -444,6 +447,61 @@ def can_cast(from_, to, casting="safe"):
     return dpt.can_cast(dtype_from, to, casting)
 
 
+def column_stack(tup):
+    """
+    Stacks 1-D and 2-D arrays as columns into a 2-D array.
+
+    Take a sequence of 1-D arrays and stack them as columns to make a single
+    2-D array. 2-D arrays are stacked as-is, just like with :obj:`dpnp.hstack`.
+    1-D arrays are turned into 2-D columns first.
+
+    For full documentation refer to :obj:`numpy.column_stack`.
+
+    Parameters
+    ----------
+    tup : {dpnp.ndarray, usm_ndarray}
+        A sequence of 1-D or 2-D arrays to stack. All of them must have
+        the same first dimension.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The array formed by stacking the given arrays.
+
+    See Also
+    --------
+    :obj:`dpnp.stack` : Stack a sequence of arrays along a new axis.
+    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
+    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
+    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array((1, 2, 3))
+    >>> b = np.array((2, 3, 4))
+    >>> np.column_stack((a, b))
+    array([[1, 2],
+           [2, 3],
+           [3, 4]])
+
+    """
+
+    arrays = []
+    for v in tup:
+        dpnp.check_supported_arrays_type(v)
+
+        if v.ndim == 1:
+            v = v[:, dpnp.newaxis]
+        elif v.ndim != 2:
+            raise ValueError(
+                "Only 1 or 2 dimensional arrays can be column stacked"
+            )
+
+        arrays.append(v)
+    return dpnp.concatenate(arrays, 1)
+
+
 def concatenate(
     arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"
 ):
@@ -599,6 +657,63 @@ def copyto(dst, src, casting="same_kind", where=True):
             dpnp.get_usm_ndarray(where),
         )
         dst_usm[mask_usm] = src_usm[mask_usm]
+
+
+def dstack(tup):
+    """
+    Stack arrays in sequence depth wise (along third axis).
+
+    This is equivalent to concatenation along the third axis after 2-D arrays
+    of shape `(M, N)` have been reshaped to `(M, N, 1)` and 1-D arrays of shape
+    `(N,)` have been reshaped to `(1, N, 1)`. Rebuilds arrays divided by
+    `dsplit`.
+
+    For full documentation refer to :obj:`numpy.dstack`.
+
+    Parameters
+    ----------
+    tup : {dpnp.ndarray, usm_ndarray}
+        One or more array-like sequences. The arrays must have the same shape
+        along all but the third axis. 1-D or 2-D arrays must have the same shape.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The array formed by stacking the given arrays, will be at least 3-D.
+
+    See Also
+    --------
+    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
+    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
+    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
+    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
+    :obj:`dpnp.dsplit` : Split array along third axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array((1, 2, 3))
+    >>> b = np.array((2, 3, 4))
+    >>> np.dstack((a, b))
+    array([[[1, 2],
+            [2, 3],
+            [3, 4]]])
+
+    >>> a = np.array([[1], [2], [3]])
+    >>> b = np.array([[2], [3], [4]])
+    >>> np.dstack((a, b))
+    array([[[1, 2]],
+           [[2, 3]],
+           [[3, 4]]])
+
+    """
+
+    arrs = atleast_3d(*tup)
+    if not isinstance(arrs, list):
+        arrs = [arrs]
+    return dpnp.concatenate(arrs, axis=2)
 
 
 def expand_dims(a, axis):
@@ -1738,3 +1853,6 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     if not isinstance(arrs, list):
         arrs = [arrs]
     return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
+
+
+row_stack = vstack
