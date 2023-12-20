@@ -588,8 +588,7 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     -----------
     Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Parameter `hermitian` is supported only with default value ``False``.
-    Otherwise, the function raises `ValueError` exception.
+    Otherwise, the function raises `TypeError` or `dpnp.linalg.linalgError` exception.
 
     Examples
     --------
