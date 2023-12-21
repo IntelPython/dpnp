@@ -86,6 +86,9 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
 
     std::stringstream error_msg;
     std::int64_t info = 0;
+    bool mkl_exception_caught = false;
+    bool mkl_singular_exception_caught = false;
+    bool sycl_exception_caught = false;
 
     sycl::event getrf_batch_event;
     try {
@@ -109,33 +112,53 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
                          // routine for storing intermediate results.
             scratchpad_size, depends);
     } catch (mkl_lapack::exception const &e) {
-        error_msg
-            << "Unexpected MKL exception caught during getrf() call:\nreason: "
-            << e.what() << "\ninfo: " << e.info();
         info = e.info();
+
+        if (info < 0) {
+            error_msg << "Parameter number " << -info
+                      << " had an illegal value.";
+            mkl_exception_caught = true;
+        }
+        else if (info == scratchpad_size && e.detail() != 0) {
+            error_msg
+                << "Insufficient scratchpad size. Required size is at least "
+                << e.detail();
+            mkl_exception_caught = true;
+        }
+        else if (info > 0) {
+            mkl_singular_exception_caught = true;
+        }
+        else {
+            error_msg << "Unexpected MKL exception caught during getrf_batch() "
+                         "call:\nreason: "
+                      << e.what() << "\ninfo: " << e.info();
+            mkl_exception_caught = true;
+        }
     } catch (sycl::exception const &e) {
-        error_msg << "Unexpected SYCL exception caught during getrf() call:\n"
-                  << e.what();
-        info = -1;
+        error_msg
+            << "Unexpected SYCL exception caught during getrf_batch() call:\n"
+            << e.what();
+        sycl_exception_caught = true;
     }
 
-    if (info != 0) // an unexpected error occurs
+    if (mkl_exception_caught ||
+        sycl_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
             sycl::free(scratchpad, exec_q);
         }
 
-        if (info < 0) {
-            throw std::runtime_error(error_msg.str());
-        }
+        throw std::runtime_error(error_msg.str());
     }
 
-    sycl::event write_info_event = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(getrf_batch_event);
-        cgh.single_task([=]() { dev_info[0] = info; });
-    });
+    if (mkl_singular_exception_caught) {
+        sycl::event write_info_event = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(getrf_batch_event);
+            cgh.single_task([=]() { dev_info[0] = info; });
+        });
 
-    host_task_events.push_back(write_info_event);
+        host_task_events.push_back(write_info_event);
+    }
 
     sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(getrf_batch_event);
