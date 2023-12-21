@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.13.1dev1+22.gca1eafcff9 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.13.1dev1+23.g50e19a59d1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=cd566adf"></script>
+        <script src="../../_static/documentation_options.js?v=9a308220"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+22.gca1eafcff9
+                0.13.1dev1+23.g50e19a59d1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1493,6 +1493,8 @@
 
 
 
+<div class="viewcode-block" id="logsumexp">
+<a class="viewcode-back" href="../../reference/generated/dpnp.logsumexp.html#dpnp.logsumexp">[docs]</a>
 <span class="k">def</span> <span class="nf">logsumexp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the logarithm of the sum of exponentials of elements in the input array.</span>
@@ -1500,13 +1502,13 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : {dpnp_array, usm_ndarray}</span>
-<span class="sd">        Input array.</span>
+<span class="sd">        Input array, expected to have a real-valued data type.</span>
 <span class="sd">    axis : int or tuple of ints, optional</span>
 <span class="sd">        Axis or axes along which values must be computed. If a tuple</span>
 <span class="sd">        of unique integers, values are computed over multiple axes.</span>
 <span class="sd">        If ``None``, the result is computed over the entire array.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out :  {dpnp_array, usm_ndarray}, optional</span>
+<span class="sd">    out : {dpnp_array, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    dtype : data type, optional</span>
@@ -1539,11 +1541,9 @@
 <span class="sd">        array has the data type as described in the `dtype` parameter</span>
 <span class="sd">        description above.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Input array is only supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by real-valued data types.</span>
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    This function is equivalent of `numpy.logaddexp.reduce`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1567,7 +1567,8 @@
         <span class="n">dpt</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="reciprocal">
@@ -1605,6 +1606,8 @@
 
 
 
+<div class="viewcode-block" id="reduce_hypot">
+<a class="viewcode-back" href="../../reference/generated/dpnp.reduce_hypot.html#dpnp.reduce_hypot">[docs]</a>
 <span class="k">def</span> <span class="nf">reduce_hypot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the square root of the sum of squares of elements in the input array.</span>
@@ -1612,13 +1615,13 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : {dpnp_array, usm_ndarray}</span>
-<span class="sd">        Input array.</span>
+<span class="sd">        Input array, expected to have a real-valued data type.</span>
 <span class="sd">    axis : int or tuple of ints, optional</span>
 <span class="sd">        Axis or axes along which values must be computed. If a tuple</span>
 <span class="sd">        of unique integers, values are computed over multiple axes.</span>
 <span class="sd">        If ``None``, the result is computed over the entire array.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out :  {dpnp_array, usm_ndarray}, optional</span>
+<span class="sd">    out : {dpnp_array, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    dtype : data type, optional</span>
@@ -1651,11 +1654,9 @@
 <span class="sd">        array has the data type as described in the `dtype` parameter</span>
 <span class="sd">        description above.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Input array is only supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported real-valued data types.</span>
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    This function is equivalent of `numpy.hypot.reduce`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1677,7 +1678,8 @@
         <span class="n">dpt</span><span class="o">.</span><span class="n">reduce_hypot</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">rsqrt</span><span class="p">(</span>
