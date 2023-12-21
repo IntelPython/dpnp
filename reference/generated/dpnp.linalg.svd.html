@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.svd &mdash; Data Parallel Extension for NumPy 0.13.1dev1+64.g6be53c8ec2 documentation</title>
+  <title>dpnp.linalg.svd &mdash; Data Parallel Extension for NumPy 0.13.1dev1+27.gf4b1694565 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=653791ac"></script>
+        <script src="../../_static/documentation_options.js?v=6875b0e9"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+64.g6be53c8ec2
+                0.13.1dev1+27.gf4b1694565
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -127,33 +127,9 @@
 <h1>dpnp.linalg.svd<a class="headerlink" href="#dpnp-linalg-svd" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.linalg.svd">
-<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">svd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_matrices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_uv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hermitian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#svd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.svd" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">svd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_matrices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_uv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hermitian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#svd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.svd" title="Link to this definition"></a></dt>
 <dd><p>Singular Value Decomposition.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.svd.html#numpy.linalg.svd" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.svd</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p><strong>u</strong> (<em>{ (…, M, M), (…, M, K) } dpnp.ndarray</em>) – Unitary matrix, where M is the number of rows of the input array <cite>a</cite>.
-The shape of the matrix <cite>u</cite> depends on the value of <cite>full_matrices</cite>.
-If <cite>full_matrices</cite> is True, <cite>u</cite> has the shape (…, M, M).
-If <cite>full_matrices</cite> is False, <cite>u</cite> has the shape (…, M, K),
-where K = min(M, N), and N is the number of columns of the input array <cite>a</cite>.
-If <cite>compute_uv</cite> is False, neither <cite>u</cite> or <cite>Vh</cite> are computed.</p></li>
-<li><p><strong>s</strong> (<em>(…, K) dpnp.ndarray</em>) – Vector containing the singular values of <cite>a</cite>, sorted in descending order.
-The length of <cite>s</cite> is min(M, N).</p></li>
-<li><p><strong>Vh</strong> (<em>{ (…, N, N), (…, K, N) } dpnp.ndarray</em>) – Unitary matrix, where N is the number of columns of the input array <cite>a</cite>.
-The shape of the matrix <cite>Vh</cite> depends on the value of <cite>full_matrices</cite>.
-If <cite>full_matrices</cite> is True, <cite>Vh</cite> has the shape (…, N, N).
-If <cite>full_matrices</cite> is False, <cite>Vh</cite> has the shape (…, K, N).
-If <cite>compute_uv</cite> is False, neither <cite>u</cite> or <cite>Vh</cite> are computed.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-<p class="rubric">Limitations</p>
-<p>Parameter <cite>a</cite> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
-Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.
-Otherwise, the function raises <cite>TypeError</cite> or <cite>dpnp.linalg.linalgError</cite> exception.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
