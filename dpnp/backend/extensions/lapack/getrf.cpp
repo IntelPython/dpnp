@@ -134,13 +134,41 @@ static sycl::event getrf_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    getrf(sycl::queue q,
+    getrf(sycl::queue exec_q,
           dpctl::tensor::usm_ndarray a_array,
           dpctl::tensor::usm_ndarray ipiv_array,
           dpctl::tensor::usm_ndarray dev_info_array,
           const std::int64_t n,
           const std::vector<sycl::event> &depends)
 {
+    const int a_array_nd = a_array.get_ndim();
+    const int ipiv_array_nd = ipiv_array.get_ndim();
+
+    if (a_array_nd != 2) {
+        throw py::value_error(
+            "The input array has ndim=" + std::to_string(a_array_nd) +
+            ", but a 2-dimensional array is expected.");
+    }
+
+    if (ipiv_array_nd != 1) {
+        throw py::value_error("The array of pivot indices has ndim=" +
+                              std::to_string(ipiv_array_nd) +
+                              ", but a 1-dimensional array is expected.");
+    }
+
+    // check compatibility of execution queue and allocation queue
+    if (!dpctl::utils::queues_are_compatible(
+            exec_q, {a_array, ipiv_array, dev_info_array}))
+    {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    bool is_a_array_c_contig = a_array.is_c_contiguous();
+    if (!is_a_array_c_contig) {
+        throw py::value_error("The input array "
+                              "must be C-contiguous");
+    }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
@@ -151,6 +179,14 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error(
             "No getrf implementation defined for the provided type "
             "of the input matrix.");
+    }
+
+    auto ipiv_types = dpctl_td_ns::usm_ndarray_types();
+    int ipiv_array_type_id =
+        ipiv_types.typenum_to_lookup_id(ipiv_array.get_typenum());
+
+    if (ipiv_array_type_id != static_cast<int>(dpctl_td_ns::typenum_t::INT64)) {
+        throw py::value_error("The type of 'ipiv_array' must be int64.");
     }
 
     char *a_array_data = a_array.get_data();
@@ -164,11 +200,11 @@ std::pair<sycl::event, sycl::event>
         reinterpret_cast<std::int64_t *>(dev_info_array_data);
 
     std::vector<sycl::event> host_task_events;
-    sycl::event getrf_ev = getrf_fn(q, n, a_array_data, lda, d_ipiv, d_dev_info,
-                                    host_task_events, depends);
+    sycl::event getrf_ev = getrf_fn(exec_q, n, a_array_data, lda, d_ipiv,
+                                    d_dev_info, host_task_events, depends);
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
-        q, {a_array, ipiv_array, dev_info_array}, host_task_events);
+        exec_q, {a_array, ipiv_array, dev_info_array}, host_task_events);
 
     return std::make_pair(args_ev, getrf_ev);
 }
