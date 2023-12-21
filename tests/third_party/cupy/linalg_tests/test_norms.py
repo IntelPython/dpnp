@@ -73,8 +73,6 @@ class TestDet(unittest.TestCase):
             with pytest.raises(xp.linalg.LinAlgError):
                 xp.linalg.det(a)
 
-    # TODO: remove skipif when MKLD-16626 is resolved
-    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det_singular(self, xp, dtype):
@@ -104,8 +102,6 @@ class TestSlogdet(unittest.TestCase):
         sign, logdet = xp.linalg.slogdet(a)
         return sign, logdet
 
-    # TODO: remove skipif when MKLD-16626 is resolved
-    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
     @testing.for_dtypes("fdFD")
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_slogdet_singular(self, xp, dtype):
@@ -113,8 +109,6 @@ class TestSlogdet(unittest.TestCase):
         sign, logdet = xp.linalg.slogdet(a)
         return sign, logdet
 
-    # TODO: remove skipif when MKLD-16626 is resolved
-    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
     @testing.for_dtypes("fdFD")
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_slogdet_singular_errstate(self, xp, dtype):
