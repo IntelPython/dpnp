@@ -110,33 +110,35 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
             scratchpad,  // Pointer to scratchpad memory to be used by MKL
                          // routine for storing intermediate results.
             scratchpad_size, depends);
+    } catch (mkl_lapack::batch_error const &be) {
+        // Get the indices of matrices within the batch that encountered an
+        // error
+        auto error_matrices_ids = be.ids();
+        // Get the indices of the first zero diagonal elements of these matrices
+        auto error_info = be.exceptions();
+
+        for (size_t i = 0; i < error_matrices_ids.size(); ++i) {
+            // Assign the index of the first zero diagonal element in each
+            // error matrix to the corresponding index in 'dev_info'
+            dev_info[error_matrices_ids[i]] = error_info[i];
+        }
     } catch (mkl_lapack::exception const &e) {
+        mkl_exception_caught = true;
         info = e.info();
 
         if (info < 0) {
             error_msg << "Parameter number " << -info
                       << " had an illegal value.";
-            mkl_exception_caught = true;
         }
         else if (info == scratchpad_size && e.detail() != 0) {
             error_msg
                 << "Insufficient scratchpad size. Required size is at least "
                 << e.detail();
-            mkl_exception_caught = true;
-        }
-        else if (info > 0) {
-            // Store the positive 'info' value in the first element of
-            // 'dev_info'. This indicates that the factorization has been
-            // completed, but the factor U (upper triangular matrix) is exactly
-            // singular. The 'info' value here is the index of the first zero
-            // element in the diagonal of U.
-            dev_info[0] = info;
         }
         else {
             error_msg << "Unexpected MKL exception caught during getrf_batch() "
                          "call:\nreason: "
                       << e.what() << "\ninfo: " << e.info();
-            mkl_exception_caught = true;
         }
     } catch (sycl::exception const &e) {
         error_msg
