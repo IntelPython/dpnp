@@ -42,7 +42,7 @@ extern std::pair<sycl::event, sycl::event>
     getrf(sycl::queue exec_q,
           dpctl::tensor::usm_ndarray a_array,
           dpctl::tensor::usm_ndarray ipiv_array,
-          dpctl::tensor::usm_ndarray dev_info_array,
+          py::list dev_info,
           const std::int64_t n,
           const std::vector<sycl::event> &depends = {});
 
@@ -50,7 +50,7 @@ extern std::pair<sycl::event, sycl::event>
     getrf_batch(sycl::queue exec_q,
                 dpctl::tensor::usm_ndarray a_array,
                 dpctl::tensor::usm_ndarray ipiv_array,
-                dpctl::tensor::usm_ndarray dev_info_array,
+                py::list dev_info,
                 std::int64_t n,
                 std::int64_t stride_a,
                 std::int64_t stride_ipiv,

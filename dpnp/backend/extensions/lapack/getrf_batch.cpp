@@ -55,7 +55,7 @@ typedef sycl::event (*getrf_batch_impl_fn_ptr_t)(
     std::int64_t *,
     std::int64_t,
     std::int64_t,
-    std::int64_t *,
+    py::list,
     std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
@@ -71,7 +71,7 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
                                     std::int64_t *ipiv,
                                     std::int64_t stride_ipiv,
                                     std::int64_t batch_size,
-                                    std::int64_t *dev_info,
+                                    py::list dev_info,
                                     std::vector<sycl::event> &host_task_events,
                                     const std::vector<sycl::event> &depends)
 {
@@ -87,7 +87,6 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
     std::stringstream error_msg;
     std::int64_t info = 0;
     bool mkl_exception_caught = false;
-    bool mkl_singular_exception_caught = false;
     bool sycl_exception_caught = false;
 
     sycl::event getrf_batch_event;
@@ -126,7 +125,12 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
             mkl_exception_caught = true;
         }
         else if (info > 0) {
-            mkl_singular_exception_caught = true;
+            // Store the positive 'info' value in the first element of
+            // 'dev_info'. This indicates that the factorization has been
+            // completed, but the factor U (upper triangular matrix) is exactly
+            // singular. The 'info' value here is the index of the first zero
+            // element in the diagonal of U.
+            dev_info[0] = info;
         }
         else {
             error_msg << "Unexpected MKL exception caught during getrf_batch() "
@@ -151,15 +155,6 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
         throw std::runtime_error(error_msg.str());
     }
 
-    if (mkl_singular_exception_caught) {
-        sycl::event write_info_event = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(getrf_batch_event);
-            cgh.single_task([=]() { dev_info[0] = info; });
-        });
-
-        host_task_events.push_back(write_info_event);
-    }
-
     sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(getrf_batch_event);
         auto ctx = exec_q.get_context();
@@ -173,7 +168,7 @@ std::pair<sycl::event, sycl::event>
     getrf_batch(sycl::queue exec_q,
                 dpctl::tensor::usm_ndarray a_array,
                 dpctl::tensor::usm_ndarray ipiv_array,
-                dpctl::tensor::usm_ndarray dev_info_array,
+                py::list dev_info,
                 std::int64_t n,
                 std::int64_t stride_a,
                 std::int64_t stride_ipiv,
@@ -196,9 +191,7 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(
-            exec_q, {a_array, ipiv_array, dev_info_array}))
-    {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {a_array, ipiv_array})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
@@ -235,17 +228,13 @@ std::pair<sycl::event, sycl::event>
     char *ipiv_array_data = ipiv_array.get_data();
     std::int64_t *d_ipiv = reinterpret_cast<std::int64_t *>(ipiv_array_data);
 
-    char *dev_info_array_data = dev_info_array.get_data();
-    std::int64_t *d_dev_info =
-        reinterpret_cast<std::int64_t *>(dev_info_array_data);
-
     std::vector<sycl::event> host_task_events;
     sycl::event getrf_batch_ev = getrf_batch_fn(
         exec_q, n, a_array_data, lda, stride_a, d_ipiv, stride_ipiv, batch_size,
-        d_dev_info, host_task_events, depends);
+        dev_info, host_task_events, depends);
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
-        exec_q, {a_array, ipiv_array, dev_info_array}, host_task_events);
+        exec_q, {a_array, ipiv_array}, host_task_events);
 
     return std::make_pair(args_ev, getrf_batch_ev);
 }

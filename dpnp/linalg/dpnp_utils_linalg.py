@@ -260,12 +260,7 @@ def _lu_factor(a, res_type):
                 usm_type=a_usm_type,
                 sycl_queue=a_sycl_queue,
             )
-            dev_info_h = dpnp.zeros(
-                (batch_size,),
-                dtype=dpnp.int64,
-                usm_type=a_usm_type,
-                sycl_queue=a_sycl_queue,
-            )
+            dev_info_h = [0] * batch_size
 
             a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
@@ -280,7 +275,7 @@ def _lu_factor(a, res_type):
                 a_sycl_queue,
                 a_h.get_array(),
                 ipiv_h.get_array(),
-                dev_info_h.get_array(),
+                dev_info_h,
                 n,
                 a_stride,
                 ipiv_stride,
@@ -291,7 +286,11 @@ def _lu_factor(a, res_type):
             ht_lapack_ev.wait()
             a_ht_copy_ev.wait()
 
-            return (a_h, ipiv_h, dev_info_h)
+            dev_info_array = dpnp.array(
+                dev_info_h, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+            )
+
+            return (a_h, ipiv_h, dev_info_array)
 
         else:
             # Initialize lists for storing arrays and events for each batch
@@ -319,12 +318,7 @@ def _lu_factor(a, res_type):
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
-                dev_info_vecs[i] = dpnp.zeros(
-                    (1,),
-                    dtype=dpnp.int64,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
-                )
+                dev_info_vecs[i] = [0]
 
                 # Call the LAPACK extension function _getrf
                 # to perform LU decomposition on each batch in 'a_vecs[i]'
@@ -332,7 +326,7 @@ def _lu_factor(a, res_type):
                     a_sycl_queue,
                     a_vecs[i].get_array(),
                     ipiv_vecs[i].get_array(),
-                    dev_info_vecs[i].get_array(),
+                    dev_info_vecs[i],
                     n,
                     [a_copy_ev],
                 )
@@ -344,7 +338,9 @@ def _lu_factor(a, res_type):
             # Reshape the results back to their original shape
             out_a = dpnp.array(a_vecs, order="C").reshape(orig_shape)
             out_ipiv = dpnp.array(ipiv_vecs).reshape(orig_shape[:-1])
-            out_dev_info = dpnp.array(dev_info_vecs).reshape(orig_shape[:-2])
+            out_dev_info = dpnp.array(
+                dev_info_vecs, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+            ).reshape(orig_shape[:-2])
 
             return (out_a, out_ipiv, out_dev_info)
 
@@ -363,9 +359,7 @@ def _lu_factor(a, res_type):
         ipiv_h = dpnp.empty(
             n, dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
         )
-        dev_info_h = dpnp.zeros(
-            (1,), dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
-        )
+        dev_info_h = [0]
 
         # Call the LAPACK extension function _getrf
         # to perform LU decomposition on the input matrix
@@ -373,7 +367,7 @@ def _lu_factor(a, res_type):
             a_sycl_queue,
             a_h.get_array(),
             ipiv_h.get_array(),
-            dev_info_h.get_array(),
+            dev_info_h,
             n,
             [a_copy_ev],
         )
@@ -381,10 +375,14 @@ def _lu_factor(a, res_type):
         ht_lapack_ev.wait()
         a_ht_copy_ev.wait()
 
+        dev_info_array = dpnp.array(
+            dev_info_h, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+        )
+
         # Return a tuple containing the factorized matrix 'a_h',
         # pivot indices 'ipiv_h'
         # and the status 'dev_info_h' from the LAPACK getrf call
-        return (a_h, ipiv_h, dev_info_h)
+        return (a_h, ipiv_h, dev_info_array)
 
 
 def dpnp_eigh(a, UPLO):
