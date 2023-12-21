@@ -9,7 +9,7 @@ from tests.third_party.cupy import testing
 class TestJoin:
     @testing.for_all_dtypes(name="dtype1")
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_column_stack(self, xp, dtype1, dtype2):
         a = testing.shaped_arange((4, 3), xp, dtype1)
         b = testing.shaped_arange((4,), xp, dtype2)
