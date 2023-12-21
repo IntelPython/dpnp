@@ -260,8 +260,8 @@ def _lu_factor(a, res_type):
                 usm_type=a_usm_type,
                 sycl_queue=a_sycl_queue,
             )
-            dev_info_h = dpnp.empty(
-                1,
+            dev_info_h = dpnp.zeros(
+                (batch_size,),
                 dtype=dpnp.int64,
                 usm_type=a_usm_type,
                 sycl_queue=a_sycl_queue,
@@ -319,7 +319,7 @@ def _lu_factor(a, res_type):
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
-                dev_info_vecs[i] = dpnp.empty(
+                dev_info_vecs[i] = dpnp.zeros(
                     (1,),
                     dtype=dpnp.int64,
                     usm_type=a_usm_type,
@@ -363,8 +363,8 @@ def _lu_factor(a, res_type):
         ipiv_h = dpnp.empty(
             n, dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
         )
-        dev_info_h = dpnp.empty(
-            1, dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+        dev_info_h = dpnp.zeros(
+            (1,), dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
         )
 
         # Call the LAPACK extension function _getrf
