@@ -1347,13 +1347,13 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
     Parameters
     ----------
     x : {dpnp_array, usm_ndarray}
-        Input array.
+        Input array, expected to have a real-valued data type.
     axis : int or tuple of ints, optional
         Axis or axes along which values must be computed. If a tuple
         of unique integers, values are computed over multiple axes.
         If ``None``, the result is computed over the entire array.
         Default: ``None``.
-    out :  {dpnp_array, usm_ndarray}, optional
+    out : {dpnp_array, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     dtype : data type, optional
@@ -1386,11 +1386,9 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
         array has the data type as described in the `dtype` parameter
         description above.
 
-    Limitations
-    -----------
-    Input array is only supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by real-valued data types.
+    Note
+    ----
+    This function is equivalent of `numpy.logaddexp.reduce`.
 
     See Also
     --------
@@ -1456,13 +1454,13 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
     Parameters
     ----------
     x : {dpnp_array, usm_ndarray}
-        Input array.
+        Input array, expected to have a real-valued data type.
     axis : int or tuple of ints, optional
         Axis or axes along which values must be computed. If a tuple
         of unique integers, values are computed over multiple axes.
         If ``None``, the result is computed over the entire array.
         Default: ``None``.
-    out :  {dpnp_array, usm_ndarray}, optional
+    out : {dpnp_array, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     dtype : data type, optional
@@ -1495,11 +1493,9 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
         array has the data type as described in the `dtype` parameter
         description above.
 
-    Limitations
-    -----------
-    Input array is only supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported real-valued data types.
+    Note
+    ----
+    This function is equivalent of `numpy.hypot.reduce`.
 
     See Also
     --------
