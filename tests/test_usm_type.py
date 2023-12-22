@@ -480,6 +480,30 @@ def test_broadcast_to(usm_type):
     assert x.usm_type == y.usm_type
 
 
+@pytest.mark.parametrize(
+    "func,data1,data2",
+    [
+        pytest.param("column_stack", (1, 2, 3), (2, 3, 4)),
+        pytest.param("concatenate", [[1, 2], [3, 4]], [[5, 6]]),
+        pytest.param("dstack", [[1], [2], [3]], [[2], [3], [4]]),
+        pytest.param("hstack", (1, 2, 3), (4, 5, 6)),
+        pytest.param("row_stack", [[7], [1], [2], [3]], [[2], [3], [9], [4]]),
+        pytest.param("stack", [1, 2, 3], [4, 5, 6]),
+        pytest.param("vstack", [0, 1, 2, 3], [4, 5, 6, 7]),
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
+    x = dp.array(data1, usm_type=usm_type_x)
+    y = dp.array(data2, usm_type=usm_type_y)
+    z = getattr(dp, func)((x, y))
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
 @pytest.mark.parametrize("func", ["take", "take_along_axis"])
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
