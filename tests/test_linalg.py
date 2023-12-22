@@ -704,6 +704,22 @@ class TestSlogdet:
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
 
+    # TODO: remove skipif when MKLD-16626 is resolved
+    # _getrf_batch does not raise an error with singular matrices.
+    # Skip running on cpu because dpnp uses _getrf_batch only on cpu.
+    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
+    def test_slogdet_singular_matrix_3D(self):
+        a_np = numpy.array(
+            [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
+        )
+        a_dp = inp.array(a_np)
+
+        sign_expected, logdet_expected = numpy.linalg.slogdet(a_np)
+        sign_result, logdet_result = inp.linalg.slogdet(a_dp)
+
+        assert_allclose(sign_expected, sign_result)
+        assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
+
     def test_solve_errors(self):
         a_dp = inp.array([[1, 2], [3, 5]], dtype="float32")
 
