@@ -105,46 +105,114 @@ def test_cond(arr, p):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.skipif(is_cpu_device(), reason="MKL bug MKLD-16626")
-@pytest.mark.parametrize(
-    "array",
-    [
-        [[0, 0], [0, 0]],
-        [[1, 2], [1, 2]],
-        [[1, 2], [3, 4]],
-        [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
+class TestDet:
+    @pytest.mark.parametrize(
+        "array",
         [
-            [[[1, 2], [3, 4]], [[1, 2], [2, 1]]],
-            [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
+            [[1, 2], [3, 4]],
+            [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
+            [
+                [[[1, 2], [3, 4]], [[1, 2], [2, 1]]],
+                [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
+            ],
         ],
-    ],
-    ids=[
-        "[[0, 0], [0, 0]]",
-        "[[1, 2], [1, 2]]",
-        "[[1, 2], [3, 4]]",
-        "[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]",
-        "[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]",
-    ],
-)
-def test_det(array):
-    a = numpy.array(array)
-    ia = inp.array(a)
-    result = inp.linalg.det(ia)
-    expected = numpy.linalg.det(a)
-    assert_allclose(expected, result)
+        ids=[
+            "2D_array",
+            "3D_array",
+            "4D_array",
+        ],
+    )
+    def test_det(self, array):
+        a = numpy.array(array)
+        ia = inp.array(a)
+        result = inp.linalg.det(ia)
+        expected = numpy.linalg.det(a)
+        assert_allclose(expected, result)
 
+    def test_det_strides(self):
+        a_np = numpy.array(
+            [
+                [2, 3, 1, 4, 5],
+                [5, 6, 7, 8, 9],
+                [9, 7, 7, 2, 3],
+                [1, 4, 5, 1, 8],
+                [8, 9, 8, 5, 3],
+            ]
+        )
 
-def test_det_empty():
-    a = numpy.empty((0, 0, 2, 2), dtype=numpy.float32)
-    ia = inp.array(a)
+        a_dp = inp.array(a_np)
 
-    np_det = numpy.linalg.det(a)
-    dpnp_det = inp.linalg.det(ia)
+        # positive strides
+        expected = numpy.linalg.det(a_np[::2, ::2])
+        result = inp.linalg.det(a_dp[::2, ::2])
+        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
-    assert dpnp_det.dtype == np_det.dtype
-    assert dpnp_det.shape == np_det.shape
+        # negative strides
+        expected = numpy.linalg.det(a_np[::-2, ::-2])
+        result = inp.linalg.det(a_dp[::-2, ::-2])
+        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
-    assert_allclose(np_det, dpnp_det)
+    def test_det_empty(self):
+        a = numpy.empty((0, 0, 2, 2), dtype=numpy.float32)
+        ia = inp.array(a)
+
+        np_det = numpy.linalg.det(a)
+        dpnp_det = inp.linalg.det(ia)
+
+        assert dpnp_det.dtype == np_det.dtype
+        assert dpnp_det.shape == np_det.shape
+
+        assert_allclose(np_det, dpnp_det)
+
+    @pytest.mark.parametrize(
+        "matrix",
+        [
+            [[1, 2], [2, 4]],
+            [[0, 0], [0, 0]],
+            [[1, 1], [1, 1]],
+            [[2, 4], [1, 2]],
+            [[1, 2], [0, 0]],
+            [[1, 0], [2, 0]],
+        ],
+        ids=[
+            "Linearly dependent rows",
+            "Zero matrix",
+            "Identical rows",
+            "Linearly dependent columns",
+            "Zero row",
+            "Zero column",
+        ],
+    )
+    def test_det_singular_matrix(self, matrix):
+        a_np = numpy.array(matrix, dtype="float32")
+        a_dp = inp.array(a_np)
+
+        expected = numpy.linalg.slogdet(a_np)
+        result = inp.linalg.slogdet(a_dp)
+
+        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+
+    # TODO: remove skipif when MKLD-16626 is resolved
+    # _getrf_batch does not raise an error with singular matrices.
+    # Skip running on cpu because dpnp uses _getrf_batch only on cpu.
+    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
+    def test_det_singular_matrix_3D(self):
+        a_np = numpy.array(
+            [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
+        )
+        a_dp = inp.array(a_np)
+
+        expected = numpy.linalg.det(a_np)
+        result = inp.linalg.det(a_dp)
+
+        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+
+    def test_det_errors(self):
+        a_dp = inp.array([[1, 2], [3, 5]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.det, a_np)
 
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
@@ -720,7 +788,7 @@ class TestSlogdet:
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
 
-    def test_solve_errors(self):
+    def test_slogdet_errors(self):
         a_dp = inp.array([[1, 2], [3, 5]], dtype="float32")
 
         # unsupported type
