@@ -570,8 +570,8 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     u : { (…, M, M), (…, M, K) } dpnp.ndarray
         Unitary matrix, where M is the number of rows of the input array `a`.
         The shape of the matrix `u` depends on the value of `full_matrices`.
-        If `full_matrices` is True, `u` has the shape (…, M, M).
-        If `full_matrices` is False, `u` has the shape (…, M, K),
+        If `full_matrices` is ``True``, `u` has the shape (…, M, M).
+        If `full_matrices` is ``False``, `u` has the shape (…, M, K),
         where K = min(M, N), and N is the number of columns of the input array `a`.
         If `compute_uv` is False, neither `u` or `Vh` are computed.
     s : (…, K) dpnp.ndarray
@@ -580,9 +580,9 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     Vh : { (…, N, N), (…, K, N) } dpnp.ndarray
         Unitary matrix, where N is the number of columns of the input array `a`.
         The shape of the matrix `Vh` depends on the value of `full_matrices`.
-        If `full_matrices` is True, `Vh` has the shape (…, N, N).
-        If `full_matrices` is False, `Vh` has the shape (…, K, N).
-        If `compute_uv` is False, neither `u` or `Vh` are computed.
+        If `full_matrices` is ``True``, `Vh` has the shape (…, N, N).
+        If `full_matrices` is ``False``, `Vh` has the shape (…, K, N).
+        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.
 
     Limitations
     -----------
@@ -602,11 +602,11 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     >>> u.shape, s.shape, vh.shape
     ((9, 9), (6,), (6, 6))
     >>> np.allclose(a, np.dot(u[:, :6] * s, vh))
-    True
+    array([ True])
     >>> smat = np.zeros((9, 6), dtype=complex)
     >>> smat[:6, :6] = np.diag(s)
     >>> np.allclose(a, np.dot(u, np.dot(smat, vh)))
-    True
+    array([ True])
 
     Reconstruction based on reduced SVD, 2D case:
 
@@ -614,10 +614,10 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     >>> u.shape, s.shape, vh.shape
     ((9, 6), (6,), (6, 6))
     >>> np.allclose(a, np.dot(u * s, vh))
-    True
+    array([ True])
     >>> smat = np.diag(s)
     >>> np.allclose(a, np.dot(u, np.dot(smat, vh)))
-    True
+    array([ True])
 
     Reconstruction based on full SVD, 4D case:
 
@@ -625,9 +625,9 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     >>> u.shape, s.shape, vh.shape
     ((2, 7, 8, 8), (2, 7, 3), (2, 7, 3, 3))
     >>> np.allclose(b, np.matmul(u[..., :3] * s[..., None, :], vh))
-    True
+    array([ True])
     >>> np.allclose(b, np.matmul(u[..., :3], s[..., None] * vh))
-    True
+    array([ True])
 
     Reconstruction based on reduced SVD, 4D case:
 
@@ -635,9 +635,9 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     >>> u.shape, s.shape, vh.shape
     ((2, 7, 8, 3), (2, 7, 3), (2, 7, 3, 3))
     >>> np.allclose(b, np.matmul(u * s[..., None, :], vh))
-    True
+    array([ True])
     >>> np.allclose(b, np.matmul(u, s[..., None] * vh))
-    True
+    array([ True])
 
     """
 

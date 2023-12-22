@@ -45,6 +45,35 @@ __all__ = [
 _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
 
+_real_types_map = {
+    "float32": "float32",  # single : single
+    "float64": "float64",  # double : double
+    "complex64": "float32",  # csingle : csingle
+    "complex128": "float64",  # cdouble : cdouble
+}
+
+
+def _real_type(dtype, device=None):
+    """
+    Returns the real data type corresponding to a given dpnp data type.
+
+    Parameters
+    ----------
+    dtype : dpnp.dtype
+        The dtype for which to find the corresponding real data type.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where an array of default floating type might be created.
+    Returns
+    -------
+    out : str
+        The name of the real data type.
+
+    """
+
+    default = dpnp.default_float_type(device)
+    real_type = _real_types_map.get(dtype.name, default)
+    return dpnp.dtype(real_type)
+
 
 def _common_type(*arrays):
     """
@@ -482,6 +511,13 @@ def dpnp_solve(a, b):
 
 
 def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
+    """
+    dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True)
+
+    Return the batched singular value decomposition (SVD) of a stack of matrices.
+
+    """
+
     a_usm_type = a.usm_type
     a_sycl_queue = a.sycl_queue
     reshape = False
@@ -572,10 +608,10 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
     for i in range(batch_size):
         if compute_uv:
             vt_matrices[i], s_matrices[i], u_matrices[i] = dpnp_svd(
-                a[i], full_matrices, compute_uv
+                a[i], full_matrices, compute_uv=True
             )
         else:
-            s_matrices[i] = dpnp_svd(a[i], full_matrices, compute_uv)
+            s_matrices[i] = dpnp_svd(a[i], full_matrices, compute_uv=False)
 
     if compute_uv:
         out_s = dpnp.array(s_matrices)
@@ -599,9 +635,10 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
 
 def dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     """
-    dpnp_svd(a)
+    dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False)
 
     Return the singular value decomposition (SVD).
+
     """
 
     if hermitian:
@@ -631,15 +668,14 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False):
             s = dpnp.abs(s)
             return dpnp.sort(s)[..., ::-1]
 
-    a_usm_type = a.usm_type
-    a_sycl_queue = a.sycl_queue
-
     uv_type = _common_type(a)
-    s_type = uv_type.char.lower()
+    s_type = _real_type(uv_type)
 
     if a.ndim > 2:
         return dpnp_svd_batch(a, uv_type, s_type, full_matrices, compute_uv)
 
+    a_usm_type = a.usm_type
+    a_sycl_queue = a.sycl_queue
     n, m = a.shape
 
     if m == 0 or n == 0:
@@ -673,17 +709,17 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False):
         else:
             return s
 
-    # `a` must be copied because gesvd destroys the input matrix
-    # `a` must be traspotted if m < n
+    # `a` must be transposed if m < n
     if m >= n:
         x = a
-        a_h = dpnp.empty_like(a, order="C", dtype=uv_type)
         trans_flag = False
     else:
         m, n = a.shape
         x = a.transpose()
-        a_h = dpnp.empty_like(x, order="C", dtype=uv_type)
         trans_flag = True
+
+    # `a` must be copied because gesvd destroys the input matrix
+    a_h = dpnp.empty_like(x, order="C", dtype=uv_type)
 
     a_usm_arr = dpnp.get_usm_ndarray(x)
 

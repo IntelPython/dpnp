@@ -65,24 +65,24 @@ class TestSVD(unittest.TestCase):
         k = s_cpu.shape[-1]
 
         # dpnp.dot/matmul does not support complex type and unstable on cpu
-        # TODO: remove it when dpnp.dot/matmul is updated
-        u_gpu = cupy.asnumpy(u_gpu)
-        vh_gpu = cupy.asnumpy(vh_gpu)
-        s_gpu = cupy.asnumpy(s_gpu)
+        # TODO: remove it and use xp.dot/matmul when dpnp.dot/matmul is updated
+        u_gpu = u_gpu.asnumpy()
+        vh_gpu = vh_gpu.asnumpy()
+        s_gpu = s_gpu.asnumpy()
         xp = numpy
 
         if len(shape) == 2:
             if self.full_matrices:
-                a_gpu_usv = xp.dot(u_gpu[:, :k] * s_gpu, vh_gpu[:k, :])
+                a_gpu_usv = numpy.dot(u_gpu[:, :k] * s_gpu, vh_gpu[:k, :])
             else:
-                a_gpu_usv = xp.dot(u_gpu * s_gpu, vh_gpu)
+                a_gpu_usv = numpy.dot(u_gpu * s_gpu, vh_gpu)
         else:
             if self.full_matrices:
-                a_gpu_usv = xp.matmul(
+                a_gpu_usv = numpy.matmul(
                     u_gpu[..., :k] * s_gpu[..., None, :], vh_gpu[..., :k, :]
                 )
             else:
-                a_gpu_usv = xp.matmul(u_gpu * s_gpu[..., None, :], vh_gpu)
+                a_gpu_usv = numpy.matmul(u_gpu * s_gpu[..., None, :], vh_gpu)
         testing.assert_allclose(a_gpu, a_gpu_usv, rtol=1e-4, atol=1e-4)
 
         # assert unitary

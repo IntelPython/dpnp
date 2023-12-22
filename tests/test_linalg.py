@@ -564,7 +564,7 @@ class TestSolve:
 
 
 class TestSvd:
-    def set_tol(self, dtype):
+    def get_tol(self, dtype):
         tol = 1e-06
         if dtype in (inp.float32, inp.complex64):
             tol = 1e-04
@@ -595,6 +595,11 @@ class TestSvd:
             assert dp_vt.shape == np_vt.shape
         assert dp_s.shape == np_s.shape
 
+    # Checks the accuracy of singular value decomposition (SVD).
+    # Compares the reconstructed matrix from the decomposed components
+    # with the original matrix.
+    # Additionally checks for equality of singular values
+    # between dpnp and numpy decompositions
     def check_decomposition(
         self, dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt, tol
     ):
@@ -648,7 +653,7 @@ class TestSvd:
         dp_u, dp_s, dp_vt = inp.linalg.svd(dp_a)
 
         self.check_types_shapes(dp_u, dp_s, dp_vt, np_u, np_s, np_vt)
-        tol = self.set_tol(dtype)
+        tol = self.get_tol(dtype)
         self.check_decomposition(
             dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, True, tol
         )
@@ -682,7 +687,7 @@ class TestSvd:
         self.check_types_shapes(
             dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
         )
-        tol = self.set_tol(dtype)
+        tol = self.get_tol(dtype)
         self.check_decomposition(
             dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt, tol
         )

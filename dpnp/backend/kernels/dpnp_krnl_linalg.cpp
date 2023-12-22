@@ -834,17 +834,6 @@ template <typename _InputDT, typename _ComputeDT, typename _SVDT>
 void (*dpnp_svd_default_c)(void *, void *, void *, void *, size_t, size_t) =
     dpnp_svd_c<_InputDT, _ComputeDT, _SVDT>;
 
-template <typename _InputDT, typename _ComputeDT, typename _SVDT>
-DPCTLSyclEventRef (*dpnp_svd_ext_c)(DPCTLSyclQueueRef,
-                                    void *,
-                                    void *,
-                                    void *,
-                                    void *,
-                                    size_t,
-                                    size_t,
-                                    const DPCTLEventVectorRef) =
-    dpnp_svd_c<_InputDT, _ComputeDT, _SVDT>;
-
 void func_map_init_linalg_func(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_FLT][eft_FLT] = {
