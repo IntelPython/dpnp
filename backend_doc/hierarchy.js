@@ -77,6 +77,8 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::get_linear_id< std::tuple< T, Axis... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1get__linear__id_3_01std_1_1tuple_3_01_t_00_01_axis_8_8_8_01_4_01_4.html", null ],
+    [ "dpnp::backend::ext::lapack::types::GetrfBatchTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html", null ],
+    [ "dpnp::backend::ext::lapack::types::GetrfTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::lapack::types::HeevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::vm::HypotContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_hypot_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::HypotOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_hypot_output_type.html", null ],
