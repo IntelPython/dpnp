@@ -105,7 +105,7 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
         The input array.
     dtype : str or dtype object, optional
         Float type code to coerce input array `a`.  If `dtype` is ``None``,
-        :obj:`dpnp.bool` or one of the `int` dtypesis it is replaced with
+        :obj:`dpnp.bool` or one of the `int` dtypes, it is replaced with
         the default floating type (:obj:`dpnp.float64` if a device supports it,
         or :obj:`dpnp.float32` type otherwise).
     device : {None, string, SyclDevice, SyclQueue}, optional
