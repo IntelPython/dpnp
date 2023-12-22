@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.13.1dev1+28.g315dd9c60c documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.13.1dev1+30.ga255de4aab documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=10324ac7"></script>
+        <script src="../../_static/documentation_options.js?v=6b39adf0"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+28.g315dd9c60c
+                0.13.1dev1+30.ga255de4aab
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -197,7 +197,7 @@
 <span class="sd">        The input array.</span>
 <span class="sd">    dtype : str or dtype object, optional</span>
 <span class="sd">        Float type code to coerce input array `a`.  If `dtype` is ``None``,</span>
-<span class="sd">        :obj:`dpnp.bool` or one of the `int` dtypesis it is replaced with</span>
+<span class="sd">        :obj:`dpnp.bool` or one of the `int` dtypes, it is replaced with</span>
 <span class="sd">        the default floating type (:obj:`dpnp.float64` if a device supports it,</span>
 <span class="sd">        or :obj:`dpnp.float32` type otherwise).</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -866,7 +866,7 @@
 <span class="sd">    This is equivalent to concatenation along the third axis after 2-D arrays</span>
 <span class="sd">    of shape `(M, N)` have been reshaped to `(M, N, 1)` and 1-D arrays of shape</span>
 <span class="sd">    `(N,)` have been reshaped to `(1, N, 1)`. Rebuilds arrays divided by</span>
-<span class="sd">    `dsplit`.</span>
+<span class="sd">    :obj:`dpnp.dsplit`.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.dstack`.</span>
 
