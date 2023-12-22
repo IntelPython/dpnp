@@ -28,7 +28,7 @@
 
 
 import dpctl.tensor._tensor_impl as ti
-from numpy import issubdtype, prod
+from numpy import prod
 
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
@@ -73,7 +73,8 @@ def _common_type(*arrays):
 
     dtypes = [arr.dtype for arr in arrays]
 
-    default = dpnp.default_float_type(device=arrays[0].device)
+    _, sycl_queue = get_usm_allocations(arrays)
+    default = dpnp.default_float_type(sycl_queue=sycl_queue)
     dtype_common = _common_inexact_type(default, *dtypes)
 
     return dtype_common
@@ -100,7 +101,8 @@ def _common_inexact_type(default_dtype, *dtypes):
 
     """
     inexact_dtypes = [
-        dt if issubdtype(dt, dpnp.inexact) else default_dtype for dt in dtypes
+        dt if dpnp.issubdtype(dt, dpnp.inexact) else default_dtype
+        for dt in dtypes
     ]
     return dpnp.result_type(*inexact_dtypes)
 
