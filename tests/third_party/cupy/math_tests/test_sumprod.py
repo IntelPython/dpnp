@@ -1,5 +1,3 @@
-import unittest
-
 import numpy
 import pytest
 
@@ -8,62 +6,63 @@ from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
-class TestSumprod(unittest.TestCase):
+# Note: numpy.sum() always upcast integers to (u)int64 and float32 to
+# float64 for dtype=None. `np.sum` does that too for integers, but not for
+# float32, so we need to special-case it for these tests
+def _get_dtype_kwargs(xp, dtype):
+    if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
+        return {"dtype": numpy.float64}
+    return {}
+
+
+class TestSumprod:
     def tearDown(self):
         # Free huge memory for slow test
         # cupy.get_default_memory_pool().free_all_blocks()
         # cupy.get_default_pinned_memory_pool().free_all_blocks()
         pass
 
-    # Note: numpy.sum() always upcast integers to (u)int64 and float32 to
-    # float64 for dtype=None. `np.sum` does that too for integers, but not for
-    # float32, so we need to special-case it for these tests
-    def _get_dtype_kwargs(self, xp, dtype):
-        if xp is numpy and dtype == numpy.float32 and has_support_aspect64():
-            return {"dtype": numpy.float64}
-        return {}
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_sum_all(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype))
+        return a.sum(**_get_dtype_kwargs(xp, dtype))
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_sum_all_keepdims(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype), keepdims=True)
+        return a.sum(**_get_dtype_kwargs(xp, dtype), keepdims=True)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_external_sum_all(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        return xp.sum(a, **self._get_dtype_kwargs(xp, dtype))
+        return xp.sum(a, **_get_dtype_kwargs(xp, dtype))
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-06)
     def test_sum_all2(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40), xp, dtype)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype))
+        return a.sum(**_get_dtype_kwargs(xp, dtype))
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=False)
     def test_sum_all_transposed(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(2, 0, 1)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype))
+        return a.sum(**_get_dtype_kwargs(xp, dtype))
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-06)
     def test_sum_all_transposed2(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40), xp, dtype).transpose(2, 0, 1)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype))
+        return a.sum(**_get_dtype_kwargs(xp, dtype))
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_sum_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype), axis=1)
+        return a.sum(**_get_dtype_kwargs(xp, dtype), axis=1)
 
     @testing.slow
     @testing.numpy_cupy_allclose()
@@ -75,7 +74,7 @@ class TestSumprod(unittest.TestCase):
     @testing.numpy_cupy_allclose()
     def test_external_sum_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        return xp.sum(a, **self._get_dtype_kwargs(xp, dtype), axis=1)
+        return xp.sum(a, **_get_dtype_kwargs(xp, dtype), axis=1)
 
     # float16 is omitted, since NumPy's sum on float16 arrays has more error
     # than CuPy's.
@@ -83,49 +82,49 @@ class TestSumprod(unittest.TestCase):
     @testing.numpy_cupy_allclose()
     def test_sum_axis2(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40), xp, dtype)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype), axis=1)
+        return a.sum(**_get_dtype_kwargs(xp, dtype), axis=1)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_sum_axis_transposed(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(2, 0, 1)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype), axis=1)
+        return a.sum(**_get_dtype_kwargs(xp, dtype), axis=1)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_sum_axis_transposed2(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40), xp, dtype).transpose(2, 0, 1)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype), axis=1)
+        return a.sum(**_get_dtype_kwargs(xp, dtype), axis=1)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_sum_axes(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4, 5), xp, dtype)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype), axis=(1, 3))
+        return a.sum(**_get_dtype_kwargs(xp, dtype), axis=(1, 3))
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-4)
     def test_sum_axes2(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40, 50), xp, dtype)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype), axis=(1, 3))
+        return a.sum(**_get_dtype_kwargs(xp, dtype), axis=(1, 3))
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_sum_axes3(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4, 5), xp, dtype)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype), axis=(0, 2, 3))
+        return a.sum(**_get_dtype_kwargs(xp, dtype), axis=(0, 2, 3))
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_sum_axes4(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40, 50), xp, dtype)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype), axis=(0, 2, 3))
+        return a.sum(**_get_dtype_kwargs(xp, dtype), axis=(0, 2, 3))
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_sum_empty_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4, 5), xp, dtype)
-        return a.sum(**self._get_dtype_kwargs(xp, dtype), axis=())
+        return a.sum(**_get_dtype_kwargs(xp, dtype), axis=())
 
     @testing.for_all_dtypes_combination(names=["src_dtype", "dst_dtype"])
     @testing.numpy_cupy_allclose()
@@ -143,9 +142,7 @@ class TestSumprod(unittest.TestCase):
     @testing.numpy_cupy_allclose()
     def test_sum_keepdims_multiple_axes(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        return a.sum(
-            **self._get_dtype_kwargs(xp, dtype), axis=(1, 2), keepdims=True
-        )
+        return a.sum(**_get_dtype_kwargs(xp, dtype), axis=(1, 2), keepdims=True)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
@@ -158,7 +155,7 @@ class TestSumprod(unittest.TestCase):
     def test_sum_out_wrong_shape(self):
         a = testing.shaped_arange((2, 3, 4))
         b = cupy.empty((2, 3))
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             a.sum(axis=1, out=b)
 
     @testing.for_all_dtypes()
@@ -203,8 +200,7 @@ class TestSumprod(unittest.TestCase):
         }
     )
 )
-@testing.gpu
-class TestNansumNanprodLong(unittest.TestCase):
+class TestNansumNanprodLong:
     def _do_transposed_axis_test(self):
         return not self.transpose_axes and self.axis != 1
 
@@ -263,8 +259,7 @@ class TestNansumNanprodLong(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
-class TestNansumNanprodExtra(unittest.TestCase):
+class TestNansumNanprodExtra:
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
     @testing.numpy_cupy_allclose()
     def test_nansum_out(self, xp, dtype):
@@ -279,7 +274,7 @@ class TestNansumNanprodExtra(unittest.TestCase):
         a = testing.shaped_arange(self.shape)
         a[:, 1] = cupy.nan
         b = cupy.empty((2, 3))
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             cupy.nansum(a, axis=1, out=b)
 
 
@@ -291,16 +286,36 @@ class TestNansumNanprodExtra(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
-class TestNansumNanprodAxes(unittest.TestCase):
+class TestNansumNanprodAxes:
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_nansum_axes(self, xp, dtype):
         a = testing.shaped_arange(self.shape, xp, dtype)
         if not issubclass(dtype, xp.integer):
             a[:, 1] = xp.nan
-        return xp.nansum(a, axis=self.axis)
+        return xp.nansum(a, **_get_dtype_kwargs(xp, dtype), axis=self.axis)
+
+
+class TestNansumNanprodHuge:
+    def _test(self, xp, nan_slice):
+        a = testing.shaped_random((2048, 1, 1024), xp, "f")
+        a[nan_slice] = xp.nan
+        a = xp.broadcast_to(a, (2048, 1024, 1024))
+        return xp.nansum(a, **_get_dtype_kwargs(xp, a.dtype), axis=2)
+
+    @testing.slow
+    @testing.numpy_cupy_allclose(atol=1e-1)
+    def test_nansum_axis_huge(self, xp):
+        return self._test(
+            xp, (slice(None, None), slice(None, None), slice(1, 2))
+        )
+
+    @testing.slow
+    @testing.numpy_cupy_allclose(atol=1e-2)
+    def test_nansum_axis_huge_halfnan(self, xp):
+        return self._test(
+            xp, (slice(None, None), slice(None, None), slice(0, 512))
+        )
 
 
 axes = [0, 1, 2]
@@ -309,7 +324,7 @@ axes = [0, 1, 2]
 @testing.parameterize(*testing.product({"axis": axes}))
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 # TODO: remove "type_check=False" once leveraged on dpctl call
-class TestCumsum(unittest.TestCase):
+class TestCumsum:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=False)
     def test_cumsum(self, xp, dtype):
@@ -391,7 +406,7 @@ class TestCumsum(unittest.TestCase):
     @testing.for_all_dtypes()
     def test_invalid_axis_lower2(self, dtype):
         a = testing.shaped_arange((4, 5), cupy, dtype)
-        with self.assertRaises(numpy.AxisError):
+        with pytest.raises(numpy.AxisError):
             return cupy.cumsum(a, axis=-a.ndim - 1)
 
     @testing.for_all_dtypes()
@@ -404,22 +419,21 @@ class TestCumsum(unittest.TestCase):
     @testing.for_all_dtypes()
     def test_invalid_axis_upper2(self, dtype):
         a = testing.shaped_arange((4, 5), cupy, dtype)
-        with self.assertRaises(numpy.AxisError):
+        with pytest.raises(numpy.AxisError):
             return cupy.cumsum(a, axis=a.ndim + 1)
 
     def test_cumsum_arraylike(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             return cupy.cumsum((1, 2, 3))
 
     @testing.for_float_dtypes()
     def test_cumsum_numpy_array(self, dtype):
         a_numpy = numpy.arange(8, dtype=dtype)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             return cupy.cumsum(a_numpy)
 
 
-@testing.gpu
-class TestCumprod(unittest.TestCase):
+class TestCumprod:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_cumprod_1dim(self, xp, dtype):
@@ -503,17 +517,17 @@ class TestCumprod(unittest.TestCase):
     @testing.for_all_dtypes()
     def test_invalid_axis_upper2(self, dtype):
         a = testing.shaped_arange((4, 5), cupy, dtype)
-        with self.assertRaises(numpy.AxisError):
+        with pytest.raises(numpy.AxisError):
             return cupy.cumprod(a, axis=a.ndim)
 
     def test_cumprod_arraylike(self):
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             return cupy.cumprod((1, 2, 3))
 
     @testing.for_float_dtypes()
     def test_cumprod_numpy_array(self, dtype):
         a_numpy = numpy.arange(1, 6, dtype=dtype)
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             return cupy.cumprod(a_numpy)
 
 
