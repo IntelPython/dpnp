@@ -23,6 +23,7 @@ Trigonometric functions
    dpnp.unwrap
    dpnp.deg2rad
    dpnp.rad2deg
+   dpnp.reduce_hypot
 
 
 Hyperbolic functions
@@ -94,6 +95,7 @@ Exponents and logarithms
    dpnp.log1p
    dpnp.logaddexp
    dpnp.logaddexp2
+   dpnp.logsumexp
 
 
 Other special functions
