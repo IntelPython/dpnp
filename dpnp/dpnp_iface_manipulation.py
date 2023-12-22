@@ -744,7 +744,7 @@ def dstack(tup):
     This is equivalent to concatenation along the third axis after 2-D arrays
     of shape `(M, N)` have been reshaped to `(M, N, 1)` and 1-D arrays of shape
     `(N,)` have been reshaped to `(1, N, 1)`. Rebuilds arrays divided by
-    `dsplit`.
+    :obj:`dpnp.dsplit`.
 
     For full documentation refer to :obj:`numpy.dstack`.
 
