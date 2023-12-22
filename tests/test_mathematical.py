@@ -1752,6 +1752,90 @@ class TestHypot:
         assert_raises(TypeError, numpy.hypot, a.asnumpy(), 2, out)
 
 
+class TestLogSumExp:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("axis", [None, 2, -1, (0, 1)])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_logsumexp(self, dtype, axis, keepdims):
+        a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
+        res = dpnp.logsumexp(a, axis=axis, keepdims=keepdims)
+        exp_dtype = dpnp.default_float_type(a.device)
+        exp = numpy.logaddexp.reduce(
+            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
+        )
+
+        assert_dtype_allclose(res, exp)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("axis", [None, 2, -1, (0, 1)])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_logsumexp_out(self, dtype, axis, keepdims):
+        a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
+        exp_dtype = dpnp.default_float_type(a.device)
+        exp = numpy.logaddexp.reduce(
+            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
+        )
+        dpnp_out = dpnp.empty(exp.shape, dtype=exp_dtype)
+        res = dpnp.logsumexp(a, axis=axis, out=dpnp_out, keepdims=keepdims)
+
+        assert res is dpnp_out
+        assert_dtype_allclose(res, exp)
+
+    @pytest.mark.parametrize(
+        "in_dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("out_dtype", get_all_dtypes(no_bool=True))
+    def test_logsumexp_dtype(self, in_dtype, out_dtype):
+        a = dpnp.ones(100, dtype=in_dtype)
+        res = dpnp.logsumexp(a, dtype=out_dtype)
+        exp = numpy.logaddexp.reduce(dpnp.asnumpy(a))
+        exp = exp.astype(out_dtype)
+
+        assert_allclose(res, exp, rtol=1e-06)
+
+
+class TestReduceHypot:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("axis", [None, 2, -1, (0, 1)])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_reduce_hypot(self, dtype, axis, keepdims):
+        a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
+        res = dpnp.reduce_hypot(a, axis=axis, keepdims=keepdims)
+        exp_dtype = dpnp.default_float_type(a.device)
+        exp = numpy.hypot.reduce(
+            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
+        )
+
+        assert_dtype_allclose(res, exp)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("axis", [None, 2, -1, (0, 1)])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_reduce_hypot_out(self, dtype, axis, keepdims):
+        a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
+        exp_dtype = dpnp.default_float_type(a.device)
+        exp = numpy.hypot.reduce(
+            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
+        )
+        dpnp_out = dpnp.empty(exp.shape, dtype=exp_dtype)
+        res = dpnp.reduce_hypot(a, axis=axis, out=dpnp_out, keepdims=keepdims)
+
+        assert res is dpnp_out
+        assert_dtype_allclose(res, exp)
+
+    @pytest.mark.parametrize(
+        "in_dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("out_dtype", get_all_dtypes(no_bool=True))
+    def test_reduce_hypot_dtype(self, in_dtype, out_dtype):
+        a = dpnp.ones(99, dtype=in_dtype)
+        res = dpnp.reduce_hypot(a, dtype=out_dtype)
+        exp = numpy.hypot.reduce(dpnp.asnumpy(a))
+        exp = exp.astype(out_dtype)
+
+        assert_allclose(res, exp, rtol=1e-06)
+
+
 class TestMaximum:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_maximum(self, dtype):
