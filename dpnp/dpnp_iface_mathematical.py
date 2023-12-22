@@ -2119,7 +2119,7 @@ def prod(
         du.intel_device_info(a.sycl_device).get("device_id", 0) & 0xFF00
     )
     if _any_complex and device_mask in [0x3E00, 0x9B00]:
-        return call_origin(
+        res = call_origin(
             numpy.prod,
             a,
             axis=axis,
@@ -2129,6 +2129,10 @@ def prod(
             initial=initial,
             where=where,
         )
+        if dpnp.isscalar(res):
+            # numpy may return a scalar, convert it back to dpnp array
+            return dpnp.array(res, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
+        return res
     elif initial is not None:
         raise NotImplementedError(
             "initial keyword argument is only supported with its default value."
