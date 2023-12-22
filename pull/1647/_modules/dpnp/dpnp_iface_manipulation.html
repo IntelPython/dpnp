@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.13.1dev1+30.ga255de4aab documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.13.1dev1+31.g0f9e0f2b95 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=6b39adf0"></script>
+        <script src="../../_static/documentation_options.js?v=00857492"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+30.ga255de4aab
+                0.13.1dev1+31.g0f9e0f2b95
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -193,8 +193,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        The input array.</span>
+<span class="sd">    a : array_like</span>
+<span class="sd">        Input data, in any form that can be converted to an array.</span>
+<span class="sd">        This includes an instance of :class:`dpnp.ndarray` or</span>
+<span class="sd">        :class:`dpctl.tensor.usm_ndarray`, an object representing</span>
+<span class="sd">        SYCL USM allocation and implementing `__sycl_usm_array_interface__`</span>
+<span class="sd">        protocol, an instance of :class:`numpy.ndarray`, an object supporting</span>
+<span class="sd">        Python buffer protocol, a Python scalar, or a (possibly nested)</span>
+<span class="sd">        sequence of Python scalars.</span>
 <span class="sd">    dtype : str or dtype object, optional</span>
 <span class="sd">        Float type code to coerce input array `a`.  If `dtype` is ``None``,</span>
 <span class="sd">        :obj:`dpnp.bool` or one of the `int` dtypes, it is replaced with</span>
@@ -453,7 +459,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : {dpnp.ndarray}</span>
+<span class="sd">    out : list of dpnp.ndarray</span>
 <span class="sd">        A list of arrays which are views on the original arrays from `args`.</span>
 
 <span class="sd">    Limitations</span>
@@ -654,7 +660,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.stack` : Stack a sequence of arrays along a new axis.</span>
+<span class="sd">    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.</span>
 <span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third axis).</span>
 <span class="sd">    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).</span>
 <span class="sd">    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).</span>
@@ -1503,7 +1509,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    arrays_and_dtypes : {dpnp.ndarray, usm_ndarray, dtype}</span>
+<span class="sd">    arrays_and_dtypes : list of {dpnp.ndarray, usm_ndarray, dtype}</span>
 <span class="sd">        An arbitrary length sequence of arrays or dtypes.</span>
 
 <span class="sd">    Returns</span>
