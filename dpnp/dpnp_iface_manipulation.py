@@ -101,8 +101,14 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
 
     Parameters
     ----------
-    a : {dpnp.ndarray, usm_ndarray}
-        The input array.
+    a : array_like
+        Input data, in any form that can be converted to an array.
+        This includes an instance of :class:`dpnp.ndarray` or
+        :class:`dpctl.tensor.usm_ndarray`, an object representing
+        SYCL USM allocation and implementing `__sycl_usm_array_interface__`
+        protocol, an instance of :class:`numpy.ndarray`, an object supporting
+        Python buffer protocol, a Python scalar, or a (possibly nested)
+        sequence of Python scalars.
     dtype : str or dtype object, optional
         Float type code to coerce input array `a`.  If `dtype` is ``None``,
         :obj:`dpnp.bool` or one of the `int` dtypes, it is replaced with
@@ -349,7 +355,7 @@ def broadcast_arrays(*args, subok=False):
 
     Returns
     -------
-    out : {dpnp.ndarray}
+    out : list of dpnp.ndarray
         A list of arrays which are views on the original arrays from `args`.
 
     Limitations
@@ -541,7 +547,7 @@ def column_stack(tup):
 
     See Also
     --------
-    :obj:`dpnp.stack` : Stack a sequence of arrays along a new axis.
+    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
     :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third axis).
     :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
     :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
@@ -1351,7 +1357,7 @@ def result_type(*arrays_and_dtypes):
 
     Parameters
     ----------
-    arrays_and_dtypes : {dpnp.ndarray, usm_ndarray, dtype}
+    arrays_and_dtypes : list of {dpnp.ndarray, usm_ndarray, dtype}
         An arbitrary length sequence of arrays or dtypes.
 
     Returns
