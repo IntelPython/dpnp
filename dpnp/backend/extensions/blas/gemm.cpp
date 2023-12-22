@@ -86,8 +86,7 @@ static sycl::event gemm_impl(sycl::queue exec_q,
     Tc *res = reinterpret_cast<Tc *>(resultC);
 
     std::stringstream error_msg;
-    std::int64_t info = 0;
-    bool mkl_exception_caught = false;
+    bool is_exception_caught = false;
 
     sycl::event gemm_event;
     try {
@@ -115,14 +114,14 @@ static sycl::event gemm_impl(sycl::queue exec_q,
         error_msg
             << "Unexpected MKL exception caught during gemm() call:\nreason: "
             << e.what();
-        mkl_exception_caught = true;
+        is_exception_caught = true;
     } catch (sycl::exception const &e) {
         error_msg << "Unexpected SYCL exception caught during gemm() call:\n"
                   << e.what();
-        info = -1;
+        is_exception_caught = true;
     }
 
-    if (info != 0 || mkl_exception_caught) // an unexpected error occurs
+    if (is_exception_caught) // an unexpected error occurs
     {
         throw std::runtime_error(error_msg.str());
     }
@@ -145,6 +144,16 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("The input matrices must be of 2 dimensions.");
     }
 
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(matrixA, resultC)) {
+        throw py::value_error("Input array 1 and output array are overlapping "
+                              "segments of memory");
+    }
+    if (overlap(matrixB, resultC)) {
+        throw py::value_error("Input array 2 and output array are overlapping "
+                              "segments of memory");
+    }
+
     // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(
             exec_q,
@@ -156,14 +165,25 @@ std::pair<sycl::event, sycl::event>
 
     bool is_matrixA_f_contig = matrixA.is_f_contiguous();
     bool is_matrixB_f_contig = matrixB.is_f_contiguous();
+    bool is_matrixA_c_contig = matrixA.is_c_contiguous();
+    bool is_matrixB_c_contig = matrixB.is_c_contiguous();
+
+    if (!is_matrixA_f_contig and !is_matrixA_c_contig) {
+        throw py::value_error(
+            "Input array 1 is not c-contiguous nor f-contiguous.");
+    }
+    if (!is_matrixB_f_contig and !is_matrixB_c_contig) {
+        throw py::value_error(
+            "Input array 2 is not c-contiguous nor f-contiguous.");
+    }
 
     const py::ssize_t *a_shape = matrixA.get_shape_raw();
     const py::ssize_t *b_shape = matrixB.get_shape_raw();
     const py::ssize_t *res_shape = resultC.get_shape_raw();
 
     if (a_shape[1] != b_shape[0]) {
-        throw std::runtime_error("The number of columns in A must be equal to "
-                                 "the number of rows in B.");
+        throw py::value_error("The number of columns in A must be equal to "
+                              "the number of rows in B.");
     }
 
     oneapi::mkl::transpose transA = is_matrixA_f_contig
@@ -206,14 +226,12 @@ std::pair<sycl::event, sycl::event>
     char *b_typeless_ptr = matrixB.get_data();
     char *r_typeless_ptr = resultC.get_data();
 
-    std::vector<sycl::event> host_task_events;
     sycl::event gemm_ev =
         gemm_fn(exec_q, transA, transB, m, n, k, a_typeless_ptr, lda,
                 b_typeless_ptr, ldb, r_typeless_ptr, ldc, depends);
 
-    host_task_events.push_back(gemm_ev);
     sycl::event args_ev = dpctl::utils::keep_args_alive(
-        exec_q, {matrixA, matrixB, resultC}, host_task_events);
+        exec_q, {matrixA, matrixB, resultC}, {gemm_ev});
 
     return std::make_pair(args_ev, gemm_ev);
 }

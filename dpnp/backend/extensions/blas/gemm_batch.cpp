@@ -95,8 +95,7 @@ static sycl::event gemm_batch_impl(sycl::queue exec_q,
     Tc *res = reinterpret_cast<Tc *>(resultC);
 
     std::stringstream error_msg;
-    std::int64_t info = 0;
-    bool mkl_exception_caught = false;
+    bool is_exception_caught = false;
 
     sycl::event gemm_batch_event;
     try {
@@ -129,15 +128,15 @@ static sycl::event gemm_batch_impl(sycl::queue exec_q,
         error_msg << "Unexpected MKL exception caught during gemm_batch() "
                      "call:\nreason: "
                   << e.what();
-        mkl_exception_caught = true;
+        is_exception_caught = true;
     } catch (sycl::exception const &e) {
         error_msg
             << "Unexpected SYCL exception caught during gemm_batch() call:\n"
             << e.what();
-        info = -1;
+        is_exception_caught = true;
     }
 
-    if (info != 0 || mkl_exception_caught) // an unexpected error occurs
+    if (is_exception_caught) // an unexpected error occurs
     {
         throw std::runtime_error(error_msg.str());
     }
@@ -150,18 +149,10 @@ std::pair<sycl::event, sycl::event>
                dpctl::tensor::usm_ndarray matrixA,
                dpctl::tensor::usm_ndarray matrixB,
                dpctl::tensor::usm_ndarray resultC,
-               const std::int64_t m,
-               const std::int64_t n,
-               const std::int64_t k,
                const std::int64_t batch_size,
-               const std::int64_t lda,
-               const std::int64_t ldb,
-               const std::int64_t ld_result,
                size_t stridea,
                size_t strideb,
                size_t stridec,
-               const std::int64_t transA_int,
-               const std::int64_t transB_int,
                const std::vector<sycl::event> &depends = {})
 {
     if (!dpctl::utils::queues_are_compatible(
@@ -172,12 +163,33 @@ std::pair<sycl::event, sycl::event>
             "USM allocations are not compatible with the execution queue.");
     }
 
-    oneapi::mkl::transpose transA = (transA_int == 1)
-                                        ? oneapi::mkl::transpose::N
-                                        : oneapi::mkl::transpose::T;
-    oneapi::mkl::transpose transB = (transB_int == 1)
-                                        ? oneapi::mkl::transpose::N
-                                        : oneapi::mkl::transpose::T;
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(matrixA, resultC)) {
+        throw py::value_error("Input array 1 and output array are overlapping "
+                              "segments of memory");
+    }
+    if (overlap(matrixB, resultC)) {
+        throw py::value_error("Input array 2 and output array are overlapping "
+                              "segments of memory");
+    }
+
+    const int matrixA_nd = matrixA.get_ndim();
+    const int matrixB_nd = matrixB.get_ndim();
+    const py::ssize_t *a_shape = matrixA.get_shape_raw();
+    const py::ssize_t *b_shape = matrixB.get_shape_raw();
+
+    if (a_shape[matrixA_nd - 1] != b_shape[matrixB_nd - 2]) {
+        throw py::value_error("The number of columns in A must be equal to "
+                              "the number of rows in B.");
+    }
+
+    const std::int64_t m = a_shape[matrixA_nd - 2];
+    const std::int64_t n = b_shape[matrixB_nd - 1];
+    const std::int64_t k = a_shape[matrixA_nd - 1];
+
+    // transA and transB are always True
+    oneapi::mkl::transpose transA = oneapi::mkl::transpose::N;
+    oneapi::mkl::transpose transB = oneapi::mkl::transpose::N;
 
     int matrixA_typenum = matrixA.get_typenum();
     int matrixB_typenum = matrixB.get_typenum();
@@ -201,15 +213,14 @@ std::pair<sycl::event, sycl::event>
     char *b_typeless_ptr = matrixB.get_data();
     char *r_typeless_ptr = resultC.get_data();
 
-    std::vector<sycl::event> host_task_events;
-    sycl::event gemm_batch_ev =
-        gemm_batch_fn(exec_q, m, n, k, batch_size, lda, ldb, ld_result, stridea,
-                      strideb, stridec, transA, transB, a_typeless_ptr,
-                      b_typeless_ptr, r_typeless_ptr, depends);
+    // Note that lda = k, ldb = n, and ld_result = n
+    sycl::event gemm_batch_ev = gemm_batch_fn(
+        exec_q, m, n, k, batch_size, k, n, n, stridea, strideb, stridec, transA,
+        transB, a_typeless_ptr, b_typeless_ptr, r_typeless_ptr, depends);
 
-    host_task_events.push_back(gemm_batch_ev);
     sycl::event args_batch_ev = dpctl::utils::keep_args_alive(
-        exec_q, {matrixA, matrixB, resultC}, host_task_events);
+        exec_q, {matrixA, matrixB, resultC}, {gemm_batch_ev});
+
     return std::make_pair(args_batch_ev, gemm_batch_ev);
 }
 

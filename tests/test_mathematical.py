@@ -2525,14 +2525,9 @@ class TestMatmulInvalidCases:
             dpnp.matmul(a1, a2, out=dp_out)
 
     def test_exe_q(self):
-        try:
-            x1 = dpnp.ones((5, 4), device="cpu")
-        except dpctl.SyclDeviceCreationError:
-            pytest.skip("No SYCL devices available")
-        try:
-            x2 = dpnp.ones((4, 7), device="gpu")
-        except dpctl.SyclDeviceCreationError:
-            pytest.skip("No SYCL devices available")
+        x1 = dpnp.ones((5, 4), sycl_queue=dpctl.SyclQueue())
+        x2 = dpnp.ones((4, 7), sycl_queue=dpctl.SyclQueue())
+
         with pytest.raises(ValueError):
             dpnp.matmul(x1, x2)
 

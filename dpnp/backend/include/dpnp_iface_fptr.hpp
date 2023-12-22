@@ -192,8 +192,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_LOG2,            /**< Used in numpy.log2() impl  */
     DPNP_FN_LOG1P,           /**< Used in numpy.log1p() impl  */
     DPNP_FN_MATMUL,          /**< Used in numpy.matmul() impl  */
-    DPNP_FN_MATMUL_EXT,      /**< Used in numpy.matmul() impl, requires extra
-                                parameters */
     DPNP_FN_MATRIX_RANK,     /**< Used in numpy.linalg.matrix_rank() impl  */
     DPNP_FN_MATRIX_RANK_EXT, /**< Used in numpy.linalg.matrix_rank() impl,
                                 requires extra parameters */

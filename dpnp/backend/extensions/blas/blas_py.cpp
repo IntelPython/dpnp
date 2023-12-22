@@ -59,10 +59,8 @@ PYBIND11_MODULE(_blas_impl, m)
               "Call `gemm_batch` from OneMKL LAPACK library to return "
               "the matrix-matrix product for a batch of 2-D matrices.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
-              py::arg("result"), py::arg("m"), py::arg("n"), py::arg("k"),
-              py::arg("batch_size"), py::arg("ld_array_1"),
-              py::arg("ld_array_2"), py::arg("ld_result"), py::arg("stridea"),
-              py::arg("strideb"), py::arg("stridec"), py::arg("transA_int"),
-              py::arg("transB_int"), py::arg("depends") = py::list());
+              py::arg("result"), py::arg("batch_size"), py::arg("stridea"),
+              py::arg("strideb"), py::arg("stridec"),
+              py::arg("depends") = py::list());
     }
 }
