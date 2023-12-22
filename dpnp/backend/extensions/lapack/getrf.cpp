@@ -155,7 +155,6 @@ std::pair<sycl::event, sycl::event>
           dpctl::tensor::usm_ndarray a_array,
           dpctl::tensor::usm_ndarray ipiv_array,
           py::list dev_info,
-          const std::int64_t n,
           const std::vector<sycl::event> &depends)
 {
     const int a_array_nd = a_array.get_ndim();
@@ -203,6 +202,8 @@ std::pair<sycl::event, sycl::event>
     if (ipiv_array_type_id != static_cast<int>(dpctl_td_ns::typenum_t::INT64)) {
         throw py::value_error("The type of 'ipiv_array' must be int64.");
     }
+
+    const std::int64_t n = a_array.get_shape_raw()[0];
 
     char *a_array_data = a_array.get_data();
     const std::int64_t lda = std::max<size_t>(1UL, n);

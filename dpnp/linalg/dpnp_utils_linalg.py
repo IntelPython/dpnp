@@ -327,7 +327,6 @@ def _lu_factor(a, res_type):
                     a_vecs[i].get_array(),
                     ipiv_vecs[i].get_array(),
                     dev_info_vecs[i],
-                    n,
                     [a_copy_ev],
                 )
 
@@ -368,7 +367,6 @@ def _lu_factor(a, res_type):
             a_h.get_array(),
             ipiv_h.get_array(),
             dev_info_h,
-            n,
             [a_copy_ev],
         )
 
