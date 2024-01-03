@@ -246,3 +246,12 @@ def test_repeat():
     numpy_array = numpy.arange(4).repeat(3)
     dpnp_array = dpnp.arange(4).repeat(3)
     assert_array_equal(numpy_array, dpnp_array)
+
+
+def test_clip():
+    numpy_array = numpy.arange(10)
+    dpnp_array = dpnp.arange(10)
+    result = dpnp.clip(dpnp_array, 3, 7)
+    expected = numpy.clip(numpy_array, 3, 7)
+
+    assert_array_equal(expected, result)

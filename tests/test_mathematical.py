@@ -13,6 +13,7 @@ from numpy.testing import (
 )
 
 import dpnp
+from dpnp.dpnp_array import dpnp_array
 
 from .helper import (
     assert_dtype_allclose,
@@ -25,6 +26,98 @@ from .helper import (
     is_cpu_device,
     is_win_platform,
 )
+
+
+class TestClip:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("order", ["C", "F", "A", "K", None])
+    def test_clip(self, dtype, order):
+        dp_a = dpnp.asarray([[1, 2, 8], [1, 6, 4], [9, 5, 1]], dtype=dtype)
+        np_a = dpnp.asnumpy(dp_a)
+
+        result = dpnp.clip(dp_a, 2, 6, order=order)
+        expected = numpy.clip(np_a, 2, 6, order=order)
+        assert_allclose(expected, result)
+        assert expected.flags.c_contiguous == result.flags.c_contiguous
+        assert expected.flags.f_contiguous == result.flags.f_contiguous
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+    )
+    def test_clip_arrays(self, dtype):
+        dp_a = dpnp.asarray([1, 2, 8, 1, 6, 4, 1], dtype=dtype)
+        np_a = dpnp.asnumpy(dp_a)
+
+        min_v = dpnp.asarray(2, dtype=dtype)
+        max_v = dpnp.asarray(6, dtype=dtype)
+
+        result = dpnp.clip(dp_a, min_v, max_v)
+        expected = numpy.clip(np_a, min_v.asnumpy(), max_v.asnumpy())
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("in_dp", [dpnp, dpt])
+    @pytest.mark.parametrize("out_dp", [dpnp, dpt])
+    def test_clip_out(self, dtype, in_dp, out_dp):
+        np_a = numpy.array([[1, 2, 8], [1, 6, 4], [9, 5, 1]], dtype=dtype)
+        dp_a = in_dp.asarray(np_a)
+
+        dp_out = out_dp.ones(dp_a.shape, dtype=dtype)
+        np_out = numpy.ones(np_a.shape, dtype=dtype)
+
+        result = dpnp.clip(dp_a, 2, 6, out=dp_out)
+        expected = numpy.clip(np_a, 2, 6, out=np_out)
+        assert_allclose(expected, result)
+        assert_allclose(np_out, dp_out)
+        assert isinstance(result, dpnp_array)
+
+    def test_input_nan(self):
+        np_a = numpy.array([-2.0, numpy.nan, 0.5, 3.0, 0.25, numpy.nan])
+        dp_a = dpnp.array(np_a)
+
+        result = dpnp.clip(dp_a, -1, 1)
+        expected = numpy.clip(np_a, -1, 1)
+        assert_array_equal(result, expected)
+
+    # TODO: unmute the test once dpctl resolves the issue
+    @pytest.mark.skip(reason="dpctl-1489 issue")
+    @pytest.mark.parametrize(
+        "kwargs",
+        [
+            {"min": numpy.nan},
+            {"max": numpy.nan},
+            {"min": numpy.nan, "max": numpy.nan},
+            {"min": -2, "max": numpy.nan},
+            {"min": numpy.nan, "max": 10},
+        ],
+    )
+    def test_nan_edges(self, kwargs):
+        np_a = numpy.arange(7)
+        dp_a = dpnp.asarray(np_a)
+
+        result = dp_a.clip(**kwargs)
+        expected = np_a.clip(**kwargs)
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize(
+        "kwargs",
+        [
+            {"casting": "same_kind"},
+            {"dtype": "i8"},
+            {"subok": True},
+            {"where": True},
+        ],
+    )
+    def test_not_implemented_kwargs(self, kwargs):
+        a = dpnp.arange(8, dtype="i4")
+
+        numpy.clip(a.asnumpy(), 1, 5, **kwargs)
+        with pytest.raises(NotImplementedError):
+            dpnp.clip(a, 1, 5, **kwargs)
 
 
 class TestDiff:
@@ -607,8 +700,8 @@ def test_positive_boolean():
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 def test_prod_nanprod(func, axis, keepdims, dtype):
     a = numpy.arange(1, 13, dtype=dtype).reshape((2, 2, 3))
-    if func == "nanprod" and issubclass(a.dtype.type, dpnp.inexact):
-        a[1:2:] = numpy.nan
+    if func == "nanprod" and dpnp.issubdtype(a.dtype, dpnp.inexact):
+        a[:, :, 2] = numpy.nan
     ia = dpnp.array(a)
 
     np_res = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
@@ -625,24 +718,20 @@ def test_prod_zero_size(axis):
 
     np_res = numpy.prod(a, axis=axis)
     dpnp_res = dpnp.prod(ia, axis=axis)
-
-    assert dpnp_res.shape == np_res.shape
-    assert_allclose(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res)
 
 
 @pytest.mark.parametrize("func", ["prod", "nanprod"])
 @pytest.mark.parametrize("axis", [None, 0, 1, -1])
 @pytest.mark.parametrize("keepdims", [False, True])
 def test_prod_nanprod_bool(func, axis, keepdims):
-    a = numpy.arange(2, dtype=dpnp.bool)
+    a = numpy.arange(2, dtype=numpy.bool_)
     a = numpy.tile(a, (2, 2))
     ia = dpnp.array(a)
 
     np_res = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
     dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
-
-    assert dpnp_res.shape == np_res.shape
-    assert_allclose(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -650,41 +739,48 @@ def test_prod_nanprod_bool(func, axis, keepdims):
 @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 @pytest.mark.parametrize("func", ["prod", "nanprod"])
 @pytest.mark.parametrize("in_dtype", get_all_dtypes(no_bool=True))
-@pytest.mark.parametrize("out_dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize(
+    "out_dtype", get_all_dtypes(no_bool=True, no_none=True)
+)
 def test_prod_nanprod_dtype(func, in_dtype, out_dtype):
     a = numpy.arange(1, 13, dtype=in_dtype).reshape((2, 2, 3))
-    if func == "nanprod" and issubclass(a.dtype.type, dpnp.inexact):
-        a[1:2:] = numpy.nan
+    if func == "nanprod" and dpnp.issubdtype(a.dtype, dpnp.inexact):
+        a[:, :, 2] = numpy.nan
     ia = dpnp.array(a)
 
     np_res = getattr(numpy, func)(a, dtype=out_dtype)
     dpnp_res = getattr(dpnp, func)(ia, dtype=out_dtype)
-
-    if out_dtype is not None:
-        assert dpnp_res.dtype == out_dtype
-    assert_allclose(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res)
 
 
+@pytest.mark.usefixtures("suppress_overflow_encountered_in_cast_numpy_warnings")
 @pytest.mark.parametrize("func", ["prod", "nanprod"])
 def test_prod_nanprod_out(func):
-    a = numpy.arange(1, 7).reshape((2, 3))
-    if func == "nanprod" and issubclass(a.dtype.type, dpnp.inexact):
-        a[1:2:] = numpy.nan
-    ia = dpnp.array(a)
+    ia = dpnp.arange(1, 7).reshape((2, 3))
+    ia = ia.astype(dpnp.default_float_type(ia.device))
+    if func == "nanprod":
+        ia[:, 1] = dpnp.nan
+    a = dpnp.asnumpy(ia)
 
+    # output is dpnp_array
     np_res = getattr(numpy, func)(a, axis=0)
-    dpnp_res = dpnp.array(numpy.empty_like(np_res))
-    getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+    dpnp_out = dpnp.empty(np_res.shape, dtype=np_res.dtype)
+    dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpnp_out)
+    assert dpnp_out is dpnp_res
     assert_allclose(dpnp_res, np_res)
 
-    dpnp_res = dpt.asarray(numpy.empty_like(np_res))
-    getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+    # output is usm_ndarray
+    dpt_out = dpt.empty(np_res.shape, dtype=np_res.dtype)
+    dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpt_out)
+    assert dpt_out is dpnp_res.get_array()
     assert_allclose(dpnp_res, np_res)
 
+    # out is a numpy array -> TypeError
     dpnp_res = numpy.empty_like(np_res)
     with pytest.raises(TypeError):
         getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
 
+    # incorrect shape for out
     dpnp_res = dpnp.array(numpy.empty((2, 3)))
     with pytest.raises(ValueError):
         getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
@@ -1656,6 +1752,90 @@ class TestHypot:
         assert_raises(TypeError, numpy.hypot, a.asnumpy(), 2, out)
 
 
+class TestLogSumExp:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("axis", [None, 2, -1, (0, 1)])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_logsumexp(self, dtype, axis, keepdims):
+        a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
+        res = dpnp.logsumexp(a, axis=axis, keepdims=keepdims)
+        exp_dtype = dpnp.default_float_type(a.device)
+        exp = numpy.logaddexp.reduce(
+            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
+        )
+
+        assert_dtype_allclose(res, exp)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("axis", [None, 2, -1, (0, 1)])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_logsumexp_out(self, dtype, axis, keepdims):
+        a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
+        exp_dtype = dpnp.default_float_type(a.device)
+        exp = numpy.logaddexp.reduce(
+            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
+        )
+        dpnp_out = dpnp.empty(exp.shape, dtype=exp_dtype)
+        res = dpnp.logsumexp(a, axis=axis, out=dpnp_out, keepdims=keepdims)
+
+        assert res is dpnp_out
+        assert_dtype_allclose(res, exp)
+
+    @pytest.mark.parametrize(
+        "in_dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("out_dtype", get_all_dtypes(no_bool=True))
+    def test_logsumexp_dtype(self, in_dtype, out_dtype):
+        a = dpnp.ones(100, dtype=in_dtype)
+        res = dpnp.logsumexp(a, dtype=out_dtype)
+        exp = numpy.logaddexp.reduce(dpnp.asnumpy(a))
+        exp = exp.astype(out_dtype)
+
+        assert_allclose(res, exp, rtol=1e-06)
+
+
+class TestReduceHypot:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("axis", [None, 2, -1, (0, 1)])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_reduce_hypot(self, dtype, axis, keepdims):
+        a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
+        res = dpnp.reduce_hypot(a, axis=axis, keepdims=keepdims)
+        exp_dtype = dpnp.default_float_type(a.device)
+        exp = numpy.hypot.reduce(
+            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
+        )
+
+        assert_dtype_allclose(res, exp)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("axis", [None, 2, -1, (0, 1)])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_reduce_hypot_out(self, dtype, axis, keepdims):
+        a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
+        exp_dtype = dpnp.default_float_type(a.device)
+        exp = numpy.hypot.reduce(
+            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
+        )
+        dpnp_out = dpnp.empty(exp.shape, dtype=exp_dtype)
+        res = dpnp.reduce_hypot(a, axis=axis, out=dpnp_out, keepdims=keepdims)
+
+        assert res is dpnp_out
+        assert_dtype_allclose(res, exp)
+
+    @pytest.mark.parametrize(
+        "in_dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("out_dtype", get_all_dtypes(no_bool=True))
+    def test_reduce_hypot_dtype(self, in_dtype, out_dtype):
+        a = dpnp.ones(99, dtype=in_dtype)
+        res = dpnp.reduce_hypot(a, dtype=out_dtype)
+        exp = numpy.hypot.reduce(dpnp.asnumpy(a))
+        exp = exp.astype(out_dtype)
+
+        assert_allclose(res, exp, rtol=1e-06)
+
+
 class TestMaximum:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_maximum(self, dtype):
@@ -2082,11 +2262,10 @@ def test_sum_empty(dtype, axis):
     assert_array_equal(numpy_res, dpnp_res.asnumpy())
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True, no_bool=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 def test_sum_empty_out(dtype):
     a = dpnp.empty((1, 2, 0, 4), dtype=dtype)
-    out = dpnp.ones(())
+    out = dpnp.ones((), dtype=dtype)
     res = a.sum(out=out)
     assert_array_equal(out.asnumpy(), res.asnumpy())
     assert_array_equal(out.asnumpy(), numpy.array(0, dtype=dtype))

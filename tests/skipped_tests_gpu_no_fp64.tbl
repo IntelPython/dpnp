@@ -285,15 +285,3 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeib
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_2_{a_shape=(3, 2), shape=(4, 3, 2)}::test_weibull_for_inf_a
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_3_{a_shape=(3, 2), shape=(3, 2)}::test_weibull
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_3_{a_shape=(3, 2), shape=(3, 2)}::test_weibull_for_inf_a
-
-
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_6_{func='std', params=((), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_12_{func='var', params=((), None)}::test_external_mean_zero_len

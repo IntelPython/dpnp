@@ -369,10 +369,15 @@ def test_meshgrid(device_x, device_y):
         pytest.param("max", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("mean", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("min", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("nanargmax", [1.0, 2.0, 4.0, dpnp.nan]),
+        pytest.param("nanargmin", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("nancumprod", [1.0, dpnp.nan]),
         pytest.param("nancumsum", [1.0, dpnp.nan]),
+        pytest.param("nanmax", [1.0, 2.0, 4.0, dpnp.nan]),
+        pytest.param("nanmin", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("nanprod", [1.0, dpnp.nan]),
         pytest.param("nansum", [1.0, dpnp.nan]),
+        pytest.param("nanvar", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("negative", [1.0, 0.0, -1.0]),
         pytest.param("positive", [1.0, 0.0, -1.0]),
         pytest.param("prod", [1.0, 2.0]),
@@ -387,6 +392,7 @@ def test_meshgrid(device_x, device_y):
         ),
         pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
+        pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("sum", [1.0, 2.0]),
         pytest.param(
             "tan", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
@@ -394,6 +400,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("tanh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("trapz", [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
     ],
 )
 @pytest.mark.parametrize(
@@ -457,6 +464,38 @@ def test_rsqrt(device):
     result = dpnp.rsqrt(x)
     expected = 1 / numpy.sqrt(x.asnumpy())
     assert_allclose(result, expected)
+
+    expected_queue = x.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_logsumexp(device):
+    x = dpnp.arange(10, device=device)
+    result = dpnp.logsumexp(x)
+    expected = numpy.logaddexp.reduce(x.asnumpy())
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = x.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_reduce_hypot(device):
+    x = dpnp.arange(10, device=device)
+    result = dpnp.reduce_hypot(x)
+    expected = numpy.hypot.reduce(x.asnumpy())
+    assert_dtype_allclose(result, expected)
 
     expected_queue = x.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
@@ -1284,6 +1323,38 @@ def test_broadcast_to(device):
 
 
 @pytest.mark.parametrize(
+    "func,data1,data2",
+    [
+        pytest.param("column_stack", (1, 2, 3), (2, 3, 4)),
+        pytest.param("concatenate", [[1, 2], [3, 4]], [[5, 6]]),
+        pytest.param("dstack", [[1], [2], [3]], [[2], [3], [4]]),
+        pytest.param("hstack", (1, 2, 3), (4, 5, 6)),
+        pytest.param("row_stack", [[7], [1], [2], [3]], [[2], [3], [9], [4]]),
+        pytest.param("stack", [1, 2, 3], [4, 5, 6]),
+        pytest.param("vstack", [0, 1, 2, 3], [4, 5, 6, 7]),
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_concat_stack(func, data1, data2, device):
+    x1_orig = numpy.array(data1)
+    x2_orig = numpy.array(data2)
+    expected = getattr(numpy, func)((x1_orig, x2_orig))
+
+    x1 = dpnp.array(data1, device=device)
+    x2 = dpnp.array(data2, device=device)
+    result = getattr(dpnp, func)((x1, x2))
+
+    assert_allclose(result, expected)
+
+    assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
+
+
+@pytest.mark.parametrize(
     "device_x",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
@@ -1381,3 +1452,14 @@ def test_solve(device):
 
     assert_sycl_queue_equal(result_queue, dpnp_x.sycl_queue)
     assert_sycl_queue_equal(result_queue, dpnp_y.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_clip(device):
+    x = dpnp.arange(10, device=device)
+    y = dpnp.clip(x, 3, 7)
+    assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
