@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.can_cast &mdash; Data Parallel Extension for NumPy 0.13.1dev1+23.gb5c8f057d7 documentation</title>
+  <title>dpnp.can_cast &mdash; Data Parallel Extension for NumPy 0.13.1dev1+29.g3e4184f0a1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=726c26e7"></script>
+        <script src="../../_static/documentation_options.js?v=df668e41"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+23.gb5c8f057d7
+                0.13.1dev1+29.g3e4184f0a1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -130,19 +130,18 @@
 <dt class="sig sig-object py" id="dpnp.can_cast">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">can_cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'safe'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#can_cast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.can_cast" title="Link to this definition"></a></dt>
 <dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if cast between data types can occur according to the casting rule.</p>
-<p>If <cite>from</cite> is a scalar or array scalar, also returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the scalar value can
-be cast without overflow or truncation to an integer.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.can_cast.html#numpy.can_cast" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.can_cast</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>from</strong> (<em>dpnp.array</em><em>, </em><a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a>) – Source data type.</p></li>
+<li><p><strong>from</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a><em>, </em><em>dtype specifier}</em>) – Source data type.</p></li>
 <li><p><strong>to</strong> (<a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a>) – Target data type.</p></li>
 <li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) – Controls what kind of data casting may occur.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – True if cast can occur according to the casting rule.</p>
+<dd class="field-even"><p><strong>out</strong> – <code class="docutils literal notranslate"><span class="pre">True</span></code> if cast can occur according to the casting rule,
+<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a></p>
@@ -154,6 +153,59 @@ be cast without overflow or truncation to an integer.</p>
 <dt><a class="reference internal" href="dpnp.result_type.html#dpnp.result_type" title="dpnp.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.result_type</span></code></a></dt><dd><p>Returns the type that results from applying the NumPy type promotion rules to the arguments.</p>
 </dd>
 </dl>
+</div>
+<p class="rubric">Examples</p>
+<p>Basic examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="nb">complex</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="nb">complex</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="s1">&#39;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="s1">&#39;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Array scalar checks the value, array does not</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mf">1000.0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1000.0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Using the casting rules</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="s1">&#39;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="s1">&#39;&lt;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="s1">&#39;&lt;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;equiv&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="s1">&#39;&lt;i4&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;equiv&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="s1">&#39;&lt;i4&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;safe&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="s1">&#39;&lt;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i4&#39;</span><span class="p">,</span> <span class="s1">&#39;safe&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="s1">&#39;&lt;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;i4&#39;</span><span class="p">,</span> <span class="s1">&#39;same_kind&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="s1">&#39;&lt;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;u4&#39;</span><span class="p">,</span> <span class="s1">&#39;same_kind&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="s1">&#39;&lt;i8&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;u4&#39;</span><span class="p">,</span> <span class="s1">&#39;unsafe&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
 </div>
 </dd></dl>
 
