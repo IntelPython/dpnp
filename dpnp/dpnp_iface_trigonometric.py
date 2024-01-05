@@ -1345,14 +1345,14 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
 
     Parameters
     ----------
-    x : {dpnp_array, usm_ndarray}
+    x : {dpnp.ndarray, usm_ndarray}
         Input array, expected to have a real-valued data type.
     axis : int or tuple of ints, optional
         Axis or axes along which values must be computed. If a tuple
         of unique integers, values are computed over multiple axes.
         If ``None``, the result is computed over the entire array.
         Default: ``None``.
-    out : {dpnp_array, usm_ndarray}, optional
+    out : {dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     dtype : data type, optional
@@ -1432,7 +1432,7 @@ def reciprocal(
 
     Parameters
     ----------
-    x : {dpnp.array, usm_ndarray}
+    x : {dpnp.ndarray, usm_ndarray}
         Input array.
     out : {None, dpnp.ndarray}, optional
         Output array to populate.
@@ -1480,14 +1480,14 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
 
     Parameters
     ----------
-    x : {dpnp_array, usm_ndarray}
+    x : {dpnp.ndarray, usm_ndarray}
         Input array, expected to have a real-valued data type.
     axis : int or tuple of ints, optional
         Axis or axes along which values must be computed. If a tuple
         of unique integers, values are computed over multiple axes.
         If ``None``, the result is computed over the entire array.
         Default: ``None``.
-    out : {dpnp_array, usm_ndarray}, optional
+    out : {dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     dtype : data type, optional

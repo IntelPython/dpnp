@@ -301,7 +301,7 @@ def angle(z, deg=False):
 
     Parameters
     ----------
-    x : {dpnp.array, usm_ndarray}
+    x : {dpnp.ndarray, usm_ndarray}
         Input array, expected to have a complex-valued floating-point data type.
     deg : bool, optional
         Return angle in degrees if True, radians if False (default).
@@ -448,12 +448,12 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
     Parameters
     ----------
-    a : {dpnp.array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Array containing elements to clip.
-    a_min, a_max : {dpnp.array, usm_ndarray, None}
+    a_min, a_max : {dpnp.ndarray, usm_ndarray, None}
         Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.
         Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.
-    out : {dpnp.array, usm_ndarray}, optional
+    out : {dpnp.ndarray, usm_ndarray}, optional
         The results will be placed in this array. It may be the input array for in-place clipping.
         `out` must be of the right shape to hold the output. Its type is preserved.
     order : {"C", "F", "A", "K", None}, optional
@@ -462,7 +462,7 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
     Returns
     -------
-    out : dpnp.array
+    out : dpnp.ndarray
         An array with the elements of `a`, but where values < `a_min` are replaced with `a_min`,
         and those > `a_max` with `a_max`.
 
