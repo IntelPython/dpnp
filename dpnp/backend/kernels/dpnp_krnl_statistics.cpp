@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2023, Intel Corporation
+// Copyright (c) 2016-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -358,9 +358,7 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
         }
     }
     else {
-        size_t res_ndim = ndim - naxis;
-        size_t res_shape[res_ndim];
-        int ind = 0;
+        std::vector<size_t> res_shape;
         for (size_t i = 0; i < ndim; ++i) {
             bool found = false;
             for (size_t j = 0; j < naxis; ++j) {
@@ -370,28 +368,24 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
                 }
             }
             if (!found) {
-                res_shape[ind] = shape[i];
-                ind++;
+                res_shape.push_back(shape[i]);
             }
         }
+        const size_t res_ndim = res_shape.size();
 
-        size_t input_shape_offsets[ndim];
         size_t acc = 1;
-        for (size_t i = ndim - 1; i > 0; --i) {
-            input_shape_offsets[i] = acc;
+        std::vector<size_t> input_shape_offsets{acc};
+        for (size_t i = ndim - 2; i > 0; --i) {
             acc *= shape[i];
+            input_shape_offsets.insert(input_shape_offsets.begin(), acc);
         }
-        input_shape_offsets[0] = acc;
 
-        size_t output_shape_offsets[res_ndim];
         acc = 1;
-        if (res_ndim > 0) {
-            for (size_t i = res_ndim - 1; i > 0; --i) {
-                output_shape_offsets[i] = acc;
-                acc *= res_shape[i];
-            }
+        std::vector<size_t> output_shape_offsets{acc};
+        for (size_t i = res_ndim - 2; i > 0; --i) {
+            acc *= res_shape[i];
+            output_shape_offsets.insert(output_shape_offsets.begin(), acc);
         }
-        output_shape_offsets[0] = acc;
 
         size_t size_result = 1;
         for (size_t i = 0; i < res_ndim; ++i) {
@@ -399,15 +393,16 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
         }
 
         // init result array
+        size_t *xyz = new size_t[res_ndim];
+        size_t *source_axis = new size_t[ndim];
+        size_t *result_axis = new size_t[res_ndim];
         for (size_t result_idx = 0; result_idx < size_result; ++result_idx) {
-            size_t xyz[res_ndim];
             size_t remainder = result_idx;
             for (size_t i = 0; i < res_ndim; ++i) {
                 xyz[i] = remainder / output_shape_offsets[i];
                 remainder = remainder - xyz[i] * output_shape_offsets[i];
             }
 
-            size_t source_axis[ndim];
             size_t result_axis_idx = 0;
             for (size_t idx = 0; idx < ndim; ++idx) {
                 bool found = false;
@@ -436,7 +431,6 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
 
         for (size_t source_idx = 0; source_idx < size_input; ++source_idx) {
             // reconstruct x,y,z from linear source_idx
-            size_t xyz[ndim];
             size_t remainder = source_idx;
             for (size_t i = 0; i < ndim; ++i) {
                 xyz[i] = remainder / input_shape_offsets[i];
@@ -444,7 +438,6 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
             }
 
             // extract result axis
-            size_t result_axis[res_ndim];
             size_t result_idx = 0;
             for (size_t idx = 0; idx < ndim; ++idx) {
                 // try to find current idx in axis array
@@ -471,6 +464,10 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
                 result[result_offset] = array_1[source_idx];
             }
         }
+
+        delete[] xyz;
+        delete[] source_axis;
+        delete[] result_axis;
     }
 
     return event_ref;
@@ -730,9 +727,7 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
         }
     }
     else {
-        size_t res_ndim = ndim - naxis;
-        size_t res_shape[res_ndim];
-        int ind = 0;
+        std::vector<size_t> res_shape;
         for (size_t i = 0; i < ndim; i++) {
             bool found = false;
             for (size_t j = 0; j < naxis; j++) {
@@ -742,28 +737,24 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
                 }
             }
             if (!found) {
-                res_shape[ind] = shape[i];
-                ind++;
+                res_shape.push_back(shape[i]);
             }
         }
+        const size_t res_ndim = res_shape.size();
 
-        size_t input_shape_offsets[ndim];
         size_t acc = 1;
-        for (size_t i = ndim - 1; i > 0; --i) {
-            input_shape_offsets[i] = acc;
+        std::vector<size_t> input_shape_offsets{acc};
+        for (size_t i = ndim - 2; i > 0; --i) {
             acc *= shape[i];
+            input_shape_offsets.insert(input_shape_offsets.begin(), acc);
         }
-        input_shape_offsets[0] = acc;
 
-        size_t output_shape_offsets[res_ndim];
         acc = 1;
-        if (res_ndim > 0) {
-            for (size_t i = res_ndim - 1; i > 0; --i) {
-                output_shape_offsets[i] = acc;
-                acc *= res_shape[i];
-            }
+        std::vector<size_t> output_shape_offsets{acc};
+        for (size_t i = res_ndim - 2; i > 0; --i) {
+            acc *= res_shape[i];
+            output_shape_offsets.insert(output_shape_offsets.begin(), acc);
         }
-        output_shape_offsets[0] = acc;
 
         size_t size_result = 1;
         for (size_t i = 0; i < res_ndim; ++i) {
@@ -771,15 +762,16 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
         }
 
         // init result array
+        size_t *xyz = new size_t[res_ndim];
+        size_t *source_axis = new size_t[ndim];
+        size_t *result_axis = new size_t[res_ndim];
         for (size_t result_idx = 0; result_idx < size_result; ++result_idx) {
-            size_t xyz[res_ndim];
             size_t remainder = result_idx;
             for (size_t i = 0; i < res_ndim; ++i) {
                 xyz[i] = remainder / output_shape_offsets[i];
                 remainder = remainder - xyz[i] * output_shape_offsets[i];
             }
 
-            size_t source_axis[ndim];
             size_t result_axis_idx = 0;
             for (size_t idx = 0; idx < ndim; ++idx) {
                 bool found = false;
@@ -808,7 +800,6 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
 
         for (size_t source_idx = 0; source_idx < size_input; ++source_idx) {
             // reconstruct x,y,z from linear source_idx
-            size_t xyz[ndim];
             size_t remainder = source_idx;
             for (size_t i = 0; i < ndim; ++i) {
                 xyz[i] = remainder / input_shape_offsets[i];
@@ -816,7 +807,6 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
             }
 
             // extract result axis
-            size_t result_axis[res_ndim];
             size_t result_idx = 0;
             for (size_t idx = 0; idx < ndim; ++idx) {
                 // try to find current idx in axis array
@@ -843,6 +833,10 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
                 result[result_offset] = array_1[source_idx];
             }
         }
+
+        delete[] xyz;
+        delete[] source_axis;
+        delete[] result_axis;
     }
 
     return event_ref;
