@@ -290,6 +290,11 @@ def _lu_factor(a, res_type):
                 dev_info_h, usm_type=a_usm_type, sycl_queue=a_sycl_queue
             )
 
+            # Reshape the results back to their original shape
+            a_h = a_h.reshape(orig_shape)
+            ipiv_h = ipiv_h.reshape(orig_shape[:-1])
+            dev_info_array = dev_info_array.reshape(orig_shape[:-2])
+
             return (a_h, ipiv_h, dev_info_array)
 
         else:
