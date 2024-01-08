@@ -77,8 +77,7 @@ static sycl::event getrf_impl(sycl::queue exec_q,
 
     std::stringstream error_msg;
     std::int64_t info = 0;
-    bool mkl_exception_caught = false;
-    bool sycl_exception_caught = false;
+    bool is_exception_caught = false;
 
     sycl::event getrf_event;
     try {
@@ -98,18 +97,17 @@ static sycl::event getrf_impl(sycl::queue exec_q,
                         // routine for storing intermediate results.
             scratchpad_size, depends);
     } catch (mkl_lapack::exception const &e) {
+        is_exception_caught = true;
         info = e.info();
 
         if (info < 0) {
             error_msg << "Parameter number " << -info
                       << " had an illegal value.";
-            mkl_exception_caught = true;
         }
         else if (info == scratchpad_size && e.detail() != 0) {
             error_msg
                 << "Insufficient scratchpad size. Required size is at least "
                 << e.detail();
-            mkl_exception_caught = true;
         }
         else if (info > 0) {
             // Store the positive 'info' value in the first element of
@@ -117,22 +115,21 @@ static sycl::event getrf_impl(sycl::queue exec_q,
             // completed, but the factor U (upper triangular matrix) is exactly
             // singular. The 'info' value here is the index of the first zero
             // element in the diagonal of U.
+            is_exception_caught = false;
             dev_info[0] = info;
         }
         else {
             error_msg << "Unexpected MKL exception caught during getrf() "
                          "call:\nreason: "
                       << e.what() << "\ninfo: " << e.info();
-            mkl_exception_caught = true;
         }
     } catch (sycl::exception const &e) {
+        is_exception_caught = true;
         error_msg << "Unexpected SYCL exception caught during getrf() call:\n"
                   << e.what();
-        sycl_exception_caught = true;
     }
 
-    if (mkl_exception_caught ||
-        sycl_exception_caught) // an unexpected error occurs
+    if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
             sycl::free(scratchpad, exec_q);

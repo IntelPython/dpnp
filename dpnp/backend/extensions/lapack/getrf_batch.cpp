@@ -86,8 +86,7 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
 
     std::stringstream error_msg;
     std::int64_t info = 0;
-    bool mkl_exception_caught = false;
-    bool sycl_exception_caught = false;
+    bool is_exception_caught = false;
 
     sycl::event getrf_batch_event;
     try {
@@ -123,7 +122,7 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
             dev_info[error_matrices_ids[i]] = error_info[i];
         }
     } catch (mkl_lapack::exception const &e) {
-        mkl_exception_caught = true;
+        is_exception_caught = true;
         info = e.info();
 
         if (info < 0) {
@@ -141,14 +140,13 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
                       << e.what() << "\ninfo: " << e.info();
         }
     } catch (sycl::exception const &e) {
+        is_exception_caught = true;
         error_msg
             << "Unexpected SYCL exception caught during getrf_batch() call:\n"
             << e.what();
-        sycl_exception_caught = true;
     }
 
-    if (mkl_exception_caught ||
-        sycl_exception_caught) // an unexpected error occurs
+    if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
             sycl::free(scratchpad, exec_q);
