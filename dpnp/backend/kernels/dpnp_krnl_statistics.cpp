@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2024, Intel Corporation
+// Copyright (c) 2016-2023, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -473,6 +473,48 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
     return event_ref;
 }
 
+// Explicit instantiation of the function, since dpnp_max_c() is used by
+// other template functions, but implicit instantiation is not applied anymore.
+template DPCTLSyclEventRef dpnp_max_c<int32_t>(DPCTLSyclQueueRef q_ref,
+                                               void *,
+                                               void *,
+                                               const size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_max_c<int64_t>(DPCTLSyclQueueRef q_ref,
+                                               void *,
+                                               void *,
+                                               const size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_max_c<float>(DPCTLSyclQueueRef q_ref,
+                                             void *,
+                                             void *,
+                                             const size_t,
+                                             const shape_elem_type *,
+                                             size_t,
+                                             const shape_elem_type *,
+                                             size_t,
+                                             const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_max_c<double>(DPCTLSyclQueueRef q_ref,
+                                              void *,
+                                              void *,
+                                              const size_t,
+                                              const shape_elem_type *,
+                                              size_t,
+                                              const shape_elem_type *,
+                                              size_t,
+                                              const DPCTLEventVectorRef);
+
 template <typename _DataType>
 void dpnp_max_c(void *array1_in,
                 void *result1,
@@ -841,6 +883,48 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
 
     return event_ref;
 }
+
+// Explicit instantiation of the function, since dpnp_min_c() is used by
+// other template functions, but implicit instantiation is not applied anymore.
+template DPCTLSyclEventRef dpnp_min_c<int32_t>(DPCTLSyclQueueRef q_ref,
+                                               void *,
+                                               void *,
+                                               const size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_min_c<int64_t>(DPCTLSyclQueueRef q_ref,
+                                               void *,
+                                               void *,
+                                               const size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_min_c<float>(DPCTLSyclQueueRef q_ref,
+                                             void *,
+                                             void *,
+                                             const size_t,
+                                             const shape_elem_type *,
+                                             size_t,
+                                             const shape_elem_type *,
+                                             size_t,
+                                             const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_min_c<double>(DPCTLSyclQueueRef q_ref,
+                                              void *,
+                                              void *,
+                                              const size_t,
+                                              const shape_elem_type *,
+                                              size_t,
+                                              const shape_elem_type *,
+                                              size_t,
+                                              const DPCTLEventVectorRef);
 
 template <typename _DataType>
 void dpnp_min_c(void *array1_in,
