@@ -36,25 +36,15 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    'dpnp_cbrt',
     'dpnp_degrees',
-    'dpnp_exp2',
     'dpnp_radians',
     'dpnp_recip',
     'dpnp_unwrap'
 ]
 
 
-cpdef utils.dpnp_descriptor dpnp_cbrt(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_CBRT_EXT, x1)
-
-
 cpdef utils.dpnp_descriptor dpnp_degrees(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_DEGREES_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_exp2(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_EXP2_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_recip(utils.dpnp_descriptor x1):

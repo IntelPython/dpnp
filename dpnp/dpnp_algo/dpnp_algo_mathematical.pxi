@@ -36,11 +36,9 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_copysign",
     "dpnp_cross",
     "dpnp_cumprod",
     "dpnp_cumsum",
-    "dpnp_diff",
     "dpnp_ediff1d",
     "dpnp_fabs",
     "dpnp_fmod",
@@ -50,9 +48,7 @@ __all__ += [
     "dpnp_modf",
     "dpnp_nancumprod",
     "dpnp_nancumsum",
-    "dpnp_nanprod",
     "dpnp_nansum",
-    "dpnp_prod",
     "dpnp_sum",
     "dpnp_trapz",
 ]
@@ -64,14 +60,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_2out_t)(c_dpctl.DPCTLSyclQueueRef,
 ctypedef c_dpctl.DPCTLSyclEventRef(*ftpr_custom_trapz_2in_1out_with_2size_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                              void *, void * , void * , double, size_t, size_t,
                                                                              const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef utils.dpnp_descriptor dpnp_copysign(utils.dpnp_descriptor x1_obj,
-                                          utils.dpnp_descriptor x2_obj,
-                                          object dtype=None,
-                                          utils.dpnp_descriptor out=None,
-                                          object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_COPYSIGN_EXT, x1_obj, x2_obj, dtype, out, where)
 
 
 cpdef utils.dpnp_descriptor dpnp_cross(utils.dpnp_descriptor x1_obj,
@@ -104,35 +92,6 @@ cpdef utils.dpnp_descriptor dpnp_cumsum(utils.dpnp_descriptor x1):
     # (4,)
 
     return call_fptr_1in_1out(DPNP_FN_CUMSUM_EXT, x1, (x1.size,))
-
-
-cpdef utils.dpnp_descriptor dpnp_diff(utils.dpnp_descriptor x1, int n):
-    cdef utils.dpnp_descriptor res
-
-    x1_obj = x1.get_array()
-
-    if x1.size - n < 1:
-        res_obj = dpnp_container.empty(0,
-                                       dtype=x1.dtype,
-                                       device=x1_obj.sycl_device,
-                                       usm_type=x1_obj.usm_type,
-                                       sycl_queue=x1_obj.sycl_queue)
-        res = utils.dpnp_descriptor(res_obj)
-        return res
-
-    res_obj = dpnp_container.empty(x1.size - 1,
-                                   dtype=x1.dtype,
-                                   device=x1_obj.sycl_device,
-                                   usm_type=x1_obj.usm_type,
-                                   sycl_queue=x1_obj.sycl_queue)
-    res = utils.dpnp_descriptor(res_obj)
-    for i in range(res.size):
-        res.get_pyobj()[i] = x1.get_pyobj()[i + 1] - x1.get_pyobj()[i]
-
-    if n == 1:
-        return res
-
-    return dpnp_diff(res, n - 1)
 
 
 cpdef utils.dpnp_descriptor dpnp_ediff1d(utils.dpnp_descriptor x1):
@@ -319,26 +278,6 @@ cpdef utils.dpnp_descriptor dpnp_nancumsum(utils.dpnp_descriptor x1):
     return dpnp_cumsum(x1_desc)
 
 
-cpdef utils.dpnp_descriptor dpnp_nanprod(utils.dpnp_descriptor x1):
-    x1_obj = x1.get_array()
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(x1.shape,
-                                                                             x1.dtype,
-                                                                             None,
-                                                                             device=x1_obj.sycl_device,
-                                                                             usm_type=x1_obj.usm_type,
-                                                                             sycl_queue=x1_obj.sycl_queue)
-
-    for i in range(result.size):
-        input_elem = x1.get_pyobj().flat[i]
-
-        if dpnp.isnan(input_elem):
-            result.get_pyobj().flat[i] = 1
-        else:
-            result.get_pyobj().flat[i] = input_elem
-
-    return dpnp_prod(result)
-
-
 cpdef utils.dpnp_descriptor dpnp_nansum(utils.dpnp_descriptor x1):
     x1_obj = x1.get_array()
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(x1.shape,
@@ -357,68 +296,6 @@ cpdef utils.dpnp_descriptor dpnp_nansum(utils.dpnp_descriptor x1):
             result.get_pyobj().flat[i] = input_elem
 
     return dpnp_sum(result)
-
-
-cpdef utils.dpnp_descriptor dpnp_prod(utils.dpnp_descriptor x1,
-                                      object axis=None,
-                                      object dtype=None,
-                                      utils.dpnp_descriptor out=None,
-                                      cpp_bool keepdims=False,
-                                      object initial=None,
-                                      object where=True):
-    """
-    input:float64   : output:float64   : name:prod
-    input:float32   : output:float32   : name:prod
-    input:int64     : output:int64     : name:prod
-    input:int32     : output:int64     : name:prod
-    input:bool      : output:int64     : name:prod
-    input:complex64 : output:complex64 : name:prod
-    input:complex128: output:complex128: name:prod
-    """
-
-    cdef shape_type_c x1_shape = x1.shape
-    cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    cdef shape_type_c axis_shape = utils._object_to_tuple(axis)
-
-    cdef shape_type_c result_shape = utils.get_reduction_output_shape(x1_shape, axis, keepdims)
-    cdef DPNPFuncType result_c_type = utils.get_output_c_type(DPNP_FN_PROD_EXT, x1_c_type, out, dtype)
-
-    """ select kernel """
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PROD_EXT, x1_c_type, result_c_type)
-
-    x1_obj = x1.get_array()
-
-    """ Create result array """
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
-                                                                       result_c_type,
-                                                                       out,
-                                                                       device=x1_obj.sycl_device,
-                                                                       usm_type=x1_obj.usm_type,
-                                                                       sycl_queue=x1_obj.sycl_queue)
-    cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    """ Call FPTR interface function """
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    result.get_data(),
-                                                    x1.get_data(),
-                                                    x1_shape.data(),
-                                                    x1_shape.size(),
-                                                    axis_shape.data(),
-                                                    axis_shape.size(),
-                                                    NULL,
-                                                    NULL,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_sum(utils.dpnp_descriptor x1,

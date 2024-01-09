@@ -7,106 +7,110 @@ import pytest
 import dpnp as cupy
 from tests.third_party.cupy import testing
 
-_all_interpolations = (
+_all_methods = (
+    # "inverted_cdf",               # TODO(takagi) Not implemented
+    # "averaged_inverted_cdf",      # TODO(takagi) Not implemented
+    # "closest_observation",        # TODO(takagi) Not implemented
+    # "interpolated_inverted_cdf",  # TODO(takagi) Not implemented
+    # "hazen",                      # TODO(takagi) Not implemented
+    # "weibull",                    # TODO(takagi) Not implemented
+    "linear",
+    # "median_unbiased",            # TODO(takagi) Not implemented
+    # "normal_unbiased",            # TODO(takagi) Not implemented
     "lower",
     "higher",
     "midpoint",
-    # 'nearest', # TODO(hvy): Not implemented
-    "linear",
+    # "nearest",                    # TODO(hvy): Not implemented
 )
 
 
-def for_all_interpolations(name="interpolation"):
-    return testing.for_orders(_all_interpolations, name=name)
+def for_all_methods(name="method"):
+    return pytest.mark.parametrize(name, _all_methods)
 
 
-@testing.gpu
-class TestOrder(unittest.TestCase):
-    @for_all_interpolations()
+@testing.with_requires("numpy>=1.22.0rc1")
+class TestOrder:
+    @for_all_methods()
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose()
-    def test_percentile_defaults(self, xp, dtype, interpolation):
+    def test_percentile_defaults(self, xp, dtype, method):
         a = testing.shaped_random((2, 3, 8), xp, dtype)
         q = testing.shaped_random((3,), xp, dtype=dtype, scale=100)
-        return xp.percentile(a, q, interpolation=interpolation)
+        return xp.percentile(a, q, method=method)
 
-    @for_all_interpolations()
+    @for_all_methods()
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose()
-    def test_percentile_q_list(self, xp, dtype, interpolation):
+    def test_percentile_q_list(self, xp, dtype, method):
         a = testing.shaped_arange((1001,), xp, dtype)
         q = [99, 99.9]
-        return xp.percentile(a, q, interpolation=interpolation)
+        return xp.percentile(a, q, method=method)
 
-    @for_all_interpolations()
+    @for_all_methods()
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose(rtol=1e-6)
-    def test_percentile_no_axis(self, xp, dtype, interpolation):
+    def test_percentile_no_axis(self, xp, dtype, method):
         a = testing.shaped_random((10, 2, 4, 8), xp, dtype)
         q = testing.shaped_random((5,), xp, dtype=dtype, scale=100)
-        return xp.percentile(a, q, axis=None, interpolation=interpolation)
+        return xp.percentile(a, q, axis=None, method=method)
 
-    @for_all_interpolations()
+    @for_all_methods()
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose(rtol=1e-6)
-    def test_percentile_neg_axis(self, xp, dtype, interpolation):
+    def test_percentile_neg_axis(self, xp, dtype, method):
         a = testing.shaped_random((4, 3, 10, 2, 8), xp, dtype)
         q = testing.shaped_random((5,), xp, dtype=dtype, scale=100)
-        return xp.percentile(a, q, axis=-1, interpolation=interpolation)
+        return xp.percentile(a, q, axis=-1, method=method)
 
-    @for_all_interpolations()
+    @for_all_methods()
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose(rtol=1e-6)
-    def test_percentile_tuple_axis(self, xp, dtype, interpolation):
+    def test_percentile_tuple_axis(self, xp, dtype, method):
         a = testing.shaped_random((1, 6, 3, 2), xp, dtype)
         q = testing.shaped_random((5,), xp, dtype=dtype, scale=100)
-        return xp.percentile(a, q, axis=(0, 1, 2), interpolation=interpolation)
+        return xp.percentile(a, q, axis=(0, 1, 2), method=method)
 
-    @for_all_interpolations()
+    @for_all_methods()
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose()
-    def test_percentile_scalar_q(self, xp, dtype, interpolation):
+    def test_percentile_scalar_q(self, xp, dtype, method):
         a = testing.shaped_random((2, 3, 8), xp, dtype)
         q = 13.37
-        return xp.percentile(a, q, interpolation=interpolation)
+        return xp.percentile(a, q, method=method)
 
-    @for_all_interpolations()
+    @for_all_methods()
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose(rtol=1e-5)
-    def test_percentile_keepdims(self, xp, dtype, interpolation):
+    def test_percentile_keepdims(self, xp, dtype, method):
         a = testing.shaped_random((7, 2, 9, 2), xp, dtype)
         q = testing.shaped_random((5,), xp, dtype=dtype, scale=100)
-        return xp.percentile(
-            a, q, axis=None, keepdims=True, interpolation=interpolation
-        )
+        return xp.percentile(a, q, axis=None, keepdims=True, method=method)
 
-    @for_all_interpolations()
+    @for_all_methods()
     @testing.for_float_dtypes(no_float16=True)  # NumPy raises error on int8
     @testing.numpy_cupy_allclose(rtol=1e-6)
-    def test_percentile_out(self, xp, dtype, interpolation):
+    def test_percentile_out(self, xp, dtype, method):
         a = testing.shaped_random((10, 2, 3, 2), xp, dtype)
         q = testing.shaped_random((5,), xp, dtype=dtype, scale=100)
         out = testing.shaped_random((5, 10, 2, 3), xp, dtype)
-        return xp.percentile(
-            a, q, axis=-1, interpolation=interpolation, out=out
-        )
+        return xp.percentile(a, q, axis=-1, method=method, out=out)
 
-    @for_all_interpolations()
+    @for_all_methods()
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
-    def test_percentile_bad_q(self, dtype, interpolation):
+    def test_percentile_bad_q(self, dtype, method):
         for xp in (numpy, cupy):
             a = testing.shaped_random((4, 2, 3, 2), xp, dtype)
             q = testing.shaped_random((1, 2, 3), xp, dtype=dtype, scale=100)
             with pytest.raises(ValueError):
-                xp.percentile(a, q, axis=-1, interpolation=interpolation)
+                xp.percentile(a, q, axis=-1, method=method)
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
-    def test_percentile_uxpected_interpolation(self, dtype):
+    def test_percentile_unxpected_method(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_random((4, 2, 3, 2), xp, dtype)
             q = testing.shaped_random((5,), xp, dtype=dtype, scale=100)
             with pytest.raises(ValueError):
-                xp.percentile(a, q, axis=-1, interpolation="deadbeef")
+                xp.percentile(a, q, axis=-1, method="deadbeef")
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
@@ -152,8 +156,8 @@ class TestOrder(unittest.TestCase):
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             m = xp.nanmax(a)
-        self.assertEqual(len(w), 1)
-        self.assertIs(w[0].category, RuntimeWarning)
+        assert len(w) == 1
+        assert w[0].category is RuntimeWarning
         return m
 
     @testing.for_all_dtypes(no_complex=True)
@@ -200,8 +204,8 @@ class TestOrder(unittest.TestCase):
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             m = xp.nanmin(a)
-        self.assertEqual(len(w), 1)
-        self.assertIs(w[0].category, RuntimeWarning)
+        assert len(w) == 1
+        assert w[0].category is RuntimeWarning
         return m
 
     @testing.for_all_dtypes(no_bool=True)
