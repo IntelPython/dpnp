@@ -40,10 +40,12 @@ it contains:
 """
 
 
+import dpctl.tensor as dpt
 import numpy
 
 import dpnp
 from dpnp.dpnp_algo import *
+from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import *
 
 from .dpnp_algo.dpnp_elementwise_common import (
@@ -55,9 +57,11 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_atan,
     dpnp_atan2,
     dpnp_atanh,
+    dpnp_cbrt,
     dpnp_cos,
     dpnp_cosh,
     dpnp_exp,
+    dpnp_exp2,
     dpnp_expm1,
     dpnp_hypot,
     dpnp_log,
@@ -65,6 +69,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_log2,
     dpnp_log10,
     dpnp_logaddexp,
+    dpnp_rsqrt,
     dpnp_sin,
     dpnp_sinh,
     dpnp_sqrt,
@@ -95,9 +100,12 @@ __all__ = [
     "log1p",
     "log2",
     "logaddexp",
+    "logsumexp",
     "rad2deg",
     "radians",
     "reciprocal",
+    "reduce_hypot",
+    "rsqrt",
     "sin",
     "sinh",
     "sqrt",
@@ -532,34 +540,70 @@ def arctanh(
     )
 
 
-def cbrt(x1):
+def cbrt(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Return the cube-root of an array, element-wise.
 
     For full documentation refer to :obj:`numpy.cbrt`.
 
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array, expected to have a real-valued data type.
+    out : ({None, dpnp.ndarray, usm_ndarray}, optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order : ({'C', 'F', 'A', 'K'}, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The cube-root of each element in `x`.
+
     Limitations
     -----------
-    Input array is supported as :class:`dpnp.ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by real-valued data types.
+
+    See Also
+    --------
+    :obj:`dpnp.sqrt` : Return the positive square-root of an array, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([1, 8, 27])
-    >>> out = np.cbrt(x)
-    >>> [i for i in out]
-    [1.0, 2.0, 3.0]
+    >>> np.cbrt(x)
+    array([1., 2., 3.])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.cbrt,
+        dpnp_cbrt,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_cbrt(x1_desc).get_pyobj()
-
-    return call_origin(numpy.cbrt, x1, **kwargs)
 
 
 def cos(
@@ -787,39 +831,72 @@ def exp(
     )
 
 
-def exp2(x1):
+def exp2(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Calculate `2**p` for all `p` in the input array.
 
     For full documentation refer to :obj:`numpy.exp2`.
 
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array, expected to have a floating-point data type.
+    out : ({None, dpnp.ndarray, usm_ndarray}, optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order : ({'C', 'F', 'A', 'K'}, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Element-wise 2 to the power `x`.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.power` : First array elements raised to powers from
-                        second array, element-wise.
+    :obj:`dpnp.exp` : Calculate exponential for all elements in the array.
+    :obj:`dpnp.expm1` : ``exp(x) - 1``, the inverse of :obj:`dpnp.log1p`.
+    :obj:`dpnp.power` : First array elements raised to powers from second array, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.arange(3.)
-    >>> out = np.exp2(x)
-    >>> [i for i in out]
-    [1.0, 2.0, 4.0]
+    >>> np.exp2(x)
+    array([1., 2., 4.])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.exp2,
+        dpnp_exp2,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc:
-        return dpnp_exp2(x1_desc).get_pyobj()
-
-    return call_origin(numpy.exp2, x1)
 
 
 def expm1(
@@ -915,6 +992,10 @@ def hypot(
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported real-valued data types.
+
+    See Also
+    --------
+    :obj:`dpnp.reduce_hypot` : The square root of the sum of squares of elements in the input array.
 
     Examples
     --------
@@ -1230,6 +1311,7 @@ def logaddexp(
     --------
     :obj:`dpnp.log` : Natural logarithm, element-wise.
     :obj:`dpnp.exp` : Exponential, element-wise.
+    :obj:`dpnp.logsumdexp` : Logarithm of the sum of exponentials of elements in the input array.
 
     Examples
     --------
@@ -1256,6 +1338,81 @@ def logaddexp(
         subok=subok,
         **kwargs,
     )
+
+
+def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
+    """
+    Calculates the logarithm of the sum of exponentials of elements in the input array.
+
+    Parameters
+    ----------
+    x : {dpnp_array, usm_ndarray}
+        Input array, expected to have a real-valued data type.
+    axis : int or tuple of ints, optional
+        Axis or axes along which values must be computed. If a tuple
+        of unique integers, values are computed over multiple axes.
+        If ``None``, the result is computed over the entire array.
+        Default: ``None``.
+    out : {dpnp_array, usm_ndarray}, optional
+        If provided, the result will be inserted into this array. It should
+        be of the appropriate shape and dtype.
+    dtype : data type, optional
+        Data type of the returned array. If ``None``, the default data
+        type is inferred from the "kind" of the input array data type.
+            * If `x` has a real-valued floating-point data type,
+                the returned array will have the default real-valued
+                floating-point data type for the device where input
+                array `x` is allocated.
+            * If `x` has a boolean or integral data type, the returned array
+                will have the default floating point data type for the device
+                where input array `x` is allocated.
+            * If `x` has a complex-valued floating-point data type,
+                an error is raised.
+        If the data type (either specified or resolved) differs from the
+        data type of `x`, the input array elements are cast to the
+        specified data type before computing the result. Default: ``None``.
+    keepdims : bool
+        If ``True``, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input arrays according to Array Broadcasting
+        rules. Otherwise, if ``False``, the reduced axes are not included in
+        the returned array. Default: ``False``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array containing the results. If the result was computed over
+        the entire array, a zero-dimensional array is returned. The returned
+        array has the data type as described in the `dtype` parameter
+        description above.
+
+    Note
+    ----
+    This function is equivalent of `numpy.logaddexp.reduce`.
+
+    See Also
+    --------
+    :obj:`dpnp.log` : Natural logarithm, element-wise.
+    :obj:`dpnp.exp` : Exponential, element-wise.
+    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponentiations of the inputs, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.ones(10)
+    >>> np.logsumexp(a)
+    array(3.30258509)
+    >>> np.log(np.sum(np.exp(a)))
+    array(3.30258509)
+
+    """
+
+    dpt_array = dpnp.get_usm_ndarray(x)
+    result = dpnp_array._create_from_usm_ndarray(
+        dpt.logsumexp(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
+    )
+
+    return dpnp.get_result_array(result, out, casting="same_kind")
 
 
 def reciprocal(x1, **kwargs):
@@ -1288,6 +1445,144 @@ def reciprocal(x1, **kwargs):
         return dpnp_recip(x1_desc).get_pyobj()
 
     return call_origin(numpy.reciprocal, x1, **kwargs)
+
+
+def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
+    """
+    Calculates the square root of the sum of squares of elements in the input array.
+
+    Parameters
+    ----------
+    x : {dpnp_array, usm_ndarray}
+        Input array, expected to have a real-valued data type.
+    axis : int or tuple of ints, optional
+        Axis or axes along which values must be computed. If a tuple
+        of unique integers, values are computed over multiple axes.
+        If ``None``, the result is computed over the entire array.
+        Default: ``None``.
+    out : {dpnp_array, usm_ndarray}, optional
+        If provided, the result will be inserted into this array. It should
+        be of the appropriate shape and dtype.
+    dtype : data type, optional
+            Data type of the returned array. If ``None``, the default data
+            type is inferred from the "kind" of the input array data type.
+                * If `x` has a real-valued floating-point data type,
+                  the returned array will have the default real-valued
+                  floating-point data type for the device where input
+                  array `x` is allocated.
+                * If `x` has a boolean or integral data type, the returned array
+                  will have the default floating point data type for the device
+                  where input array `x` is allocated.
+                * If `x` has a complex-valued floating-point data type,
+                  an error is raised.
+            If the data type (either specified or resolved) differs from the
+            data type of `x`, the input array elements are cast to the
+            specified data type before computing the result. Default: ``None``.
+    keepdims : bool
+        If ``True``, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input arrays according to Array Broadcasting
+        rules. Otherwise, if ``False``, the reduced axes are not included in
+        the returned array. Default: ``False``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array containing the results. If the result was computed over
+        the entire array, a zero-dimensional array is returned. The returned
+        array has the data type as described in the `dtype` parameter
+        description above.
+
+    Note
+    ----
+    This function is equivalent of `numpy.hypot.reduce`.
+
+    See Also
+    --------
+    :obj:`dpnp.hypot` : Given the "legs" of a right triangle, return its hypotenuse.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.ones(10)
+    >>> np.reduce_hypot(a)
+    array(3.16227766)
+    >>> np.sqrt(np.sum(np.square(a)))
+    array(3.16227766)
+
+    """
+
+    dpt_array = dpnp.get_usm_ndarray(x)
+    result = dpnp_array._create_from_usm_ndarray(
+        dpt.reduce_hypot(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
+    )
+
+    return dpnp.get_result_array(result, out, casting="same_kind")
+
+
+def rsqrt(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Computes the reciprocal square-root for each element `x_i` for input array `x`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array, expected to have a real floating-point data type.
+    out : ({None, dpnp.ndarray, usm_ndarray}, optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order : ({'C', 'F', 'A', 'K'}, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K"
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The reciprocal square-root, element-wise.
+
+    Limitations
+    -----------
+    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by real-valued data types.
+
+    See Also
+    --------
+    :obj:`dpnp.sqrt` : Return the positive square-root of an array, element-wise.
+    :obj:`dpnp.reciprocal` : Return the reciprocal of an array, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 8, 27])
+    >>> np.rsqrt(x)
+    array([1.        , 0.35355338, 0.19245009])
+
+    """
+
+    return check_nd_call_func(
+        None,
+        dpnp_rsqrt,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
 
 
 def rad2deg(x1):
@@ -1491,6 +1786,11 @@ def sqrt(
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.cbrt` : Return the cube-root of an array, element-wise.
+    :obj:`dpnp.rsqrt` : Return the reciprocal square-root of an array, element-wise.
 
     Examples
     --------
