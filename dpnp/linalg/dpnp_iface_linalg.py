@@ -167,11 +167,6 @@ def det(a):
     det : (...) dpnp.ndarray
         Determinant of `a`.
 
-    Limitations
-    -----------
-    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
     See Also
     --------
     :obj:`dpnp.linalg.slogdet` : Returns sign and logarithm of the determinant of an array.
@@ -674,17 +669,12 @@ def slogdet(a):
 
     Returns
     -------
-        sign : (...) dpnp.ndarray
-            A number representing the sign of the determinant. For a real matrix,
-            this is 1, 0, or -1. For a complex matrix, this is a complex number
-            with absolute value 1 (i.e., it is on the unit circle), or else 0.
-        logabsdet : (...) dpnp.ndarray
-            The natural log of the absolute value of the determinant.
-
-    Limitations
-    -----------
-    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    sign : (...) dpnp.ndarray
+        A number representing the sign of the determinant. For a real matrix,
+        this is 1, 0, or -1. For a complex matrix, this is a complex number
+        with absolute value 1 (i.e., it is on the unit circle), or else 0.
+    logabsdet : (...) dpnp.ndarray
+        The natural log of the absolute value of the determinant.
 
     See Also
     --------
