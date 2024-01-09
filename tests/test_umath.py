@@ -83,7 +83,7 @@ def test_umaths(test_cases):
     args = get_args(args_str, sh, xp=numpy)
     iargs = get_args(args_str, sh, xp=dpnp)
 
-    if umath == "reciprocal" and iargs[0].dtype in [dpnp.int32, dpnp.int64]:
+    if umath == "reciprocal" and args[0].dtype in [numpy.int32, numpy.int64]:
         pytest.skip("For integer input array, numpy.reciprocal returns zero.")
 
     # original

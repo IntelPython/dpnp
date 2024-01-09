@@ -83,7 +83,6 @@ class TestArithmeticRaisesWithNumpyInput:
                         testing.shaped_arange((2, 3), numpy, dtype=d)
                         for d in all_types
                     ]
-                    + [0, 0.0j, 0j, 2, 2.0, 2j, True, False]
                 ),
                 "name": ["conj", "conjugate", "real", "imag"],
             }
@@ -95,7 +94,6 @@ class TestArithmeticRaisesWithNumpyInput:
                         testing.shaped_arange((2, 3), numpy, dtype=d)
                         for d in all_types
                     ]
-                    + [0, 0.0j, 0j, 2, 2.0, 2j, True, False]
                 ),
                 "deg": [True, False],
                 "name": ["angle"],
@@ -108,7 +106,6 @@ class TestArithmeticRaisesWithNumpyInput:
                         numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
                         for d in negative_types_wo_fp16
                     ]
-                    + [0, 0.0j, 0j, 2, 2.0, 2j, -2, -2.0, -2j, True, False]
                 ),
                 "deg": [True, False],
                 "name": ["angle"],
@@ -121,14 +118,12 @@ class TestArithmeticRaisesWithNumpyInput:
                         testing.shaped_arange((2, 3), numpy, dtype=d) + 1
                         for d in all_types
                     ]
-                    + [2, 2.0]
                 ),
                 "name": ["reciprocal"],
             }
         )
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestArithmeticUnary:
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_unary(self, xp):

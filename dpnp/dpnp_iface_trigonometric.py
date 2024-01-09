@@ -1452,6 +1452,10 @@ def reciprocal(
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
 
+    See Also
+    --------
+    :obj:`dpnp.rsqrt` : Return the reciprocal square-root of an array, element-wise.
+
     Examples
     --------
     >>> import dpnp as np
