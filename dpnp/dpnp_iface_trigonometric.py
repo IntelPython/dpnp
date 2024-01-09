@@ -1451,7 +1451,7 @@ def reciprocal(
     If `x` has a integral data type, the output will have the default
     real-valued floating-point data type for the device where
     input array `x` is allocated. If `x` has a floating-point
-    data type, the output has the same data type.
+    data type, the output will have the same data type.
 
     Limitations
     -----------
