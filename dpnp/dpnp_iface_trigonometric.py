@@ -1446,6 +1446,13 @@ def reciprocal(
     out : dpnp.ndarray
         An array containing the element-wise reciprocals.
 
+    Notes
+    -----
+    If `x` has a integral data type, the output has the default
+    real-valued floating-point data type for the device where
+    input array `x` is allocated. If `x` has a floating-point
+    data type, the output has the same data type.
+
     Limitations
     -----------
     Parameters `where`, `dtype` and `subok` are supported with their default values.
