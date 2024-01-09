@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.mean &mdash; Data Parallel Extension for NumPy 0.13.1dev2+2.g454d7f3289 documentation</title>
+  <title>dpnp.mean &mdash; Data Parallel Extension for NumPy 0.13.1dev1+35.gebd1585578 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=a4487217"></script>
+        <script src="../../_static/documentation_options.js?v=3c5089bb"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+2.g454d7f3289
+                0.13.1dev1+35.gebd1585578
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -130,40 +130,20 @@
 <dd><p>Compute the arithmetic mean along the specified axis.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.mean</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}:</em>) – Input array.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em><em>, </em><em>optional</em>) – Axis or axes along which the arithmetic means must be computed. If
-a tuple of unique integers, the means are computed over multiple
-axes. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the mean is computed over the entire array.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a><em>, </em><em>optional</em>) – Type to use in computing the mean. By default, if <cite>a</cite> has a
-floating-point data type, the returned array will have
-the same data type as <cite>a</cite>.
-If <cite>a</cite> has a boolean or integral data type, the returned array
-will have the default floating point data type for the device
-where input array <cite>a</cite> is allocated.</p></li>
-<li><p><strong>out</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) – Alternative output array in which to place the result. It must have
-the same shape as the expected output but the type (of the calculated
-values) will be cast if necessary. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) are included in the result
-as singleton dimensions, so that the returned array remains
-compatible with the input array according to Array Broadcasting
-rules. Otherwise, if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the reduced axes are not included in
-the returned array. Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – An array containing the arithmetic means along the specified axis(axes).
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>out</strong> – an array containing the mean values of the elements along the specified axis(axes).
 If the input is a zero-size array, an array containing NaN values is returned.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dpnp.ndarray</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
-<p>Parameter <cite>where</cite> is only supported with its default value.
-Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
+<p>Parameters <cite>a</cite> is supported as either <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
+or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
+Parameter <cite>where</cite> is only supported with its default value.
+Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.
+Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -173,9 +153,9 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 </dd>
 <dt><a class="reference internal" href="dpnp.var.html#dpnp.var" title="dpnp.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.var</span></code></a></dt><dd><p>Compute the variance along the specified axis.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.nanmean.html#dpnp.nanmean" title="dpnp.nanmean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanmean</span></code></a></dt><dd><p>Compute the arithmetic mean along the specified axis, ignoring NaNs.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanmean</span></code></dt><dd><p>Compute the arithmetic mean along the specified axis, ignoring NaNs.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.nanstd.html#dpnp.nanstd" title="dpnp.nanstd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanstd</span></code></a></dt><dd><p>Compute the standard deviation along the specified axis, while ignoring NaNs.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanstd</span></code></dt><dd><p>Compute the standard deviation along the specified axis, while ignoring NaNs.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.nanvar.html#dpnp.nanvar" title="dpnp.nanvar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanvar</span></code></a></dt><dd><p>Compute the variance along the specified axis, while ignoring NaNs.</p>
 </dd>
