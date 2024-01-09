@@ -7,8 +7,10 @@ import dpnp
 from .helper import get_all_dtypes
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-def test_amax(dtype):
+@pytest.mark.parametrize("func", ["amax", "amin"])
+@pytest.mark.parametrize("keepdims", [True, False])
+@pytest.mark.parametrize("dtype", get_all_dtypes())
+def test_amax_amin(func, keepdims, dtype):
     a = numpy.array(
         [
             [[-2.0, 3.0], [9.1, 0.2]],
@@ -20,26 +22,8 @@ def test_amax(dtype):
     ia = dpnp.array(a)
 
     for axis in range(len(a)):
-        result = dpnp.amax(ia, axis=axis)
-        expected = numpy.amax(a, axis=axis)
-        assert_allclose(expected, result)
-
-
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-def test_amin(dtype):
-    a = numpy.array(
-        [
-            [[-2.0, 3.0], [9.1, 0.2]],
-            [[-2.0, 5.0], [-2, -1.2]],
-            [[1.0, -2.0], [5.0, -1.1]],
-        ],
-        dtype=dtype,
-    )
-    ia = dpnp.array(a)
-
-    for axis in range(len(a)):
-        result = dpnp.amin(ia, axis=axis)
-        expected = numpy.amin(a, axis=axis)
+        result = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
+        expected = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
         assert_allclose(expected, result)
 
 
@@ -55,8 +39,7 @@ def _get_min_max_input(type, shape):
     return a.reshape(shape)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 @pytest.mark.parametrize(
     "shape", [(4,), (2, 3), (4, 5, 6)], ids=["(4,)", "(2,3)", "(4,5,6)"]
 )
@@ -74,8 +57,7 @@ def test_amax_diff_shape(dtype, shape):
     numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 @pytest.mark.parametrize(
     "shape", [(4,), (2, 3), (4, 5, 6)], ids=["(4,)", "(2,3)", "(4,5,6)"]
 )

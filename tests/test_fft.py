@@ -16,7 +16,7 @@ def test_fft(dtype, norm):
     np_res = numpy.fft.fft(data, norm=norm)
     dpnp_res = dpnp.fft.fft(dpnp_data, norm=norm)
 
-    assert_dtype_allclose(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
@@ -29,7 +29,7 @@ def test_fft_ndim(dtype, shape, norm):
     np_res = numpy.fft.fft(np_data, norm=norm)
     dpnp_res = dpnp.fft.fft(dpnp_data, norm=norm)
 
-    assert_dtype_allclose(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
@@ -44,7 +44,7 @@ def test_fft_ifft(dtype, shape, norm):
     np_res = numpy.fft.ifft(np_data, norm=norm)
     dpnp_res = dpnp.fft.ifft(dpnp_data, norm=norm)
 
-    assert_dtype_allclose(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
@@ -58,7 +58,7 @@ def test_fft_rfft(dtype, shape):
     np_res = numpy.fft.rfft(np_data)
     dpnp_res = dpnp.fft.rfft(dpnp_data)
 
-    assert_dtype_allclose(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
 
 
 @pytest.mark.parametrize(

@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2023, Intel Corporation
+// Copyright (c) 2016-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -233,18 +233,14 @@ DPCTLSyclEventRef dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
                     continue;
                 }
                 else {
-                    size_t ind_input_size = ind_list.size() + 2;
-                    size_t ind_input_[ind_input_size];
-                    ind_input_[0] = i;
-                    ind_input_[1] = i + offset;
-                    size_t ind_output_size = ind_list.size() + 1;
-                    size_t ind_output_[ind_output_size];
-                    for (size_t k = 0; k < ind_list.size(); k++) {
-                        ind_input_[k + 2] = ind_list.at(k);
-                        ind_output_[k] = ind_list.at(k);
-                    }
-                    ind_output_[ind_list.size()] = i;
+                    std::vector<size_t> ind_input_{i, i + offset};
+                    ind_input_.insert(ind_input_.end(), ind_list.begin(),
+                                      ind_list.end());
 
+                    std::vector<size_t> ind_output_ = ind_list;
+                    ind_output_.push_back(i);
+
+                    const size_t ind_output_size = ind_output_.size();
                     size_t ind_output = 0;
                     size_t n = 1;
                     for (size_t k = 0; k < ind_output_size; k++) {
@@ -253,6 +249,7 @@ DPCTLSyclEventRef dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
                         n *= res_shape[ind];
                     }
 
+                    const size_t ind_input_size = ind_input_.size();
                     size_t ind_input = 0;
                     size_t m = 1;
                     for (size_t k = 0; k < ind_input_size; k++) {
@@ -423,11 +420,13 @@ DPCTLSyclEventRef dpnp_nonzero_c(DPCTLSyclQueueRef q_ref,
     long *result = result_ptr.get_ptr();
 
     size_t idx = 0;
+    size_t *ids = new size_t[ndim];
+
     for (size_t i = 0; i < input1_size; ++i) {
         if (arr[i] != 0) {
-            size_t ids[ndim];
             size_t ind1 = input1_size;
             size_t ind2 = i;
+
             for (size_t k = 0; k < ndim; ++k) {
                 ind1 = ind1 / shape[k];
                 ids[k] = ind2 / ind1;
@@ -438,6 +437,7 @@ DPCTLSyclEventRef dpnp_nonzero_c(DPCTLSyclQueueRef q_ref,
             idx += 1;
         }
     }
+    delete[] ids;
 
     return event_ref;
 }
@@ -621,8 +621,6 @@ DPCTLSyclEventRef
     DPCTLSyclEventRef event_ref = nullptr;
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
-    size_t res_ndim = ndim - 1;
-    size_t res_shape[res_ndim];
     const size_t size_arr = std::accumulate(shape, shape + ndim, 1,
                                             std::multiplies<shape_elem_type>());
 
@@ -635,14 +633,14 @@ DPCTLSyclEventRef
     _DataType *values = input2_ptr.get_ptr();
     _DataType *arr = result_ptr.get_ptr();
 
-    if (axis != res_ndim) {
-        int ind = 0;
+    if (axis != (ndim - 1)) {
+        std::vector<size_t> res_shape;
         for (size_t i = 0; i < ndim; i++) {
             if (axis != i) {
-                res_shape[ind] = shape[i];
-                ind++;
+                res_shape.push_back(shape[i]);
             }
         }
+        size_t res_ndim = res_shape.size();
 
         size_t prod = 1;
         for (size_t i = 0; i < res_ndim; ++i) {
@@ -651,12 +649,13 @@ DPCTLSyclEventRef
             }
         }
 
-        size_t ind_array[prod];
-        bool bool_ind_array[prod];
+        size_t *ind_array = new size_t[prod];
+        bool *bool_ind_array = new bool[prod];
         for (size_t i = 0; i < prod; ++i) {
             bool_ind_array[i] = true;
         }
-        size_t arr_shape_offsets[ndim];
+
+        size_t *arr_shape_offsets = new size_t[ndim];
         size_t acc = 1;
         for (size_t i = ndim - 1; i > 0; --i) {
             arr_shape_offsets[i] = acc;
@@ -664,7 +663,7 @@ DPCTLSyclEventRef
         }
         arr_shape_offsets[0] = acc;
 
-        size_t output_shape_offsets[res_ndim];
+        size_t *output_shape_offsets = new size_t[res_ndim];
         acc = 1;
         if (res_ndim > 0) {
             for (size_t i = res_ndim - 1; i > 0; --i) {
@@ -680,31 +679,31 @@ DPCTLSyclEventRef
         }
 
         // init result array
+        size_t *xyz = new size_t[res_ndim];
         for (size_t result_idx = 0; result_idx < size_result; ++result_idx) {
-            size_t xyz[res_ndim];
             size_t remainder = result_idx;
             for (size_t i = 0; i < res_ndim; ++i) {
                 xyz[i] = remainder / output_shape_offsets[i];
                 remainder = remainder - xyz[i] * output_shape_offsets[i];
             }
 
-            size_t source_axis[ndim];
-            size_t result_axis_idx = 0;
-            for (size_t idx = 0; idx < ndim; ++idx) {
-                bool found = false;
-                if (axis == idx) {
-                    found = true;
-                }
-                if (found) {
-                    source_axis[idx] = 0;
-                }
-                else {
-                    source_axis[idx] = xyz[result_axis_idx];
-                    result_axis_idx++;
-                }
-            }
+            // FIXME: computed and unused. Commented out per compiler warning
+            // size_t source_axis[ndim];
+            // size_t result_axis_idx = 0;
+            // for (size_t idx = 0; idx < ndim; ++idx) {
+            //     bool found = false;
+            //     if (axis == idx) {
+            //         found = true;
+            //     }
+            //     if (found) {
+            //         source_axis[idx] = 0;
+            //     }
+            //     else {
+            //         source_axis[idx] = xyz[result_axis_idx];
+            //         result_axis_idx++;
+            //     }
+            // }
 
-            // FIXME: computed, but unused. Commented out per compiler warning
             // size_t source_idx = 0;
             // for (size_t i = 0; i < static_cast<size_t>(ndim); ++i)
             // {
@@ -714,7 +713,6 @@ DPCTLSyclEventRef
 
         for (size_t source_idx = 0; source_idx < size_arr; ++source_idx) {
             // reconstruct x,y,z from linear source_idx
-            size_t xyz[ndim];
             size_t remainder = source_idx;
             for (size_t i = 0; i < ndim; ++i) {
                 xyz[i] = remainder / arr_shape_offsets[i];
@@ -722,17 +720,11 @@ DPCTLSyclEventRef
             }
 
             // extract result axis
-            size_t result_axis[res_ndim];
-            size_t result_idx = 0;
+            std::vector<size_t> result_axis;
             for (size_t idx = 0; idx < ndim; ++idx) {
                 // try to find current idx in axis array
-                bool found = false;
-                if (axis == idx) {
-                    found = true;
-                }
-                if (!found) {
-                    result_axis[result_idx] = xyz[idx];
-                    result_idx++;
+                if (axis != idx) {
+                    result_axis.push_back(xyz[idx]);
                 }
             }
 
@@ -756,6 +748,12 @@ DPCTLSyclEventRef
                 arr[source_idx] = values[source_idx % values_size];
             }
         }
+
+        delete[] ind_array;
+        delete[] bool_ind_array;
+        delete[] arr_shape_offsets;
+        delete[] output_shape_offsets;
+        delete[] xyz;
     }
     else {
         for (size_t i = 0; i < size_arr; ++i) {
@@ -794,19 +792,6 @@ void (*dpnp_put_along_axis_default_c)(void *,
                                       size_t,
                                       size_t,
                                       size_t) =
-    dpnp_put_along_axis_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_put_along_axis_ext_c)(DPCTLSyclQueueRef,
-                                               void *,
-                                               long *,
-                                               void *,
-                                               size_t,
-                                               const shape_elem_type *,
-                                               size_t,
-                                               size_t,
-                                               size_t,
-                                               const DPCTLEventVectorRef) =
     dpnp_put_along_axis_c<_DataType>;
 
 template <typename _DataType, typename _IndecesType>
@@ -1004,15 +989,6 @@ void func_map_init_indexing_func(func_map_t &fmap)
         eft_FLT, (void *)dpnp_put_along_axis_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_put_along_axis_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_put_along_axis_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_put_along_axis_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_put_along_axis_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_put_along_axis_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_BLN][eft_INT] = {
         eft_BLN, (void *)dpnp_take_default_c<bool, int32_t>};

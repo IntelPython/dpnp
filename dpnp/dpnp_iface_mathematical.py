@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2023, Intel Corporation
@@ -41,8 +39,12 @@ it contains:
 
 
 import dpctl.tensor as dpt
+import dpctl.utils as du
 import numpy
-from numpy.core.numeric import normalize_axis_tuple
+from numpy.core.numeric import (
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
@@ -54,6 +56,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_add,
     dpnp_ceil,
     dpnp_conj,
+    dpnp_copysign,
     dpnp_divide,
     dpnp_floor,
     dpnp_floor_divide,
@@ -81,6 +84,7 @@ __all__ = [
     "add",
     "around",
     "ceil",
+    "clip",
     "conj",
     "conjugate",
     "convolve",
@@ -104,10 +108,6 @@ __all__ = [
     "mod",
     "modf",
     "multiply",
-    "nancumprod",
-    "nancumsum",
-    "nanprod",
-    "nansum",
     "negative",
     "positive",
     "power",
@@ -125,6 +125,31 @@ __all__ = [
     "true_divide",
     "trunc",
 ]
+
+
+def _append_to_diff_array(a, axis, combined, values):
+    """
+    Append `values` to `combined` list based on data of array `a`.
+
+    Scalar value (including case with 0d array) is expanded to an array
+    with length=1 in the direction of axis and the shape of the input array `a`
+    along all other axes.
+    Note, if `values` is a scalar, then it is converted to 0d array allocating
+    on the same SYCL queue as the input array `a` and with the same USM type.
+
+    """
+
+    dpnp.check_supported_arrays_type(values, scalar_type=True)
+    if dpnp.isscalar(values):
+        values = dpnp.asarray(
+            values, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+        )
+
+    if values.ndim == 0:
+        shape = list(a.shape)
+        shape[axis] = 1
+        values = dpnp.broadcast_to(values, tuple(shape))
+    combined.append(values)
 
 
 def absolute(
@@ -223,6 +248,10 @@ def add(
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Notes
+    -----
+    Equivalent to `x1` + `x2` in terms of array broadcasting.
 
     Examples
     --------
@@ -353,6 +382,78 @@ def ceil(
     )
 
 
+def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
+    """
+    Clip (limit) the values in an array.
+
+    For full documentation refer to :obj:`numpy.clip`.
+
+    Parameters
+    ----------
+    a : {dpnp_array, usm_ndarray}
+        Array containing elements to clip.
+    a_min, a_max : {dpnp_array, usm_ndarray, None}
+        Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.
+        Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.
+    out : {dpnp_array, usm_ndarray}, optional
+        The results will be placed in this array. It may be the input array for in-place clipping.
+        `out` must be of the right shape to hold the output. Its type is preserved.
+    order : {"C", "F", "A", "K", None}, optional
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        If `order` is ``None``, the default value "K" will be used.
+
+    Returns
+    -------
+    out : dpnp_array
+        An array with the elements of `a`, but where values < `a_min` are replaced with `a_min`,
+        and those > `a_max` with `a_max`.
+
+    Limitations
+    -----------
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise ``NotImplementedError`` exception will be raised.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(10)
+    >>> a
+    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    >>> np.clip(a, 1, 8)
+    array([1, 1, 2, 3, 4, 5, 6, 7, 8, 8])
+    >>> np.clip(a, 8, 1)
+    array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+    >>> np.clip(a, 3, 6, out=a)
+    array([3, 3, 3, 3, 4, 5, 6, 6, 6, 6])
+    >>> a
+    array([3, 3, 3, 3, 4, 5, 6, 6, 6, 6])
+
+    >>> a = np.arange(10)
+    >>> a
+    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    >>> min = np.array([3, 4, 1, 1, 1, 4, 4, 4, 4, 4])
+    >>> np.clip(a, min, 8)
+    array([3, 4, 2, 3, 4, 5, 6, 7, 8, 8])
+
+    """
+
+    if kwargs:
+        raise NotImplementedError(f"kwargs={kwargs} is currently not supported")
+
+    if order is None:
+        order = "K"
+
+    usm_arr = dpnp.get_usm_ndarray(a)
+    usm_min = None if a_min is None else dpnp.get_usm_ndarray_or_scalar(a_min)
+    usm_max = None if a_max is None else dpnp.get_usm_ndarray_or_scalar(a_max)
+
+    usm_out = None if out is None else dpnp.get_usm_ndarray(out)
+    usm_res = dpt.clip(usm_arr, usm_min, usm_max, out=usm_out, order=order)
+    if out is not None and isinstance(out, dpnp_array):
+        return out
+    return dpnp_array._create_from_usm_ndarray(usm_res)
+
+
 def conjugate(
     x,
     /,
@@ -431,12 +532,35 @@ def convolve(a, v, mode="full"):
 
 
 def copysign(
-    x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
 ):
     """
     Change the sign of `x1` to that of `x2`, element-wise.
 
     For full documentation refer to :obj:`numpy.copysign`.
+
+    Parameters
+    ----------
+    x1 : {dpnp.ndarray, usm_ndarray}
+        First input array, expected to have a real floating-point data type.
+    x2 : {dpnp.ndarray, usm_ndarray}
+        Second input array, also expected to have a real floating-point data
+        type.
+    out : ({None, dpnp.ndarray, usm_ndarray}, optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order : ({'C', 'F', 'A', 'K'}, optional):
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        Default: "K".
 
     Returns
     -------
@@ -450,7 +574,12 @@ def copysign(
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Input array data types are limited by supported real data types.
+
+    See Also
+    --------
+    :obj:`dpnp.negative` : Return the numerical negative of each element of `x`.
+    :obj:`dpnp.positive` : Return the numerical positive of each element of `x`.
 
     Examples
     --------
@@ -470,60 +599,17 @@ def copysign(
 
     """
 
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
-
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            if out is not None:
-                if not dpnp.is_supported_array_type(out):
-                    raise TypeError(
-                        "return array must be of supported array type"
-                    )
-                out_desc = (
-                    dpnp.get_dpnp_descriptor(
-                        out, copy_when_nondefault_queue=False
-                    )
-                    or None
-                )
-            else:
-                out_desc = None
-
-            return dpnp_copysign(
-                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.copysign, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+    return check_nd_call_func(
+        numpy.copysign,
+        dpnp_copysign,
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
 
 
@@ -622,6 +708,10 @@ def cumsum(x1, **kwargs):
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
+    See Also
+    --------
+    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.
+
     Examples
     --------
     >>> import dpnp as np
@@ -643,39 +733,95 @@ def cumsum(x1, **kwargs):
     return call_origin(numpy.cumsum, x1, **kwargs)
 
 
-def diff(x1, n=1, axis=-1, prepend=numpy._NoValue, append=numpy._NoValue):
+def diff(a, n=1, axis=-1, prepend=None, append=None):
     """
     Calculate the n-th discrete difference along the given axis.
 
     For full documentation refer to :obj:`numpy.diff`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameters `axis`, `prepend` and `append` are supported only with default values.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array
+    n : int, optional
+        The number of times values are differenced. If zero, the input
+        is returned as-is.
+    axis : int, optional
+        The axis along which the difference is taken, default is the
+        last axis.
+    prepend, append : {scalar, dpnp.ndarray, usm_ndarray}, optional
+        Values to prepend or append to `a` along axis prior to
+        performing the difference. Scalar values are expanded to
+        arrays with length 1 in the direction of axis and the shape
+        of the input array in along all other axes. Otherwise the
+        dimension and shape must match `a` except along axis.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The n-th differences. The shape of the output is the same as `a`
+        except along `axis` where the dimension is smaller by `n`. The
+        type of the output is the same as the type of the difference
+        between any two elements of `a`. This is the same as the type of
+        `a` in most cases.
+
+    See Also
+    --------
+    :obj:`dpnp.gradient` : Return the gradient of an N-dimensional array.
+    :obj:`dpnp.ediff1d` : Compute the differences between consecutive elements of an array.
+    :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along a given axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 2, 4, 7, 0])
+    >>> np.diff(x)
+    array([ 1,  2,  3, -7])
+    >>> np.diff(x, n=2)
+    array([  1,   1, -10])
+
+    >>> x = np.array([[1, 3, 6, 10], [0, 5, 6, 8]])
+    >>> np.diff(x)
+    array([[2, 3, 4],
+           [5, 1, 2]])
+    >>> np.diff(x, axis=0)
+    array([[-1,  2,  0, -2]])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not isinstance(n, int):
-            pass
-        elif n < 1:
-            pass
-        elif x1_desc.ndim != 1:
-            pass
-        elif axis != -1:
-            pass
-        elif prepend is not numpy._NoValue:
-            pass
-        elif append is not numpy._NoValue:
-            pass
-        else:
-            return dpnp_diff(x1_desc, n).get_pyobj()
+    dpnp.check_supported_arrays_type(a)
+    if n == 0:
+        return a
+    if n < 0:
+        raise ValueError(f"order must be non-negative but got {n}")
 
-    return call_origin(
-        numpy.diff, x1, n=n, axis=axis, prepend=prepend, append=append
-    )
+    nd = a.ndim
+    if nd == 0:
+        raise ValueError("diff requires input that is at least one dimensional")
+    axis = normalize_axis_index(axis, nd)
+
+    combined = []
+    if prepend is not None:
+        _append_to_diff_array(a, axis, combined, prepend)
+
+    combined.append(a)
+    if append is not None:
+        _append_to_diff_array(a, axis, combined, append)
+
+    if len(combined) > 1:
+        a = dpnp.concatenate(combined, axis=axis)
+
+    slice1 = [slice(None)] * nd
+    slice2 = [slice(None)] * nd
+    slice1[axis] = slice(1, None)
+    slice2[axis] = slice(None, -1)
+    slice1 = tuple(slice1)
+    slice2 = tuple(slice2)
+
+    op = dpnp.not_equal if a.dtype == numpy.bool_ else dpnp.subtract
+    for _ in range(n):
+        a = op(a[slice1], a[slice2])
+    return a
 
 
 def divide(
@@ -708,6 +854,13 @@ def divide(
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Notes
+    -----
+    Equivalent to `x1` / `x2` in terms of array-broadcasting.
+
+    The ``true_divide(x1, x2)`` function is an alias for
+    ``divide(x1, x2)``.
 
     Examples
     --------
@@ -979,7 +1132,9 @@ def fmax(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     See Also
     --------
     :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.
-    :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignore NaNs.
+    :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignores NaNs.
+    :obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs..
+    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
     :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
@@ -1084,7 +1239,9 @@ def fmin(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     See Also
     --------
     :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.
-    :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignore NaNs.
+    :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignores NaNs.
+    :obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
+    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
     :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
@@ -1289,6 +1446,10 @@ def gradient(x1, *varargs, **kwargs):
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
+    See Also
+    --------
+    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.
+
     Examples
     --------
     >>> import dpnp as np
@@ -1398,11 +1559,11 @@ def maximum(
     --------
     :obj:`dpnp.minimum` : Element-wise minimum of two arrays, propagates NaNs.
     :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
-    :obj:`dpnp.amax` : The maximum value of an array along a given axis, propagates NaNs.
+    :obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs.
     :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
     :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.
-    :obj:`dpnp.amix` : The minimum value of an array along a given axis, propagates NaNs.
-    :obj:`dpnp.nanmix` : The minimum value of an array along a given axis, ignores NaNs.
+    :obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
+    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
 
     Examples
     --------
@@ -1477,10 +1638,10 @@ def minimum(
     --------
     :obj:`dpnp.maximum` : Element-wise maximum of two arrays, propagates NaNs.
     :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.
-    :obj:`dpnp.amin` : The minimum value of an array along a given axis, propagates NaNs.
+    :obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
     :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
     :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
-    :obj:`dpnp.amax` : The maximum value of an array along a given axis, propagates NaNs.
+    :obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs.
     :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
 
     Examples
@@ -1638,6 +1799,10 @@ def multiply(
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
+    Notes
+    -----
+    Equivalent to `x1` * `x2` in terms of array broadcasting.
+
     Examples
     --------
     >>> import dpnp as np
@@ -1673,143 +1838,6 @@ def multiply(
         subok=subok,
         **kwargs,
     )
-
-
-def nancumprod(x1, **kwargs):
-    """
-    Return the cumulative product of array elements over a given axis treating Not a Numbers (NaNs) as one.
-
-    For full documentation refer to :obj:`numpy.nancumprod`.
-
-    Limitations
-    -----------
-    Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    .. seealso:: :obj:`dpnp.cumprod` : Return the cumulative product of elements along a given axis.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([1., np.nan])
-    >>> result = np.nancumprod(a)
-    >>> [x for x in result]
-    [1.0, 1.0]
-    >>> b = np.array([[1., 2., np.nan], [4., np.nan, 6.]])
-    >>> result = np.nancumprod(b)
-    >>> [x for x in result]
-    [1.0, 2.0, 2.0, 8.0, 8.0, 48.0]
-
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_nancumprod(x1_desc).get_pyobj()
-
-    return call_origin(numpy.nancumprod, x1, **kwargs)
-
-
-def nancumsum(x1, **kwargs):
-    """
-    Return the cumulative sum of the elements along a given axis.
-
-    For full documentation refer to :obj:`numpy.nancumsum`.
-
-    Limitations
-    -----------
-    Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along a given axis.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([1., np.nan])
-    >>> result = np.nancumsum(a)
-    >>> [x for x in result]
-    [1.0, 1.0]
-    >>> b = np.array([[1., 2., np.nan], [4., np.nan, 6.]])
-    >>> result = np.nancumprod(b)
-    >>> [x for x in result]
-    [1.0, 3.0, 3.0, 7.0, 7.0, 13.0]
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_nancumsum(x1_desc).get_pyobj()
-
-    return call_origin(numpy.nancumsum, x1, **kwargs)
-
-
-def nanprod(x1, **kwargs):
-    """
-    Calculate prod() function treating 'Not a Numbers' (NaN) as ones.
-
-    For full documentation refer to :obj:`numpy.nanprod`.
-
-    Limitations
-    -----------
-    Parameter `x1` is supported as :obj:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.nanprod(np.array([1, 2]))
-    2
-    >>> np.nanprod(np.array([[1, 2], [3, 4]]))
-    24
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_nanprod(x1_desc).get_pyobj()
-
-    return call_origin(numpy.nanprod, x1, **kwargs)
-
-
-def nansum(x1, **kwargs):
-    """
-    Calculate sum() function treating 'Not a Numbers' (NaN) as zero.
-
-    For full documentation refer to :obj:`numpy.nansum`.
-
-    Limitations
-    -----------
-    Parameter `x1` is supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.nansum(np.array([1, 2]))
-    3
-    >>> np.nansum(np.array([[1, 2], [3, 4]]))
-    10
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        result_obj = dpnp_nansum(x1_desc).get_pyobj()
-        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
-        return result
-
-    return call_origin(numpy.nansum, x1, **kwargs)
 
 
 def negative(
@@ -2030,7 +2058,7 @@ def power(
 
 
 def prod(
-    x1,
+    a,
     axis=None,
     dtype=None,
     out=None,
@@ -2039,54 +2067,87 @@ def prod(
     where=True,
 ):
     """
-    Calculate product of array elements over a given axis.
+    Return the product of array elements over a given axis.
 
     For full documentation refer to :obj:`numpy.prod`.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        A new array holding the result is returned unless `out` is specified, in which case it is returned.
+
     Limitations
     -----------
-    Parameter `where` is unsupported.
+    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `initial`, and `where` are only supported with their default values.
+    Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.nanprod` : Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> np.prod(np.array([[1, 2], [3, 4]]))
-    24
     >>> np.prod(np.array([1, 2]))
-    2
+    array(2)
+
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> np.prod(a)
+    array(24)
+
+    >>> np.prod(a, axis=1)
+    array([ 2, 12])
+    >>> np.prod(a, axis=0)
+    array([3, 8])
+
+    >>> x = np.array([1, 2, 3], dtype=np.int8)
+    >>> np.prod(x).dtype == int
+    True
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if where is not True:
-            pass
-        else:
-            out_desc = (
-                dpnp.get_dpnp_descriptor(out, copy_when_nondefault_queue=False)
-                if out is not None
-                else None
-            )
-            result_obj = dpnp_prod(
-                x1_desc, axis, dtype, out_desc, keepdims, initial, where
-            ).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(
-                result_obj, keepdims
-            )
-
-            return result
-
-    return call_origin(
-        numpy.prod,
-        x1,
-        axis=axis,
-        dtype=dtype,
-        out=out,
-        keepdims=keepdims,
-        initial=initial,
-        where=where,
+    # Product reduction for complex output are known to fail for Gen9 with 2024.0 compiler
+    # TODO: get rid of this temporary work around when OneAPI 2024.1 is released
+    dpnp.check_supported_arrays_type(a)
+    _dtypes = (a.dtype, dtype)
+    _any_complex = any(
+        dpnp.issubdtype(dt, dpnp.complexfloating) for dt in _dtypes
     )
+    device_mask = (
+        du.intel_device_info(a.sycl_device).get("device_id", 0) & 0xFF00
+    )
+    if _any_complex and device_mask in [0x3E00, 0x9B00]:
+        res = call_origin(
+            numpy.prod,
+            a,
+            axis=axis,
+            dtype=dtype,
+            out=out,
+            keepdims=keepdims,
+            initial=initial,
+            where=where,
+        )
+        if dpnp.isscalar(res):
+            # numpy may return a scalar, convert it back to dpnp array
+            return dpnp.array(res, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
+        return res
+    elif initial is not None:
+        raise NotImplementedError(
+            "initial keyword argument is only supported with its default value."
+        )
+    elif where is not True:
+        raise NotImplementedError(
+            "where keyword argument is only supported with its default value."
+        )
+    else:
+        dpt_array = dpnp.get_usm_ndarray(a)
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
+        )
+
+        return dpnp.get_result_array(result, out)
 
 
 def proj(
@@ -2541,6 +2602,10 @@ def subtract(
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
+    Notes
+    -----
+    Equivalent to `x1` - `x2` in terms of array broadcasting.
+
     Examples
     --------
     >>> import dpnp as np
@@ -2605,8 +2670,8 @@ def sum(
     -----------
     Parameters `x` is supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `out`, `initial` and `where` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters `initial` and `where` are supported with their default values.
+    Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -2627,12 +2692,14 @@ def sum(
 
         axis = normalize_axis_tuple(axis, x.ndim, "axis")
 
-    if out is not None:
-        pass
-    elif initial != 0:
-        pass
+    if initial != 0:
+        raise NotImplementedError(
+            "initial keyword argument is only supported with its default value."
+        )
     elif where is not True:
-        pass
+        raise NotImplementedError(
+            "where keyword argument is only supported with its default value."
+        )
     else:
         if (
             len(x.shape) == 2
@@ -2690,18 +2757,8 @@ def sum(
         y = dpt.sum(
             dpnp.get_usm_ndarray(x), axis=axis, dtype=dtype, keepdims=keepdims
         )
-        return dpnp_array._create_from_usm_ndarray(y)
-
-    return call_origin(
-        numpy.sum,
-        x,
-        axis=axis,
-        dtype=dtype,
-        out=out,
-        keepdims=keepdims,
-        initial=initial,
-        where=where,
-    )
+        result = dpnp_array._create_from_usm_ndarray(y)
+        return dpnp.get_result_array(result, out, casting="same_kind")
 
 
 def trapz(y1, x1=None, dx=1.0, axis=-1):
@@ -2764,23 +2821,7 @@ def trapz(y1, x1=None, dx=1.0, axis=-1):
     return call_origin(numpy.trapz, y1, x1, dx, axis)
 
 
-def true_divide(*args, **kwargs):
-    """
-    Provide a true division of the inputs, element-wise.
-
-    For full documentation refer to :obj:`numpy.true_divide`.
-
-    See Also
-    --------
-    :obj:`dpnp.divide` : Standard division.
-
-    Notes
-    -----
-    This function works the same as :obj:`dpnp.divide`.
-
-    """
-
-    return dpnp.divide(*args, **kwargs)
+true_divide = divide
 
 
 def trunc(

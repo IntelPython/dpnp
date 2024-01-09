@@ -7,7 +7,6 @@ import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
-@testing.gpu
 class TestIndexing(unittest.TestCase):
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
@@ -51,14 +50,12 @@ class TestIndexing(unittest.TestCase):
         b = xp.array([0], dtype=dtype)
         return a.take(b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_take_along_axis(self, xp):
         a = testing.shaped_random((2, 4, 3), xp, dtype="float32")
         b = testing.shaped_random((2, 6, 3), xp, dtype="int64", scale=4)
         return xp.take_along_axis(a, b, axis=-2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_take_along_axis_none_axis(self, xp):
         a = testing.shaped_random((2, 4, 3), xp, dtype="float32")

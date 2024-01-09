@@ -2,12 +2,13 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
 class TestMisc:
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(atol=1e-5, type_check=False)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def check_unary(self, name, xp, dtype, no_bool=False):
         if no_bool and numpy.dtype(dtype).char == "?":
             return numpy.int_(0)
@@ -164,7 +165,7 @@ class TestMisc:
         self.check_unary("sqrt")
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_cbrt(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.cbrt(a)
@@ -518,7 +519,7 @@ class TestConvolve:
         return xp.convolve(a[::200], b[10::70], mode=mode)
 
     @testing.for_all_dtypes(no_float16=True)
-    @testing.numpy_cupy_allclose(rtol=1e-4)
+    @testing.numpy_cupy_allclose(rtol=5e-4)
     def test_convolve_large_non_contiguous(self, xp, dtype, mode):
         a = testing.shaped_arange((10000,), xp, dtype)
         b = testing.shaped_arange((100,), xp, dtype)

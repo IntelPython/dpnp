@@ -15,7 +15,7 @@ jobs:
 
     env:
       python-ver: '3.10'
-      CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+      CHANNELS: '-c dppy/label/coverage -c intel -c conda-forge --override-channels'
 
     steps:
       - name: Cancel Previous Runs
@@ -42,8 +42,10 @@ jobs:
 
       - name: Install dpnp dependencies
         run: |
+          # use DPC++ compiler 2023.2 to work around an issue with crash
           conda install cython llvm cmake">=3.21" scikit-build ninja pytest pytest-cov coverage[toml] \
-              dpctl dpcpp_linux-64 sysroot_linux-64">=2.28" mkl-devel-dpcpp tbb-devel onedpl-devel ${{ env.CHANNELS }}
+              dpctl">=0.15.1dev2" dpcpp_linux-64"=2023.2" sysroot_linux-64">=2.28" mkl-devel-dpcpp tbb-devel"=2021.10" \
+              onedpl-devel ${{ env.CHANNELS }}
 
       - name: Conda info
         run: |
@@ -51,8 +53,22 @@ jobs:
           conda list
 
       - name: Build dpnp with coverage
+        id: build_coverage
+        uses: nick-fields/retry@v2.9.0
+        with:
+          shell: bash
+          timeout_minutes: 60
+          max_attempts: 5
+          retry_on: error
+          command: |
+            . $CONDA/etc/profile.d/conda.sh
+            conda activate coverage
+            git clean -fxd
+            python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py"
+
+      - name: Total number of coverage attempts
         run: |
-          python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py"
+          echo "Total number of coverage attempts made: ${{ steps.build_coverage.outputs.total_attempts }}"
 
       - name: Install coverall dependencies
         run: |

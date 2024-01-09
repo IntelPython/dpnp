@@ -25,7 +25,6 @@
 # *****************************************************************************
 
 import dpctl.tensor as dpt
-import numpy
 
 import dpnp
 
@@ -487,58 +486,23 @@ class dpnp_array:
             self, axis=axis, out=out, keepdims=keepdims, where=where
         )
 
-    def argmax(self, axis=None, out=None):
+    def argmax(self, axis=None, out=None, *, keepdims=False):
         """
         Returns array of indices of the maximum values along the given axis.
 
-        Parameters
-        ----------
-        axis : {None, integer}
-            If None, the index is into the flattened array, otherwise along
-            the specified axis
-        out : {None, array}, optional
-            Array into which the result can be placed. Its type is preserved
-            and it must be of the right shape to hold the output.
-
-        Returns
-        -------
-        index_array : {integer_array}
-
-        Examples
-        --------
-        >>> a = np.arange(6).reshape(2,3)
-        >>> a.argmax()
-        5
-        >>> a.argmax(0)
-        array([1, 1, 1])
-        >>> a.argmax(1)
-        array([2, 2])
+        Refer to :obj:`dpnp.argmax` for full documentation.
 
         """
-        return dpnp.argmax(self, axis, out)
+        return dpnp.argmax(self, axis, out, keepdims=keepdims)
 
-    def argmin(self, axis=None, out=None):
+    def argmin(self, axis=None, out=None, *, keepdims=False):
         """
         Return array of indices to the minimum values along the given axis.
 
-        Parameters
-        ----------
-        axis : {None, integer}
-            If None, the index is into the flattened array, otherwise along
-            the specified axis
-        out : {None, array}, optional
-            Array into which the result can be placed. Its type is preserved
-            and it must be of the right shape to hold the output.
-
-        Returns
-        -------
-        ndarray or scalar
-            If multi-dimension input, returns a new ndarray of indices to the
-            minimum values along the given axis.  Otherwise, returns a scalar
-            of index to the minimum values along the given axis.
+        Refer to :obj:`dpnp.argmin` for full documentation.
 
         """
-        return dpnp.argmin(self, axis, out)
+        return dpnp.argmin(self, axis, out, keepdims=keepdims)
 
     # 'argpartition',
 
@@ -664,7 +628,16 @@ class dpnp_array:
 
         return dpnp.choose(input, choices, out, mode)
 
-    # 'clip',
+    def clip(self, min=None, max=None, out=None, **kwargs):
+        """
+        Clip (limit) the values in an array.
+
+        Refer to :obj:`dpnp.clip` for full documentation.
+
+        """
+
+        return dpnp.clip(self, min, max, out=out, **kwargs)
+
     # 'compress',
 
     def conj(self):
@@ -939,28 +912,42 @@ class dpnp_array:
         self,
         axis=None,
         out=None,
-        keepdims=numpy._NoValue,
-        initial=numpy._NoValue,
-        where=numpy._NoValue,
+        keepdims=False,
+        initial=None,
+        where=True,
     ):
-        """Return the maximum along an axis."""
+        """
+        Return the maximum along an axis.
+
+        Refer to :obj:`dpnp.max` for full documentation.
+        """
 
         return dpnp.max(self, axis, out, keepdims, initial, where)
 
-    def mean(self, axis=None, **kwargs):
-        """Returns the average of the array elements."""
+    def mean(
+        self, axis=None, dtype=None, out=None, keepdims=False, *, where=True
+    ):
+        """
+        Returns the average of the array elements.
 
-        return dpnp.mean(self, axis=axis, **kwargs)
+        Refer to :obj:`dpnp.mean` for full documentation.
+        """
+
+        return dpnp.mean(self, axis, dtype, out, keepdims, where=where)
 
     def min(
         self,
         axis=None,
         out=None,
-        keepdims=numpy._NoValue,
-        initial=numpy._NoValue,
-        where=numpy._NoValue,
+        keepdims=False,
+        initial=None,
+        where=True,
     ):
-        """Return the minimum along a given axis."""
+        """
+        Return the minimum along a given axis.
+
+        Refer to :obj:`dpnp.min` for full documentation.
+        """
 
         return dpnp.min(self, axis, out, keepdims, initial, where)
 
@@ -1026,15 +1013,11 @@ class dpnp_array:
         """
         Returns the prod along a given axis.
 
-        .. seealso::
-           :obj:`dpnp.prod` for full documentation,
-           :meth:`dpnp.dparray.sum`
+        For full documentation refer to :obj:`dpnp.prod`.
 
         """
 
         return dpnp.prod(self, axis, dtype, out, keepdims, initial, where)
-
-    # 'ptp'
 
     def put(self, indices, vals, /, *, axis=None, mode="wrap"):
         """
@@ -1045,7 +1028,15 @@ class dpnp_array:
 
         return dpnp.put(self, indices, vals, axis=axis, mode=mode)
 
-    # 'ravel',
+    def ravel(self, order="C"):
+        """
+        Return a contiguous flattened array.
+
+        For full documentation refer to :obj:`dpnp.ravel`.
+
+        """
+
+        return dpnp.ravel(self, order=order)
 
     @property
     def real(self):
@@ -1082,7 +1073,15 @@ class dpnp_array:
         """
         dpnp.copyto(self._array_obj.real, value)
 
-    # 'repeat',
+    def repeat(self, repeats, axis=None):
+        """
+        Repeat elements of an array.
+
+        For full documentation refer to :obj:`dpnp.repeat`.
+
+        """
+
+        return dpnp.repeat(self, repeats, axis=axis)
 
     def reshape(self, *sh, **kwargs):
         """
@@ -1177,15 +1176,23 @@ class dpnp_array:
 
         return dpnp.squeeze(self, axis)
 
-    def std(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
-        """Returns the variance of the array elements, along given axis.
+    def std(
+        self,
+        axis=None,
+        dtype=None,
+        out=None,
+        ddof=0,
+        keepdims=False,
+        *,
+        where=True,
+    ):
+        """
+        Returns the standard deviation of the array elements, along given axis.
 
-        .. seealso::
-           :obj:`dpnp.var` for full documentation,
-
+        Refer to :obj:`dpnp.std` for full documentation.
         """
 
-        return dpnp.std(self, axis, dtype, out, ddof, keepdims)
+        return dpnp.std(self, axis, dtype, out, ddof, keepdims, where=where)
 
     @property
     def strides(self):
@@ -1217,10 +1224,7 @@ class dpnp_array:
         """
         Returns the sum along a given axis.
 
-        .. seealso::
-           :obj:`dpnp.sum` for full documentation,
-           :meth:`dpnp.dparray.sum`
-
+        For full documentation refer to :obj:`dpnp.sum`.
         """
 
         return dpnp.sum(
@@ -1317,23 +1321,22 @@ class dpnp_array:
             res._array_obj = dpt.permute_dims(self._array_obj, axes)
         return res
 
-    def var(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
+    def var(
+        self,
+        axis=None,
+        dtype=None,
+        out=None,
+        ddof=0,
+        keepdims=False,
+        *,
+        where=True,
+    ):
         """
-        Returns the variance of the array elements along given axis.
+        Returns the variance of the array elements, along given axis.
 
-        Masked entries are ignored, and result elements which are not
-        finite will be masked.
-
-        Refer to `numpy.var` for full documentation.
-
-        See Also
-        --------
-        :obj:`numpy.ndarray.var` : corresponding function for ndarrays
-        :obj:`numpy.var` : Equivalent function
-
+        Refer to :obj:`dpnp.var` for full documentation.
         """
-
-        return dpnp.var(self, axis, dtype, out, ddof, keepdims)
+        return dpnp.var(self, axis, dtype, out, ddof, keepdims, where=where)
 
 
 # 'view'

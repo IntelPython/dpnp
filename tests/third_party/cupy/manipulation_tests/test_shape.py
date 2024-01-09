@@ -108,6 +108,7 @@ class TestReshape(unittest.TestCase):
             with pytest.raises(ValueError):
                 a.reshape((-1, 0))
 
+    @pytest.mark.skip("array.base is not implemented")
     @testing.numpy_cupy_array_equal()
     def test_reshape_zerosize(self, xp):
         a = xp.zeros((0,))
@@ -115,6 +116,7 @@ class TestReshape(unittest.TestCase):
         assert b.base is a
         return b
 
+    @pytest.mark.skip("array.base is not implemented")
     @testing.for_orders(_supported_orders)
     @testing.numpy_cupy_array_equal(strides_check=True)
     def test_reshape_zerosize2(self, xp, order):
@@ -157,20 +159,23 @@ class TestReshape(unittest.TestCase):
 
 @testing.gpu
 class TestRavel(unittest.TestCase):
-    @testing.for_orders("CFA")
+    @testing.for_orders("CF")
+    # order = 'A' is out of support currently
     @testing.numpy_cupy_array_equal()
     def test_ravel(self, xp, order):
         a = testing.shaped_arange((2, 3, 4), xp)
         a = a.transpose(2, 0, 1)
         return a.ravel(order)
 
-    @testing.for_orders("CFA")
+    @testing.for_orders("CF")
+    # order = 'A' is out of support currently
     @testing.numpy_cupy_array_equal()
     def test_ravel2(self, xp, order):
         a = testing.shaped_arange((2, 3, 4), xp)
         return a.ravel(order)
 
-    @testing.for_orders("CFA")
+    @testing.for_orders("CF")
+    # order = 'A' is out of support currently
     @testing.numpy_cupy_array_equal()
     def test_ravel3(self, xp, order):
         a = testing.shaped_arange((2, 3, 4), xp)

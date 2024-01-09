@@ -6,7 +6,7 @@ from numpy.testing import assert_allclose
 
 import dpnp
 
-from .helper import get_all_dtypes
+from .helper import assert_dtype_allclose, get_all_dtypes
 
 
 def _getattr(ex, str_):
@@ -96,6 +96,36 @@ def test_strides_1arg(func_name, dtype, shape):
     expected = numpy_func(b)
 
     assert_allclose(result, expected, rtol=1e-06)
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_rsqrt(dtype):
+    a = numpy.arange(1, 11, dtype=dtype)[::2]
+    dpa = dpnp.arange(1, 11, dtype=dtype)[::2]
+
+    result = dpnp.rsqrt(dpa)
+    expected = 1 / numpy.sqrt(a)
+    assert_dtype_allclose(result, expected)
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_logsumexp(dtype):
+    a = numpy.arange(10, dtype=dtype)[::2]
+    dpa = dpnp.arange(10, dtype=dtype)[::2]
+
+    result = dpnp.logsumexp(dpa)
+    expected = numpy.logaddexp.reduce(a)
+    assert_allclose(result, expected)
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_reduce_hypot(dtype):
+    a = numpy.arange(10, dtype=dtype)[::2]
+    dpa = dpnp.arange(10, dtype=dtype)[::2]
+
+    result = dpnp.reduce_hypot(dpa)
+    expected = numpy.hypot.reduce(a)
+    assert_allclose(result, expected)
 
 
 @pytest.mark.parametrize(

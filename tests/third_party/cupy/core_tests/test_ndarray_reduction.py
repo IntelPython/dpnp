@@ -9,210 +9,381 @@ import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @testing.gpu
+@testing.parameterize(
+    *testing.product(
+        {
+            "order": ("C", "F"),
+        }
+    )
+)
 class TestArrayReduction(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_max_all(self, xp, dtype):
-        a = testing.shaped_random((2, 3), xp, dtype)
+        a = testing.shaped_random((2, 3), xp, dtype, order=self.order)
         return a.max()
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_max_all_keepdims(self, xp, dtype):
-        a = testing.shaped_random((2, 3), xp, dtype)
+        a = testing.shaped_random((2, 3), xp, dtype, order=self.order)
         return a.max(keepdims=True)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_max_axis_large(self, xp, dtype):
-        a = testing.shaped_random((3, 1000), xp, dtype)
+        a = testing.shaped_random((3, 1000), xp, dtype, order=self.order)
         return a.max(axis=0)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_max_axis0(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
         return a.max(axis=0)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_max_axis1(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
         return a.max(axis=1)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_max_axis2(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
         return a.max(axis=2)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_max_multiple_axes(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
         return a.max(axis=(1, 2))
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_max_multiple_axes_keepdims(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
         return a.max(axis=(1, 2), keepdims=True)
 
     @testing.for_float_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_max_nan(self, xp, dtype):
-        a = xp.array([float("nan"), 1, -1], dtype)
+        a = xp.array([float("nan"), 1, -1], dtype, order=self.order)
         return a.max()
 
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_max_nan_real(self, xp, dtype):
-        a = xp.array([float("nan"), 1, -1], dtype)
+        a = xp.array([float("nan"), 1, -1], dtype, order=self.order)
         return a.max()
 
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_max_nan_imag(self, xp, dtype):
-        a = xp.array([float("nan") * 1.0j, 1.0j, -1.0j], dtype)
+        a = xp.array(
+            [float("nan") * 1.0j, 1.0j, -1.0j], dtype, order=self.order
+        )
         return a.max()
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_min_all(self, xp, dtype):
-        a = testing.shaped_random((2, 3), xp, dtype)
+        a = testing.shaped_random((2, 3), xp, dtype, order=self.order)
         return a.min()
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_min_all_keepdims(self, xp, dtype):
-        a = testing.shaped_random((2, 3), xp, dtype)
+        a = testing.shaped_random((2, 3), xp, dtype, order=self.order)
         return a.min(keepdims=True)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_min_axis_large(self, xp, dtype):
-        a = testing.shaped_random((3, 1000), xp, dtype)
+        a = testing.shaped_random((3, 1000), xp, dtype, order=self.order)
         return a.min(axis=0)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_min_axis0(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
         return a.min(axis=0)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_min_axis1(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
         return a.min(axis=1)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_min_axis2(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
         return a.min(axis=2)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_min_multiple_axes(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
         return a.min(axis=(1, 2))
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_min_multiple_axes_keepdims(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
         return a.min(axis=(1, 2), keepdims=True)
 
     @testing.for_float_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_min_nan(self, xp, dtype):
-        a = xp.array([float("nan"), 1, -1], dtype)
+        a = xp.array([float("nan"), 1, -1], dtype, order=self.order)
         return a.min()
 
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_min_nan_real(self, xp, dtype):
-        a = xp.array([float("nan"), 1, -1], dtype)
+        a = xp.array([float("nan"), 1, -1], dtype, order=self.order)
         return a.min()
 
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_min_nan_imag(self, xp, dtype):
-        a = xp.array([float("nan") * 1.0j, 1.0j, -1.0j], dtype)
+        a = xp.array(
+            [float("nan") * 1.0j, 1.0j, -1.0j], dtype, order=self.order
+        )
         return a.min()
 
     # skip bool: numpy's ptp raises a TypeError on bool inputs
     @testing.for_all_dtypes(no_bool=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_ptp_all(self, xp, dtype):
-        a = testing.shaped_random((2, 3), xp, dtype)
-        return a.ptp()
+        a = testing.shaped_random((2, 3), xp, dtype, order=self.order)
+        return xp.ptp(a)
 
     @testing.with_requires("numpy>=1.15")
     @testing.for_all_dtypes(no_bool=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_ptp_all_keepdims(self, xp, dtype):
-        a = testing.shaped_random((2, 3), xp, dtype)
-        return a.ptp(keepdims=True)
+        a = testing.shaped_random((2, 3), xp, dtype, order=self.order)
+        return xp.ptp(a, keepdims=True)
 
     @testing.for_all_dtypes(no_bool=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_ptp_axis_large(self, xp, dtype):
-        a = testing.shaped_random((3, 1000), xp, dtype)
-        return a.ptp(axis=0)
+        a = testing.shaped_random((3, 1000), xp, dtype, order=self.order)
+        return xp.ptp(a, axis=0)
 
     @testing.for_all_dtypes(no_bool=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_ptp_axis0(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
-        return a.ptp(axis=0)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
+        return xp.ptp(a, axis=0)
 
     @testing.for_all_dtypes(no_bool=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_ptp_axis1(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
-        return a.ptp(axis=1)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
+        return xp.ptp(a, axis=1)
 
     @testing.for_all_dtypes(no_bool=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_ptp_axis2(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
-        return a.ptp(axis=2)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
+        return xp.ptp(a, axis=2)
 
     @testing.with_requires("numpy>=1.15")
     @testing.for_all_dtypes(no_bool=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_ptp_multiple_axes(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
-        return a.ptp(axis=(1, 2))
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
+        return xp.ptp(a, axis=(1, 2))
 
     @testing.with_requires("numpy>=1.15")
     @testing.for_all_dtypes(no_bool=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_ptp_multiple_axes_keepdims(self, xp, dtype):
-        a = testing.shaped_random((2, 3, 4), xp, dtype)
-        return a.ptp(axis=(1, 2), keepdims=True)
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
+        return xp.ptp(a, axis=(1, 2), keepdims=True)
 
     @testing.for_float_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_ptp_nan(self, xp, dtype):
-        a = xp.array([float("nan"), 1, -1], dtype)
-        return a.ptp()
+        a = xp.array([float("nan"), 1, -1], dtype, order=self.order)
+        return xp.ptp(a)
 
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_ptp_nan_real(self, xp, dtype):
-        a = xp.array([float("nan"), 1, -1], dtype)
-        return a.ptp()
+        a = xp.array([float("nan"), 1, -1], dtype, order=self.order)
+        return xp.ptp(a)
 
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_ptp_nan_imag(self, xp, dtype):
-        a = xp.array([float("nan") * 1.0j, 1.0j, -1.0j], dtype)
-        return a.ptp()
+        a = xp.array(
+            [float("nan") * 1.0j, 1.0j, -1.0j], dtype, order=self.order
+        )
+        return xp.ptp(a)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmax_all(self, xp, dtype):
+        a = testing.shaped_random((2, 3), xp, dtype, order=self.order)
+        return a.argmax()
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmax_axis_large(self, xp, dtype):
+        a = testing.shaped_random((3, 1000), xp, dtype, order=self.order)
+        return a.argmax(axis=0)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmax_axis0(self, xp, dtype):
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
+        return a.argmax(axis=0)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmax_axis1(self, xp, dtype):
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
+        return a.argmax(axis=1)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmax_axis2(self, xp, dtype):
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
+        return a.argmax(axis=2)
+
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmax_nan(self, xp, dtype):
+        a = xp.array([float("nan"), 1, -1], dtype, order=self.order)
+        return a.argmax()
+
+    @testing.for_complex_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmax_nan_real(self, xp, dtype):
+        a = xp.array([float("nan"), 1, -1], dtype, order=self.order)
+        return a.argmax()
+
+    @testing.for_complex_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmax_nan_imag(self, xp, dtype):
+        a = xp.array(
+            [float("nan") * 1.0j, 1.0j, -1.0j], dtype, order=self.order
+        )
+        return a.argmax()
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmin_all(self, xp, dtype):
+        a = testing.shaped_random((2, 3), xp, dtype, order=self.order)
+        return a.argmin()
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmin_axis_large(self, xp, dtype):
+        a = testing.shaped_random((3, 1000), xp, dtype, order=self.order)
+        return a.argmin(axis=0)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmin_axis0(self, xp, dtype):
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
+        return a.argmin(axis=0)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmin_axis1(self, xp, dtype):
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
+        return a.argmin(axis=1)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmin_axis2(self, xp, dtype):
+        a = testing.shaped_random((2, 3, 4), xp, dtype, order=self.order)
+        return a.argmin(axis=2)
+
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmin_nan(self, xp, dtype):
+        a = xp.array([float("nan"), 1, -1], dtype, order=self.order)
+        return a.argmin()
+
+    @testing.for_complex_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmin_nan_real(self, xp, dtype):
+        a = xp.array([float("nan"), 1, -1], dtype, order=self.order)
+        return a.argmin()
+
+    @testing.for_complex_dtypes()
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def test_argmin_nan_imag(self, xp, dtype):
+        a = xp.array(
+            [float("nan") * 1.0j, 1.0j, -1.0j], dtype, order=self.order
+        )
+        return a.argmin()
+
+
+@testing.parameterize(
+    *testing.product(
+        {
+            # TODO(leofang): make a @testing.for_all_axes decorator
+            "shape_and_axis": [
+                ((), None),
+                ((0,), (0,)),
+                ((0, 2), (0,)),
+                ((0, 2), (1,)),
+                ((0, 2), (0, 1)),
+                ((2, 0), (0,)),
+                ((2, 0), (1,)),
+                ((2, 0), (0, 1)),
+                ((0, 2, 3), (0,)),
+                ((0, 2, 3), (1,)),
+                ((0, 2, 3), (2,)),
+                ((0, 2, 3), (0, 1)),
+                ((0, 2, 3), (1, 2)),
+                ((0, 2, 3), (0, 2)),
+                ((0, 2, 3), (0, 1, 2)),
+                ((2, 0, 3), (0,)),
+                ((2, 0, 3), (1,)),
+                ((2, 0, 3), (2,)),
+                ((2, 0, 3), (0, 1)),
+                ((2, 0, 3), (1, 2)),
+                ((2, 0, 3), (0, 2)),
+                ((2, 0, 3), (0, 1, 2)),
+                ((2, 3, 0), (0,)),
+                ((2, 3, 0), (1,)),
+                ((2, 3, 0), (2,)),
+                ((2, 3, 0), (0, 1)),
+                ((2, 3, 0), (1, 2)),
+                ((2, 3, 0), (0, 2)),
+                ((2, 3, 0), (0, 1, 2)),
+            ],
+            "order": ("C", "F"),
+            "func": ("min", "max", "argmin", "argmax"),
+        }
+    )
+)
+class TestArrayReductionZeroSize:
+    @testing.numpy_cupy_allclose(
+        contiguous_check=False, accept_error=ValueError
+    )
+    def test_zero_size(self, xp):
+        shape, axis = self.shape_and_axis
+        # NumPy only supports axis being an int
+        if self.func in ("argmax", "argmin"):
+            if axis is not None and len(axis) == 1:
+                axis = axis[0]
+            else:
+                pytest.skip(
+                    f"NumPy does not support axis={axis} for {self.func}"
+                )
+        # dtype is irrelevant here, just pick one
+        a = testing.shaped_random(shape, xp, xp.float32, order=self.order)
+        return getattr(a, self.func)(axis=axis)
 
 
 # This class compares CUB results against NumPy's
