@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.13.1dev1+25.g95b14b5131 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.13.1dev1+26.gabbe3b88a4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9dc6b517"></script>
+        <script src="../../_static/documentation_options.js?v=5b611496"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+25.g95b14b5131
+                0.13.1dev1+26.gabbe3b88a4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -419,6 +419,7 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.</span>
+<span class="sd">    :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.</span>
 <span class="sd">    :obj:`dpnp.absolute` : Calculate the absolute value element-wise.</span>
 
 <span class="sd">    Examples</span>
@@ -433,18 +434,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp_angle</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">deg</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">*</span> <span class="p">(</span><span class="mi">180</span> <span class="o">/</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">res</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
-            <span class="n">numpy</span><span class="o">.</span><span class="n">angle</span><span class="p">,</span>
-            <span class="n">z</span><span class="p">,</span>
-            <span class="n">deg</span><span class="o">=</span><span class="n">deg</span><span class="p">,</span>
-        <span class="p">)</span></div>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp_angle</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">deg</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">*</span> <span class="p">(</span><span class="mi">180</span> <span class="o">/</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
 
 
 
@@ -1694,21 +1688,23 @@
 
 <div class="viewcode-block" id="imag">
 <a class="viewcode-back" href="../../reference/generated/dpnp.imag.html#dpnp.imag">[docs]</a>
-<span class="k">def</span> <span class="nf">imag</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">imag</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the imaginary part of the complex argument.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.imag`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        The imaginary component of the complex argument.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">        The imaginary component of the complex argument. If `val` is real,</span>
+<span class="sd">        the type of `val` is used for the output. If `val` has complex</span>
+<span class="sd">        elements, the returned type is float.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1732,12 +1728,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="c1"># input has to be an array</span>
-        <span class="k">pass</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_imag</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_imag</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
 
 
 
@@ -2459,21 +2451,23 @@
 
 <div class="viewcode-block" id="real">
 <a class="viewcode-back" href="../../reference/generated/dpnp.real.html#dpnp.real">[docs]</a>
-<span class="k">def</span> <span class="nf">real</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">real</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the real part of the complex argument.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.real`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        The real component of the complex argument.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">        The real component of the complex argument.  If `val` is real,</span>
+<span class="sd">        the type of `val` is used for the output. If `val` has complex</span>
+<span class="sd">        elements, the returned type is float.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -2500,15 +2494,12 @@
 <span class="sd">    array(1.)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="c1"># input has to be an array</span>
-        <span class="k">pass</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubsctype</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_real</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubsctype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">dpnp_real</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">x</span>
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">val</span></div>
 
 
 
