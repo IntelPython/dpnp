@@ -291,14 +291,12 @@ class dpnp_nd_grid:
     ):
         dpu.validate_usm_type(usm_type, allow_none=False)
         self.sparse = sparse
-        self.device = device
         self.usm_type = usm_type
-        self.sycl_queue = sycl_queue
+        self.sycl_queue_normalized = dpnp.get_normalized_queue_device(
+            sycl_queue=sycl_queue, device=device
+        )
 
     def __getitem__(self, key):
-        sycl_queue_normalized = dpnp.get_normalized_queue_device(
-            sycl_queue=self.sycl_queue, device=self.device
-        )
         if isinstance(key, slice):
             step = key.step
             stop = key.stop
@@ -318,7 +316,7 @@ class dpnp_nd_grid:
                         1,
                         dtype=dpnp.default_float_type(),
                         usm_type=self.usm_type,
-                        sycl_queue=sycl_queue_normalized,
+                        sycl_queue=self.sycl_queue_normalized,
                     )
                     * step
                     + start
@@ -329,7 +327,7 @@ class dpnp_nd_grid:
                     stop,
                     step,
                     usm_type=self.usm_type,
-                    sycl_queue=sycl_queue_normalized,
+                    sycl_queue=self.sycl_queue_normalized,
                 )
 
         size = []
@@ -361,7 +359,7 @@ class dpnp_nd_grid:
                     _x,
                     dtype=_t,
                     usm_type=self.usm_type,
-                    sycl_queue=sycl_queue_normalized,
+                    sycl_queue=self.sycl_queue_normalized,
                 )
                 for _x, _t in zip(size, (dtype,) * len(size))
             ]
@@ -370,7 +368,7 @@ class dpnp_nd_grid:
                 size,
                 dtype,
                 usm_type=self.usm_type,
-                sycl_queue=sycl_queue_normalized,
+                sycl_queue=self.sycl_queue_normalized,
             )
         for k in range(len(size)):
             step = key[k].step

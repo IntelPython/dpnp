@@ -1366,7 +1366,9 @@ def test_indices(device, sparse):
 )
 @pytest.mark.parametrize("func", ["mgrid", "ogrid"])
 def test_grid(device, func):
-    assert getattr(dpnp, func)(device=device)[0:4].sycl_device == device
+    sycl_queue = dpctl.SyclQueue(device)
+    x = getattr(dpnp, func)(sycl_queue=sycl_queue)[0:4]
+    assert_sycl_queue_equal(x.sycl_queue, sycl_queue)
 
 
 @pytest.mark.parametrize(
