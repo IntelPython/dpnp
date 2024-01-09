@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.13.1dev2+179.ge62d60759e documentation</title>
+  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.13.1dev2+9.gbb4c9d90b1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=34d1d331"></script>
+        <script src="../../_static/documentation_options.js?v=b6466006"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+179.ge62d60759e
+                0.13.1dev2+9.gbb4c9d90b1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -160,14 +160,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    val : float</span>
 <span class="sd">        NaN values are set to `val` before doing the operation.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : {dpnp_array}</span>
+<span class="sd">    out : {dpnp.ndarray}</span>
 <span class="sd">        If `a` is of inexact type, return a copy of `a` with the NaNs</span>
 <span class="sd">        replaced by the fill value, otherwise return `a`.</span>
 <span class="sd">    mask: {bool, None}</span>
@@ -200,13 +200,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a :  {dpnp_array, usm_ndarray}</span>
+<span class="sd">    a :  {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis along which to search. If ``None``, the function must return</span>
 <span class="sd">        the index of the maximum value of the flattened array.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out :  {dpnp_array, usm_ndarray}, optional</span>
+<span class="sd">    out :  {dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    keepdims : bool</span>
@@ -271,13 +271,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis along which to search. If ``None``, the function must return</span>
 <span class="sd">        the index of the minimum value of the flattened array.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out : {dpnp_array, usm_ndarray}, optional</span>
+<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    keepdims : bool</span>
@@ -422,14 +422,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a :  {dpnp_array, usm_ndarray}</span>
+<span class="sd">    a :  {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    axis : int or tuple of ints, optional</span>
 <span class="sd">        Axis or axes along which maximum values must be computed. By default,</span>
 <span class="sd">        the maximum value must be computed over the entire array. If a tuple of integers,</span>
 <span class="sd">        maximum values must be computed over multiple axes.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out :  {dpnp_array, usm_ndarray}, optional</span>
+<span class="sd">    out :  {dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    keepdims : bool</span>
@@ -520,14 +520,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a :  {dpnp_array, usm_ndarray}</span>
+<span class="sd">    a :  {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    axis : int or tuple of ints, optional</span>
 <span class="sd">        Axis or axes along which minimum values must be computed. By default,</span>
 <span class="sd">        the minimum value must be computed over the entire array. If a tuple of integers,</span>
 <span class="sd">        minimum values must be computed over multiple axes.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out :  {dpnp_array, usm_ndarray}, optional</span>
+<span class="sd">    out :  {dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    keepdims : bool, optional</span>
@@ -719,7 +719,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray}:</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}:</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    axis : int or tuple of ints, optional</span>
 <span class="sd">        axis or axes along which the variances must be computed. If a tuple</span>
@@ -730,7 +730,7 @@
 <span class="sd">        Type to use in computing the standard deviation. For arrays of</span>
 <span class="sd">        integer type the default real-valued floating-point data type is used,</span>
 <span class="sd">        for arrays of float types it is the same as the array type.</span>
-<span class="sd">    out : {dpnp_array, usm_ndarray}, optional</span>
+<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        the same shape as the expected output but the type (of the calculated</span>
 <span class="sd">        values) will be cast if necessary.</span>
