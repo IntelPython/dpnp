@@ -148,7 +148,6 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNPFuncName::DPNP_FN_RADIANS_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a58553723bdf252b3b5cc6d609a578c88", null ],
       [ "DPNPFuncName::DPNP_FN_REMAINDER", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a028e932a6262fc8cbff6ab47412f6b71", null ],
       [ "DPNPFuncName::DPNP_FN_RECIP", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a0dbb5104ccb3369e5088d8cd8356c95e", null ],
-      [ "DPNPFuncName::DPNP_FN_RECIP_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ab454f2f9a9964754a8a66e1c30b325ff", null ],
       [ "DPNPFuncName::DPNP_FN_REPEAT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a3123eb06ba67fc5187f81cda95a80be6", null ],
       [ "DPNPFuncName::DPNP_FN_RIGHT_SHIFT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ab42ed2c36eba8a3ec79ba5f60f5f54de", null ],
       [ "DPNPFuncName::DPNP_FN_RNG_BETA", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a0668a283409d746cfa94256b7cdb850e", null ],
