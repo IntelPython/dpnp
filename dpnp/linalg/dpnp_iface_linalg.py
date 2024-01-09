@@ -50,6 +50,7 @@ from dpnp.linalg.dpnp_algo_linalg import *
 from .dpnp_utils_linalg import (
     check_stacked_2d,
     check_stacked_square,
+    dpnp_det,
     dpnp_eigh,
     dpnp_slogdet,
     dpnp_solve,
@@ -195,9 +196,10 @@ def det(a):
     """
 
     dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-    sign, logdet = slogdet(a)
-    return sign * dpnp.exp(logdet)
+    return dpnp_det(a)
 
 
 def eig(x1):

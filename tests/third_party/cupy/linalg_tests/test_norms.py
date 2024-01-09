@@ -4,7 +4,6 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from tests.helper import is_cpu_device
 from tests.third_party.cupy import testing
 
 

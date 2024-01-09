@@ -37,6 +37,7 @@ from dpnp.dpnp_utils import get_usm_allocations
 __all__ = [
     "check_stacked_2d",
     "check_stacked_square",
+    "dpnp_det",
     "dpnp_eigh",
     "dpnp_slogdet",
     "dpnp_solve",
@@ -51,6 +52,50 @@ _real_types_map = {
     "complex64": "float32",  # csingle : csingle
     "complex128": "float64",  # cdouble : cdouble
 }
+
+
+def _calculate_determinant_sign(ipiv, diag, res_type, n):
+    """
+    Calculate the sign of the determinant based on row exchanges and diagonal values.
+
+    Parameters
+    -----------
+    ipiv : {dpnp.ndarray, usm_ndarray}
+        The pivot indices from LU decomposition.
+    diag : {dpnp.ndarray, usm_ndarray}
+        The diagonal elements of the LU decomposition matrix.
+    res_type : dpnp.dtype
+        The common data type for linalg operations.
+    n : int
+        The size of the last two dimensions of the array.
+
+    Returns
+    -------
+    sign : {dpnp_array, usm_ndarray}
+        The sign of the determinant.
+
+    """
+
+    # Checks for row exchanges in LU decomposition affecting determinant sign.
+    ipiv_diff = ipiv != dpnp.arange(
+        1, n + 1, usm_type=ipiv.usm_type, sycl_queue=ipiv.sycl_queue
+    )
+
+    # Counts row exchanges from 'ipiv_diff'.
+    non_zero = dpnp.count_nonzero(ipiv_diff, axis=-1)
+
+    # For floating types, adds count of negative diagonal elements
+    # to determine determinant sign.
+    if dpnp.issubdtype(res_type, dpnp.floating):
+        non_zero += dpnp.count_nonzero(diag < 0, axis=-1)
+
+    sign = (non_zero % 2) * -2 + 1
+
+    # For complex types, compute sign from the phase of diagonal elements.
+    if dpnp.issubdtype(res_type, dpnp.complexfloating):
+        sign = sign * dpnp.prod(diag / dpnp.abs(diag), axis=-1)
+
+    return sign.astype(res_type)
 
 
 def _real_type(dtype, device=None):
@@ -84,7 +129,7 @@ def check_stacked_2d(*arrays):
 
     Parameters
     ----------
-    arrays : {dpnp_array, usm_ndarray}
+    arrays : {dpnp.ndarray, usm_ndarray}
         A sequence of input arrays to check for dimensionality.
 
     Returns
@@ -123,7 +168,7 @@ def check_stacked_square(*arrays):
 
     Parameters
     ----------
-    arrays : {dpnp_array, usm_ndarray}
+    arrays : {dpnp.ndarray, usm_ndarray}
         A sequence of input arrays to check for square matrix shape.
 
     Returns
@@ -148,8 +193,6 @@ def check_stacked_square(*arrays):
 
 def _common_type(*arrays):
     """
-    _common_type(*arrays)
-
     Common type for linear algebra operations.
 
     This function determines the common data type for linalg operations.
@@ -160,12 +203,15 @@ def _common_type(*arrays):
     - The default floating-point data type is determined by the capabilities of the device
       on which `arrays` are created, as indicated by `dpnp.default_float_type()`.
 
-    Args:
-        *arrays (dpnp.ndarray): Input arrays.
+    Parameters
+    ----------
+    arrays : {dpnp.ndarray, usm_ndarray}
+        A sequence of input arrays.
 
-    Returns:
-        dtype_common (dtype): The common data type for linalg operations.
-
+    Returns
+    -------
+    dtype_common : dpnp.dtype
+        The common data type for linalg operations.
         This returned value is applicable both as the precision to be used
         in linalg calls and as the dtype of (possibly complex) output(s).
 
@@ -181,24 +227,27 @@ def _common_type(*arrays):
 
 def _common_inexact_type(default_dtype, *dtypes):
     """
-    _common_inexact_type(default_dtype, *dtypes)
-
     Determines the common 'inexact' data type for linear algebra operations.
 
     This function selects an 'inexact' data type appropriate for the device's capabilities.
     It defaults to `default_dtype` when provided types are not 'inexact'.
 
-    Args:
-        default_dtype: The default data type. This is determined by the capabilities of
+    Parameters
+    ----------
+    default_dtype : dpnp.dtype
+        The default data type. This is determined by the capabilities of
         the device and is used when none of the provided types are 'inexact'.
         *dtypes: A variable number of data types to be evaluated to find
         the common 'inexact' type.
 
-    Returns:
-        dpnp.result_type (dtype) : The resultant 'inexact' data type for linalg operations,
+    Returns
+    -------
+    dpnp.result_type : dpnp.dtype
+        The resultant 'inexact' data type for linalg operations,
         ensuring computational compatibility.
 
     """
+
     inexact_dtypes = [
         dt if issubdtype(dt, dpnp.inexact) else default_dtype for dt in dtypes
     ]
@@ -214,15 +263,15 @@ def _lu_factor(a, res_type):
 
     Parameters
     ----------
-        a : (..., M, M) {dpnp.ndarray, usm_ndarray}
-            Input array containing the matrices to be decomposed.
-        res_type : dpnp.dtype
-            Specifies the data type of the result.
-            Acceptable data types are float32, float64, complex64, or complex128.
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Input array containing the matrices to be decomposed.
+    res_type : dpnp.dtype
+        Specifies the data type of the result.
+        Acceptable data types are float32, float64, complex64, or complex128.
 
     Returns
     -------
-        tuple:
+    tuple:
         lu_t : (..., N, N) {dpnp.ndarray, usm_ndarray}
             Combined 'L' and 'U' matrices from LU decomposition
             excluding the diagonal of 'L'.
@@ -386,6 +435,54 @@ def _lu_factor(a, res_type):
         # pivot indices 'ipiv_h'
         # and the status 'dev_info_h' from the LAPACK getrf call
         return (a_h, ipiv_h, dev_info_array)
+
+
+def dpnp_det(a):
+    """
+    dpnp_det(a)
+
+    Returns the determinant of `a` array.
+
+    """
+
+    a_usm_type = a.usm_type
+    a_sycl_queue = a.sycl_queue
+
+    res_type = _common_type(a)
+    det_dtype = _real_type(res_type)
+
+    a_shape = a.shape
+    shape = a_shape[:-2]
+    n = a_shape[-2]
+
+    if a.size == 0:
+        # empty batch (result is empty, too) or empty matrices det([[]]) == 1
+        det = dpnp.ones(
+            shape,
+            dtype=det_dtype,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+        return det
+
+    lu, ipiv, dev_info = _lu_factor(a, res_type)
+
+    # Transposing 'lu' to swap the last two axes for compatibility
+    # with 'dpnp.diagonal' as it does not support 'axis1' and 'axis2' arguments.
+    # TODO: Replace with 'dpnp.diagonal(lu, axis1=-2, axis2=-1)' when supported.
+    lu_transposed = lu.transpose(-2, -1, *range(lu.ndim - 2))
+    diag = dpnp.diagonal(lu_transposed)
+
+    det = dpnp.prod(diag, axis=-1)
+
+    sign = _calculate_determinant_sign(ipiv, diag, res_type, n)
+
+    det = sign * det
+    det = det.astype(det_dtype, copy=False)
+    singular = dpnp.array([dev_info > 0])
+    det = dpnp.where(singular, res_type.type(0), det)
+
+    return det.reshape(shape)
 
 
 def dpnp_eigh(a, UPLO):
@@ -689,22 +786,8 @@ def dpnp_slogdet(a):
 
     logdet = dpnp.log(dpnp.abs(diag)).sum(axis=-1)
 
-    # ipiv is 1-origin
-    non_zero = dpnp.count_nonzero(
-        ipiv
-        != dpnp.arange(
-            1, n + 1, usm_type=ipiv.usm_type, sycl_queue=ipiv.sycl_queue
-        ),
-        axis=-1,
-    )
-    if dpnp.issubdtype(res_type, dpnp.floating):
-        non_zero += dpnp.count_nonzero(diag < 0, axis=-1)
+    sign = _calculate_determinant_sign(ipiv, diag, res_type, n)
 
-    sign = (non_zero % 2) * -2 + 1
-    if dpnp.issubdtype(res_type, dpnp.complexfloating):
-        sign = sign * dpnp.prod(diag / dpnp.abs(diag), axis=-1)
-
-    sign = sign.astype(res_type)
     logdet = logdet.astype(logdet_dtype, copy=False)
     singular = dpnp.array([dev_info > 0])
     return (
