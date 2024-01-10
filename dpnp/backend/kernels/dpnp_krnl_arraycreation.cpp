@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2023, Intel Corporation
+// Copyright (c) 2016-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -855,11 +855,12 @@ DPCTLSyclEventRef dpnp_tril_c(DPCTLSyclQueueRef q_ref,
     _DataType *array_m = input1_ptr.get_ptr();
     _DataType *result = result_ptr.get_ptr();
 
+    int *ids = new int[res_ndim];
+
     if (ndim == 1) {
         for (size_t i = 0; i < res_size; ++i) {
             size_t n = res_size;
             size_t val = i;
-            int ids[res_ndim];
             for (size_t j = 0; j < res_ndim; ++j) {
                 n /= res_shape[j];
                 size_t p = val / n;
@@ -886,7 +887,6 @@ DPCTLSyclEventRef dpnp_tril_c(DPCTLSyclQueueRef q_ref,
         for (size_t i = 0; i < res_size; ++i) {
             size_t n = res_size;
             size_t val = i;
-            int ids[res_ndim];
             for (size_t j = 0; j < res_ndim; ++j) {
                 n /= res_shape[j];
                 size_t p = val / n;
@@ -909,6 +909,8 @@ DPCTLSyclEventRef dpnp_tril_c(DPCTLSyclQueueRef q_ref,
             }
         }
     }
+
+    delete[] ids;
     return DPCTLEvent_Copy(event_ref);
 }
 
@@ -989,11 +991,12 @@ DPCTLSyclEventRef dpnp_triu_c(DPCTLSyclQueueRef q_ref,
     _DataType *array_m = input1_ptr.get_ptr();
     _DataType *result = result_ptr.get_ptr();
 
+    int *ids = new int[res_ndim];
+
     if (ndim == 1) {
         for (size_t i = 0; i < res_size; ++i) {
             size_t n = res_size;
             size_t val = i;
-            int ids[res_ndim];
             for (size_t j = 0; j < res_ndim; ++j) {
                 n /= res_shape[j];
                 size_t p = val / n;
@@ -1020,7 +1023,6 @@ DPCTLSyclEventRef dpnp_triu_c(DPCTLSyclQueueRef q_ref,
         for (size_t i = 0; i < res_size; ++i) {
             size_t n = res_size;
             size_t val = i;
-            int ids[res_ndim];
             for (size_t j = 0; j < res_ndim; ++j) {
                 n /= res_shape[j];
                 size_t p = val / n;
@@ -1043,6 +1045,8 @@ DPCTLSyclEventRef dpnp_triu_c(DPCTLSyclQueueRef q_ref,
             }
         }
     }
+
+    delete[] ids;
     return DPCTLEvent_Copy(event_ref);
 }
 
