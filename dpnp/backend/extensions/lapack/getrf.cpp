@@ -175,9 +175,20 @@ std::pair<sycl::event, sycl::event>
             "Execution queue is not compatible with allocation queues");
     }
 
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(a_array, ipiv_array)) {
+        throw py::value_error("The input array and the array of pivot indices "
+                              "are overlapping segments of memory");
+    }
+
     bool is_a_array_c_contig = a_array.is_c_contiguous();
+    bool is_ipiv_array_c_contig = ipiv_array.is_c_contiguous();
     if (!is_a_array_c_contig) {
         throw py::value_error("The input array "
+                              "must be C-contiguous");
+    }
+    if (!is_ipiv_array_c_contig) {
+        throw py::value_error("The array of pivot indices "
                               "must be C-contiguous");
     }
 

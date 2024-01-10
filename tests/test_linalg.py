@@ -122,8 +122,9 @@ class TestDet:
             "4D_array",
         ],
     )
-    def test_det(self, array):
-        a = numpy.array(array)
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_det(self, array, dtype):
+        a = numpy.array(array, dtype=dtype)
         ia = inp.array(a)
         result = inp.linalg.det(ia)
         expected = numpy.linalg.det(a)

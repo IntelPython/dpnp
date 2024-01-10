@@ -306,6 +306,7 @@ def _lu_factor(a, res_type):
             ipiv_h = dpnp.empty(
                 (batch_size, n),
                 dtype=dpnp.int64,
+                order="C",
                 usm_type=a_usm_type,
                 sycl_queue=a_sycl_queue,
             )
@@ -369,6 +370,7 @@ def _lu_factor(a, res_type):
                 ipiv_vecs[i] = dpnp.empty(
                     (n,),
                     dtype=dpnp.int64,
+                    order="C",
                     usm_type=a_usm_type,
                     sycl_queue=a_sycl_queue,
                 )
@@ -410,7 +412,11 @@ def _lu_factor(a, res_type):
         )
 
         ipiv_h = dpnp.empty(
-            n, dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+            n,
+            dtype=dpnp.int64,
+            order="C",
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
         )
         dev_info_h = [0]
 
@@ -479,7 +485,7 @@ def dpnp_det(a):
 
     det = sign * det
     det = det.astype(det_dtype, copy=False)
-    singular = dpnp.array([dev_info > 0])
+    singular = dev_info > 0
     det = dpnp.where(singular, res_type.type(0), det)
 
     return det.reshape(shape)
@@ -789,7 +795,7 @@ def dpnp_slogdet(a):
     sign = _calculate_determinant_sign(ipiv, diag, res_type, n)
 
     logdet = logdet.astype(logdet_dtype, copy=False)
-    singular = dpnp.array([dev_info > 0])
+    singular = dev_info > 0
     return (
         dpnp.where(singular, res_type.type(0), sign).reshape(shape),
         dpnp.where(singular, logdet_dtype.type("-inf"), logdet).reshape(shape),
