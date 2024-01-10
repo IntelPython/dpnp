@@ -38,7 +38,6 @@ it contains:
 """
 
 
-import dpctl
 import dpctl.tensor as dpt
 import numpy
 from numpy.core.numeric import normalize_axis_index
@@ -188,7 +187,7 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
         Return the average along the specified axis. When `returned` is ``True``,
         return a tuple with the average as the first element and the sum of the
         weights as the second element. `sum_of_weights` is of the same type as
-        `out`. The result dtype follows a genereal pattern. If `weights` is
+        `out`. The result dtype follows a general pattern. If `weights` is
         ``None``, the result dtype will be that of `a` , or default floating point
         data type for the device where input array `a` is allocated. Otherwise,
         if `weights` is not ``None`` and `a` is non-integral, the result type
@@ -200,6 +199,7 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
     See Also
     --------
     :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.
+    :obj:`dpnp.sum` : Sum of array elements over a given axis.
 
     Examples
     --------
@@ -240,26 +240,21 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
     dpnp.check_supported_arrays_type(a)
     if weights is None:
         avg = dpnp.mean(a, axis=axis, keepdims=keepdims)
-        scl = avg.dtype.type(a.size / avg.size)
-        scl = dpnp.asanyarray(scl, usm_type=a.usm_type, sycl_queue=a.sycl_queue)
+        scl = dpnp.asanyarray(
+            avg.dtype.type(a.size / avg.size),
+            usm_type=a.usm_type,
+            sycl_queue=a.sycl_queue,
+        )
     else:
         if not isinstance(weights, (dpnp_array, dpt.usm_ndarray)):
             wgt = dpnp.asanyarray(
                 weights, usm_type=a.usm_type, sycl_queue=a.sycl_queue
             )
         else:
-            exec_q = dpctl.utils.get_execution_queue(
-                (a.sycl_queue, weights.sycl_queue)
-            )
-            if exec_q is None:
-                raise ValueError(
-                    "Execution placement can not be unambiguously inferred "
-                    "from input arguments."
-                )
-            else:
-                wgt = weights
+            get_usm_allocations([a, weights])
+            wgt = weights
 
-        if issubclass(a.dtype.type, (dpnp.integer, dpnp.bool)):
+        if not dpnp.issubdtype(a.dtype, dpnp.inexact):
             default_dtype = dpnp.default_float_type(a.device)
             result_dtype = dpnp.result_type(a.dtype, wgt.dtype, default_dtype)
         else:

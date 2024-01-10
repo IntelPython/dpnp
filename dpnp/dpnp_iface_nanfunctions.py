@@ -457,7 +457,11 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
     :obj:`dpnp.average` : Weighted average.
     :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.
     :obj:`dpnp.var` : Compute the variance along the specified axis.
-    :obj:`dpnp.nanvar` : Compute the variance along the specified axis, while ignoring NaNs.
+    :obj:`dpnp.nanvar` : Compute the variance along the specified axis,
+                while ignoring NaNs.
+    :obj:`dpnp.std` : Compute the standard deviation along the specified axis.
+    :obj:`dpnp.nanstd` : Compute the standard deviation along the specified axis,
+                while ignoring NaNs.
 
     Examples
     --------
@@ -662,7 +666,7 @@ def nanprod(
 
     """
 
-    a, mask = _replace_nan(a, 1)
+    a, _ = _replace_nan(a, 1)
     return dpnp.prod(
         a,
         axis=axis,
@@ -780,7 +784,7 @@ def nansum(
 
     """
 
-    a, mask = _replace_nan(a, 0)
+    a, _ = _replace_nan(a, 0)
     return dpnp.sum(
         a,
         axis=axis,

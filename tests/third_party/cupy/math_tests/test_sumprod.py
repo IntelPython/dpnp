@@ -47,7 +47,7 @@ class TestSumprod:
         return a.sum(**_get_dtype_kwargs(xp, dtype))
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(type_check=False)
+    @testing.numpy_cupy_allclose()
     def test_sum_all_transposed(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(2, 0, 1)
         return a.sum(**_get_dtype_kwargs(xp, dtype))
@@ -159,28 +159,28 @@ class TestSumprod:
             a.sum(axis=1, out=b)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(type_check=False)
+    @testing.numpy_cupy_allclose()
     def test_prod_all(self, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
-        return a.prod()
+        return a.prod(**_get_dtype_kwargs(xp, dtype))
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(type_check=False)
+    @testing.numpy_cupy_allclose()
     def test_external_prod_all(self, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
-        return xp.prod(a)
+        return xp.prod(a, **_get_dtype_kwargs(xp, dtype))
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(type_check=False)
+    @testing.numpy_cupy_allclose()
     def test_prod_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        return a.prod(axis=1)
+        return a.prod(axis=1, **_get_dtype_kwargs(xp, dtype))
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(type_check=False)
+    @testing.numpy_cupy_allclose()
     def test_external_prod_axis(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        return xp.prod(a, axis=1)
+        return xp.prod(a, axis=1, **_get_dtype_kwargs(xp, dtype))
 
     @testing.for_all_dtypes_combination(names=["src_dtype", "dst_dtype"])
     @testing.numpy_cupy_allclose()
@@ -228,10 +228,15 @@ class TestNansumNanprodLong:
         if not issubclass(dtype, xp.integer):
             a[:, 1] = xp.nan
         func = getattr(xp, self.func)
-        return func(a, axis=self.axis, keepdims=self.keepdims)
+        return func(
+            a,
+            **_get_dtype_kwargs(xp, dtype),
+            axis=self.axis,
+            keepdims=self.keepdims,
+        )
 
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
-    @testing.numpy_cupy_allclose(type_check=False)
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_nansum_all(self, xp, dtype):
         if (
             not self._numpy_nanprod_implemented()
@@ -241,7 +246,9 @@ class TestNansumNanprodLong:
         return self._test(xp, dtype)
 
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
-    @testing.numpy_cupy_allclose(contiguous_check=False, type_check=False)
+    @testing.numpy_cupy_allclose(
+        contiguous_check=False, type_check=has_support_aspect64()
+    )
     def test_nansum_axis_transposed(self, xp, dtype):
         if (
             not self._numpy_nanprod_implemented()
@@ -258,7 +265,6 @@ class TestNansumNanprodLong:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestNansumNanprodExtra:
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
     @testing.numpy_cupy_allclose()
