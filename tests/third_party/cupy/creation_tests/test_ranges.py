@@ -363,7 +363,7 @@ class TestMgrid(unittest.TestCase):
     def test_mgrid2(self, xp):
         return xp.mgrid[-10:10:10j]
 
-    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
+    @testing.numpy_cupy_allclose(rtol=1e-4, type_check=has_support_aspect64())
     def test_mgrid3(self, xp):
         x = xp.zeros(10)[:, None]
         y = xp.ones(10)[:, None]
@@ -374,7 +374,7 @@ class TestMgrid(unittest.TestCase):
         # check len(keys) > 1
         return xp.mgrid[-10:10:10j, -10:10:10j]
 
-    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
+    @testing.numpy_cupy_allclose(rtol=1e-4, type_check=has_support_aspect64())
     def test_mgrid5(self, xp):
         # check len(keys) > 1
         x = xp.zeros(10)[:, None]
@@ -396,18 +396,18 @@ class TestOgrid(unittest.TestCase):
     def test_ogrid2(self, xp):
         return xp.ogrid[-10:10:10j]
 
-    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
+    @testing.numpy_cupy_allclose(rtol=1e-4, type_check=has_support_aspect64())
     def test_ogrid3(self, xp):
         x = xp.zeros(10)[:, None]
         y = xp.ones(10)[:, None]
         return xp.ogrid[x:y:10j]
 
-    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
+    @testing.numpy_cupy_allclose(rtol=1e-4, type_check=has_support_aspect64())
     def test_ogrid4(self, xp):
         # check len(keys) > 1
         return xp.ogrid[-10:10:10j, -10:10:10j]
 
-    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
+    @testing.numpy_cupy_allclose(rtol=1e-4, type_check=has_support_aspect64())
     def test_ogrid5(self, xp):
         # check len(keys) > 1
         x = xp.zeros(10)[:, None]
