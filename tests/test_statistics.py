@@ -435,7 +435,7 @@ class TestNanMean:
         # out dtype should be inexact
         res = dpnp.empty((1,), dtype=dpnp.int32)
         with pytest.raises(TypeError):
-            dpnp.nanvar(ia, out=res)
+            dpnp.nanmean(ia, out=res)
 
 
 class TestVar:
