@@ -471,6 +471,38 @@ def test_rsqrt(device):
 
 
 @pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_logsumexp(device):
+    x = dpnp.arange(10, device=device)
+    result = dpnp.logsumexp(x)
+    expected = numpy.logaddexp.reduce(x.asnumpy())
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = x.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_reduce_hypot(device):
+    x = dpnp.arange(10, device=device)
+    result = dpnp.reduce_hypot(x)
+    expected = numpy.hypot.reduce(x.asnumpy())
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = x.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
     "func,data1,data2",
     [
         pytest.param(
@@ -1297,6 +1329,38 @@ def test_broadcast_to(device):
     x = dpnp.arange(5, device=device)
     y = dpnp.broadcast_to(x, (3, 5))
     assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "func,data1,data2",
+    [
+        pytest.param("column_stack", (1, 2, 3), (2, 3, 4)),
+        pytest.param("concatenate", [[1, 2], [3, 4]], [[5, 6]]),
+        pytest.param("dstack", [[1], [2], [3]], [[2], [3], [4]]),
+        pytest.param("hstack", (1, 2, 3), (4, 5, 6)),
+        pytest.param("row_stack", [[7], [1], [2], [3]], [[2], [3], [9], [4]]),
+        pytest.param("stack", [1, 2, 3], [4, 5, 6]),
+        pytest.param("vstack", [0, 1, 2, 3], [4, 5, 6, 7]),
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_concat_stack(func, data1, data2, device):
+    x1_orig = numpy.array(data1)
+    x2_orig = numpy.array(data2)
+    expected = getattr(numpy, func)((x1_orig, x2_orig))
+
+    x1 = dpnp.array(data1, device=device)
+    x2 = dpnp.array(data2, device=device)
+    result = getattr(dpnp, func)((x1, x2))
+
+    assert_allclose(result, expected)
+
+    assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
 
 @pytest.mark.parametrize(
