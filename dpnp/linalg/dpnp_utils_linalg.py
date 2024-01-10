@@ -613,24 +613,23 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
         else:
             s_matrices[i] = dpnp_svd(a[i], full_matrices, compute_uv=False)
 
+    out_s = dpnp.array(s_matrices)
+    if reshape:
+        out_s = out_s.reshape(batch_shape_orig + out_s.shape[-1:])
+
     if compute_uv:
-        out_s = dpnp.array(s_matrices)
         out_vt = dpnp.array(vt_matrices)
         out_u = dpnp.array(u_matrices)
         if reshape:
             return (
                 out_vt.reshape(batch_shape_orig + out_vt.shape[-2:]),
-                out_s.reshape(batch_shape_orig + out_s.shape[-1:]),
+                out_s,
                 out_u.reshape(batch_shape_orig + out_u.shape[-2:]),
             )
         else:
             return out_vt, out_s, out_u
     else:
-        out_s = dpnp.array(s_matrices)
-        if reshape:
-            return out_s.reshape(batch_shape_orig + out_s.shape[-1:])
-        else:
-            return out_s
+        return out_s
 
 
 def dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False):
