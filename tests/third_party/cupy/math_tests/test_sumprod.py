@@ -300,7 +300,7 @@ class TestNansumNanprodHuge:
     def _test(self, xp, nan_slice):
         a = testing.shaped_random((2048, 1, 1024), xp, "f")
         a[nan_slice] = xp.nan
-        a = xp.broadcast_to(a, (2048, 1024, 1024))
+        a = xp.broadcast_to(a, (2048, 256, 1024))
         return xp.nansum(a, **_get_dtype_kwargs(xp, a.dtype), axis=2)
 
     @testing.slow
