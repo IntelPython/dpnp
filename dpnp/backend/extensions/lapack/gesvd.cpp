@@ -187,8 +187,6 @@ std::pair<sycl::event, sycl::event>
     gesvd(sycl::queue exec_q,
           const std::int8_t jobu_val,
           const std::int8_t jobvt_val,
-          const std::int64_t m,
-          const std::int64_t n,
           dpctl::tensor::usm_ndarray a_array,
           dpctl::tensor::usm_ndarray out_s,
           dpctl::tensor::usm_ndarray out_u,
@@ -251,6 +249,10 @@ std::pair<sycl::event, sycl::event>
     char *out_s_data = out_s.get_data();
     char *out_u_data = out_u.get_data();
     char *out_vt_data = out_vt.get_data();
+
+    const py::ssize_t *a_array_shape = a_array.get_shape_raw();
+    const std::int64_t n = a_array_shape[0];
+    const std::int64_t m = a_array_shape[1];
 
     const std::int64_t lda = std::max<size_t>(1UL, m);
     const std::int64_t ldu = std::max<size_t>(1UL, m);

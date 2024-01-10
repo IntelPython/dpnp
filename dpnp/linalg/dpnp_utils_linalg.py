@@ -766,8 +766,6 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False):
         a_sycl_queue,
         jobu,
         jobvt,
-        m,
-        n,
         a_h.get_array(),
         s_h.get_array(),
         u_h.get_array(),

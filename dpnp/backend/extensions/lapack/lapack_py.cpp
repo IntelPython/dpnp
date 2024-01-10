@@ -74,8 +74,8 @@ PYBIND11_MODULE(_lapack_impl, m)
           "Call `gesvd` from OneMKL LAPACK library to return "
           "the singular value decomposition of a general rectangular matrix",
           py::arg("sycl_queue"), py::arg("jobu_val"), py::arg("jobvt_val"),
-          py::arg("m"), py::arg("n"), py::arg("a_array"), py::arg("res_s"),
-          py::arg("res_u"), py::arg("res_vt"), py::arg("depends") = py::list());
+          py::arg("a_array"), py::arg("res_s"), py::arg("res_u"),
+          py::arg("res_vt"), py::arg("depends") = py::list());
 
     m.def("_heevd", &lapack_ext::heevd,
           "Call `heevd` from OneMKL LAPACK library to return "
