@@ -39,10 +39,10 @@ def _gemm_res_dtype(*arrays, dtype, casting, sycl_queue):
     Determines the output array data type and the intermediate data type.
 
     If dtype is ``None``, the output array data type is determined based on
-    the Promotion Type Rule and device capibilities. Otherwise, `dtype` is
+    the Promotion Type Rule and device capabilities. Otherwise, `dtype` is
     used as output array dtype if input arrays can cast to it according to
     the casting rule determined. If casting cannot be done, a ``TypeError``
-    is raised
+    is raised.
     The intermediate data type is the data type used for performing matmul
     operation calculations. If output array dtype is a floating-point data type,
     it is also used for the intermediate data type. If output array dtype is an
@@ -77,21 +77,14 @@ def _gemm_res_dtype(*arrays, dtype, casting, sycl_queue):
     if dtype is not None:
         if dpnp.can_cast(res_dtype, dtype, casting=casting):
             res_dtype = dtype
-            gemm_dtype = (
-                res_dtype
-                if dpnp.issubdtype(res_dtype, dpnp.inexact)
-                else default_dtype
-            )
         else:
             raise TypeError(
                 f"Cannot cast ufunc 'matmul' output from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
             )
-    else:
-        gemm_dtype = (
-            res_dtype
-            if dpnp.issubdtype(res_dtype, dpnp.inexact)
-            else default_dtype
-        )
+
+    gemm_dtype = (
+        res_dtype if dpnp.issubdtype(res_dtype, dpnp.inexact) else default_dtype
+    )
 
     return gemm_dtype, res_dtype
 
@@ -157,12 +150,26 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, x1_is_2D, x2_is_2D, dev_tasks_list):
 
 
 def _get_gemm_contig_array(x, dep_events, host_events, dtype=None):
+    """
+    Creating a copy of input array if needed.
+
+    This function has two use cases. In the first use case, which is more general,
+    if the input array is not c-contiguous or f-contiguous, we ensure it becomes
+    c-contiguous. Additionally, if the input array has an integral dtype, we
+    convert it to an appropriate floating-point data type specified by `dtype`.
+    In the second use case, which is for N-dimensional arrays with N>2, we need
+    to ensure c-contiguity. This is crucial because the implementation of the
+    `gemm_batch` function in dpnp only works for C-contiguous arrays. This use case
+    is essential when the input array is f-contiguous with floating point dtype for
+    which the array is not modified in the first use case.
+
+    """
+
     if dtype is None:
         copy = not x.flags.c_contiguous
     else:
         copy = (
-            not x.flags.c_contiguous
-            or not x.flags.f_contiguous
+            not (x.flags.c_contiguous or x.flags.f_contiguous)
             or x.dtype != dtype
         )
 
@@ -283,17 +290,6 @@ def dpnp_matmul(
         x2_shape = x2.shape
         res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
 
-    # input arrays should have the proper data type
-    # and be C_CONTIGUOUS or F_CONTIGUOUS
-    dep_events_list = []
-    host_tasks_list = []
-    x1 = _get_gemm_contig_array(
-        x1, dep_events_list, host_tasks_list, gemm_dtype
-    )
-    x2 = _get_gemm_contig_array(
-        x2, dep_events_list, host_tasks_list, gemm_dtype
-    )
-
     # calculate results
     result = dpnp.empty(
         res_shape,
@@ -303,37 +299,46 @@ def dpnp_matmul(
     )
     if result.size == 0:
         pass
+    elif x1.size == 0 or x2.size == 0:
+        result.fill(0)
     else:
-        if x1.size == 0 or x2.size == 0:
-            result.fill(0)
+        # input arrays should have the proper data type
+        # and be C_CONTIGUOUS or F_CONTIGUOUS
+        dep_events_list = []
+        host_tasks_list = []
+        x1 = _get_gemm_contig_array(
+            x1, dep_events_list, host_tasks_list, gemm_dtype
+        )
+        x2 = _get_gemm_contig_array(
+            x2, dep_events_list, host_tasks_list, gemm_dtype
+        )
+
+        if x1_is_2D and x2_is_2D:
+            ht_blas_ev, _ = bi._gemm(
+                exec_q,
+                dpnp.get_usm_ndarray(x1),
+                dpnp.get_usm_ndarray(x2),
+                dpnp.get_usm_ndarray(result),
+                dep_events_list,
+            )
         else:
-            if x1_is_2D and x2_is_2D:
-                ht_blas_ev, _ = bi._gemm(
-                    exec_q,
-                    dpnp.get_usm_ndarray(x1),
-                    dpnp.get_usm_ndarray(x2),
-                    dpnp.get_usm_ndarray(result),
-                    dep_events_list,
-                )
-            else:
-                (
-                    ht_blas_ev,
-                    ht_copy_ev,
-                    result,
-                ) = _gemm_batch_matmul(
-                    exec_q,
-                    x1,
-                    x2,
-                    result,
-                    x1_is_2D,
-                    x2_is_2D,
-                    dep_events_list,
-                )
-                host_tasks_list += ht_copy_ev
+            (
+                ht_blas_ev,
+                ht_copy_ev,
+                result,
+            ) = _gemm_batch_matmul(
+                exec_q,
+                x1,
+                x2,
+                result,
+                x1_is_2D,
+                x2_is_2D,
+                dep_events_list,
+            )
+            host_tasks_list += ht_copy_ev
 
-            host_tasks_list.append(ht_blas_ev)
-
-    dpctl.SyclEvent.wait_for(host_tasks_list)
+        host_tasks_list.append(ht_blas_ev)
+        dpctl.SyclEvent.wait_for(host_tasks_list)
 
     if squeeze_flag:
         result = dpnp.squeeze(result)
@@ -349,7 +354,7 @@ def dpnp_matmul(
         result = dpnp.astype(result, res_dtype, copy=False)
     if out is None:
         # If `order` was not passed as default
-        # we must copy `result` to match the passed `order`.
+        # we need to update it to match the passed `order`.
         if order not in ["k", "K"]:
             return dpnp.array(result, copy=False, order=order)
         else:

@@ -72,6 +72,9 @@ def test_repeat(arr):
     assert_array_equal(expected, result)
 
 
+# TODO: Temporary skipping the test, until Internal CI is updated with
+# recent changed in dpctl regarding dpt.result_type function
+@pytest.mark.skip("Temporary skipping the test")
 def test_result_type():
     X = [dpnp.ones((2), dtype=dpnp.int64), dpnp.int32, "float32"]
     X_np = [numpy.ones((2), dtype=numpy.int64), numpy.int32, "float32"]
