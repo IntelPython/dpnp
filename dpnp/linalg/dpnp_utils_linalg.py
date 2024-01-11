@@ -455,7 +455,6 @@ def dpnp_det(a):
     a_sycl_queue = a.sycl_queue
 
     res_type = _common_type(a)
-    det_dtype = _real_type(res_type)
 
     a_shape = a.shape
     shape = a_shape[:-2]
@@ -465,7 +464,7 @@ def dpnp_det(a):
         # empty batch (result is empty, too) or empty matrices det([[]]) == 1
         det = dpnp.ones(
             shape,
-            dtype=det_dtype,
+            dtype=res_type,
             usm_type=a_usm_type,
             sycl_queue=a_sycl_queue,
         )
@@ -479,12 +478,12 @@ def dpnp_det(a):
     lu_transposed = lu.transpose(-2, -1, *range(lu.ndim - 2))
     diag = dpnp.diagonal(lu_transposed)
 
-    det = dpnp.prod(diag, axis=-1)
+    det = dpnp.prod(dpnp.abs(diag), axis=-1)
 
     sign = _calculate_determinant_sign(ipiv, diag, res_type, n)
 
     det = sign * det
-    det = det.astype(det_dtype, copy=False)
+    det = det.astype(res_type, copy=False)
     singular = dev_info > 0
     det = dpnp.where(singular, res_type.type(0), det)
 
