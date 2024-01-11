@@ -380,6 +380,16 @@ def indices(
     sparse : boolean, optional
         Return a sparse representation of the grid instead of a dense representation.
         Default is ``False``.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
 
     Returns
     -------
@@ -404,11 +414,18 @@ def indices(
     array([[0, 1, 2],
            [0, 1, 2]])
 
+    The indices can be used as an index into an array.
+
     >>> x = np.arange(20).reshape(5, 4)
     >>> row, col = np.indices((2, 3))
     >>> x[row, col]
     array([[0, 1, 2],
            [4, 5, 6]])
+
+    Note that it would be more straightforward in the above example to
+    extract the required elements directly with ``x[:2, :3]``.
+    If sparse is set to ``True``, the grid will be returned in a sparse
+    representation.
 
     >>> i, j = np.indices((2, 3), sparse=True)
     >>> i.shape

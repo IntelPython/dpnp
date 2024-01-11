@@ -1425,9 +1425,10 @@ def test_take(func, device):
 )
 @pytest.mark.parametrize("sparse", [True, False], ids=["True", "False"])
 def test_indices(device, sparse):
-    dpnp_array = dpnp.indices((2, 3), sparse=sparse, device=device)
-    for i in dpnp_array:
-        assert i.sycl_device == device
+    sycl_queue = dpctl.SyclQueue(device)
+    grid = dpnp.indices((2, 3), sparse=sparse, sycl_queue=sycl_queue)
+    for dpnp_array in grid:
+        assert_sycl_queue_equal(dpnp_array.sycl_queue, sycl_queue)
 
 
 @pytest.mark.parametrize(
