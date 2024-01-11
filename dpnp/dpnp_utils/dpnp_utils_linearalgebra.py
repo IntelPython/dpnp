@@ -34,22 +34,31 @@ from dpnp.dpnp_utils import get_usm_allocations
 __all__ = ["dpnp_matmul"]
 
 
-def _gemm_res_dtype(*arrays, sycl_queue, casting):
+def _gemm_res_dtype(*arrays, dtype, casting, sycl_queue):
     """
-    Determines the data types for matmul operation and the output array of matmul operation.
+    Determines the output array data type and the intermediate data type.
 
-    The output array data type is determined based on the Promotion Type Rule
-    and device capibilities. The data type used in matmul operation is an 'inexact' data type
-    determined based on the output data type and device capabilities.
-    Both data types are determined based on the fact that the output array data type can be cast
-    to the other data type according to casting rule specified, otherwise a ``TypeError`` is raised.
+    If dtype is ``None``, the output array data type is determined based on
+    the Promotion Type Rule and device capibilities. Otherwise, `dtype` is
+    used as output array dtype if input arrays can cast to it according to
+    the casting rule determined. If casting cannot be done, a ``TypeError``
+    is raised
+    The intermediate data type is the data type used for performing matmul
+    operation calculations. If output array dtype is a floating-point data type,
+    it is also used for the intermediate data type. If output array dtype is an
+    integral data type, the default floating point data type of the device where
+    input arrays are allocated on are used for intermediate data type.
 
     Parameters
     ----------
-    arrays : {dpnp_array, usm_ndarray}
+    arrays : {dpnp.ndarray, usm_ndarray}
         Input arrays.
+    dtype : dtype
+        If not ``None``, data type of the output array.
     casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
         Controls what kind of data casting may occur.
+    sycl_queue : {SyclQueue}
+        A SYCL queue to use for determining default floating point datat type.
 
     Returns
     -------
@@ -63,29 +72,28 @@ def _gemm_res_dtype(*arrays, sycl_queue, casting):
     """
 
     res_dtype = dpnp.result_type(*arrays)
-    gemm_dtype = dpnp.default_float_type(sycl_queue=sycl_queue)
-    if dpnp.issubdtype(res_dtype, dpnp.complexfloating):
+    default_dtype = dpnp.default_float_type(sycl_queue=sycl_queue)
+
+    if dtype is not None:
+        if dpnp.can_cast(res_dtype, dtype, casting=casting):
+            res_dtype = dtype
+            gemm_dtype = (
+                res_dtype
+                if dpnp.issubdtype(res_dtype, dpnp.inexact)
+                else default_dtype
+            )
+        else:
+            raise TypeError(
+                f"Cannot cast ufunc 'matmul' output from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
+            )
+    else:
         gemm_dtype = (
-            dpnp.complex64 if gemm_dtype == dpnp.float32 else dpnp.complex128
+            res_dtype
+            if dpnp.issubdtype(res_dtype, dpnp.inexact)
+            else default_dtype
         )
 
-    if dpnp.can_cast(res_dtype, gemm_dtype, casting):
-        if res_dtype in [
-            dpnp.float64,
-            dpnp.complex128,
-        ]:  # in case device does not support fp64
-            return gemm_dtype, gemm_dtype
-        elif res_dtype in [
-            dpnp.float32,
-            dpnp.complex64,
-        ]:  # needed dtype is fp32 but device supports fp64
-            return res_dtype, res_dtype
-        else:
-            return gemm_dtype, res_dtype
-    else:
-        raise TypeError(
-            f"Cannot cast ufunc 'matmul' output from dtype({res_dtype}) to dtype({gemm_dtype}) with casting rule {casting}"
-        )
+    return gemm_dtype, res_dtype
 
 
 def _gemm_batch_matmul(exec_q, x1, x2, res, x1_is_2D, x2_is_2D, dev_tasks_list):
@@ -226,15 +234,9 @@ def dpnp_matmul(
         )
 
     # Determine the appropriate data types
-    if dtype is not None:
-        res_dtype = dtype
-        gemm_dtype, _ = _gemm_res_dtype(
-            x1, x2, sycl_queue=exec_q, casting=casting
-        )
-    else:
-        gemm_dtype, res_dtype = _gemm_res_dtype(
-            x1, x2, sycl_queue=exec_q, casting=casting
-        )
+    gemm_dtype, res_dtype = _gemm_res_dtype(
+        x1, x2, dtype=dtype, casting=casting, sycl_queue=exec_q
+    )
 
     x1_is_2D = x1_ndim == 2 or numpy.prod(x1_shape[:-2]) == 1  # inherently 2D
     x2_is_2D = x2_ndim == 2 or numpy.prod(x2_shape[:-2]) == 1
