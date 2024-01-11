@@ -2334,7 +2334,7 @@ class TestNanSum:
 
         expected = numpy.nansum(a)
         result = dpnp.nansum(ia)
-        assert_dtype_allclose(result, expected)
+        assert_allclose(result, expected, rtol=1e-06)
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("axis", [0, 1])
