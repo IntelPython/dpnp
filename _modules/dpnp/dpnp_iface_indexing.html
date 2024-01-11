@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.13.1dev2+10.g78f19d45cc documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.13.1dev2+7.g8cb6e5d656 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=be7f34da"></script>
+        <script src="../../_static/documentation_options.js?v=31277708"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+10.g78f19d45cc
+                0.13.1dev2+7.g8cb6e5d656
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -465,117 +465,31 @@
 
 <div class="viewcode-block" id="indices">
 <a class="viewcode-back" href="../../reference/generated/dpnp.indices.html#dpnp.indices">[docs]</a>
-<span class="k">def</span> <span class="nf">indices</span><span class="p">(</span>
-    <span class="n">dimensions</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-    <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span>
-    <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
+<span class="k">def</span> <span class="nf">indices</span><span class="p">(</span><span class="n">dimensions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array representing the indices of a grid.</span>
 
-<span class="sd">    Compute an array where the subarrays contain index values 0, 1, …</span>
-<span class="sd">    varying only along the corresponding axis.</span>
-
 <span class="sd">    For full documentation refer to :obj:`numpy.indices`.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    dimensions : sequence of ints</span>
-<span class="sd">        The shape of the grid.</span>
-<span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        Data type of the result.</span>
-<span class="sd">    sparse : boolean, optional</span>
-<span class="sd">        Return a sparse representation of the grid instead of a dense representation.</span>
-<span class="sd">        Default is ``False``.</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
-<span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
-<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
-<span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : one dpnp.ndarray or tuple of dpnp.ndarray</span>
-<span class="sd">        If sparse is ``False``:</span>
-<span class="sd">        Returns one array of grid indices, grid.shape = (len(dimensions),) + tuple(dimensions).</span>
-
-<span class="sd">        If sparse is ``True``:</span>
-<span class="sd">        Returns a tuple of arrays, with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)</span>
-<span class="sd">        with dimensions[i] in the ith place.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; grid = np.indices((2, 3))</span>
-<span class="sd">    &gt;&gt;&gt; grid.shape</span>
-<span class="sd">    (2, 2, 3)</span>
-<span class="sd">    &gt;&gt;&gt; grid[0]</span>
-<span class="sd">    array([[0, 0, 0],</span>
-<span class="sd">           [1, 1, 1]])</span>
-<span class="sd">    &gt;&gt;&gt; grid[1]</span>
-<span class="sd">    array([[0, 1, 2],</span>
-<span class="sd">           [0, 1, 2]])</span>
-
-<span class="sd">    The indices can be used as an index into an array.</span>
-
-<span class="sd">    &gt;&gt;&gt; x = np.arange(20).reshape(5, 4)</span>
-<span class="sd">    &gt;&gt;&gt; row, col = np.indices((2, 3))</span>
-<span class="sd">    &gt;&gt;&gt; x[row, col]</span>
-<span class="sd">    array([[0, 1, 2],</span>
-<span class="sd">           [4, 5, 6]])</span>
-
-<span class="sd">    Note that it would be more straightforward in the above example to</span>
-<span class="sd">    extract the required elements directly with ``x[:2, :3]``.</span>
-<span class="sd">    If sparse is set to ``True``, the grid will be returned in a sparse</span>
-<span class="sd">    representation.</span>
-
-<span class="sd">    &gt;&gt;&gt; i, j = np.indices((2, 3), sparse=True)</span>
-<span class="sd">    &gt;&gt;&gt; i.shape</span>
-<span class="sd">    (2, 1)</span>
-<span class="sd">    &gt;&gt;&gt; j.shape</span>
-<span class="sd">    (1, 3)</span>
-<span class="sd">    &gt;&gt;&gt; i</span>
-<span class="sd">    array([[0],</span>
-<span class="sd">           [1]])</span>
-<span class="sd">    &gt;&gt;&gt; j</span>
-<span class="sd">    array([[0, 1, 2]])</span>
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `dtype` and `sparse` are supported only with default values.</span>
+<span class="sd">    Parameter `dimensions` is supported with len &lt;=2.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dimensions</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dimensions</span><span class="p">)</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dimensions</span><span class="p">)</span>
-    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">N</span>
-    <span class="k">if</span> <span class="n">sparse</span><span class="p">:</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dimensions</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">dimensions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">dimensions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">sparse</span><span class="p">:</span>
+        <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">N</span><span class="p">,)</span> <span class="o">+</span> <span class="n">dimensions</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dimensions</span><span class="p">):</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-            <span class="n">dim</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">dim</span><span class="p">,)</span> <span class="o">+</span> <span class="n">shape</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:])</span>
-        <span class="k">if</span> <span class="n">sparse</span><span class="p">:</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">+</span> <span class="p">(</span><span class="n">idx</span><span class="p">,)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
-    <span class="k">return</span> <span class="n">res</span></div>
+        <span class="k">return</span> <span class="n">dpnp_indices</span><span class="p">(</span><span class="n">dimensions</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">sparse</span><span class="p">)</span></div>
 
 
 

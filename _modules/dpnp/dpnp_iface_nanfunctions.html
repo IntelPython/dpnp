@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.13.1dev2+10.g78f19d45cc documentation</title>
+  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.13.1dev2+7.g8cb6e5d656 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=be7f34da"></script>
+        <script src="../../_static/documentation_options.js?v=31277708"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+10.g78f19d45cc
+                0.13.1dev2+7.g8cb6e5d656
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -142,8 +142,10 @@
     <span class="s2">&quot;nancumprod&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nancumsum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nanmax&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nanmean&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nanmin&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nanprod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nanstd&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nansum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nanvar&quot;</span><span class="p">,</span>
 <span class="p">]</span>
@@ -510,6 +512,125 @@
 
 
 
+<div class="viewcode-block" id="nanmean">
+<a class="viewcode-back" href="../../reference/generated/dpnp.nanmean.html#dpnp.nanmean">[docs]</a>
+<span class="k">def</span> <span class="nf">nanmean</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the arithmetic mean along the specified axis, ignoring NaNs.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.nanmean`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}:</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which the arithmetic means must be computed. If</span>
+<span class="sd">        a tuple of unique integers, the means are computed over multiple</span>
+<span class="sd">        axes. If ``None``, the mean is computed over the entire array.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">        Type to use in computing the mean. By default, if `a` has a</span>
+<span class="sd">        floating-point data type, the returned array will have</span>
+<span class="sd">        the same data type as `a`.</span>
+<span class="sd">        If `a` has a boolean or integral data type, the returned array</span>
+<span class="sd">        will have the default floating point data type for the device</span>
+<span class="sd">        where input array `a` is allocated.</span>
+<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have</span>
+<span class="sd">        the same shape as the expected output but the type (of the calculated</span>
+<span class="sd">        values) will be cast if necessary. Default: ``None``.</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">        as singleton dimensions, so that the returned array remains</span>
+<span class="sd">        compatible with the input array according to Array Broadcasting</span>
+<span class="sd">        rules. Otherwise, if ``False``, the reduced axes are not included in</span>
+<span class="sd">        the returned array. Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        An array containing the arithmetic means along the specified axis(axes).</span>
+<span class="sd">        If the input is a zero-size array, an array containing NaN values is returned.</span>
+<span class="sd">        In addition, NaN is returned for slices that contain only NaNs.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter `where` is only supported with its default value.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.average` : Weighted average.</span>
+<span class="sd">    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.var` : Compute the variance along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.nanvar` : Compute the variance along the specified axis,</span>
+<span class="sd">                while ignoring NaNs.</span>
+<span class="sd">    :obj:`dpnp.std` : Compute the standard deviation along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.nanstd` : Compute the standard deviation along the specified axis,</span>
+<span class="sd">                while ignoring NaNs.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, np.nan], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; np.nanmean(a)</span>
+<span class="sd">    array(2.6666666666666665)</span>
+<span class="sd">    &gt;&gt;&gt; np.nanmean(a, axis=0)</span>
+<span class="sd">    array([2., 4.])</span>
+<span class="sd">    &gt;&gt;&gt; np.nanmean(a, axis=1)</span>
+<span class="sd">    array([1., 3.5]) # may vary</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">arr</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+                <span class="n">arr</span><span class="p">,</span>
+                <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+                <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+                <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;If input is inexact, then dtype must be inexact.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;If input is inexact, then out must be inexact.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="n">cnt_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+            <span class="o">~</span><span class="n">mask</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">cnt_dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
+        <span class="p">)</span>
+        <span class="n">var_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
+        <span class="n">avg</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+            <span class="n">arr</span><span class="p">,</span>
+            <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">var_dtype</span><span class="p">,</span>
+            <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+            <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+            <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">avg</span><span class="p">,</span> <span class="n">cnt</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">avg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">avg</span></div>
+
+
+
 <div class="viewcode-block" id="nanmin">
 <a class="viewcode-back" href="../../reference/generated/dpnp.nanmin.html#dpnp.nanmin">[docs]</a>
 <span class="k">def</span> <span class="nf">nanmin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -658,8 +779,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">a</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-
+    <span class="n">a</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
@@ -674,36 +794,227 @@
 
 <div class="viewcode-block" id="nansum">
 <a class="viewcode-back" href="../../reference/generated/dpnp.nansum.html#dpnp.nansum">[docs]</a>
-<span class="k">def</span> <span class="nf">nansum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">nansum</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">initial</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate sum() function treating &#39;Not a Numbers&#39; (NaN) as zero.</span>
+<span class="sd">    Return the sum of array elements over a given axis treating Not a Numbers (NaNs) as zero.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.nansum`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}:</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which sums must be computed. If a tuple</span>
+<span class="sd">        of unique integers, sums are computed over multiple axes.</span>
+<span class="sd">        If ``None``, the sum is computed over the entire array.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">        Data type of the returned array. If ``None``, the default data</span>
+<span class="sd">        type is inferred from the &quot;kind&quot; of the input array data type.</span>
+<span class="sd">            * If `a` has a real-valued floating-point data type,</span>
+<span class="sd">                the returned array will have the default real-valued</span>
+<span class="sd">                floating-point data type for the device where input</span>
+<span class="sd">                array `a` is allocated.</span>
+<span class="sd">            * If `a` has signed integral data type, the returned array</span>
+<span class="sd">                will have the default signed integral type for the device</span>
+<span class="sd">                where input array `a` is allocated.</span>
+<span class="sd">            * If `a` has unsigned integral data type, the returned array</span>
+<span class="sd">                will have the default unsigned integral type for the device</span>
+<span class="sd">                where input array `a` is allocated.</span>
+<span class="sd">            * If `a` has a complex-valued floating-point data type,</span>
+<span class="sd">                the returned array will have the default complex-valued</span>
+<span class="sd">                floating-pointer data type for the device where input</span>
+<span class="sd">                array `a` is allocated.</span>
+<span class="sd">            * If `a` has a boolean data type, the returned array will</span>
+<span class="sd">                have the default signed integral type for the device</span>
+<span class="sd">                where input array `a` is allocated.</span>
+<span class="sd">        If the data type (either specified or resolved) differs from the</span>
+<span class="sd">        data type of `a`, the input array elements are cast to the</span>
+<span class="sd">        specified data type before computing the sum.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have</span>
+<span class="sd">        the same shape as the expected output but the type (of the calculated</span>
+<span class="sd">        values) will be cast if necessary. Default: ``None``.</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">        as singleton dimensions, so that the returned array remains</span>
+<span class="sd">        compatible with the input array according to Array Broadcasting</span>
+<span class="sd">        rules. Otherwise, if ``False``, the reduced axes are not included in</span>
+<span class="sd">        the returned array. Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        An array containing the sums. If the sum is computed over the</span>
+<span class="sd">        entire array, a zero-dimensional array is returned. The returned</span>
+<span class="sd">        array has the data type as described in the `dtype` parameter</span>
+<span class="sd">        description above. Zero is returned for slices that are all-NaN</span>
+<span class="sd">        or empty.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Parameters `initial` and `where` are supported with their default values.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.sum` : Sum across array propagating NaNs.</span>
+<span class="sd">    :obj:`dpnp.isnan` : Show which elements are NaN.</span>
+<span class="sd">    :obj:`dpnp.isfinite` : Show which elements are not NaN or +/-inf.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If both positive and negative infinity are present, the sum will be Not</span>
+<span class="sd">    A Number (NaN).</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.nansum(np.array([1, 2]))</span>
-<span class="sd">    3</span>
-<span class="sd">    &gt;&gt;&gt; np.nansum(np.array([[1, 2], [3, 4]]))</span>
-<span class="sd">    10</span>
+<span class="sd">    &gt;&gt;&gt; np.nansum(np.array([1]))</span>
+<span class="sd">    array(1)</span>
+<span class="sd">    &gt;&gt;&gt; np.nansum(np.array([1, np.nan]))</span>
+<span class="sd">    array(1.)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 1], [1, np.nan]])</span>
+<span class="sd">    &gt;&gt;&gt; np.nansum(a)</span>
+<span class="sd">    array(3.)</span>
+<span class="sd">    &gt;&gt;&gt; np.nansum(a, axis=0)</span>
+<span class="sd">    array([2.,  1.])</span>
+<span class="sd">    &gt;&gt;&gt; np.nansum(np.array([1, np.nan, np.inf]))</span>
+<span class="sd">    array(inf)</span>
+<span class="sd">    &gt;&gt;&gt; np.nansum(np.array([1, np.nan, np.NINF]))</span>
+<span class="sd">    array(-inf)</span>
+<span class="sd">    &gt;&gt;&gt; np.nansum(np.array([1, np.nan, np.inf, -np.inf])) # both +/- infinity present</span>
+<span class="sd">    array(nan)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_nansum</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+        <span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nansum</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="nanstd">
+<a class="viewcode-back" href="../../reference/generated/dpnp.nanstd.html#dpnp.nanstd">[docs]</a>
+<span class="k">def</span> <span class="nf">nanstd</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the standard deviation along the specified axis, while ignoring NaNs.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.nanstd`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}:</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which the standard deviations must be computed.</span>
+<span class="sd">        If a tuple of unique integers is given, the standard deviations</span>
+<span class="sd">        are computed over multiple axes. If ``None``, the standard deviation</span>
+<span class="sd">        is computed over the entire array.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">        Type to use in computing the standard deviation. By default,</span>
+<span class="sd">        if `a` has a floating-point data type, the returned array</span>
+<span class="sd">        will have the same data type as `a`.</span>
+<span class="sd">        If `a` has a boolean or integral data type, the returned array</span>
+<span class="sd">        will have the default floating point data type for the device</span>
+<span class="sd">        where input array `a` is allocated.</span>
+<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have</span>
+<span class="sd">        the same shape as the expected output but the type (of the calculated</span>
+<span class="sd">        values) will be cast if necessary.</span>
+<span class="sd">    ddof : {int, float}, optional</span>
+<span class="sd">        Means Delta Degrees of Freedom. The divisor used in calculations</span>
+<span class="sd">        is ``N - ddof``, where ``N`` the number of non-NaN elements.</span>
+<span class="sd">        Default: `0.0`.</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">        as singleton dimensions, so that the returned array remains</span>
+<span class="sd">        compatible with the input array according to Array Broadcasting</span>
+<span class="sd">        rules. Otherwise, if ``False``, the reduced axes are not included in</span>
+<span class="sd">        the returned array. Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        An array containing the standard deviations. If the standard</span>
+<span class="sd">        deviation was computed over the entire array, a zero-dimensional</span>
+<span class="sd">        array is returned. If ddof is &gt;= the number of non-NaN elements</span>
+<span class="sd">        in a slice or the slice contains only NaNs, then the result for</span>
+<span class="sd">        that slice is NaN.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `where` is only supported with its default value.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Note that, for complex numbers, the absolute value is taken before squaring,</span>
+<span class="sd">    so that the result is always real and nonnegative.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.var` : Compute the variance along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.std` : Compute the standard deviation along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.nanmean` : Compute the arithmetic mean along the specified axis, ignoring NaNs.</span>
+<span class="sd">    :obj:`dpnp.nanvar` : Compute the variance along the specified axis, while ignoring NaNs.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, np.nan], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; np.nanstd(a)</span>
+<span class="sd">    array(1.247219128924647)</span>
+<span class="sd">    &gt;&gt;&gt; np.nanstd(a, axis=0)</span>
+<span class="sd">    array([1.,  0.])</span>
+<span class="sd">    &gt;&gt;&gt; np.nanstd(a, axis=1)</span>
+<span class="sd">    array([0.,  0.5])  # may vary</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ddof</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;An integer or float is required, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ddof</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">nanvar</span><span class="p">(</span>
+            <span class="n">a</span><span class="p">,</span>
+            <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+            <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span>
+            <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+            <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">res</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
 
 
 
@@ -725,19 +1036,21 @@
 <span class="sd">        axis or axes along which the variances must be computed. If a tuple</span>
 <span class="sd">        of unique integers is given, the variances are computed over multiple axes.</span>
 <span class="sd">        If ``None``, the variance is computed over the entire array.</span>
-<span class="sd">        Default: `None`.</span>
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        Type to use in computing the standard deviation. For arrays of</span>
-<span class="sd">        integer type the default real-valued floating-point data type is used,</span>
-<span class="sd">        for arrays of float types it is the same as the array type.</span>
+<span class="sd">        Type to use in computing the variance. By default, if `a` has a</span>
+<span class="sd">        floating-point data type, the returned array will have</span>
+<span class="sd">        the same data type as `a`.</span>
+<span class="sd">        If `a` has a boolean or integral data type, the returned array</span>
+<span class="sd">        will have the default floating point data type for the device</span>
+<span class="sd">        where input array `a` is allocated.</span>
 <span class="sd">    out : {dpnp_array, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        the same shape as the expected output but the type (of the calculated</span>
 <span class="sd">        values) will be cast if necessary.</span>
 <span class="sd">    ddof : {int, float}, optional</span>
 <span class="sd">        Means Delta Degrees of Freedom.  The divisor used in calculations</span>
-<span class="sd">        is ``N - ddof``, where ``N`` corresponds to the total</span>
-<span class="sd">        number of elements over which the variance is calculated.</span>
+<span class="sd">        is ``N - ddof``, where ``N`` represents the number of non-NaN elements.</span>
 <span class="sd">        Default: `0.0`.</span>
 <span class="sd">    keepdims : bool, optional</span>
 <span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
@@ -749,20 +1062,20 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        an array containing the variances. If the variance was computed</span>
+<span class="sd">        An array containing the variances. If the variance was computed</span>
 <span class="sd">        over the entire array, a zero-dimensional array is returned.</span>
-
-<span class="sd">        If `a` has a real-valued floating-point data type, the returned</span>
-<span class="sd">        array will have the same data type as `a`.</span>
-<span class="sd">        If `a` has a boolean or integral data type, the returned array</span>
-<span class="sd">        will have the default floating point data type for the device</span>
-<span class="sd">        where input array `a` is allocated.</span>
+<span class="sd">        If ddof is &gt;= the number of non-NaN elements in a slice or the</span>
+<span class="sd">        slice contains only NaNs, then the result for that slice is NaN.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters `where` is only supported with its default value.</span>
 <span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
-<span class="sd">    Input array data types are limited by real valued data types.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Note that, for complex numbers, the absolute value is taken before squaring,</span>
+<span class="sd">    so that the result is always real and nonnegative.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -786,7 +1099,6 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
@@ -810,7 +1122,7 @@
 
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                     <span class="s2">&quot;If input is inexact, then dtype must be inexact.&quot;</span>
                 <span class="p">)</span>
@@ -826,9 +1138,7 @@
         <span class="n">cnt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
             <span class="o">~</span><span class="n">mask</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">var_dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
         <span class="p">)</span>
-        <span class="n">avg</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
-            <span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">var_dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
-        <span class="p">)</span>
+        <span class="n">avg</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
         <span class="n">avg</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">avg</span><span class="p">,</span> <span class="n">cnt</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">avg</span><span class="p">)</span>
 
         <span class="c1"># Compute squared deviation from mean.</span>
