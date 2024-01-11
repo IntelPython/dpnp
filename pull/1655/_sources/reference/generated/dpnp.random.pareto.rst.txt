@@ -1,0 +1,6 @@
+﻿dpnp.random.pareto
+==================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: pareto
