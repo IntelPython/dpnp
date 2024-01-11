@@ -574,7 +574,7 @@ class TestSvd:
             None,
         ):
             tol = 1e-05
-        return tol
+        self._tol = tol
 
     def check_types_shapes(
         self, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt=True
@@ -601,8 +601,9 @@ class TestSvd:
     # Additionally checks for equality of singular values
     # between dpnp and numpy decompositions
     def check_decomposition(
-        self, dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt, tol
+        self, dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
     ):
+        tol = self._tol
         if compute_vt:
             dpnp_diag_s = inp.zeros_like(dp_a, dtype=dp_s.dtype)
             for i in range(min(dp_a.shape[-2], dp_a.shape[-1])):
@@ -653,9 +654,9 @@ class TestSvd:
         dp_u, dp_s, dp_vt = inp.linalg.svd(dp_a)
 
         self.check_types_shapes(dp_u, dp_s, dp_vt, np_u, np_s, np_vt)
-        tol = self.get_tol(dtype)
+        self.get_tol(dtype)
         self.check_decomposition(
-            dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, True, tol
+            dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, True
         )
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
@@ -687,9 +688,11 @@ class TestSvd:
         self.check_types_shapes(
             dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
         )
-        tol = self.get_tol(dtype)
+
+        self.get_tol(dtype)
+
         self.check_decomposition(
-            dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt, tol
+            dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
         )
 
     def test_svd_errors(self):
