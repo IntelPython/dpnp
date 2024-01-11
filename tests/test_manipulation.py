@@ -8,6 +8,7 @@ from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
+    has_support_aspect64,
 )
 
 testdata = []
@@ -72,10 +73,13 @@ def test_repeat(arr):
 
 
 def test_result_type():
-    X = [dpnp.ones((2), dtype=dpnp.int64), dpnp.int32, "float16"]
-    X_np = [numpy.ones((2), dtype=numpy.int64), numpy.int32, "float16"]
+    X = [dpnp.ones((2), dtype=dpnp.int64), dpnp.int32, "float32"]
+    X_np = [numpy.ones((2), dtype=numpy.int64), numpy.int32, "float32"]
 
-    assert dpnp.result_type(*X) == numpy.result_type(*X_np)
+    if has_support_aspect64():
+        assert dpnp.result_type(*X) == numpy.result_type(*X_np)
+    else:
+        assert dpnp.result_type(*X) == dpnp.default_float_type(X[0].device)
 
 
 def test_result_type_only_dtypes():
