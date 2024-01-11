@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.13.1dev2+5.gb7caa870cc documentation</title>
+  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.13.1dev2+6.ge56966f8ce documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=a03d1d26"></script>
+        <script src="../../_static/documentation_options.js?v=0955f577"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+5.gb7caa870cc
+                0.13.1dev2+6.ge56966f8ce
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -564,7 +564,11 @@
 <span class="sd">    :obj:`dpnp.average` : Weighted average.</span>
 <span class="sd">    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.</span>
 <span class="sd">    :obj:`dpnp.var` : Compute the variance along the specified axis.</span>
-<span class="sd">    :obj:`dpnp.nanvar` : Compute the variance along the specified axis, while ignoring NaNs.</span>
+<span class="sd">    :obj:`dpnp.nanvar` : Compute the variance along the specified axis,</span>
+<span class="sd">                while ignoring NaNs.</span>
+<span class="sd">    :obj:`dpnp.std` : Compute the standard deviation along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.nanstd` : Compute the standard deviation along the specified axis,</span>
+<span class="sd">                while ignoring NaNs.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -775,7 +779,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">a</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
@@ -896,7 +900,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">a</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>

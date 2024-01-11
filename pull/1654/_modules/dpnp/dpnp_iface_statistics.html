@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.13.1dev2+5.gb7caa870cc documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.13.1dev2+6.ge56966f8ce documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=a03d1d26"></script>
+        <script src="../../_static/documentation_options.js?v=0955f577"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+5.gb7caa870cc
+                0.13.1dev2+6.ge56966f8ce
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -128,7 +128,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
@@ -286,7 +285,7 @@
 <span class="sd">        Return the average along the specified axis. When `returned` is ``True``,</span>
 <span class="sd">        return a tuple with the average as the first element and the sum of the</span>
 <span class="sd">        weights as the second element. `sum_of_weights` is of the same type as</span>
-<span class="sd">        `out`. The result dtype follows a genereal pattern. If `weights` is</span>
+<span class="sd">        `out`. The result dtype follows a general pattern. If `weights` is</span>
 <span class="sd">        ``None``, the result dtype will be that of `a` , or default floating point</span>
 <span class="sd">        data type for the device where input array `a` is allocated. Otherwise,</span>
 <span class="sd">        if `weights` is not ``None`` and `a` is non-integral, the result type</span>
@@ -298,6 +297,7 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.sum` : Sum of array elements over a given axis.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -338,26 +338,21 @@
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">avg</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
-        <span class="n">scl</span> <span class="o">=</span> <span class="n">avg</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="n">avg</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-        <span class="n">scl</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">scl</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+        <span class="n">scl</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span>
+            <span class="n">avg</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="n">avg</span><span class="o">.</span><span class="n">size</span><span class="p">),</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
             <span class="n">wgt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span>
                 <span class="n">weights</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">weights</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
-                    <span class="s2">&quot;from input arguments.&quot;</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">wgt</span> <span class="o">=</span> <span class="n">weights</span>
+            <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">])</span>
+            <span class="n">wgt</span> <span class="o">=</span> <span class="n">weights</span>
 
-        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
             <span class="n">default_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
             <span class="n">result_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">wgt</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">default_dtype</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
