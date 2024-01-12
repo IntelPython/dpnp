@@ -1434,6 +1434,17 @@ def test_diff_scalar_append(device, kwargs):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_clip(device):
+    x = dpnp.arange(10, device=device)
+    y = dpnp.clip(x, 3, 7)
+    assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
+
+
 @pytest.mark.parametrize("func", ["take", "take_along_axis"])
 @pytest.mark.parametrize(
     "device",
@@ -1481,11 +1492,43 @@ def test_solve(device):
 
 
 @pytest.mark.parametrize(
+    "shape, is_empty",
+    [
+        ((2, 2), False),
+        ((3, 2, 2), False),
+        ((0, 0), True),
+        ((0, 2, 2), True),
+    ],
+    ids=[
+        "(2, 2)",
+        "(3, 2, 2)",
+        "(0, 0)",
+        "(0, 2, 2)",
+    ],
+)
+@pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_clip(device):
-    x = dpnp.arange(10, device=device)
-    y = dpnp.clip(x, 3, 7)
-    assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
+def test_slogdet(shape, is_empty, device):
+    if is_empty:
+        numpy_x = numpy.empty(shape, dtype=dpnp.default_float_type(device))
+    else:
+        count_elem = numpy.prod(shape)
+        numpy_x = numpy.arange(
+            1, count_elem + 1, dtype=dpnp.default_float_type(device)
+        ).reshape(shape)
+
+    dpnp_x = dpnp.array(numpy_x, device=device)
+
+    sign_result, logdet_result = dpnp.linalg.slogdet(dpnp_x)
+    sign_expected, logdet_expected = numpy.linalg.slogdet(numpy_x)
+    assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
+    assert_allclose(sign_expected, sign_result)
+
+    sign_queue = sign_result.sycl_queue
+    logdet_queue = logdet_result.sycl_queue
+
+    assert_sycl_queue_equal(sign_queue, dpnp_x.sycl_queue)
+    assert_sycl_queue_equal(logdet_queue, dpnp_x.sycl_queue)
