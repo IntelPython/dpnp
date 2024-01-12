@@ -28,7 +28,7 @@ import dpnp
 # -- Project information -----------------------------------------------------
 
 project = "Data Parallel Extension for NumPy"
-copyright = "2020-2023, Intel Corporation"
+copyright = "2020-2024, Intel Corporation"
 author = "Intel"
 
 version = dpnp.__version__.strip(".dirty")
