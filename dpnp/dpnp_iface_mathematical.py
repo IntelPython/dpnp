@@ -2643,7 +2643,7 @@ def subtract(
 
 
 def sum(
-    x,
+    a,
     /,
     *,
     axis=None,
@@ -2658,31 +2658,86 @@ def sum(
 
     For full documentation refer to :obj:`numpy.sum`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}:
+        Input array.
+    axis : int or tuple of ints, optional
+        Axis or axes along which sums must be computed. If a tuple
+        of unique integers, sums are computed over multiple axes.
+        If ``None``, the sum is computed over the entire array.
+        Default: ``None``.
+    dtype : dtype, optional
+        Data type of the returned array. If ``None``, the default data
+        type is inferred from the "kind" of the input array data type.
+            * If `a` has a real-valued floating-point data type,
+                the returned array will have the default real-valued
+                floating-point data type for the device where input
+                array `a` is allocated.
+            * If `a` has signed integral data type, the returned array
+                will have the default signed integral type for the device
+                where input array `a` is allocated.
+            * If `a` has unsigned integral data type, the returned array
+                will have the default unsigned integral type for the device
+                where input array `a` is allocated.
+            * If `a` has a complex-valued floating-point data type,
+                the returned array will have the default complex-valued
+                floating-pointer data type for the device where input
+                array `a` is allocated.
+            * If `a` has a boolean data type, the returned array will
+                have the default signed integral type for the device
+                where input array `a` is allocated.
+        If the data type (either specified or resolved) differs from the
+        data type of `a`, the input array elements are cast to the
+        specified data type before computing the sum.
+        Default: ``None``.
+    out : {dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must
+        have the same shape as the expected output, but the type of
+        the output values will be cast if necessary.
+        Default: ``None``.
+    keepdims : bool, optional
+        If ``True``, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input array according to Array Broadcasting
+        rules. Otherwise, if ``False``, the reduced axes are not included in
+        the returned array. Default: ``False``.
+
     Returns
     -------
     out : dpnp.ndarray
-        an array containing the sums. If the sum was computed over the
+        An array containing the sums. If the sum is computed over the
         entire array, a zero-dimensional array is returned. The returned
         array has the data type as described in the `dtype` parameter
-        of the Python Array API standard for the `sum` function.
+        description above.
 
     Limitations
     -----------
-    Parameters `x` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `initial` and `where` are supported with their default values.
     Otherwise ``NotImplementedError`` exception will be raised.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.sum` : Equivalent method.
+    :obj:`dpnp.cumsum` : Cumulative sum of array elements.
+    :obj:`dpnp.trapz` : Integration of array values using the composite trapezoidal rule.
+    :obj:`dpnp.mean` : Compute the arithmetic mean.
+    :obj:`dpnp.average` : Compute the weighted average.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> np.sum(np.array([1, 2, 3, 4, 5]))
-    array(15)
-    >>> np.sum(np.array(5))
-    array(5)
-    >>> result = np.sum(np.array([[0, 1], [0, 5]]), axis=0)
+    >>> np.sum(np.array([0.5, 1.5]))
+    array(2.)
+    >>> np.sum(np.array([0.5, 0.7, 0.2, 1.5]), dtype=np.int32)
+    array(1)
+    >>> a = np.array([[0, 1], [0, 5]])
+    >>> np.sum(a)
+    array(6)
+    >>> np.sum(a, axis=0)
     array([0, 6])
+    >>> np.sum(a, axis=1)
+    array([1, 5])
 
     """
 
@@ -2690,7 +2745,7 @@ def sum(
         if not isinstance(axis, (tuple, list)):
             axis = (axis,)
 
-        axis = normalize_axis_tuple(axis, x.ndim, "axis")
+        axis = normalize_axis_tuple(axis, a.ndim, "axis")
 
     if initial != 0:
         raise NotImplementedError(
@@ -2702,20 +2757,20 @@ def sum(
         )
     else:
         if (
-            len(x.shape) == 2
-            and x.itemsize == 4
+            len(a.shape) == 2
+            and a.itemsize == 4
             and (
                 (
                     axis == (0,)
-                    and x.flags.c_contiguous
-                    and 32 <= x.shape[1] <= 1024
-                    and x.shape[0] > x.shape[1]
+                    and a.flags.c_contiguous
+                    and 32 <= a.shape[1] <= 1024
+                    and a.shape[0] > a.shape[1]
                 )
                 or (
                     axis == (1,)
-                    and x.flags.f_contiguous
-                    and 32 <= x.shape[0] <= 1024
-                    and x.shape[1] > x.shape[0]
+                    and a.flags.f_contiguous
+                    and 32 <= a.shape[0] <= 1024
+                    and a.shape[1] > a.shape[0]
                 )
             )
         ):
@@ -2723,7 +2778,7 @@ def sum(
 
             from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
 
-            input = x
+            input = a
             if axis == (1,):
                 input = input.T
             input = dpnp.get_usm_ndarray(input)
@@ -2755,7 +2810,7 @@ def sum(
                 return result
 
         y = dpt.sum(
-            dpnp.get_usm_ndarray(x), axis=axis, dtype=dtype, keepdims=keepdims
+            dpnp.get_usm_ndarray(a), axis=axis, dtype=dtype, keepdims=keepdims
         )
         result = dpnp_array._create_from_usm_ndarray(y)
         return dpnp.get_result_array(result, out, casting="same_kind")

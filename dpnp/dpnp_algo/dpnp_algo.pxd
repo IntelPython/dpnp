@@ -185,8 +185,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_SEARCHSORTED_EXT
         DPNP_FN_SORT
         DPNP_FN_SORT_EXT
-        DPNP_FN_SUM
-        DPNP_FN_SUM_EXT
         DPNP_FN_SVD
         DPNP_FN_SVD_EXT
         DPNP_FN_TRACE
@@ -284,16 +282,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_strides_t)(c_dpctl.DPCTLSyclQu
                                                              const long * ,
                                                              const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void *, void * , void * , size_t, size_t, size_t)
-ctypedef c_dpctl.DPCTLSyclEventRef(*dpnp_reduction_c_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                        void *,
-                                                        const void * ,
-                                                        const shape_elem_type*,
-                                                        const size_t,
-                                                        const shape_elem_type*,
-                                                        const size_t,
-                                                        const void * ,
-                                                        const long*,
-                                                        const c_dpctl.DPCTLEventVectorRef)
 
 
 """
