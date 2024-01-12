@@ -2334,7 +2334,12 @@ class TestNanSum:
 
         expected = numpy.nansum(a)
         result = dpnp.nansum(ia)
-        assert_allclose(result, expected, rtol=1e-06)
+
+        # use only type kinds check when dpnp handles complex64 arrays
+        # since `dpnp.sum()` and `numpy.sum()` return different dtypes
+        assert_dtype_allclose(
+            result, expected, check_only_type_kind=(dtype == dpnp.complex64)
+        )
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("axis", [0, 1])
