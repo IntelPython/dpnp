@@ -331,6 +331,7 @@ def test_meshgrid(device_x, device_y):
 @pytest.mark.parametrize(
     "func,data",
     [
+        pytest.param("average", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("abs", [-1.2, 1.2]),
         pytest.param("arccos", [-0.5, 0.0, 0.5]),
         pytest.param("arccosh", [1.5, 3.5, 5.0]),
@@ -374,8 +375,10 @@ def test_meshgrid(device_x, device_y):
         pytest.param("nancumprod", [1.0, dpnp.nan]),
         pytest.param("nancumsum", [1.0, dpnp.nan]),
         pytest.param("nanmax", [1.0, 2.0, 4.0, dpnp.nan]),
+        pytest.param("nanmean", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("nanmin", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("nanprod", [1.0, dpnp.nan]),
+        pytest.param("nanstd", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("nansum", [1.0, dpnp.nan]),
         pytest.param("nanvar", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("negative", [1.0, 0.0, -1.0]),

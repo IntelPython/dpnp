@@ -36,7 +36,6 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_average",
     "dpnp_correlate",
     "dpnp_median",
 ]
@@ -47,15 +46,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*custom_statistic_1in_1out_func_ptr_t)(c_dpct
                                                                           void *, void * , shape_elem_type * , size_t,
                                                                           shape_elem_type * , size_t,
                                                                           const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef dpnp_average(utils.dpnp_descriptor x1):
-    array_sum = dpnp_sum(x1).get_pyobj()
-
-    """ Numpy interface inconsistency """
-    return_type = dpnp.float32 if (x1.dtype == dpnp.float32) else dpnp.float64
-
-    return (return_type(array_sum / x1.size))
 
 
 cpdef utils.dpnp_descriptor dpnp_correlate(utils.dpnp_descriptor x1, utils.dpnp_descriptor x2):
