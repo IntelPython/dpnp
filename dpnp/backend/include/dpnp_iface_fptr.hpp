@@ -374,29 +374,28 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SUBTRACT_EXT, /**< Used in numpy.subtract() impl, requires extra
                              parameters */
     DPNP_FN_SUM,          /**< Used in numpy.sum() impl  */
-    DPNP_FN_SUM_EXT, /**< Used in numpy.sum() impl, requires extra parameters */
-    DPNP_FN_SVD,     /**< Used in numpy.linalg.svd() impl  */
-    DPNP_FN_SVD_EXT, /**< Used in numpy.linalg.svd() impl, requires extra
-                        parameters */
-    DPNP_FN_TAKE,    /**< Used in numpy.take() impl  */
-    DPNP_FN_TAN,     /**< Used in numpy.tan() impl  */
-    DPNP_FN_TANH,    /**< Used in numpy.tanh() impl  */
-    DPNP_FN_TRANSPOSE,  /**< Used in numpy.transpose() impl  */
-    DPNP_FN_TRACE,      /**< Used in numpy.trace() impl  */
-    DPNP_FN_TRACE_EXT,  /**< Used in numpy.trace() impl, requires extra
-                           parameters */
-    DPNP_FN_TRAPZ,      /**< Used in numpy.trapz() impl  */
-    DPNP_FN_TRAPZ_EXT,  /**< Used in numpy.trapz() impl, requires extra
-                           parameters */
-    DPNP_FN_TRI,        /**< Used in numpy.tri() impl  */
-    DPNP_FN_TRIL,       /**< Used in numpy.tril() impl  */
-    DPNP_FN_TRIU,       /**< Used in numpy.triu() impl  */
-    DPNP_FN_TRUNC,      /**< Used in numpy.trunc() impl  */
-    DPNP_FN_VANDER,     /**< Used in numpy.vander() impl  */
-    DPNP_FN_VAR,        /**< Used in numpy.var() impl  */
-    DPNP_FN_ZEROS,      /**< Used in numpy.zeros() impl */
-    DPNP_FN_ZEROS_LIKE, /**< Used in numpy.zeros_like() impl */
-    DPNP_FN_LAST,       /**< The latest element of the enumeration */
+    DPNP_FN_SVD,          /**< Used in numpy.linalg.svd() impl  */
+    DPNP_FN_SVD_EXT,      /**< Used in numpy.linalg.svd() impl, requires extra
+                             parameters */
+    DPNP_FN_TAKE,         /**< Used in numpy.take() impl  */
+    DPNP_FN_TAN,          /**< Used in numpy.tan() impl  */
+    DPNP_FN_TANH,         /**< Used in numpy.tanh() impl  */
+    DPNP_FN_TRANSPOSE,    /**< Used in numpy.transpose() impl  */
+    DPNP_FN_TRACE,        /**< Used in numpy.trace() impl  */
+    DPNP_FN_TRACE_EXT,    /**< Used in numpy.trace() impl, requires extra
+                             parameters */
+    DPNP_FN_TRAPZ,        /**< Used in numpy.trapz() impl  */
+    DPNP_FN_TRAPZ_EXT,    /**< Used in numpy.trapz() impl, requires extra
+                             parameters */
+    DPNP_FN_TRI,          /**< Used in numpy.tri() impl  */
+    DPNP_FN_TRIL,         /**< Used in numpy.tril() impl  */
+    DPNP_FN_TRIU,         /**< Used in numpy.triu() impl  */
+    DPNP_FN_TRUNC,        /**< Used in numpy.trunc() impl  */
+    DPNP_FN_VANDER,       /**< Used in numpy.vander() impl  */
+    DPNP_FN_VAR,          /**< Used in numpy.var() impl  */
+    DPNP_FN_ZEROS,        /**< Used in numpy.zeros() impl */
+    DPNP_FN_ZEROS_LIKE,   /**< Used in numpy.zeros_like() impl */
+    DPNP_FN_LAST,         /**< The latest element of the enumeration */
 };
 
 /**
