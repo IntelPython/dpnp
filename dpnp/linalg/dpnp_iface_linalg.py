@@ -50,7 +50,9 @@ from dpnp.linalg.dpnp_algo_linalg import *
 from .dpnp_utils_linalg import (
     check_stacked_2d,
     check_stacked_square,
+    dpnp_det,
     dpnp_eigh,
+    dpnp_slogdet,
     dpnp_solve,
 )
 
@@ -69,6 +71,7 @@ __all__ = [
     "qr",
     "solve",
     "svd",
+    "slogdet",
 ]
 
 
@@ -148,32 +151,50 @@ def cond(input, p=None):
     return call_origin(numpy.linalg.cond, input, p)
 
 
-def det(input):
+def det(a):
     """
     Compute the determinant of an array.
 
+    For full documentation refer to :obj:`numpy.linalg.det`.
+
     Parameters
     ----------
-    input : (..., M, M) array_like
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         Input array to compute determinants for.
 
     Returns
     -------
-    det : (...) array_like
-        Determinant of `input`.
+    det : (...) dpnp.ndarray
+        Determinant of `a`.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.slogdet` : Returns sign and logarithm of the determinant of an array.
+
+    Examples
+    --------
+    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 4]])
+    >>> dp.linalg.det(a)
+    array(-2.)
+
+    Computing determinants for a stack of matrices:
+
+    >>> a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])
+    >>> a.shape
+    (3, 2, 2)
+    >>> dp.linalg.det(a)
+    array([-2., -3., -8.])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.ndim < 2:
-            pass
-        elif x1_desc.shape[-1] == x1_desc.shape[-2]:
-            result_obj = dpnp_det(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-            return result
-
-    return call_origin(numpy.linalg.det, input)
+    return dpnp_det(a)
 
 
 def eig(x1):
@@ -633,3 +654,59 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     return call_origin(
         numpy.linalg.svd, x1, full_matrices, compute_uv, hermitian
     )
+
+
+def slogdet(a):
+    """
+    Compute the sign and (natural) logarithm of the determinant of an array.
+
+    For full documentation refer to :obj:`numpy.linalg.slogdet`.
+
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Input array, has to be a square 2-D array.
+
+    Returns
+    -------
+    sign : (...) dpnp.ndarray
+        A number representing the sign of the determinant. For a real matrix,
+        this is 1, 0, or -1. For a complex matrix, this is a complex number
+        with absolute value 1 (i.e., it is on the unit circle), or else 0.
+    logabsdet : (...) dpnp.ndarray
+        The natural log of the absolute value of the determinant.
+
+    See Also
+    --------
+    :obj:`dpnp.det` : Returns the determinant of an array.
+
+    Examples
+    --------
+    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 4]])
+    >>> (sign, logabsdet) = dp.linalg.slogdet(a)
+    >>> (sign, logabsdet)
+    (array(-1.), array(0.69314718))
+    >>> sign * dp.exp(logabsdet)
+    array(-2.)
+
+    Computing log-determinants for a stack of matrices:
+
+    >>> a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])
+    >>> a.shape
+    (3, 2, 2)
+    >>> sign, logabsdet = dp.linalg.slogdet(a)
+    >>> (sign, logabsdet)
+    (array([-1., -1., -1.]), array([0.69314718, 1.09861229, 2.07944154]))
+    >>> sign * dp.exp(logabsdet)
+    array([-2., -3., -8.])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
+
+    return dpnp_slogdet(a)
