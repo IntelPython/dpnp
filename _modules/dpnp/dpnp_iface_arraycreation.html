@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.13.1dev1+31.gb86e653700 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.13.1dev2+26.gff0004f73e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=601d8725"></script>
+        <script src="../../_static/documentation_options.js?v=6970072f"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+31.gb86e653700
+                0.13.1dev2+26.gff0004f73e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -142,7 +142,6 @@
     <span class="n">dpnp_geomspace</span><span class="p">,</span>
     <span class="n">dpnp_linspace</span><span class="p">,</span>
     <span class="n">dpnp_logspace</span><span class="p">,</span>
-    <span class="n">dpnp_nd_grid</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -1618,24 +1617,6 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.mgrid`.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
-<span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
-<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
-<span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : one dpnp.ndarray or tuple of dpnp.ndarray</span>
-<span class="sd">        Returns one array of grid indices, grid.shape = (len(dimensions),) + tuple(dimensions).</span>
-
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
@@ -1650,31 +1631,13 @@
 <span class="sd">            [0, 1, 2, 3, 4],</span>
 <span class="sd">            [0, 1, 2, 3, 4],</span>
 <span class="sd">            [0, 1, 2, 3, 4]]])</span>
-
-<span class="sd">    &gt;&gt;&gt; x = np.mgrid[-1:1:5j]</span>
-<span class="sd">    &gt;&gt;&gt; x</span>
+<span class="sd">    &gt;&gt;&gt; np.mgrid[-1:1:5j]</span>
 <span class="sd">    array([-1. , -0.5,  0. ,  0.5,  1. ])</span>
-<span class="sd">    &gt;&gt;&gt; x.usm_type</span>
-<span class="sd">    &#39;device&#39;</span>
-
-<span class="sd">    &gt;&gt;&gt; y = np.mgrid(usm_type=&quot;host&quot;)[-1:1:5j]</span>
-<span class="sd">    &gt;&gt;&gt; y</span>
-<span class="sd">    array([-1. , -0.5,  0. ,  0.5,  1. ])</span>
-<span class="sd">    &gt;&gt;&gt; x.usm_type</span>
-<span class="sd">    &#39;host&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_nd_grid</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="n">key</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_nd_grid</span><span class="p">(</span>
-            <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
 
 <span class="n">mgrid</span> <span class="o">=</span> <span class="n">MGridClass</span><span class="p">()</span>
@@ -1686,56 +1649,23 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.ogrid`.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
-<span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
-<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
-<span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : one dpnp.ndarray or tuple of dpnp.ndarray</span>
-<span class="sd">        Returns a tuple of arrays, with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)</span>
-<span class="sd">        with dimensions[i] in the ith place.</span>
-
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.ogrid[0:5, 0:5]</span>
+<span class="sd">    &gt;&gt;&gt; from numpy import ogrid</span>
+<span class="sd">    &gt;&gt;&gt; ogrid[-1:1:5j]</span>
+<span class="sd">    array([-1. , -0.5,  0. ,  0.5,  1. ])</span>
+<span class="sd">    &gt;&gt;&gt; ogrid[0:5,0:5]</span>
 <span class="sd">    [array([[0],</span>
 <span class="sd">            [1],</span>
 <span class="sd">            [2],</span>
 <span class="sd">            [3],</span>
 <span class="sd">            [4]]), array([[0, 1, 2, 3, 4]])]</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.ogrid[-1:1:5j]</span>
-<span class="sd">    &gt;&gt;&gt; x</span>
-<span class="sd">    array([-1. , -0.5,  0. ,  0.5,  1. ])</span>
-<span class="sd">    &gt;&gt;&gt; x.usm_type</span>
-<span class="sd">    &#39;device&#39;</span>
-
-<span class="sd">    &gt;&gt;&gt; y = np.ogrid(usm_type=&quot;host&quot;)[-1:1:5j]</span>
-<span class="sd">    &gt;&gt;&gt; y</span>
-<span class="sd">    array([-1. , -0.5,  0. ,  0.5,  1. ])</span>
-<span class="sd">    &gt;&gt;&gt; x.usm_type</span>
-<span class="sd">    &#39;host&#39;</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_nd_grid</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="n">key</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_nd_grid</span><span class="p">(</span>
-            <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ogrid</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
 
 <span class="n">ogrid</span> <span class="o">=</span> <span class="n">OGridClass</span><span class="p">()</span>
