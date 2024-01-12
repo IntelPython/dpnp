@@ -2,15 +2,13 @@ import numpy
 import pytest
 from numpy.testing import (
     assert_allclose,
-    assert_array_almost_equal,
-    assert_array_equal,
 )
 
 import dpnp
 
 from .helper import (
+    assert_dtype_allclose,
     get_all_dtypes,
-    get_complex_dtypes,
     get_float_dtypes,
     has_support_aspect16,
     has_support_aspect64,
@@ -93,65 +91,60 @@ def test_umaths(test_cases):
     assert_allclose(result, expected, rtol=1e-6)
 
 
-class TestSin:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
-    def test_sin(self, dtype):
-        np_array = numpy.arange(10, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.float64)
+def _get_numpy_arrays(func_name, dtype, range):
+    """
+    Return a sample array and an output array.
 
-        # DPNP
-        dp_out_dtype = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            dp_out_dtype = dpnp.float64
+    Create an appropriate array specified by `dtype` and `range` which is used as
+    an input for a function specified by `func_name` to obtain the output.
+    """
+    low = range[0]
+    high = range[1]
+    size = range[2]
+    if dtype == numpy.bool_:
+        np_array = numpy.arange(2, dtype=dtype)
+        result = getattr(numpy, func_name)(np_array)
+    elif dpnp.issubdtype(dtype, dpnp.complexfloating):
+        a = numpy.random.uniform(low=low, high=high, size=size)
+        b = numpy.random.uniform(low=low, high=high, size=size)
+        np_array = numpy.array(a + 1j * b, dtype=dtype)
+        result = getattr(numpy, func_name)(np_array)
+    else:
+        a = numpy.random.uniform(low=low, high=high, size=size)
+        np_array = numpy.array(a, dtype=dtype)
+        result = getattr(numpy, func_name)(np_array)
 
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        dp_array = dpnp.array(np_array, dtype=dtype)
-        result = dpnp.sin(dp_array, out=dp_out)
+    return np_array, result
 
-        # original
-        expected = numpy.sin(np_array, out=np_out)
 
-        precision = numpy.finfo(dtype=result.dtype).precision
-        assert_array_almost_equal(expected, result.asnumpy(), decimal=precision)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_sin_complex(self, dtype):
-        np_array = numpy.arange(10, 20, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.complex128)
-
-        # DPNP
-        dp_out_dtype = dpnp.complex64
+def _get_output_data_type(dtype):
+    """Return a data type specified by input `dtype` and device capabilities."""
+    if dpnp.issubdtype(dtype, dpnp.bool):
+        out_dtype = dpnp.float16 if has_support_aspect16() else dpnp.float32
+    elif dpnp.issubdtype(dtype, dpnp.complexfloating):
+        out_dtype = dpnp.complex64
         if has_support_aspect64() and dtype != dpnp.complex64:
-            dp_out_dtype = dpnp.complex128
+            out_dtype = dpnp.complex128
+    else:
+        out_dtype = dpnp.float32
+        if has_support_aspect64() and dtype != dpnp.float32:
+            out_dtype = dpnp.float64
 
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        dp_array = dpnp.array(np_array, dtype=dtype)
+    return out_dtype
+
+
+class TestSin:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_sin(self, dtype):
+        np_array, expected = _get_numpy_arrays("sin", dtype, [-5, 5, 10])
+
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.sin(dp_array, out=dp_out)
 
-        # original
-        expected = numpy.sin(np_array, out=np_out)
-
-        precision = numpy.finfo(dtype=result.dtype).precision
-        assert_array_almost_equal(expected, result.asnumpy(), decimal=precision)
-
-    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.skipif(
-        not has_support_aspect16(), reason="No fp16 support by device"
-    )
-    def test_sin_bool(self):
-        np_array = numpy.arange(2, dtype=numpy.bool_)
-        np_out = numpy.empty(2, dtype=numpy.float16)
-
-        # DPNP
-        dp_array = dpnp.array(np_array, dtype=np_array.dtype)
-        dp_out = dpnp.array(np_out, dtype=np_out.dtype)
-        result = dpnp.sin(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.sin(np_array, out=np_out)
-        assert_allclose(expected, result)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype",
@@ -177,64 +170,17 @@ class TestSin:
 
 
 class TestSinh:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_sinh(self, dtype):
-        np_array = numpy.arange(10, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.float64)
+        np_array, expected = _get_numpy_arrays("sinh", dtype, [-5, 5, 10])
 
-        # DPNP
-        dp_out_dtype = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            dp_out_dtype = dpnp.float64
-
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        dp_array = dpnp.array(np_array, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.sinh(dp_array, out=dp_out)
 
-        # original
-        expected = numpy.sinh(np_array, out=np_out)
-
-        tol = numpy.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_sinh_complex(self, dtype):
-        np_array = numpy.arange(10, 20, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.complex128)
-
-        # DPNP
-        dp_out_dtype = dpnp.complex64
-        if has_support_aspect64() and dtype != dpnp.complex64:
-            dp_out_dtype = dpnp.complex128
-
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        dp_array = dpnp.array(np_array, dtype=dtype)
-        result = dpnp.sinh(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.sinh(np_array, out=np_out)
-
-        tol = numpy.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
-
-    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.skipif(
-        not has_support_aspect16(), reason="No fp16 support by device"
-    )
-    def test_sinh_bool(self):
-        np_array = numpy.arange(2, dtype=numpy.bool_)
-        np_out = numpy.empty(2, dtype=numpy.float16)
-
-        # DPNP
-        dp_array = dpnp.array(np_array, dtype=np_array.dtype)
-        dp_out = dpnp.array(np_out, dtype=np_out.dtype)
-        result = dpnp.sinh(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.sinh(np_array, out=np_out)
-        assert_allclose(expected, result)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype",
@@ -260,64 +206,17 @@ class TestSinh:
 
 
 class TestCos:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_cos(self, dtype):
-        np_array = numpy.arange(10, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.float64)
+        np_array, expected = _get_numpy_arrays("cos", dtype, [-5, 5, 10])
 
-        # DPNP
-        dp_out_dtype = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            dp_out_dtype = dpnp.float64
-
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        dp_array = dpnp.array(np_array, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.cos(dp_array, out=dp_out)
 
-        # original
-        expected = numpy.cos(np_array, out=np_out)
-
-        precision = numpy.finfo(dtype=result.dtype).precision
-        assert_array_almost_equal(expected, result.asnumpy(), decimal=precision)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_cos_complex(self, dtype):
-        np_array = numpy.arange(10, 20, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.complex128)
-
-        # DPNP
-        dp_out_dtype = dpnp.complex64
-        if has_support_aspect64() and dtype != dpnp.complex64:
-            dp_out_dtype = dpnp.complex128
-
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        dp_array = dpnp.array(np_array, dtype=dtype)
-        result = dpnp.cos(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.cos(np_array, out=np_out)
-
-        precision = numpy.finfo(dtype=result.dtype).precision
-        assert_array_almost_equal(expected, result.asnumpy(), decimal=precision)
-
-    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.skipif(
-        not has_support_aspect16(), reason="No fp16 support by device"
-    )
-    def test_cos_bool(self):
-        np_array = numpy.arange(2, dtype=numpy.bool_)
-        np_out = numpy.empty(2, dtype=numpy.float16)
-
-        # DPNP
-        dp_array = dpnp.array(np_array, dtype=np_array.dtype)
-        dp_out = dpnp.array(np_out, dtype=np_out.dtype)
-        result = dpnp.cos(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.cos(np_array, out=np_out)
-        assert_allclose(expected, result)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype",
@@ -343,64 +242,17 @@ class TestCos:
 
 
 class TestCosh:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_cosh(self, dtype):
-        np_array = numpy.arange(10, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.float64)
+        np_array, expected = _get_numpy_arrays("cosh", dtype, [-5, 5, 10])
 
-        # DPNP
-        dp_out_dtype = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            dp_out_dtype = dpnp.float64
-
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        dp_array = dpnp.array(np_array, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.cosh(dp_array, out=dp_out)
 
-        # original
-        expected = numpy.cosh(np_array, out=np_out)
-
-        tol = numpy.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_cosh_complex(self, dtype):
-        np_array = numpy.arange(10, 20, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.complex128)
-
-        # DPNP
-        dp_out_dtype = dpnp.complex64
-        if has_support_aspect64() and dtype != dpnp.complex64:
-            dp_out_dtype = dpnp.complex128
-
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        dp_array = dpnp.array(np_array, dtype=dtype)
-        result = dpnp.cosh(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.cosh(np_array, out=np_out)
-
-        tol = numpy.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
-
-    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.skipif(
-        not has_support_aspect16(), reason="No fp16 support by device"
-    )
-    def test_cosh_bool(self):
-        np_array = numpy.arange(2, dtype=numpy.bool_)
-        np_out = numpy.empty(2, dtype=numpy.float16)
-
-        # DPNP
-        dp_array = dpnp.array(np_array, dtype=np_array.dtype)
-        dp_out = dpnp.array(np_out, dtype=np_out.dtype)
-        result = dpnp.cosh(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.cosh(np_array, out=np_out)
-        assert_allclose(expected, result)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype",
@@ -425,65 +277,19 @@ class TestCosh:
             dpnp.cosh(dp_array, out=dp_out)
 
 
-class TestsLog:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
-    def test_log(self, dtype):
-        np_array = numpy.arange(10, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.float64)
-
-        # DPNP
-        dp_out_dtype = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            dp_out_dtype = dpnp.float64
-
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        dp_array = dpnp.array(np_array, dtype=dtype)
-        result = dpnp.log(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.log(np_array, out=np_out)
-
-        precision = numpy.finfo(dtype=result.dtype).precision
-        assert_array_almost_equal(expected, result.asnumpy(), decimal=precision)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_log_complex(self, dtype):
-        np_array = numpy.arange(10, 20, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.complex128)
-
-        # DPNP
-        dp_out_dtype = dpnp.complex64
-        if has_support_aspect64() and dtype != dpnp.complex64:
-            dp_out_dtype = dpnp.complex128
-
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        dp_array = dpnp.array(np_array, dtype=dtype)
-        result = dpnp.log(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.log(np_array, out=np_out)
-
-        precision = numpy.finfo(dtype=result.dtype).precision
-        assert_array_almost_equal(expected, result.asnumpy(), decimal=precision)
-
+class TestLog:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.skipif(
-        not has_support_aspect16(), reason="No fp16 support by device"
-    )
-    def test_log_bool(self):
-        np_array = numpy.arange(2, dtype=numpy.bool_)
-        np_out = numpy.empty(2, dtype=numpy.float16)
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_log(self, dtype):
+        np_array, expected = _get_numpy_arrays("log", dtype, [0.1, 10, 10])
 
-        # DPNP
-        dp_array = dpnp.array(np_array, dtype=np_array.dtype)
-        dp_out = dpnp.array(np_out, dtype=np_out.dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.log(dp_array, out=dp_out)
 
-        # original
-        expected = numpy.log(np_array, out=np_out)
-        assert_allclose(expected, result)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype",
@@ -509,50 +315,17 @@ class TestsLog:
 
 
 class TestExp:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_exp(self, dtype):
-        np_array = numpy.arange(10, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.float64)
+        np_array, expected = _get_numpy_arrays("exp", dtype, [-3, 8, 10])
 
-        # DPNP
-        dp_out_dtype = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            dp_out_dtype = dpnp.float64
-
-        dp_array = dpnp.array(np_array, dtype=dp_out_dtype)
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.exp(dp_array, out=dp_out)
 
-        # original
-        expected = numpy.exp(np_array, out=np_out)
-
-        tol = numpy.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_exp_complex(self, dtype):
-        x1 = numpy.linspace(0, 8, num=10)
-        x2 = numpy.linspace(0, 6, num=10)
-        Xnp = x1 + 1j * x2
-        np_array = numpy.asarray(Xnp, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.complex128)
-
-        # DPNP
-        dp_out_dtype = dpnp.complex64
-        if has_support_aspect64() and dtype != dpnp.complex64:
-            dp_out_dtype = dpnp.complex128
-
-        dp_array = dpnp.array(np_array, dtype=dp_out_dtype)
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        result = dpnp.exp(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.exp(np_array, out=np_out)
-
-        tol = numpy.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
@@ -578,50 +351,17 @@ class TestExp:
 
 
 class TestExp2:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_exp2(self, dtype):
-        np_array = numpy.arange(7, dtype=dtype)
-        np_out = numpy.empty(7, dtype=numpy.float64)
+        np_array, expected = _get_numpy_arrays("exp2", dtype, [-3, 8, 10])
 
-        # DPNP
-        dp_out_dtype = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            dp_out_dtype = dpnp.float64
-
-        dp_array = dpnp.array(np_array, dtype=dp_out_dtype)
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.exp2(dp_array, out=dp_out)
 
-        # original
-        expected = numpy.exp2(np_array, out=np_out)
-
-        tol = dpnp.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_exp2_complex(self, dtype):
-        x1 = numpy.linspace(0, 8, num=10)
-        x2 = numpy.linspace(0, 6, num=10)
-        Xnp = x1 + 1j * x2
-        np_array = numpy.asarray(Xnp, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.complex128)
-
-        # DPNP
-        dp_out_dtype = dpnp.complex64
-        if has_support_aspect64() and dtype != dpnp.complex64:
-            dp_out_dtype = dpnp.complex128
-
-        dp_array = dpnp.array(np_array, dtype=dp_out_dtype)
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        result = dpnp.exp2(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.exp2(np_array, out=np_out)
-
-        tol = dpnp.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
@@ -647,27 +387,17 @@ class TestExp2:
 
 
 class TestCbrt:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_cbrt(self, dtype):
-        np_array = numpy.arange(7, dtype=dtype)
-        np_out = numpy.empty(7, dtype=numpy.float64)
+        np_array, expected = _get_numpy_arrays("cbrt", dtype, [-5, 5, 10])
 
-        # DPNP
-        dp_out_dtype = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            dp_out_dtype = dpnp.float64
-
-        dp_array = dpnp.array(np_array, dtype=dp_out_dtype)
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.cbrt(dp_array, out=dp_out)
 
-        # original
-        expected = numpy.cbrt(np_array, out=np_out)
-
-        tol = dpnp.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
@@ -693,27 +423,19 @@ class TestCbrt:
 
 
 class TestRsqrt:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_rsqrt(self, dtype):
-        np_array = numpy.arange(1, 10, dtype=dtype)
-        np_out = numpy.empty(9, dtype=numpy.float64)
+        np_array, expected = _get_numpy_arrays("sqrt", dtype, [0, 10, 10])
+        expected = numpy.reciprocal(expected)
 
-        # DPNP
-        dp_out_dtype = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            dp_out_dtype = dpnp.float64
-
-        dp_array = dpnp.array(np_array, dtype=dp_out_dtype)
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.rsqrt(dp_array, out=dp_out)
 
-        # original
-        expected = numpy.reciprocal(numpy.sqrt(np_array), out=np_out)
-
-        tol = dpnp.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
@@ -739,23 +461,17 @@ class TestRsqrt:
 
 
 class TestArccos:
-    @pytest.mark.parametrize("dtype", get_float_dtypes())
-    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_arccos(self, dtype):
-        array_data = numpy.arange(-9, 10, 2) / 10
-        out = numpy.empty(10, dtype=dtype)
+        np_array, expected = _get_numpy_arrays("arccos", dtype, [-1, 1, 10])
 
-        # DPNP
-        dp_array = dpnp.array(array_data, dtype=dtype)
-        dp_out = dpnp.array(out, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.arccos(dp_array, out=dp_out)
 
-        # original
-        np_array = numpy.array(array_data, dtype=dtype)
-        expected = numpy.arccos(np_array, out=out)
-
-        tol = numpy.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
@@ -781,23 +497,18 @@ class TestArccos:
 
 
 class TestArccosh:
-    @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_arccosh(self, dtype):
-        array_data = numpy.arange(2, 12)
-        out = numpy.empty(10, dtype=dtype)
+        np_array, expected = _get_numpy_arrays("arccosh", dtype, [1, 10, 10])
 
-        # DPNP
-        dp_array = dpnp.array(array_data, dtype=dtype)
-        dp_out = dpnp.array(out, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.arccosh(dp_array, out=dp_out)
 
-        # original
-        np_array = numpy.array(array_data, dtype=dtype)
-        expected = numpy.arccosh(np_array, out=out)
-
-        tol = numpy.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
@@ -823,23 +534,17 @@ class TestArccosh:
 
 
 class TestArcsin:
-    @pytest.mark.parametrize("dtype", get_float_dtypes())
-    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_arcsin(self, dtype):
-        array_data = numpy.arange(-9, 10, 2) / 10
-        out = numpy.empty(10, dtype=dtype)
+        np_array, expected = _get_numpy_arrays("arcsin", dtype, [-1, 1, 10])
 
-        # DPNP
-        dp_array = dpnp.array(array_data, dtype=dtype)
-        dp_out = dpnp.array(out, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.arcsin(dp_array, out=dp_out)
 
-        # original
-        np_array = numpy.array(array_data, dtype=dtype)
-        expected = numpy.arcsin(np_array, out=out)
-
-        tol = numpy.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
@@ -865,23 +570,17 @@ class TestArcsin:
 
 
 class TestArcsinh:
-    @pytest.mark.parametrize("dtype", get_float_dtypes())
-    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_arcsinh(self, dtype):
-        array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=dtype)
+        np_array, expected = _get_numpy_arrays("arcsinh", dtype, [-5, 5, 10])
 
-        # DPNP
-        dp_array = dpnp.array(array_data, dtype=dtype)
-        dp_out = dpnp.array(out, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.arcsinh(dp_array, out=dp_out)
 
-        # original
-        np_array = numpy.array(array_data, dtype=dtype)
-        expected = numpy.arcsinh(np_array, out=out)
-
-        tol = numpy.finfo(dtype=result.dtype).resolution
-        assert_allclose(expected, result.asnumpy(), rtol=tol)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
@@ -907,22 +606,17 @@ class TestArcsinh:
 
 
 class TestArctan:
-    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_arctan(self, dtype):
-        array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=dtype)
+        np_array, expected = _get_numpy_arrays("arctan", dtype, [-5, 5, 10])
 
-        # DPNP
-        dp_array = dpnp.array(array_data, dtype=dtype)
-        dp_out = dpnp.array(out, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.arctan(dp_array, out=dp_out)
 
-        # original
-        np_array = numpy.array(array_data, dtype=dtype)
-        expected = numpy.arctan(np_array, out=out)
-
-        tol = numpy.finfo(dtype).resolution
-        assert_allclose(expected, result, tol)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
@@ -948,22 +642,18 @@ class TestArctan:
 
 
 class TestArctanh:
-    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_arctanh(self, dtype):
-        array_data = numpy.arange(-9, 10, 2) / 10
-        out = numpy.empty(10, dtype=dtype)
+        np_array, expected = _get_numpy_arrays("arctanh", dtype, [-1, 1, 10])
 
-        # DPNP
-        dp_array = dpnp.array(array_data, dtype=dtype)
-        dp_out = dpnp.array(out, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.arctanh(dp_array, out=dp_out)
 
-        # original
-        np_array = numpy.array(array_data, dtype=dtype)
-        expected = numpy.arctanh(np_array, out=out)
-
-        tol = numpy.finfo(dtype).resolution
-        assert_allclose(expected, result, tol)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
@@ -989,22 +679,17 @@ class TestArctanh:
 
 
 class TestTan:
-    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_tan(self, dtype):
-        array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=dtype)
+        np_array, expected = _get_numpy_arrays("tan", dtype, [-5, 5, 10])
 
-        # DPNP
-        dp_array = dpnp.array(array_data, dtype=dtype)
-        dp_out = dpnp.array(out, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.tan(dp_array, out=dp_out)
 
-        # original
-        np_array = numpy.array(array_data, dtype=dtype)
-        expected = numpy.tan(np_array, out=out)
-
-        tol = numpy.finfo(dtype).resolution
-        assert_allclose(expected, result, rtol=tol)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
@@ -1030,41 +715,20 @@ class TestTan:
 
 
 class TestArctan2:
-    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_arctan2(self, dtype):
-        array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=dtype)
+        np_array1, _ = _get_numpy_arrays("array", dtype, [-5, 5, 10])
+        np_array2, _ = _get_numpy_arrays("array", dtype, [-5, 5, 10])
+        expected = numpy.arctan2(np_array1, np_array2)
 
-        # DPNP
-        dp_array = dpnp.array(array_data, dtype=dtype)
-        dp_out = dpnp.array(out, dtype=dtype)
-        result = dpnp.arctan2(dp_array, dp_array, out=dp_out)
+        dp_array1 = dpnp.array(np_array1)
+        dp_array2 = dpnp.array(np_array2)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
+        result = dpnp.arctan2(dp_array1, dp_array2, out=dp_out)
 
-        # original
-        np_array = numpy.array(array_data, dtype=dtype)
-        expected = numpy.arctan2(np_array, np_array, out=out)
-
-        assert_allclose(expected, result)
-
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
-    )
-    def test_out_dtypes(self, dtype):
-        if has_support_aspect64() and dtype != numpy.float32:
-            dtype_out = numpy.float64
-        else:
-            dtype_out = numpy.float32
-        size = 2 if dtype == dpnp.bool else 10
-
-        np_array = numpy.arange(size, dtype=dtype)
-        np_out = numpy.empty(size, dtype=dtype_out)
-        expected = numpy.arctan2(np_array, np_array, out=np_out)
-
-        dp_array = dpnp.arange(size, dtype=dtype)
-        dp_out = dpnp.empty(size, dtype=dtype_out)
-        result = dpnp.arctan2(dp_array, dp_array, out=dp_out)
-
-        assert_allclose(expected, result)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize(
@@ -1079,41 +743,20 @@ class TestArctan2:
 
 
 class TestCopySign:
-    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_copysign(self, dtype):
-        array_data = numpy.arange(10)
-        out = numpy.empty(10, dtype=dtype)
+        np_array1, _ = _get_numpy_arrays("array", dtype, [1, 10, 10])
+        np_array2, _ = _get_numpy_arrays("array", dtype, [-10, -1, 10])
+        expected = numpy.copysign(np_array1, np_array2)
 
-        # DPNP
-        dp_array = dpnp.array(array_data, dtype=dtype)
-        dp_out = dpnp.array(out, dtype=dtype)
-        result = dpnp.copysign(dp_array, -dp_array, out=dp_out)
+        dp_array1 = dpnp.array(np_array1)
+        dp_array2 = dpnp.array(np_array2)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
+        result = dpnp.copysign(dp_array1, dp_array2, out=dp_out)
 
-        # original
-        np_array = numpy.array(array_data, dtype=dtype)
-        expected = numpy.copysign(np_array, -np_array, out=out)
-
-        assert_allclose(expected, result)
-
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
-    )
-    def test_out_dtypes(self, dtype):
-        if has_support_aspect64() and dtype != numpy.float32:
-            dtype_out = numpy.float64
-        else:
-            dtype_out = numpy.float32
-        size = 2 if dtype == dpnp.bool else 10
-
-        np_array = numpy.arange(size, dtype=dtype)
-        np_out = numpy.empty(size, dtype=dtype_out)
-        expected = numpy.copysign(np_array, -np_array, out=np_out)
-
-        dp_array = dpnp.arange(size, dtype=dtype)
-        dp_out = dpnp.empty(size, dtype=dtype_out)
-        result = dpnp.copysign(dp_array, -dp_array, out=dp_out)
-
-        assert_allclose(expected, result)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize(
@@ -1128,60 +771,17 @@ class TestCopySign:
 
 
 class TestSqrt:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
-    def test_sqrt_int_float(self, dtype):
-        np_array = numpy.arange(10, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.float64)
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_sqrt(self, dtype):
+        np_array, expected = _get_numpy_arrays("sqrt", dtype, [0, 10, 10])
 
-        # DPNP
-        dp_out_dtype = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            dp_out_dtype = dpnp.float64
-
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        dp_array = dpnp.array(np_array, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.sqrt(dp_array, out=dp_out)
 
-        # original
-        expected = numpy.sqrt(np_array, out=np_out)
-        assert_allclose(expected, result)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_sqrt_complex(self, dtype):
-        np_array = numpy.arange(10, 20, dtype=dtype)
-        np_out = numpy.empty(10, dtype=numpy.complex128)
-
-        # DPNP
-        dp_out_dtype = dpnp.complex64
-        if has_support_aspect64() and dtype != dpnp.complex64:
-            dp_out_dtype = dpnp.complex128
-
-        dp_out = dpnp.array(np_out, dtype=dp_out_dtype)
-        dp_array = dpnp.array(np_array, dtype=dtype)
-        result = dpnp.sqrt(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.sqrt(np_array, out=np_out)
-        assert_allclose(expected, result)
-
-    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.skipif(
-        not has_support_aspect16(), reason="No fp16 support by device"
-    )
-    def test_sqrt_bool(self):
-        np_array = numpy.arange(2, dtype=numpy.bool_)
-        np_out = numpy.empty(2, dtype=numpy.float16)
-
-        # DPNP
-        dp_array = dpnp.array(np_array, dtype=np_array.dtype)
-        dp_out = dpnp.array(np_out, dtype=np_out.dtype)
-        result = dpnp.sqrt(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.sqrt(np_array, out=np_out)
-        assert_allclose(expected, result)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", [numpy.int64, numpy.int32], ids=["numpy.int64", "numpy.int32"]
@@ -1216,34 +816,17 @@ class TestSqrt:
 
 
 class TestSquare:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_none=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_square(self, dtype):
-        np_array = numpy.arange(10, dtype=dtype)
-        np_out = numpy.empty(10, dtype=dtype)
+        np_array, expected = _get_numpy_arrays("square", dtype, [-5, 5, 10])
 
-        # DPNP
-        dp_out = dpnp.array(np_out, dtype=dtype)
-        dp_array = dpnp.array(np_array, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = numpy.int8 if dtype == numpy.bool_ else dtype
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.square(dp_array, out=dp_out)
 
-        # original
-        expected = numpy.square(np_array, out=np_out)
-        assert_allclose(expected, result)
-
-    def test_square_bool(self):
-        np_array = numpy.arange(2, dtype=numpy.bool_)
-        np_out = numpy.empty(2, dtype=numpy.int8)
-
-        # DPNP
-        dp_array = dpnp.array(np_array, dtype=np_array.dtype)
-        dp_out = dpnp.array(np_out, dtype=np_out.dtype)
-        result = dpnp.square(dp_array, out=dp_out)
-
-        # original
-        expected = numpy.square(np_array, out=np_out)
-        assert_allclose(expected, result)
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)

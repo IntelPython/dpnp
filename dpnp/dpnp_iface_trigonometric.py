@@ -437,7 +437,7 @@ def arctan2(
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword arguments `kwargs` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Input array data types are limited by real-valued data types.
 
     See Also
     --------
