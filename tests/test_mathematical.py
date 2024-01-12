@@ -2587,6 +2587,9 @@ class TestMatmul:
             with pytest.raises(TypeError):
                 dpnp.matmul(b1, b2, dtype=dtype2)
 
+    # TODO: Temporary skipping the test, until Internal CI is updated with
+    # recent changed in dpctl regarding dpt.result_type function
+    @pytest.mark.skip("Temporary skipping the test")
     @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("dtype2", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
@@ -2734,6 +2737,9 @@ class TestMatmulInvalidCases:
         with pytest.raises(ValueError):
             dpnp.matmul(x1, x2)
 
+    # TODO: Temporary skipping the test, until Internal CI is updated with
+    # recent changed in dpctl regarding dpt.result_type function
+    @pytest.mark.skip("Temporary skipping the test")
     def test_matmul_casting(self):
         a1 = dpnp.arange(2 * 4, dtype=dpnp.float32).reshape(2, 4)
         a2 = dpnp.arange(4 * 3).reshape(4, 3)
