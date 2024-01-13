@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.repeat
-===================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.repeat
