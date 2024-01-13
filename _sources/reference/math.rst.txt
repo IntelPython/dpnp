@@ -205,6 +205,7 @@ Miscellaneous
    dpnp.sqrt
    dpnp.cbrt
    dpnp.square
+   dpnp.rsqrt
    dpnp.abs
    dpnp.absolute
    dpnp.fabs
