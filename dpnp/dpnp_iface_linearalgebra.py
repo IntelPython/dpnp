@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2023, Intel Corporation
@@ -46,6 +44,7 @@ import numpy
 import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
+from dpnp.dpnp_utils.dpnp_utils_linearalgebra import dpnp_matmul
 
 __all__ = [
     "dot",
@@ -246,7 +245,17 @@ def kron(x1, x2):
     return call_origin(numpy.kron, x1, x2)
 
 
-def matmul(x1, x2, out=None, **kwargs):
+def matmul(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    casting="same_kind",
+    order="K",
+    dtype=None,
+    subok=True,
+):
     """
     Matrix product of two arrays.
 
@@ -254,9 +263,9 @@ def matmul(x1, x2, out=None, **kwargs):
 
     Limitations
     -----------
-    Input arrays are supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Parameter `out` is supported as :obj:`dpnp.ndarray` and as default value ``None``.
+    Input arrays and parameter `out` are supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Keyword argument `subok` is currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -269,63 +278,65 @@ def matmul(x1, x2, out=None, **kwargs):
 
     Examples
     --------
+    For 2-D arrays it is the matrix product:
+
     >>> import dpnp as np
-    >>> a = np.ones([9, 5, 7, 4])
-    >>> c = np.ones([9, 5, 4, 3])
-    >>> np.matmul(a, c).shape
-    (9, 5, 7, 3)
     >>> a = np.array([[1, 0], [0, 1]])
     >>> b = np.array([[4, 1], [2, 2]])
     >>> np.matmul(a, b)
     array([[4, 1],
            [2, 2]])
 
+    For 2-D mixed with 1-D, the result is the usual.
+
+    >>> a = np.array([[1, 0], [0, 1]])
+    >>> b = np.array([1, 2])
+    >>> np.matmul(a, b)
+    array([1, 2])
+    >>> np.matmul(b, a)
+    array([1, 2])
+
+    Broadcasting is conventional for stacks of arrays
+
+    >>> a = np.arange(2 * 2 * 4).reshape((2, 2, 4))
+    >>> b = np.arange(2 * 2 * 4).reshape((2, 4, 2))
+    >>> np.matmul(a,b).shape
+    (2, 2, 2)
+    >>> np.matmul(a, b)[0, 1, 1]
+    array(98)
+    >>> np.sum(a[0, 1, :] * b[0 , :, 1])
+    array(98)
+
+    Vector, vector returns the scalar inner product, but neither argument is complex-conjugated:
+
+    >>> x1 = np.array([2j, 3j])
+    >>> x2 = np.array([2j, 3j])
+    >>> np.matmul(x1, x2)
+    array(-13+0j)
+
+    The ``@`` operator can be used as a shorthand for ``matmul`` on
+    :class:`dpnp.ndarray`.
+
+    >>> x1 @ x2
+    array(-13+0j)
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-    if x1_desc and x2_desc and not kwargs:
-        if x1_desc.ndim != 2 or x2_desc.ndim != 2:
-            pass
-        elif not x1_desc.ndim:
-            pass
-        elif not x2_desc.ndim:
-            pass
-        elif not x1_desc.size:
-            pass
-        elif not x2_desc.size:
-            pass
-        else:
-            if 0:
-                """
-                Cost model checks
-                """
-
-                array1_size = x1_desc.size
-                array2_size = x2_desc.size
-                cost_size = 4096  # 2D array shape(64, 64)
-
-                if (x1_desc.dtype == dpnp.float64) or (
-                    x1_desc.dtype == dpnp.float32
-                ):
-                    """
-                    Floating point types are handled via original math library better than SYCL math library
-                    """
-                    cost_size = 262144  # 2D array shape(512, 512)
-
-                if (array1_size > cost_size) and (array2_size > cost_size):
-                    return dpnp_matmul(x1_desc, x2_desc, out)
-            else:
-                out_desc = (
-                    dpnp.get_dpnp_descriptor(
-                        out, copy_when_nondefault_queue=False
-                    )
-                    if out is not None
-                    else None
-                )
-                return dpnp_matmul(x1_desc, x2_desc, out_desc).get_pyobj()
-
-    return call_origin(numpy.matmul, x1, x2, out=out, **kwargs)
+    dpnp.check_supported_arrays_type(x1)
+    dpnp.check_supported_arrays_type(x2)
+    if subok is False:
+        raise NotImplementedError(
+            "subok keyword argument is only supported by its default value."
+        )
+    else:
+        return dpnp_matmul(
+            x1,
+            x2,
+            out=out,
+            casting=casting,
+            order=order,
+            dtype=dtype,
+        )
 
 
 def outer(x1, x2, out=None):

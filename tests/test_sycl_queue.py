@@ -667,6 +667,41 @@ def test_2in_1out_diff_queue_but_equal_context(func, device):
 
 
 @pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "shape_pair",
+    [
+        ((2, 4), (4, 3)),
+        ((4, 2, 3), (4, 3, 5)),
+        ((6, 7, 4, 3), (6, 7, 3, 5)),
+    ],
+    ids=[
+        "((2, 4), (4, 3))",
+        "((4, 2, 3), (4, 3, 5))",
+        "((6, 7, 4, 3), (6, 7, 3, 5))",
+    ],
+)
+def test_matmul(device, shape_pair):
+    shape1, shape2 = shape_pair
+    a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+    a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+
+    b1 = dpnp.asarray(a1, device=device)
+    b2 = dpnp.asarray(a2, device=device)
+
+    result = dpnp.matmul(b1, b2)
+    expected = numpy.matmul(a1, a2)
+    assert_allclose(expected, result)
+
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, b1.sycl_queue)
+    assert_sycl_queue_equal(result_queue, b2.sycl_queue)
+
+
+@pytest.mark.parametrize(
     "func, kwargs",
     [
         pytest.param("normal", {"loc": 1.0, "scale": 3.4, "size": (5, 12)}),

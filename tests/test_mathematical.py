@@ -1,5 +1,6 @@
 from itertools import permutations
 
+import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
@@ -2389,3 +2390,367 @@ def test_inplace_remainder(dtype):
     dp_a %= 4
 
     assert_allclose(dp_a, np_a)
+
+
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+)
+def test_inplace_floor_divide(dtype):
+    size = 21
+    np_a = numpy.arange(size, dtype=dtype)
+    dp_a = dpnp.arange(size, dtype=dtype)
+
+    np_a //= 4
+    dp_a //= 4
+
+    assert_allclose(dp_a, np_a)
+
+
+class TestMatmul:
+    @pytest.mark.parametrize(
+        "order_pair", [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")]
+    )
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((4,), (4,)),
+            ((4,), (4, 2)),
+            ((2, 4), (4,)),
+            ((2, 4), (4, 3)),
+            ((1, 2, 3), (1, 3, 5)),
+            ((4, 2, 3), (4, 3, 5)),
+            ((1, 2, 3), (4, 3, 5)),
+            ((2, 3), (4, 3, 5)),
+            ((4, 2, 3), (1, 3, 5)),
+            ((4, 2, 3), (3, 5)),
+            ((1, 1, 4, 3), (1, 1, 3, 5)),
+            ((6, 7, 4, 3), (6, 7, 3, 5)),
+            ((6, 7, 4, 3), (1, 1, 3, 5)),
+            ((6, 7, 4, 3), (1, 3, 5)),
+            ((6, 7, 4, 3), (3, 5)),
+            ((6, 7, 4, 3), (1, 7, 3, 5)),
+            ((6, 7, 4, 3), (7, 3, 5)),
+            ((6, 7, 4, 3), (6, 1, 3, 5)),
+            ((1, 1, 4, 3), (6, 7, 3, 5)),
+            ((1, 4, 3), (6, 7, 3, 5)),
+            ((4, 3), (6, 7, 3, 5)),
+            ((6, 1, 4, 3), (6, 7, 3, 5)),
+            ((1, 7, 4, 3), (6, 7, 3, 5)),
+            ((7, 4, 3), (6, 7, 3, 5)),
+            ((1, 5, 3, 2), (6, 5, 2, 4)),
+            ((5, 3, 2), (6, 5, 2, 4)),
+            ((1, 3, 3), (10, 1, 3, 1)),
+        ],
+    )
+    def test_matmul(self, order_pair, shape_pair):
+        order1, order2 = order_pair
+        shape1, shape2 = shape_pair
+        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+        a1 = numpy.array(a1, order=order1)
+        a2 = numpy.array(a2, order=order2)
+
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        result = dpnp.matmul(b1, b2)
+        expected = numpy.matmul(a1, a2)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "order_pair", [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")]
+    )
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((2, 0), (0, 3)),
+            ((0, 4), (4, 3)),
+            ((2, 4), (4, 0)),
+            ((1, 2, 3), (0, 3, 5)),
+            ((0, 2, 3), (1, 3, 5)),
+            ((2, 3), (0, 3, 5)),
+            ((0, 2, 3), (3, 5)),
+            ((0, 0, 4, 3), (1, 1, 3, 5)),
+            ((6, 0, 4, 3), (1, 3, 5)),
+            ((0, 7, 4, 3), (3, 5)),
+            ((0, 7, 4, 3), (1, 7, 3, 5)),
+            ((0, 7, 4, 3), (7, 3, 5)),
+            ((6, 0, 4, 3), (6, 1, 3, 5)),
+            ((1, 1, 4, 3), (0, 0, 3, 5)),
+            ((1, 4, 3), (6, 0, 3, 5)),
+            ((4, 3), (0, 0, 3, 5)),
+            ((6, 1, 4, 3), (6, 0, 3, 5)),
+            ((1, 7, 4, 3), (0, 7, 3, 5)),
+            ((7, 4, 3), (0, 7, 3, 5)),
+        ],
+    )
+    def test_matmul_empty(self, order_pair, shape_pair):
+        order1, order2 = order_pair
+        shape1, shape2 = shape_pair
+        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+        a1 = numpy.array(a1, order=order1)
+        a2 = numpy.array(a2, order=order2)
+
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        result = dpnp.matmul(b1, b2)
+        expected = numpy.matmul(a1, a2)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((2, 4), (4, 3)),
+            ((4, 2, 3), (4, 3, 5)),
+            ((6, 7, 4, 3), (6, 7, 3, 5)),
+        ],
+        ids=[
+            "((2, 4), (4, 3))",
+            "((4, 2, 3), (4, 3, 5))",
+            "((6, 7, 4, 3), (6, 7, 3, 5))",
+        ],
+    )
+    def test_matmul_bool(self, shape_pair):
+        shape1, shape2 = shape_pair
+        a1 = numpy.resize(
+            numpy.arange(2, dtype=numpy.bool_), numpy.prod(shape1)
+        ).reshape(shape1)
+        a2 = numpy.resize(
+            numpy.arange(2, dtype=numpy.bool_), numpy.prod(shape2)
+        ).reshape(shape2)
+
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        result = dpnp.matmul(b1, b2)
+        expected = numpy.matmul(a1, a2)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((2, 4), (4, 3)),
+            ((4, 2, 3), (4, 3, 5)),
+            ((6, 7, 4, 3), (6, 7, 3, 5)),
+        ],
+        ids=[
+            "((2, 4), (4, 3))",
+            "((4, 2, 3), (4, 3, 5))",
+            "((6, 7, 4, 3), (6, 7, 3, 5))",
+        ],
+    )
+    def test_matmul_dtype(self, dtype, shape_pair):
+        shape1, shape2 = shape_pair
+        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        result = dpnp.matmul(b1, b2, dtype=dtype)
+        expected = numpy.matmul(a1, a2, dtype=dtype)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "dtype2", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((2, 4), (4, 3)),
+            ((4, 2, 3), (4, 3, 5)),
+            ((6, 7, 4, 3), (6, 7, 3, 5)),
+        ],
+        ids=[
+            "((2, 4), (4, 3))",
+            "((4, 2, 3), (4, 3, 5))",
+            "((6, 7, 4, 3), (6, 7, 3, 5))",
+        ],
+    )
+    def test_matmul_dtype_matrix_inputs(self, dtype1, dtype2, shape_pair):
+        shape1, shape2 = shape_pair
+        a1 = numpy.arange(numpy.prod(shape1), dtype=dtype1).reshape(shape1)
+        a2 = numpy.arange(numpy.prod(shape2), dtype=dtype1).reshape(shape2)
+
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        if dpnp.can_cast(dpnp.result_type(b1, b2), dtype2, casting="same_kind"):
+            result = dpnp.matmul(b1, b2, dtype=dtype2)
+            expected = numpy.matmul(a1, a2, dtype=dtype2)
+            assert_dtype_allclose(result, expected)
+        else:
+            with pytest.raises(TypeError):
+                dpnp.matmul(b1, b2, dtype=dtype2)
+
+    # TODO: Temporary skipping the test, until Internal CI is updated with
+    # recent changed in dpctl regarding dpt.result_type function
+    @pytest.mark.skip("Temporary skipping the test")
+    @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype2", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((2, 4), (4, 3)),
+            ((4, 2, 3), (4, 3, 5)),
+            ((6, 7, 4, 3), (6, 7, 3, 5)),
+        ],
+        ids=[
+            "((2, 4), (4, 3))",
+            "((4, 2, 3), (4, 3, 5))",
+            "((6, 7, 4, 3), (6, 7, 3, 5))",
+        ],
+    )
+    def test_matmul_dtype_matrix_inout(self, dtype1, dtype2, shape_pair):
+        shape1, shape2 = shape_pair
+        a1 = numpy.arange(numpy.prod(shape1), dtype=dtype1).reshape(shape1)
+        a2 = numpy.arange(numpy.prod(shape2), dtype=dtype2).reshape(shape2)
+
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        result = dpnp.matmul(b1, b2)
+        expected = numpy.matmul(a1, a2)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("order", ["C", "F", "K", "A"])
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((2, 4), (4, 3)),
+            ((4, 2, 3), (4, 3, 5)),
+            ((6, 7, 4, 3), (6, 7, 3, 5)),
+        ],
+        ids=[
+            "((2, 4), (4, 3))",
+            "((4, 2, 3), (4, 3, 5))",
+            "((6, 7, 4, 3), (6, 7, 3, 5))",
+        ],
+    )
+    def test_matmul_order(self, order, shape_pair):
+        shape1, shape2 = shape_pair
+        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        result = dpnp.matmul(b1, b2, order=order)
+        expected = numpy.matmul(a1, a2, order=order)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    def test_matmul_strided(self):
+        for dim in [1, 2, 3, 4]:
+            A = numpy.random.rand(*([20] * dim))
+            B = dpnp.asarray(A)
+            # positive strides
+            slices = tuple(slice(None, None, 2) for _ in range(dim))
+            a = A[slices]
+            b = B[slices]
+
+            result = dpnp.matmul(b, b)
+            expected = numpy.matmul(a, a)
+            assert_dtype_allclose(result, expected)
+
+            # negative strides
+            slices = tuple(slice(None, None, -2) for _ in range(dim))
+            a = A[slices]
+            b = B[slices]
+
+            result = dpnp.matmul(b, b)
+            expected = numpy.matmul(a, a)
+            assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    def test_matmul_out(self, dtype):
+        a1 = numpy.arange(5 * 4, dtype=dtype).reshape(5, 4)
+        a2 = numpy.arange(7 * 4, dtype=dtype).reshape(4, 7)
+
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        dpnp_out = dpnp.empty((5, 7), dtype=dtype)
+        result = dpnp.matmul(b1, b2, out=dpnp_out)
+        expected = numpy.matmul(a1, a2)
+        assert result is dpnp_out
+        assert_dtype_allclose(result, expected)
+
+
+class TestMatmulInvalidCases:
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((3, 2), ()),
+            ((), (3, 2)),
+            ((), ()),
+        ],
+    )
+    def test_zero_dim(self, shape_pair):
+        for xp in (numpy, dpnp):
+            shape1, shape2 = shape_pair
+            x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
+            x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
+            with pytest.raises(ValueError):
+                xp.matmul(x1, x2)
+
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((5, 3, 1), (3, 1, 4)),
+            ((3, 2, 3), (3, 2, 4)),
+            ((3, 2), (1,)),
+            ((1, 2), (3, 1)),
+            ((4, 3, 2), (6, 5, 2, 4)),
+            ((6, 5, 3, 2), (3, 2, 4)),
+        ],
+    )
+    def test_invalid_shape(self, shape_pair):
+        for xp in (numpy, dpnp):
+            shape1, shape2 = shape_pair
+            x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
+            x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
+            with pytest.raises(ValueError):
+                xp.matmul(x1, x2)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True)[:-2])
+    def test_invalid_dtype(self, dtype):
+        dpnp_dtype = get_all_dtypes(no_none=True)[-1]
+        a1 = dpnp.arange(5 * 4, dtype=dpnp_dtype).reshape(5, 4)
+        a2 = dpnp.arange(7 * 4, dtype=dpnp_dtype).reshape(4, 7)
+        dp_out = dpnp.empty((5, 7), dtype=dtype)
+
+        with pytest.raises(TypeError):
+            dpnp.matmul(a1, a2, out=dp_out)
+
+    def test_exe_q(self):
+        x1 = dpnp.ones((5, 4), sycl_queue=dpctl.SyclQueue())
+        x2 = dpnp.ones((4, 7), sycl_queue=dpctl.SyclQueue())
+
+        with pytest.raises(ValueError):
+            dpnp.matmul(x1, x2)
+
+    # TODO: Temporary skipping the test, until Internal CI is updated with
+    # recent changed in dpctl regarding dpt.result_type function
+    @pytest.mark.skip("Temporary skipping the test")
+    def test_matmul_casting(self):
+        a1 = dpnp.arange(2 * 4, dtype=dpnp.float32).reshape(2, 4)
+        a2 = dpnp.arange(4 * 3).reshape(4, 3)
+
+        res = dpnp.empty((2, 3), dtype=dpnp.int64)
+        with pytest.raises(TypeError):
+            dpnp.matmul(a1, a2, out=res, casting="safe")
+
+    def test_matmul_subok(self):
+        a1 = dpnp.arange(2 * 4).reshape(2, 4)
+        a2 = dpnp.arange(4 * 3).reshape(4, 3)
+
+        with pytest.raises(NotImplementedError):
+            dpnp.matmul(a1, a2, subok=False)
