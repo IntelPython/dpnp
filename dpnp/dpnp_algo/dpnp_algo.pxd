@@ -54,8 +54,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CUMSUM_EXT
         DPNP_FN_DEGREES
         DPNP_FN_DEGREES_EXT
-        DPNP_FN_DET
-        DPNP_FN_DET_EXT
         DPNP_FN_DIAG_INDICES
         DPNP_FN_DIAG_INDICES_EXT
         DPNP_FN_DIAGONAL
@@ -88,8 +86,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_INV_EXT
         DPNP_FN_KRON
         DPNP_FN_KRON_EXT
-        DPNP_FN_MATMUL
-        DPNP_FN_MATMUL_EXT
         DPNP_FN_MATRIX_RANK
         DPNP_FN_MATRIX_RANK_EXT
         DPNP_FN_MAXIMUM
@@ -302,8 +298,6 @@ cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input
 Linear algebra
 """
 cpdef dpnp_descriptor dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2)
-cpdef dpnp_descriptor dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, dpnp_descriptor out=*)
-
 
 """
 Array creation routines

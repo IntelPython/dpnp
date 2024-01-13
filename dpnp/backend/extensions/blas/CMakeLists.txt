@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2023, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,14 +24,11 @@
 # *****************************************************************************
 
 
-set(python_module_name _lapack_impl)
+set(python_module_name _blas_impl)
 set(_module_src
-    ${CMAKE_CURRENT_SOURCE_DIR}/lapack_py.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gesv.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/getrf.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/getrf_batch.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/heevd.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/syevd.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/blas_py.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gemm.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gemm_batch.cpp
 )
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
@@ -76,11 +73,11 @@ if (DPNP_GENERATE_COVERAGE)
 endif()
 
 if (MKL_VERSION_2024)
-    target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::LAPACK)
+    target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::BLAS)
 else()
     target_link_libraries(${python_module_name} PUBLIC MKL::MKL_DPCPP)
 endif()
 
 install(TARGETS ${python_module_name}
-  DESTINATION "dpnp/backend/extensions/lapack"
+  DESTINATION "dpnp/backend/extensions/blas"
 )

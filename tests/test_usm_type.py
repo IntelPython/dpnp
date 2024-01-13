@@ -354,6 +354,39 @@ def test_coerced_usm_types_bitwise_op(op, usm_type_x, usm_type_y):
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "shape_pair",
+    [
+        ((2, 4), (4, 3)),
+        ((2, 0), (0, 3)),
+        ((2, 4), (4, 0)),
+        ((4, 2, 3), (4, 3, 5)),
+        ((6, 7, 4, 3), (6, 7, 3, 5)),
+    ],
+    ids=[
+        "((2, 4), (4, 3))",
+        "((2, 0), (0, 3))",
+        "((2, 4), (4, 0))",
+        "((4, 2, 3), (4, 3, 5))",
+        "((6, 7, 4, 3), (6, 7, 3, 5))",
+    ],
+)
+def test_matmul(usm_type_x, usm_type_y, shape_pair):
+    shape1, shape2 = shape_pair
+    x = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+    y = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+
+    x = dp.array(x, usm_type=usm_type_x)
+    y = dp.array(y, usm_type=usm_type_y)
+    z = dp.matmul(x, y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_meshgrid(usm_type_x, usm_type_y):
     x = dp.arange(100, usm_type=usm_type_x)
     y = dp.arange(100, usm_type=usm_type_y)
@@ -525,6 +558,13 @@ def test_take(func, usm_type_x, usm_type_ind):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
 
 
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_clip(usm_type):
+    x = dp.arange(10, usm_type=usm_type)
+    y = dp.clip(x, 2, 7)
+    assert x.usm_type == y.usm_type
+
+
 @pytest.mark.parametrize(
     "usm_type_matrix", list_of_usm_types, ids=list_of_usm_types
 )
@@ -564,7 +604,61 @@ def test_solve(matrix, vector, usm_type_matrix, usm_type_vector):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_clip(usm_type):
-    x = dp.arange(10, usm_type=usm_type)
-    y = dp.clip(x, 2, 7)
-    assert x.usm_type == y.usm_type
+@pytest.mark.parametrize(
+    "shape, is_empty",
+    [
+        ((2, 2), False),
+        ((3, 2, 2), False),
+        ((0, 0), True),
+        ((0, 2, 2), True),
+    ],
+    ids=[
+        "(2, 2)",
+        "(3, 2, 2)",
+        "(0, 0)",
+        "(0, 2, 2)",
+    ],
+)
+def test_slogdet(shape, is_empty, usm_type):
+    if is_empty:
+        x = dp.empty(shape, dtype=dp.default_float_type(), usm_type=usm_type)
+    else:
+        count_elem = numpy.prod(shape)
+        x = dp.arange(
+            1, count_elem + 1, dtype=dp.default_float_type(), usm_type=usm_type
+        ).reshape(shape)
+
+    sign, logdet = dp.linalg.slogdet(x)
+
+    assert x.usm_type == sign.usm_type
+    assert x.usm_type == logdet.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "shape, is_empty",
+    [
+        ((2, 2), False),
+        ((3, 2, 2), False),
+        ((0, 0), True),
+        ((0, 2, 2), True),
+    ],
+    ids=[
+        "(2, 2)",
+        "(3, 2, 2)",
+        "(0, 0)",
+        "(0, 2, 2)",
+    ],
+)
+def test_det(shape, is_empty, usm_type):
+    if is_empty:
+        x = dp.empty(shape, dtype=dp.default_float_type(), usm_type=usm_type)
+    else:
+        count_elem = numpy.prod(shape)
+        x = dp.arange(
+            1, count_elem + 1, dtype=dp.default_float_type(), usm_type=usm_type
+        ).reshape(shape)
+
+    det = dp.linalg.det(x)
+
+    assert x.usm_type == det.usm_type
