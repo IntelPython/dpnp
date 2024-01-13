@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2023-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -415,7 +415,7 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
 
     Parameters
     ----------
-    a : {dpnp.ndarray, usm_ndarray}:
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which the arithmetic means must be computed. If
@@ -696,7 +696,7 @@ def nansum(
 
     Parameters
     ----------
-    a : {dpnp.ndarray, usm_ndarray}:
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which sums must be computed. If a tuple
@@ -806,7 +806,7 @@ def nanstd(
 
     Parameters
     ----------
-    a : {dpnp.ndarray, usm_ndarray}:
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which the standard deviations must be computed.
@@ -908,7 +908,7 @@ def nanvar(
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}:
+    a : {dpnp_array, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         axis or axes along which the variances must be computed. If a tuple

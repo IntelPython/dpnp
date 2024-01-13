@@ -151,7 +151,7 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
 
     Parameters
     ----------
-    a : {dpnp.ndarray, usm_ndarray}:
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which the averages must be computed. If
@@ -573,7 +573,7 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
 
     Parameters
     ----------
-    a : {dpnp.ndarray, usm_ndarray}:
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which the arithmetic means must be computed. If
@@ -839,7 +839,7 @@ def std(
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}:
+    a : {dpnp_array, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which the standard deviations must be computed.
@@ -958,7 +958,7 @@ def var(
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}:
+    a : {dpnp_array, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         axis or axes along which the variances must be computed. If a tuple

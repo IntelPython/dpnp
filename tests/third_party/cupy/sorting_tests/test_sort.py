@@ -17,7 +17,6 @@ def get_array_module(*args):
 cupy.get_array_module = get_array_module
 
 
-@testing.gpu
 class TestSort(unittest.TestCase):
     # Test ranks
 
@@ -33,14 +32,12 @@ class TestSort(unittest.TestCase):
             with pytest.raises(numpy.AxisError):
                 xp.sort(a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_sort_two_or_more_dim(self, xp):
         a = testing.shaped_random((2, 3, 3), xp)
         a.sort()
         return a
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_external_sort_two_or_more_dim(self, xp):
         a = testing.shaped_random((2, 3, 3), xp)
@@ -69,10 +66,11 @@ class TestSort(unittest.TestCase):
         a.sort()
         return a
 
-    def test_sort_non_contiguous(self):
-        a = testing.shaped_random((10,), cupy)[::2]  # Non contiguous view
-        with self.assertRaises(NotImplementedError):
-            a.sort()
+    @testing.numpy_cupy_array_equal()
+    def test_sort_non_contiguous(self, xp):
+        a = testing.shaped_random((10,), xp)[::2]  # Non contiguous view
+        a.sort()
+        return a
 
     @testing.numpy_cupy_array_equal()
     def test_external_sort_contiguous(self, xp):
@@ -104,7 +102,6 @@ class TestSort(unittest.TestCase):
         a.sort(axis=2)
         return a
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_external_sort_axis(self, xp):
         a = testing.shaped_random((2, 3, 3), xp)
@@ -116,13 +113,11 @@ class TestSort(unittest.TestCase):
         a.sort(axis=-2)
         return a
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_external_sort_negative_axis(self, xp):
         a = testing.shaped_random((2, 3, 3), xp)
         return xp.sort(a, axis=-2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_external_sort_none_axis(self, xp):
         a = testing.shaped_random((2, 3, 3), xp)
@@ -139,14 +134,12 @@ class TestSort(unittest.TestCase):
         with self.assertRaises(numpy.AxisError):
             a.sort(axis=3)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_external_sort_invalid_axis1(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((2, 3, 3), xp)
             with pytest.raises(numpy.AxisError):
                 xp.sort(a, axis=3)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_external_sort_invalid_axis2(self):
         a = testing.shaped_random((2, 3, 3), cupy)
         with self.assertRaises(numpy.AxisError):
@@ -163,14 +156,12 @@ class TestSort(unittest.TestCase):
         with self.assertRaises(numpy.AxisError):
             a.sort(axis=-4)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_external_sort_invalid_negative_axis1(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((2, 3, 3), xp)
             with pytest.raises(numpy.AxisError):
                 xp.sort(a, axis=-4)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_external_sort_invalid_negative_axis2(self):
         a = testing.shaped_random((2, 3, 3), cupy)
         with self.assertRaises(numpy.AxisError):
@@ -296,7 +287,6 @@ class TestLexsort(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestArgsort(unittest.TestCase):
     def argsort(self, a, axis=-1):
         if self.external:

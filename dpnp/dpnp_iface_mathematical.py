@@ -2660,7 +2660,7 @@ def sum(
 
     Parameters
     ----------
-    a : {dpnp.ndarray, usm_ndarray}:
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which sums must be computed. If a tuple
@@ -2713,7 +2713,7 @@ def sum(
 
     Limitations
     -----------
-    Parameters `initial` and `where` are supported with their default values.
+    Parameters `initial` and `where` are only supported with their default values.
     Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also

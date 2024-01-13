@@ -36,10 +36,8 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_argsort",
     "dpnp_partition",
     "dpnp_searchsorted",
-    "dpnp_sort"
 ]
 
 
@@ -59,13 +57,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_searchsorted_t)(c_dpctl.DPCTLSyclQ
                                                               const size_t,
                                                               const size_t,
                                                               const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef utils.dpnp_descriptor dpnp_argsort(utils.dpnp_descriptor x1):
-    cdef shape_type_c result_shape = x1.shape
-    if result_shape == ():
-        result_shape = (1,)
-    return call_fptr_1in_1out(DPNP_FN_ARGSORT_EXT, x1, result_shape)
 
 
 cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, axis=-1, kind='introselect', order=None):
@@ -148,7 +139,3 @@ cpdef utils.dpnp_descriptor dpnp_searchsorted(utils.dpnp_descriptor arr, utils.d
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_sort(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_SORT_EXT, x1, x1.shape)
