@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2023, Intel Corporation
+// Copyright (c) 2016-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -121,8 +121,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_DEGREES_EXT,   /**< Used in numpy.degrees() impl, requires extra
                               parameters */
     DPNP_FN_DET,           /**< Used in numpy.linalg.det() impl  */
-    DPNP_FN_DET_EXT,       /**< Used in numpy.linalg.det() impl, requires extra
-                              parameters */
     DPNP_FN_DIAG,          /**< Used in numpy.diag() impl  */
     DPNP_FN_DIAG_INDICES,  /**< Used in numpy.diag_indices() impl  */
     DPNP_FN_DIAG_INDICES_EXT, /**< Used in numpy.diag_indices() impl, requires
@@ -192,8 +190,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_LOG2,            /**< Used in numpy.log2() impl  */
     DPNP_FN_LOG1P,           /**< Used in numpy.log1p() impl  */
     DPNP_FN_MATMUL,          /**< Used in numpy.matmul() impl  */
-    DPNP_FN_MATMUL_EXT,      /**< Used in numpy.matmul() impl, requires extra
-                                parameters */
     DPNP_FN_MATRIX_RANK,     /**< Used in numpy.linalg.matrix_rank() impl  */
     DPNP_FN_MATRIX_RANK_EXT, /**< Used in numpy.linalg.matrix_rank() impl,
                                 requires extra parameters */

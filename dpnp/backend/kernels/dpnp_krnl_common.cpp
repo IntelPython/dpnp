@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2023, Intel Corporation
+// Copyright (c) 2016-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -946,26 +946,6 @@ void (*dpnp_matmul_default_c)(void *,
                               const shape_elem_type *) =
     dpnp_matmul_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_matmul_ext_c)(DPCTLSyclQueueRef,
-                                       void *,
-                                       const size_t,
-                                       const size_t,
-                                       const shape_elem_type *,
-                                       const shape_elem_type *,
-                                       const void *,
-                                       const size_t,
-                                       const size_t,
-                                       const shape_elem_type *,
-                                       const shape_elem_type *,
-                                       const void *,
-                                       const size_t,
-                                       const size_t,
-                                       const shape_elem_type *,
-                                       const shape_elem_type *,
-                                       const DPCTLEventVectorRef) =
-    dpnp_matmul_c<_DataType>;
-
 void func_map_init_linalg(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_BLN][eft_BLN] = {
@@ -1189,15 +1169,6 @@ void func_map_init_linalg(func_map_t &fmap)
         eft_FLT, (void *)dpnp_matmul_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_matmul_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_MATMUL_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_matmul_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_MATMUL_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_matmul_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_MATMUL_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_matmul_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_MATMUL_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_matmul_ext_c<double>};
 
     return;
 }

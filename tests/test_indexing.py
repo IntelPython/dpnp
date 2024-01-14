@@ -261,6 +261,7 @@ def test_choose():
     assert_array_equal(expected, result)
 
 
+@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_bool=True))
 @pytest.mark.parametrize("offset", [0, 1], ids=["0", "1"])
 @pytest.mark.parametrize(
     "array",
@@ -296,8 +297,8 @@ def test_choose():
         "[[[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]]]",
     ],
 )
-def test_diagonal(array, offset):
-    a = numpy.array(array)
+def test_diagonal(array, arr_dtype, offset):
+    a = numpy.array(array, dtype=arr_dtype)
     ia = dpnp.array(a)
     expected = numpy.diagonal(a, offset)
     result = dpnp.diagonal(ia, offset)
