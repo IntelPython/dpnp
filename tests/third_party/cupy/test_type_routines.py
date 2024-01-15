@@ -87,9 +87,6 @@ class TestCommonType(unittest.TestCase):
         }
     )
 )
-# TODO: Temporary skipping the test, until Internal CI is updated with
-# recent changed in dpctl regarding dpt.result_type function
-@pytest.mark.skip("Temporary skipping the test")
 class TestResultType(unittest.TestCase):
     @testing.for_all_dtypes_combination(names=("dtype1", "dtype2"))
     @testing.numpy_cupy_equal()
