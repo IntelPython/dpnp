@@ -75,38 +75,14 @@ __all__ = [
 
 def cholesky(a):
     """
-    Cholesky decomposition.
-
-    Return the Cholesky decomposition, `L * L.H`, of the square matrix `a`,
-    where `L` is lower-triangular and .H is the conjugate transpose operator
-    (which is the ordinary transpose if `a` is real-valued).  `a` must be
-    Hermitian (symmetric if real-valued) and positive-definite. No
-    checking is performed to verify whether `a` is Hermitian or not.
-    In addition, only the lower-triangular and diagonal elements of `a`
-    are used. Only `L` is actually returned.
+    Compute the Cholesky decomposition of a square array.
 
     For full documentation refer to :obj:`numpy.linalg.cholesky`.
-
-    Parameters
-    ----------
-    a : (..., M, M) dpnp.ndarray
-        Hermitian (symmetric if all elements are real), positive-definite
-        input matrix.
-
-    Returns
-    -------
-    L : (..., M, M) dpnp.ndarray
-        Lower-triangular Cholesky factor of `a`.  Returns `a`
-        matrix object if `a` is a matrix object.
 
     Limitations
     -----------
     Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`scipy.linalg.cholesky` : Similar function in SciPy.
 
     Examples
     --------
@@ -125,23 +101,9 @@ def cholesky(a):
 
     """
 
-    # TODO: use _assert_dpnp_array
-    if not dpnp.is_supported_array_type(a):
-        raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(a))
-        )
-
-    # TODO: use _assert_stacked_2d
-    if a.ndim < 2:
-        raise ValueError(
-            f"{a.ndim}-dimensional array given. The input "
-            "array must be at least two-dimensional"
-        )
-
-    # TODO: use _assert_stacked_square
-    n, m = a.shape[-2:]
-    if m != n:
-        raise ValueError("Last 2 dimensions of the input array must be square")
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
     return dpnp_cholesky(a)
 
