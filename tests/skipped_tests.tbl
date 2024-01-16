@@ -177,10 +177,6 @@ tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid4
-tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid5
 tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_AxisConcatenator_init1
 tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_len
 tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_1
