@@ -1,38 +1,33 @@
-import unittest
-
 import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
-class TestJoin(unittest.TestCase):
-    @pytest.mark.skip("dpnp.column_stack() is not implemented yet")
+class TestJoin:
     @testing.for_all_dtypes(name="dtype1")
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_column_stack(self, xp, dtype1, dtype2):
         a = testing.shaped_arange((4, 3), xp, dtype1)
         b = testing.shaped_arange((4,), xp, dtype2)
         c = testing.shaped_arange((4, 2), xp, dtype1)
         return xp.column_stack((a, b, c))
 
-    @pytest.mark.skip("dpnp.column_stack() is not implemented yet")
     def test_column_stack_wrong_ndim1(self):
         a = cupy.zeros(())
         b = cupy.zeros((3,))
         with pytest.raises(ValueError):
             cupy.column_stack((a, b))
 
-    @pytest.mark.skip("dpnp.column_stack() is not implemented yet")
     def test_column_stack_wrong_ndim2(self):
         a = cupy.zeros((3, 2, 3))
         b = cupy.zeros((3, 2))
         with pytest.raises(ValueError):
             cupy.column_stack((a, b))
 
-    @pytest.mark.skip("dpnp.column_stack() is not implemented yet")
     def test_column_stack_wrong_shape(self):
         a = cupy.zeros((3, 2))
         b = cupy.zeros((4, 3))
@@ -87,9 +82,8 @@ class TestJoin(unittest.TestCase):
         b = testing.shaped_reverse_arange((2, 3, 4), xp, dtype)
         return xp.concatenate((a, b) * 10, axis=-1)
 
-    @pytest.mark.skip("TODO: remove once dpctl #1325 is resolved")
     @testing.for_all_dtypes(name="dtype")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_concatenate_large_5(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         b = testing.shaped_reverse_arange((2, 3, 4), xp, "i")
@@ -113,8 +107,8 @@ class TestJoin(unittest.TestCase):
         e = testing.shaped_arange((2, 3, 2), xp, dtype)
         return xp.concatenate((a, b, c, d, e) * 2, axis=-1)
 
-    @pytest.mark.skip("TODO: remove once dpctl #1325 is resolved")
-    @testing.numpy_cupy_array_equal()
+    @pytest.mark.skip(reason="lead to crash due to reported issue in OCL RT")
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_concatenate_many_multi_dtype(self, xp):
         a = testing.shaped_arange((2, 1), xp, "i")
         b = testing.shaped_arange((2, 1), xp, "f")
@@ -191,9 +185,8 @@ class TestJoin(unittest.TestCase):
             with pytest.raises(TypeError):
                 xp.concatenate((a, b, c), axis=1, out=out)
 
-    @pytest.mark.skip("TODO: remove once dpctl #1325 is resolved")
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_concatenate_different_dtype(self, xp, dtype1, dtype2):
         a = testing.shaped_arange((3, 4), xp, dtype1)
         b = testing.shaped_arange((3, 4), xp, dtype2)
@@ -235,7 +228,6 @@ class TestJoin(unittest.TestCase):
         b = testing.shaped_arange((3, 4), xp, dtype1)
         return xp.concatenate((a, b), dtype=dtype2, casting=casting)
 
-    @pytest.mark.skip("dpnp.dstack() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_dstack(self, xp):
         a = testing.shaped_arange((1, 3, 2), xp)
@@ -243,19 +235,16 @@ class TestJoin(unittest.TestCase):
         c = testing.shaped_arange((1, 3), xp)
         return xp.dstack((a, b, c))
 
-    @pytest.mark.skip("dpnp.dstack() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_dstack_single_element(self, xp):
         a = testing.shaped_arange((1, 2, 3), xp)
         return xp.dstack((a,))
 
-    @pytest.mark.skip("dpnp.dstack() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_dstack_single_element_2(self, xp):
         a = testing.shaped_arange((1, 2), xp)
         return xp.dstack((a,))
 
-    @pytest.mark.skip("dpnp.dstack() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_dstack_single_element_3(self, xp):
         a = testing.shaped_arange((1,), xp)
@@ -473,33 +462,30 @@ class TestJoin(unittest.TestCase):
     def test_stack_casting(self, xp, dtype1, dtype2, casting):
         a = testing.shaped_arange((3, 4), xp, dtype1)
         b = testing.shaped_arange((3, 4), xp, dtype1)
+        # may raise TypeError or ComplexWarning
         return xp.stack((a, b), dtype=dtype2, casting=casting)
 
-    @pytest.mark.skip("dpnp.row_stack() is not implemented yet")
     @testing.for_all_dtypes(name="dtype1")
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_row_stack(self, xp, dtype1, dtype2):
         a = testing.shaped_arange((4, 3), xp, dtype1)
         b = testing.shaped_arange((3,), xp, dtype2)
         c = testing.shaped_arange((2, 3), xp, dtype1)
         return xp.row_stack((a, b, c))
 
-    @pytest.mark.skip("dpnp.row_stack() is not implemented yet")
     def test_row_stack_wrong_ndim1(self):
         a = cupy.zeros(())
         b = cupy.zeros((3,))
         with pytest.raises(ValueError):
             cupy.row_stack((a, b))
 
-    @pytest.mark.skip("dpnp.row_stack() is not implemented yet")
     def test_row_stack_wrong_ndim2(self):
         a = cupy.zeros((3, 2, 3))
         b = cupy.zeros((3, 2))
         with pytest.raises(ValueError):
             cupy.row_stack((a, b))
 
-    @pytest.mark.skip("dpnp.row_stack() is not implemented yet")
     def test_row_stack_wrong_shape(self):
         a = cupy.zeros((3, 2))
         b = cupy.zeros((4, 3))

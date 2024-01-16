@@ -31,7 +31,9 @@ env:
       test_usm_type.py
       third_party/cupy/core_tests
       third_party/cupy/linalg_tests/test_decomposition.py
+      third_party/cupy/linalg_tests/test_norms.py
       third_party/cupy/linalg_tests/test_product.py
+      third_party/cupy/linalg_tests/test_solve.py
       third_party/cupy/logic_tests/test_comparison.py
       third_party/cupy/logic_tests/test_truth.py
       third_party/cupy/manipulation_tests/test_basic.py

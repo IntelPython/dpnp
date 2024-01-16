@@ -1,8 +1,5 @@
-# cython: language_level=3
-# distutils: language = c++
-# -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -47,7 +44,15 @@ from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.linalg.dpnp_algo_linalg import *
 
-from .dpnp_utils_linalg import dpnp_cholesky, dpnp_eigh
+from .dpnp_utils_linalg import (
+    check_stacked_2d,
+    check_stacked_square,
+    dpnp_cholesky,
+    dpnp_det,
+    dpnp_eigh,
+    dpnp_slogdet,
+    dpnp_solve,
+)
 
 __all__ = [
     "cholesky",
@@ -62,7 +67,9 @@ __all__ = [
     "multi_dot",
     "norm",
     "qr",
+    "solve",
     "svd",
+    "slogdet",
 ]
 
 
@@ -167,32 +174,50 @@ def cond(input, p=None):
     return call_origin(numpy.linalg.cond, input, p)
 
 
-def det(input):
+def det(a):
     """
     Compute the determinant of an array.
 
+    For full documentation refer to :obj:`numpy.linalg.det`.
+
     Parameters
     ----------
-    input : (..., M, M) array_like
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         Input array to compute determinants for.
 
     Returns
     -------
-    det : (...) array_like
-        Determinant of `input`.
+    det : (...) dpnp.ndarray
+        Determinant of `a`.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.slogdet` : Returns sign and logarithm of the determinant of an array.
+
+    Examples
+    --------
+    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 4]])
+    >>> dp.linalg.det(a)
+    array(-2.)
+
+    Computing determinants for a stack of matrices:
+
+    >>> a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])
+    >>> a.shape
+    (3, 2, 2)
+    >>> dp.linalg.det(a)
+    array([-2., -3., -8.])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.ndim < 2:
-            pass
-        elif x1_desc.shape[-1] == x1_desc.shape[-2]:
-            result_obj = dpnp_det(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-            return result
-
-    return call_origin(numpy.linalg.det, input)
+    return dpnp_det(a)
 
 
 def eig(x1):
@@ -524,6 +549,59 @@ def qr(x1, mode="reduced"):
     return call_origin(numpy.linalg.qr, x1, mode)
 
 
+def solve(a, b):
+    """
+    Solve a linear matrix equation, or system of linear scalar equations.
+
+    For full documentation refer to :obj:`numpy.linalg.solve`.
+
+    Returns
+    -------
+    out : {(…, M,), (…, M, K)} dpnp.ndarray
+        Solution to the system ax = b. Returned shape is identical to b.
+
+    Limitations
+    -----------
+    Parameters `a` and `b` are supported as either :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.dot` : Returns the dot product of two arrays.
+
+    Examples
+    --------
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 5]])
+    >>> b = dp.array([1, 2])
+    >>> x = dp.linalg.solve(a, b)
+    >>> x
+    array([-1.,  1.])
+
+    Check that the solution is correct:
+
+    >>> dp.allclose(dp.dot(a, x), b)
+    array([ True])
+
+    """
+
+    dpnp.check_supported_arrays_type(a, b)
+    check_stacked_2d(a)
+    check_stacked_square(a)
+
+    if not (
+        (a.ndim == b.ndim or a.ndim == b.ndim + 1)
+        and a.shape[:-1] == b.shape[: a.ndim - 1]
+    ):
+        raise dpnp.linalg.LinAlgError(
+            "a must have (..., M, M) shape and b must have (..., M) "
+            "or (..., M, K)"
+        )
+
+    return dpnp_solve(a, b)
+
+
 def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     """
     Singular Value Decomposition.
@@ -599,3 +677,59 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     return call_origin(
         numpy.linalg.svd, x1, full_matrices, compute_uv, hermitian
     )
+
+
+def slogdet(a):
+    """
+    Compute the sign and (natural) logarithm of the determinant of an array.
+
+    For full documentation refer to :obj:`numpy.linalg.slogdet`.
+
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Input array, has to be a square 2-D array.
+
+    Returns
+    -------
+    sign : (...) dpnp.ndarray
+        A number representing the sign of the determinant. For a real matrix,
+        this is 1, 0, or -1. For a complex matrix, this is a complex number
+        with absolute value 1 (i.e., it is on the unit circle), or else 0.
+    logabsdet : (...) dpnp.ndarray
+        The natural log of the absolute value of the determinant.
+
+    See Also
+    --------
+    :obj:`dpnp.det` : Returns the determinant of an array.
+
+    Examples
+    --------
+    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 4]])
+    >>> (sign, logabsdet) = dp.linalg.slogdet(a)
+    >>> (sign, logabsdet)
+    (array(-1.), array(0.69314718))
+    >>> sign * dp.exp(logabsdet)
+    array(-2.)
+
+    Computing log-determinants for a stack of matrices:
+
+    >>> a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])
+    >>> a.shape
+    (3, 2, 2)
+    >>> sign, logabsdet = dp.linalg.slogdet(a)
+    >>> (sign, logabsdet)
+    (array([-1., -1., -1.]), array([0.69314718, 1.09861229, 2.07944154]))
+    >>> sign * dp.exp(logabsdet)
+    array([-2., -3., -8.])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
+
+    return dpnp_slogdet(a)

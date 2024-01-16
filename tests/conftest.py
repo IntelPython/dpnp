@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
 
 import os
 import sys
+import warnings
 
 import dpctl
 import numpy
@@ -120,6 +121,27 @@ def suppress_invalid_numpy_warnings():
     old_settings = numpy.seterr(invalid="ignore")
     yield
     numpy.seterr(**old_settings)  # reset to default
+
+
+@pytest.fixture
+def suppress_dof_numpy_warnings():
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", r"Degrees of freedom <= 0 for slice")
+        yield
+
+
+@pytest.fixture
+def suppress_mean_empty_slice_numpy_warnings():
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", r"Mean of empty slice")
+        yield
+
+
+@pytest.fixture
+def suppress_overflow_encountered_in_cast_numpy_warnings():
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", r"overflow encountered in cast")
+        yield
 
 
 @pytest.fixture

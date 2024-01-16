@@ -2,7 +2,7 @@
 # cython: linetrace=True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -36,89 +36,16 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_average",
     "dpnp_correlate",
     "dpnp_median",
-    "dpnp_nanvar",
-    "dpnp_std",
-    "dpnp_var",
 ]
 
-
-# C function pointer to the C library template functions
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_custom_cov_1in_1out_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                void *, void * , size_t, size_t,
-                                                                const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_custom_nanvar_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                          void *, void * , void * , size_t, size_t,
-                                                          const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_custom_std_var_1in_1out_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                    void *, void * , shape_elem_type * , size_t,
-                                                                    shape_elem_type * , size_t, size_t,
-                                                                    const c_dpctl.DPCTLEventVectorRef)
 
 # C function pointer to the C library template functions
 ctypedef c_dpctl.DPCTLSyclEventRef(*custom_statistic_1in_1out_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                           void *, void * , shape_elem_type * , size_t,
                                                                           shape_elem_type * , size_t,
                                                                           const c_dpctl.DPCTLEventVectorRef)
-
-cdef utils.dpnp_descriptor call_fptr_custom_std_var_1in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1, ddof):
-    cdef shape_type_c x1_shape = x1.shape
-
-    """ Convert string type names (array.dtype) to C enum DPNPFuncType """
-    cdef DPNPFuncType param_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    """ get the FPTR data structure """
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param_type, DPNP_FT_NONE)
-
-    x1_obj = x1.get_array()
-
-    # create result array with type given by FPTR data
-    cdef shape_type_c result_shape = (1,)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=x1_obj.sycl_device,
-                                                                       usm_type=x1_obj.usm_type,
-                                                                       sycl_queue=x1_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_custom_std_var_1in_1out_t func = <fptr_custom_std_var_1in_1out_t > kernel_data.ptr
-
-    # stub for interface support
-    cdef shape_type_c axis
-    cdef Py_ssize_t axis_size = 0
-
-    """ Call FPTR function """
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    x1.get_data(),
-                                                    result.get_data(),
-                                                    x1_shape.data(),
-                                                    x1.ndim,
-                                                    axis.data(),
-                                                    axis_size,
-                                                    ddof,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-
-    return result
-
-
-cpdef dpnp_average(utils.dpnp_descriptor x1):
-    array_sum = dpnp_sum(x1).get_pyobj()
-
-    """ Numpy interface inconsistency """
-    return_type = dpnp.float32 if (x1.dtype == dpnp.float32) else dpnp.float64
-
-    return (return_type(array_sum / x1.size))
 
 
 cpdef utils.dpnp_descriptor dpnp_correlate(utils.dpnp_descriptor x1, utils.dpnp_descriptor x2):
@@ -207,53 +134,3 @@ cpdef utils.dpnp_descriptor dpnp_median(utils.dpnp_descriptor array1):
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_nanvar(utils.dpnp_descriptor arr, ddof):
-    # dpnp_isnan does not support USM array as input in comparison to dpnp.isnan
-    cdef utils.dpnp_descriptor mask_arr = dpnp.get_dpnp_descriptor(dpnp.isnan(arr.get_pyobj()),
-                                                                   copy_when_nondefault_queue=False)
-    n = dpnp.count_nonzero(mask_arr.get_pyobj())
-    res_size = int(arr.size - n)
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_NANVAR_EXT, param1_type, param1_type)
-
-    arr_obj = arr.get_array()
-
-    # create result array with type given by FPTR data
-    cdef shape_type_c result_shape = utils._object_to_tuple(res_size)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=arr_obj.sycl_device,
-                                                                       usm_type=arr_obj.usm_type,
-                                                                       sycl_queue=arr_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_custom_nanvar_t func = <fptr_custom_nanvar_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    arr.get_data(),
-                                                    mask_arr.get_data(),
-                                                    result.get_data(),
-                                                    result.size,
-                                                    arr.size,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return call_fptr_custom_std_var_1in_1out(DPNP_FN_VAR_EXT, result, ddof)
-
-
-cpdef utils.dpnp_descriptor dpnp_std(utils.dpnp_descriptor a, size_t ddof):
-    return call_fptr_custom_std_var_1in_1out(DPNP_FN_STD_EXT, a, ddof)
-
-
-cpdef utils.dpnp_descriptor dpnp_var(utils.dpnp_descriptor a, size_t ddof):
-    return call_fptr_custom_std_var_1in_1out(DPNP_FN_VAR_EXT, a, ddof)

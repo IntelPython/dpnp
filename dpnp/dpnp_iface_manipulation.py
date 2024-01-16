@@ -1,8 +1,6 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -57,8 +55,10 @@ __all__ = [
     "broadcast_arrays",
     "broadcast_to",
     "can_cast",
+    "column_stack",
     "concatenate",
     "copyto",
+    "dstack",
     "expand_dims",
     "flip",
     "fliplr",
@@ -71,6 +71,7 @@ __all__ = [
     "result_type",
     "roll",
     "rollaxis",
+    "row_stack",
     "shape",
     "squeeze",
     "stack",
@@ -82,22 +83,52 @@ __all__ = [
 ]
 
 
+def _check_stack_arrays(arrays):
+    """Validate a sequence type of arrays to stack."""
+
+    if not hasattr(arrays, "__getitem__"):
+        raise TypeError(
+            'arrays to stack must be passed as a "sequence" type '
+            "such as list or tuple."
+        )
+
+
 def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
     """
     Return an array converted to a float type.
 
     For full documentation refer to :obj:`numpy.asfarray`.
 
-    Notes
-    -----
-    If `dtype` is ``None``, :obj:`dpnp.bool` or one of the `int` dtypes,
-    it is replaced with the default floating type (:obj:`dpnp.float64`
-    if a device supports it, or :obj:`dpnp.float32` type otherwise).
+    Parameters
+    ----------
+    a : array_like
+        Input data, in any form that can be converted to an array.
+        This includes an instance of :class:`dpnp.ndarray` or
+        :class:`dpctl.tensor.usm_ndarray`, an object representing
+        SYCL USM allocation and implementing `__sycl_usm_array_interface__`
+        protocol, an instance of :class:`numpy.ndarray`, an object supporting
+        Python buffer protocol, a Python scalar, or a (possibly nested)
+        sequence of Python scalars.
+    dtype : str or dtype object, optional
+        Float type code to coerce input array `a`.  If `dtype` is ``None``,
+        :obj:`dpnp.bool` or one of the `int` dtypes, it is replaced with
+        the default floating type (:obj:`dpnp.float64` if a device supports it,
+        or :obj:`dpnp.float32` type otherwise).
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by :obj:`dpnp.ndarray.device` property.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
 
     Returns
     -------
-    y : dpnp.ndarray
-        The input a as a float ndarray.
+    out : dpnp.ndarray
+        The input `a` as a float ndarray.
 
     Examples
     --------
@@ -115,7 +146,7 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
         a, sycl_queue=sycl_queue, device=device
     )
 
-    if dtype is None or not numpy.issubdtype(dtype, dpnp.inexact):
+    if dtype is None or not dpnp.issubdtype(dtype, dpnp.inexact):
         dtype = dpnp.default_float_type(sycl_queue=_sycl_queue)
 
     return dpnp.asarray(
@@ -317,16 +348,18 @@ def broadcast_arrays(*args, subok=False):
 
     For full documentation refer to :obj:`numpy.broadcast_arrays`.
 
+    Parameters
+    ----------
+    args : {dpnp.ndarray, usm_ndarray}
+        A list of arrays to broadcast.
+
     Returns
     -------
-    broadcasted : list of dpnp.ndarray
-        These arrays are views on the original arrays.
+    out : list of dpnp.ndarray
+        A list of arrays which are views on the original arrays from `args`.
 
     Limitations
     -----------
-    Parameter `args` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise ``TypeError`` exception will be raised.
     Parameter `subok` is supported with default value.
     Otherwise ``NotImplementedError`` exception will be raised.
 
@@ -352,12 +385,8 @@ def broadcast_arrays(*args, subok=False):
     if len(args) == 0:
         return []
 
-    dpt_arrays = dpt.broadcast_arrays(
-        *[dpnp.get_usm_ndarray(array) for array in args]
-    )
-    return [
-        dpnp_array._create_from_usm_ndarray(usm_arr) for usm_arr in dpt_arrays
-    ]
+    usm_arrays = dpt.broadcast_arrays(*[dpnp.get_usm_ndarray(a) for a in args])
+    return [dpnp_array._create_from_usm_ndarray(a) for a in usm_arrays]
 
 
 def broadcast_to(array, /, shape, subok=False):
@@ -366,19 +395,23 @@ def broadcast_to(array, /, shape, subok=False):
 
     For full documentation refer to :obj:`numpy.broadcast_to`.
 
+    Parameters
+    ----------
+    array : {dpnp.ndarray, usm_ndarray}
+        The array to broadcast.
+    shape : tuple or int
+        The shape of the desired array. A single integer ``i`` is interpreted
+        as ``(i,)``.
+
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         An array having a specified shape. Must have the same data type as `array`.
 
     Limitations
     -----------
-    Parameter `array` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise ``TypeError`` exception will be raised.
     Parameter `subok` is supported with default value.
     Otherwise ``NotImplementedError`` exception will be raised.
-    Input array data types of `array` is limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -386,9 +419,9 @@ def broadcast_to(array, /, shape, subok=False):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> x = dp.array([1, 2, 3])
-    >>> dp.broadcast_to(x, (3, 3))
+    >>> import dpnp as np
+    >>> x = np.array([1, 2, 3])
+    >>> np.broadcast_to(x, (3, 3))
     array([[1, 2, 3],
            [1, 2, 3],
            [1, 2, 3]])
@@ -398,8 +431,8 @@ def broadcast_to(array, /, shape, subok=False):
     if subok is not False:
         raise NotImplementedError(f"subok={subok} is currently not supported")
 
-    dpt_array = dpnp.get_usm_ndarray(array)
-    new_array = dpt.broadcast_to(dpt_array, shape)
+    usm_array = dpnp.get_usm_ndarray(array)
+    new_array = dpt.broadcast_to(usm_array, shape)
     return dpnp_array._create_from_usm_ndarray(new_array)
 
 
@@ -407,14 +440,11 @@ def can_cast(from_, to, casting="safe"):
     """
     Returns ``True`` if cast between data types can occur according to the casting rule.
 
-    If `from` is a scalar or array scalar, also returns ``True`` if the scalar value can
-    be cast without overflow or truncation to an integer.
-
     For full documentation refer to :obj:`numpy.can_cast`.
 
     Parameters
     ----------
-    from : dpnp.array, dtype
+    from_ : {dpnp.ndarray, usm_ndarray, dtype, dtype specifier}
         Source data type.
     to : dtype
         Target data type.
@@ -424,12 +454,62 @@ def can_cast(from_, to, casting="safe"):
     Returns
     -------
     out: bool
-        True if cast can occur according to the casting rule.
+        ``True`` if cast can occur according to the casting rule,
+        ``False`` otherwise.
 
     See Also
     --------
-    :obj:`dpnp.result_type` : Returns the type that results from applying the NumPy
-        type promotion rules to the arguments.
+    :obj:`dpnp.result_type` : Returns the type that results from applying
+                              the NumPy type promotion rules to the arguments.
+
+    Examples
+    --------
+    Basic examples
+
+    >>> import dpnp as np
+    >>> np.can_cast(np.int32, np.int64)
+    True
+    >>> np.can_cast(np.float64, complex)
+    True
+    >>> np.can_cast(complex, float)
+    False
+
+    >>> np.can_cast('i8', 'f8')
+    True
+    >>> np.can_cast('i8', 'f4')
+    False
+
+    Array scalar checks the value, array does not
+
+    >>> np.can_cast(np.array(1000.0), np.float32)
+    True
+    >>> np.can_cast(np.array([1000.0]), np.float32)
+    False
+
+    Using the casting rules
+
+    >>> np.can_cast('i8', 'i8', 'no')
+    True
+    >>> np.can_cast('<i8', '>i8', 'no')
+    False
+
+    >>> np.can_cast('<i8', '>i8', 'equiv')
+    True
+    >>> np.can_cast('<i4', '>i8', 'equiv')
+    False
+
+    >>> np.can_cast('<i4', '>i8', 'safe')
+    True
+    >>> np.can_cast('<i8', '>i4', 'safe')
+    False
+
+    >>> np.can_cast('<i8', '>i4', 'same_kind')
+    True
+    >>> np.can_cast('<i8', '>u4', 'same_kind')
+    False
+
+    >>> np.can_cast('<i8', '>u4', 'unsafe')
+    True
 
     """
 
@@ -442,6 +522,64 @@ def can_cast(from_, to, casting="safe"):
         else dpnp.dtype(from_)
     )
     return dpt.can_cast(dtype_from, to, casting)
+
+
+def column_stack(tup):
+    """
+    Stacks 1-D and 2-D arrays as columns into a 2-D array.
+
+    Take a sequence of 1-D arrays and stack them as columns to make a single
+    2-D array. 2-D arrays are stacked as-is, just like with :obj:`dpnp.hstack`.
+    1-D arrays are turned into 2-D columns first.
+
+    For full documentation refer to :obj:`numpy.column_stack`.
+
+    Parameters
+    ----------
+    tup : {dpnp.ndarray, usm_ndarray}
+        A sequence of 1-D or 2-D arrays to stack. All of them must have
+        the same first dimension.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The array formed by stacking the given arrays.
+
+    See Also
+    --------
+    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
+    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third axis).
+    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
+    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
+    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array((1, 2, 3))
+    >>> b = np.array((2, 3, 4))
+    >>> np.column_stack((a, b))
+    array([[1, 2],
+           [2, 3],
+           [3, 4]])
+
+    """
+
+    _check_stack_arrays(tup)
+
+    arrays = []
+    for v in tup:
+        dpnp.check_supported_arrays_type(v)
+
+        if v.ndim == 1:
+            v = v[:, dpnp.newaxis]
+        elif v.ndim != 2:
+            raise ValueError(
+                "Only 1 or 2 dimensional arrays can be column stacked"
+            )
+
+        arrays.append(v)
+    return dpnp.concatenate(arrays, axis=1)
 
 
 def concatenate(
@@ -531,14 +669,18 @@ def copyto(dst, src, casting="same_kind", where=True):
 
     For full documentation refer to :obj:`numpy.copyto`.
 
-    Limitations
-    -----------
-    The `dst` parameter is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    The `where` parameter is supported as either :class:`dpnp.ndarray`,
-    :class:`dpctl.tensor.usm_ndarray` or scalar.
-    Otherwise ``TypeError`` exception will be raised.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    dst : {dpnp.ndarray, usm_ndarray}
+        The array into which values are copied.
+    src : array_like
+        The array from which values are copied.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur when copying.
+    where : {dpnp.ndarray, usm_ndarray, scalar} of bool, optional
+        A boolean array or a scalar which is broadcasted to match
+        the dimensions of `dst`, and selects elements to copy
+        from `src` to `dst` wherever it contains the value ``True``.
 
     Examples
     --------
@@ -601,6 +743,65 @@ def copyto(dst, src, casting="same_kind", where=True):
         dst_usm[mask_usm] = src_usm[mask_usm]
 
 
+def dstack(tup):
+    """
+    Stack arrays in sequence depth wise (along third axis).
+
+    This is equivalent to concatenation along the third axis after 2-D arrays
+    of shape `(M, N)` have been reshaped to `(M, N, 1)` and 1-D arrays of shape
+    `(N,)` have been reshaped to `(1, N, 1)`. Rebuilds arrays divided by
+    :obj:`dpnp.dsplit`.
+
+    For full documentation refer to :obj:`numpy.dstack`.
+
+    Parameters
+    ----------
+    tup : {dpnp.ndarray, usm_ndarray}
+        One or more array-like sequences. The arrays must have the same shape
+        along all but the third axis. 1-D or 2-D arrays must have the same shape.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The array formed by stacking the given arrays, will be at least 3-D.
+
+    See Also
+    --------
+    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
+    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
+    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
+    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
+    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.dsplit` : Split array along third axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array((1, 2, 3))
+    >>> b = np.array((2, 3, 4))
+    >>> np.dstack((a, b))
+    array([[[1, 2],
+            [2, 3],
+            [3, 4]]])
+
+    >>> a = np.array([[1], [2], [3]])
+    >>> b = np.array([[2], [3], [4]])
+    >>> np.dstack((a, b))
+    array([[[1, 2]],
+           [[2, 3]],
+           [[3, 4]]])
+
+    """
+
+    _check_stack_arrays(tup)
+
+    arrs = atleast_3d(*tup)
+    if not isinstance(arrs, list):
+        arrs = [arrs]
+    return dpnp.concatenate(arrs, axis=2)
+
+
 def expand_dims(a, axis):
     """
     Expand the shape of an array.
@@ -610,18 +811,18 @@ def expand_dims(a, axis):
 
     For full documentation refer to :obj:`numpy.expand_dims`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : int or tuple of ints
+        Position in the expanded axes where the new axis (or axes) is placed.
+
     Returns
     -------
     out : dpnp.ndarray
         An array with the number of dimensions increased.
         A view is returned whenever possible.
-
-    Limitations
-    -----------
-    Parameters `a` is supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Otherwise ``TypeError`` exception will be raised.
 
     Notes
     -----
@@ -683,9 +884,9 @@ def expand_dims(a, axis):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(a)
+    usm_array = dpnp.get_usm_ndarray(a)
     return dpnp_array._create_from_usm_ndarray(
-        dpt.expand_dims(dpt_array, axis=axis)
+        dpt.expand_dims(usm_array, axis=axis)
     )
 
 
@@ -697,17 +898,21 @@ def flip(m, axis=None):
 
     For full documentation refer to :obj:`numpy.flip`.
 
+    Parameters
+    ----------
+    m : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : None or int or tuple of ints, optional
+         Axis or axes along which to flip over. The default,
+         ``axis=None``, will flip over all of the axes of the input array.
+         If `axis` is negative it counts from the last to the first axis.
+         If `axis` is a tuple of ints, flipping is performed on all of the axes
+         specified in the tuple.
+
     Returns
     -------
     out : dpnp.ndarray
         A view of `m` with the entries of axis reversed.
-
-    Limitations
-    -----------
-    Parameters `m` is supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Otherwise ``TypeError`` exception will be raised.
 
     See Also
     --------
@@ -763,17 +968,15 @@ def fliplr(m):
 
     For full documentation refer to :obj:`numpy.fliplr`.
 
+    Parameters
+    ----------
+    m : {dpnp.ndarray, usm_ndarray}
+        Input array, must be at least 2-D.
+
     Returns
     -------
     out : dpnp.ndarray
         A view of `m` with the columns reversed.
-
-    Limitations
-    -----------
-    Parameters `m` is supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Otherwise ``TypeError`` exception will be raised.
 
     See Also
     --------
@@ -815,17 +1018,15 @@ def flipud(m):
 
     For full documentation refer to :obj:`numpy.flipud`.
 
+    Parameters
+    ----------
+    m : {dpnp.ndarray, usm_ndarray}
+        Input array.
+
     Returns
     -------
     out : dpnp.ndarray
         A view of `m` with the rows reversed.
-
-    Limitations
-    -----------
-    Parameters `m` is supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Otherwise ``TypeError`` exception will be raised.
 
     See Also
     --------
@@ -887,33 +1088,34 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
     :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
     :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
+    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third dimension).
+    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
     :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
     :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array((1,2,3))
-    >>> b = np.array((4,5,6))
-    >>> np.hstack((a,b))
+    >>> a = np.array((1, 2, 3))
+    >>> b = np.array((4, 5, 6))
+    >>> np.hstack((a, b))
     array([1, 2, 3, 4, 5, 6])
 
-    >>> a = np.array([[1],[2],[3]])
-    >>> b = np.array([[4],[5],[6]])
-    >>> np.hstack((a,b))
+    >>> a = np.array([[1], [2], [3]])
+    >>> b = np.array([[4], [5], [6]])
+    >>> np.hstack((a, b))
     array([[1, 4],
            [2, 5],
            [3, 6]])
 
     """
 
-    if not hasattr(tup, "__getitem__"):
-        raise TypeError(
-            "Arrays to stack must be passed as a sequence type such as list or tuple."
-        )
+    _check_stack_arrays(tup)
+
     arrs = dpnp.atleast_1d(*tup)
     if not isinstance(arrs, list):
         arrs = [arrs]
+
     # As a special case, dimension 0 of 1-dimensional arrays is "horizontal"
     if arrs and arrs[0].ndim == 1:
         return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
@@ -927,20 +1129,20 @@ def moveaxis(a, source, destination):
 
     For full documentation refer to :obj:`numpy.moveaxis`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        The array whose axes should be reordered.
+    source : int or sequence of int
+        Original positions of the axes to move. These must be unique.
+    destination : int or sequence of int
+        Destination positions for each of the original axes. These must also be
+        unique.
+
     Returns
     -------
     out : dpnp.ndarray
-        Array with moved axes.
-        The returned array will have the same data and
-        the same USM allocation type as `a`.
-
-    Limitations
-    -----------
-    Parameters `a` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
-    will be raised.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Otherwise ``TypeError`` exception will be raised.
+        Array with moved axes. This array is a view of the input array.
 
     See Also
     --------
@@ -958,9 +1160,9 @@ def moveaxis(a, source, destination):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(a)
+    usm_array = dpnp.get_usm_ndarray(a)
     return dpnp_array._create_from_usm_ndarray(
-        dpt.moveaxis(dpt_array, source, destination)
+        dpt.moveaxis(usm_array, source, destination)
     )
 
 
@@ -986,7 +1188,7 @@ def ravel(a, order="C"):
     Returns
     -------
     out : dpnp_array
-        `out` is a contiguous 1-D array of the same subtype as `a`, with shape (a.size,)
+        A contiguous 1-D array of the same subtype as `a`, with shape (a.size,).
 
     See Also
     --------
@@ -1084,7 +1286,7 @@ def reshape(a, /, newshape, order="C", copy=None):
         inferred from the length of the array and remaining dimensions.
     order : {'C', 'F'}, optional
         Read the elements of `a` using this index order, and place the
-        elements into the reshaped array using this index order.  'C'
+        elements into the reshaped array using this index order. 'C'
         means to read / write the elements using C-like index order,
         with the last axis index changing fastest, back to the first
         axis index changing slowest. 'F' means to read / write the
@@ -1102,7 +1304,7 @@ def reshape(a, /, newshape, order="C", copy=None):
 
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         This will be a new view object if possible; otherwise, it will
         be a copy.  Note there is no guarantee of the *memory layout* (C- or
         Fortran- contiguous) of the returned array.
@@ -1155,18 +1357,13 @@ def result_type(*arrays_and_dtypes):
 
     Parameters
     ----------
-    arrays_and_dtypes : list of arrays and dtypes
+    arrays_and_dtypes : list of {dpnp.ndarray, usm_ndarray, dtype}
         An arbitrary length sequence of arrays or dtypes.
 
     Returns
     -------
     out : dtype
         The result type.
-
-    Limitations
-    -----------
-    An array in the input list is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
 
     Examples
     --------
@@ -1183,7 +1380,9 @@ def result_type(*arrays_and_dtypes):
     """
 
     usm_arrays_and_dtypes = [
-        X.dtype if isinstance(X, (dpnp_array, dpt.usm_ndarray)) else X
+        dpnp.get_usm_ndarray(X)
+        if isinstance(X, (dpnp_array, dpt.usm_ndarray))
+        else X
         for X in arrays_and_dtypes
     ]
     return dpt.result_type(*usm_arrays_and_dtypes)
@@ -1199,19 +1398,26 @@ def roll(x, shift, axis=None):
 
     For full documentation refer to :obj:`numpy.roll`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    shift : int or tuple of ints
+        The number of places by which elements are shifted. If a tuple,
+        then `axis` must be a tuple of the same size, and each of the
+        given axes is shifted by the corresponding number. If an int
+        while `axis` is a tuple of ints, then the same value is used for
+        all given axes.
+    axis : int or tuple of ints, optional
+        Axis or axes along which elements are shifted. By default, the
+        array is flattened before shifting, after which the original
+        shape is restored.
+
     Returns
     -------
-    dpnp.ndarray
+    out : dpnp.ndarray
         An array with the same data type as `x`
         and whose elements, relative to `x`, are shifted.
-
-    Limitations
-    -----------
-    Parameter `x` is supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
-    will be raised.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
 
     See Also
     --------
@@ -1241,9 +1447,9 @@ def roll(x, shift, axis=None):
     """
     if axis is None:
         return roll(x.reshape(-1), shift, 0).reshape(x.shape)
-    dpt_array = dpnp.get_usm_ndarray(x)
+    usm_array = dpnp.get_usm_ndarray(x)
     return dpnp_array._create_from_usm_ndarray(
-        dpt.roll(dpt_array, shift=shift, axis=axis)
+        dpt.roll(usm_array, shift=shift, axis=axis)
     )
 
 
@@ -1253,18 +1459,24 @@ def rollaxis(x, axis, start=0):
 
     For full documentation refer to :obj:`numpy.rollaxis`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : int
+        The axis to be rolled. The positions of the other axes do not
+        change relative to one another.
+    start : int, optional
+        When ``start <= axis``, the axis is rolled back until it lies in
+        this position. When ``start > axis``, the axis is rolled until it
+        lies before this position. The default, ``0``, results in a "complete"
+        roll.
+
     Returns
     -------
-    dpnp.ndarray
+    out : dpnp.ndarray
         An array with the same data type as `x` where the specified axis
         has been repositioned to the desired position.
-
-    Limitations
-    -----------
-    Parameter `x` is supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception
-    will be raised.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -1296,8 +1508,8 @@ def rollaxis(x, axis, start=0):
         start -= 1
     if axis == start:
         return x
-    dpt_array = dpnp.get_usm_ndarray(x)
-    return dpnp.moveaxis(dpt_array, source=axis, destination=start)
+    usm_array = dpnp.get_usm_ndarray(x)
+    return dpnp.moveaxis(usm_array, source=axis, destination=start)
 
 
 def shape(a):
@@ -1349,22 +1561,22 @@ def squeeze(a, /, axis=None):
 
     For full documentation refer to :obj:`numpy.squeeze`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input data.
+    axis : None or int or tuple of ints, optional
+        Selects a subset of the entries of length one in the shape.
+        If an axis is selected with shape entry greater than one,
+        an error is raised.
+
     Returns
     -------
     out : dpnp.ndarray
-        Output array is a view, if possible,
-        and a copy otherwise, but with all or a subset of the
-        dimensions of length 1 removed. Output has the same data
-        type as the input, is allocated on the same device as the
-        input and has the same USM allocation type as the input
-        array `a`.
-
-    Limitations
-    -----------
-    Parameters `a` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Otherwise ``TypeError`` exception will be raised.
+        Output array is a view, if possible, and a copy otherwise, but with all
+        or a subset of the dimensions of length 1 removed. Output has the same
+        data type as the input, is allocated on the same device as the input
+        and has the same USM allocation type as the input array `a`.
 
     Examples
     --------
@@ -1385,9 +1597,9 @@ def squeeze(a, /, axis=None):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(a)
+    usm_array = dpnp.get_usm_ndarray(a)
     return dpnp_array._create_from_usm_ndarray(
-        dpt.squeeze(dpt_array, axis=axis)
+        dpt.squeeze(usm_array, axis=axis)
     )
 
 
@@ -1420,6 +1632,10 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
     See Also
     --------
     :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
+    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
+    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third dimension).
+    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
     :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
     :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
 
@@ -1449,6 +1665,8 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
 
     """
 
+    _check_stack_arrays(arrays)
+
     if dtype is not None and out is not None:
         raise TypeError(
             "stack() only takes `out` or `dtype` as an argument, but both were provided."
@@ -1471,18 +1689,20 @@ def swapaxes(a, axis1, axis2):
 
     For full documentation refer to :obj:`numpy.swapaxes`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis1 : int
+        First axis.
+    axis2 : int
+        Second axis.
+
     Returns
     -------
     out : dpnp.ndarray
         An array with with swapped axes.
         A view is returned whenever possible.
-
-    Limitations
-    -----------
-    Parameters `a` is supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Otherwise ``TypeError`` exception will be raised.
 
     Notes
     -----
@@ -1512,9 +1732,9 @@ def swapaxes(a, axis1, axis2):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(a)
+    usm_array = dpnp.get_usm_ndarray(a)
     return dpnp_array._create_from_usm_ndarray(
-        dpt.swapaxes(dpt_array, axis1=axis1, axis2=axis2)
+        dpt.swapaxes(usm_array, axis1=axis1, axis2=axis2)
     )
 
 
@@ -1542,14 +1762,14 @@ def tile(A, reps):
 
     Parameters
     ----------
-    A : dpnp.ndarray
+    A : {dpnp.ndarray, usm_ndarray}
         The input array.
-    reps : array_like
+    reps : int or tuple of ints
         The number of repetitions of `A` along each axis.
 
     Returns
     -------
-    c : dpnp.ndarray
+    out : dpnp.ndarray
         The tiled output array.
 
     See Also
@@ -1592,8 +1812,8 @@ def tile(A, reps):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(A)
-    return dpnp_array._create_from_usm_ndarray(dpt.tile(dpt_array, reps))
+    usm_array = dpnp.get_usm_ndarray(A)
+    return dpnp_array._create_from_usm_ndarray(dpt.tile(usm_array, reps))
 
 
 def transpose(a, axes=None):
@@ -1602,15 +1822,21 @@ def transpose(a, axes=None):
 
     For full documentation refer to :obj:`numpy.transpose`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axes : tuple or list of ints, optional
+        If specified, it must be a tuple or list which contains a permutation
+        of [0, 1, ..., N-1] where N is the number of axes of `a`.
+        The `i`'th axis of the returned array will correspond to the axis
+        numbered ``axes[i]`` of the input. If not specified, defaults to
+        ``range(a.ndim)[::-1]``, which reverses the order of the axes.
+
     Returns
     -------
-    y : dpnp.ndarray
+    out : dpnp.ndarray
         `a` with its axes permuted. A view is returned whenever possible.
-
-    Limitations
-    -----------
-    Input array is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
 
     See Also
     --------
@@ -1682,6 +1908,9 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     """
     Stack arrays in sequence vertically (row wise).
 
+    :obj:`dpnp.row_stack` is an alias for :obj:`dpnp.vstack`.
+    They are the same function.
+
     For full documentation refer to :obj:`numpy.vstack`.
 
     Parameters
@@ -1730,11 +1959,12 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
 
     """
 
-    if not hasattr(tup, "__getitem__"):
-        raise TypeError(
-            "Arrays to stack must be passed as a sequence type such as list or tuple."
-        )
+    _check_stack_arrays(tup)
+
     arrs = dpnp.atleast_2d(*tup)
     if not isinstance(arrs, list):
         arrs = [arrs]
     return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
+
+
+row_stack = vstack

@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,9 @@
 set(python_module_name _lapack_impl)
 set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/lapack_py.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gesv.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/getrf.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/getrf_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/heevd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/potrf.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/potrf_batch.cpp

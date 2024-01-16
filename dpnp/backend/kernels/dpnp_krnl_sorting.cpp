@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2023, Intel Corporation
+// Copyright (c) 2016-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -192,11 +192,12 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
     auto arr_to_result_event = q.memcpy(result, arr, size * sizeof(_DataType));
     arr_to_result_event.wait();
 
+    _DataType *matrix = new _DataType[shape_[ndim - 1]];
+
     for (size_t i = 0; i < size_; ++i) {
         size_t ind_begin = i * shape_[ndim - 1];
         size_t ind_end = (i + 1) * shape_[ndim - 1] - 1;
 
-        _DataType matrix[shape_[ndim - 1]];
         for (size_t j = ind_begin; j < ind_end + 1; ++j) {
             size_t ind = j - ind_begin;
             matrix[ind] = arr2[j];
@@ -242,6 +243,7 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
 
     event.wait();
 
+    delete[] matrix;
     sycl::free(shape, q);
 
     return event_ref;

@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2023, Intel Corporation
+// Copyright (c) 2016-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -358,9 +358,7 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
         }
     }
     else {
-        size_t res_ndim = ndim - naxis;
-        size_t res_shape[res_ndim];
-        int ind = 0;
+        std::vector<size_t> res_shape;
         for (size_t i = 0; i < ndim; ++i) {
             bool found = false;
             for (size_t j = 0; j < naxis; ++j) {
@@ -370,28 +368,24 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
                 }
             }
             if (!found) {
-                res_shape[ind] = shape[i];
-                ind++;
+                res_shape.push_back(shape[i]);
             }
         }
+        const size_t res_ndim = res_shape.size();
 
-        size_t input_shape_offsets[ndim];
         size_t acc = 1;
-        for (size_t i = ndim - 1; i > 0; --i) {
-            input_shape_offsets[i] = acc;
+        std::vector<size_t> input_shape_offsets{acc};
+        for (size_t i = ndim - 2; i > 0; --i) {
             acc *= shape[i];
+            input_shape_offsets.insert(input_shape_offsets.begin(), acc);
         }
-        input_shape_offsets[0] = acc;
 
-        size_t output_shape_offsets[res_ndim];
         acc = 1;
-        if (res_ndim > 0) {
-            for (size_t i = res_ndim - 1; i > 0; --i) {
-                output_shape_offsets[i] = acc;
-                acc *= res_shape[i];
-            }
+        std::vector<size_t> output_shape_offsets{acc};
+        for (size_t i = res_ndim - 2; i > 0; --i) {
+            acc *= res_shape[i];
+            output_shape_offsets.insert(output_shape_offsets.begin(), acc);
         }
-        output_shape_offsets[0] = acc;
 
         size_t size_result = 1;
         for (size_t i = 0; i < res_ndim; ++i) {
@@ -399,15 +393,16 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
         }
 
         // init result array
+        size_t *xyz = new size_t[res_ndim];
+        size_t *source_axis = new size_t[ndim];
+        size_t *result_axis = new size_t[res_ndim];
         for (size_t result_idx = 0; result_idx < size_result; ++result_idx) {
-            size_t xyz[res_ndim];
             size_t remainder = result_idx;
             for (size_t i = 0; i < res_ndim; ++i) {
                 xyz[i] = remainder / output_shape_offsets[i];
                 remainder = remainder - xyz[i] * output_shape_offsets[i];
             }
 
-            size_t source_axis[ndim];
             size_t result_axis_idx = 0;
             for (size_t idx = 0; idx < ndim; ++idx) {
                 bool found = false;
@@ -436,7 +431,6 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
 
         for (size_t source_idx = 0; source_idx < size_input; ++source_idx) {
             // reconstruct x,y,z from linear source_idx
-            size_t xyz[ndim];
             size_t remainder = source_idx;
             for (size_t i = 0; i < ndim; ++i) {
                 xyz[i] = remainder / input_shape_offsets[i];
@@ -444,7 +438,6 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
             }
 
             // extract result axis
-            size_t result_axis[res_ndim];
             size_t result_idx = 0;
             for (size_t idx = 0; idx < ndim; ++idx) {
                 // try to find current idx in axis array
@@ -471,10 +464,56 @@ DPCTLSyclEventRef dpnp_max_c(DPCTLSyclQueueRef q_ref,
                 result[result_offset] = array_1[source_idx];
             }
         }
+
+        delete[] xyz;
+        delete[] source_axis;
+        delete[] result_axis;
     }
 
     return event_ref;
 }
+
+// Explicit instantiation of the function, since dpnp_max_c() is used by
+// other template functions, but implicit instantiation is not applied anymore.
+template DPCTLSyclEventRef dpnp_max_c<int32_t>(DPCTLSyclQueueRef q_ref,
+                                               void *,
+                                               void *,
+                                               const size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_max_c<int64_t>(DPCTLSyclQueueRef q_ref,
+                                               void *,
+                                               void *,
+                                               const size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_max_c<float>(DPCTLSyclQueueRef q_ref,
+                                             void *,
+                                             void *,
+                                             const size_t,
+                                             const shape_elem_type *,
+                                             size_t,
+                                             const shape_elem_type *,
+                                             size_t,
+                                             const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_max_c<double>(DPCTLSyclQueueRef q_ref,
+                                              void *,
+                                              void *,
+                                              const size_t,
+                                              const shape_elem_type *,
+                                              size_t,
+                                              const shape_elem_type *,
+                                              size_t,
+                                              const DPCTLEventVectorRef);
 
 template <typename _DataType>
 void dpnp_max_c(void *array1_in,
@@ -730,9 +769,7 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
         }
     }
     else {
-        size_t res_ndim = ndim - naxis;
-        size_t res_shape[res_ndim];
-        int ind = 0;
+        std::vector<size_t> res_shape;
         for (size_t i = 0; i < ndim; i++) {
             bool found = false;
             for (size_t j = 0; j < naxis; j++) {
@@ -742,28 +779,24 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
                 }
             }
             if (!found) {
-                res_shape[ind] = shape[i];
-                ind++;
+                res_shape.push_back(shape[i]);
             }
         }
+        const size_t res_ndim = res_shape.size();
 
-        size_t input_shape_offsets[ndim];
         size_t acc = 1;
-        for (size_t i = ndim - 1; i > 0; --i) {
-            input_shape_offsets[i] = acc;
+        std::vector<size_t> input_shape_offsets{acc};
+        for (size_t i = ndim - 2; i > 0; --i) {
             acc *= shape[i];
+            input_shape_offsets.insert(input_shape_offsets.begin(), acc);
         }
-        input_shape_offsets[0] = acc;
 
-        size_t output_shape_offsets[res_ndim];
         acc = 1;
-        if (res_ndim > 0) {
-            for (size_t i = res_ndim - 1; i > 0; --i) {
-                output_shape_offsets[i] = acc;
-                acc *= res_shape[i];
-            }
+        std::vector<size_t> output_shape_offsets{acc};
+        for (size_t i = res_ndim - 2; i > 0; --i) {
+            acc *= res_shape[i];
+            output_shape_offsets.insert(output_shape_offsets.begin(), acc);
         }
-        output_shape_offsets[0] = acc;
 
         size_t size_result = 1;
         for (size_t i = 0; i < res_ndim; ++i) {
@@ -771,15 +804,16 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
         }
 
         // init result array
+        size_t *xyz = new size_t[res_ndim];
+        size_t *source_axis = new size_t[ndim];
+        size_t *result_axis = new size_t[res_ndim];
         for (size_t result_idx = 0; result_idx < size_result; ++result_idx) {
-            size_t xyz[res_ndim];
             size_t remainder = result_idx;
             for (size_t i = 0; i < res_ndim; ++i) {
                 xyz[i] = remainder / output_shape_offsets[i];
                 remainder = remainder - xyz[i] * output_shape_offsets[i];
             }
 
-            size_t source_axis[ndim];
             size_t result_axis_idx = 0;
             for (size_t idx = 0; idx < ndim; ++idx) {
                 bool found = false;
@@ -808,7 +842,6 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
 
         for (size_t source_idx = 0; source_idx < size_input; ++source_idx) {
             // reconstruct x,y,z from linear source_idx
-            size_t xyz[ndim];
             size_t remainder = source_idx;
             for (size_t i = 0; i < ndim; ++i) {
                 xyz[i] = remainder / input_shape_offsets[i];
@@ -816,7 +849,6 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
             }
 
             // extract result axis
-            size_t result_axis[res_ndim];
             size_t result_idx = 0;
             for (size_t idx = 0; idx < ndim; ++idx) {
                 // try to find current idx in axis array
@@ -843,10 +875,56 @@ DPCTLSyclEventRef dpnp_min_c(DPCTLSyclQueueRef q_ref,
                 result[result_offset] = array_1[source_idx];
             }
         }
+
+        delete[] xyz;
+        delete[] source_axis;
+        delete[] result_axis;
     }
 
     return event_ref;
 }
+
+// Explicit instantiation of the function, since dpnp_min_c() is used by
+// other template functions, but implicit instantiation is not applied anymore.
+template DPCTLSyclEventRef dpnp_min_c<int32_t>(DPCTLSyclQueueRef q_ref,
+                                               void *,
+                                               void *,
+                                               const size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_min_c<int64_t>(DPCTLSyclQueueRef q_ref,
+                                               void *,
+                                               void *,
+                                               const size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const shape_elem_type *,
+                                               size_t,
+                                               const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_min_c<float>(DPCTLSyclQueueRef q_ref,
+                                             void *,
+                                             void *,
+                                             const size_t,
+                                             const shape_elem_type *,
+                                             size_t,
+                                             const shape_elem_type *,
+                                             size_t,
+                                             const DPCTLEventVectorRef);
+
+template DPCTLSyclEventRef dpnp_min_c<double>(DPCTLSyclQueueRef q_ref,
+                                              void *,
+                                              void *,
+                                              const size_t,
+                                              const shape_elem_type *,
+                                              size_t,
+                                              const shape_elem_type *,
+                                              size_t,
+                                              const DPCTLEventVectorRef);
 
 template <typename _DataType>
 void dpnp_min_c(void *array1_in,
@@ -939,16 +1017,6 @@ template <typename _DataType>
 void (*dpnp_nanvar_default_c)(void *, void *, void *, const size_t, size_t) =
     dpnp_nanvar_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_nanvar_ext_c)(DPCTLSyclQueueRef,
-                                       void *,
-                                       void *,
-                                       void *,
-                                       const size_t,
-                                       size_t,
-                                       const DPCTLEventVectorRef) =
-    dpnp_nanvar_c<_DataType>;
-
 template <typename _DataType, typename _ResultType>
 DPCTLSyclEventRef dpnp_std_c(DPCTLSyclQueueRef q_ref,
                              void *array1_in,
@@ -1038,18 +1106,6 @@ void (*dpnp_std_default_c)(void *,
                            const shape_elem_type *,
                            size_t,
                            size_t) = dpnp_std_c<_DataType, _ResultType>;
-
-template <typename _DataType, typename _ResultType>
-DPCTLSyclEventRef (*dpnp_std_ext_c)(DPCTLSyclQueueRef,
-                                    void *,
-                                    void *,
-                                    const shape_elem_type *,
-                                    size_t,
-                                    const shape_elem_type *,
-                                    size_t,
-                                    size_t,
-                                    const DPCTLEventVectorRef) =
-    dpnp_std_c<_DataType, _ResultType>;
 
 template <typename _DataType, typename _ResultType>
 class dpnp_var_c_kernel;
@@ -1149,18 +1205,6 @@ void (*dpnp_var_default_c)(void *,
                            const shape_elem_type *,
                            size_t,
                            size_t) = dpnp_var_c<_DataType, _ResultType>;
-
-template <typename _DataType, typename _ResultType>
-DPCTLSyclEventRef (*dpnp_var_ext_c)(DPCTLSyclQueueRef,
-                                    void *,
-                                    void *,
-                                    const shape_elem_type *,
-                                    size_t,
-                                    const shape_elem_type *,
-                                    size_t,
-                                    size_t,
-                                    const DPCTLEventVectorRef) =
-    dpnp_var_c<_DataType, _ResultType>;
 
 void func_map_init_statistics(func_map_t &fmap)
 {
@@ -1316,15 +1360,6 @@ void func_map_init_statistics(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_NANVAR][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_nanvar_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_NANVAR_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_nanvar_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_NANVAR_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_nanvar_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_NANVAR_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_nanvar_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_NANVAR_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_nanvar_ext_c<double>};
-
     fmap[DPNPFuncName::DPNP_FN_STD][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_std_default_c<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_STD][eft_LNG][eft_LNG] = {
@@ -1334,15 +1369,6 @@ void func_map_init_statistics(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_STD][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_std_default_c<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_STD_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_std_ext_c<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_STD_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_std_ext_c<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_STD_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_std_ext_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_STD_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_std_ext_c<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_VAR][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_var_default_c<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_VAR][eft_LNG][eft_LNG] = {
@@ -1351,15 +1377,6 @@ void func_map_init_statistics(func_map_t &fmap)
         eft_FLT, (void *)dpnp_var_default_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_VAR][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_var_default_c<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_VAR_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_var_ext_c<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_VAR_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_var_ext_c<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_VAR_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_var_ext_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_VAR_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_var_ext_c<double, double>};
 
     return;
 }
