@@ -29,6 +29,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/type_utils.hpp"
 
+#include "linalg_exceptions.hpp"
 #include "potrf.hpp"
 #include "types_matrix.hpp"
 
@@ -76,6 +77,7 @@ static sycl::event potrf_impl(sycl::queue exec_q,
 
     std::stringstream error_msg;
     std::int64_t info = 0;
+    bool is_exception_caught = false;
 
     sycl::event potrf_event;
     try {
@@ -83,7 +85,10 @@ static sycl::event potrf_impl(sycl::queue exec_q,
 
         potrf_event = oneapi::mkl::lapack::potrf(
             exec_q,
-            upper_lower, //
+            upper_lower, // An enumeration value of type oneapi::mkl::uplo:
+                         // oneapi::mkl::uplo::upper for the upper triangular
+                         // part; oneapi::mkl::uplo::lower for the lower
+                         // triangular part.
             n,           // Order of the square matrix; (0 ≤ n).
             a,           // Pointer to the n-by-n matrix.
             lda,         // The leading dimension of `a`.
@@ -91,27 +96,37 @@ static sycl::event potrf_impl(sycl::queue exec_q,
                          // routine for storing intermediate results.
             scratchpad_size, depends);
     } catch (mkl_lapack::exception const &e) {
-        error_msg
-            << "Unexpected MKL exception caught during potrf() call:\nreason: "
-            << e.what() << "\ninfo: " << e.info();
+        is_exception_caught = true;
         info = e.info();
+        if (info < 0) {
+            error_msg << "Parameter number " << -info
+                      << " had an illegal value.";
+        }
+        else if (info == scratchpad_size && e.detail() != 0) {
+            error_msg
+                << "Insufficient scratchpad size. Required size is at least "
+                << e.detail();
+        }
+        else if (info > 0 && e.detail() == 0) {
+            sycl::free(scratchpad, exec_q);
+            throw LinAlgError("Matrix is not positive definite.");
+        }
+        else {
+            error_msg << "Unexpected MKL exception caught during getrf() "
+                         "call:\nreason: "
+                      << e.what() << "\ninfo: " << e.info();
+        }
     } catch (sycl::exception const &e) {
+        is_exception_caught = true;
         error_msg << "Unexpected SYCL exception caught during potrf() call:\n"
                   << e.what();
-        info = -1;
     }
 
-    if (info != 0) // an unexpected error occurs
+    if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
             sycl::free(scratchpad, exec_q);
         }
-
-        // TODO: use LinAlgError
-        if (info == 2) {
-            throw py::value_error("Matrix is not positive definite");
-        }
-
         throw std::runtime_error(error_msg.str());
     }
 
