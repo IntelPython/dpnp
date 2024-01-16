@@ -581,6 +581,26 @@ def test_cholesky(data, is_empty, usm_type):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_indices(usm_type):
+    x = dp.indices((2,), usm_type=usm_type)
+    assert x.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("func", ["mgrid", "ogrid"])
+def test_grid(usm_type, func):
+    assert getattr(dp, func)(usm_type=usm_type)[0:4].usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("sparse", [True, False], ids=["True", "False"])
+def test_indices_sparse(usm_type, sparse):
+    x = dp.indices((2, 3), sparse=sparse, usm_type=usm_type)
+    for i in x:
+        assert i.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_clip(usm_type):
     x = dp.arange(10, usm_type=usm_type)
     y = dp.clip(x, 2, 7)
