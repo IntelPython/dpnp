@@ -488,11 +488,11 @@ def dpnp_det(a):
     return det.reshape(shape)
 
 
-def _dpnp_cholesky_batch(a, res_type):
+def dpnp_cholesky_batch(a, res_type):
     """
-    _dpnp_cholesky_batch(a, res_type)
+    dpnp_cholesky_batch(a, res_type)
 
-    Batched Cholesky decomposition.
+    Return the batched Cholesky decomposition of `a` array.
 
     """
 
@@ -507,7 +507,7 @@ def _dpnp_cholesky_batch(a, res_type):
     batch_size = a.shape[0]
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
-    # oneMKL LAPACK potrf overwrites `a`
+    # `a` must be copied because potrf_batch destroys the input matrix
     a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
 
     # use DPCTL tensor function to fill the сopy of the input array
@@ -519,8 +519,8 @@ def _dpnp_cholesky_batch(a, res_type):
     a_stride = a_h.strides[0]
 
     # Call the LAPACK extension function _potrf_batch
-    # to perform the Cholesky factorization of a batch of
-    # symmetric positive-definite matrix
+    # to computes the Cholesky decomposition of a batch of
+    # symmetric positive-definite matrices
     ht_lapack_ev, _ = li._potrf_batch(
         a_sycl_queue,
         a_h.get_array(),
@@ -542,7 +542,7 @@ def dpnp_cholesky(a):
     """
     dpnp_cholesky(a)
 
-    Return the Cholesky factorization.
+    Return the Cholesky decomposition of `a` array.
 
     """
 
@@ -563,11 +563,11 @@ def dpnp_cholesky(a):
         )
 
     if a.ndim > 2:
-        return _dpnp_cholesky_batch(a, res_type)
+        return dpnp_cholesky_batch(a, res_type)
 
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
-    # oneMKL LAPACK potrf overwrites `a`
+    # `a` must be copied because potrf destroys the input matrix
     a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
 
     # use DPCTL tensor function to fill the сopy of the input array
@@ -577,7 +577,7 @@ def dpnp_cholesky(a):
     )
 
     # Call the LAPACK extension function _potrf
-    # to computes the Cholesky factorization
+    # to computes the Cholesky decomposition
     ht_lapack_ev, _ = li._potrf(
         a_sycl_queue,
         n,
