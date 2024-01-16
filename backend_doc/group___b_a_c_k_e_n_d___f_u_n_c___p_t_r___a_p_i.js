@@ -36,7 +36,6 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNPFuncName::DPNP_FN_CBRT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a9369d46f49ff95d9d0865f2fb58a2a88", null ],
       [ "DPNPFuncName::DPNP_FN_CEIL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558af11c9206d6eb40b78e5382a5b952668b", null ],
       [ "DPNPFuncName::DPNP_FN_CHOLESKY", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ae4103d59e90a46b2d70fa1a139c6ceea", null ],
-      [ "DPNPFuncName::DPNP_FN_CHOLESKY_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ae97ddbdf60c1f955f32a4988d0df9e07", null ],
       [ "DPNPFuncName::DPNP_FN_CONJUGATE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a39c990c4e2ab1746bacaf7920374ab24", null ],
       [ "DPNPFuncName::DPNP_FN_CHOOSE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a753a922dac7c8d4151b2f1c65b95f80f", null ],
       [ "DPNPFuncName::DPNP_FN_CHOOSE_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a78256afce49f190fe5699d5c3be57176", null ],
