@@ -141,6 +141,29 @@ std::pair<sycl::event, sycl::event>
                 std::int64_t batch_size,
                 const std::vector<sycl::event> &depends)
 {
+    const int a_array_nd = a_array.get_ndim();
+
+    if (a_array_nd < 3) {
+        throw py::value_error(
+            "The input array has ndim=" + std::to_string(a_array_nd) +
+            ", but a 3-dimensional or higher array is expected.");
+    }
+
+    const py::ssize_t *a_array_shape = a_array.get_shape_raw();
+
+    if (a_array_shape[a_array_nd - 1] != a_array_shape[a_array_nd - 2]) {
+        throw py::value_error(
+            "The last two dimensions of the input array must be square,"
+            " but got a shape of (" +
+            std::to_string(a_array_shape[a_array_nd - 1]) + ", " +
+            std::to_string(a_array_shape[a_array_nd - 2]) + ").");
+    }
+
+    bool is_a_array_c_contig = a_array.is_c_contiguous();
+    if (!is_a_array_c_contig) {
+        throw py::value_error("The input array "
+                              "must be C-contiguous");
+    }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
