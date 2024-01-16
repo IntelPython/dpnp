@@ -441,53 +441,6 @@ def _lu_factor(a, res_type):
         return (a_h, ipiv_h, dev_info_array)
 
 
-def dpnp_det(a):
-    """
-    dpnp_det(a)
-
-    Returns the determinant of `a` array.
-
-    """
-
-    a_usm_type = a.usm_type
-    a_sycl_queue = a.sycl_queue
-
-    res_type = _common_type(a)
-
-    a_shape = a.shape
-    shape = a_shape[:-2]
-    n = a_shape[-2]
-
-    if a.size == 0:
-        # empty batch (result is empty, too) or empty matrices det([[]]) == 1
-        det = dpnp.ones(
-            shape,
-            dtype=res_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
-        )
-        return det
-
-    lu, ipiv, dev_info = _lu_factor(a, res_type)
-
-    # Transposing 'lu' to swap the last two axes for compatibility
-    # with 'dpnp.diagonal' as it does not support 'axis1' and 'axis2' arguments.
-    # TODO: Replace with 'dpnp.diagonal(lu, axis1=-2, axis2=-1)' when supported.
-    lu_transposed = lu.transpose(-2, -1, *range(lu.ndim - 2))
-    diag = dpnp.diagonal(lu_transposed)
-
-    det = dpnp.prod(dpnp.abs(diag), axis=-1)
-
-    sign = _calculate_determinant_sign(ipiv, diag, res_type, n)
-
-    det = sign * det
-    det = det.astype(res_type, copy=False)
-    singular = dev_info > 0
-    det = dpnp.where(singular, res_type.type(0), det)
-
-    return det.reshape(shape)
-
-
 def dpnp_cholesky_batch(a, res_type):
     """
     dpnp_cholesky_batch(a, res_type)
@@ -591,6 +544,53 @@ def dpnp_cholesky(a):
     a_h = dpnp.tril(a_h)
 
     return a_h
+
+
+def dpnp_det(a):
+    """
+    dpnp_det(a)
+
+    Returns the determinant of `a` array.
+
+    """
+
+    a_usm_type = a.usm_type
+    a_sycl_queue = a.sycl_queue
+
+    res_type = _common_type(a)
+
+    a_shape = a.shape
+    shape = a_shape[:-2]
+    n = a_shape[-2]
+
+    if a.size == 0:
+        # empty batch (result is empty, too) or empty matrices det([[]]) == 1
+        det = dpnp.ones(
+            shape,
+            dtype=res_type,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+        return det
+
+    lu, ipiv, dev_info = _lu_factor(a, res_type)
+
+    # Transposing 'lu' to swap the last two axes for compatibility
+    # with 'dpnp.diagonal' as it does not support 'axis1' and 'axis2' arguments.
+    # TODO: Replace with 'dpnp.diagonal(lu, axis1=-2, axis2=-1)' when supported.
+    lu_transposed = lu.transpose(-2, -1, *range(lu.ndim - 2))
+    diag = dpnp.diagonal(lu_transposed)
+
+    det = dpnp.prod(dpnp.abs(diag), axis=-1)
+
+    sign = _calculate_determinant_sign(ipiv, diag, res_type, n)
+
+    det = sign * det
+    det = det.astype(res_type, copy=False)
+    singular = dev_info > 0
+    det = dpnp.where(singular, res_type.type(0), det)
+
+    return det.reshape(shape)
 
 
 def dpnp_eigh(a, UPLO):
