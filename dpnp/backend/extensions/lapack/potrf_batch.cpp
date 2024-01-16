@@ -29,6 +29,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/type_utils.hpp"
 
+#include "linalg_exceptions.hpp"
 #include "potrf.hpp"
 #include "types_matrix.hpp"
 
@@ -82,6 +83,7 @@ static sycl::event potrf_batch_impl(sycl::queue exec_q,
 
     std::stringstream error_msg;
     std::int64_t info = 0;
+    bool is_exception_caught = false;
 
     sycl::event potrf_batch_event;
     try {
@@ -89,7 +91,10 @@ static sycl::event potrf_batch_impl(sycl::queue exec_q,
 
         potrf_batch_event = oneapi::mkl::lapack::potrf_batch(
             exec_q,
-            upper_lower, //
+            upper_lower, // An enumeration value of type oneapi::mkl::uplo:
+                         // oneapi::mkl::uplo::upper for the upper triangular
+                         // part; oneapi::mkl::uplo::lower for the lower
+                         // triangular part.
             n,           // Order of each square matrix in the batch; (0 ≤ n).
             a,           // Pointer to the batch of matrices.
             lda,         // The leading dimension of `a`.
@@ -99,28 +104,58 @@ static sycl::event potrf_batch_impl(sycl::queue exec_q,
             scratchpad,  // Pointer to scratchpad memory to be used by MKL
                          // routine for storing intermediate results.
             scratchpad_size, depends);
-    } catch (mkl_lapack::exception const &e) {
+    } catch (mkl_lapack::batch_error const &be) {
+        // Get the indices of matrices within the batch that encountered an
+        // error
+        auto error_matrices_ids = be.ids();
+
         error_msg
-            << "Unexpected MKL exception caught during potrf() call:\nreason: "
-            << e.what() << "\ninfo: " << e.info();
+            << "Matrix is not positive definite. Errors in matrices with IDs: ";
+        for (size_t i = 0; i < error_matrices_ids.size(); ++i) {
+            error_msg << error_matrices_ids[i];
+            if (i < error_matrices_ids.size() - 1) {
+                error_msg << ", ";
+            }
+        }
+        error_msg << ".";
+
+        sycl::free(scratchpad, exec_q);
+        throw LinAlgError(error_msg.str().c_str());
+    } catch (mkl_lapack::exception const &e) {
+        is_exception_caught = true;
         info = e.info();
+
+        if (info < 0) {
+            error_msg << "Parameter number " << -info
+                      << " had an illegal value.";
+        }
+        else if (info == scratchpad_size && e.detail() != 0) {
+            error_msg
+                << "Insufficient scratchpad size. Required size is at least "
+                << e.detail();
+        }
+        else if (info != 0 && e.detail() == 0) {
+            error_msg << "Error in batch processing. "
+                         "Number of failed calculations: "
+                      << info;
+        }
+        else {
+            error_msg << "Unexpected MKL exception caught during potrf_batch() "
+                         "call:\nreason: "
+                      << e.what() << "\ninfo: " << e.info();
+        }
     } catch (sycl::exception const &e) {
-        error_msg << "Unexpected SYCL exception caught during potrf() call:\n"
-                  << e.what();
-        info = -1;
+        is_exception_caught = true;
+        error_msg
+            << "Unexpected SYCL exception caught during potrf_batch() call:\n"
+            << e.what();
     }
 
-    if (info != 0) // an unexpected error occurs
+    if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
             sycl::free(scratchpad, exec_q);
         }
-
-        // TODO: use LinAlgError
-        if (info == 2) {
-            throw py::value_error("Matrix is not positive definite");
-        }
-
         throw std::runtime_error(error_msg.str());
     }
 
