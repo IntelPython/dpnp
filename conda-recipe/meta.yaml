@@ -49,7 +49,8 @@ test:
       - tests
       - setup.cfg
     commands:
-      - python -c "import dpnp"
+      - python -c "import dpnp; print(dpnp.__version__)"
+      - python -m dpctl -f
       - pytest -s
 
 about:
