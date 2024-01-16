@@ -117,7 +117,7 @@ class TestCholeskyInvalid(unittest.TestCase):
     def check_L(self, array):
         for xp in (numpy, cupy):
             a = xp.asarray(array)
-            with pytest.raises((numpy.linalg.LinAlgError, ValueError)):
+            with pytest.raises(xp.linalg.LinAlgError):
                 xp.linalg.cholesky(a)
 
     # TODO: remove skipif when MKLD-16626 is resolved

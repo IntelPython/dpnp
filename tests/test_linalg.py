@@ -44,44 +44,88 @@ def vvsort(val, vec, size, xp):
         vec[:, imax] = temp
 
 
-@pytest.mark.parametrize(
-    "array",
-    [
-        [[[1, -2], [2, 5]]],
-        [[[1.0, -2.0], [2.0, 5.0]]],
-        [[[1.0, -2.0], [2.0, 5.0]], [[1.0, -2.0], [2.0, 5.0]]],
-    ],
-    ids=[
-        "[[[1, -2], [2, 5]]]",
-        "[[[1., -2.], [2., 5.]]]",
-        "[[[1., -2.], [2., 5.]], [[1., -2.], [2., 5.]]]",
-    ],
-)
-def test_cholesky(array):
-    a = numpy.array(array)
-    ia = inp.array(a)
-    result = inp.linalg.cholesky(ia)
-    expected = numpy.linalg.cholesky(a)
-    assert_array_equal(expected, result)
+class TestCholesky:
+    @pytest.mark.parametrize(
+        "array",
+        [
+            [[1, 2], [2, 5]],
+            [[[5, 2], [2, 6]], [[7, 3], [3, 8]], [[3, 1], [1, 4]]],
+            [
+                [[[5, 2], [2, 5]], [[6, 3], [3, 6]]],
+                [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
+            ],
+        ],
+        ids=[
+            "2D_array",
+            "3D_array",
+            "4D_array",
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_cholesky_3d_4d(self, array, dtype):
+        a = numpy.array(array, dtype=dtype)
+        ia = inp.array(a)
+        result = inp.linalg.cholesky(ia)
+        expected = numpy.linalg.cholesky(a)
+        assert_dtype_allclose(result, expected)
 
+    def test_cholesky_strides(self):
+        a_np = numpy.array(
+            [
+                [5, 2, 0, 0, 1],
+                [2, 6, 0, 0, 2],
+                [0, 0, 7, 0, 0],
+                [0, 0, 0, 4, 0],
+                [1, 2, 0, 0, 5],
+            ]
+        )
 
-@pytest.mark.parametrize(
-    "shape",
-    [
-        (0, 0),
-        (3, 0, 0),
-    ],
-    ids=[
-        "(0, 0)",
-        "(3, 0, 0)",
-    ],
-)
-def test_cholesky_0D(shape):
-    a = numpy.empty(shape)
-    ia = inp.array(a)
-    result = inp.linalg.cholesky(ia)
-    expected = numpy.linalg.cholesky(a)
-    assert_array_equal(expected, result)
+        a_dp = inp.array(a_np)
+
+        # positive strides
+        expected = numpy.linalg.cholesky(a_np[::2, ::2])
+        result = inp.linalg.cholesky(a_dp[::2, ::2])
+        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+
+        # negative strides
+        expected = numpy.linalg.cholesky(a_np[::-2, ::-2])
+        result = inp.linalg.cholesky(a_dp[::-2, ::-2])
+        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (0, 0),
+            (3, 0, 0),
+            (0, 2, 2),
+        ],
+        ids=[
+            "(0, 0)",
+            "(3, 0, 0)",
+            "(0, 2, 2)",
+        ],
+    )
+    def test_cholesky_empty(self, shape):
+        a = numpy.empty(shape)
+        ia = inp.array(a)
+        result = inp.linalg.cholesky(ia)
+        expected = numpy.linalg.cholesky(a)
+        assert_array_equal(expected, result)
+
+    def test_cholesky_errors(self):
+        a_dp = inp.array([[1, 2], [2, 5]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.cholesky, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.cholesky, a_dp_ndim_1)
+
+        # a is not square
+        a_dp = inp.ones((2, 3))
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.cholesky, a_dp)
 
 
 @pytest.mark.parametrize(
