@@ -548,29 +548,11 @@ def dpnp_cholesky(a):
 
     a_sycl_queue = a.sycl_queue
     a_usm_type = a.usm_type
+
+    res_type = _common_type(a)
+
     a_shape = a.shape
-
     n = a.shape[-2]
-
-    # TODO: Use linalg_common_type from #1598
-    if dpnp.issubdtype(a.dtype, dpnp.floating):
-        res_type = (
-            a.dtype
-            if a_sycl_queue.sycl_device.has_aspect_fp64
-            else dpnp.float32
-        )
-    elif dpnp.issubdtype(a.dtype, dpnp.complexfloating):
-        res_type = (
-            a.dtype
-            if a_sycl_queue.sycl_device.has_aspect_fp64
-            else dpnp.complex64
-        )
-    else:
-        res_type = (
-            dpnp.float64
-            if a_sycl_queue.sycl_device.has_aspect_fp64
-            else dpnp.float32
-        )
 
     if a.size == 0:
         return dpnp.empty(
