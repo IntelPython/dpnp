@@ -126,11 +126,9 @@ static sycl::event potrf_impl(sycl::queue exec_q,
 
 std::pair<sycl::event, sycl::event>
     potrf(sycl::queue q,
-          const std::int64_t n,
           dpctl::tensor::usm_ndarray a_array,
           const std::vector<sycl::event> &depends)
 {
-
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
@@ -143,6 +141,7 @@ std::pair<sycl::event, sycl::event>
     }
 
     char *a_array_data = a_array.get_data();
+    const std::int64_t n = a_array.get_shape_raw()[0];
     const std::int64_t lda = std::max<size_t>(1UL, n);
     oneapi::mkl::uplo upper_lower = oneapi::mkl::uplo::upper;
 

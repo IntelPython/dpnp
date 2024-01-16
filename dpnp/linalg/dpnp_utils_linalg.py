@@ -505,7 +505,6 @@ def dpnp_cholesky(a):
     res_type = _common_type(a)
 
     a_shape = a.shape
-    n = a.shape[-2]
 
     if a.size == 0:
         return dpnp.empty(
@@ -533,7 +532,6 @@ def dpnp_cholesky(a):
     # to computes the Cholesky decomposition
     ht_lapack_ev, _ = li._potrf(
         a_sycl_queue,
-        n,
         a_h.get_array(),
         [a_copy_ev],
     )

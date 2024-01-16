@@ -40,7 +40,6 @@ namespace lapack
 {
 extern std::pair<sycl::event, sycl::event>
     potrf(sycl::queue exec_q,
-          const std::int64_t n,
           dpctl::tensor::usm_ndarray a_array,
           const std::vector<sycl::event> &depends = {});
 

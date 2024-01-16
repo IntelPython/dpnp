@@ -98,7 +98,7 @@ PYBIND11_MODULE(_lapack_impl, m)
     m.def("_potrf", &lapack_ext::potrf,
           "Call `potrf` from OneMKL LAPACK library to return "
           "the Cholesky factorization of a symmetric positive-definite matrix",
-          py::arg("sycl_queue"), py::arg("n"), py::arg("a_array"),
+          py::arg("sycl_queue"), py::arg("a_array"),
           py::arg("depends") = py::list());
 
     m.def("_potrf_batch", &lapack_ext::potrf_batch,
