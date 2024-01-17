@@ -48,7 +48,7 @@ namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
 typedef sycl::event (*potrf_impl_fn_ptr_t)(sycl::queue,
-                                           oneapi::mkl::uplo,
+                                           const oneapi::mkl::uplo,
                                            const std::int64_t,
                                            char *,
                                            std::int64_t,
@@ -59,7 +59,7 @@ static potrf_impl_fn_ptr_t potrf_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
 static sycl::event potrf_impl(sycl::queue exec_q,
-                              oneapi::mkl::uplo upper_lower,
+                              const oneapi::mkl::uplo upper_lower,
                               const std::int64_t n,
                               char *in_a,
                               std::int64_t lda,
@@ -142,6 +142,7 @@ static sycl::event potrf_impl(sycl::queue exec_q,
 std::pair<sycl::event, sycl::event>
     potrf(sycl::queue q,
           dpctl::tensor::usm_ndarray a_array,
+          const std::int8_t upper_lower,
           const std::vector<sycl::event> &depends)
 {
     const int a_array_nd = a_array.get_ndim();
@@ -161,10 +162,10 @@ std::pair<sycl::event, sycl::event>
                               std::to_string(a_array_shape[1]) + ").");
     }
 
-    bool is_a_array_c_contig = a_array.is_c_contiguous();
-    if (!is_a_array_c_contig) {
+    bool is_a_array_f_contig = a_array.is_f_contiguous();
+    if (!is_a_array_f_contig) {
         throw py::value_error("The input array "
-                              "must be C-contiguous");
+                              "must be F-contiguous");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
@@ -181,11 +182,12 @@ std::pair<sycl::event, sycl::event>
     char *a_array_data = a_array.get_data();
     const std::int64_t n = a_array_shape[0];
     const std::int64_t lda = std::max<size_t>(1UL, n);
-    oneapi::mkl::uplo upper_lower = oneapi::mkl::uplo::upper;
+    const oneapi::mkl::uplo uplo_val =
+        static_cast<oneapi::mkl::uplo>(upper_lower);
 
     std::vector<sycl::event> host_task_events;
-    sycl::event potrf_ev = potrf_fn(q, upper_lower, n, a_array_data, lda,
-                                    host_task_events, depends);
+    sycl::event potrf_ev =
+        potrf_fn(q, uplo_val, n, a_array_data, lda, host_task_events, depends);
 
     sycl::event args_ev =
         dpctl::utils::keep_args_alive(q, {a_array}, host_task_events);

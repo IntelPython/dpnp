@@ -73,17 +73,18 @@ __all__ = [
 ]
 
 
-def cholesky(a):
+def cholesky(a, upper=False):
     """
     Cholesky decomposition.
 
-    Return the Cholesky decomposition, `L * L.H`, of the square matrix `a`,
-    where `L` is lower-triangular and .H is the conjugate transpose operator
-    (which is the ordinary transpose if `a` is real-valued).  `a` must be
-    Hermitian (symmetric if real-valued) and positive-definite. No
-    checking is performed to verify whether `a` is Hermitian or not.
-    In addition, only the lower-triangular and diagonal elements of `a`
-    are used. Only `L` is actually returned.
+    Return the lower or upper Cholesky decomposition, ``L * L.H`` or
+    ``U.H * U``, of the square matrix ``a``, where ``L`` is lower-triangular,
+    ``U`` is upper-triangular, and ``.H`` is the conjugate transpose operator
+    (which is the ordinary transpose if ``a`` is real-valued). ``a`` must be
+    Hermitian (symmetric if real-valued) and positive-definite. No checking is
+    performed to verify whether ``a`` is Hermitian or not. In addition, only
+    the lower or upper-triangular and diagonal elements of ``a`` are used.
+    Only ``L`` or ``U`` is actually returned.
 
     For full documentation refer to :obj:`numpy.linalg.cholesky`.
 
@@ -92,11 +93,15 @@ def cholesky(a):
     a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         Hermitian (symmetric if all elements are real), positive-definite
         input matrix.
+    upper : bool, optional
+        If ``True``, the result must be the upper-triangular Cholesky factor.
+        If ``False``, the result must be the lower-triangular Cholesky factor.
+        Default: ``False``.
 
     Returns
     -------
     L : (..., M, M) dpnp.ndarray
-        Lower-triangular Cholesky factor of `a`.
+        Lower or upper-triangular Cholesky factor of `a`.
 
     Examples
     --------
@@ -113,13 +118,19 @@ def cholesky(a):
     array([[1., 2.],
            [2., 5.]])
 
+    The upper-triangular Cholesky factor can also be obtained:
+
+    >>> np.linalg.cholesky(A, upper=True)
+    array([[ 1.+0.j, -0.-2.j],
+           [ 0.+0.j,  1.+0.j]]
+
     """
 
     dpnp.check_supported_arrays_type(a)
     check_stacked_2d(a)
     check_stacked_square(a)
 
-    return dpnp_cholesky(a)
+    return dpnp_cholesky(a, upper=upper)
 
 
 def cond(input, p=None):

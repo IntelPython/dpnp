@@ -43,6 +43,9 @@ __all__ = [
 
 _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
+# Map booleans to MKL`s `uplo`` values:
+# True -> 0 (upper), False -> 1 (lower).
+_upper_lower_bool = {False: 1, True: 0}
 
 _real_types_map = {
     "float32": "float32",  # single : single
@@ -491,9 +494,9 @@ def dpnp_cholesky_batch(a, res_type):
     return a_h
 
 
-def dpnp_cholesky(a):
+def dpnp_cholesky(a, upper):
     """
-    dpnp_cholesky(a)
+    dpnp_cholesky(a, upper)
 
     Return the Cholesky decomposition of `a` array.
 
@@ -514,13 +517,16 @@ def dpnp_cholesky(a):
             sycl_queue=a_sycl_queue,
         )
 
+    # Set `uplo` value for MKL functions based on boolean input
+    upper_lower = _upper_lower_bool[upper]
+
     if a.ndim > 2:
         return dpnp_cholesky_batch(a, res_type)
 
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
     # `a` must be copied because potrf destroys the input matrix
-    a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
+    a_h = dpnp.empty_like(a, order="F", dtype=res_type, usm_type=a_usm_type)
 
     # use DPCTL tensor function to fill the сopy of the input array
     # from the input array
@@ -533,13 +539,18 @@ def dpnp_cholesky(a):
     ht_lapack_ev, _ = li._potrf(
         a_sycl_queue,
         a_h.get_array(),
+        upper_lower,
         [a_copy_ev],
     )
 
     ht_lapack_ev.wait()
     a_ht_copy_ev.wait()
 
-    a_h = dpnp.tril(a_h)
+    # Get upper or lower-triangular matrix part as per `upper` value
+    if upper:
+        a_h = dpnp.triu(a_h)
+    else:
+        a_h = dpnp.tril(a_h)
 
     return a_h
 
