@@ -660,6 +660,17 @@ def test_negative(data, dtype):
     expected = numpy.negative(np_a)
     assert_allclose(result, expected)
 
+    result = -dpnp_a
+    expected = -np_a
+    assert_allclose(result, expected)
+
+    # out keyword
+    if dtype is not None:
+        dp_out = dpnp.empty(expected.shape, dtype=dtype)
+        result = dpnp.negative(dpnp_a, out=dp_out)
+        assert result is dp_out
+        assert_allclose(result, expected)
+
 
 def test_negative_boolean():
     dpnp_a = dpnp.array([True, False])
@@ -685,6 +696,13 @@ def test_positive(data, dtype):
     result = +dpnp_a
     expected = +np_a
     assert_allclose(result, expected)
+
+    # out keyword
+    if dtype is not None:
+        dp_out = dpnp.empty(expected.shape, dtype=dtype)
+        result = dpnp.positive(dpnp_a, out=dp_out)
+        assert result is dp_out
+        assert_allclose(result, expected)
 
 
 def test_positive_boolean():
@@ -811,7 +829,14 @@ def test_sign(data, dtype):
 
     result = dpnp.sign(dpnp_a)
     expected = numpy.sign(np_a)
-    assert_allclose(result, expected)
+    assert_dtype_allclose(result, expected)
+
+    # out keyword
+    if dtype is not None:
+        dp_out = dpnp.empty(expected.shape, dtype=expected.dtype)
+        result = dpnp.sign(dpnp_a, out=dp_out)
+        assert dp_out is result
+        assert_dtype_allclose(result, expected)
 
 
 def test_sign_boolean():
@@ -833,9 +858,20 @@ def test_signbit(data, dtype):
 
     result = dpnp.signbit(dpnp_a)
     expected = numpy.signbit(np_a)
-    assert_allclose(result, expected)
+    assert_dtype_allclose(result, expected)
+
+    # out keyword
+    dp_out = dpnp.empty(expected.shape, dtype=expected.dtype)
+    result = dpnp.signbit(dpnp_a, out=dp_out)
+    assert dp_out is result
+    assert_dtype_allclose(result, expected)
 
 
+@pytest.mark.parametrize(
+    "func",
+    ["real", "imag", "conj"],
+    ids=["real", "imag", "conj"],
+)
 @pytest.mark.parametrize(
     "data",
     [complex(-1, -4), complex(-1, 2), complex(3, -7), complex(4, 12)],
@@ -847,17 +883,20 @@ def test_signbit(data, dtype):
     ],
 )
 @pytest.mark.parametrize("dtype", get_complex_dtypes())
-def test_real_imag(data, dtype):
+def test_complex_funcs(func, data, dtype):
     np_a = numpy.array(data, dtype=dtype)
     dpnp_a = dpnp.array(data, dtype=dtype)
 
-    result = dpnp.real(dpnp_a)
-    expected = numpy.real(np_a)
-    assert_allclose(result, expected)
+    result = getattr(dpnp, func)(dpnp_a)
+    expected = getattr(numpy, func)(np_a)
+    assert_dtype_allclose(result, expected)
 
-    result = dpnp.imag(dpnp_a)
-    expected = numpy.imag(np_a)
-    assert_allclose(result, expected)
+    # out keyword
+    if func == "conj":
+        dp_out = dpnp.empty(expected.shape, dtype=expected.dtype)
+        result = getattr(dpnp, func)(dpnp_a, out=dp_out)
+        assert dp_out is result
+        assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize("dtype", get_complex_dtypes())
@@ -875,9 +914,16 @@ def test_projection_infinity(dtype):
         complex(dpnp.inf, 0.0),
     ]
 
-    result = dpnp.proj(dpnp.array(X, dtype=dtype))
+    a = dpnp.array(X, dtype=dtype)
+    result = dpnp.proj(a)
     expected = dpnp.array(Y, dtype=dtype)
-    assert_allclose(result, expected)
+    assert_dtype_allclose(result, expected)
+
+    # out keyword
+    dp_out = dpnp.empty(expected.shape, dtype=expected.dtype)
+    result = dpnp.proj(a, out=dp_out)
+    assert dp_out is result
+    assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes())

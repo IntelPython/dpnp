@@ -250,6 +250,11 @@ def test_logical_not(dtype):
     dpnp_res = dpnp.logical_not(a)
     assert_equal(dpnp_res, np_res)
 
+    dp_out = dpnp.empty(np_res.shape, dtype=dpnp.bool)
+    dpnp_res = dpnp.logical_not(a, out=dp_out)
+    assert dpnp_res is dp_out
+    assert_equal(dpnp_res, np_res)
+
 
 @pytest.mark.parametrize(
     "op",
@@ -316,6 +321,13 @@ def test_elemwise_comparison(op, x1, x2, dtype):
     dpnp_res = getattr(dpnp, op)(dp_x1[::-1], dp_x2)
     assert_equal(dpnp_res, np_res)
 
+    # out keyword
+    np_res = getattr(numpy, op)(np_x1, np_x2)
+    dp_out = dpnp.empty(np_res.shape, dtype=dpnp.bool)
+    dpnp_res = getattr(dpnp, op)(dp_x1, dp_x2, out=dp_out)
+    assert dp_out is dpnp_res
+    assert_equal(dpnp_res, np_res)
+
 
 @pytest.mark.parametrize(
     "op",
@@ -374,6 +386,11 @@ def test_comparison_no_broadcast_with_shapes(op, sh1, sh2):
 @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
 def test_finite(op, data, dtype):
     x = dpnp.asarray(data, dtype=dtype)
-    np_res = getattr(dpnp, op)(x)
-    dpnp_res = getattr(numpy, op)(x.asnumpy())
+    np_res = getattr(numpy, op)(x.asnumpy())
+    dpnp_res = getattr(dpnp, op)(x)
+    assert_equal(dpnp_res, np_res)
+
+    dp_out = dpnp.empty(np_res.shape, dtype=dpnp.bool)
+    dpnp_res = getattr(dpnp, op)(x, out=dp_out)
+    assert dp_out is dpnp_res
     assert_equal(dpnp_res, np_res)
