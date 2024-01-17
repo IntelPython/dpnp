@@ -177,10 +177,6 @@ tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid4
-tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid5
 tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_AxisConcatenator_init1
 tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_len
 tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_1
@@ -560,13 +556,6 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum_numpy_array
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_arraylike
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_numpy_array
-
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_0_{axis=(1, 3), shape=(2, 3, 4, 5)}::test_nansum_axes
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_1_{axis=(1, 3), shape=(20, 30, 40, 50)}::test_nansum_axes
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_2_{axis=(0, 2, 3), shape=(2, 3, 4, 5)}::test_nansum_axes
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_3_{axis=(0, 2, 3), shape=(20, 30, 40, 50)}::test_nansum_axes
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodExtra_param_0_{shape=(2, 3, 4)}::test_nansum_out
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodExtra_param_1_{shape=(20, 30, 40)}::test_nansum_out
 
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont
@@ -953,63 +942,7 @@ tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_h
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_range_with_density
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_range_with_weights_and_density
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_same_value
-
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_mismatch
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_all_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_float16
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_huge
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_out
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_0_{axis=None, keepdims=True, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_0_{axis=None, keepdims=True, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_10_{axis=1, keepdims=False, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_10_{axis=1, keepdims=False, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_11_{axis=1, keepdims=False, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_11_{axis=1, keepdims=False, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_1_{axis=None, keepdims=True, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_1_{axis=None, keepdims=True, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_2_{axis=None, keepdims=False, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_2_{axis=None, keepdims=False, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_3_{axis=None, keepdims=False, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_3_{axis=None, keepdims=False, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_4_{axis=0, keepdims=True, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_4_{axis=0, keepdims=True, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_5_{axis=0, keepdims=True, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_5_{axis=0, keepdims=True, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_6_{axis=0, keepdims=False, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_6_{axis=0, keepdims=False, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_7_{axis=0, keepdims=False, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_7_{axis=0, keepdims=False, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_8_{axis=1, keepdims=True, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_8_{axis=1, keepdims=True, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_9_{axis=1, keepdims=True, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_9_{axis=1, keepdims=True, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStdAdditional::test_nanstd_float16
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStdAdditional::test_nanstd_huge
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStdAdditional::test_nanstd_out
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_0_{axis=None, ddof=0, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_10_{axis=0, ddof=0, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_11_{axis=0, ddof=0, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_12_{axis=0, ddof=1, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_13_{axis=0, ddof=1, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_14_{axis=0, ddof=1, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_15_{axis=0, ddof=1, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_16_{axis=1, ddof=0, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_17_{axis=1, ddof=0, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_18_{axis=1, ddof=0, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_19_{axis=1, ddof=0, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_1_{axis=None, ddof=0, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_20_{axis=1, ddof=1, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_21_{axis=1, ddof=1, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_22_{axis=1, ddof=1, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_23_{axis=1, ddof=1, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_2_{axis=None, ddof=0, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_3_{axis=None, ddof=0, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_4_{axis=None, ddof=1, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_5_{axis=None, ddof=1, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_6_{axis=None, ddof=1, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_7_{axis=None, ddof=1, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_8_{axis=0, ddof=0, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_9_{axis=0, ddof=0, keepdims=True, shape=(4, 3, 5)}::test_nanstd
 
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_bad_q[linear]
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_bad_q[lower]

@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023, Intel Corporation
+// Copyright (c) 2023-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 
 #include "gesv.hpp"
 #include "gesvd.hpp"
+#include "getrf.hpp"
 #include "heevd.hpp"
 #include "linalg_exceptions.hpp"
 #include "syevd.hpp"
@@ -43,6 +44,8 @@ namespace py = pybind11;
 void init_dispatch_vectors(void)
 {
     lapack_ext::init_gesv_dispatch_vector();
+    lapack_ext::init_getrf_batch_dispatch_vector();
+    lapack_ext::init_getrf_dispatch_vector();
     lapack_ext::init_syevd_dispatch_vector();
 }
 
@@ -76,6 +79,20 @@ PYBIND11_MODULE(_lapack_impl, m)
           py::arg("sycl_queue"), py::arg("jobu_val"), py::arg("jobvt_val"),
           py::arg("a_array"), py::arg("res_s"), py::arg("res_u"),
           py::arg("res_vt"), py::arg("depends") = py::list());
+
+    m.def("_getrf", &lapack_ext::getrf,
+          "Call `getrf` from OneMKL LAPACK library to return "
+          "the LU factorization of a general n x n matrix",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("ipiv_array"),
+          py::arg("dev_info"), py::arg("depends") = py::list());
+
+    m.def("_getrf_batch", &lapack_ext::getrf_batch,
+          "Call `getrf_batch` from OneMKL LAPACK library to return "
+          "the LU factorization of a batch of general n x n matrices",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("ipiv_array"),
+          py::arg("dev_info_array"), py::arg("n"), py::arg("stride_a"),
+          py::arg("stride_ipiv"), py::arg("batch_size"),
+          py::arg("depends") = py::list());
 
     m.def("_heevd", &lapack_ext::heevd,
           "Call `heevd` from OneMKL LAPACK library to return "

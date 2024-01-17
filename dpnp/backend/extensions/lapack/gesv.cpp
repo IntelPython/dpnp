@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023, Intel Corporation
+// Copyright (c) 2023-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -84,7 +84,7 @@ static sycl::event gesv_impl(sycl::queue exec_q,
 
     std::stringstream error_msg;
     std::int64_t info = 0;
-    bool sycl_exception_caught = false;
+    bool is_exception_caught = false;
 
     sycl::event gesv_event;
     try {
@@ -106,11 +106,17 @@ static sycl::event gesv_impl(sycl::queue exec_q,
                         // routine for storing intermediate results.
             scratchpad_size, depends);
     } catch (mkl_lapack::exception const &e) {
+        is_exception_caught = true;
         info = e.info();
 
         if (info < 0) {
             error_msg << "Parameter number " << -info
                       << " had an illegal value.";
+        }
+        else if (info == scratchpad_size && e.detail() != 0) {
+            error_msg
+                << "Insufficient scratchpad size. Required size is at least "
+                << e.detail();
         }
         else if (info > 0) {
             T host_U;
@@ -131,23 +137,18 @@ static sycl::event gesv_impl(sycl::queue exec_q,
                           << e.what() << "\ninfo: " << e.info();
             }
         }
-        else if (info == scratchpad_size && e.detail() != 0) {
-            error_msg
-                << "Insufficient scratchpad size. Required size is at least "
-                << e.detail();
-        }
         else {
             error_msg << "Unexpected MKL exception caught during gesv() "
                          "call:\nreason: "
                       << e.what() << "\ninfo: " << e.info();
         }
     } catch (sycl::exception const &e) {
+        is_exception_caught = true;
         error_msg << "Unexpected SYCL exception caught during gesv() call:\n"
                   << e.what();
-        sycl_exception_caught = true;
     }
 
-    if (info != 0 || sycl_exception_caught) // an unexpected error occurs
+    if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
             sycl::free(scratchpad, exec_q);

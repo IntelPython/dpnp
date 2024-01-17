@@ -863,15 +863,6 @@ void func_map_init_linalg_func(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_DET][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_det_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_DET_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_det_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DET_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_det_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DET_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_det_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_DET_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_det_ext_c<double>};
-
     fmap[DPNPFuncName::DPNP_FN_INV][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_inv_default_c<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_INV][eft_LNG][eft_LNG] = {

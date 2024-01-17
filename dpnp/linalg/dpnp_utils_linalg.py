@@ -1,8 +1,5 @@
-# cython: language_level=3
-# distutils: language = c++
-# -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2023, Intel Corporation
+# Copyright (c) 2023-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -37,7 +34,9 @@ from dpnp.dpnp_utils import get_usm_allocations
 __all__ = [
     "check_stacked_2d",
     "check_stacked_square",
+    "dpnp_det",
     "dpnp_eigh",
+    "dpnp_slogdet",
     "dpnp_solve",
     "dpnp_svd",
 ]
@@ -53,6 +52,50 @@ _real_types_map = {
 }
 
 
+def _calculate_determinant_sign(ipiv, diag, res_type, n):
+    """
+    Calculate the sign of the determinant based on row exchanges and diagonal values.
+
+    Parameters
+    -----------
+    ipiv : {dpnp.ndarray, usm_ndarray}
+        The pivot indices from LU decomposition.
+    diag : {dpnp.ndarray, usm_ndarray}
+        The diagonal elements of the LU decomposition matrix.
+    res_type : dpnp.dtype
+        The common data type for linalg operations.
+    n : int
+        The size of the last two dimensions of the array.
+
+    Returns
+    -------
+    sign : {dpnp_array, usm_ndarray}
+        The sign of the determinant.
+
+    """
+
+    # Checks for row exchanges in LU decomposition affecting determinant sign.
+    ipiv_diff = ipiv != dpnp.arange(
+        1, n + 1, usm_type=ipiv.usm_type, sycl_queue=ipiv.sycl_queue
+    )
+
+    # Counts row exchanges from 'ipiv_diff'.
+    non_zero = dpnp.count_nonzero(ipiv_diff, axis=-1)
+
+    # For floating types, adds count of negative diagonal elements
+    # to determine determinant sign.
+    if dpnp.issubdtype(res_type, dpnp.floating):
+        non_zero += dpnp.count_nonzero(diag < 0, axis=-1)
+
+    sign = (non_zero % 2) * -2 + 1
+
+    # For complex types, compute sign from the phase of diagonal elements.
+    if dpnp.issubdtype(res_type, dpnp.complexfloating):
+        sign = sign * dpnp.prod(diag / dpnp.abs(diag), axis=-1)
+
+    return sign.astype(res_type)
+
+
 def _real_type(dtype, device=None):
     """
     Returns the real data type corresponding to a given dpnp data type.
@@ -63,6 +106,7 @@ def _real_type(dtype, device=None):
         The dtype for which to find the corresponding real data type.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where an array of default floating type might be created.
+
     Returns
     -------
     out : str
@@ -77,8 +121,6 @@ def _real_type(dtype, device=None):
 
 def _common_type(*arrays):
     """
-    _common_type(*arrays)
-
     Common type for linear algebra operations.
 
     This function determines the common data type for linalg operations.
@@ -89,12 +131,15 @@ def _common_type(*arrays):
     - The default floating-point data type is determined by the capabilities of the device
       on which `arrays` are created, as indicated by `dpnp.default_float_type()`.
 
-    Args:
-        *arrays (dpnp.ndarray): Input arrays.
+    Parameters
+    ----------
+    arrays : {dpnp.ndarray, usm_ndarray}
+        A sequence of input arrays.
 
-    Returns:
-        dtype_common (dtype): The common data type for linalg operations.
-
+    Returns
+    -------
+    dtype_common : dpnp.dtype
+        The common data type for linalg operations.
         This returned value is applicable both as the precision to be used
         in linalg calls and as the dtype of (possibly complex) output(s).
 
@@ -111,24 +156,27 @@ def _common_type(*arrays):
 
 def _common_inexact_type(default_dtype, *dtypes):
     """
-    _common_inexact_type(default_dtype, *dtypes)
-
     Determines the common 'inexact' data type for linear algebra operations.
 
     This function selects an 'inexact' data type appropriate for the device's capabilities.
     It defaults to `default_dtype` when provided types are not 'inexact'.
 
-    Args:
-        default_dtype: The default data type. This is determined by the capabilities of
+    Parameters
+    ----------
+    default_dtype : dpnp.dtype
+        The default data type. This is determined by the capabilities of
         the device and is used when none of the provided types are 'inexact'.
         *dtypes: A variable number of data types to be evaluated to find
         the common 'inexact' type.
 
-    Returns:
-        dpnp.result_type (dtype) : The resultant 'inexact' data type for linalg operations,
+    Returns
+    -------
+    dpnp.result_type : dpnp.dtype
+        The resultant 'inexact' data type for linalg operations,
         ensuring computational compatibility.
 
     """
+
     inexact_dtypes = [
         dt if dpnp.issubdtype(dt, dpnp.inexact) else default_dtype
         for dt in dtypes
@@ -180,6 +228,195 @@ def _stacked_identity(
     return x
 
 
+def _lu_factor(a, res_type):
+    """
+    Compute pivoted LU decomposition.
+
+    Decompose a given batch of square matrices. Inputs and outputs are
+    transposed.
+
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Input array containing the matrices to be decomposed.
+    res_type : dpnp.dtype
+        Specifies the data type of the result.
+        Acceptable data types are float32, float64, complex64, or complex128.
+
+    Returns
+    -------
+    tuple:
+        lu_t : (..., N, N) {dpnp.ndarray, usm_ndarray}
+            Combined 'L' and 'U' matrices from LU decomposition
+            excluding the diagonal of 'L'.
+        piv : (..., N) {dpnp.ndarray, usm_ndarray}
+            1-origin pivot indices indicating row permutations during decomposition.
+        dev_info : (...) {dpnp.ndarray, usm_ndarray}
+            Information on `getrf` or `getrf_batch` computation success (0 for success).
+
+    """
+
+    n = a.shape[-2]
+
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+
+    # TODO: Find out at which array sizes the best performance is obtained
+    # getrf_batch implementation shows slow results with large arrays on GPU.
+    # Use getrf_batch only on CPU.
+    # On GPU call getrf for each two-dimensional array by loop
+    use_batch = a.sycl_device.has_aspect_cpu
+
+    if a.ndim > 2:
+        orig_shape = a.shape
+        # get 3d input arrays by reshape
+        a = a.reshape(-1, n, n)
+        batch_size = a.shape[0]
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+
+        if use_batch:
+            # `a` must be copied because getrf_batch destroys the input matrix
+            a_h = dpnp.empty_like(a, order="C", dtype=res_type)
+            ipiv_h = dpnp.empty(
+                (batch_size, n),
+                dtype=dpnp.int64,
+                order="C",
+                usm_type=a_usm_type,
+                sycl_queue=a_sycl_queue,
+            )
+            dev_info_h = [0] * batch_size
+
+            a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+            )
+
+            ipiv_stride = n
+            a_stride = a_h.strides[0]
+
+            # Call the LAPACK extension function _getrf_batch
+            # to perform LU decomposition of a batch of general matrices
+            ht_lapack_ev, _ = li._getrf_batch(
+                a_sycl_queue,
+                a_h.get_array(),
+                ipiv_h.get_array(),
+                dev_info_h,
+                n,
+                a_stride,
+                ipiv_stride,
+                batch_size,
+                [a_copy_ev],
+            )
+
+            ht_lapack_ev.wait()
+            a_ht_copy_ev.wait()
+
+            dev_info_array = dpnp.array(
+                dev_info_h, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+            )
+
+            # Reshape the results back to their original shape
+            a_h = a_h.reshape(orig_shape)
+            ipiv_h = ipiv_h.reshape(orig_shape[:-1])
+            dev_info_array = dev_info_array.reshape(orig_shape[:-2])
+
+            return (a_h, ipiv_h, dev_info_array)
+
+        else:
+            # Initialize lists for storing arrays and events for each batch
+            a_vecs = [None] * batch_size
+            ipiv_vecs = [None] * batch_size
+            dev_info_vecs = [None] * batch_size
+            a_ht_copy_ev = [None] * batch_size
+            ht_lapack_ev = [None] * batch_size
+
+            # Process each batch
+            for i in range(batch_size):
+                # Copy each 2D slice to a new array as getrf destroys the input matrix
+                a_vecs[i] = dpnp.empty_like(a[i], order="C", dtype=res_type)
+                (
+                    a_ht_copy_ev[i],
+                    a_copy_ev,
+                ) = ti._copy_usm_ndarray_into_usm_ndarray(
+                    src=a_usm_arr[i],
+                    dst=a_vecs[i].get_array(),
+                    sycl_queue=a_sycl_queue,
+                )
+                ipiv_vecs[i] = dpnp.empty(
+                    (n,),
+                    dtype=dpnp.int64,
+                    order="C",
+                    usm_type=a_usm_type,
+                    sycl_queue=a_sycl_queue,
+                )
+                dev_info_vecs[i] = [0]
+
+                # Call the LAPACK extension function _getrf
+                # to perform LU decomposition on each batch in 'a_vecs[i]'
+                ht_lapack_ev[i], _ = li._getrf(
+                    a_sycl_queue,
+                    a_vecs[i].get_array(),
+                    ipiv_vecs[i].get_array(),
+                    dev_info_vecs[i],
+                    [a_copy_ev],
+                )
+
+            for i in range(batch_size):
+                ht_lapack_ev[i].wait()
+                a_ht_copy_ev[i].wait()
+
+            # Reshape the results back to their original shape
+            out_a = dpnp.array(a_vecs, order="C").reshape(orig_shape)
+            out_ipiv = dpnp.array(ipiv_vecs).reshape(orig_shape[:-1])
+            out_dev_info = dpnp.array(
+                dev_info_vecs, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+            ).reshape(orig_shape[:-2])
+
+            return (out_a, out_ipiv, out_dev_info)
+
+    else:
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+
+        # `a` must be copied because getrf destroys the input matrix
+        a_h = dpnp.empty_like(a, order="C", dtype=res_type)
+
+        # use DPCTL tensor function to fill the сopy of the input array
+        # from the input array
+        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+        )
+
+        ipiv_h = dpnp.empty(
+            n,
+            dtype=dpnp.int64,
+            order="C",
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+        dev_info_h = [0]
+
+        # Call the LAPACK extension function _getrf
+        # to perform LU decomposition on the input matrix
+        ht_lapack_ev, _ = li._getrf(
+            a_sycl_queue,
+            a_h.get_array(),
+            ipiv_h.get_array(),
+            dev_info_h,
+            [a_copy_ev],
+        )
+
+        ht_lapack_ev.wait()
+        a_ht_copy_ev.wait()
+
+        dev_info_array = dpnp.array(
+            dev_info_h, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+        )
+
+        # Return a tuple containing the factorized matrix 'a_h',
+        # pivot indices 'ipiv_h'
+        # and the status 'dev_info_h' from the LAPACK getrf call
+        return (a_h, ipiv_h, dev_info_array)
+
+
 def check_stacked_2d(*arrays):
     """
     Return ``True`` if each array in `arrays` has at least two dimensions.
@@ -188,7 +425,7 @@ def check_stacked_2d(*arrays):
 
     Parameters
     ----------
-    arrays : {dpnp_array, usm_ndarray}
+    arrays : {dpnp.ndarray, usm_ndarray}
         A sequence of input arrays to check for dimensionality.
 
     Returns
@@ -227,7 +464,7 @@ def check_stacked_square(*arrays):
 
     Parameters
     ----------
-    arrays : {dpnp_array, usm_ndarray}
+    arrays : {dpnp.ndarray, usm_ndarray}
         A sequence of input arrays to check for square matrix shape.
 
     Returns
@@ -248,6 +485,53 @@ def check_stacked_square(*arrays):
             raise dpnp.linalg.LinAlgError(
                 "Last 2 dimensions of the input array must be square"
             )
+
+
+def dpnp_det(a):
+    """
+    dpnp_det(a)
+
+    Returns the determinant of `a` array.
+
+    """
+
+    a_usm_type = a.usm_type
+    a_sycl_queue = a.sycl_queue
+
+    res_type = _common_type(a)
+
+    a_shape = a.shape
+    shape = a_shape[:-2]
+    n = a_shape[-2]
+
+    if a.size == 0:
+        # empty batch (result is empty, too) or empty matrices det([[]]) == 1
+        det = dpnp.ones(
+            shape,
+            dtype=res_type,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+        return det
+
+    lu, ipiv, dev_info = _lu_factor(a, res_type)
+
+    # Transposing 'lu' to swap the last two axes for compatibility
+    # with 'dpnp.diagonal' as it does not support 'axis1' and 'axis2' arguments.
+    # TODO: Replace with 'dpnp.diagonal(lu, axis1=-2, axis2=-1)' when supported.
+    lu_transposed = lu.transpose(-2, -1, *range(lu.ndim - 2))
+    diag = dpnp.diagonal(lu_transposed)
+
+    det = dpnp.prod(dpnp.abs(diag), axis=-1)
+
+    sign = _calculate_determinant_sign(ipiv, diag, res_type, n)
+
+    det = sign * det
+    det = det.astype(res_type, copy=False)
+    singular = dev_info > 0
+    det = dpnp.where(singular, res_type.type(0), det)
+
+    return det.reshape(shape)
 
 
 def dpnp_eigh(a, UPLO):
@@ -508,6 +792,57 @@ def dpnp_solve(a, b):
         a_ht_copy_ev.wait()
 
         return b_f
+
+
+def dpnp_slogdet(a):
+    """
+    dpnp_slogdet(a)
+
+    Returns sign and logarithm of the determinant of `a` array.
+
+    """
+
+    a_usm_type = a.usm_type
+    a_sycl_queue = a.sycl_queue
+
+    res_type = _common_type(a)
+    logdet_dtype = _real_type(res_type)
+
+    a_shape = a.shape
+    shape = a_shape[:-2]
+    n = a_shape[-2]
+
+    if a.size == 0:
+        # empty batch (result is empty, too) or empty matrices det([[]]) == 1
+        sign = dpnp.ones(
+            shape, dtype=res_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+        )
+        logdet = dpnp.zeros(
+            shape,
+            dtype=logdet_dtype,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+        return sign, logdet
+
+    lu, ipiv, dev_info = _lu_factor(a, res_type)
+
+    # Transposing 'lu' to swap the last two axes for compatibility
+    # with 'dpnp.diagonal' as it does not support 'axis1' and 'axis2' arguments.
+    # TODO: Replace with 'dpnp.diagonal(lu, axis1=-2, axis2=-1)' when supported.
+    lu_transposed = lu.transpose(-2, -1, *range(lu.ndim - 2))
+    diag = dpnp.diagonal(lu_transposed)
+
+    logdet = dpnp.log(dpnp.abs(diag)).sum(axis=-1)
+
+    sign = _calculate_determinant_sign(ipiv, diag, res_type, n)
+
+    logdet = logdet.astype(logdet_dtype, copy=False)
+    singular = dev_info > 0
+    return (
+        dpnp.where(singular, res_type.type(0), sign).reshape(shape),
+        dpnp.where(singular, logdet_dtype.type("-inf"), logdet).reshape(shape),
+    )
 
 
 def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
