@@ -75,14 +75,28 @@ __all__ = [
 
 def cholesky(a):
     """
-    Compute the Cholesky decomposition of a square array.
+    Cholesky decomposition.
+
+    Return the Cholesky decomposition, `L * L.H`, of the square matrix `a`,
+    where `L` is lower-triangular and .H is the conjugate transpose operator
+    (which is the ordinary transpose if `a` is real-valued).  `a` must be
+    Hermitian (symmetric if real-valued) and positive-definite. No
+    checking is performed to verify whether `a` is Hermitian or not.
+    In addition, only the lower-triangular and diagonal elements of `a`
+    are used. Only `L` is actually returned.
 
     For full documentation refer to :obj:`numpy.linalg.cholesky`.
 
-    Limitations
-    -----------
-    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Hermitian (symmetric if all elements are real), positive-definite
+        input matrix.
+
+    Returns
+    -------
+    L : (..., M, M) dpnp.ndarray
+        Lower-triangular Cholesky factor of `a`.
 
     Examples
     --------
