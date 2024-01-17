@@ -38,13 +38,12 @@ it contains:
 """
 
 
-import dpctl.tensor as dpt
 import numpy
 
 import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
-from dpnp.dpnp_utils.dpnp_utils_linearalgebra import dpnp_matmul
+from dpnp.dpnp_utils.dpnp_utils_linearalgebra import dpnp_dot, dpnp_matmul
 
 __all__ = [
     "dot",
@@ -59,16 +58,28 @@ __all__ = [
 ]
 
 
-def dot(x1, x2, out=None, **kwargs):
+def dot(a, b, out=None):
     """
-    Dot product of `x1` and `x2`.
+    Dot product of `a` and `b`.
 
     For full documentation refer to :obj:`numpy.dot`.
 
+    Parameters
+    ----------
+    a : {dpnp_array, usm_ndarray, scalar}
+        First input array. Both inputs `a` and `b` can not be scalars at the same time.
+    b : {dpnp_array, usm_ndarray, scalar}
+        Second input array. Both inputs `a` and `b` can not be scalars at the same time.
+    out : {dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have
+        the same shape and data type as the expected output and should be
+        C-contiguous. If these conditions are not met, an exception is
+        raised, instead of attempting to be flexible.
+
     Returns
     -------
-    y : dpnp.ndarray
-        Returns the dot product of `x1` and `x2`.
+    out : dpnp.ndarray
+        Returns the dot product of `a` and `b`.
         If `out` is given, then it is returned.
 
     Limitations
@@ -81,65 +92,64 @@ def dot(x1, x2, out=None, **kwargs):
 
     See Also
     --------
+    :obj:`dpnp.ndarray.dot` : Equivalent method.
     :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
     :obj:`dpnp.vdot` : Complex-conjugating dot product.
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> a = dp.array([1, 2, 3])
-    >>> b = dp.array([1, 2, 3])
-    >>> dp.dot(a, b)
-    14
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([1, 2, 3])
+    >>> np.dot(a, b)
+    array(14)
+
+    Neither argument is complex-conjugated:
+
+    >>> np.dot(np.array([2j, 3j]), np.array([2j, 3j]))
+    array(-13+0j)
+
+    For 2-D arrays it is the matrix product:
+
+    >>> a = np.array([[1, 0], [0, 1]])
+    >>> b = np.array([[4, 1], [2, 2]])
+    >>> np.dot(a, b)
+    array([[4, 1],
+           [2, 2]])
+
+    >>> a = np.arange(3*4*5*6).reshape((3,4,5,6))
+    >>> b = np.arange(3*4*5*6)[::-1].reshape((5,4,6,3))
+    >>> np.dot(a, b)[2,3,2,1,2,2]
+    array(499128)
+    >>> sum(a[2,3,2,:] * b[1,2,:,2])
+    array(499128)
 
     """
 
-    if kwargs:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
+    dpnp.check_supported_arrays_type(a, scalar_type=True)
+    dpnp.check_supported_arrays_type(b, scalar_type=True)
+
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        if not out.flags.c_contiguous:
+            raise ValueError("Only C-contiguous array is acceptable.")
+
+    if dpnp.isscalar(a) or dpnp.isscalar(b):
+        return dpnp.multiply(a, b, out=out)
+    elif a.ndim == 0 or b.ndim == 0:
+        return dpnp.multiply(a, b, out=out)
+    elif a.ndim == 1 and b.ndim == 1:
+        return dpnp_dot(a, b, out=out)
+    elif a.ndim == 2 and b.ndim == 2:
+        # NumPy does not allow casting even if it is safe
+        return dpnp.matmul(a, b, out=out, casting="no")
+    elif a.ndim > 1 and b.ndim == 1:
+        # NumPy does not allow casting even if it is safe
+        return dpnp.matmul(a, b, out=out, casting="no")
     else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
-
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            if out is not None:
-                if not isinstance(out, (dpnp.ndarray, dpt.usm_ndarray)):
-                    raise TypeError(
-                        "return array must be of supported array type"
-                    )
-                out_desc = (
-                    dpnp.get_dpnp_descriptor(
-                        out,
-                        copy_when_strides=False,
-                        copy_when_nondefault_queue=False,
-                    )
-                    or None
-                )
-            else:
-                out_desc = None
-            return dpnp_dot(x1_desc, x2_desc, out=out_desc).get_pyobj()
-
-    return call_origin(numpy.dot, x1, x2, out=out, **kwargs)
+        result = dpnp.tensordot(a, b, axes=(-1, -2))
+        # NumPy does not allow casting even if it is safe
+        return dpnp.get_result_array(result, out, casting="no")
 
 
 def einsum(*args, **kwargs):

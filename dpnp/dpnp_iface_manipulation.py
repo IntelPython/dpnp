@@ -709,7 +709,7 @@ def copyto(dst, src, casting="same_kind", where=True):
         src = dpnp.array(src, sycl_queue=dst.sycl_queue)
 
     if not dpnp.can_cast(src.dtype, dst.dtype, casting=casting):
-        raise TypeError(
+        raise ValueError(
             f"Cannot cast from {src.dtype} to {dst.dtype} "
             f"according to the rule {casting}."
         )
