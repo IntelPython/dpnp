@@ -1472,6 +1472,31 @@ def test_take(func, device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+@pytest.mark.parametrize("sparse", [True, False], ids=["True", "False"])
+def test_indices(device, sparse):
+    sycl_queue = dpctl.SyclQueue(device)
+    grid = dpnp.indices((2, 3), sparse=sparse, sycl_queue=sycl_queue)
+    for dpnp_array in grid:
+        assert_sycl_queue_equal(dpnp_array.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize("func", ["mgrid", "ogrid"])
+def test_grid(device, func):
+    sycl_queue = dpctl.SyclQueue(device)
+    x = getattr(dpnp, func)(sycl_queue=sycl_queue)[0:4]
+    assert_sycl_queue_equal(x.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_solve(device):
     x = [[1.0, 2.0], [3.0, 5.0]]
     y = [1.0, 2.0]
