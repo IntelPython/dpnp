@@ -268,47 +268,6 @@ class TestCbrt:
             dpnp.cbrt(dp_array, out=dp_out)
 
 
-class TestReciprocal:
-    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
-    def test_reciprocal(self, dtype):
-        np_array = numpy.arange(1, 7, dtype=dtype)
-        expected = numpy.reciprocal(np_array)
-
-        dp_out_dtype = (
-            dtype
-            if has_support_aspect64()
-            else dpnp.complex64
-            if numpy.iscomplexobj(np_array)
-            else dpnp.float32
-        )
-        dp_array = dpnp.array(np_array)
-        dp_out = dpnp.empty(6, dtype=dp_out_dtype)
-        result = dpnp.reciprocal(dp_array, out=dp_out)
-
-        assert result is dp_out
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_float_complex_dtypes()[:-1])
-    def test_invalid_dtype(self, dtype):
-        dpnp_dtype = get_float_complex_dtypes()[-1]
-        dp_array = dpnp.arange(1, 10, dtype=dpnp_dtype)
-        dp_out = dpnp.empty(9, dtype=dtype)
-
-        with pytest.raises(TypeError):
-            dpnp.reciprocal(dp_array, out=dp_out)
-
-    @pytest.mark.parametrize("dtype", get_float_dtypes())
-    @pytest.mark.parametrize(
-        "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
-    )
-    def test_invalid_shape(self, shape, dtype):
-        dp_array = dpnp.arange(10, dtype=dtype)
-        dp_out = dpnp.empty(shape, dtype=dtype)
-
-        with pytest.raises(ValueError):
-            dpnp.reciprocal(dp_array, out=dp_out)
-
-
 class TestRsqrt:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
@@ -395,6 +354,39 @@ class TestSquare:
 
         numpy.testing.assert_raises(TypeError, dpnp.square, a, out)
         numpy.testing.assert_raises(TypeError, numpy.square, a.asnumpy(), out)
+
+
+class TestReciprocal:
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_reciprocal(self, dtype):
+        np_array, expected = _get_numpy_arrays("reciprocal", dtype, [-5, 5, 10])
+
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
+        result = dpnp.reciprocal(dp_array, out=dp_out)
+
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes()[:-1])
+    def test_invalid_dtype(self, dtype):
+        dpnp_dtype = get_float_complex_dtypes()[-1]
+        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(TypeError):
+            dpnp.reciprocal(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize(
+        "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
+    )
+    def test_invalid_shape(self, shape):
+        dp_array = dpnp.arange(10)
+        dp_out = dpnp.empty(shape)
+
+        with pytest.raises(ValueError):
+            dpnp.reciprocal(dp_array, out=dp_out)
 
 
 class TestArctan2:

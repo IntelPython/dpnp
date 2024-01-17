@@ -447,10 +447,7 @@ def dpnp_angle(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = angle_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _asin_docstring = """
@@ -2535,10 +2532,7 @@ def dpnp_reciprocal(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = reciprocal_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _remainder_docstring = """
