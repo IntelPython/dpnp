@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.tanh &mdash; Data Parallel Extension for NumPy 0.13.1dev2+8.g75f1f97995 documentation</title>
+  <title>dpnp.rsqrt &mdash; Data Parallel Extension for NumPy 0.13.1dev2+8.g75f1f97995 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -30,8 +30,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.arcsinh" href="dpnp.arcsinh.html" />
-    <link rel="prev" title="dpnp.cosh" href="dpnp.cosh.html" /> 
+    <link rel="next" title="dpnp.sin" href="dpnp.sin.html" />
+    <link rel="prev" title="dpnp.reciprocal" href="dpnp.reciprocal.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -63,8 +63,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../ufunc.html#available-ufuncs">Available ufuncs</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#math-operations">Math operations</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../ufunc.html#trigonometric-functions">Trigonometric functions</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ufunc.html#math-operations">Math operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#trigonometric-functions">Trigonometric functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../ufunc.html#bit-twiddling-functions">Bit-twiddling functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../ufunc.html#comparison-functions">Comparison functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../ufunc.html#floating-functions">Floating functions</a></li>
@@ -101,9 +101,9 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../ufunc.html">Universal Functions (ufunc)</a></li>
-      <li class="breadcrumb-item active">dpnp.tanh</li>
+      <li class="breadcrumb-item active">dpnp.rsqrt</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/reference/generated/dpnp.tanh.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.rsqrt.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -111,19 +111,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dpnp-tanh">
-<h1>dpnp.tanh<a class="headerlink" href="#dpnp-tanh" title="Link to this heading"></a></h1>
+  <section id="dpnp-rsqrt">
+<h1>dpnp.rsqrt<a class="headerlink" href="#dpnp-rsqrt" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="dpnp.tanh">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">tanh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_trigonometric.html#tanh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.tanh" title="Link to this definition"></a></dt>
-<dd><p>Compute hyperbolic tangent element-wise.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tanh.html#numpy.tanh" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tanh</span></code></a>.</p>
+<dt class="sig sig-object py" id="dpnp.rsqrt">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">rsqrt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_trigonometric.html#rsqrt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.rsqrt" title="Link to this definition"></a></dt>
+<dd><p>Computes the reciprocal square-root for each element <cite>x_i</cite> for input array <cite>x</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>out</strong> – The hyperbolic tangent of each element of <cite>x</cite>.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Input array, expected to have a real floating-point data type.</p></li>
+<li><p><strong>out</strong> (<em>(</em><em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em><em>)</em><em>:</em>) – Output array to populate.
+Array must have the correct shape and the expected data type.</p></li>
+<li><p><strong>order</strong> (<em>(</em><em>{'C'</em><em>, </em><em>'F'</em><em>, </em><em>'A'</em><em>, </em><em>'K'}</em><em>, </em><em>optional</em><em>)</em><em>:</em>) – Memory layout of the newly output array, if parameter <cite>out</cite> is <cite>None</cite>.
+Default: “K”</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dpnp.ndarray</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – The reciprocal square-root, element-wise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
@@ -131,25 +139,21 @@
 Parameters <cite>where</cite>, <cite>dtype</cite> and <cite>subok</cite> are supported with their default values.
 Keyword argument <cite>kwargs</cite> is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
+Input array data types are limited by real-valued data types.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.arctanh.html#dpnp.arctanh" title="dpnp.arctanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arctanh</span></code></a></dt><dd><p>Hyperbolic inverse tangent, element-wise.</p>
+<dt><a class="reference internal" href="dpnp.sqrt.html#dpnp.sqrt" title="dpnp.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sqrt</span></code></a></dt><dd><p>Return the positive square-root of an array, element-wise.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.sinh.html#dpnp.sinh" title="dpnp.sinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sinh</span></code></a></dt><dd><p>Hyperbolic sine, element-wise.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.cosh.html#dpnp.cosh" title="dpnp.cosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.cosh</span></code></a></dt><dd><p>Hyperbolic cosine, element-wise.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.tan.html#dpnp.tan" title="dpnp.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tan</span></code></a></dt><dd><p>Trigonometric tangent, element-wise.</p>
+<dt><a class="reference internal" href="dpnp.reciprocal.html#dpnp.reciprocal" title="dpnp.reciprocal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reciprocal</span></code></a></dt><dd><p>Return the reciprocal of an array, element-wise.</p>
 </dd>
 </dl>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="go">array([0.0, -0.996272, 0.917152, 0.996272])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">27</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">rsqrt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">array([1.        , 0.35355338, 0.19245009])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -160,8 +164,8 @@ Input array data types are limited by supported DPNP <span class="xref std std-r
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.cosh.html" class="btn btn-neutral float-left" title="dpnp.cosh" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.arcsinh.html" class="btn btn-neutral float-right" title="dpnp.arcsinh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.reciprocal.html" class="btn btn-neutral float-left" title="dpnp.reciprocal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.sin.html" class="btn btn-neutral float-right" title="dpnp.sin" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
