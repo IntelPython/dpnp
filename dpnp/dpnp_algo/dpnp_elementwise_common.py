@@ -177,6 +177,13 @@ def check_nd_call_func(
         )
 
 
+def _get_result(res_usm, out=None):
+    if out is None:
+        return dpnp_array._create_from_usm_ndarray(res_usm)
+    else:
+        return out
+
+
 def _make_unary_func(
     name, dpt_unary_fn, fn_docstring, mkl_fn_to_call=None, mkl_impl_fn=None
 ):
@@ -273,10 +280,7 @@ def dpnp_abs(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = abs_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _acos_docstring = """
@@ -317,10 +321,7 @@ def dpnp_acos(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = acos_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _acosh_docstring = """
@@ -361,10 +362,7 @@ def dpnp_acosh(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = acosh_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _add_docstring = """
@@ -410,10 +408,7 @@ def dpnp_add(x1, x2, out=None, order="K"):
     res_usm = add_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _asin_docstring = """
@@ -454,10 +449,7 @@ def dpnp_asin(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = asin_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _asinh_docstring = """
@@ -498,10 +490,7 @@ def dpnp_asinh(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = asinh_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _atan_docstring = """
@@ -542,10 +531,7 @@ def dpnp_atan(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = atan_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _atan2_docstring = """
@@ -595,10 +581,7 @@ def dpnp_atan2(x1, x2, out=None, order="K"):
     res_usm = atan2_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _atanh_docstring = """
@@ -639,10 +622,7 @@ def dpnp_atanh(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = atanh_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _bitwise_and_docstring = """
@@ -686,10 +666,7 @@ def dpnp_bitwise_and(x1, x2, out=None, order="K"):
     res_usm = bitwise_and_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _bitwise_or_docstring = """
@@ -733,10 +710,7 @@ def dpnp_bitwise_or(x1, x2, out=None, order="K"):
     res_usm = bitwise_or_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _bitwise_xor_docstring = """
@@ -780,10 +754,7 @@ def dpnp_bitwise_xor(x1, x2, out=None, order="K"):
     res_usm = bitwise_xor_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _cbrt_docstring = """
@@ -823,10 +794,7 @@ def dpnp_cbrt(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = cbrt_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _ceil_docstring = """
@@ -866,10 +834,7 @@ def dpnp_ceil(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = ceil_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _conj_docstring = """
@@ -908,10 +873,7 @@ def dpnp_conj(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = conj_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _copysign_docstring = """
@@ -952,10 +914,7 @@ def dpnp_copysign(x1, x2, out=None, order="K"):
     res_usm = copysign_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _cos_docstring = """
@@ -995,10 +954,7 @@ def dpnp_cos(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = cos_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _cosh_docstring = """
@@ -1038,10 +994,7 @@ def dpnp_cosh(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = cosh_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _divide_docstring = """
@@ -1087,10 +1040,7 @@ def dpnp_divide(x1, x2, out=None, order="K"):
     res_usm = divide_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _equal_docstring = """
@@ -1130,10 +1080,7 @@ def dpnp_equal(x1, x2, out=None, order="K"):
     res_usm = equal_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _exp_docstring = """
@@ -1174,10 +1121,7 @@ def dpnp_exp(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = exp_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _exp2_docstring = """
@@ -1218,10 +1162,7 @@ def dpnp_exp2(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = exp2_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _expm1_docstring = """
@@ -1264,10 +1205,7 @@ def dpnp_expm1(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = expm1_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _floor_docstring = """
@@ -1307,10 +1245,7 @@ def dpnp_floor(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = floor_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _floor_divide_docstring = """
@@ -1354,10 +1289,7 @@ def dpnp_floor_divide(x1, x2, out=None, order="K"):
     res_usm = floor_divide_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _greater_docstring = """
@@ -1397,10 +1329,7 @@ def dpnp_greater(x1, x2, out=None, order="K"):
     res_usm = greater_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _greater_equal_docstring = """
@@ -1442,10 +1371,7 @@ def dpnp_greater_equal(x1, x2, out=None, order="K"):
     res_usm = greater_equal_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _hypot_docstring = """
@@ -1491,10 +1417,7 @@ def dpnp_hypot(x1, x2, out=None, order="K"):
     res_usm = hypot_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _imag_docstring = """
@@ -1531,10 +1454,7 @@ def dpnp_imag(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = imag_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _invert_docstring = """
@@ -1569,10 +1489,7 @@ def dpnp_invert(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = invert_func(x_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _isfinite_docstring = """
@@ -1607,10 +1524,7 @@ def dpnp_isfinite(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = isfinite_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _isinf_docstring = """
@@ -1644,10 +1558,7 @@ def dpnp_isinf(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = isinf_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _isnan_docstring = """
@@ -1681,10 +1592,7 @@ def dpnp_isnan(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = isnan_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _left_shift_docstring = """
@@ -1728,10 +1636,7 @@ def dpnp_left_shift(x1, x2, out=None, order="K"):
     res_usm = left_shift_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _less_docstring = """
@@ -1771,10 +1676,7 @@ def dpnp_less(x1, x2, out=None, order="K"):
     res_usm = less_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _less_equal_docstring = """
@@ -1816,10 +1718,7 @@ def dpnp_less_equal(x1, x2, out=None, order="K"):
     res_usm = less_equal_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _log_docstring = """
@@ -1860,10 +1759,7 @@ def dpnp_log(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = log_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _log10_docstring = """
@@ -1904,10 +1800,7 @@ def dpnp_log10(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = log10_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _log1p_docstring = """
@@ -1947,10 +1840,7 @@ def dpnp_log1p(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = log1p_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _log2_docstring = """
@@ -1991,10 +1881,7 @@ def dpnp_log2(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = log2_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _logaddexp_docstring = """
@@ -2042,10 +1929,7 @@ def dpnp_logaddexp(x1, x2, out=None, order="K"):
     res_usm = logaddexp_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _logical_and_docstring = """
@@ -2086,10 +1970,7 @@ def dpnp_logical_and(x1, x2, out=None, order="K"):
     res_usm = logical_and_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _logical_not_docstring = """
@@ -2124,10 +2005,7 @@ def dpnp_logical_not(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = logical_not_func(x_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _logical_or_docstring = """
@@ -2168,10 +2046,7 @@ def dpnp_logical_or(x1, x2, out=None, order="K"):
     res_usm = logical_or_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _logical_xor_docstring = """
@@ -2212,10 +2087,7 @@ def dpnp_logical_xor(x1, x2, out=None, order="K"):
     res_usm = logical_xor_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _maximum_docstring = """
@@ -2255,10 +2127,7 @@ def dpnp_maximum(x1, x2, out=None, order="K"):
     res_usm = maximum_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _minimum_docstring = """
@@ -2298,10 +2167,7 @@ def dpnp_minimum(x1, x2, out=None, order="K"):
     res_usm = minimum_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _multiply_docstring = """
@@ -2351,10 +2217,7 @@ def dpnp_multiply(x1, x2, out=None, order="K"):
     res_usm = multiply_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _negative_docstring = """
@@ -2394,10 +2257,7 @@ def dpnp_negative(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = negative_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _not_equal_docstring = """
@@ -2439,10 +2299,7 @@ def dpnp_not_equal(x1, x2, out=None, order="K"):
     res_usm = not_equal_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _positive_docstring = """
@@ -2481,10 +2338,7 @@ def dpnp_positive(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = positive_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _power_docstring = """
@@ -2531,10 +2385,7 @@ def dpnp_power(x1, x2, out=None, order="K"):
     res_usm = power_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _proj_docstring = """
@@ -2568,10 +2419,7 @@ def dpnp_proj(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = proj_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _real_docstring = """
@@ -2608,10 +2456,7 @@ def dpnp_real(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = real_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _remainder_docstring = """
@@ -2652,10 +2497,7 @@ def dpnp_remainder(x1, x2, out=None, order="K"):
     res_usm = remainder_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _right_shift_docstring = """
@@ -2698,10 +2540,7 @@ def dpnp_right_shift(x1, x2, out=None, order="K"):
     res_usm = right_shift_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _round_docstring = """
@@ -2741,10 +2580,7 @@ def dpnp_round(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = round_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _rsqrt_docstring = """
@@ -2779,10 +2615,7 @@ def dpnp_rsqrt(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = rsqrt_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _sign_docstring = """
@@ -2824,10 +2657,7 @@ def dpnp_sign(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = sign_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _signbit_docstring = """
@@ -2862,10 +2692,7 @@ def dpnp_signbit(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = signbit_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _sin_docstring = """
@@ -2905,10 +2732,7 @@ def dpnp_sin(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = sin_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _sinh_docstring = """
@@ -2948,10 +2772,7 @@ def dpnp_sinh(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = sinh_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _sqrt_docstring = """
@@ -2990,10 +2811,7 @@ def dpnp_sqrt(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = sqrt_func(x_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _square_docstring = """
@@ -3032,10 +2850,7 @@ def dpnp_square(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = square_func(x_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _subtract_docstring = """
@@ -3096,10 +2911,7 @@ def dpnp_subtract(x1, x2, out=None, order="K"):
     res_usm = subtract_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _tan_docstring = """
@@ -3139,10 +2951,7 @@ def dpnp_tan(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = tan_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _tanh_docstring = """
@@ -3182,10 +2991,7 @@ def dpnp_tanh(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = tanh_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
 
 
 _trunc_docstring = """
@@ -3227,7 +3033,4 @@ def dpnp_trunc(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = trunc_func(x1_usm, out=out_usm, order=order)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-    else:
-        return out
+    return _get_result(res_usm, out=out)
