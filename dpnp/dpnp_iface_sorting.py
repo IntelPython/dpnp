@@ -64,7 +64,7 @@ def argsort(a, axis=-1, kind=None, order=None):
     axis : int or None, optional
         Axis along which to sort. If ``None``, the array is flattened before
         sorting. The default is -1, which sorts along the last axis.
-    kind : None
+    kind : None, optional
         Default is ``None``, which is equivalent to `stable`.
         Unlike in NumPy any other options are not accepted here.
 
@@ -220,7 +220,7 @@ def sort(a, axis=-1, kind=None, order=None):
     axis : int or None, optional
         Axis along which to sort. If ``None``, the array is flattened before
         sorting. The default is -1, which sorts along the last axis.
-    kind : None
+    kind : None, optional
         Default is ``None``, which is equivalent to `stable`.
         Unlike in NumPy any other options are not accepted here.
 

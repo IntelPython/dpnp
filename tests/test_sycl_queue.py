@@ -341,6 +341,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("arctanh", [-0.5, 0.0, 0.5]),
         pytest.param("argmax", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("argmin", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("argsort", [2.0, 1.0, 7.0, 4.0]),
         pytest.param("cbrt", [1.0, 8.0, 27.0]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
@@ -394,7 +395,9 @@ def test_meshgrid(device_x, device_y):
             "sin", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
         ),
         pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
+        pytest.param("sort", [2.0, 1.0, 7.0, 4.0]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
+        pytest.param("square", [1.0, 3.0, 9.0]),
         pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("sum", [1.0, 2.0]),
         pytest.param(
