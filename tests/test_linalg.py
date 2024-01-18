@@ -4,6 +4,7 @@ import pytest
 from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp as inp
+from tests.third_party.cupy import testing
 
 from .helper import (
     assert_dtype_allclose,
@@ -62,11 +63,82 @@ class TestCholesky:
         ],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_cholesky_3d_4d(self, array, dtype):
+    def test_cholesky(self, array, dtype):
         a = numpy.array(array, dtype=dtype)
         ia = inp.array(a)
         result = inp.linalg.cholesky(ia)
         expected = numpy.linalg.cholesky(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "array",
+        [
+            [[1, 2], [2, 5]],
+            [[[5, 2], [2, 6]], [[7, 3], [3, 8]], [[3, 1], [1, 4]]],
+            [
+                [[[5, 2], [2, 5]], [[6, 3], [3, 6]]],
+                [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
+            ],
+        ],
+        ids=[
+            "2D_array",
+            "3D_array",
+            "4D_array",
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_cholesky_upper(self, array, dtype):
+        ia = inp.array(array, dtype=dtype)
+        result = inp.linalg.cholesky(ia, upper=True)
+
+        if ia.ndim > 2:
+            n = ia.shape[-1]
+            ia_reshaped = ia.reshape(-1, n, n)
+            res_reshaped = result.reshape(-1, n, n)
+            batch_size = ia_reshaped.shape[0]
+            for idx in range(batch_size):
+                # Reconstruct the matrix using the Cholesky decomposition result
+                if inp.issubdtype(dtype, inp.complexfloating):
+                    reconstructed = (
+                        res_reshaped[idx].T.conj() @ res_reshaped[idx]
+                    )
+                else:
+                    reconstructed = res_reshaped[idx].T @ res_reshaped[idx]
+                assert_dtype_allclose(
+                    reconstructed, ia_reshaped[idx], check_type=False
+                )
+        else:
+            # Reconstruct the matrix using the Cholesky decomposition result
+            if inp.issubdtype(dtype, inp.complexfloating):
+                reconstructed = result.T.conj() @ result
+            else:
+                reconstructed = result.T @ result
+            assert_dtype_allclose(reconstructed, ia, check_type=False)
+
+    # upper parameter support will be added in numpy 2.0 version
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize(
+        "array",
+        [
+            [[1, 2], [2, 5]],
+            [[[5, 2], [2, 6]], [[7, 3], [3, 8]], [[3, 1], [1, 4]]],
+            [
+                [[[5, 2], [2, 5]], [[6, 3], [3, 6]]],
+                [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
+            ],
+        ],
+        ids=[
+            "2D_array",
+            "3D_array",
+            "4D_array",
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_cholesky_upper_numpy(self, array, dtype):
+        a = numpy.array(array, dtype=dtype)
+        ia = inp.array(a)
+        result = inp.linalg.cholesky(ia, upper=True)
+        expected = numpy.linalg.cholesky(a, upper=True)
         assert_dtype_allclose(result, expected)
 
     def test_cholesky_strides(self):
