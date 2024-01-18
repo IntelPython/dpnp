@@ -49,12 +49,12 @@ namespace type_utils = dpctl::tensor::type_utils;
 
 typedef sycl::event (*potrf_batch_impl_fn_ptr_t)(
     sycl::queue,
-    oneapi::mkl::uplo,
-    std::int64_t,
+    const oneapi::mkl::uplo,
+    const std::int64_t,
     char *,
-    std::int64_t,
-    std::int64_t,
-    std::int64_t,
+    const std::int64_t,
+    const std::int64_t,
+    const std::int64_t,
     std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
@@ -63,12 +63,12 @@ static potrf_batch_impl_fn_ptr_t
 
 template <typename T>
 static sycl::event potrf_batch_impl(sycl::queue exec_q,
-                                    oneapi::mkl::uplo upper_lower,
-                                    std::int64_t n,
+                                    const oneapi::mkl::uplo upper_lower,
+                                    const std::int64_t n,
                                     char *in_a,
-                                    std::int64_t lda,
-                                    std::int64_t stride_a,
-                                    std::int64_t batch_size,
+                                    const std::int64_t lda,
+                                    const std::int64_t stride_a,
+                                    const std::int64_t batch_size,
                                     std::vector<sycl::event> &host_task_events,
                                     const std::vector<sycl::event> &depends)
 {
@@ -171,9 +171,10 @@ static sycl::event potrf_batch_impl(sycl::queue exec_q,
 std::pair<sycl::event, sycl::event>
     potrf_batch(sycl::queue q,
                 dpctl::tensor::usm_ndarray a_array,
-                std::int64_t n,
-                std::int64_t stride_a,
-                std::int64_t batch_size,
+                const std::int8_t upper_lower,
+                const std::int64_t n,
+                const std::int64_t stride_a,
+                const std::int64_t batch_size,
                 const std::vector<sycl::event> &depends)
 {
     const int a_array_nd = a_array.get_ndim();
@@ -214,12 +215,13 @@ std::pair<sycl::event, sycl::event>
 
     char *a_array_data = a_array.get_data();
     const std::int64_t lda = std::max<size_t>(1UL, n);
-    oneapi::mkl::uplo upper_lower = oneapi::mkl::uplo::upper;
+    const oneapi::mkl::uplo uplo_val =
+        static_cast<oneapi::mkl::uplo>(upper_lower);
 
     std::vector<sycl::event> host_task_events;
     sycl::event potrf_batch_ev =
-        potrf_batch_fn(q, upper_lower, n, a_array_data, lda, stride_a,
-                       batch_size, host_task_events, depends);
+        potrf_batch_fn(q, uplo_val, n, a_array_data, lda, stride_a, batch_size,
+                       host_task_events, depends);
 
     sycl::event args_ev =
         dpctl::utils::keep_args_alive(q, {a_array}, host_task_events);

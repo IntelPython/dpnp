@@ -162,10 +162,10 @@ std::pair<sycl::event, sycl::event>
                               std::to_string(a_array_shape[1]) + ").");
     }
 
-    bool is_a_array_f_contig = a_array.is_f_contiguous();
-    if (!is_a_array_f_contig) {
+    bool is_a_array_c_contig = a_array.is_c_contiguous();
+    if (!is_a_array_c_contig) {
         throw py::value_error("The input array "
-                              "must be F-contiguous");
+                              "must be C-contiguous");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();

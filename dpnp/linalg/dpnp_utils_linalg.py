@@ -43,9 +43,6 @@ __all__ = [
 
 _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
-# Map booleans to MKL`s `uplo`` values:
-# True -> 0 (upper), False -> 1 (lower).
-_upper_lower_bool = {False: 1, True: 0}
 
 _real_types_map = {
     "float32": "float32",  # single : single
@@ -444,9 +441,9 @@ def _lu_factor(a, res_type):
         return (a_h, ipiv_h, dev_info_array)
 
 
-def dpnp_cholesky_batch(a, res_type):
+def dpnp_cholesky_batch(a, upper_lower, res_type):
     """
-    dpnp_cholesky_batch(a, res_type)
+    dpnp_cholesky_batch(a, upper_lower, res_type)
 
     Return the batched Cholesky decomposition of `a` array.
 
@@ -480,6 +477,7 @@ def dpnp_cholesky_batch(a, res_type):
     ht_lapack_ev, _ = li._potrf_batch(
         a_sycl_queue,
         a_h.get_array(),
+        upper_lower,
         n,
         a_stride,
         batch_size,
@@ -489,7 +487,12 @@ def dpnp_cholesky_batch(a, res_type):
     ht_lapack_ev.wait()
     a_ht_copy_ev.wait()
 
-    a_h = dpnp.tril(a_h.reshape(orig_shape))
+    # Get upper or lower-triangular matrix part as per `upper_lower` value
+    # upper_lower is 0 (lower) or 1 (upper)
+    if upper_lower:
+        a_h = dpnp.triu(a_h.reshape(orig_shape))
+    else:
+        a_h = dpnp.tril(a_h.reshape(orig_shape))
 
     return a_h
 
@@ -517,16 +520,23 @@ def dpnp_cholesky(a, upper):
             sycl_queue=a_sycl_queue,
         )
 
-    # Set `uplo` value for MKL functions based on boolean input
-    upper_lower = _upper_lower_bool[upper]
+    # Set `uplo` value for `potrf` and `potrf_batch` function based on the boolean input `upper`.
+    # In oneapi::mkl, `uplo` value of 1 is equivalent to oneapi::mkl::uplo::lower
+    # and `uplo` value of 0 is equivalent to oneapi::mkl::uplo::upper.
+    # However, we adjust this logic based on the array's memory layout.
+    # Note: lower for row-major (which is used here) is upper for column-major layout.
+    # Reference: comment from tbmkl/tests/lapack/unit/dpcpp/potrf_usm/potrf_usm.cpp
+    # This means that if `upper` is False (lower triangular),
+    # we actually use oneapi::mkl::uplo::upper (0) for the row-major layout, and vice versa.
+    upper_lower = int(upper)
 
     if a.ndim > 2:
-        return dpnp_cholesky_batch(a, res_type)
+        return dpnp_cholesky_batch(a, upper_lower, res_type)
 
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
     # `a` must be copied because potrf destroys the input matrix
-    a_h = dpnp.empty_like(a, order="F", dtype=res_type, usm_type=a_usm_type)
+    a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
 
     # use DPCTL tensor function to fill the сopy of the input array
     # from the input array
