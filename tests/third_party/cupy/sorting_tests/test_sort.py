@@ -301,7 +301,8 @@ class TestArgsort(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_argsort_zero_dim(self, xp, dtype):
         a = testing.shaped_random((), xp, dtype)
-        return self.argsort(a)
+        axis = None if xp == cupy else -1
+        return self.argsort(a, axis=axis)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -352,7 +353,8 @@ class TestArgsort(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_argsort_zero_dim_axis(self, xp):
         a = testing.shaped_random((), xp)
-        return self.argsort(a, axis=0)
+        axis = None if xp == cupy else 0
+        return self.argsort(a, axis=axis)
 
     def test_argsort_zero_dim_invalid_axis(self):
         for xp in (numpy, cupy):

@@ -65,9 +65,17 @@ class TestSort:
             dp_array.sort(axis=None)
 
     def test_sort_zero_dim(self):
-        dp_array = dpnp.array(2.5)
+        np_array = numpy.array(2.5)
+        dp_array = dpnp.array(np_array)
+
+        # with default axis=-1
         with pytest.raises(numpy.AxisError):
             dpnp.sort(dp_array)
+
+        # with axis = None
+        result = dpnp.sort(dp_array, axis=None)
+        expected = numpy.sort(np_array, axis=None)
+        assert_dtype_allclose(result, expected)
 
 
 class TestArgsort:
@@ -125,8 +133,13 @@ class TestArgsort:
         np_array = numpy.array(2.5)
         dp_array = dpnp.array(np_array)
 
-        result = dpnp.argsort(dp_array)
-        expected = numpy.argsort(np_array)
+        # with default axis=-1
+        with pytest.raises(numpy.AxisError):
+            dpnp.argsort(dp_array)
+
+        # with axis = None
+        result = dpnp.argsort(dp_array, axis=None)
+        expected = numpy.argsort(np_array, axis=None)
         assert_dtype_allclose(result, expected)
 
 

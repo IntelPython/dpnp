@@ -1157,6 +1157,7 @@ class dpnp_array:
               [3, 4]])
 
         """
+
         if axis is None:
             raise TypeError(
                 "'NoneType' object cannot be interpreted as an integer"

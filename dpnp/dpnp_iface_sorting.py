@@ -76,11 +76,15 @@ def argsort(a, axis=-1, kind=None, order=None):
         More generally, ``dpnp.take_along_axis(a, index_array, axis=axis)``
         always yields the sorted `a`, irrespective of dimensionality.
 
+    Notes
+    -----
+    For zero-dimensional arrays, if `axis=None`, output is a one-dimensional
+    a single zero element. Otherwise, an ``AxisError`` is raised.
+
     Limitations
     -----------
     Parameters `kind` and `order` are only supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -126,15 +130,17 @@ def argsort(a, axis=-1, kind=None, order=None):
     elif order is not None:
         pass
     else:
+        dpnp.check_supported_arrays_type(a)
         if axis is None:
-            dpnp.check_supported_arrays_type(a)
             a = a.flatten()
             axis = -1
-        result = dpnp_array._create_from_usm_ndarray(
+        if a.ndim == 0:
+            raise numpy.AxisError(
+                f"axis {axis} is out of bounds for array of dimension {a.ndim}."
+            )
+        return dpnp_array._create_from_usm_ndarray(
             dpt.argsort(dpnp.get_usm_ndarray(a), axis=axis)
         )
-        result = dpnp.atleast_1d(result) if a.ndim == 0 else result
-        return result
 
     return call_origin(numpy.argsort, a, axis=axis, kind=kind, order=order)
 
@@ -229,11 +235,15 @@ def sort(a, axis=-1, kind=None, order=None):
     out : dpnp.ndarray
         Sorted array with the same type and shape as `a`.
 
+    Notes
+    -----
+    For zero-dimensional arrays, if `axis=None`, output is the input array
+    returned as a one-dimensional array. Otherwise, an ``AxisError`` is raised.
+
     Limitations
     -----------
     Parameters `kind` and `order` are only supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -264,14 +274,13 @@ def sort(a, axis=-1, kind=None, order=None):
         pass
     else:
         dpnp.check_supported_arrays_type(a)
+        if axis is None:
+            a = a.flatten()
+            axis = -1
         if a.ndim == 0:
             raise numpy.AxisError(
                 f"axis {axis} is out of bounds for array of dimension {a.ndim}."
             )
-        if axis is None:
-            dpnp.check_supported_arrays_type(a)
-            a = a.flatten()
-            axis = -1
         return dpnp_array._create_from_usm_ndarray(
             dpt.sort(dpnp.get_usm_ndarray(a), axis=axis)
         )
