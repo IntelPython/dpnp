@@ -31,8 +31,7 @@
 #include <oneapi/mkl/rng/device.hpp>
 
 // dpctl tensor headers
-#include "kernels/alignment.hpp"
-#include "utils/offset_utils.hpp"
+// #include "utils/offset_utils.hpp"
 
 namespace dpnp
 {
@@ -47,9 +46,6 @@ namespace device
 namespace details
 {
 namespace py = pybind11;
-
-using dpctl::tensor::kernels::alignment_utils::is_aligned;
-using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
 namespace mkl_rng_dev = oneapi::mkl::rng::device;
 
@@ -67,7 +63,7 @@ private:
     const std::uint32_t seed_;
     const DataT mean_;
     const DataT stddev_;
-    ResT *res_ = nullptr;
+    ResT * const res_ = nullptr;
     const size_t nelems_;
 
 public:
@@ -84,10 +80,10 @@ public:
         const std::uint8_t sg_size = sg.get_local_range()[0];
         const std::uint8_t max_sg_size = sg.get_max_local_range()[0];
 
-        auto engine = mkl_rng_dev::mrg32k3a<vec_sz>(seed_, nelems_ * global_id);
+        auto engine = mkl_rng_dev::mrg32k3a<vec_sz>(seed_, nelems_ * global_id);  // offset is questionable...
         mkl_rng_dev::gaussian<DataT, Method> distr(mean_, stddev_);
 
-        if (enable_sg_load) {
+        if constexpr (enable_sg_load) {
             const size_t base = items_per_wi * vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) + sg.get_group_id()[0] * max_sg_size);
 
             if ((sg_size == max_sg_size) && (base + items_per_wi * vec_sz * sg_size < nelems_)) {
@@ -118,38 +114,38 @@ public:
     }
 };
 
-template <typename DataT,
-          typename ResT = DataT,
-          typename Method = mkl_rng_dev::gaussian_method::by_default,
-          typename IndexerT = ResT,
-          typename UnaryOpT = ResT>
-struct RngStridedFunctor
-{
-private:
-    const std::uint32_t seed_;
-    const double mean_;
-    const double stddev_;
-    ResT *res_ = nullptr;
-    IndexerT out_indexer_;
+// template <typename DataT,
+//           typename ResT = DataT,
+//           typename Method = mkl_rng_dev::gaussian_method::by_default,
+//           typename IndexerT = ResT,
+//           typename UnaryOpT = ResT>
+// struct RngStridedFunctor
+// {
+// private:
+//     const std::uint32_t seed_;
+//     const double mean_;
+//     const double stddev_;
+//     ResT *res_ = nullptr;
+//     IndexerT out_indexer_;
 
-public:
-    RngStridedFunctor(const std::uint32_t seed, const double mean, const double stddev, ResT *res_p, IndexerT out_indexer)
-        : seed_(seed), mean_(mean), stddev_(stddev), res_(res_p), out_indexer_(out_indexer)
-    {
-    }
+// public:
+//     RngStridedFunctor(const std::uint32_t seed, const double mean, const double stddev, ResT *res_p, IndexerT out_indexer)
+//         : seed_(seed), mean_(mean), stddev_(stddev), res_(res_p), out_indexer_(out_indexer)
+//     {
+//     }
 
-    void operator()(sycl::id<1> wid) const
-    {
-        const auto res_offset = out_indexer_(wid.get(0));
+//     void operator()(sycl::id<1> wid) const
+//     {
+//         const auto res_offset = out_indexer_(wid.get(0));
 
-        // UnaryOpT op{};
+//         // UnaryOpT op{};
 
-        auto engine = mkl_rng_dev::mrg32k3a(seed_);
-        mkl_rng_dev::gaussian<DataT, Method> distr(mean_, stddev_);
+//         auto engine = mkl_rng_dev::mrg32k3a(seed_);
+//         mkl_rng_dev::gaussian<DataT, Method> distr(mean_, stddev_);
 
-        res_[res_offset] = mkl_rng_dev::generate(distr, engine);
-    }
-};
+//         res_[res_offset] = mkl_rng_dev::generate(distr, engine);
+//     }
+// };
 } // namespace details
 } // namespace device
 } // namespace rng
