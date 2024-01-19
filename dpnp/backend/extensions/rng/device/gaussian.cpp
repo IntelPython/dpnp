@@ -57,6 +57,40 @@ namespace mkl_rng_dev = oneapi::mkl::rng::device;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
+constexpr int num_methods = 2; // number of methods of gaussian distribution
+
+// static mkl_rng_dev::gaussian_method get_method(const std::int8_t method) {
+//     switch (method) {
+//         case 0: return mkl_rng_dev::gaussian_method::by_default;
+//         case 1: return mkl_rng_dev::gaussian_method::by_default;
+//         default:
+//             throw py::value_error();
+//     }
+// }
+
+template <typename DataT, typename Method>
+struct GaussianDistr
+{
+private:
+    const DataT mean_;
+    const DataT stddev_;
+
+public:
+    using method_type = Method;
+    using result_type = DataT;
+    using distr_type = typename mkl_rng_dev::gaussian<DataT, Method>;
+
+    GaussianDistr(const DataT mean, const DataT stddev)
+        : mean_(mean), stddev_(stddev)
+    {
+    }
+
+    inline auto operator()(void) const
+    {
+        return distr_type(mean_, stddev_);
+    }
+};
+
 typedef sycl::event (*gaussian_impl_fn_ptr_t)(sycl::queue &,
                                            const std::uint32_t,
                                            const double,
@@ -65,13 +99,12 @@ typedef sycl::event (*gaussian_impl_fn_ptr_t)(sycl::queue &,
                                            char *,
                                            const std::vector<sycl::event> &);
 
-static gaussian_impl_fn_ptr_t gaussian_dispatch_vector[dpctl_td_ns::num_types];
+static gaussian_impl_fn_ptr_t gaussian_dispatch_table[dpctl_td_ns::num_types][num_methods];
 
-// template <typename DataT, typename Method = mkl_rng_dev::gaussian_method::by_default>
-template <typename DataT, unsigned int vec_sz, unsigned int items_per_wi>
+template <typename DataT,  typename Method, unsigned int vec_sz, unsigned int items_per_wi>
 class gaussian_kernel;
 
-template <typename DataT, typename Method = mkl_rng_dev::gaussian_method::by_default>
+template <typename DataT, typename Method>
 static sycl::event gaussian_impl(sycl::queue& exec_q,
                                  const std::uint32_t seed,
                                  const double mean_val,
@@ -98,20 +131,23 @@ static sycl::event gaussian_impl(sycl::queue& exec_q,
         distr_event = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
 
+            using GaussianDistrT = GaussianDistr<DataT, Method>;
+            GaussianDistrT distr(mean, stddev);
+
             if (is_aligned<required_alignment>(out_ptr)) {
                 constexpr bool enable_sg_load = true;
-                using KernelName = gaussian_kernel<DataT, vec_sz, items_per_wi>;
+                using KernelName = gaussian_kernel<DataT, Method, vec_sz, items_per_wi>;
 
                 cgh.parallel_for<KernelName>(sycl::nd_range<1>({global_size}, {local_size}),
-                    details::RngContigFunctor<DataT, DataT, Method, DataT, vec_sz, items_per_wi, enable_sg_load>(seed, mean, stddev, out, n));
+                    details::RngContigFunctor<DataT, GaussianDistrT, DataT, DataT, vec_sz, items_per_wi, enable_sg_load>(seed, distr, out, n));
             }
             else {
                 constexpr bool disable_sg_load = false;
-                using InnerKernelName = gaussian_kernel<DataT, vec_sz, items_per_wi>;
+                using InnerKernelName = gaussian_kernel<DataT, Method, vec_sz, items_per_wi>;
                 using KernelName = disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
 
                 cgh.parallel_for<KernelName>(sycl::nd_range<1>({global_size}, {local_size}),
-                    details::RngContigFunctor<DataT, DataT, Method, DataT, vec_sz, items_per_wi, disable_sg_load>(seed, mean, stddev, out, n));
+                    details::RngContigFunctor<DataT, GaussianDistrT, DataT, DataT, vec_sz, items_per_wi, disable_sg_load>(seed, distr, out, n));
             }
         });
     } catch (oneapi::mkl::exception const &e) {
@@ -129,6 +165,7 @@ static sycl::event gaussian_impl(sycl::queue& exec_q,
 }
 
 std::pair<sycl::event, sycl::event> gaussian(sycl::queue exec_q,
+                                             const std::uint8_t method_id,
                                              const std::uint32_t seed,
                                              const double mean,
                                              const double stddev,
@@ -166,10 +203,14 @@ std::pair<sycl::event, sycl::event> gaussian(sycl::queue exec_q,
         throw std::runtime_error("Only population of contiguous array is supported.");
     }
 
+    if (method_id >= num_methods) {
+        throw std::runtime_error("Unknown method=" + std::to_string(method_id) + " for gaussian distribution.");
+    }
+
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int res_type_id = array_types.typenum_to_lookup_id(res.get_typenum());
 
-    auto gaussian_fn = gaussian_dispatch_vector[res_type_id];
+    auto gaussian_fn = gaussian_dispatch_table[res_type_id][method_id];
     if (gaussian_fn == nullptr) {
         throw py::value_error("No gaussian implementation defined for a required type");
     }
@@ -181,23 +222,84 @@ std::pair<sycl::event, sycl::event> gaussian(sycl::queue exec_q,
      return std::make_pair(ht_ev, gaussian_ev);
 }
 
-template <typename T>
+template <typename funcPtrT,
+          template <typename fnT, typename D, typename S> typename factory,
+          int _num_types,
+          int _num_methods>
+// class DispatchTableBuilder : public dpctl_td_ns::DispatchTableBuilder<funcPtrT, factory, _num_types>
+class DispatchTableBuilder/* : public dpctl_td_ns::DispatchTableBuilder<funcPtrT, factory, _num_types>*/
+{
+private:
+    template <typename dstTy>
+    const std::vector<funcPtrT> row_per_method() const
+    {
+        std::vector<funcPtrT> per_method = {
+            factory<funcPtrT, dstTy, mkl_rng_dev::gaussian_method::by_default>{}.get(),
+            factory<funcPtrT, dstTy, mkl_rng_dev::gaussian_method::box_muller2>{}.get(),
+        };
+        assert(per_method.size() == _num_methods);
+        return per_method;
+    }
+
+public:
+    DispatchTableBuilder() = default;
+    ~DispatchTableBuilder() = default;
+
+    void populate(funcPtrT table[][_num_methods]) const
+    {
+        const auto map_by_dst_type = {row_per_method<bool>(),
+                                      row_per_method<int8_t>(),
+                                      row_per_method<uint8_t>(),
+                                      row_per_method<int16_t>(),
+                                      row_per_method<uint16_t>(),
+                                      row_per_method<int32_t>(),
+                                      row_per_method<uint32_t>(),
+                                      row_per_method<int64_t>(),
+                                      row_per_method<uint64_t>(),
+                                      row_per_method<sycl::half>(),
+                                      row_per_method<float>(),
+                                      row_per_method<double>(),
+                                      row_per_method<std::complex<float>>(),
+                                      row_per_method<std::complex<double>>()};
+        assert(map_by_dst_type.size() == _num_types);
+        int dst_id = 0;
+        for (auto &row : map_by_dst_type) {
+            int src_id = 0;
+            for (auto &fn_ptr : row) {
+                table[dst_id][src_id] = fn_ptr;
+                ++src_id;
+            }
+            ++dst_id;
+        }
+    }
+};
+
+template <typename Ty, typename ArgTy, typename Method, typename argMethod>
+struct TypePairDefinedEntry : std::bool_constant<std::is_same_v<Ty, ArgTy> &&
+                                                 std::is_same_v<Method, argMethod>>
+{
+    static constexpr bool is_defined = true;
+};
+
+template <typename T, typename M>
 struct GaussianTypePairSupportFactory
 {
     static constexpr bool is_defined = std::disjunction<
-        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
-        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
+        TypePairDefinedEntry<T, double, M, mkl_rng_dev::gaussian_method::by_default>,
+        TypePairDefinedEntry<T, double, M, mkl_rng_dev::gaussian_method::box_muller2>,
+        TypePairDefinedEntry<T, float, M, mkl_rng_dev::gaussian_method::by_default>,
+        TypePairDefinedEntry<T, float, M, mkl_rng_dev::gaussian_method::box_muller2>,
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
 
-template <typename fnT, typename T>
+template <typename fnT, typename T, typename M>
 struct GaussianContigFactory
 {
     fnT get()
     {
-        if constexpr (GaussianTypePairSupportFactory<T>::is_defined) {
-            return gaussian_impl<T>;
+        if constexpr (GaussianTypePairSupportFactory<T, M>::is_defined) {
+            return gaussian_impl<T, M>;
         }
         else {
             return nullptr;
@@ -205,12 +307,10 @@ struct GaussianContigFactory
     }
 };
 
-void init_gaussian_dispatch_vector(void)
+void init_gaussian_dispatch_table(void)
 {
-    dpctl_td_ns::DispatchVectorBuilder<gaussian_impl_fn_ptr_t, GaussianContigFactory,
-                                       dpctl_td_ns::num_types>
-        contig;
-    contig.populate_dispatch_vector(gaussian_dispatch_vector);
+    DispatchTableBuilder<gaussian_impl_fn_ptr_t, GaussianContigFactory, dpctl_td_ns::num_types, num_methods> contig;
+    contig.populate(gaussian_dispatch_table);
 }
 } // namespace device
 } // namespace rng

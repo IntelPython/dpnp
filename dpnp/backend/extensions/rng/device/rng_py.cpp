@@ -43,13 +43,13 @@ namespace py = pybind11;
 // populate dispatch vectors
 void init_dispatch_vectors(void)
 {
-    rng_dev_ext::init_gaussian_dispatch_vector();
+    // rng_dev_ext::init_gaussian_dispatch_vector();
 }
 
 // populate dispatch tables
 void init_dispatch_tables(void)
 {
-    // lapack_ext::init_heevd_dispatch_table();
+    rng_dev_ext::init_gaussian_dispatch_table();
 }
 
 
@@ -81,7 +81,7 @@ PYBIND11_MODULE(_rng_dev_impl, m)
 
     m.def("_gaussian", &rng_dev_ext::gaussian,
           "",
-          py::arg("sycl_queue"), py::arg("seed"), py::arg("mean"), py::arg("stddev"),
+          py::arg("sycl_queue"), py::arg("method"), py::arg("seed"), py::arg("mean"), py::arg("stddev"),
           py::arg("n"), py::arg("res"),
           py::arg("depends") = py::list());
 }
