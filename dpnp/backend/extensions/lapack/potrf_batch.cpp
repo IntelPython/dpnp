@@ -77,8 +77,8 @@ static sycl::event potrf_batch_impl(sycl::queue exec_q,
     T *a = reinterpret_cast<T *>(in_a);
 
     const std::int64_t scratchpad_size =
-        oneapi::mkl::lapack::potrf_batch_scratchpad_size<T>(
-            exec_q, upper_lower, n, lda, stride_a, batch_size);
+        mkl_lapack::potrf_batch_scratchpad_size<T>(exec_q, upper_lower, n, lda,
+                                                   stride_a, batch_size);
     T *scratchpad = nullptr;
 
     std::stringstream error_msg;
@@ -89,7 +89,7 @@ static sycl::event potrf_batch_impl(sycl::queue exec_q,
     try {
         scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
 
-        potrf_batch_event = oneapi::mkl::lapack::potrf_batch(
+        potrf_batch_event = mkl_lapack::potrf_batch(
             exec_q,
             upper_lower, // An enumeration value of type oneapi::mkl::uplo:
                          // oneapi::mkl::uplo::upper for the upper triangular
