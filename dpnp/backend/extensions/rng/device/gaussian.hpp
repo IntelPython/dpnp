@@ -42,6 +42,7 @@ namespace rng
 namespace device
 {
 extern std::pair<sycl::event, sycl::event> gaussian(sycl::queue exec_q,
+                                             const std::uint8_t method_id,
                                              const std::uint32_t seed,
                                              const double mean,
                                              const double stddev,
@@ -49,7 +50,7 @@ extern std::pair<sycl::event, sycl::event> gaussian(sycl::queue exec_q,
                                              dpctl::tensor::usm_ndarray res,
                                              const std::vector<sycl::event> &depends = {});
 
-extern void init_gaussian_dispatch_vector(void);
+extern void init_gaussian_dispatch_table(void);
 } // namespace device
 } // namespace rng
 } // namespace ext
