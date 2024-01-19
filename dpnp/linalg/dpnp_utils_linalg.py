@@ -521,7 +521,7 @@ def dpnp_cholesky(a, upper):
         )
 
     # Set `uplo` value for `potrf` and `potrf_batch` function based on the boolean input `upper`.
-    # In oneapi::mkl, `uplo` value of 1 is equivalent to oneapi::mkl::uplo::lower
+    # In oneMKL, `uplo` value of 1 is equivalent to oneapi::mkl::uplo::lower
     # and `uplo` value of 0 is equivalent to oneapi::mkl::uplo::upper.
     # However, we adjust this logic based on the array's memory layout.
     # Note: lower for row-major (which is used here) is upper for column-major layout.
