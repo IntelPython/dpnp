@@ -201,6 +201,14 @@ class TestSort(unittest.TestCase):
         out = xp.sort(a, axis=2)
         return out
 
+    # Large case
+
+    @testing.slow
+    @testing.numpy_cupy_array_equal()
+    def test_large(self, xp):
+        a = testing.shaped_random((17, 1023, 1023), xp)
+        return xp.sort(a, axis=-1)
+
 
 @testing.gpu
 class TestLexsort(unittest.TestCase):
@@ -301,15 +309,15 @@ class TestArgsort(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_argsort_zero_dim(self, xp, dtype):
         a = testing.shaped_random((), xp, dtype)
-        axis = None if xp == cupy else -1
-        return self.argsort(a, axis=axis)
+        # only numpy allows 0d array without axis=None
+        kwargs = {} if xp == numpy else {"axis": None}
+        return self.argsort(a, **kwargs)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_argsort_one_dim(self, xp, dtype):
         a = testing.shaped_random((10,), xp, dtype)
-        res = self.argsort(a)
-        return a[res]
+        return self.argsort(a)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -353,8 +361,8 @@ class TestArgsort(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_argsort_zero_dim_axis(self, xp):
         a = testing.shaped_random((), xp)
-        axis = None if xp == cupy else 0
-        return self.argsort(a, axis=axis)
+        # only numpy allows 0d array without axis=None
+        return self.argsort(a, axis=None)
 
     def test_argsort_zero_dim_invalid_axis(self):
         for xp in (numpy, cupy):

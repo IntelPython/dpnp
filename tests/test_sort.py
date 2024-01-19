@@ -54,7 +54,7 @@ class TestSort:
         np_array = numpy.repeat(numpy.arange(10), 10)
         dp_array = dpnp.array(np_array)
 
-        result = dpnp.sort(dp_array)
+        result = dpnp.sort(dp_array, kind="stable")
         expected = numpy.sort(np_array, kind="stable")
         assert_dtype_allclose(result, expected)
 
@@ -76,6 +76,15 @@ class TestSort:
         result = dpnp.sort(dp_array, axis=None)
         expected = numpy.sort(np_array, axis=None)
         assert_dtype_allclose(result, expected)
+
+    def test_sort_notimplemented(self):
+        dp_array = dpnp.arange(10)
+
+        with pytest.raises(NotImplementedError):
+            dpnp.sort(dp_array, kind="quicksort")
+
+        with pytest.raises(NotImplementedError):
+            dpnp.sort(dp_array, order=["age"])
 
 
 class TestArgsort:
@@ -125,7 +134,7 @@ class TestArgsort:
         np_array = numpy.repeat(numpy.arange(10), 10)
         dp_array = dpnp.array(np_array)
 
-        result = dpnp.argsort(dp_array)
+        result = dpnp.argsort(dp_array, kind="stable")
         expected = numpy.argsort(np_array, kind="stable")
         assert_dtype_allclose(result, expected)
 
@@ -141,6 +150,15 @@ class TestArgsort:
         result = dpnp.argsort(dp_array, axis=None)
         expected = numpy.argsort(np_array, axis=None)
         assert_dtype_allclose(result, expected)
+
+    def test_sort_notimplemented(self):
+        dp_array = dpnp.arange(10)
+
+        with pytest.raises(NotImplementedError):
+            dpnp.argsort(dp_array, kind="quicksort")
+
+        with pytest.raises(NotImplementedError):
+            dpnp.argsort(dp_array, order=["age"])
 
 
 @pytest.mark.parametrize("kth", [0, 1], ids=["0", "1"])
