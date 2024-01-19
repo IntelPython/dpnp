@@ -86,7 +86,7 @@ def argsort(a, axis=-1, kind=None, order=None):
     Limitations
     -----------
     Parameters `order` is only supported with its default value.
-    Parameters `kind` can only be ``None`` or ``"stable"``which
+    Parameters `kind` can only be ``None`` or ``"stable"`` which
     are equivalent.
     Otherwise ``NotImplementedError`` exception will be raised.
 
@@ -247,7 +247,7 @@ def sort(a, axis=-1, kind=None, order=None):
     Limitations
     -----------
     Parameters `order` is only supported with its default value.
-    Parameters `kind` can only be ``None`` or ``"stable"``which
+    Parameters `kind` can only be ``None`` or ``"stable"`` which
     are equivalent.
     Otherwise ``NotImplementedError`` exception will be raised.
 
