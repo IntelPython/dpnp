@@ -80,7 +80,7 @@ set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
 find_package(Cython REQUIRED)
 find_package(Dpctl REQUIRED)
 
-message(STATUS "Dpctl_INCLUDE_DIRS=" ${Dpctl_INCLUDE_DIRS})
+message(STATUS "Dpctl_INCLUDE_DIR=" ${Dpctl_INCLUDE_DIR})
 message(STATUS "Dpctl_TENSOR_INCLUDE_DIR=" ${Dpctl_TENSOR_INCLUDE_DIR})
 
 if(WIN32)

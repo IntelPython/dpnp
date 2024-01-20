@@ -129,15 +129,6 @@ void (*dpnp_cholesky_default_c)(void *, void *, const size_t, const size_t) =
     dpnp_cholesky_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_cholesky_ext_c)(DPCTLSyclQueueRef,
-                                         void *,
-                                         void *,
-                                         const size_t,
-                                         const size_t,
-                                         const DPCTLEventVectorRef) =
-    dpnp_cholesky_c<_DataType>;
-
-template <typename _DataType>
 DPCTLSyclEventRef dpnp_det_c(DPCTLSyclQueueRef q_ref,
                              void *array1_in,
                              void *result1,
@@ -859,11 +850,6 @@ void func_map_init_linalg_func(func_map_t &fmap)
         eft_FLT, (void *)dpnp_cholesky_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_cholesky_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_cholesky_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_cholesky_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_DET][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_det_default_c<int32_t>};

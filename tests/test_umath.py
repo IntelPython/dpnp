@@ -209,7 +209,9 @@ class TestUmath:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             getattr(dpnp, func_name)(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -254,7 +256,9 @@ class TestCbrt:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.cbrt(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -291,7 +295,9 @@ class TestRsqrt:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.rsqrt(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -332,7 +338,9 @@ class TestSquare:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.square(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -413,7 +421,9 @@ class TestArctan2:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.arctan2(dp_array, dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -449,7 +459,9 @@ class TestCopySign:
         dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.copysign(dp_array, dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -485,7 +497,9 @@ class TestLogaddexp:
         dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.logaddexp(dp_array, dp_array, out=dp_out)
 
     @pytest.mark.parametrize(

@@ -38,8 +38,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ARANGE
         DPNP_FN_ARGSORT
         DPNP_FN_ARGSORT_EXT
-        DPNP_FN_CHOLESKY
-        DPNP_FN_CHOLESKY_EXT
         DPNP_FN_CHOOSE
         DPNP_FN_CHOOSE_EXT
         DPNP_FN_COPY

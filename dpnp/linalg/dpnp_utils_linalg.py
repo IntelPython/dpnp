@@ -34,6 +34,7 @@ from dpnp.dpnp_utils import get_usm_allocations
 __all__ = [
     "check_stacked_2d",
     "check_stacked_square",
+    "dpnp_cholesky",
     "dpnp_det",
     "dpnp_eigh",
     "dpnp_slogdet",
@@ -438,6 +439,130 @@ def _lu_factor(a, res_type):
         # pivot indices 'ipiv_h'
         # and the status 'dev_info_h' from the LAPACK getrf call
         return (a_h, ipiv_h, dev_info_array)
+
+
+def dpnp_cholesky_batch(a, upper_lower, res_type):
+    """
+    dpnp_cholesky_batch(a, upper_lower, res_type)
+
+    Return the batched Cholesky decomposition of `a` array.
+
+    """
+
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+
+    n = a.shape[-2]
+
+    orig_shape = a.shape
+    # get 3d input arrays by reshape
+    a = a.reshape(-1, n, n)
+    batch_size = a.shape[0]
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+
+    # `a` must be copied because potrf_batch destroys the input matrix
+    a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
+
+    # use DPCTL tensor function to fill the сopy of the input array
+    # from the input array
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+    )
+
+    a_stride = a_h.strides[0]
+
+    # Call the LAPACK extension function _potrf_batch
+    # to computes the Cholesky decomposition of a batch of
+    # symmetric positive-definite matrices
+    ht_lapack_ev, _ = li._potrf_batch(
+        a_sycl_queue,
+        a_h.get_array(),
+        upper_lower,
+        n,
+        a_stride,
+        batch_size,
+        [a_copy_ev],
+    )
+
+    ht_lapack_ev.wait()
+    a_ht_copy_ev.wait()
+
+    # Get upper or lower-triangular matrix part as per `upper_lower` value
+    # upper_lower is 0 (lower) or 1 (upper)
+    if upper_lower:
+        a_h = dpnp.triu(a_h.reshape(orig_shape))
+    else:
+        a_h = dpnp.tril(a_h.reshape(orig_shape))
+
+    return a_h
+
+
+def dpnp_cholesky(a, upper):
+    """
+    dpnp_cholesky(a, upper)
+
+    Return the Cholesky decomposition of `a` array.
+
+    """
+
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+
+    res_type = _common_type(a)
+
+    a_shape = a.shape
+
+    if a.size == 0:
+        return dpnp.empty(
+            a_shape,
+            dtype=res_type,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+
+    # Set `uplo` value for `potrf` and `potrf_batch` function based on the boolean input `upper`.
+    # In oneMKL, `uplo` value of 1 is equivalent to oneapi::mkl::uplo::lower
+    # and `uplo` value of 0 is equivalent to oneapi::mkl::uplo::upper.
+    # However, we adjust this logic based on the array's memory layout.
+    # Note: lower for row-major (which is used here) is upper for column-major layout.
+    # Reference: comment from tbmkl/tests/lapack/unit/dpcpp/potrf_usm/potrf_usm.cpp
+    # This means that if `upper` is False (lower triangular),
+    # we actually use oneapi::mkl::uplo::upper (0) for the row-major layout, and vice versa.
+    upper_lower = int(upper)
+
+    if a.ndim > 2:
+        return dpnp_cholesky_batch(a, upper_lower, res_type)
+
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+
+    # `a` must be copied because potrf destroys the input matrix
+    a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
+
+    # use DPCTL tensor function to fill the сopy of the input array
+    # from the input array
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+    )
+
+    # Call the LAPACK extension function _potrf
+    # to computes the Cholesky decomposition
+    ht_lapack_ev, _ = li._potrf(
+        a_sycl_queue,
+        a_h.get_array(),
+        upper_lower,
+        [a_copy_ev],
+    )
+
+    ht_lapack_ev.wait()
+    a_ht_copy_ev.wait()
+
+    # Get upper or lower-triangular matrix part as per `upper` value
+    if upper:
+        a_h = dpnp.triu(a_h)
+    else:
+        a_h = dpnp.tril(a_h)
+
+    return a_h
 
 
 def dpnp_det(a):

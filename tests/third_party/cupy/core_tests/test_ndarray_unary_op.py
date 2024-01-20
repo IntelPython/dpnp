@@ -124,7 +124,14 @@ class TestArrayIntUnaryOp(unittest.TestCase):
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def check_zerodim_op(self, op, xp, dtype):
         a = xp.array(-2).astype(dtype)
-        return op(a)
+        try:
+            return op(a)
+        except ValueError:
+            # When op is operator.invert and dtype is inexact,
+            # NumPy raises TypeError while DPNP raises ValueError.
+            # With this logic, when ValueError is raised in DPNP,
+            # it is changed to TypeError to align with Numpy.
+            raise TypeError
 
     def test_invert_zerodim(self):
         self.check_zerodim_op(operator.invert)
