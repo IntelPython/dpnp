@@ -34,6 +34,7 @@
 #include "getrf.hpp"
 #include "heevd.hpp"
 #include "linalg_exceptions.hpp"
+#include "potrf.hpp"
 #include "syevd.hpp"
 
 namespace lapack_ext = dpnp::backend::ext::lapack;
@@ -45,6 +46,8 @@ void init_dispatch_vectors(void)
     lapack_ext::init_gesv_dispatch_vector();
     lapack_ext::init_getrf_batch_dispatch_vector();
     lapack_ext::init_getrf_dispatch_vector();
+    lapack_ext::init_potrf_batch_dispatch_vector();
+    lapack_ext::init_potrf_dispatch_vector();
     lapack_ext::init_syevd_dispatch_vector();
 }
 
@@ -90,6 +93,20 @@ PYBIND11_MODULE(_lapack_impl, m)
           "the eigenvalues and eigenvectors of a complex Hermitian matrix",
           py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
           py::arg("eig_vecs"), py::arg("eig_vals"),
+          py::arg("depends") = py::list());
+
+    m.def("_potrf", &lapack_ext::potrf,
+          "Call `potrf` from OneMKL LAPACK library to return "
+          "the Cholesky factorization of a symmetric positive-definite matrix",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("upper_lower"),
+          py::arg("depends") = py::list());
+
+    m.def("_potrf_batch", &lapack_ext::potrf_batch,
+          "Call `potrf_batch` from OneMKL LAPACK library to return "
+          "the Cholesky factorization of a batch of symmetric "
+          "positive-definite matrix",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("upper_lower"),
+          py::arg("n"), py::arg("stride_a"), py::arg("batch_size"),
           py::arg("depends") = py::list());
 
     m.def("_syevd", &lapack_ext::syevd,

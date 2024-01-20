@@ -88,8 +88,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CBRT,         /**< Used in numpy.cbrt() impl  */
     DPNP_FN_CEIL,         /**< Used in numpy.ceil() impl  */
     DPNP_FN_CHOLESKY,     /**< Used in numpy.linalg.cholesky() impl  */
-    DPNP_FN_CHOLESKY_EXT, /**< Used in numpy.linalg.cholesky() impl, requires
-                             extra parameters */
     DPNP_FN_CONJUGATE,    /**< Used in numpy.conjugate() impl  */
     DPNP_FN_CHOOSE,       /**< Used in numpy.choose() impl  */
     DPNP_FN_CHOOSE_EXT,   /**< Used in numpy.choose() impl, requires extra
