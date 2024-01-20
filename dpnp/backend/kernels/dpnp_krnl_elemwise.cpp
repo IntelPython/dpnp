@@ -34,6 +34,12 @@
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
+// dpctl tensor headers
+#include "kernels/alignment.hpp"
+
+using dpctl::tensor::kernels::alignment_utils::is_aligned;
+using dpctl::tensor::kernels::alignment_utils::required_alignment;
+
 #define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)         \
     template <typename _KernelNameSpecialization1,                             \
               typename _KernelNameSpecialization2>                             \
@@ -1198,8 +1204,12 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                         (nd_it.get_group(0) * nd_it.get_local_range(0) +       \
                          sg.get_group_id()[0] * max_sg_size);                  \
                                                                                \
-                    if (start + static_cast<size_t>(vec_sz) * max_sg_size <    \
-                        result_size) {                                         \
+                    if (is_aligned<required_alignment>(input1_data) &&         \
+                        is_aligned<required_alignment>(input2_data) &&         \
+                        is_aligned<required_alignment>(result) &&              \
+                        (start + static_cast<size_t>(vec_sz) * max_sg_size <   \
+                         result_size))                                         \
+                    {                                                          \
                         auto input1_multi_ptr = sycl::address_space_cast<      \
                             sycl::access::address_space::global_space,         \
                             sycl::access::decorated::yes>(                     \
