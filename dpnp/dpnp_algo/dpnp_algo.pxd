@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,8 +38,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ARANGE
         DPNP_FN_ARGSORT
         DPNP_FN_ARGSORT_EXT
-        DPNP_FN_CHOLESKY
-        DPNP_FN_CHOLESKY_EXT
         DPNP_FN_CHOOSE
         DPNP_FN_CHOOSE_EXT
         DPNP_FN_COPY
@@ -54,8 +52,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CUMSUM_EXT
         DPNP_FN_DEGREES
         DPNP_FN_DEGREES_EXT
-        DPNP_FN_DET
-        DPNP_FN_DET_EXT
         DPNP_FN_DIAG_INDICES
         DPNP_FN_DIAG_INDICES_EXT
         DPNP_FN_DIAGONAL
@@ -88,8 +84,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_INV_EXT
         DPNP_FN_KRON
         DPNP_FN_KRON_EXT
-        DPNP_FN_MATMUL
-        DPNP_FN_MATMUL_EXT
         DPNP_FN_MATRIX_RANK
         DPNP_FN_MATRIX_RANK_EXT
         DPNP_FN_MAXIMUM
@@ -185,8 +179,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_SEARCHSORTED_EXT
         DPNP_FN_SORT
         DPNP_FN_SORT_EXT
-        DPNP_FN_SUM
-        DPNP_FN_SUM_EXT
         DPNP_FN_SVD
         DPNP_FN_SVD_EXT
         DPNP_FN_TRACE
@@ -284,16 +276,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_strides_t)(c_dpctl.DPCTLSyclQu
                                                              const long * ,
                                                              const c_dpctl.DPCTLEventVectorRef) except +
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void *, void * , void * , size_t, size_t, size_t)
-ctypedef c_dpctl.DPCTLSyclEventRef(*dpnp_reduction_c_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                        void *,
-                                                        const void * ,
-                                                        const shape_elem_type*,
-                                                        const size_t,
-                                                        const shape_elem_type*,
-                                                        const size_t,
-                                                        const void * ,
-                                                        const long*,
-                                                        const c_dpctl.DPCTLEventVectorRef)
 
 
 """
@@ -314,8 +296,6 @@ cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input
 Linear algebra
 """
 cpdef dpnp_descriptor dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2)
-cpdef dpnp_descriptor dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, dpnp_descriptor out=*)
-
 
 """
 Array creation routines

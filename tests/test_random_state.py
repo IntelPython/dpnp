@@ -491,7 +491,7 @@ class TestRandInt:
 
         sycl_device = dpctl.SyclQueue().sycl_device
         if sycl_device.has_aspect_gpu and not sycl_device.has_aspect_fp64:
-            # TODO: discuss with opneMKL
+            # TODO: discuss with oneMKL
             pytest.skip(
                 f"Due to some reason, oneMKL wrongly returns high value instead of low"
             )

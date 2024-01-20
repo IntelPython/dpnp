@@ -177,10 +177,6 @@ tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid4
-tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid5
 tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_AxisConcatenator_init1
 tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_len
 tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_1
@@ -561,13 +557,6 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_arraylike
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_numpy_array
 
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_0_{axis=(1, 3), shape=(2, 3, 4, 5)}::test_nansum_axes
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_1_{axis=(1, 3), shape=(20, 30, 40, 50)}::test_nansum_axes
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_2_{axis=(0, 2, 3), shape=(2, 3, 4, 5)}::test_nansum_axes
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_3_{axis=(0, 2, 3), shape=(20, 30, 40, 50)}::test_nansum_axes
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodExtra_param_0_{shape=(2, 3, 4)}::test_nansum_out
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodExtra_param_1_{shape=(20, 30, 40)}::test_nansum_out
-
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_period
@@ -768,34 +757,6 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_1_{ar
 tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_2_{array=array([], dtype=float64)}::test_flatnonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_3_{array=array([], shape=(0, 2), dtype=float64)}::test_flatnonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_4_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_all
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis2
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis_large
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan2
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan3
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan4
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan5
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_tie
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_zero_size_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_all
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_axis2
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_axis_large
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_nan
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_nan2
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_nan3
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_nan4
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_nan5
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_tie
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis1
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_0_{array=array(0)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_axis
@@ -981,86 +942,44 @@ tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_h
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_range_with_density
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_range_with_weights_and_density
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_same_value
-
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_mismatch
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_all_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_float16
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_huge
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_out
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_0_{axis=None, keepdims=True, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_0_{axis=None, keepdims=True, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_10_{axis=1, keepdims=False, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_10_{axis=1, keepdims=False, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_11_{axis=1, keepdims=False, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_11_{axis=1, keepdims=False, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_1_{axis=None, keepdims=True, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_1_{axis=None, keepdims=True, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_2_{axis=None, keepdims=False, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_2_{axis=None, keepdims=False, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_3_{axis=None, keepdims=False, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_3_{axis=None, keepdims=False, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_4_{axis=0, keepdims=True, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_4_{axis=0, keepdims=True, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_5_{axis=0, keepdims=True, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_5_{axis=0, keepdims=True, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_6_{axis=0, keepdims=False, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_6_{axis=0, keepdims=False, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_7_{axis=0, keepdims=False, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_7_{axis=0, keepdims=False, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_8_{axis=1, keepdims=True, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_8_{axis=1, keepdims=True, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_9_{axis=1, keepdims=True, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMean_param_9_{axis=1, keepdims=True, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStdAdditional::test_nanstd_float16
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStdAdditional::test_nanstd_huge
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStdAdditional::test_nanstd_out
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_0_{axis=None, ddof=0, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_10_{axis=0, ddof=0, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_11_{axis=0, ddof=0, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_12_{axis=0, ddof=1, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_13_{axis=0, ddof=1, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_14_{axis=0, ddof=1, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_15_{axis=0, ddof=1, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_16_{axis=1, ddof=0, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_17_{axis=1, ddof=0, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_18_{axis=1, ddof=0, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_19_{axis=1, ddof=0, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_1_{axis=None, ddof=0, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_20_{axis=1, ddof=1, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_21_{axis=1, ddof=1, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_22_{axis=1, ddof=1, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_23_{axis=1, ddof=1, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_2_{axis=None, ddof=0, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_3_{axis=None, ddof=0, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_4_{axis=None, ddof=1, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_5_{axis=None, ddof=1, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_6_{axis=None, ddof=1, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_7_{axis=None, ddof=1, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_8_{axis=0, ddof=0, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanVarStd_param_9_{axis=0, ddof=0, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_all
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_all_nan
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_axis0
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_axis1
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_axis2
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_axis_large
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_nan
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_all
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_all_nan
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_axis0
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_axis1
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_axis2
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_axis_large
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_nan
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_bad_q
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_defaults
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_keepdims
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_neg_axis
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_no_axis
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_out
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_q_list
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_scalar_q
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_tuple_axis
-tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_uxpected_interpolation
+
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_bad_q[linear]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_bad_q[lower]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_bad_q[higher]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_bad_q[midpoint]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_defaults[linear]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_defaults[lower]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_defaults[higher]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_defaults[midpoint]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_keepdims[linear]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_keepdims[lower]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_keepdims[higher]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_keepdims[midpoint]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_neg_axis[linear]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_neg_axis[lower]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_neg_axis[higher]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_neg_axis[midpoint]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_no_axis[linear]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_no_axis[lower]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_no_axis[higher]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_no_axis[midpoint]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_out[linear]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_out[lower]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_out[higher]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_out[midpoint]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_q_list[linear]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_q_list[lower]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_q_list[higher]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_q_list[midpoint]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_scalar_q[linear]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_scalar_q[lower]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_scalar_q[higher]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_scalar_q[midpoint]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_tuple_axis[linear]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_tuple_axis[lower]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_tuple_axis[higher]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_tuple_axis[midpoint]
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_unxpected_method
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_all_nan
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_nan

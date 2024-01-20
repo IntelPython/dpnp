@@ -1,8 +1,5 @@
-# cython: language_level=3
-# distutils: language = c++
-# -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -50,7 +47,10 @@ from dpnp.linalg.dpnp_algo_linalg import *
 from .dpnp_utils_linalg import (
     check_stacked_2d,
     check_stacked_square,
+    dpnp_cholesky,
+    dpnp_det,
     dpnp_eigh,
+    dpnp_slogdet,
     dpnp_solve,
 )
 
@@ -69,55 +69,68 @@ __all__ = [
     "qr",
     "solve",
     "svd",
+    "slogdet",
 ]
 
 
-def cholesky(input):
+def cholesky(a, upper=False):
     """
     Cholesky decomposition.
 
-    Return the Cholesky decomposition, `L * L.H`, of the square matrix `input`,
-    where `L` is lower-triangular and .H is the conjugate transpose operator
-    (which is the ordinary transpose if `input` is real-valued).  `input` must be
-    Hermitian (symmetric if real-valued) and positive-definite. No
-    checking is performed to verify whether `a` is Hermitian or not.
-    In addition, only the lower-triangular and diagonal elements of `input`
-    are used. Only `L` is actually returned.
+    Return the lower or upper Cholesky decomposition, ``L * L.H`` or
+    ``U.H * U``, of the square matrix ``a``, where ``L`` is lower-triangular,
+    ``U`` is upper-triangular, and ``.H`` is the conjugate transpose operator
+    (which is the ordinary transpose if ``a`` is real-valued). ``a`` must be
+    Hermitian (symmetric if real-valued) and positive-definite. No checking is
+    performed to verify whether ``a`` is Hermitian or not. In addition, only
+    the lower or upper-triangular and diagonal elements of ``a`` are used.
+    Only ``L`` or ``U`` is actually returned.
+
+    For full documentation refer to :obj:`numpy.linalg.cholesky`.
 
     Parameters
     ----------
-    input : (..., M, M) array_like
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         Hermitian (symmetric if all elements are real), positive-definite
         input matrix.
+    upper : bool, optional
+        If ``True``, the result must be the upper-triangular Cholesky factor.
+        If ``False``, the result must be the lower-triangular Cholesky factor.
+        Default: ``False``.
 
     Returns
     -------
-    L : (..., M, M) array_like
-        Upper or lower-triangular Cholesky factor of `input`.  Returns a
-        matrix object if `input` is a matrix object.
+    L : (..., M, M) dpnp.ndarray
+        Lower or upper-triangular Cholesky factor of `a`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> A = np.array([[1.0, 2.0],[2.0, 5.0]])
+    >>> A
+    array([[1., 2.],
+           [2., 5.]])
+    >>> L = np.linalg.cholesky(A)
+    >>> L
+    array([[1., 0.],
+           [2., 1.]])
+    >>> np.dot(L, L.T.conj()) # verify that L * L.H = A
+    array([[1., 2.],
+           [2., 5.]])
+
+    The upper-triangular Cholesky factor can also be obtained:
+
+    >>> np.linalg.cholesky(A, upper=True)
+    array([[ 1.+0.j, -0.-2.j],
+           [ 0.+0.j,  1.+0.j]]
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.shape[-1] != x1_desc.shape[-2]:
-            pass
-        else:
-            if input.dtype == dpnp.int32 or input.dtype == dpnp.int64:
-                dev = x1_desc.get_array().sycl_device
-                if dev.has_aspect_fp64:
-                    dtype = dpnp.float64
-                else:
-                    dtype = dpnp.float32
-                # TODO memory copy. needs to move into DPNPC
-                input_ = dpnp.get_dpnp_descriptor(
-                    dpnp.astype(input, dtype=dtype),
-                    copy_when_nondefault_queue=False,
-                )
-            else:
-                input_ = x1_desc
-            return dpnp_cholesky(input_).get_pyobj()
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-    return call_origin(numpy.linalg.cholesky, input)
+    return dpnp_cholesky(a, upper=upper)
 
 
 def cond(input, p=None):
@@ -148,32 +161,50 @@ def cond(input, p=None):
     return call_origin(numpy.linalg.cond, input, p)
 
 
-def det(input):
+def det(a):
     """
     Compute the determinant of an array.
 
+    For full documentation refer to :obj:`numpy.linalg.det`.
+
     Parameters
     ----------
-    input : (..., M, M) array_like
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         Input array to compute determinants for.
 
     Returns
     -------
-    det : (...) array_like
-        Determinant of `input`.
+    det : (...) dpnp.ndarray
+        Determinant of `a`.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.slogdet` : Returns sign and logarithm of the determinant of an array.
+
+    Examples
+    --------
+    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 4]])
+    >>> dp.linalg.det(a)
+    array(-2.)
+
+    Computing determinants for a stack of matrices:
+
+    >>> a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])
+    >>> a.shape
+    (3, 2, 2)
+    >>> dp.linalg.det(a)
+    array([-2., -3., -8.])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.ndim < 2:
-            pass
-        elif x1_desc.shape[-1] == x1_desc.shape[-2]:
-            result_obj = dpnp_det(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-            return result
-
-    return call_origin(numpy.linalg.det, input)
+    return dpnp_det(a)
 
 
 def eig(x1):
@@ -633,3 +664,59 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     return call_origin(
         numpy.linalg.svd, x1, full_matrices, compute_uv, hermitian
     )
+
+
+def slogdet(a):
+    """
+    Compute the sign and (natural) logarithm of the determinant of an array.
+
+    For full documentation refer to :obj:`numpy.linalg.slogdet`.
+
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Input array, has to be a square 2-D array.
+
+    Returns
+    -------
+    sign : (...) dpnp.ndarray
+        A number representing the sign of the determinant. For a real matrix,
+        this is 1, 0, or -1. For a complex matrix, this is a complex number
+        with absolute value 1 (i.e., it is on the unit circle), or else 0.
+    logabsdet : (...) dpnp.ndarray
+        The natural log of the absolute value of the determinant.
+
+    See Also
+    --------
+    :obj:`dpnp.det` : Returns the determinant of an array.
+
+    Examples
+    --------
+    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 4]])
+    >>> (sign, logabsdet) = dp.linalg.slogdet(a)
+    >>> (sign, logabsdet)
+    (array(-1.), array(0.69314718))
+    >>> sign * dp.exp(logabsdet)
+    array(-2.)
+
+    Computing log-determinants for a stack of matrices:
+
+    >>> a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])
+    >>> a.shape
+    (3, 2, 2)
+    >>> sign, logabsdet = dp.linalg.slogdet(a)
+    >>> (sign, logabsdet)
+    (array([-1., -1., -1.]), array([0.69314718, 1.09861229, 2.07944154]))
+    >>> sign * dp.exp(logabsdet)
+    array([-2., -3., -8.])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
+
+    return dpnp_slogdet(a)
