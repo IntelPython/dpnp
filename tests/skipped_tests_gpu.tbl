@@ -186,7 +186,6 @@ tests/test_linalg.py::test_matrix_rank[None-[[1, 2], [3, 4]]-float32]
 tests/test_linalg.py::test_matrix_rank[None-[[1, 2], [3, 4]]-int64]
 tests/test_linalg.py::test_matrix_rank[None-[[1, 2], [3, 4]]-int32]
 
-tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestAngle::test_angle
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag_inplace
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real_inplace
 
@@ -494,8 +493,6 @@ tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_par
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_1_{shapes=[(3, 2), (2, 3)]}::test_invalid_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_2_{shapes=[(3, 2), (3, 4)]}::test_invalid_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_3_{shapes=[(0,), (2,)]}::test_invalid_broadcast
-
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_3_{name='angle', nargs=1}::test_raises_with_numpy_input
 
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2_infinities

@@ -788,7 +788,7 @@ def empty_like(
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
+    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`
     Parameter `order` is supported with values ``"C"`` or ``"F"``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -1050,7 +1050,7 @@ def full_like(
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
+    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`
     Parameter `order` is supported only with values ``"C"`` and ``"F"``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -1396,7 +1396,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
 
     Limitations
     -----------
-    Each array instance from `xi` is supported as either :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
+    Each array instance from `xi` is supported as either :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameter `copy` is supported only with default value ``True``.
     Parameter `sparse` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -1653,7 +1653,7 @@ def ones_like(
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
+    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`
     Parameter `order` is supported with values ``"C"`` or ``"F"``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -1823,7 +1823,7 @@ def tril(x1, /, *, k=0):
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
+    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
     Parameter `k` is supported only of integer data type.
     Otherwise the function will be executed sequentially on CPU.
 
@@ -1867,7 +1867,7 @@ def triu(x1, /, *, k=0):
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
+    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
     Parameter `k` is supported only of integer data type.
     Otherwise the function will be executed sequentially on CPU.
 
@@ -2055,7 +2055,7 @@ def zeros_like(
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
+    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`
     Parameter `order` is supported with values ``"C"`` or ``"F"``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.

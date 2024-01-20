@@ -54,6 +54,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     check_nd_call_func,
     dpnp_abs,
     dpnp_add,
+    dpnp_angle,
     dpnp_ceil,
     dpnp_conj,
     dpnp_copysign,
@@ -82,6 +83,7 @@ __all__ = [
     "abs",
     "absolute",
     "add",
+    "angle",
     "around",
     "ceil",
     "clip",
@@ -291,6 +293,56 @@ def add(
     )
 
 
+def angle(z, deg=False):
+    """
+    Return the angle of the complex argument.
+
+    For full documentation refer to :obj:`numpy.angle`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array, expected to have a complex-valued floating-point data type.
+    deg : bool, optional
+        Return angle in degrees if True, radians if False (default).
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The counterclockwise angle from the positive real axis on
+        the complex plane in the range `(-pi, pi]`.
+        The returned array has a floating-point data type determined
+        by the Type Promotion Rules.
+
+    Notes
+    -----
+    Although the angle of the complex number 0 is undefined, `dpnp.angle(0)` returns the value 0.
+
+    See Also
+    --------
+    :obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
+    :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+    :obj:`dpnp.absolute` : Calculate the absolute value element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1.0, 1.0j, 1+1j])
+    >>> np.angle(a) # in radians
+    array([0.        , 1.57079633, 0.78539816]) # may vary
+
+    >>> np.angle(a, deg=True) # in degrees
+    array([ 0., 90., 45.])
+
+    """
+
+    dpnp.check_supported_arrays_type(z)
+    res = dpnp_angle(z)
+    if deg is True:
+        res = res * (180 / dpnp.pi)
+    return res
+
+
 def around(x, /, decimals=0, out=None):
     """
     Round an array to the given number of decimals.
@@ -390,12 +442,12 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Array containing elements to clip.
-    a_min, a_max : {dpnp_array, usm_ndarray, None}
+    a_min, a_max : {dpnp.ndarray, usm_ndarray, None}
         Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.
         Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.
-    out : {dpnp_array, usm_ndarray}, optional
+    out : {dpnp.ndarray, usm_ndarray}, optional
         The results will be placed in this array. It may be the input array for in-place clipping.
         `out` must be of the right shape to hold the output. Its type is preserved.
     order : {"C", "F", "A", "K", None}, optional
@@ -404,7 +456,7 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
     Returns
     -------
-    out : dpnp_array
+    out : dpnp.ndarray
         An array with the elements of `a`, but where values < `a_min` are replaced with `a_min`,
         and those > `a_max` with `a_max`.
 
@@ -1478,21 +1530,23 @@ def gradient(x1, *varargs, **kwargs):
     return call_origin(numpy.gradient, x1, *varargs, **kwargs)
 
 
-def imag(x):
+def imag(val):
     """
     Return the imaginary part of the complex argument.
 
     For full documentation refer to :obj:`numpy.imag`.
 
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+
     Returns
     -------
     out : dpnp.ndarray
-        The imaginary component of the complex argument.
-
-    Limitations
-    -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+        The imaginary component of the complex argument. If `val` is real,
+        the type of `val` is used for the output. If `val` has complex
+        elements, the returned type is float.
 
     See Also
     --------
@@ -1516,12 +1570,8 @@ def imag(x):
 
     """
 
-    if dpnp.isscalar(x):
-        # input has to be an array
-        pass
-    else:
-        return dpnp_imag(x)
-    return call_origin(numpy.imag, x)
+    dpnp.check_supported_arrays_type(val)
+    return dpnp_imag(val)
 
 
 def maximum(
@@ -2210,21 +2260,23 @@ def proj(
     )
 
 
-def real(x):
+def real(val):
     """
     Return the real part of the complex argument.
 
     For full documentation refer to :obj:`numpy.real`.
 
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+
     Returns
     -------
     out : dpnp.ndarray
-        The real component of the complex argument.
-
-    Limitations
-    -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+        The real component of the complex argument.  If `val` is real,
+        the type of `val` is used for the output. If `val` has complex
+        elements, the returned type is float.
 
     See Also
     --------
@@ -2251,15 +2303,12 @@ def real(x):
     array(1.)
 
     """
-    if dpnp.isscalar(x):
-        # input has to be an array
-        pass
+
+    dpnp.check_supported_arrays_type(val)
+    if dpnp.issubsctype(val.dtype, dpnp.complexfloating):
+        return dpnp_real(val)
     else:
-        if dpnp.issubsctype(x.dtype, dpnp.complexfloating):
-            return dpnp_real(x)
-        else:
-            return x
-    return call_origin(numpy.real, x)
+        return val
 
 
 def remainder(
