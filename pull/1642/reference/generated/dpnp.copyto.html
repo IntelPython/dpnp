@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.copyto &mdash; Data Parallel Extension for NumPy 0.13.1dev1+24.g62cdff047f documentation</title>
+  <title>dpnp.copyto &mdash; Data Parallel Extension for NumPy 0.13.1dev2+17.gcb5f21851a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8c6470fc"></script>
+        <script src="../../_static/documentation_options.js?v=4d8ed344"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+24.g62cdff047f
+                0.13.1dev2+17.gcb5f21851a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -137,13 +137,18 @@
 <p>Raises a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> if the <cite>casting</cite> rule is violated, and if
 <cite>where</cite> is provided, it selects which elements to copy.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.copyto.html#numpy.copyto" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.copyto</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>The <cite>dst</cite> parameter is supported as either <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
-or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
-The <cite>where</cite> parameter is supported as either <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code> or scalar.
-Otherwise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> exception will be raised.
-Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dst</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – The array into which values are copied.</p></li>
+<li><p><strong>src</strong> (<em>array_like</em>) – The array from which values are copied.</p></li>
+<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) – Controls what kind of data casting may occur when copying.</p></li>
+<li><p><strong>where</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – A boolean array or a scalar which is broadcasted to match
+the dimensions of <cite>dst</cite>, and selects elements to copy
+from <cite>src</cite> to <cite>dst</cite> wherever it contains the value <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
@@ -176,7 +181,7 @@ Input array data types are limited by supported DPNP <span class="xref std std-r
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2023, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

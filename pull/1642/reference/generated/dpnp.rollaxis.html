@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.rollaxis &mdash; Data Parallel Extension for NumPy 0.13.1dev1+24.g62cdff047f documentation</title>
+  <title>dpnp.rollaxis &mdash; Data Parallel Extension for NumPy 0.13.1dev2+17.gcb5f21851a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8c6470fc"></script>
+        <script src="../../_static/documentation_options.js?v=4d8ed344"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+24.g62cdff047f
+                0.13.1dev2+17.gcb5f21851a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -136,19 +136,25 @@
 <dd><p>Roll the specified axis backwards, until it lies in a given position.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.rollaxis.html#numpy.rollaxis" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.rollaxis</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An array with the same data type as <cite>x</cite> where the specified axis
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Input array.</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The axis to be rolled. The positions of the other axes do not
+change relative to one another.</p></li>
+<li><p><strong>start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – When <code class="docutils literal notranslate"><span class="pre">start</span> <span class="pre">&lt;=</span> <span class="pre">axis</span></code>, the axis is rolled back until it lies in
+this position. When <code class="docutils literal notranslate"><span class="pre">start</span> <span class="pre">&gt;</span> <span class="pre">axis</span></code>, the axis is rolled until it
+lies before this position. The default, <code class="docutils literal notranslate"><span class="pre">0</span></code>, results in a “complete”
+roll.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – An array with the same data type as <cite>x</cite> where the specified axis
 has been repositioned to the desired position.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dpnp.ndarray</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
-<p class="rubric">Limitations</p>
-<p>Parameter <cite>x</cite> is supported either as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
-or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>. Otherwise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> exception
-will be raised.
-Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -184,7 +190,7 @@ Input array data types are limited by supported DPNP <span class="xref std std-r
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2023, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

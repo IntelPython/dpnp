@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.squeeze &mdash; Data Parallel Extension for NumPy 0.13.1dev1+24.g62cdff047f documentation</title>
+  <title>dpnp.squeeze &mdash; Data Parallel Extension for NumPy 0.13.1dev2+17.gcb5f21851a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8c6470fc"></script>
+        <script src="../../_static/documentation_options.js?v=4d8ed344"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+24.g62cdff047f
+                0.13.1dev2+17.gcb5f21851a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -136,23 +136,24 @@
 <dd><p>Removes singleton dimensions (axes) from array <cite>a</cite>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.squeeze.html#numpy.squeeze" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.squeeze</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>out</strong> – Output array is a view, if possible,
-and a copy otherwise, but with all or a subset of the
-dimensions of length 1 removed. Output has the same data
-type as the input, is allocated on the same device as the
-input and has the same USM allocation type as the input
-array <cite>a</cite>.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Input data.</p></li>
+<li><p><strong>axis</strong> (<em>None</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em><em>, </em><em>optional</em>) – Selects a subset of the entries of length one in the shape.
+If an axis is selected with shape entry greater than one,
+an error is raised.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dpnp.ndarray</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – Output array is a view, if possible, and a copy otherwise, but with all
+or a subset of the dimensions of length 1 removed. Output has the same
+data type as the input, is allocated on the same device as the input
+and has the same USM allocation type as the input array <cite>a</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
-<p class="rubric">Limitations</p>
-<p>Parameters <cite>a</cite> is supported as either <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
-or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
-Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.
-Otherwise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> exception will be raised.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">]]])</span>
@@ -185,7 +186,7 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">TypeError
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2023, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

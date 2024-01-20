@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.cbrt &mdash; Data Parallel Extension for NumPy 0.13.1dev1+24.g62cdff047f documentation</title>
+  <title>dpnp.cbrt &mdash; Data Parallel Extension for NumPy 0.13.1dev2+17.gcb5f21851a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,14 +24,14 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8c6470fc"></script>
+        <script src="../../_static/documentation_options.js?v=4d8ed344"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Random Sampling (dpnp.random)" href="../random.html" />
-    <link rel="prev" title="dpnp.clip" href="dpnp.clip.html" /> 
+    <link rel="next" title="dpnp.square" href="dpnp.square.html" />
+    <link rel="prev" title="dpnp.sqrt" href="dpnp.sqrt.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+24.g62cdff047f
+                0.13.1dev2+17.gcb5f21851a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -61,36 +61,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Array Indexing Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../math.html">Mathematical Functions</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../math.html#trigonometric-functions">Trigonometric functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#hyperbolic-functions">Hyperbolic functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#rounding">Rounding</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#sums-products-differences">Sums, products, differences</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#exponents-and-logarithms">Exponents and logarithms</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#other-special-functions">Other special functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#floating-point-routines">Floating point routines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#rational-routines">Rational routines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#arithmetic-operations">Arithmetic operations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#handling-complex-numbers">Handling complex numbers</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#extrema-finding">Extrema Finding</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../math.html#miscellaneous">Miscellaneous</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../ufunc.html#available-ufuncs">Available ufuncs</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../ufunc.html#math-operations">Math operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#trigonometric-functions">Trigonometric functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#bit-twiddling-functions">Bit-twiddling functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#comparison-functions">Comparison functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#floating-functions">Floating functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../routines.html">Routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
@@ -118,8 +100,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
-          <li class="breadcrumb-item"><a href="../math.html">Mathematical Functions</a></li>
+          <li class="breadcrumb-item"><a href="../ufunc.html">Universal Functions (ufunc)</a></li>
       <li class="breadcrumb-item active">dpnp.cbrt</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.cbrt.rst.txt" rel="nofollow"> View page source</a>
@@ -182,14 +163,14 @@ Input array data types are limited by real-valued data types.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.clip.html" class="btn btn-neutral float-left" title="dpnp.clip" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../random.html" class="btn btn-neutral float-right" title="Random Sampling (dpnp.random)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.sqrt.html" class="btn btn-neutral float-left" title="dpnp.sqrt" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.square.html" class="btn btn-neutral float-right" title="dpnp.square" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2023, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

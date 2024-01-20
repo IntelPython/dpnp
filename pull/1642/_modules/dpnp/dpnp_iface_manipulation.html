@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.13.1dev1+24.g62cdff047f documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.13.1dev2+17.gcb5f21851a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8c6470fc"></script>
+        <script src="../../_static/documentation_options.js?v=4d8ed344"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+24.g62cdff047f
+                0.13.1dev2+17.gcb5f21851a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -90,7 +90,7 @@
   <h1>Source code for dpnp.dpnp_iface_manipulation</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2023, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2024, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -145,8 +145,10 @@
     <span class="s2">&quot;broadcast_arrays&quot;</span><span class="p">,</span>
     <span class="s2">&quot;broadcast_to&quot;</span><span class="p">,</span>
     <span class="s2">&quot;can_cast&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;column_stack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;concatenate&quot;</span><span class="p">,</span>
     <span class="s2">&quot;copyto&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dstack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;expand_dims&quot;</span><span class="p">,</span>
     <span class="s2">&quot;flip&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fliplr&quot;</span><span class="p">,</span>
@@ -159,6 +161,7 @@
     <span class="s2">&quot;result_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;roll&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rollaxis&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;row_stack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;shape&quot;</span><span class="p">,</span>
     <span class="s2">&quot;squeeze&quot;</span><span class="p">,</span>
     <span class="s2">&quot;stack&quot;</span><span class="p">,</span>
@@ -170,6 +173,16 @@
 <span class="p">]</span>
 
 
+<span class="k">def</span> <span class="nf">_check_stack_arrays</span><span class="p">(</span><span class="n">arrays</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate a sequence type of arrays to stack.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="s2">&quot;__getitem__&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s1">&#39;arrays to stack must be passed as a &quot;sequence&quot; type &#39;</span>
+            <span class="s2">&quot;such as list or tuple.&quot;</span>
+        <span class="p">)</span>
+
+
 <div class="viewcode-block" id="asfarray">
 <a class="viewcode-back" href="../../reference/generated/dpnp.asfarray.html#dpnp.asfarray">[docs]</a>
 <span class="k">def</span> <span class="nf">asfarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -178,16 +191,36 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.asfarray`.</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    If `dtype` is ``None``, :obj:`dpnp.bool` or one of the `int` dtypes,</span>
-<span class="sd">    it is replaced with the default floating type (:obj:`dpnp.float64`</span>
-<span class="sd">    if a device supports it, or :obj:`dpnp.float32` type otherwise).</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : array_like</span>
+<span class="sd">        Input data, in any form that can be converted to an array.</span>
+<span class="sd">        This includes an instance of :class:`dpnp.ndarray` or</span>
+<span class="sd">        :class:`dpctl.tensor.usm_ndarray`, an object representing</span>
+<span class="sd">        SYCL USM allocation and implementing `__sycl_usm_array_interface__`</span>
+<span class="sd">        protocol, an instance of :class:`numpy.ndarray`, an object supporting</span>
+<span class="sd">        Python buffer protocol, a Python scalar, or a (possibly nested)</span>
+<span class="sd">        sequence of Python scalars.</span>
+<span class="sd">    dtype : str or dtype object, optional</span>
+<span class="sd">        Float type code to coerce input array `a`.  If `dtype` is ``None``,</span>
+<span class="sd">        :obj:`dpnp.bool` or one of the `int` dtypes, it is replaced with</span>
+<span class="sd">        the default floating type (:obj:`dpnp.float64` if a device supports it,</span>
+<span class="sd">        or :obj:`dpnp.float32` type otherwise).</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by :obj:`dpnp.ndarray.device` property.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    y : dpnp.ndarray</span>
-<span class="sd">        The input a as a float ndarray.</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The input `a` as a float ndarray.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -205,7 +238,7 @@
         <span class="n">a</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
@@ -419,16 +452,18 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.broadcast_arrays`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    args : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        A list of arrays to broadcast.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    broadcasted : list of dpnp.ndarray</span>
-<span class="sd">        These arrays are views on the original arrays.</span>
+<span class="sd">    out : list of dpnp.ndarray</span>
+<span class="sd">        A list of arrays which are views on the original arrays from `args`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `args` is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
 <span class="sd">    Parameter `subok` is supported with default value.</span>
 <span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
 
@@ -454,12 +489,8 @@
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
 
-    <span class="n">dpt_arrays</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">[</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="p">[</span>
-        <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_arr</span><span class="p">)</span> <span class="k">for</span> <span class="n">usm_arr</span> <span class="ow">in</span> <span class="n">dpt_arrays</span>
-    <span class="p">]</span></div>
+    <span class="n">usm_arrays</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">])</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">usm_arrays</span><span class="p">]</span></div>
 
 
 
@@ -471,19 +502,23 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.broadcast_to`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        The array to broadcast.</span>
+<span class="sd">    shape : tuple or int</span>
+<span class="sd">        The shape of the desired array. A single integer ``i`` is interpreted</span>
+<span class="sd">        as ``(i,)``.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        An array having a specified shape. Must have the same data type as `array`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `array` is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
 <span class="sd">    Parameter `subok` is supported with default value.</span>
 <span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
-<span class="sd">    Input array data types of `array` is limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -491,9 +526,9 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
-<span class="sd">    &gt;&gt;&gt; x = dp.array([1, 2, 3])</span>
-<span class="sd">    &gt;&gt;&gt; dp.broadcast_to(x, (3, 3))</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.broadcast_to(x, (3, 3))</span>
 <span class="sd">    array([[1, 2, 3],</span>
 <span class="sd">           [1, 2, 3],</span>
 <span class="sd">           [1, 2, 3]])</span>
@@ -503,8 +538,8 @@
     <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;subok=</span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2"> is currently not supported&quot;</span><span class="p">)</span>
 
-    <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
-    <span class="n">new_array</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+    <span class="n">usm_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="n">new_array</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">usm_array</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">new_array</span><span class="p">)</span></div>
 
 
@@ -515,14 +550,11 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns ``True`` if cast between data types can occur according to the casting rule.</span>
 
-<span class="sd">    If `from` is a scalar or array scalar, also returns ``True`` if the scalar value can</span>
-<span class="sd">    be cast without overflow or truncation to an integer.</span>
-
 <span class="sd">    For full documentation refer to :obj:`numpy.can_cast`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    from : dpnp.array, dtype</span>
+<span class="sd">    from_ : {dpnp.ndarray, usm_ndarray, dtype, dtype specifier}</span>
 <span class="sd">        Source data type.</span>
 <span class="sd">    to : dtype</span>
 <span class="sd">        Target data type.</span>
@@ -532,12 +564,62 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out: bool</span>
-<span class="sd">        True if cast can occur according to the casting rule.</span>
+<span class="sd">        ``True`` if cast can occur according to the casting rule,</span>
+<span class="sd">        ``False`` otherwise.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.result_type` : Returns the type that results from applying the NumPy</span>
-<span class="sd">        type promotion rules to the arguments.</span>
+<span class="sd">    :obj:`dpnp.result_type` : Returns the type that results from applying</span>
+<span class="sd">                              the NumPy type promotion rules to the arguments.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Basic examples</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.can_cast(np.int32, np.int64)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.can_cast(np.float64, complex)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.can_cast(complex, float)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &gt;&gt;&gt; np.can_cast(&#39;i8&#39;, &#39;f8&#39;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.can_cast(&#39;i8&#39;, &#39;f4&#39;)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    Array scalar checks the value, array does not</span>
+
+<span class="sd">    &gt;&gt;&gt; np.can_cast(np.array(1000.0), np.float32)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.can_cast(np.array([1000.0]), np.float32)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    Using the casting rules</span>
+
+<span class="sd">    &gt;&gt;&gt; np.can_cast(&#39;i8&#39;, &#39;i8&#39;, &#39;no&#39;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.can_cast(&#39;&lt;i8&#39;, &#39;&gt;i8&#39;, &#39;no&#39;)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &gt;&gt;&gt; np.can_cast(&#39;&lt;i8&#39;, &#39;&gt;i8&#39;, &#39;equiv&#39;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.can_cast(&#39;&lt;i4&#39;, &#39;&gt;i8&#39;, &#39;equiv&#39;)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &gt;&gt;&gt; np.can_cast(&#39;&lt;i4&#39;, &#39;&gt;i8&#39;, &#39;safe&#39;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.can_cast(&#39;&lt;i8&#39;, &#39;&gt;i4&#39;, &#39;safe&#39;)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &gt;&gt;&gt; np.can_cast(&#39;&lt;i8&#39;, &#39;&gt;i4&#39;, &#39;same_kind&#39;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.can_cast(&#39;&lt;i8&#39;, &#39;&gt;u4&#39;, &#39;same_kind&#39;)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &gt;&gt;&gt; np.can_cast(&#39;&lt;i8&#39;, &#39;&gt;u4&#39;, &#39;unsafe&#39;)</span>
+<span class="sd">    True</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -550,6 +632,67 @@
         <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">from_</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">dtype_from</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">casting</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="column_stack">
+<a class="viewcode-back" href="../../reference/generated/dpnp.column_stack.html#dpnp.column_stack">[docs]</a>
+<span class="k">def</span> <span class="nf">column_stack</span><span class="p">(</span><span class="n">tup</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stacks 1-D and 2-D arrays as columns into a 2-D array.</span>
+
+<span class="sd">    Take a sequence of 1-D arrays and stack them as columns to make a single</span>
+<span class="sd">    2-D array. 2-D arrays are stacked as-is, just like with :obj:`dpnp.hstack`.</span>
+<span class="sd">    1-D arrays are turned into 2-D columns first.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.column_stack`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tup : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        A sequence of 1-D or 2-D arrays to stack. All of them must have</span>
+<span class="sd">        the same first dimension.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The array formed by stacking the given arrays.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.</span>
+<span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third axis).</span>
+<span class="sd">    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).</span>
+<span class="sd">    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).</span>
+<span class="sd">    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array((1, 2, 3))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array((2, 3, 4))</span>
+<span class="sd">    &gt;&gt;&gt; np.column_stack((a, b))</span>
+<span class="sd">    array([[1, 2],</span>
+<span class="sd">           [2, 3],</span>
+<span class="sd">           [3, 4]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_check_stack_arrays</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+
+    <span class="n">arrays</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">tup</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">[:,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Only 1 or 2 dimensional arrays can be column stacked&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 
 
@@ -645,14 +788,18 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.copyto`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    The `dst` parameter is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    The `where` parameter is supported as either :class:`dpnp.ndarray`,</span>
-<span class="sd">    :class:`dpctl.tensor.usm_ndarray` or scalar.</span>
-<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dst : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        The array into which values are copied.</span>
+<span class="sd">    src : array_like</span>
+<span class="sd">        The array from which values are copied.</span>
+<span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
+<span class="sd">        Controls what kind of data casting may occur when copying.</span>
+<span class="sd">    where : {dpnp.ndarray, usm_ndarray, scalar} of bool, optional</span>
+<span class="sd">        A boolean array or a scalar which is broadcasted to match</span>
+<span class="sd">        the dimensions of `dst`, and selects elements to copy</span>
+<span class="sd">        from `src` to `dst` wherever it contains the value ``True``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -716,6 +863,68 @@
 
 
 
+<div class="viewcode-block" id="dstack">
+<a class="viewcode-back" href="../../reference/generated/dpnp.dstack.html#dpnp.dstack">[docs]</a>
+<span class="k">def</span> <span class="nf">dstack</span><span class="p">(</span><span class="n">tup</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stack arrays in sequence depth wise (along third axis).</span>
+
+<span class="sd">    This is equivalent to concatenation along the third axis after 2-D arrays</span>
+<span class="sd">    of shape `(M, N)` have been reshaped to `(M, N, 1)` and 1-D arrays of shape</span>
+<span class="sd">    `(N,)` have been reshaped to `(1, N, 1)`. Rebuilds arrays divided by</span>
+<span class="sd">    :obj:`dpnp.dsplit`.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.dstack`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tup : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        One or more array-like sequences. The arrays must have the same shape</span>
+<span class="sd">        along all but the third axis. 1-D or 2-D arrays must have the same shape.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The array formed by stacking the given arrays, will be at least 3-D.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.</span>
+<span class="sd">    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).</span>
+<span class="sd">    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).</span>
+<span class="sd">    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.</span>
+<span class="sd">    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.</span>
+<span class="sd">    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.</span>
+<span class="sd">    :obj:`dpnp.dsplit` : Split array along third axis.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array((1, 2, 3))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array((2, 3, 4))</span>
+<span class="sd">    &gt;&gt;&gt; np.dstack((a, b))</span>
+<span class="sd">    array([[[1, 2],</span>
+<span class="sd">            [2, 3],</span>
+<span class="sd">            [3, 4]]])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1], [2], [3]])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([[2], [3], [4]])</span>
+<span class="sd">    &gt;&gt;&gt; np.dstack((a, b))</span>
+<span class="sd">    array([[[1, 2]],</span>
+<span class="sd">           [[2, 3]],</span>
+<span class="sd">           [[3, 4]]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_check_stack_arrays</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+
+    <span class="n">arrs</span> <span class="o">=</span> <span class="n">atleast_3d</span><span class="p">(</span><span class="o">*</span><span class="n">tup</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">arrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">arrs</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="expand_dims">
 <a class="viewcode-back" href="../../reference/generated/dpnp.expand_dims.html#dpnp.expand_dims">[docs]</a>
 <span class="k">def</span> <span class="nf">expand_dims</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
@@ -727,18 +936,18 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.expand_dims`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int or tuple of ints</span>
+<span class="sd">        Position in the expanded axes where the new axis (or axes) is placed.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        An array with the number of dimensions increased.</span>
 <span class="sd">        A view is returned whenever possible.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `a` is supported either as :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -800,9 +1009,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">usm_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
-        <span class="n">dpt</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">usm_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
     <span class="p">)</span></div>
 
 
@@ -817,17 +1026,21 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.flip`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    m : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : None or int or tuple of ints, optional</span>
+<span class="sd">         Axis or axes along which to flip over. The default,</span>
+<span class="sd">         ``axis=None``, will flip over all of the axes of the input array.</span>
+<span class="sd">         If `axis` is negative it counts from the last to the first axis.</span>
+<span class="sd">         If `axis` is a tuple of ints, flipping is performed on all of the axes</span>
+<span class="sd">         specified in the tuple.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        A view of `m` with the entries of axis reversed.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `m` is supported either as :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -886,17 +1099,15 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fliplr`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    m : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array, must be at least 2-D.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        A view of `m` with the columns reversed.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `m` is supported either as :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -941,17 +1152,15 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.flipud`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    m : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        A view of `m` with the rows reversed.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `m` is supported either as :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1016,33 +1225,34 @@
 <span class="sd">    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.</span>
 <span class="sd">    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.</span>
 <span class="sd">    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).</span>
+<span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third dimension).</span>
+<span class="sd">    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.</span>
 <span class="sd">    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.</span>
 <span class="sd">    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array((1,2,3))</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array((4,5,6))</span>
-<span class="sd">    &gt;&gt;&gt; np.hstack((a,b))</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array((1, 2, 3))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array((4, 5, 6))</span>
+<span class="sd">    &gt;&gt;&gt; np.hstack((a, b))</span>
 <span class="sd">    array([1, 2, 3, 4, 5, 6])</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.array([[1],[2],[3]])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([[4],[5],[6]])</span>
-<span class="sd">    &gt;&gt;&gt; np.hstack((a,b))</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1], [2], [3]])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([[4], [5], [6]])</span>
+<span class="sd">    &gt;&gt;&gt; np.hstack((a, b))</span>
 <span class="sd">    array([[1, 4],</span>
 <span class="sd">           [2, 5],</span>
 <span class="sd">           [3, 6]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tup</span><span class="p">,</span> <span class="s2">&quot;__getitem__&quot;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;Arrays to stack must be passed as a sequence type such as list or tuple.&quot;</span>
-        <span class="p">)</span>
+    <span class="n">_check_stack_arrays</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+
     <span class="n">arrs</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="o">*</span><span class="n">tup</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">arrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">arrs</span><span class="p">]</span>
+
     <span class="c1"># As a special case, dimension 0 of 1-dimensional arrays is &quot;horizontal&quot;</span>
     <span class="k">if</span> <span class="n">arrs</span> <span class="ow">and</span> <span class="n">arrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">)</span>
@@ -1059,20 +1269,20 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.moveaxis`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        The array whose axes should be reordered.</span>
+<span class="sd">    source : int or sequence of int</span>
+<span class="sd">        Original positions of the axes to move. These must be unique.</span>
+<span class="sd">    destination : int or sequence of int</span>
+<span class="sd">        Destination positions for each of the original axes. These must also be</span>
+<span class="sd">        unique.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Array with moved axes.</span>
-<span class="sd">        The returned array will have the same data and</span>
-<span class="sd">        the same USM allocation type as `a`.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `a` is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception</span>
-<span class="sd">    will be raised.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
+<span class="sd">        Array with moved axes. This array is a view of the input array.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1090,9 +1300,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">usm_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
-        <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">usm_array</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
     <span class="p">)</span></div>
 
 
@@ -1121,7 +1331,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp_array</span>
-<span class="sd">        `out` is a contiguous 1-D array of the same subtype as `a`, with shape (a.size,)</span>
+<span class="sd">        A contiguous 1-D array of the same subtype as `a`, with shape (a.size,).</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1225,7 +1435,7 @@
 <span class="sd">        inferred from the length of the array and remaining dimensions.</span>
 <span class="sd">    order : {&#39;C&#39;, &#39;F&#39;}, optional</span>
 <span class="sd">        Read the elements of `a` using this index order, and place the</span>
-<span class="sd">        elements into the reshaped array using this index order.  &#39;C&#39;</span>
+<span class="sd">        elements into the reshaped array using this index order. &#39;C&#39;</span>
 <span class="sd">        means to read / write the elements using C-like index order,</span>
 <span class="sd">        with the last axis index changing fastest, back to the first</span>
 <span class="sd">        axis index changing slowest. &#39;F&#39; means to read / write the</span>
@@ -1243,7 +1453,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        This will be a new view object if possible; otherwise, it will</span>
 <span class="sd">        be a copy.  Note there is no guarantee of the *memory layout* (C- or</span>
 <span class="sd">        Fortran- contiguous) of the returned array.</span>
@@ -1299,18 +1509,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    arrays_and_dtypes : list of arrays and dtypes</span>
+<span class="sd">    arrays_and_dtypes : list of {dpnp.ndarray, usm_ndarray, dtype}</span>
 <span class="sd">        An arbitrary length sequence of arrays or dtypes.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dtype</span>
 <span class="sd">        The result type.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    An array in the input list is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1327,7 +1532,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">usm_arrays_and_dtypes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">X</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span> <span class="k">else</span> <span class="n">X</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span>
+        <span class="k">else</span> <span class="n">X</span>
         <span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">arrays_and_dtypes</span>
     <span class="p">]</span>
     <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">usm_arrays_and_dtypes</span><span class="p">)</span></div>
@@ -1346,19 +1553,26 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.roll`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    shift : int or tuple of ints</span>
+<span class="sd">        The number of places by which elements are shifted. If a tuple,</span>
+<span class="sd">        then `axis` must be a tuple of the same size, and each of the</span>
+<span class="sd">        given axes is shifted by the corresponding number. If an int</span>
+<span class="sd">        while `axis` is a tuple of ints, then the same value is used for</span>
+<span class="sd">        all given axes.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which elements are shifted. By default, the</span>
+<span class="sd">        array is flattened before shifting, after which the original</span>
+<span class="sd">        shape is restored.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        An array with the same data type as `x`</span>
 <span class="sd">        and whose elements, relative to `x`, are shifted.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is supported either as :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception</span>
-<span class="sd">    will be raised.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1388,9 +1602,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">roll</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">shift</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">usm_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
-        <span class="n">dpt</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="n">shift</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">usm_array</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="n">shift</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
     <span class="p">)</span></div>
 
 
@@ -1403,18 +1617,24 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.rollaxis`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int</span>
+<span class="sd">        The axis to be rolled. The positions of the other axes do not</span>
+<span class="sd">        change relative to one another.</span>
+<span class="sd">    start : int, optional</span>
+<span class="sd">        When ``start &lt;= axis``, the axis is rolled back until it lies in</span>
+<span class="sd">        this position. When ``start &gt; axis``, the axis is rolled until it</span>
+<span class="sd">        lies before this position. The default, ``0``, results in a &quot;complete&quot;</span>
+<span class="sd">        roll.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        An array with the same data type as `x` where the specified axis</span>
 <span class="sd">        has been repositioned to the desired position.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is supported either as :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`. Otherwise ``TypeError`` exception</span>
-<span class="sd">    will be raised.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1446,8 +1666,8 @@
         <span class="n">start</span> <span class="o">-=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="n">start</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">x</span>
-    <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">start</span><span class="p">)</span></div>
+    <span class="n">usm_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">usm_array</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">start</span><span class="p">)</span></div>
 
 
 
@@ -1505,22 +1725,22 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.squeeze`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input data.</span>
+<span class="sd">    axis : None or int or tuple of ints, optional</span>
+<span class="sd">        Selects a subset of the entries of length one in the shape.</span>
+<span class="sd">        If an axis is selected with shape entry greater than one,</span>
+<span class="sd">        an error is raised.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Output array is a view, if possible,</span>
-<span class="sd">        and a copy otherwise, but with all or a subset of the</span>
-<span class="sd">        dimensions of length 1 removed. Output has the same data</span>
-<span class="sd">        type as the input, is allocated on the same device as the</span>
-<span class="sd">        input and has the same USM allocation type as the input</span>
-<span class="sd">        array `a`.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `a` is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
+<span class="sd">        Output array is a view, if possible, and a copy otherwise, but with all</span>
+<span class="sd">        or a subset of the dimensions of length 1 removed. Output has the same</span>
+<span class="sd">        data type as the input, is allocated on the same device as the input</span>
+<span class="sd">        and has the same USM allocation type as the input array `a`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1541,9 +1761,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">usm_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
-        <span class="n">dpt</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">usm_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
     <span class="p">)</span></div>
 
 
@@ -1579,6 +1799,10 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.</span>
+<span class="sd">    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).</span>
+<span class="sd">    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).</span>
+<span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third dimension).</span>
+<span class="sd">    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.</span>
 <span class="sd">    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.</span>
 <span class="sd">    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.</span>
 
@@ -1608,6 +1832,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">_check_stack_arrays</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="s2">&quot;stack() only takes `out` or `dtype` as an argument, but both were provided.&quot;</span>
@@ -1633,18 +1859,20 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.swapaxes`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis1 : int</span>
+<span class="sd">        First axis.</span>
+<span class="sd">    axis2 : int</span>
+<span class="sd">        Second axis.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        An array with with swapped axes.</span>
 <span class="sd">        A view is returned whenever possible.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `a` is supported either as :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -1674,9 +1902,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">usm_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
-        <span class="n">dpt</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">axis2</span><span class="p">)</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">usm_array</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">axis2</span><span class="p">)</span>
     <span class="p">)</span></div>
 
 
@@ -1707,14 +1935,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    A : dpnp.ndarray</span>
+<span class="sd">    A : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        The input array.</span>
-<span class="sd">    reps : array_like</span>
+<span class="sd">    reps : int or tuple of ints</span>
 <span class="sd">        The number of repetitions of `A` along each axis.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    c : dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        The tiled output array.</span>
 
 <span class="sd">    See Also</span>
@@ -1757,8 +1985,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">reps</span><span class="p">))</span></div>
+    <span class="n">usm_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">usm_array</span><span class="p">,</span> <span class="n">reps</span><span class="p">))</span></div>
 
 
 
@@ -1770,15 +1998,21 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.transpose`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axes : tuple or list of ints, optional</span>
+<span class="sd">        If specified, it must be a tuple or list which contains a permutation</span>
+<span class="sd">        of [0, 1, ..., N-1] where N is the number of axes of `a`.</span>
+<span class="sd">        The `i`&#39;th axis of the returned array will correspond to the axis</span>
+<span class="sd">        numbered ``axes[i]`` of the input. If not specified, defaults to</span>
+<span class="sd">        ``range(a.ndim)[::-1]``, which reverses the order of the axes.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        `a` with its axes permuted. A view is returned whenever possible.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1856,6 +2090,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stack arrays in sequence vertically (row wise).</span>
 
+<span class="sd">    :obj:`dpnp.row_stack` is an alias for :obj:`dpnp.vstack`.</span>
+<span class="sd">    They are the same function.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.vstack`.</span>
 
 <span class="sd">    Parameters</span>
@@ -1904,15 +2141,16 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tup</span><span class="p">,</span> <span class="s2">&quot;__getitem__&quot;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;Arrays to stack must be passed as a sequence type such as list or tuple.&quot;</span>
-        <span class="p">)</span>
+    <span class="n">_check_stack_arrays</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
+
     <span class="n">arrs</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="o">*</span><span class="n">tup</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">arrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">arrs</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">)</span></div>
 
+
+
+<span class="n">row_stack</span> <span class="o">=</span> <span class="n">vstack</span>
 </pre></div>
 
            </div>
@@ -1922,7 +2160,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2023, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
