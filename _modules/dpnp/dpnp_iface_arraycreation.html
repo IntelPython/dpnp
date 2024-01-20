@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.13.1dev2+11.g8935acfcdb documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.13.1dev2+21.g064cfbf5a2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=5e21ec81"></script>
+        <script src="../../_static/documentation_options.js?v=526741f1"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+11.g8935acfcdb
+                0.13.1dev2+21.g064cfbf5a2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -910,7 +910,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`</span>
+<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Parameter `order` is supported with values ``&quot;C&quot;`` or ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
@@ -1196,7 +1196,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`</span>
+<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;`` and ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
@@ -1560,7 +1560,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Each array instance from `xi` is supported as either :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Each array instance from `xi` is supported as either :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
 <span class="sd">    Parameter `copy` is supported only with default value ``True``.</span>
 <span class="sd">    Parameter `sparse` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
@@ -1823,7 +1823,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`</span>
+<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Parameter `order` is supported with values ``&quot;C&quot;`` or ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
@@ -2002,7 +2002,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.</span>
+<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.</span>
 <span class="sd">    Parameter `k` is supported only of integer data type.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
@@ -2049,7 +2049,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.</span>
+<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.</span>
 <span class="sd">    Parameter `k` is supported only of integer data type.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
@@ -2246,7 +2246,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`</span>
+<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Parameter `order` is supported with values ``&quot;C&quot;`` or ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
