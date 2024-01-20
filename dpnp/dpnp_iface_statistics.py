@@ -72,7 +72,7 @@ def _count_reduce_items(arr, axis, where=True):
 
     Parameters
     ----------
-    arr : {dpnp_array, usm_ndarray}
+    arr : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         axis or axes along which the number of items used in a reduction operation must be counted.
@@ -485,14 +485,14 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Parameters
     ----------
-    a :  {dpnp_array, usm_ndarray}
+    a :  {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which maximum values must be computed. By default,
         the maximum value must be computed over the entire array. If a tuple of integers,
         maximum values must be computed over multiple axes.
         Default: ``None``.
-    out :  {dpnp_array, usm_ndarray}, optional
+    out :  {dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
@@ -706,14 +706,14 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Parameters
     ----------
-    a :  {dpnp_array, usm_ndarray}
+    a :  {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which minimum values must be computed. By default,
         the minimum value must be computed over the entire array. If a tuple of integers,
         minimum values must be computed over multiple axes.
         Default: ``None``.
-    out :  {dpnp_array, usm_ndarray}, optional
+    out :  {dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool, optional
@@ -805,7 +805,7 @@ def ptp(
 
     Limitations
     -----------
-    Input array is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
+    Input array is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
 
     Examples
     --------

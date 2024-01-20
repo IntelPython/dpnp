@@ -400,6 +400,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
     [
         pytest.param("average", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("abs", [-1.2, 1.2]),
+        pytest.param("angle", [[1.0 + 1.0j, 2.0 + 3.0j]]),
         pytest.param("arccos", [-0.5, 0.0, 0.5]),
         pytest.param("arccosh", [1.5, 3.5, 5.0]),
         pytest.param("arcsin", [-0.5, 0.0, 0.5]),
@@ -450,6 +451,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
+        pytest.param("reciprocal", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("reduce_hypot", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("rsqrt", [1, 8, 27]),
         pytest.param("sign", [-5.0, 0.0, 4.5]),
@@ -560,6 +562,28 @@ def test_take(func, usm_type_x, usm_type_ind):
     assert x.usm_type == usm_type_x
     assert ind.usm_type == usm_type_ind
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
+
+
+@pytest.mark.parametrize(
+    "data, is_empty",
+    [
+        ([[1, -2], [2, 5]], False),
+        ([[[1, -2], [2, 5]], [[1, -2], [2, 5]]], False),
+        ((0, 0), True),
+        ((3, 0, 0), True),
+    ],
+    ids=["2D", "3D", "Empty_2D", "Empty_3D"],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_cholesky(data, is_empty, usm_type):
+    if is_empty:
+        x = dp.empty(data, dtype=dp.default_float_type(), usm_type=usm_type)
+    else:
+        x = dp.array(data, dtype=dp.default_float_type(), usm_type=usm_type)
+
+    result = dp.linalg.cholesky(x)
+
+    assert x.usm_type == result.usm_type
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
