@@ -383,7 +383,9 @@ class TestReciprocal:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.reciprocal(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
