@@ -40,33 +40,60 @@ it contains:
 """
 
 
+import dpctl.tensor as dpt
 import numpy
+from numpy.core.numeric import normalize_axis_index
 
 import dpnp
 from dpnp.dpnp_algo import *
+from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import *
 
 __all__ = ["argsort", "partition", "searchsorted", "sort"]
 
 
-def argsort(in_array1, axis=-1, kind=None, order=None):
+def argsort(a, axis=-1, kind=None, order=None):
     """
     Returns the indices that would sort an array.
 
     For full documentation refer to :obj:`numpy.argsort`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Array to be sorted.
+    axis : int or None, optional
+        Axis along which to sort. If ``None``, the array is flattened before
+        sorting. The default is -1, which sorts along the last axis.
+    kind : {None, "stable"}, optional
+        Default is ``None``, which is equivalent to `"stable"`.
+        Unlike in NumPy any other options are not accepted here.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of indices that sort `a` along the specified `axis`.
+        If `a` is one-dimensional, ``a[index_array]`` yields a sorted `a`.
+        More generally, ``dpnp.take_along_axis(a, index_array, axis=axis)``
+        always yields the sorted `a`, irrespective of dimensionality.
+        The return array has default array index data type.
+
+    Notes
+    -----
+    For zero-dimensional arrays, if `axis=None`, output is a one-dimensional
+    array with a single zero element. Otherwise, an ``AxisError`` is raised.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Parameter `axis` is supported only with default value ``-1``.
-    Parameter `kind` is supported only with default value ``None``.
-    Parameter `order` is supported only with default value ``None``.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters `order` is only supported with its default value.
+    Parameters `kind` can only be ``None`` or ``"stable"`` which
+    are equivalent.
+    Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
-    :obj:`dpnp.sort` : Describes sorting algorithms used.
+    :obj:`dpnp.ndarray.argsort` : Equivalent method.
+    :obj:`dpnp.sort` : Return a sorted copy of an array.
     :obj:`dpnp.lexsort` : Indirect stable sort with multiple keys.
     :obj:`dpnp.argpartition` : Indirect partial sort.
     :obj:`dpnp.take_along_axis` : Apply ``index_array`` from argsort to
@@ -76,26 +103,50 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
     --------
     >>> import dpnp as np
     >>> x = np.array([3, 1, 2])
-    >>> out = np.argsort(x)
-    >>> [i for i in out]
-    [1, 2, 0]
+    >>> np.argsort(x)
+    array([1, 2, 0])
+
+    >>> x = np.array([[0, 3], [2, 2]])
+    >>> x
+    array([[0, 3],
+           [2, 2]])
+
+    >>> ind = np.argsort(x, axis=0)  # sorts along first axis
+    >>> ind
+    array([[0, 1],
+           [1, 0]])
+    >>> np.take_along_axis(x, ind, axis=0)  # same as np.sort(x, axis=0)
+    array([[0, 2],
+           [2, 3]])
+
+    >>> ind = np.argsort(x, axis=1)  # sorts along last axis
+    >>> ind
+    array([[0, 1],
+           [0, 1]])
+    >>> np.take_along_axis(x, ind, axis=1)  # same as np.sort(x, axis=1)
+    array([[0, 3],
+           [2, 2]])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        in_array1, copy_when_nondefault_queue=False
-    )
-    if x1_desc:
-        if axis != -1:
-            pass
-        elif kind is not None:
-            pass
-        elif order is not None:
-            pass
-        else:
-            return dpnp_argsort(x1_desc).get_pyobj()
+    if order is not None:
+        raise NotImplementedError(
+            "order keyword argument is only supported with its default value."
+        )
+    elif kind is not None and kind != "stable":
+        raise NotImplementedError(
+            "kind keyword argument can only be None or 'stable'."
+        )
+    else:
+        dpnp.check_supported_arrays_type(a)
+        if axis is None:
+            a = a.flatten()
+            axis = -1
 
-    return call_origin(numpy.argsort, in_array1, axis, kind, order)
+        axis = normalize_axis_index(axis, ndim=a.ndim)
+        return dpnp_array._create_from_usm_ndarray(
+            dpt.argsort(dpnp.get_usm_ndarray(a), axis=axis)
+        )
 
 
 def partition(x1, kth, axis=-1, kind="introselect", order=None):
@@ -166,23 +217,44 @@ def searchsorted(x1, x2, side="left", sorter=None):
     return call_origin(numpy.searchsorted, x1, x2, side=side, sorter=sorter)
 
 
-def sort(x1, **kwargs):
+def sort(a, axis=-1, kind=None, order=None):
     """
     Return a sorted copy of an array.
 
     For full documentation refer to :obj:`numpy.sort`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Array to be sorted.
+    axis : int or None, optional
+        Axis along which to sort. If ``None``, the array is flattened before
+        sorting. The default is -1, which sorts along the last axis.
+    kind : {None, "stable"}, optional
+        Default is ``None``, which is equivalent to `"stable"`.
+        Unlike in NumPy any other options are not accepted here.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Sorted array with the same type and shape as `a`.
+
+    Notes
+    -----
+    For zero-dimensional arrays, if `axis=None`, output is the input array
+    returned as a one-dimensional array. Otherwise, an ``AxisError`` is raised.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Keyword arguments ``kwargs`` are currently unsupported.
-    Dimension of input array is supported to be equal to ``1``.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters `order` is only supported with its default value.
+    Parameters `kind` can only be ``None`` or ``"stable"`` which
+    are equivalent.
+    Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
-    :obj:`dpnp.argsort` : Indirect sort.
+    :obj:`dpnp.ndarray.sort` : Sort an array in-place.
+    :obj:`dpnp.argsort` : Return the indices that would sort an array.
     :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.
     :obj:`dpnp.searchsorted` : Find elements in a sorted array.
     :obj:`dpnp.partition` : Partial sort.
@@ -190,18 +262,33 @@ def sort(x1, **kwargs):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([1, 4, 3, 1])
-    >>> out = np.sort(a)
-    >>> [i for i in out]
-    [1, 1, 3, 4]
+    >>> a = np.array([[1,4],[3,1]])
+    >>> np.sort(a)                # sort along the last axis
+    array([[1, 4],
+           [1, 3]])
+    >>> np.sort(a, axis=None)     # sort the flattened array
+    array([1, 1, 3, 4])
+    >>> np.sort(a, axis=0)        # sort along the first axis
+    array([[1, 1],
+           [3, 4]])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        if x1_desc.ndim != 1:
-            pass
-        else:
-            return dpnp_sort(x1_desc).get_pyobj()
+    if order is not None:
+        raise NotImplementedError(
+            "order keyword argument is only supported with its default value."
+        )
+    elif kind is not None and kind != "stable":
+        raise NotImplementedError(
+            "kind keyword argument can only be None or 'stable'."
+        )
+    else:
+        dpnp.check_supported_arrays_type(a)
+        if axis is None:
+            a = a.flatten()
+            axis = -1
 
-    return call_origin(numpy.sort, x1, **kwargs)
+        axis = normalize_axis_index(axis, ndim=a.ndim)
+        return dpnp_array._create_from_usm_ndarray(
+            dpt.sort(dpnp.get_usm_ndarray(a), axis=axis)
+        )

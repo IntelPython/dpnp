@@ -154,8 +154,6 @@ class TestPutAlongAxis:
 
 
 class TestTakeAlongAxis:
-    # TODO: remove fixture once `dpnp.sort` is fully implemented
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "func, argfunc, kwargs",
         [

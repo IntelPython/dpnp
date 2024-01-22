@@ -4,7 +4,161 @@ from numpy.testing import assert_array_equal
 
 import dpnp
 
-from .helper import get_all_dtypes
+from .helper import assert_dtype_allclose, get_all_dtypes, get_complex_dtypes
+
+
+class TestSort:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    def test_sort_dtype(self, dtype):
+        a = numpy.random.uniform(-5, 5, 10)
+        np_array = numpy.array(a, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+
+        result = dpnp.sort(dp_array)
+        expected = numpy.sort(np_array)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_sort_complex(self, dtype):
+        a = numpy.random.uniform(-5, 5, 10)
+        b = numpy.random.uniform(-5, 5, 10)
+        np_array = numpy.array(a + b * 1j, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+
+        result = dpnp.sort(dp_array)
+        expected = numpy.sort(np_array)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("axis", [None, -2, -1, 0, 1, 2])
+    def test_sort_axis(self, axis):
+        a = numpy.random.uniform(-10, 10, 36)
+        np_array = numpy.array(a).reshape(3, 4, 3)
+        dp_array = dpnp.array(np_array)
+
+        result = dpnp.sort(dp_array, axis=axis)
+        expected = numpy.sort(np_array, axis=axis)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("axis", [-2, -1, 0, 1])
+    def test_sort_ndarray(self, dtype, axis):
+        a = numpy.random.uniform(-10, 10, 12)
+        np_array = numpy.array(a, dtype=dtype).reshape(6, 2)
+        dp_array = dpnp.array(np_array)
+
+        dp_array.sort(axis=axis)
+        np_array.sort(axis=axis)
+        assert_dtype_allclose(dp_array, np_array)
+
+    def test_sort_stable(self):
+        np_array = numpy.repeat(numpy.arange(10), 10)
+        dp_array = dpnp.array(np_array)
+
+        result = dpnp.sort(dp_array, kind="stable")
+        expected = numpy.sort(np_array, kind="stable")
+        assert_dtype_allclose(result, expected)
+
+    def test_sort_ndarray_axis_none(self):
+        a = numpy.random.uniform(-10, 10, 12)
+        dp_array = dpnp.array(a).reshape(6, 2)
+        with pytest.raises(TypeError):
+            dp_array.sort(axis=None)
+
+    def test_sort_zero_dim(self):
+        np_array = numpy.array(2.5)
+        dp_array = dpnp.array(np_array)
+
+        # with default axis=-1
+        with pytest.raises(numpy.AxisError):
+            dpnp.sort(dp_array)
+
+        # with axis = None
+        result = dpnp.sort(dp_array, axis=None)
+        expected = numpy.sort(np_array, axis=None)
+        assert_dtype_allclose(result, expected)
+
+    def test_sort_notimplemented(self):
+        dp_array = dpnp.arange(10)
+
+        with pytest.raises(NotImplementedError):
+            dpnp.sort(dp_array, kind="quicksort")
+
+        with pytest.raises(NotImplementedError):
+            dpnp.sort(dp_array, order=["age"])
+
+
+class TestArgsort:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    def test_argsort_dtype(self, dtype):
+        a = numpy.random.uniform(-5, 5, 10)
+        np_array = numpy.array(a, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+
+        result = dpnp.argsort(dp_array)
+        expected = numpy.argsort(np_array)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_argsort_complex(self, dtype):
+        a = numpy.random.uniform(-5, 5, 10)
+        b = numpy.random.uniform(-5, 5, 10)
+        np_array = numpy.array(a + b * 1j, dtype=dtype)
+        dp_array = dpnp.array(np_array)
+
+        result = dpnp.argsort(dp_array)
+        expected = numpy.argsort(np_array)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("axis", [None, -2, -1, 0, 1, 2])
+    def test_argsort_axis(self, axis):
+        a = numpy.random.uniform(-10, 10, 36)
+        np_array = numpy.array(a).reshape(3, 4, 3)
+        dp_array = dpnp.array(np_array)
+
+        result = dpnp.argsort(dp_array, axis=axis)
+        expected = numpy.argsort(np_array, axis=axis)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("axis", [None, -2, -1, 0, 1])
+    def test_argsort_ndarray(self, dtype, axis):
+        a = numpy.random.uniform(-10, 10, 12)
+        np_array = numpy.array(a, dtype=dtype).reshape(6, 2)
+        dp_array = dpnp.array(np_array)
+
+        result = dp_array.argsort(axis=axis)
+        expected = np_array.argsort(axis=axis)
+        assert_dtype_allclose(result, expected)
+
+    def test_argsort_stable(self):
+        np_array = numpy.repeat(numpy.arange(10), 10)
+        dp_array = dpnp.array(np_array)
+
+        result = dpnp.argsort(dp_array, kind="stable")
+        expected = numpy.argsort(np_array, kind="stable")
+        assert_dtype_allclose(result, expected)
+
+    def test_argsort_zero_dim(self):
+        np_array = numpy.array(2.5)
+        dp_array = dpnp.array(np_array)
+
+        # with default axis=-1
+        with pytest.raises(numpy.AxisError):
+            dpnp.argsort(dp_array)
+
+        # with axis = None
+        result = dpnp.argsort(dp_array, axis=None)
+        expected = numpy.argsort(np_array, axis=None)
+        assert_dtype_allclose(result, expected)
+
+    def test_sort_notimplemented(self):
+        dp_array = dpnp.arange(10)
+
+        with pytest.raises(NotImplementedError):
+            dpnp.argsort(dp_array, kind="quicksort")
+
+        with pytest.raises(NotImplementedError):
+            dpnp.argsort(dp_array, order=["age"])
 
 
 @pytest.mark.parametrize("kth", [0, 1], ids=["0", "1"])

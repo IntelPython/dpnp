@@ -851,6 +851,7 @@ def take_along_axis(a, indices, axis):
     --------
     :obj:`dpnp.take` : Take along an axis, using the same indices for every 1d slice.
     :obj:`dpnp.put_along_axis` : Put values into the destination array by matching 1d index and data slices.
+    :obj:`dpnp.argsort` : Return the indices that would sort an array.
 
     Examples
     --------
