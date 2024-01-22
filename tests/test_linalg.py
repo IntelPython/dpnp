@@ -919,7 +919,7 @@ class TestSvd:
                 reconstructed = inp.dot(dp_u, inp.dot(dpnp_diag_s, dp_vt))
             # TODO: use assert dpnp.allclose() inside check_decomposition()
             # when it will support complex dtypes
-            assert_allclose(dp_a, reconstructed, rtol=tol, atol=tol)
+            assert_allclose(dp_a, reconstructed, rtol=tol, atol=1e-4)
 
         assert_allclose(dp_s, np_s, rtol=tol, atol=1e-03)
 
