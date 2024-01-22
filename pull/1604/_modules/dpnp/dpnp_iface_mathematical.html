@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.13.1dev1+64.g6be53c8ec2 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.13.1dev2+78.g01532c209f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=653791ac"></script>
+        <script src="../../_static/documentation_options.js?v=4c55f584"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+64.g6be53c8ec2
+                0.13.1dev2+78.g01532c209f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -90,7 +90,7 @@
   <h1>Source code for dpnp.dpnp_iface_mathematical</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2023, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2024, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -144,6 +144,7 @@
     <span class="n">check_nd_call_func</span><span class="p">,</span>
     <span class="n">dpnp_abs</span><span class="p">,</span>
     <span class="n">dpnp_add</span><span class="p">,</span>
+    <span class="n">dpnp_angle</span><span class="p">,</span>
     <span class="n">dpnp_ceil</span><span class="p">,</span>
     <span class="n">dpnp_conj</span><span class="p">,</span>
     <span class="n">dpnp_copysign</span><span class="p">,</span>
@@ -172,6 +173,7 @@
     <span class="s2">&quot;abs&quot;</span><span class="p">,</span>
     <span class="s2">&quot;absolute&quot;</span><span class="p">,</span>
     <span class="s2">&quot;add&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;angle&quot;</span><span class="p">,</span>
     <span class="s2">&quot;around&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ceil&quot;</span><span class="p">,</span>
     <span class="s2">&quot;clip&quot;</span><span class="p">,</span>
@@ -387,6 +389,59 @@
 
 
 
+<div class="viewcode-block" id="angle">
+<a class="viewcode-back" href="../../reference/generated/dpnp.angle.html#dpnp.angle">[docs]</a>
+<span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the angle of the complex argument.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.angle`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array, expected to have a complex-valued floating-point data type.</span>
+<span class="sd">    deg : bool, optional</span>
+<span class="sd">        Return angle in degrees if True, radians if False (default).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The counterclockwise angle from the positive real axis on</span>
+<span class="sd">        the complex plane in the range `(-pi, pi]`.</span>
+<span class="sd">        The returned array has a floating-point data type determined</span>
+<span class="sd">        by the Type Promotion Rules.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Although the angle of the complex number 0 is undefined, `dpnp.angle(0)` returns the value 0.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.</span>
+<span class="sd">    :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.</span>
+<span class="sd">    :obj:`dpnp.absolute` : Calculate the absolute value element-wise.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1.0, 1.0j, 1+1j])</span>
+<span class="sd">    &gt;&gt;&gt; np.angle(a) # in radians</span>
+<span class="sd">    array([0.        , 1.57079633, 0.78539816]) # may vary</span>
+
+<span class="sd">    &gt;&gt;&gt; np.angle(a, deg=True) # in degrees</span>
+<span class="sd">    array([ 0., 90., 45.])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp_angle</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">deg</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">*</span> <span class="p">(</span><span class="mi">180</span> <span class="o">/</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+
 <div class="viewcode-block" id="around">
 <a class="viewcode-back" href="../../reference/generated/dpnp.around.html#dpnp.around">[docs]</a>
 <span class="k">def</span> <span class="nf">around</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -494,12 +549,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Array containing elements to clip.</span>
-<span class="sd">    a_min, a_max : {dpnp_array, usm_ndarray, None}</span>
+<span class="sd">    a_min, a_max : {dpnp.ndarray, usm_ndarray, None}</span>
 <span class="sd">        Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.</span>
 <span class="sd">        Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.</span>
-<span class="sd">    out : {dpnp_array, usm_ndarray}, optional</span>
+<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        The results will be placed in this array. It may be the input array for in-place clipping.</span>
 <span class="sd">        `out` must be of the right shape to hold the output. Its type is preserved.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
@@ -508,7 +563,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : dpnp_array</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        An array with the elements of `a`, but where values &lt; `a_min` are replaced with `a_min`,</span>
 <span class="sd">        and those &gt; `a_max` with `a_max`.</span>
 
@@ -687,7 +742,7 @@
 <span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported real data types.</span>
+<span class="sd">    Input array data types are limited by supported real-valued data types.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1633,21 +1688,23 @@
 
 <div class="viewcode-block" id="imag">
 <a class="viewcode-back" href="../../reference/generated/dpnp.imag.html#dpnp.imag">[docs]</a>
-<span class="k">def</span> <span class="nf">imag</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">imag</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the imaginary part of the complex argument.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.imag`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        The imaginary component of the complex argument.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">        The imaginary component of the complex argument. If `val` is real,</span>
+<span class="sd">        the type of `val` is used for the output. If `val` has complex</span>
+<span class="sd">        elements, the returned type is float.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1671,12 +1728,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="c1"># input has to be an array</span>
-        <span class="k">pass</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_imag</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_imag</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
 
 
 
@@ -2301,7 +2354,7 @@
         <span class="n">du</span><span class="o">.</span><span class="n">intel_device_info</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;device_id&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF00</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">_any_complex</span> <span class="ow">and</span> <span class="n">device_mask</span> <span class="ow">in</span> <span class="p">[</span><span class="mh">0x3E00</span><span class="p">,</span> <span class="mh">0x9B00</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">call_origin</span><span class="p">(</span>
             <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">,</span>
             <span class="n">a</span><span class="p">,</span>
             <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
@@ -2311,6 +2364,10 @@
             <span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span>
             <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+            <span class="c1"># numpy may return a scalar, convert it back to dpnp array</span>
+            <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
     <span class="k">elif</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;initial keyword argument is only supported with its default value.&quot;</span>
@@ -2394,21 +2451,23 @@
 
 <div class="viewcode-block" id="real">
 <a class="viewcode-back" href="../../reference/generated/dpnp.real.html#dpnp.real">[docs]</a>
-<span class="k">def</span> <span class="nf">real</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">real</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the real part of the complex argument.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.real`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        The real component of the complex argument.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">        The real component of the complex argument.  If `val` is real,</span>
+<span class="sd">        the type of `val` is used for the output. If `val` has complex</span>
+<span class="sd">        elements, the returned type is float.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -2435,15 +2494,12 @@
 <span class="sd">    array(1.)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="c1"># input has to be an array</span>
-        <span class="k">pass</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubsctype</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_real</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubsctype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">dpnp_real</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">x</span>
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">val</span></div>
 
 
 
@@ -2848,7 +2904,7 @@
 <div class="viewcode-block" id="sum">
 <a class="viewcode-back" href="../../reference/generated/dpnp.sum.html#dpnp.sum">[docs]</a>
 <span class="k">def</span> <span class="nf">sum</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">,</span>
+    <span class="n">a</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2863,31 +2919,86 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.sum`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which sums must be computed. If a tuple</span>
+<span class="sd">        of unique integers, sums are computed over multiple axes.</span>
+<span class="sd">        If ``None``, the sum is computed over the entire array.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">        Data type of the returned array. If ``None``, the default data</span>
+<span class="sd">        type is inferred from the &quot;kind&quot; of the input array data type.</span>
+<span class="sd">            * If `a` has a real-valued floating-point data type,</span>
+<span class="sd">                the returned array will have the default real-valued</span>
+<span class="sd">                floating-point data type for the device where input</span>
+<span class="sd">                array `a` is allocated.</span>
+<span class="sd">            * If `a` has signed integral data type, the returned array</span>
+<span class="sd">                will have the default signed integral type for the device</span>
+<span class="sd">                where input array `a` is allocated.</span>
+<span class="sd">            * If `a` has unsigned integral data type, the returned array</span>
+<span class="sd">                will have the default unsigned integral type for the device</span>
+<span class="sd">                where input array `a` is allocated.</span>
+<span class="sd">            * If `a` has a complex-valued floating-point data type,</span>
+<span class="sd">                the returned array will have the default complex-valued</span>
+<span class="sd">                floating-pointer data type for the device where input</span>
+<span class="sd">                array `a` is allocated.</span>
+<span class="sd">            * If `a` has a boolean data type, the returned array will</span>
+<span class="sd">                have the default signed integral type for the device</span>
+<span class="sd">                where input array `a` is allocated.</span>
+<span class="sd">        If the data type (either specified or resolved) differs from the</span>
+<span class="sd">        data type of `a`, the input array elements are cast to the</span>
+<span class="sd">        specified data type before computing the sum.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must</span>
+<span class="sd">        have the same shape as the expected output, but the type of</span>
+<span class="sd">        the output values will be cast if necessary.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">        as singleton dimensions, so that the returned array remains</span>
+<span class="sd">        compatible with the input array according to Array Broadcasting</span>
+<span class="sd">        rules. Otherwise, if ``False``, the reduced axes are not included in</span>
+<span class="sd">        the returned array. Default: ``False``.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        an array containing the sums. If the sum was computed over the</span>
+<span class="sd">        An array containing the sums. If the sum is computed over the</span>
 <span class="sd">        entire array, a zero-dimensional array is returned. The returned</span>
 <span class="sd">        array has the data type as described in the `dtype` parameter</span>
-<span class="sd">        of the Python Array API standard for the `sum` function.</span>
+<span class="sd">        description above.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x` is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameters `initial` and `where` are supported with their default values.</span>
+<span class="sd">    Parameters `initial` and `where` are only supported with their default values.</span>
 <span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.ndarray.sum` : Equivalent method.</span>
+<span class="sd">    :obj:`dpnp.cumsum` : Cumulative sum of array elements.</span>
+<span class="sd">    :obj:`dpnp.trapz` : Integration of array values using the composite trapezoidal rule.</span>
+<span class="sd">    :obj:`dpnp.mean` : Compute the arithmetic mean.</span>
+<span class="sd">    :obj:`dpnp.average` : Compute the weighted average.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.sum(np.array([1, 2, 3, 4, 5]))</span>
-<span class="sd">    array(15)</span>
-<span class="sd">    &gt;&gt;&gt; np.sum(np.array(5))</span>
-<span class="sd">    array(5)</span>
-<span class="sd">    &gt;&gt;&gt; result = np.sum(np.array([[0, 1], [0, 5]]), axis=0)</span>
+<span class="sd">    &gt;&gt;&gt; np.sum(np.array([0.5, 1.5]))</span>
+<span class="sd">    array(2.)</span>
+<span class="sd">    &gt;&gt;&gt; np.sum(np.array([0.5, 0.7, 0.2, 1.5]), dtype=np.int32)</span>
+<span class="sd">    array(1)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[0, 1], [0, 5]])</span>
+<span class="sd">    &gt;&gt;&gt; np.sum(a)</span>
+<span class="sd">    array(6)</span>
+<span class="sd">    &gt;&gt;&gt; np.sum(a, axis=0)</span>
 <span class="sd">    array([0, 6])</span>
+<span class="sd">    &gt;&gt;&gt; np.sum(a, axis=1)</span>
+<span class="sd">    array([1, 5])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -2895,7 +3006,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
             <span class="n">axis</span> <span class="o">=</span> <span class="p">(</span><span class="n">axis</span><span class="p">,)</span>
 
-        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">initial</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
@@ -2907,20 +3018,20 @@
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-            <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">==</span> <span class="mi">4</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+            <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">==</span> <span class="mi">4</span>
             <span class="ow">and</span> <span class="p">(</span>
                 <span class="p">(</span>
                     <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,)</span>
-                    <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
-                    <span class="ow">and</span> <span class="mi">32</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1024</span>
-                    <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
+                    <span class="ow">and</span> <span class="mi">32</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1024</span>
+                    <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                 <span class="p">)</span>
                 <span class="ow">or</span> <span class="p">(</span>
                     <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
-                    <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
-                    <span class="ow">and</span> <span class="mi">32</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1024</span>
-                    <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
+                    <span class="ow">and</span> <span class="mi">32</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1024</span>
+                    <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="p">):</span>
@@ -2928,7 +3039,7 @@
 
             <span class="kn">from</span> <span class="nn">dpnp.backend.extensions.sycl_ext</span> <span class="kn">import</span> <span class="n">_sycl_ext_impl</span>
 
-            <span class="nb">input</span> <span class="o">=</span> <span class="n">x</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="n">a</span>
             <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span>
                 <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">T</span>
             <span class="nb">input</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
@@ -2960,7 +3071,7 @@
                 <span class="k">return</span> <span class="n">result</span>
 
         <span class="n">y</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span>
         <span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span></div>
@@ -3099,7 +3210,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2023, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

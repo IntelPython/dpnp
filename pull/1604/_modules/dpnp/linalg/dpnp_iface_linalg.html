@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev1+64.g6be53c8ec2 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev2+78.g01532c209f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=653791ac"></script>
+        <script src="../../../_static/documentation_options.js?v=4c55f584"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev1+64.g6be53c8ec2
+                0.13.1dev2+78.g01532c209f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -88,11 +88,8 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dpnp.linalg.dpnp_iface_linalg</h1><div class="highlight"><pre>
-<span></span><span class="c1"># cython: language_level=3</span>
-<span class="c1"># distutils: language = c++</span>
-<span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2023, Intel Corporation</span>
+<span></span><span class="c1"># *****************************************************************************</span>
+<span class="c1"># Copyright (c) 2016-2024, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -140,7 +137,10 @@
 <span class="kn">from</span> <span class="nn">.dpnp_utils_linalg</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">check_stacked_2d</span><span class="p">,</span>
     <span class="n">check_stacked_square</span><span class="p">,</span>
+    <span class="n">dpnp_cholesky</span><span class="p">,</span>
+    <span class="n">dpnp_det</span><span class="p">,</span>
     <span class="n">dpnp_eigh</span><span class="p">,</span>
+    <span class="n">dpnp_slogdet</span><span class="p">,</span>
     <span class="n">dpnp_solve</span><span class="p">,</span>
     <span class="n">dpnp_svd</span><span class="p">,</span>
 <span class="p">)</span>
@@ -160,57 +160,70 @@
     <span class="s2">&quot;qr&quot;</span><span class="p">,</span>
     <span class="s2">&quot;solve&quot;</span><span class="p">,</span>
     <span class="s2">&quot;svd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;slogdet&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="cholesky">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.cholesky.html#dpnp.linalg.cholesky">[docs]</a>
-<span class="k">def</span> <span class="nf">cholesky</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cholesky</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cholesky decomposition.</span>
 
-<span class="sd">    Return the Cholesky decomposition, `L * L.H`, of the square matrix `input`,</span>
-<span class="sd">    where `L` is lower-triangular and .H is the conjugate transpose operator</span>
-<span class="sd">    (which is the ordinary transpose if `input` is real-valued).  `input` must be</span>
-<span class="sd">    Hermitian (symmetric if real-valued) and positive-definite. No</span>
-<span class="sd">    checking is performed to verify whether `a` is Hermitian or not.</span>
-<span class="sd">    In addition, only the lower-triangular and diagonal elements of `input`</span>
-<span class="sd">    are used. Only `L` is actually returned.</span>
+<span class="sd">    Return the lower or upper Cholesky decomposition, ``L * L.H`` or</span>
+<span class="sd">    ``U.H * U``, of the square matrix ``a``, where ``L`` is lower-triangular,</span>
+<span class="sd">    ``U`` is upper-triangular, and ``.H`` is the conjugate transpose operator</span>
+<span class="sd">    (which is the ordinary transpose if ``a`` is real-valued). ``a`` must be</span>
+<span class="sd">    Hermitian (symmetric if real-valued) and positive-definite. No checking is</span>
+<span class="sd">    performed to verify whether ``a`` is Hermitian or not. In addition, only</span>
+<span class="sd">    the lower or upper-triangular and diagonal elements of ``a`` are used.</span>
+<span class="sd">    Only ``L`` or ``U`` is actually returned.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.linalg.cholesky`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    input : (..., M, M) array_like</span>
+<span class="sd">    a : (..., M, M) {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Hermitian (symmetric if all elements are real), positive-definite</span>
 <span class="sd">        input matrix.</span>
+<span class="sd">    upper : bool, optional</span>
+<span class="sd">        If ``True``, the result must be the upper-triangular Cholesky factor.</span>
+<span class="sd">        If ``False``, the result must be the lower-triangular Cholesky factor.</span>
+<span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    L : (..., M, M) array_like</span>
-<span class="sd">        Upper or lower-triangular Cholesky factor of `input`.  Returns a</span>
-<span class="sd">        matrix object if `input` is a matrix object.</span>
+<span class="sd">    L : (..., M, M) dpnp.ndarray</span>
+<span class="sd">        Lower or upper-triangular Cholesky factor of `a`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; A = np.array([[1.0, 2.0],[2.0, 5.0]])</span>
+<span class="sd">    &gt;&gt;&gt; A</span>
+<span class="sd">    array([[1., 2.],</span>
+<span class="sd">           [2., 5.]])</span>
+<span class="sd">    &gt;&gt;&gt; L = np.linalg.cholesky(A)</span>
+<span class="sd">    &gt;&gt;&gt; L</span>
+<span class="sd">    array([[1., 0.],</span>
+<span class="sd">           [2., 1.]])</span>
+<span class="sd">    &gt;&gt;&gt; np.dot(L, L.T.conj()) # verify that L * L.H = A</span>
+<span class="sd">    array([[1., 2.],</span>
+<span class="sd">           [2., 5.]])</span>
+
+<span class="sd">    The upper-triangular Cholesky factor can also be obtained:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.linalg.cholesky(A, upper=True)</span>
+<span class="sd">    array([[ 1.+0.j, -0.-2.j],</span>
+<span class="sd">           [ 0.+0.j,  1.+0.j]]</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">input</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int32</span> <span class="ow">or</span> <span class="nb">input</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">:</span>
-                <span class="n">dev</span> <span class="o">=</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span><span class="o">.</span><span class="n">sycl_device</span>
-                <span class="k">if</span> <span class="n">dev</span><span class="o">.</span><span class="n">has_aspect_fp64</span><span class="p">:</span>
-                    <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span>
-                <span class="c1"># TODO memory copy. needs to move into DPNPC</span>
-                <span class="n">input_</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-                    <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">),</span>
-                    <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">input_</span> <span class="o">=</span> <span class="n">x1_desc</span>
-            <span class="k">return</span> <span class="n">dpnp_cholesky</span><span class="p">(</span><span class="n">input_</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_cholesky</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="n">upper</span><span class="p">)</span></div>
 
 
 
@@ -247,32 +260,50 @@
 
 <div class="viewcode-block" id="det">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.det.html#dpnp.linalg.det">[docs]</a>
-<span class="k">def</span> <span class="nf">det</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">det</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the determinant of an array.</span>
 
+<span class="sd">    For full documentation refer to :obj:`numpy.linalg.det`.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    input : (..., M, M) array_like</span>
+<span class="sd">    a : (..., M, M) {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array to compute determinants for.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    det : (...) array_like</span>
-<span class="sd">        Determinant of `input`.</span>
+<span class="sd">    det : (...) dpnp.ndarray</span>
+<span class="sd">        Determinant of `a`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.linalg.slogdet` : Returns sign and logarithm of the determinant of an array.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
+<span class="sd">    &gt;&gt;&gt; a = dp.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; dp.linalg.det(a)</span>
+<span class="sd">    array(-2.)</span>
+
+<span class="sd">    Computing determinants for a stack of matrices:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])</span>
+<span class="sd">    &gt;&gt;&gt; a.shape</span>
+<span class="sd">    (3, 2, 2)</span>
+<span class="sd">    &gt;&gt;&gt; dp.linalg.det(a)</span>
+<span class="sd">    array([-2., -3., -8.])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
-            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_det</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">result</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_det</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
 
 
 
@@ -701,8 +732,8 @@
 <span class="sd">    u : { (…, M, M), (…, M, K) } dpnp.ndarray</span>
 <span class="sd">        Unitary matrix, where M is the number of rows of the input array `a`.</span>
 <span class="sd">        The shape of the matrix `u` depends on the value of `full_matrices`.</span>
-<span class="sd">        If `full_matrices` is True, `u` has the shape (…, M, M).</span>
-<span class="sd">        If `full_matrices` is False, `u` has the shape (…, M, K),</span>
+<span class="sd">        If `full_matrices` is ``True``, `u` has the shape (…, M, M).</span>
+<span class="sd">        If `full_matrices` is ``False``, `u` has the shape (…, M, K),</span>
 <span class="sd">        where K = min(M, N), and N is the number of columns of the input array `a`.</span>
 <span class="sd">        If `compute_uv` is False, neither `u` or `Vh` are computed.</span>
 <span class="sd">    s : (…, K) dpnp.ndarray</span>
@@ -711,9 +742,9 @@
 <span class="sd">    Vh : { (…, N, N), (…, K, N) } dpnp.ndarray</span>
 <span class="sd">        Unitary matrix, where N is the number of columns of the input array `a`.</span>
 <span class="sd">        The shape of the matrix `Vh` depends on the value of `full_matrices`.</span>
-<span class="sd">        If `full_matrices` is True, `Vh` has the shape (…, N, N).</span>
-<span class="sd">        If `full_matrices` is False, `Vh` has the shape (…, K, N).</span>
-<span class="sd">        If `compute_uv` is False, neither `u` or `Vh` are computed.</span>
+<span class="sd">        If `full_matrices` is ``True``, `Vh` has the shape (…, N, N).</span>
+<span class="sd">        If `full_matrices` is ``False``, `Vh` has the shape (…, K, N).</span>
+<span class="sd">        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -733,11 +764,11 @@
 <span class="sd">    &gt;&gt;&gt; u.shape, s.shape, vh.shape</span>
 <span class="sd">    ((9, 9), (6,), (6, 6))</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(u[:, :6] * s, vh))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 <span class="sd">    &gt;&gt;&gt; smat = np.zeros((9, 6), dtype=complex)</span>
 <span class="sd">    &gt;&gt;&gt; smat[:6, :6] = np.diag(s)</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(u, np.dot(smat, vh)))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 
 <span class="sd">    Reconstruction based on reduced SVD, 2D case:</span>
 
@@ -745,10 +776,10 @@
 <span class="sd">    &gt;&gt;&gt; u.shape, s.shape, vh.shape</span>
 <span class="sd">    ((9, 6), (6,), (6, 6))</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(u * s, vh))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 <span class="sd">    &gt;&gt;&gt; smat = np.diag(s)</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(u, np.dot(smat, vh)))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 
 <span class="sd">    Reconstruction based on full SVD, 4D case:</span>
 
@@ -756,9 +787,9 @@
 <span class="sd">    &gt;&gt;&gt; u.shape, s.shape, vh.shape</span>
 <span class="sd">    ((2, 7, 8, 8), (2, 7, 3), (2, 7, 3, 3))</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(b, np.matmul(u[..., :3] * s[..., None, :], vh))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(b, np.matmul(u[..., :3], s[..., None] * vh))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 
 <span class="sd">    Reconstruction based on reduced SVD, 4D case:</span>
 
@@ -766,9 +797,9 @@
 <span class="sd">    &gt;&gt;&gt; u.shape, s.shape, vh.shape</span>
 <span class="sd">    ((2, 7, 8, 3), (2, 7, 3), (2, 7, 3, 3))</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(b, np.matmul(u * s[..., None, :], vh))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(b, np.matmul(u, s[..., None] * vh))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -776,6 +807,65 @@
     <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_svd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">full_matrices</span><span class="p">,</span> <span class="n">compute_uv</span><span class="p">,</span> <span class="n">hermitian</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="slogdet">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.slogdet.html#dpnp.linalg.slogdet">[docs]</a>
+<span class="k">def</span> <span class="nf">slogdet</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the sign and (natural) logarithm of the determinant of an array.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.linalg.slogdet`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : (..., M, M) {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array, has to be a square 2-D array.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sign : (...) dpnp.ndarray</span>
+<span class="sd">        A number representing the sign of the determinant. For a real matrix,</span>
+<span class="sd">        this is 1, 0, or -1. For a complex matrix, this is a complex number</span>
+<span class="sd">        with absolute value 1 (i.e., it is on the unit circle), or else 0.</span>
+<span class="sd">    logabsdet : (...) dpnp.ndarray</span>
+<span class="sd">        The natural log of the absolute value of the determinant.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.det` : Returns the determinant of an array.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
+<span class="sd">    &gt;&gt;&gt; a = dp.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; (sign, logabsdet) = dp.linalg.slogdet(a)</span>
+<span class="sd">    &gt;&gt;&gt; (sign, logabsdet)</span>
+<span class="sd">    (array(-1.), array(0.69314718))</span>
+<span class="sd">    &gt;&gt;&gt; sign * dp.exp(logabsdet)</span>
+<span class="sd">    array(-2.)</span>
+
+<span class="sd">    Computing log-determinants for a stack of matrices:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])</span>
+<span class="sd">    &gt;&gt;&gt; a.shape</span>
+<span class="sd">    (3, 2, 2)</span>
+<span class="sd">    &gt;&gt;&gt; sign, logabsdet = dp.linalg.slogdet(a)</span>
+<span class="sd">    &gt;&gt;&gt; (sign, logabsdet)</span>
+<span class="sd">    (array([-1., -1., -1.]), array([0.69314718, 1.09861229, 2.07944154]))</span>
+<span class="sd">    &gt;&gt;&gt; sign * dp.exp(logabsdet)</span>
+<span class="sd">    array([-2., -3., -8.])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_slogdet</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
 
 </pre></div>
 
@@ -786,7 +876,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2023, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
