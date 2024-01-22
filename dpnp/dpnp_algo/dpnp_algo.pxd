@@ -304,12 +304,6 @@ cpdef dpnp_descriptor dpnp_fmin(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, 
 
 
 """
-Sorting functions
-"""
-cpdef dpnp_descriptor dpnp_argsort(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_sort(dpnp_descriptor array1)
-
-"""
 Trigonometric functions
 """
 cpdef dpnp_descriptor dpnp_degrees(dpnp_descriptor array1)

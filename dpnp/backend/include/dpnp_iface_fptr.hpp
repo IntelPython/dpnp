@@ -78,8 +78,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARGMAX,       /**< Used in numpy.argmax() impl  */
     DPNP_FN_ARGMIN,       /**< Used in numpy.argmin() impl  */
     DPNP_FN_ARGSORT,      /**< Used in numpy.argsort() impl  */
-    DPNP_FN_ARGSORT_EXT,  /**< Used in numpy.argsort() impl, requires extra
-                             parameters */
     DPNP_FN_AROUND,       /**< Used in numpy.around() impl  */
     DPNP_FN_ASTYPE,       /**< Used in numpy.astype() impl  */
     DPNP_FN_BITWISE_AND,  /**< Used in numpy.bitwise_and() impl  */
@@ -357,9 +355,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SIN,              /**< Used in numpy.sin() impl  */
     DPNP_FN_SINH,             /**< Used in numpy.sinh() impl  */
     DPNP_FN_SORT,             /**< Used in numpy.sort() impl  */
-    DPNP_FN_SORT_EXT, /**< Used in numpy.sort() impl, requires extra parameters
-                       */
-    DPNP_FN_SQRT,     /**< Used in numpy.sqrt() impl  */
+    DPNP_FN_SQRT,             /**< Used in numpy.sqrt() impl  */
     DPNP_FN_SQRT_EXT, /**< Used in numpy.sqrt() impl, requires extra parameters
                        */
     DPNP_FN_SQUARE,   /**< Used in numpy.square() impl  */
