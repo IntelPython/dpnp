@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndarray.flatten &mdash; Data Parallel Extension for NumPy 0.13.1dev2+13.g8072622fb3 documentation</title>
+  <title>dpnp.ndarray.sort &mdash; Data Parallel Extension for NumPy 0.13.1dev2+13.g8072622fb3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -30,8 +30,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.ndarray.ravel" href="dpnp.ndarray.ravel.html" />
-    <link rel="prev" title="dpnp.ndarray.swapaxes" href="dpnp.ndarray.swapaxes.html" /> 
+    <link rel="next" title="dpnp.ndarray.argsort" href="dpnp.ndarray.argsort.html" />
+    <link rel="prev" title="dpnp.ndarray.choose" href="dpnp.ndarray.choose.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -71,16 +71,19 @@
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#other-attributes">Other attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-methods">Array methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-conversion">Array conversion</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../ndarray.html#shape-manipulation">Shape manipulation</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.reshape.html">dpnp.ndarray.reshape</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.transpose.html">dpnp.ndarray.transpose</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.swapaxes.html">dpnp.ndarray.swapaxes</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">dpnp.ndarray.flatten</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.ravel.html">dpnp.ndarray.ravel</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.squeeze.html">dpnp.ndarray.squeeze</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#shape-manipulation">Shape manipulation</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../ndarray.html#item-selection-and-manipulation">Item selection and manipulation</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.take.html">dpnp.ndarray.take</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.put.html">dpnp.ndarray.put</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.repeat.html">dpnp.ndarray.repeat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.choose.html">dpnp.ndarray.choose</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dpnp.ndarray.sort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.argsort.html">dpnp.ndarray.argsort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.partition.html">dpnp.ndarray.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.nonzero.html">dpnp.ndarray.nonzero</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.diagonal.html">dpnp.ndarray.diagonal</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#item-selection-and-manipulation">Item selection and manipulation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#calculation">Calculation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#arithmetic-matrix-multiplication-and-comparison-operations">Arithmetic, matrix multiplication, and comparison operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#special-methods">Special methods</a></li>
@@ -116,9 +119,9 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
-      <li class="breadcrumb-item active">dpnp.ndarray.flatten</li>
+      <li class="breadcrumb-item active">dpnp.ndarray.sort</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/reference/generated/dpnp.ndarray.flatten.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.ndarray.sort.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -126,29 +129,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dpnp-ndarray-flatten">
-<h1>dpnp.ndarray.flatten<a class="headerlink" href="#dpnp-ndarray-flatten" title="Link to this heading"></a></h1>
+  <section id="dpnp-ndarray-sort">
+<h1>dpnp.ndarray.sort<a class="headerlink" href="#dpnp-ndarray-sort" title="Link to this heading"></a></h1>
 <dl class="py method">
-<dt class="sig sig-object py" id="dpnp.ndarray.flatten">
-<span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.flatten" title="Link to this definition"></a></dt>
-<dd><p>Return a copy of the array collapsed into one dimension.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'</em><em>, </em><em>'A'</em><em>, </em><em>'K'}</em><em>, </em><em>optional</em>) – ‘C’ means to flatten in row-major (C-style) order.
-‘F’ means to flatten in column-major (Fortran- style) order.
-‘A’ means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
-‘K’ means to flatten a in the order the elements occur in memory. The default is ‘C’.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – A copy of the input array, flattened to one dimension.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.ravel.html#dpnp.ravel" title="dpnp.ravel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ravel</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.flat</span></code></p>
+<dt class="sig sig-object py" id="dpnp.ndarray.sort">
+<span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.sort" title="Link to this definition"></a></dt>
+<dd><p>Sort an array in-place.</p>
+<p>Refer to <a class="reference internal" href="dpnp.sort.html#dpnp.sort" title="dpnp.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sort</span></code></a> for full documentation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>axis</cite> in <a class="reference internal" href="dpnp.sort.html#dpnp.sort" title="dpnp.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sort</span></code></a> could be integr or <code class="docutils literal notranslate"><span class="pre">None</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+the array is flattened before sorting. However, <cite>axis</cite> in <a class="reference internal" href="#dpnp.ndarray.sort" title="dpnp.ndarray.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.sort</span></code></a>
+can only be integer since it sorts an array in-place.</p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([[1, 4],</span>
+<span class="go">      [1, 3]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([[1, 1],</span>
+<span class="go">      [3, 4]])</span>
+</pre></div>
 </div>
 </dd></dl>
 
@@ -158,8 +163,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.ndarray.swapaxes.html" class="btn btn-neutral float-left" title="dpnp.ndarray.swapaxes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.ndarray.ravel.html" class="btn btn-neutral float-right" title="dpnp.ndarray.ravel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.ndarray.choose.html" class="btn btn-neutral float-left" title="dpnp.ndarray.choose" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.ndarray.argsort.html" class="btn btn-neutral float-right" title="dpnp.ndarray.argsort" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
