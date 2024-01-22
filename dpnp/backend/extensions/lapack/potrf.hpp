@@ -39,25 +39,22 @@ namespace ext
 namespace lapack
 {
 extern std::pair<sycl::event, sycl::event>
-    getrf(sycl::queue exec_q,
+    potrf(sycl::queue exec_q,
           dpctl::tensor::usm_ndarray a_array,
-          dpctl::tensor::usm_ndarray ipiv_array,
-          py::list dev_info,
+          const std::int8_t upper_lower,
           const std::vector<sycl::event> &depends = {});
 
 extern std::pair<sycl::event, sycl::event>
-    getrf_batch(sycl::queue exec_q,
+    potrf_batch(sycl::queue exec_q,
                 dpctl::tensor::usm_ndarray a_array,
-                dpctl::tensor::usm_ndarray ipiv_array,
-                py::list dev_info,
-                std::int64_t n,
-                std::int64_t stride_a,
-                std::int64_t stride_ipiv,
-                std::int64_t batch_size,
+                const std::int8_t upper_lower,
+                const std::int64_t n,
+                const std::int64_t stride_a,
+                const std::int64_t batch_size,
                 const std::vector<sycl::event> &depends = {});
 
-extern void init_getrf_dispatch_vector(void);
-extern void init_getrf_batch_dispatch_vector(void);
+extern void init_potrf_dispatch_vector(void);
+extern void init_potrf_batch_dispatch_vector(void);
 } // namespace lapack
 } // namespace ext
 } // namespace backend

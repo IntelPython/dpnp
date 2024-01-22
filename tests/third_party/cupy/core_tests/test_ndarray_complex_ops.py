@@ -4,10 +4,10 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
-@testing.gpu
 class TestConj(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_almost_equal()
@@ -38,10 +38,9 @@ class TestConj(unittest.TestCase):
         return y
 
 
-@testing.gpu
 class TestAngle(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_array_almost_equal()
+    @testing.numpy_cupy_array_almost_equal(type_check=has_support_aspect64())
     def test_angle(self, xp, dtype):
         x = testing.shaped_arange((2, 3), xp, dtype)
         return xp.angle(x)
@@ -154,7 +153,6 @@ class TestRealImag(unittest.TestCase):
         assert cupy.all(x == expected)
 
 
-@testing.gpu
 class TestScalarConversion(unittest.TestCase):
     @testing.for_all_dtypes()
     def test_scalar_conversion(self, dtype):

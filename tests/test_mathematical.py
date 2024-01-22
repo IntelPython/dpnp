@@ -29,6 +29,47 @@ from .helper import (
 )
 
 
+class TestAngle:
+    @pytest.mark.parametrize("deg", [True, False])
+    def test_angle_bool(self, deg):
+        dp_a = dpnp.array([True, False])
+        np_a = dp_a.asnumpy()
+
+        expected = numpy.angle(np_a, deg=deg)
+        result = dpnp.angle(dp_a, deg=deg)
+
+        # In Numpy, for boolean arguments the output data type is always default floating data type.
+        # while data type of output in DPNP is determined by Type Promotion Rules.
+        # data type should not be compared
+        assert_allclose(result.asnumpy(), expected)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("deg", [True, False])
+    def test_angle(self, dtype, deg):
+        dp_a = dpnp.arange(10, dtype=dtype)
+        np_a = dp_a.asnumpy()
+
+        expected = numpy.angle(np_a, deg=deg)
+        result = dpnp.angle(dp_a, deg=deg)
+
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize("deg", [True, False])
+    def test_angle_complex(self, dtype, deg):
+        a = numpy.random.rand(10)
+        b = numpy.random.rand(10)
+        np_a = numpy.array(a + 1j * b, dtype=dtype)
+        dp_a = dpnp.array(np_a)
+
+        expected = numpy.angle(np_a, deg=deg)
+        result = dpnp.angle(dp_a, deg=deg)
+
+        assert_dtype_allclose(result, expected)
+
+
 class TestClip:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
@@ -1160,7 +1201,9 @@ class TestCeil:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.ceil(dp_array, out=dp_out)
 
     @pytest.mark.parametrize("dtype", get_float_dtypes())
@@ -1200,7 +1243,9 @@ class TestFloor:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.floor(dp_array, out=dp_out)
 
     @pytest.mark.parametrize("dtype", get_float_dtypes())
@@ -1240,7 +1285,9 @@ class TestTrunc:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.trunc(dp_array, out=dp_out)
 
     @pytest.mark.parametrize("dtype", get_float_dtypes())
@@ -1291,7 +1338,9 @@ class TestAdd:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            with pytest.raises(TypeError):
+            # TODO: change it to ValueError, when dpctl
+            # is being used in internal CI
+            with pytest.raises((TypeError, ValueError)):
                 dpnp.add(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -1388,7 +1437,9 @@ class TestDivide:
         check_dtype = True
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            with pytest.raises(TypeError):
+            # TODO: change it to ValueError, when dpctl
+            # is being used in internal CI
+            with pytest.raises((TypeError, ValueError)):
                 dpnp.divide(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -1489,7 +1540,9 @@ class TestFloorDivide:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            with pytest.raises(TypeError):
+            # TODO: change it to ValueError, when dpctl
+            # is being used in internal CI
+            with pytest.raises((TypeError, ValueError)):
                 dpnp.floor_divide(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -1749,7 +1802,9 @@ class TestHypot:
         dp_out = dpnp.empty(size, dtype=dpnp.float32)
         if dtype != dpnp.float32:
             # dtype of out mismatches types of input arrays
-            with pytest.raises(TypeError):
+            # TODO: change it to ValueError, when dpctl
+            # is being used in internal CI
+            with pytest.raises((TypeError, ValueError)):
                 dpnp.hypot(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -1917,7 +1972,9 @@ class TestMaximum:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            with pytest.raises(TypeError):
+            # TODO: change it to ValueError, when dpctl
+            # is being used in internal CI
+            with pytest.raises((TypeError, ValueError)):
                 dpnp.maximum(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -1998,7 +2055,9 @@ class TestMinimum:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            with pytest.raises(TypeError):
+            # TODO: change it to ValueError, when dpctl
+            # is being used in internal CI
+            with pytest.raises((TypeError, ValueError)):
                 dpnp.minimum(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -2079,7 +2138,9 @@ class TestMultiply:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            with pytest.raises(TypeError):
+            # TODO: change it to ValueError, when dpctl
+            # is being used in internal CI
+            with pytest.raises((TypeError, ValueError)):
                 dpnp.multiply(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -2174,7 +2235,9 @@ class TestPower:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            with pytest.raises(TypeError):
+            # TODO: change it to ValueError, when dpctl
+            # is being used in internal CI
+            with pytest.raises((TypeError, ValueError)):
                 dpnp.power(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type

@@ -9,6 +9,7 @@ import dpnp
 from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
+    get_float_complex_dtypes,
     get_float_dtypes,
     has_support_aspect16,
     has_support_aspect64,
@@ -81,6 +82,9 @@ def test_umaths(test_cases):
 
     args = get_args(args_str, sh, xp=numpy)
     iargs = get_args(args_str, sh, xp=dpnp)
+
+    if umath == "reciprocal" and args[0].dtype in [numpy.int32, numpy.int64]:
+        pytest.skip("For integer input array, numpy.reciprocal returns zero.")
 
     # original
     expected = getattr(numpy, umath)(*args)
@@ -205,7 +209,9 @@ class TestUmath:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             getattr(dpnp, func_name)(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -250,7 +256,9 @@ class TestCbrt:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.cbrt(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -262,15 +270,6 @@ class TestCbrt:
 
         with pytest.raises(ValueError):
             dpnp.cbrt(dp_array, out=dp_out)
-
-    @pytest.mark.parametrize(
-        "out",
-        [4, (), [], (3, 7), [2, 4]],
-        ids=["4", "()", "[]", "(3, 7)", "[2, 4]"],
-    )
-    def test_invalid_out(self, out):
-        a = dpnp.arange(10)
-        numpy.testing.assert_raises(TypeError, dpnp.cbrt, a, out)
 
 
 class TestRsqrt:
@@ -296,7 +295,9 @@ class TestRsqrt:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.rsqrt(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -337,7 +338,9 @@ class TestSquare:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.square(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -359,6 +362,41 @@ class TestSquare:
 
         numpy.testing.assert_raises(TypeError, dpnp.square, a, out)
         numpy.testing.assert_raises(TypeError, numpy.square, a.asnumpy(), out)
+
+
+class TestReciprocal:
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_reciprocal(self, dtype):
+        np_array, expected = _get_numpy_arrays("reciprocal", dtype, [-5, 5, 10])
+
+        dp_array = dpnp.array(np_array)
+        out_dtype = _get_output_data_type(dtype)
+        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
+        result = dpnp.reciprocal(dp_array, out=dp_out)
+
+        assert result is dp_out
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes()[:-1])
+    def test_invalid_dtype(self, dtype):
+        dpnp_dtype = get_float_complex_dtypes()[-1]
+        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
+            dpnp.reciprocal(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize(
+        "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
+    )
+    def test_invalid_shape(self, shape):
+        dp_array = dpnp.arange(10)
+        dp_out = dpnp.empty(shape)
+
+        with pytest.raises(ValueError):
+            dpnp.reciprocal(dp_array, out=dp_out)
 
 
 class TestArctan2:
@@ -385,7 +423,9 @@ class TestArctan2:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.arctan2(dp_array, dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -421,7 +461,9 @@ class TestCopySign:
         dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.copysign(dp_array, dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -457,7 +499,9 @@ class TestLogaddexp:
         dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
-        with pytest.raises(TypeError):
+        # TODO: change it to ValueError, when dpctl
+        # is being used in internal CI
+        with pytest.raises((TypeError, ValueError)):
             dpnp.logaddexp(dp_array, dp_array, out=dp_out)
 
     @pytest.mark.parametrize(

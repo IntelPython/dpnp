@@ -47,6 +47,7 @@ from dpnp.linalg.dpnp_algo_linalg import *
 from .dpnp_utils_linalg import (
     check_stacked_2d,
     check_stacked_square,
+    dpnp_cholesky,
     dpnp_det,
     dpnp_eigh,
     dpnp_slogdet,
@@ -73,52 +74,64 @@ __all__ = [
 ]
 
 
-def cholesky(input):
+def cholesky(a, upper=False):
     """
     Cholesky decomposition.
 
-    Return the Cholesky decomposition, `L * L.H`, of the square matrix `input`,
-    where `L` is lower-triangular and .H is the conjugate transpose operator
-    (which is the ordinary transpose if `input` is real-valued).  `input` must be
-    Hermitian (symmetric if real-valued) and positive-definite. No
-    checking is performed to verify whether `a` is Hermitian or not.
-    In addition, only the lower-triangular and diagonal elements of `input`
-    are used. Only `L` is actually returned.
+    Return the lower or upper Cholesky decomposition, ``L * L.H`` or
+    ``U.H * U``, of the square matrix ``a``, where ``L`` is lower-triangular,
+    ``U`` is upper-triangular, and ``.H`` is the conjugate transpose operator
+    (which is the ordinary transpose if ``a`` is real-valued). ``a`` must be
+    Hermitian (symmetric if real-valued) and positive-definite. No checking is
+    performed to verify whether ``a`` is Hermitian or not. In addition, only
+    the lower or upper-triangular and diagonal elements of ``a`` are used.
+    Only ``L`` or ``U`` is actually returned.
+
+    For full documentation refer to :obj:`numpy.linalg.cholesky`.
 
     Parameters
     ----------
-    input : (..., M, M) array_like
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         Hermitian (symmetric if all elements are real), positive-definite
         input matrix.
+    upper : bool, optional
+        If ``True``, the result must be the upper-triangular Cholesky factor.
+        If ``False``, the result must be the lower-triangular Cholesky factor.
+        Default: ``False``.
 
     Returns
     -------
-    L : (..., M, M) array_like
-        Upper or lower-triangular Cholesky factor of `input`.  Returns a
-        matrix object if `input` is a matrix object.
+    L : (..., M, M) dpnp.ndarray
+        Lower or upper-triangular Cholesky factor of `a`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> A = np.array([[1.0, 2.0],[2.0, 5.0]])
+    >>> A
+    array([[1., 2.],
+           [2., 5.]])
+    >>> L = np.linalg.cholesky(A)
+    >>> L
+    array([[1., 0.],
+           [2., 1.]])
+    >>> np.dot(L, L.T.conj()) # verify that L * L.H = A
+    array([[1., 2.],
+           [2., 5.]])
+
+    The upper-triangular Cholesky factor can also be obtained:
+
+    >>> np.linalg.cholesky(A, upper=True)
+    array([[ 1.+0.j, -0.-2.j],
+           [ 0.+0.j,  1.+0.j]]
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.shape[-1] != x1_desc.shape[-2]:
-            pass
-        else:
-            if input.dtype == dpnp.int32 or input.dtype == dpnp.int64:
-                dev = x1_desc.get_array().sycl_device
-                if dev.has_aspect_fp64:
-                    dtype = dpnp.float64
-                else:
-                    dtype = dpnp.float32
-                # TODO memory copy. needs to move into DPNPC
-                input_ = dpnp.get_dpnp_descriptor(
-                    dpnp.astype(input, dtype=dtype),
-                    copy_when_nondefault_queue=False,
-                )
-            else:
-                input_ = x1_desc
-            return dpnp_cholesky(input_).get_pyobj()
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-    return call_origin(numpy.linalg.cholesky, input)
+    return dpnp_cholesky(a, upper=upper)
 
 
 def cond(input, p=None):
