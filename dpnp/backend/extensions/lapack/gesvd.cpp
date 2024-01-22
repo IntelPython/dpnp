@@ -222,10 +222,12 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Arrays have overlapping segments of memory");
     }
 
-    bool is_a_array_c_contig = a_array.is_c_contiguous();
-    if (!is_a_array_c_contig) {
-        throw py::value_error("The input array must be C-contiguous");
+    bool is_a_array_f_contig = a_array.is_f_contiguous();
+    if (!is_a_array_f_contig) {
+        throw py::value_error("The input array must be F-contiguous");
     }
+
+    // TODO: add checks for output arrays
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
@@ -255,12 +257,15 @@ std::pair<sycl::event, sycl::event>
     char *out_vt_data = out_vt.get_data();
 
     const py::ssize_t *a_array_shape = a_array.get_shape_raw();
-    const std::int64_t n = a_array_shape[0];
-    const std::int64_t m = a_array_shape[1];
+    const std::int64_t m = a_array_shape[0];
+    const std::int64_t n = a_array_shape[1];
 
     const std::int64_t lda = std::max<size_t>(1UL, m);
     const std::int64_t ldu = std::max<size_t>(1UL, m);
-    const std::int64_t ldvt = std::max<size_t>(1UL, n);
+    const std::int64_t ldvt =
+        std::max<std::size_t>(1UL, jobvt_val == 'S' ? (m > n ? n : m) : n);
+    std::cout << "ldvt: " << ldvt << std::endl;
+    // const std::int64_t ldvt = std::max<size_t>(1UL, n);
 
     const oneapi::mkl::jobsvd jobu = process_job(jobu_val);
     const oneapi::mkl::jobsvd jobvt = process_job(jobvt_val);
