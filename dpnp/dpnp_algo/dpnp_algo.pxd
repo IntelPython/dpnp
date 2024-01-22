@@ -36,8 +36,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ALLCLOSE
         DPNP_FN_ALLCLOSE_EXT
         DPNP_FN_ARANGE
-        DPNP_FN_ARGSORT
-        DPNP_FN_ARGSORT_EXT
         DPNP_FN_CHOOSE
         DPNP_FN_CHOOSE_EXT
         DPNP_FN_COPY
@@ -175,8 +173,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_ZIPF_EXT
         DPNP_FN_SEARCHSORTED
         DPNP_FN_SEARCHSORTED_EXT
-        DPNP_FN_SORT
-        DPNP_FN_SORT_EXT
         DPNP_FN_TRACE
         DPNP_FN_TRACE_EXT
         DPNP_FN_TRANSPOSE
