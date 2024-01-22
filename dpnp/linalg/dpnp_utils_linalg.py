@@ -1065,13 +1065,25 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
     u_matrices = [None] * batch_size
     s_matrices = [None] * batch_size
     vt_matrices = [None] * batch_size
+    a_ht_copy_ev = [None] * batch_size
+    ht_lapack_ev = [None] * batch_size
     for i in range(batch_size):
         if compute_uv:
-            u_matrices[i], s_matrices[i], vt_matrices[i] = dpnp_svd(
-                a[i], full_matrices, compute_uv=True
-            )
+            (
+                u_matrices[i],
+                s_matrices[i],
+                vt_matrices[i],
+                ht_lapack_ev[i],
+                a_ht_copy_ev[i],
+            ) = dpnp_svd(a[i], full_matrices, compute_uv=True, batch_call=True)
         else:
-            s_matrices[i] = dpnp_svd(a[i], full_matrices, compute_uv=False)
+            s_matrices[i], ht_lapack_ev[i], a_ht_copy_ev[i] = dpnp_svd(
+                a[i], full_matrices, compute_uv=False, batch_call=True
+            )
+
+    for i in range(batch_size):
+        ht_lapack_ev[i].wait()
+        a_ht_copy_ev[i].wait()
 
     out_s = dpnp.array(s_matrices)
     if reshape:
@@ -1092,9 +1104,11 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
         return out_s
 
 
-def dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False):
+def dpnp_svd(
+    a, full_matrices=True, compute_uv=True, hermitian=False, batch_call=False
+):
     """
-    dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False)
+    dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False, batch_call=False)
 
     Return the singular value decomposition (SVD).
 
@@ -1225,6 +1239,12 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False):
         vt_h.get_array(),
         [a_copy_ev],
     )
+
+    if batch_call:
+        if compute_uv:
+            return u_h, s_h, vt_h, ht_lapack_ev, a_ht_copy_ev
+        else:
+            return s_h, ht_lapack_ev, a_ht_copy_ev
 
     ht_lapack_ev.wait()
     a_ht_copy_ev.wait()
