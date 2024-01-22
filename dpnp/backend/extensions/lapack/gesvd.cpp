@@ -227,7 +227,21 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("The input array must be F-contiguous");
     }
 
-    // TODO: add checks for output arrays
+    bool is_out_u_array_f_contig = out_u.is_f_contiguous();
+    bool is_out_vt_array_f_contig = out_vt.is_f_contiguous();
+
+    if (!is_out_u_array_f_contig || !is_out_vt_array_f_contig) {
+        throw py::value_error("The output arrays of the left and right "
+                              "singular vectors must be F-contiguous");
+    }
+
+    bool is_out_s_array_c_contig = out_s.is_c_contiguous();
+    bool is_out_s_array_f_contig = out_s.is_f_contiguous();
+
+    if (!is_out_s_array_c_contig || !is_out_s_array_f_contig) {
+        throw py::value_error("The output array of singular values "
+                              "must be C or F-contiguous");
+    }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
@@ -264,8 +278,6 @@ std::pair<sycl::event, sycl::event>
     const std::int64_t ldu = std::max<size_t>(1UL, m);
     const std::int64_t ldvt =
         std::max<std::size_t>(1UL, jobvt_val == 'S' ? (m > n ? n : m) : n);
-    std::cout << "ldvt: " << ldvt << std::endl;
-    // const std::int64_t ldvt = std::max<size_t>(1UL, n);
 
     const oneapi::mkl::jobsvd jobu = process_job(jobu_val);
     const oneapi::mkl::jobsvd jobvt = process_job(jobvt_val);

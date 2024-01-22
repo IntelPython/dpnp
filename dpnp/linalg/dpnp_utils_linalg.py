@@ -1168,8 +1168,7 @@ def dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False):
         else:
             return s
 
-    # `a` must be copied because gesvd destroys the input matrix
-    # oneMKL LAPACK gesvd overwrites `a` and assumes fortran-like array as input.
+    # oneMKL LAPACK gesvd destroys `a` and assumes fortran-like array as input.
     # Allocate 'F' order memory for dpnp arrays to comply with these requirements.
     a_h = dpnp.empty_like(a, order="F", dtype=uv_type)
 
