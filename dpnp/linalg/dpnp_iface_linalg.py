@@ -596,6 +596,22 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
 
     For full documentation refer to :obj:`numpy.linalg.svd`.
 
+    Parameters
+    ----------
+    a : (..., M, N) {dpnp.ndarray, usm_ndarray}
+        Input array with ``a.ndim >= 2``.
+    full_matrices : bool, optional
+        If ``True``, it returns `u` and `Vh` with full-sized matrices.
+        If ``False``, the matrices are reduced in size.
+        Default: ``True``.
+    compute_uv : bool, optional
+        If ``False``, it only returns singular values.
+        Default: ``True``.
+    hermitian : bool, optional
+        If True, a is assumed to be Hermitian (symmetric if real-valued),
+        enabling a more efficient method for finding singular values.
+        Default: ``False``.
+
     Returns
     -------
     u : { (…, M, M), (…, M, K) } dpnp.ndarray
@@ -604,7 +620,7 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
         If `full_matrices` is ``True``, `u` has the shape (…, M, M).
         If `full_matrices` is ``False``, `u` has the shape (…, M, K),
         where K = min(M, N), and N is the number of columns of the input array `a`.
-        If `compute_uv` is False, neither `u` or `Vh` are computed.
+        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.
     s : (…, K) dpnp.ndarray
         Vector containing the singular values of `a`, sorted in descending order.
         The length of `s` is min(M, N).
@@ -614,12 +630,6 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
         If `full_matrices` is ``True``, `Vh` has the shape (…, N, N).
         If `full_matrices` is ``False``, `Vh` has the shape (…, K, N).
         If `compute_uv` is ``False``, neither `u` or `Vh` are computed.
-
-    Limitations
-    -----------
-    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Otherwise, the function raises `TypeError` or `dpnp.linalg.linalgError` exception.
 
     Examples
     --------
