@@ -198,11 +198,49 @@ std::pair<sycl::event, sycl::event>
           const std::vector<sycl::event> &depends)
 {
     const int a_array_nd = a_array.get_ndim();
+    const int out_u_array_nd = out_u.get_ndim();
+    const int out_s_array_nd = out_s.get_ndim();
+    const int out_vt_array_nd = out_vt.get_ndim();
 
     if (a_array_nd != 2) {
         throw py::value_error(
             "The input array has ndim=" + std::to_string(a_array_nd) +
             ", but a 2-dimensional array is expected.");
+    }
+
+    if (out_s_array_nd != 1) {
+        throw py::value_error("The output array of singular values has ndim=" +
+                              std::to_string(out_s_array_nd) +
+                              ", but a 1-dimensional array is expected.");
+    }
+
+    if (jobu_val == 'N' && jobvt_val == 'N') {
+        if (out_u_array_nd != 0) {
+            throw py::value_error(
+                "The output array of the left singular vectors has ndim=" +
+                std::to_string(out_u_array_nd) +
+                ", but it is not used and should have ndim=0.");
+        }
+        if (out_vt_array_nd != 0) {
+            throw py::value_error(
+                "The output array of the right singular vectors has ndim=" +
+                std::to_string(out_vt_array_nd) +
+                ", but it is not used and should have ndim=0.");
+        }
+    }
+    else {
+        if (out_u_array_nd != 2) {
+            throw py::value_error(
+                "The output array of the left singular vectors has ndim=" +
+                std::to_string(out_u_array_nd) +
+                ", but a 2-dimensional array is expected.");
+        }
+        if (out_vt_array_nd != 2) {
+            throw py::value_error(
+                "The output array of the right singular vectors has ndim=" +
+                std::to_string(out_vt_array_nd) +
+                ", but a 2-dimensional array is expected.");
+        }
     }
 
     // check compatibility of execution queue and allocation queue
@@ -233,14 +271,6 @@ std::pair<sycl::event, sycl::event>
     if (!is_out_u_array_f_contig || !is_out_vt_array_f_contig) {
         throw py::value_error("The output arrays of the left and right "
                               "singular vectors must be F-contiguous");
-    }
-
-    bool is_out_s_array_c_contig = out_s.is_c_contiguous();
-    bool is_out_s_array_f_contig = out_s.is_f_contiguous();
-
-    if (!is_out_s_array_c_contig || !is_out_s_array_f_contig) {
-        throw py::value_error("The output array of singular values "
-                              "must be C or F-contiguous");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
