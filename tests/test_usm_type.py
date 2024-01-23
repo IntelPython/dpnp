@@ -710,3 +710,33 @@ def test_det(shape, is_empty, usm_type):
     det = dp.linalg.det(x)
 
     assert x.usm_type == det.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "shape, is_empty",
+    [
+        ((2, 2), False),
+        ((3, 2, 2), False),
+        ((0, 0), True),
+        ((0, 2, 2), True),
+    ],
+    ids=[
+        "(2, 2)",
+        "(3, 2, 2)",
+        "(0, 0)",
+        "(0, 2, 2)",
+    ],
+)
+def test_inv(shape, is_empty, usm_type):
+    if is_empty:
+        x = dp.empty(shape, dtype=dp.default_float_type(), usm_type=usm_type)
+    else:
+        count_elem = numpy.prod(shape)
+        x = dp.arange(
+            1, count_elem + 1, dtype=dp.default_float_type(), usm_type=usm_type
+        ).reshape(shape)
+
+    result = dp.linalg.inv(x)
+
+    assert x.usm_type == result.usm_type
