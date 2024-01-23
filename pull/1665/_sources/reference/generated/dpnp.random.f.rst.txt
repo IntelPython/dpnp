@@ -1,0 +1,6 @@
+﻿dpnp.random.f
+=============
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: f
