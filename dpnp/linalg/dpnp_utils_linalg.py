@@ -37,6 +37,7 @@ __all__ = [
     "dpnp_cholesky",
     "dpnp_det",
     "dpnp_eigh",
+    "dpnp_inv",
     "dpnp_slogdet",
     "dpnp_solve",
 ]
@@ -738,6 +739,65 @@ def dpnp_eigh(a, UPLO):
         ht_copy_ev.wait()
 
         return w, out_v
+
+
+def dpnp_inv(a):
+    """
+    dpnp_inv(a)
+
+    Return the inverse of `a` matrix.
+
+    The inverse of a matrix is such that if it is multiplied by the original matrix,
+    it results in the identity matrix. This function computes the inverse of a single
+    square matrix.
+
+    """
+
+    res_type = _common_type(a)
+    if a.size == 0:
+        return dpnp.empty_like(a, dtype=res_type, usm_type=a.usm_type)
+
+    # if a.ndim >= 3:
+    #     return dpnp_inv_batched(a, res_type)
+
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+
+    a_order = "C" if a.flags.c_contiguous else "F"
+    a_shape = a.shape
+
+    # oneMKL LAPACK gesv overwrites `a` and assumes fortran-like array as input.
+    # Allocate 'F' order memory for dpnp arrays to comply with these requirements.
+    a_f = dpnp.empty_like(a, order=a_order, dtype=res_type, usm_type=a_usm_type)
+
+    # use DPCTL tensor function to fill the coefficient matrix array
+    # with content from the input array `a`
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a_sycl_queue
+    )
+
+    b_f = dpnp.eye(
+        a_shape[0],
+        dtype=res_type,
+        order=a_order,
+        sycl_queue=a_sycl_queue,
+        usm_type=a_usm_type,
+    )
+
+    if a_order == "F":
+        ht_lapack_ev, _ = li._gesv(
+            a_sycl_queue, a_f.get_array(), b_f.get_array(), [a_copy_ev]
+        )
+    else:
+        ht_lapack_ev, _ = li._gesv(
+            a_sycl_queue, a_f.T.get_array(), b_f.T.get_array(), [a_copy_ev]
+        )
+
+    ht_lapack_ev.wait()
+    a_ht_copy_ev.wait()
+
+    return b_f
 
 
 def dpnp_solve(a, b):

@@ -50,6 +50,7 @@ from .dpnp_utils_linalg import (
     dpnp_cholesky,
     dpnp_det,
     dpnp_eigh,
+    dpnp_inv,
     dpnp_slogdet,
     dpnp_solve,
 )
@@ -316,30 +317,50 @@ def eigvals(input):
     return call_origin(numpy.linalg.eigvals, input)
 
 
-def inv(input):
+def inv(a):
     """
-    Divide arguments element-wise.
+    Compute the (multiplicative) inverse of a matrix.
+
+    Given a square matrix a, return the matrix ainv
+    satisfying ``dot(a, ainv) = dot(ainv, a) = eye(a.shape[0])``.
 
     For full documentation refer to :obj:`numpy.linalg.inv`.
 
-    Limitations
-    -----------
-        Input array is supported as :obj:`dpnp.ndarray`.
-        Dimension of input array is supported to be equal to ``2``.
-        Shape of input array is limited by ``input.shape[0] == input.shape[1]``, ``input.shape[0] >= 2``.
-        Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Matrix to be inverted.
+
+    Returns
+    -------
+    out : (..., M, M) dpnp.ndarray
+        (Multiplicative) inverse of the matrix a.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1., 2.], [3., 4.]])
+    >>> ainv = np.linalg.inv(a)
+    >>> np.allclose(np.dot(a, ainv), np.eye(2))
+    array([ True])
+    >>> np.allclose(np.dot(ainv, a), np.eye(2))
+    array([ True])
+
+    Inverses of several matrices can be computed at once:
+    >>> a = np.array([[[1., 2.], [3., 4.]], [[1, 3], [3, 5]]])
+    >>> np.linalg.inv(a)
+    array([[[-2.  ,  1.  ],
+            [ 1.5 , -0.5 ]],
+          [[-1.25,  0.75],
+            [ 0.75, -0.25]]])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if (
-            x1_desc.ndim == 2
-            and x1_desc.shape[0] == x1_desc.shape[1]
-            and x1_desc.shape[0] >= 2
-        ):
-            return dpnp_inv(x1_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-    return call_origin(numpy.linalg.inv, input)
+    return dpnp_inv(a)
 
 
 def matrix_power(input, count):
