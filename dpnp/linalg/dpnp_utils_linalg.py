@@ -24,6 +24,7 @@
 # *****************************************************************************
 
 
+import dpctl
 import dpctl.tensor._tensor_impl as ti
 from numpy import prod
 
@@ -183,50 +184,6 @@ def _common_inexact_type(default_dtype, *dtypes):
         for dt in dtypes
     ]
     return dpnp.result_type(*inexact_dtypes)
-
-
-def _stacked_identity(
-    batch_shape, n, dtype, usm_type="device", sycl_queue=None
-):
-    """
-    Create stacked identity matrices of size `n x n`.
-
-    Forms multiple identity matrices based on `batch_shape`.
-
-    Parameters
-    ----------
-    batch_shape : tuple
-        Shape of the batch determining the stacking of identity matrices.
-    n : int
-        Dimension of each identity matrix.
-    dtype : dtype
-        Data type of the matrix element.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
-    sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Array of stacked `n x n` identity matrices as per `batch_shape`.
-
-    Example
-    -------
-    >>> _stacked_identity((2,), 2, dtype=dpnp.int64)
-    array([[[1, 0],
-            [0, 1]],
-
-           [[1, 0],
-            [0, 1]]])
-
-    """
-
-    shape = batch_shape + (n, n)
-    idx = dpnp.arange(n, usm_type=usm_type, sycl_queue=sycl_queue)
-    x = dpnp.zeros(shape, dtype=dtype, usm_type=usm_type, sycl_queue=sycl_queue)
-    x[..., idx, idx] = 1
-    return x
 
 
 def _lu_factor(a, res_type):
@@ -416,6 +373,50 @@ def _lu_factor(a, res_type):
         # pivot indices 'ipiv_h'
         # and the status 'dev_info_h' from the LAPACK getrf call
         return (a_h, ipiv_h, dev_info_array)
+
+
+def _stacked_identity(
+    batch_shape, n, dtype, usm_type="device", sycl_queue=None
+):
+    """
+    Create stacked identity matrices of size `n x n`.
+
+    Forms multiple identity matrices based on `batch_shape`.
+
+    Parameters
+    ----------
+    batch_shape : tuple
+        Shape of the batch determining the stacking of identity matrices.
+    n : int
+        Dimension of each identity matrix.
+    dtype : dtype
+        Data type of the matrix element.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of stacked `n x n` identity matrices as per `batch_shape`.
+
+    Example
+    -------
+    >>> _stacked_identity((2,), 2, dtype=dpnp.int64)
+    array([[[1, 0],
+            [0, 1]],
+
+           [[1, 0],
+            [0, 1]]])
+
+    """
+
+    shape = batch_shape + (n, n)
+    idx = dpnp.arange(n, usm_type=usm_type, sycl_queue=sycl_queue)
+    x = dpnp.zeros(shape, dtype=dtype, usm_type=usm_type, sycl_queue=sycl_queue)
+    x[..., idx, idx] = 1
+    return x
 
 
 def check_stacked_2d(*arrays):
@@ -1065,25 +1066,22 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
     u_matrices = [None] * batch_size
     s_matrices = [None] * batch_size
     vt_matrices = [None] * batch_size
-    a_ht_copy_ev = [None] * batch_size
-    ht_lapack_ev = [None] * batch_size
+    ht_list_ev = [None] * batch_size * 2
     for i in range(batch_size):
         if compute_uv:
             (
                 u_matrices[i],
                 s_matrices[i],
                 vt_matrices[i],
-                ht_lapack_ev[i],
-                a_ht_copy_ev[i],
+                ht_list_ev[2 * i],
+                ht_list_ev[2 * i + 1],
             ) = dpnp_svd(a[i], full_matrices, compute_uv=True, batch_call=True)
         else:
-            s_matrices[i], ht_lapack_ev[i], a_ht_copy_ev[i] = dpnp_svd(
+            s_matrices[i], ht_list_ev[2 * i], ht_list_ev[2 * i + 1] = dpnp_svd(
                 a[i], full_matrices, compute_uv=False, batch_call=True
             )
 
-    for i in range(batch_size):
-        ht_lapack_ev[i].wait()
-        a_ht_copy_ev[i].wait()
+    dpctl.SyclEvent.wait_for(ht_list_ev)
 
     out_s = dpnp.array(s_matrices)
     if reshape:
