@@ -741,6 +741,84 @@ def dpnp_eigh(a, UPLO):
         return w, out_v
 
 
+def dpnp_inv_batched(a, res_type):
+    """
+    dpnp_inv_batched(a, res_type)
+
+    Return the inverses of each matrix in a batch of matrices `a`.
+
+    The inverse of a matrix is such that if it is multiplied by the original matrix,
+    it results in the identity matrix. This function computes the inverses of a batch
+    of square matrices.
+    """
+
+    orig_shape = a.shape
+    # get 3d input arrays by reshape
+    a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
+    batch_size = a.shape[0]
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+    n = a.shape[1]
+
+    if 0 in orig_shape:
+        return dpnp.empty_like(a, dtype=res_type)
+
+    # oneMKL LAPACK getri_batch overwrites `a`
+    a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
+    ipiv_h = dpnp.empty(
+        (batch_size, n),
+        dtype=dpnp.int64,
+        usm_type=a_usm_type,
+        sycl_queue=a_sycl_queue,
+    )
+    dev_info_h = [0] * batch_size
+
+    # use DPCTL tensor function to fill the matrix array
+    # with content from the input array `a`
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
+    )
+
+    ipiv_stride = n
+    a_stride = a_h.strides[0]
+
+    # Call the LAPACK extension function _getrf_batch
+    # to perform LU decomposition of a batch of general matrices
+    ht_lapack_ev, getrf_ev = li._getrf_batch(
+        a_sycl_queue,
+        a_h.get_array(),
+        ipiv_h.get_array(),
+        dev_info_h,
+        n,
+        a_stride,
+        ipiv_stride,
+        batch_size,
+        [a_copy_ev],
+    )
+
+    # Call the LAPACK extension function _getri_batch
+    # to compute the inverse of a batch of matrices using the results
+    # from the LU decomposition performed by _getrf_batch
+    ht_lapack_ev_1, _ = li._getri_batch(
+        a_sycl_queue,
+        a_h.get_array(),
+        ipiv_h.get_array(),
+        dev_info_h,
+        n,
+        a_stride,
+        ipiv_stride,
+        batch_size,
+        [getrf_ev],
+    )
+
+    ht_lapack_ev_1.wait()
+    ht_lapack_ev.wait()
+    a_ht_copy_ev.wait()
+
+    return a_h.reshape(orig_shape)
+
+
 def dpnp_inv(a):
     """
     dpnp_inv(a)
@@ -757,8 +835,8 @@ def dpnp_inv(a):
     if a.size == 0:
         return dpnp.empty_like(a, dtype=res_type, usm_type=a.usm_type)
 
-    # if a.ndim >= 3:
-    #     return dpnp_inv_batched(a, res_type)
+    if a.ndim >= 3:
+        return dpnp_inv_batched(a, res_type)
 
     a_usm_arr = dpnp.get_usm_ndarray(a)
     a_sycl_queue = a.sycl_queue
