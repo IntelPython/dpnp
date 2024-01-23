@@ -442,6 +442,35 @@ def _lu_factor(a, res_type):
         return (a_h, ipiv_h, dev_info_array)
 
 
+def check_lapack_dev_info(dev_info, error_msg=None):
+    """
+    Check `dev_info` from oneMKL LAPACK routines, raising an error for failures.
+
+    Parameters
+    ----------
+    dev_info : list
+        Integers indicating the status of oneMKL LAPACK routine calls. A non-zero
+        value signifies a failure.
+
+    error_message : str, optional
+        Custom error message for detected LAPACK errors.
+        Default: `Singular matrix`
+
+    Raises
+    ------
+    dpnp.linalg.LinAlgError
+        On non-zero elements in dev_info, indicating LAPACK errors.
+
+    """
+
+    dev_info_array = dpnp.array(dev_info)
+
+    if (dev_info_array != 0).any():
+        error_msg = error_msg or "Singular matrix"
+
+        raise dpnp.linalg.LinAlgError(error_msg)
+
+
 def dpnp_cholesky_batch(a, upper_lower, res_type):
     """
     dpnp_cholesky_batch(a, upper_lower, res_type)
@@ -772,7 +801,8 @@ def dpnp_inv_batched(a, res_type):
         usm_type=a_usm_type,
         sycl_queue=a_sycl_queue,
     )
-    dev_info_h = [0] * batch_size
+    dev_info_getrf_h = [0] * batch_size
+    dev_info_getri_h = [0] * batch_size
 
     # use DPCTL tensor function to fill the matrix array
     # with content from the input array `a`
@@ -789,7 +819,7 @@ def dpnp_inv_batched(a, res_type):
         a_sycl_queue,
         a_h.get_array(),
         ipiv_h.get_array(),
-        dev_info_h,
+        dev_info_getrf_h,
         n,
         a_stride,
         ipiv_stride,
@@ -804,7 +834,7 @@ def dpnp_inv_batched(a, res_type):
         a_sycl_queue,
         a_h.get_array(),
         ipiv_h.get_array(),
-        dev_info_h,
+        dev_info_getri_h,
         n,
         a_stride,
         ipiv_stride,
@@ -815,6 +845,9 @@ def dpnp_inv_batched(a, res_type):
     ht_lapack_ev_1.wait()
     ht_lapack_ev.wait()
     a_ht_copy_ev.wait()
+
+    check_lapack_dev_info(dev_info_getrf_h)
+    check_lapack_dev_info(dev_info_getri_h)
 
     return a_h.reshape(orig_shape)
 
