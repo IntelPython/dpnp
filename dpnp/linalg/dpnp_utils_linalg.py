@@ -1083,6 +1083,7 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
 
     dpctl.SyclEvent.wait_for(ht_list_ev)
 
+    # TODO: Need to return C-contiguous array to match the output of numpy.linalg.svd
     # Allocate 'F' order memory for dpnp output arrays to be aligned with dpnp_svd
     out_s = dpnp.array(s_matrices, order="F")
     if reshape:
@@ -1250,6 +1251,7 @@ def dpnp_svd(
     ht_lapack_ev.wait()
     a_ht_copy_ev.wait()
 
+    # TODO: Need to return C-contiguous array to match the output of numpy.linalg.svd
     if compute_uv:
         return u_h, s_h, vt_h
     else:
