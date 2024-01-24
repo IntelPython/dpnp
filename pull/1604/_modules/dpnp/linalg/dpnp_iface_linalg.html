@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev2+78.g01532c209f documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev2+84.gbd1287fa24 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=4c55f584"></script>
+        <script src="../../../_static/documentation_options.js?v=a623c51a"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+78.g01532c209f
+                0.13.1dev2+84.gbd1287fa24
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -727,6 +727,22 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.linalg.svd`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : (..., M, N) {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array with ``a.ndim &gt;= 2``.</span>
+<span class="sd">    full_matrices : bool, optional</span>
+<span class="sd">        If ``True``, it returns `u` and `Vh` with full-sized matrices.</span>
+<span class="sd">        If ``False``, the matrices are reduced in size.</span>
+<span class="sd">        Default: ``True``.</span>
+<span class="sd">    compute_uv : bool, optional</span>
+<span class="sd">        If ``False``, it only returns singular values.</span>
+<span class="sd">        Default: ``True``.</span>
+<span class="sd">    hermitian : bool, optional</span>
+<span class="sd">        If True, a is assumed to be Hermitian (symmetric if real-valued),</span>
+<span class="sd">        enabling a more efficient method for finding singular values.</span>
+<span class="sd">        Default: ``False``.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    u : { (…, M, M), (…, M, K) } dpnp.ndarray</span>
@@ -735,7 +751,7 @@
 <span class="sd">        If `full_matrices` is ``True``, `u` has the shape (…, M, M).</span>
 <span class="sd">        If `full_matrices` is ``False``, `u` has the shape (…, M, K),</span>
 <span class="sd">        where K = min(M, N), and N is the number of columns of the input array `a`.</span>
-<span class="sd">        If `compute_uv` is False, neither `u` or `Vh` are computed.</span>
+<span class="sd">        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.</span>
 <span class="sd">    s : (…, K) dpnp.ndarray</span>
 <span class="sd">        Vector containing the singular values of `a`, sorted in descending order.</span>
 <span class="sd">        The length of `s` is min(M, N).</span>
@@ -745,12 +761,6 @@
 <span class="sd">        If `full_matrices` is ``True``, `Vh` has the shape (…, N, N).</span>
 <span class="sd">        If `full_matrices` is ``False``, `Vh` has the shape (…, K, N).</span>
 <span class="sd">        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="sd">    Otherwise, the function raises `TypeError` or `dpnp.linalg.linalgError` exception.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
