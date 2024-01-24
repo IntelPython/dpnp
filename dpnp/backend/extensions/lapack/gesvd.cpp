@@ -273,6 +273,14 @@ std::pair<sycl::event, sycl::event>
                               "singular vectors must be F-contiguous");
     }
 
+    bool is_out_s_array_c_contig = out_s.is_c_contiguous();
+    bool is_out_s_array_f_contig = out_s.is_f_contiguous();
+
+    if (!is_out_s_array_c_contig || !is_out_s_array_f_contig) {
+        throw py::value_error("The output array of singular values "
+                              "must be contiguous");
+    }
+
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());

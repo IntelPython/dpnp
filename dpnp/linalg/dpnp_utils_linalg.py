@@ -1083,7 +1083,8 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
 
     dpctl.SyclEvent.wait_for(ht_list_ev)
 
-    out_s = dpnp.array(s_matrices)
+    # Allocate 'F' order memory for dpnp output arrays to be aligned with dpnp_svd
+    out_s = dpnp.array(s_matrices, order="F")
     if reshape:
         out_s = out_s.reshape(batch_shape_orig + out_s.shape[-1:])
 
@@ -1209,6 +1210,8 @@ def dpnp_svd(
         jobu = ord("N")
         jobvt = ord("N")
 
+    # oneMKL LAPACK assumes fortran-like array as input.
+    # Allocate 'F' order memory for dpnp output arrays to comply with these requirements.
     u_h = dpnp.empty(
         u_shape,
         dtype=uv_type,

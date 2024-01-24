@@ -240,8 +240,13 @@ class TestSVD(unittest.TestCase):
             numpy.complex128,
         ]
     )
+    # dpnp.linalg.svd() returns results as F-contiguous
+    # while numpy.linalg.svd() returns as C-contiguous
     @testing.numpy_cupy_allclose(
-        rtol=1e-5, atol=1e-4, type_check=has_support_aspect64()
+        rtol=1e-5,
+        atol=1e-4,
+        type_check=has_support_aspect64(),
+        contiguous_check=False,
     )
     def check_singular(self, shape, xp, dtype):
         array = testing.shaped_random(shape, xp, dtype=dtype, seed=self.seed)
