@@ -188,6 +188,14 @@ std::pair<sycl::event, sycl::event>
                               ", but a 2-dimensional array is expected.");
     }
 
+    const int dev_info_size = py::len(dev_info);
+    if (dev_info_size != batch_size) {
+        throw py::value_error("The size of 'dev_info' (" +
+                              std::to_string(dev_info_size) +
+                              ") does not match the expected batch size (" +
+                              std::to_string(batch_size) + ").");
+    }
+
     // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(exec_q, {a_array, ipiv_array})) {
         throw py::value_error(
