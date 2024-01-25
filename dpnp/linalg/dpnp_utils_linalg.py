@@ -99,13 +99,13 @@ def _calculate_determinant_sign(ipiv, diag, res_type, n):
 
 def _check_lapack_dev_info(dev_info, error_msg=None):
     """
-    Check `dev_info` from oneMKL LAPACK routines, raising an error for failures.
+    Check `dev_info` from OneMKL LAPACK routines, raising an error for failures.
 
     Parameters
     ----------
-    dev_info : list
-        Integers indicating the status of oneMKL LAPACK routine calls. A non-zero
-        value signifies a failure.
+    dev_info : list of ints
+        Each element of the list indicates the status of OneMKL LAPACK routine calls.
+        A non-zero value signifies a failure.
 
     error_message : str, optional
         Custom error message for detected LAPACK errors.
@@ -118,9 +118,7 @@ def _check_lapack_dev_info(dev_info, error_msg=None):
 
     """
 
-    dev_info_array = dpnp.array(dev_info)
-
-    if (dev_info_array != 0).any():
+    if any(dev_info):
         error_msg = error_msg or "Singular matrix"
 
         raise dpnp.linalg.LinAlgError(error_msg)
@@ -790,9 +788,6 @@ def dpnp_inv_batched(a, res_type):
     a_usm_type = a.usm_type
     n = a.shape[1]
 
-    if 0 in orig_shape:
-        return dpnp.empty_like(a, dtype=res_type)
-
     # oneMKL LAPACK getri_batch overwrites `a`
     a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
     ipiv_h = dpnp.empty(
@@ -801,8 +796,7 @@ def dpnp_inv_batched(a, res_type):
         usm_type=a_usm_type,
         sycl_queue=a_sycl_queue,
     )
-    dev_info_getrf_h = [0] * batch_size
-    dev_info_getri_h = [0] * batch_size
+    dev_info = [0] * batch_size
 
     # use DPCTL tensor function to fill the matrix array
     # with content from the input array `a`
@@ -815,11 +809,11 @@ def dpnp_inv_batched(a, res_type):
 
     # Call the LAPACK extension function _getrf_batch
     # to perform LU decomposition of a batch of general matrices
-    ht_lapack_ev, getrf_ev = li._getrf_batch(
+    ht_getrf_ev, getrf_ev = li._getrf_batch(
         a_sycl_queue,
         a_h.get_array(),
         ipiv_h.get_array(),
-        dev_info_getrf_h,
+        dev_info,
         n,
         a_stride,
         ipiv_stride,
@@ -827,14 +821,16 @@ def dpnp_inv_batched(a, res_type):
         [a_copy_ev],
     )
 
+    _check_lapack_dev_info(dev_info)
+
     # Call the LAPACK extension function _getri_batch
     # to compute the inverse of a batch of matrices using the results
     # from the LU decomposition performed by _getrf_batch
-    ht_lapack_ev_1, _ = li._getri_batch(
+    ht_getri_ev, _ = li._getri_batch(
         a_sycl_queue,
         a_h.get_array(),
         ipiv_h.get_array(),
-        dev_info_getri_h,
+        dev_info,
         n,
         a_stride,
         ipiv_stride,
@@ -842,12 +838,11 @@ def dpnp_inv_batched(a, res_type):
         [getrf_ev],
     )
 
-    ht_lapack_ev_1.wait()
-    ht_lapack_ev.wait()
-    a_ht_copy_ev.wait()
+    _check_lapack_dev_info(dev_info)
 
-    _check_lapack_dev_info(dev_info_getrf_h)
-    _check_lapack_dev_info(dev_info_getri_h)
+    ht_getrf_ev.wait()
+    ht_getri_ev.wait()
+    a_ht_copy_ev.wait()
 
     return a_h.reshape(orig_shape)
 
@@ -866,7 +861,7 @@ def dpnp_inv(a):
 
     res_type = _common_type(a)
     if a.size == 0:
-        return dpnp.empty_like(a, dtype=res_type, usm_type=a.usm_type)
+        return dpnp.empty_like(a, dtype=res_type)
 
     if a.ndim >= 3:
         return dpnp_inv_batched(a, res_type)
@@ -880,7 +875,7 @@ def dpnp_inv(a):
 
     # oneMKL LAPACK gesv overwrites `a` and assumes fortran-like array as input.
     # Allocate 'F' order memory for dpnp arrays to comply with these requirements.
-    a_f = dpnp.empty_like(a, order=a_order, dtype=res_type, usm_type=a_usm_type)
+    a_f = dpnp.empty_like(a, order=a_order, dtype=res_type)
 
     # use DPCTL tensor function to fill the coefficient matrix array
     # with content from the input array `a`

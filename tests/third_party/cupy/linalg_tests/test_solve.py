@@ -39,8 +39,8 @@ class TestSolve(unittest.TestCase):
         a_copy = a.copy()
         b_copy = b.copy()
         result = xp.linalg.solve(a, b)
-        numpy.testing.assert_array_equal(a_copy, a)
-        numpy.testing.assert_array_equal(b_copy, b)
+        testing.assert_array_equal(a_copy, a)
+        testing.assert_array_equal(b_copy, b)
         return result
 
     def test_solve(self):
@@ -110,7 +110,7 @@ class TestInv(unittest.TestCase):
         result_gpu = cupy.linalg.inv(a_gpu)
 
         assert_dtype_allclose(result_gpu, result_cpu)
-        numpy.testing.assert_array_equal(a_gpu_copy, a_gpu)
+        testing.assert_array_equal(a_gpu_copy, a_gpu)
 
     def check_shape(self, a_shape):
         a = cupy.random.rand(*a_shape)
@@ -129,6 +129,14 @@ class TestInv(unittest.TestCase):
         self.check_x((0, 0))
         self.check_x((3, 0, 0))
         self.check_x((2, 0, 3, 4, 4))
+
+    def test_invalid_shape(self):
+        self.check_shape((2, 3))
+        self.check_shape((4, 1))
+        self.check_shape((4, 3, 2))
+        self.check_shape((2, 4, 3))
+        self.check_shape((2, 0))
+        self.check_shape((0, 2, 3))
 
 
 class TestInvInvalid(unittest.TestCase):
