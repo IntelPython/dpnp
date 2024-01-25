@@ -315,7 +315,7 @@ def test_dot_out_error_scalar(ia):
     [
         ((10,), (10,), ()),
         ((3, 4), (4, 2), (3, 2)),
-        ((3, 4), (4,), (3, 1)),
+        ((3, 4), (4,), (3,)),
         ((5, 4, 3), (3,), (5, 4)),
         ((4,), (3, 4, 2), (3, 2)),
         ((5, 3, 4), (6, 4, 2), (5, 3, 6, 2)),
@@ -332,7 +332,7 @@ def test_dot_out_error(shape_pair):
     # output data type is incorrect
     np_out = numpy.empty(shape_out, dtype=numpy.int64)
     dp_out = dpnp.empty(shape_out, dtype=dpnp.int64)
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         dpnp.dot(ia, ib, out=dp_out)
     with pytest.raises(ValueError):
         numpy.dot(a, b, out=np_out)
@@ -345,7 +345,8 @@ def test_dot_out_error(shape_pair):
     with pytest.raises(ValueError):
         numpy.dot(a, b, out=np_out)
 
-    if not (a.ndim == 1 and b.ndim == 1):
+    # "F" or "C" is irrelevant for 0d or 1d arrays
+    if not (len(shape_out) in [0, 1]):
         # output should be C-contiguous
         np_out = numpy.empty(shape_out, dtype=numpy.int32, order="F")
         dp_out = dpnp.empty(shape_out, dtype=dpnp.int32, order="F")
