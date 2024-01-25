@@ -1,0 +1,6 @@
+﻿dpnp.mean
+=========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: mean
