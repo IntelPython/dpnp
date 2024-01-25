@@ -46,7 +46,7 @@ namespace mkl_blas = oneapi::mkl::blas;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
-typedef sycl::event (*dotc_impl_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*dotu_impl_fn_ptr_t)(sycl::queue,
                                           const std::int64_t,
                                           char *,
                                           const std::int64_t,
@@ -55,11 +55,11 @@ typedef sycl::event (*dotc_impl_fn_ptr_t)(sycl::queue,
                                           char *,
                                           const std::vector<sycl::event> &);
 
-static dotc_impl_fn_ptr_t dotc_dispatch_table[dpctl_td_ns::num_types]
+static dotu_impl_fn_ptr_t dotu_dispatch_table[dpctl_td_ns::num_types]
                                              [dpctl_td_ns::num_types];
 
 template <typename Tab, typename Tc>
-static sycl::event dotc_impl(sycl::queue exec_q,
+static sycl::event dotu_impl(sycl::queue exec_q,
                              const std::int64_t n,
                              char *vectorA,
                              const std::int64_t stride_a,
@@ -78,9 +78,9 @@ static sycl::event dotc_impl(sycl::queue exec_q,
     std::stringstream error_msg;
     bool is_exception_caught = false;
 
-    sycl::event dotc_event;
+    sycl::event dotu_event;
     try {
-        dotc_event = mkl_blas::row_major::dotc(exec_q,
+        dotu_event = mkl_blas::row_major::dotu(exec_q,
                                                n, // size of the input vectors
                                                a, // Pointer to vector a.
                                                stride_a, // Stride of vector a.
@@ -90,11 +90,11 @@ static sycl::event dotc_impl(sycl::queue exec_q,
                                                depends);
     } catch (oneapi::mkl::exception const &e) {
         error_msg
-            << "Unexpected MKL exception caught during dotc() call:\nreason: "
+            << "Unexpected MKL exception caught during dotu() call:\nreason: "
             << e.what();
         is_exception_caught = true;
     } catch (sycl::exception const &e) {
-        error_msg << "Unexpected SYCL exception caught during dotc() call:\n"
+        error_msg << "Unexpected SYCL exception caught during dotu() call:\n"
                   << e.what();
         is_exception_caught = true;
     }
@@ -104,11 +104,11 @@ static sycl::event dotc_impl(sycl::queue exec_q,
         throw std::runtime_error(error_msg.str());
     }
 
-    return dotc_event;
+    return dotu_event;
 }
 
 std::pair<sycl::event, sycl::event>
-    dotc(sycl::queue exec_q,
+    dotu(sycl::queue exec_q,
          dpctl::tensor::usm_ndarray vectorA,
          dpctl::tensor::usm_ndarray vectorB,
          dpctl::tensor::usm_ndarray result,
@@ -184,9 +184,9 @@ std::pair<sycl::event, sycl::event>
     int vectorAB_type_id = array_types.typenum_to_lookup_id(vectorA_typenum);
     int result_type_id = array_types.typenum_to_lookup_id(result_typenum);
 
-    dotc_impl_fn_ptr_t dotc_fn =
-        dotc_dispatch_table[vectorAB_type_id][result_type_id];
-    if (dotc_fn == nullptr) {
+    dotu_impl_fn_ptr_t dotu_fn =
+        dotu_dispatch_table[vectorAB_type_id][result_type_id];
+    if (dotu_fn == nullptr) {
         throw py::value_error(
             "Types of input vectors and result array are mismatched.");
     }
@@ -195,23 +195,23 @@ std::pair<sycl::event, sycl::event>
     char *b_typeless_ptr = vectorB.get_data();
     char *r_typeless_ptr = result.get_data();
 
-    sycl::event dotc_ev =
-        dotc_fn(exec_q, n, a_typeless_ptr, str_a, b_typeless_ptr, str_b,
+    sycl::event dotu_ev =
+        dotu_fn(exec_q, n, a_typeless_ptr, str_a, b_typeless_ptr, str_b,
                 r_typeless_ptr, depends);
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
-        exec_q, {vectorA, vectorB, result}, {dotc_ev});
+        exec_q, {vectorA, vectorB, result}, {dotu_ev});
 
-    return std::make_pair(args_ev, dotc_ev);
+    return std::make_pair(args_ev, dotu_ev);
 }
 
 template <typename fnT, typename Tab, typename Tc>
-struct DotcContigFactory
+struct DotuContigFactory
 {
     fnT get()
     {
-        if constexpr (types::DotcTypePairSupportFactory<Tab, Tc>::is_defined) {
-            return dotc_impl<Tab, Tc>;
+        if constexpr (types::DotuTypePairSupportFactory<Tab, Tc>::is_defined) {
+            return dotu_impl<Tab, Tc>;
         }
         else {
             return nullptr;
@@ -219,12 +219,12 @@ struct DotcContigFactory
     }
 };
 
-void init_dotc_dispatch_table(void)
+void init_dotu_dispatch_table(void)
 {
-    dpctl_td_ns::DispatchTableBuilder<dotc_impl_fn_ptr_t, DotcContigFactory,
+    dpctl_td_ns::DispatchTableBuilder<dotu_impl_fn_ptr_t, DotuContigFactory,
                                       dpctl_td_ns::num_types>
         contig;
-    contig.populate_dispatch_table(dotc_dispatch_table);
+    contig.populate_dispatch_table(dotu_dispatch_table);
 }
 } // namespace blas
 } // namespace ext

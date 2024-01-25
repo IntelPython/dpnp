@@ -2837,7 +2837,7 @@ class TestMatmulInvalidCases:
         a2 = dpnp.arange(7 * 4, dtype=dpnp_dtype).reshape(4, 7)
         dp_out = dpnp.empty((5, 7), dtype=dtype)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.matmul(a1, a2, out=dp_out)
 
     def test_exe_q(self):

@@ -45,14 +45,14 @@ namespace types
 {
 /**
  * @brief A factory to define pairs of supported types for which
- * MKL BLAS library provides support in oneapi::mkl::blas::dotc<Tab, Tc>
+ * MKL BLAS library provides support in oneapi::mkl::blas::dotu<Tab, Tc>
  * function.
  *
  * @tparam Tab Type of arrays containing input vectors A and B.
  * @tparam Tc Type of array containing output.
  */
 template <typename Tab, typename Tc>
-struct DotcTypePairSupportFactory
+struct DotuTypePairSupportFactory
 {
     static constexpr bool is_defined = std::disjunction<
         dpctl_td_ns::TypePairDefinedEntry<Tab,

@@ -40,7 +40,7 @@ namespace py = pybind11;
 void init_dispatch_tables(void)
 {
     blas_ext::init_dot_dispatch_table();
-    blas_ext::init_dotc_dispatch_table();
+    blas_ext::init_dotu_dispatch_table();
     blas_ext::init_gemm_batch_dispatch_table();
     blas_ext::init_gemm_dispatch_table();
 }
@@ -50,8 +50,8 @@ PYBIND11_MODULE(_blas_impl, m)
     init_dispatch_tables();
 
     {
-        m.def("_dotc", &blas_ext::dotc,
-              "Call `dotc` from OneMKL LAPACK library to return "
+        m.def("_dotu", &blas_ext::dotu,
+              "Call `dotu` from OneMKL LAPACK library to return "
               "the dot product of two complex-valued vectors.",
               py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
               py::arg("result"), py::arg("depends") = py::list());

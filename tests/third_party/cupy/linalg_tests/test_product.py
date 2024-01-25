@@ -73,7 +73,12 @@ class TestDot(unittest.TestCase):
         else:
             shape_c = shape_a[:-1] + shape_b[:-2] + shape_b[-1:]
         c = xp.empty(shape_c, dtype=dtype_c)
-        out = xp.dot(a, b, out=c)
+        try:
+            out = xp.dot(a, b, out=c)
+        except TypeError:
+            # When output dtype is incorrect, NumPy raises ValueError
+            # While DPNP raises TypeError, so we change it to ValueError
+            raise ValueError
         assert out is c
         return c
 

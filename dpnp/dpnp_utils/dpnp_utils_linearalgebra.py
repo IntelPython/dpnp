@@ -230,10 +230,9 @@ def dpnp_dot(
     b = _copy_array(b, dep_events_list, host_tasks_list, dtype=dot_dtype)
 
     if dpnp.issubdtype(dot_dtype, dpnp.complexfloating):
-        ht_blas_ev, _ = bi._dotc(
+        ht_blas_ev, _ = bi._dotu(
             exec_q,
-            # OneMKL Library conjugates the first input
-            dpnp.get_usm_ndarray(a.conj()),
+            dpnp.get_usm_ndarray(a),
             dpnp.get_usm_ndarray(b),
             dpnp.get_usm_ndarray(result),
             dep_events_list,
