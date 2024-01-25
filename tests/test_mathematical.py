@@ -125,8 +125,6 @@ class TestClip:
         expected = numpy.clip(np_a, -1, 1)
         assert_array_equal(result, expected)
 
-    # TODO: unmute the test once dpctl resolves the issue
-    @pytest.mark.skip(reason="dpctl-1489 issue")
     @pytest.mark.parametrize(
         "kwargs",
         [
@@ -138,7 +136,7 @@ class TestClip:
         ],
     )
     def test_nan_edges(self, kwargs):
-        np_a = numpy.arange(7)
+        np_a = numpy.arange(7.0)
         dp_a = dpnp.asarray(np_a)
 
         result = dp_a.clip(**kwargs)
@@ -563,16 +561,6 @@ def test_op_with_scalar(array, val, func, data_type, val_type):
         ):
             pytest.skip(
                 "(0j ** 0) is different: (NaN + NaNj) in dpnp and (1 + 0j) in numpy"
-            )
-        # TODO: Remove when #1378 (dpctl) is solved
-        elif (
-            is_cpu_device()
-            and dpnp_a.dtype == dpnp.complex128
-            and dpnp_a.size >= 8
-            and not dpnp.all(dpnp_a)
-        ):
-            pytest.skip(
-                "[..., 0j ** val] is different for x.size >= 8: [..., NaN + NaNj] in dpnp and [..., 0 + 0j] in numpy"
             )
 
     if func == "subtract" and val_type == bool and data_type == dpnp.bool:
@@ -1001,19 +989,6 @@ def test_power(array, val, data_type, val_type):
     np_a = numpy.array(array, dtype=data_type)
     dpnp_a = dpnp.array(array, dtype=data_type)
     val_ = val_type(val)
-
-    # TODO: Remove when #1378 (dpctl) is solved
-    if (
-        is_cpu_device()
-        and (
-            dpnp.complex128 in (data_type, val_type)
-            or dpnp.complex64 in (data_type, val_type)
-        )
-        and dpnp_a.size >= 8
-    ):
-        pytest.skip(
-            "[..., 0j ** val] is different for x.size >= 8: [..., NaN + NaNj] in dpnp and [..., 0 + 0j] in numpy"
-        )
 
     result = dpnp.power(dpnp_a, val_)
     expected = numpy.power(np_a, val_)
@@ -2306,12 +2281,6 @@ class TestPower:
         dp_arr = dpnp.array(np_arr)
         func = lambda x: x**2
 
-        # TODO: unmute the test once it's available
-        if is_win_platform():
-            pytest.skip(
-                "Until the latest dpctl is available on internal channel"
-            )
-
         assert_dtype_allclose(func(dp_arr), func(np_arr))
 
     @pytest.mark.parametrize("val", [0, 1], ids=["0", "1"])
@@ -2696,9 +2665,6 @@ class TestMatmul:
             with pytest.raises(TypeError):
                 dpnp.matmul(b1, b2, dtype=dtype2)
 
-    # TODO: Temporary skipping the test, until Internal CI is updated with
-    # recent changed in dpctl regarding dpt.result_type function
-    @pytest.mark.skip("Temporary skipping the test")
     @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("dtype2", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
@@ -2846,9 +2812,6 @@ class TestMatmulInvalidCases:
         with pytest.raises(ValueError):
             dpnp.matmul(x1, x2)
 
-    # TODO: Temporary skipping the test, until Internal CI is updated with
-    # recent changed in dpctl regarding dpt.result_type function
-    @pytest.mark.skip("Temporary skipping the test")
     def test_matmul_casting(self):
         a1 = dpnp.arange(2 * 4, dtype=dpnp.float32).reshape(2, 4)
         a2 = dpnp.arange(4 * 3).reshape(4, 3)
