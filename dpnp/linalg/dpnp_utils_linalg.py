@@ -97,6 +97,35 @@ def _calculate_determinant_sign(ipiv, diag, res_type, n):
     return sign.astype(res_type)
 
 
+def _check_lapack_dev_info(dev_info, error_msg=None):
+    """
+    Check `dev_info` from oneMKL LAPACK routines, raising an error for failures.
+
+    Parameters
+    ----------
+    dev_info : list
+        Integers indicating the status of oneMKL LAPACK routine calls. A non-zero
+        value signifies a failure.
+
+    error_message : str, optional
+        Custom error message for detected LAPACK errors.
+        Default: `Singular matrix`
+
+    Raises
+    ------
+    dpnp.linalg.LinAlgError
+        On non-zero elements in dev_info, indicating LAPACK errors.
+
+    """
+
+    dev_info_array = dpnp.array(dev_info)
+
+    if (dev_info_array != 0).any():
+        error_msg = error_msg or "Singular matrix"
+
+        raise dpnp.linalg.LinAlgError(error_msg)
+
+
 def _real_type(dtype, device=None):
     """
     Returns the real data type corresponding to a given dpnp data type.
@@ -440,35 +469,6 @@ def _lu_factor(a, res_type):
         # pivot indices 'ipiv_h'
         # and the status 'dev_info_h' from the LAPACK getrf call
         return (a_h, ipiv_h, dev_info_array)
-
-
-def check_lapack_dev_info(dev_info, error_msg=None):
-    """
-    Check `dev_info` from oneMKL LAPACK routines, raising an error for failures.
-
-    Parameters
-    ----------
-    dev_info : list
-        Integers indicating the status of oneMKL LAPACK routine calls. A non-zero
-        value signifies a failure.
-
-    error_message : str, optional
-        Custom error message for detected LAPACK errors.
-        Default: `Singular matrix`
-
-    Raises
-    ------
-    dpnp.linalg.LinAlgError
-        On non-zero elements in dev_info, indicating LAPACK errors.
-
-    """
-
-    dev_info_array = dpnp.array(dev_info)
-
-    if (dev_info_array != 0).any():
-        error_msg = error_msg or "Singular matrix"
-
-        raise dpnp.linalg.LinAlgError(error_msg)
 
 
 def dpnp_cholesky_batch(a, upper_lower, res_type):
@@ -846,8 +846,8 @@ def dpnp_inv_batched(a, res_type):
     ht_lapack_ev.wait()
     a_ht_copy_ev.wait()
 
-    check_lapack_dev_info(dev_info_getrf_h)
-    check_lapack_dev_info(dev_info_getri_h)
+    _check_lapack_dev_info(dev_info_getrf_h)
+    _check_lapack_dev_info(dev_info_getri_h)
 
     return a_h.reshape(orig_shape)
 
