@@ -378,15 +378,6 @@ template <typename _DataType, typename _ResultType>
 void (*dpnp_inv_default_c)(void *, void *, shape_elem_type *, size_t) =
     dpnp_inv_c<_DataType, _ResultType>;
 
-template <typename _DataType, typename _ResultType>
-DPCTLSyclEventRef (*dpnp_inv_ext_c)(DPCTLSyclQueueRef,
-                                    void *,
-                                    void *,
-                                    shape_elem_type *,
-                                    size_t,
-                                    const DPCTLEventVectorRef) =
-    dpnp_inv_c<_DataType, _ResultType>;
-
 template <typename _DataType1, typename _DataType2, typename _ResultType>
 class dpnp_kron_c_kernel;
 
