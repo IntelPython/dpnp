@@ -296,12 +296,12 @@ class TestLexsort(unittest.TestCase):
     )
 )
 class TestArgsort(unittest.TestCase):
-    def argsort(self, a, axis=-1):
+    def argsort(self, a, axis=-1, kind=None):
         if self.external:
             xp = cupy.get_array_module(a)
-            return xp.argsort(a, axis=axis)
+            return xp.argsort(a, axis=axis, kind=kind)
         else:
-            return a.argsort(axis=axis)
+            return a.argsort(axis=axis, kind=kind)
 
     # Test base cases
 
@@ -317,7 +317,7 @@ class TestArgsort(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_argsort_one_dim(self, xp, dtype):
         a = testing.shaped_random((10,), xp, dtype)
-        return self.argsort(a)
+        return self.argsort(a, axis=-1, kind="stable")
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()

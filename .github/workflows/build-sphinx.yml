@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+        uses: styfle/cancel-workflow-action@0.12.0
         with:
           access_token: ${{ github.token }}
 
@@ -42,7 +42,7 @@ jobs:
           echo "$GITHUB_CONTEXT"
 
       - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
+        uses: jlumbroso/free-disk-space@v1.3.1
         with:
           docker-images: false
 
@@ -76,13 +76,13 @@ jobs:
           sudo apt-get install -y nvidia-cuda-toolkit clinfo
 
       - name: Checkout repo
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
 
       # https://github.com/marketplace/actions/setup-miniconda
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.2.0
+        uses: conda-incubator/setup-miniconda@v3.0.1
         with:
           auto-update-conda: true
           python-version: ${{ env.python-ver }}
@@ -184,7 +184,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
 
