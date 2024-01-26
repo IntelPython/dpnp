@@ -34,61 +34,34 @@ from dpnp.dpnp_utils import get_usm_allocations
 __all__ = ["dpnp_dot", "dpnp_matmul"]
 
 
-def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
+def _copy_array(x, dep_events, host_events, contig_copy=False, dtype=None):
     """
-    _op_res_dtype(*arrays, dtype, casting, sycl_queue)
+    Creating a copy of input array if needed.
 
-    Determines the output array data type and an intermediate data type
-    used in performing calculations related to a specific math function.
-    If dtype is ``None``, the output array data type of the operation is
-    determined based on the Promotion Type Rule and device capabilities.
-    Otherwise, `dtype` is used as output array dtype, if input arrays
-    can cast to it according to the casting rule determined. If casting
-    cannot be done, a ``TypeError`` is raised.
-    The intermediate data type is the data type used for performing the math
-    function calculations. If output array dtype is a floating-point data type,
-    it is also used for the intermediate data type. If output array dtype is an
-    integral data type, the default floating point data type of the device where
-    input arrays are allocated on are used for intermediate data type.
-
-    Parameters
-    ----------
-    arrays : {dpnp.ndarray, usm_ndarray}
-        Input arrays.
-    dtype : dtype
-        If not ``None``, data type of the output array.
-    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
-        Controls what kind of data casting may occur.
-    sycl_queue : {SyclQueue}
-        A SYCL queue to use for determining default floating point datat type.
-
-    Returns
-    -------
-    op_dtype, res_dtype :
-        `op_dtype` is the data type used in performing math function calculations.
-        The input arrays of the math function are cast to `op_dtype` and then
-        the calculations are performed.
-        `res_dtype` is the output data type. When the result is obtained, it is cast
-        to `res_dtype`.
+    If `contig_copy` is ``True``, a C-contiguous copy of input array is returned.
+    In this case, the copy array has the input array data type unless `dtype` is
+    determined.
+    If `contig_copy` is ``False`` and input array data type is different than `dtype`,
+    a C-contiguous copy of input array with specified `dtype` is returned.
 
     """
 
-    res_dtype = dpnp.result_type(*arrays)
-    default_dtype = dpnp.default_float_type(sycl_queue=sycl_queue)
+    if contig_copy:
+        copy = contig_copy
+    else:
+        copy = x.dtype != dtype if dtype is not None else False
 
-    if dtype is not None:
-        if dpnp.can_cast(res_dtype, dtype, casting=casting):
-            res_dtype = dtype
-        else:
-            raise TypeError(
-                f"Cannot cast ufunc 'matmul' output from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
-            )
-
-    op_dtype = (
-        res_dtype if dpnp.issubdtype(res_dtype, dpnp.inexact) else default_dtype
-    )
-
-    return op_dtype, res_dtype
+    if copy:
+        x_copy = dpnp.empty_like(x, dtype=dtype, order="C")
+        ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=dpnp.get_usm_ndarray(x),
+            dst=x_copy.get_array(),
+            sycl_queue=x.sycl_queue,
+        )
+        dep_events.append(copy_ev)
+        host_events.append(ht_copy_ev)
+        return x_copy
+    return x
 
 
 def _gemm_batch_matmul(exec_q, x1, x2, res, x1_is_2D, x2_is_2D, dev_tasks_list):
@@ -153,34 +126,61 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, x1_is_2D, x2_is_2D, dev_tasks_list):
     return ht_blas_ev, ht_tasks_list, res
 
 
-def _copy_array(x, dep_events, host_events, contig_copy=False, dtype=None):
+def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
     """
-    Creating a copy of input array if needed.
+    _op_res_dtype(*arrays, dtype, casting, sycl_queue)
 
-    If `contig_copy` is ``True``, a C-contiguous copy of input array is returned.
-    In this case, the copy array has the input array data type unless `dtype` is
-    determined.
-    If `contig_copy` is ``False`` and input array data type is different than `dtype`,
-    a C-contiguous copy of input array with specified `dtype` is returned.
+    Determines the output array data type and an intermediate data type
+    used in performing calculations related to a specific math function.
+    If dtype is ``None``, the output array data type of the operation is
+    determined based on the Promotion Type Rule and device capabilities.
+    Otherwise, `dtype` is used as output array dtype, if input arrays
+    can cast to it according to the casting rule determined. If casting
+    cannot be done, a ``TypeError`` is raised.
+    The intermediate data type is the data type used for performing the math
+    function calculations. If output array dtype is a floating-point data type,
+    it is also used for the intermediate data type. If output array dtype is an
+    integral data type, the default floating point data type of the device where
+    input arrays are allocated on are used for intermediate data type.
+
+    Parameters
+    ----------
+    arrays : {dpnp.ndarray, usm_ndarray}
+        Input arrays.
+    dtype : dtype
+        If not ``None``, data type of the output array.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur.
+    sycl_queue : {SyclQueue}
+        A SYCL queue to use for determining default floating point datat type.
+
+    Returns
+    -------
+    op_dtype, res_dtype :
+        `op_dtype` is the data type used in performing math function calculations.
+        The input arrays of the math function are cast to `op_dtype` and then
+        the calculations are performed.
+        `res_dtype` is the output data type. When the result is obtained, it is cast
+        to `res_dtype`.
 
     """
 
-    if contig_copy:
-        copy = contig_copy
-    else:
-        copy = x.dtype != dtype if dtype is not None else False
+    res_dtype = dpnp.result_type(*arrays)
+    default_dtype = dpnp.default_float_type(sycl_queue=sycl_queue)
 
-    if copy:
-        x_copy = dpnp.empty_like(x, dtype=dtype, order="C")
-        ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=dpnp.get_usm_ndarray(x),
-            dst=x_copy.get_array(),
-            sycl_queue=x.sycl_queue,
-        )
-        dep_events.append(copy_ev)
-        host_events.append(ht_copy_ev)
-        return x_copy
-    return x
+    if dtype is not None:
+        if dpnp.can_cast(res_dtype, dtype, casting=casting):
+            res_dtype = dtype
+        else:
+            raise TypeError(
+                f"Cannot cast ufunc 'matmul' output from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
+            )
+
+    op_dtype = (
+        res_dtype if dpnp.issubdtype(res_dtype, dpnp.inexact) else default_dtype
+    )
+
+    return op_dtype, res_dtype
 
 
 def dpnp_dot(
@@ -394,6 +394,11 @@ def dpnp_matmul(
             dtype=gemm_dtype,
         )
 
+        # TODO: investigate usage of gemv (gemv_batch) function
+        # from BLAS when one of the inputs is a vector to
+        # gain performance.
+        # TODO: investigate usage of syrk function from BLAS in
+        # case of a.T @ a and a @ a.T to gain performance.
         if x1_is_2D and x2_is_2D:
             ht_blas_ev, _ = bi._gemm(
                 exec_q,
