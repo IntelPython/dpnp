@@ -5,8 +5,6 @@ var annotated_dup =
         [ "ext", null, [
           [ "blas", null, [
             [ "types", null, [
-              [ "DotTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html", null ],
-              [ "DotuTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
               [ "GemmBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
               [ "GemmTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ]
             ] ]
@@ -20,6 +18,7 @@ var annotated_dup =
               [ "GesvTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_gesv_type_pair_support_factory.html", null ],
               [ "GetrfBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html", null ],
               [ "GetrfTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html", null ],
+              [ "GetriBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html", null ],
               [ "HeevdTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
               [ "PotrfBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_potrf_batch_type_pair_support_factory.html", null ],
               [ "PotrfTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_potrf_type_pair_support_factory.html", null ],
