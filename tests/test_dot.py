@@ -305,12 +305,16 @@ def test_dot_out_error_scalar(ia):
 
     # output data type is incorrect
     dp_out = dpnp.empty((10,), dtype=dpnp.int64)
-    with pytest.raises(ValueError):
+    # TODO: change it to ValueError, when updated
+    # dpctl is being used in internal CI
+    with pytest.raises((ValueError, TypeError)):
         dpnp.dot(ia, ib, out=dp_out)
 
     # output shape is incorrect
     dp_out = dpnp.empty((2,), dtype=dpnp.int32)
-    with pytest.raises(ValueError):
+    # TODO: change it to ValueError, when updated
+    # dpctl is being used in internal CI
+    with pytest.raises((ValueError, TypeError)):
         dpnp.dot(ia, ib, out=dp_out)
 
 
