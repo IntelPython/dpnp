@@ -2748,7 +2748,7 @@ class TestMatmul:
         for dim in [1, 2, 3, 4]:
             A = numpy.random.rand(*([20] * dim))
             B = dpnp.asarray(A)
-            # positive strides
+            # positive stride
             slices = tuple(slice(None, None, 2) for _ in range(dim))
             a = A[slices]
             b = B[slices]
@@ -2757,7 +2757,7 @@ class TestMatmul:
             expected = numpy.matmul(a, a)
             assert_dtype_allclose(result, expected)
 
-            # negative strides
+            # negative stride
             slices = tuple(slice(None, None, -2) for _ in range(dim))
             a = A[slices]
             b = B[slices]

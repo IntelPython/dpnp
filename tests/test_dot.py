@@ -44,9 +44,6 @@ class TestDot:
         expected = numpy.dot(a, b)
         assert_allclose(result, expected)
 
-    # TODO: get rid of falls back on NumPy when tensordot
-    # is implemented using OneMKL
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
         "array_info",
@@ -88,9 +85,6 @@ class TestDot:
         expected = numpy.dot(a, b)
         assert_dtype_allclose(result, expected)
 
-    # TODO: get rid of falls back on NumPy when tensordot
-    # is implemented using OneMKL
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
         "array_info",
@@ -132,9 +126,6 @@ class TestDot:
         expected = numpy.dot(a, b)
         assert_dtype_allclose(result, expected)
 
-    # TODO: get rid of falls back on NumPy when tensordot
-    # is implemented using OneMKL
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "array_info",
@@ -214,9 +205,6 @@ class TestDot:
         assert result is dp_out
         assert_allclose(result, expected)
 
-    # TODO: get rid of falls back on NumPy when tensordot
-    # is implemented using OneMKL
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "array_info",
@@ -294,21 +282,14 @@ class TestDot:
 
         # output data type is incorrect
         dp_out = dpnp.empty((10,), dtype=dpnp.int64)
-        # TODO: change it to ValueError, when updated
-        # dpctl is being used in internal CI
-        with pytest.raises((ValueError, TypeError)):
+        with pytest.raises(ValueError):
             dpnp.dot(ia, ib, out=dp_out)
 
         # output shape is incorrect
         dp_out = dpnp.empty((2,), dtype=dpnp.int32)
-        # TODO: change it to ValueError, when updated
-        # dpctl is being used in internal CI
-        with pytest.raises((ValueError, TypeError)):
+        with pytest.raises(ValueError):
             dpnp.dot(ia, ib, out=dp_out)
 
-    # TODO: get rid of falls back on NumPy when tensordot
-    # is implemented using OneMKL
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "shape_pair",
         [
@@ -371,6 +352,147 @@ def test_multi_dot(type):
     result = dpnp.linalg.multi_dot([a, b, c, d])
     expected = numpy.linalg.multi_dot([a1, b1, c1, d1])
     assert_array_equal(expected, result)
+
+
+class TestTensordot:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_tensordot_scalar(self, dtype):
+        a = 2
+        b = numpy.array(numpy.random.uniform(-5, 5, 10), dtype=dtype)
+        ib = dpnp.array(b)
+
+        result = dpnp.tensordot(a, ib, axes=0)
+        expected = numpy.tensordot(a, b, axes=0)
+        assert_allclose(result, expected)
+
+        result = dpnp.tensordot(ib, a, axes=0)
+        expected = numpy.tensordot(b, a, axes=0)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("axes", [-3, -2, -1, 0, 1, 2])
+    def test_tensordot(self, dtype, axes):
+        a = numpy.array(numpy.random.uniform(-10, 10, 64), dtype=dtype).reshape(
+            4, 4, 4
+        )
+        b = numpy.array(numpy.random.uniform(-10, 10, 64), dtype=dtype).reshape(
+            4, 4, 4
+        )
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.tensordot(ia, ib, axes=axes)
+        expected = numpy.tensordot(a, b, axes=axes)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize("axes", [-3, -2, -1, 0, 1, 2])
+    def test_tensordot_complex(self, dtype, axes):
+        x11 = numpy.random.uniform(-10, 10, 64)
+        x12 = numpy.random.uniform(-10, 10, 64)
+        x21 = numpy.random.uniform(-10, 10, 64)
+        x22 = numpy.random.uniform(-10, 10, 64)
+        a = numpy.array(x11 + 1j * x12, dtype=dtype).reshape(4, 4, 4)
+        b = numpy.array(x21 + 1j * x22, dtype=dtype).reshape(4, 4, 4)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.tensordot(ia, ib, axes=axes)
+        expected = numpy.tensordot(a, b, axes=axes)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "axes",
+        [
+            ([0, 1]),
+            ([0, 1], [1, 2]),
+            (2, 3),
+            ([-2, -3], [3, 2]),
+            ((3, 1), (0, 2)),
+        ],
+    )
+    def test_tensordot_axes(self, dtype, axes):
+        a = numpy.array(
+            numpy.random.uniform(-10, 10, 120), dtype=dtype
+        ).reshape(2, 5, 3, 4)
+        b = numpy.array(
+            numpy.random.uniform(-10, 10, 120), dtype=dtype
+        ).reshape(4, 2, 5, 3)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.tensordot(ia, ib, axes=axes)
+        expected = numpy.tensordot(a, b, axes=axes)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype1", get_all_dtypes())
+    @pytest.mark.parametrize("dtype2", get_all_dtypes())
+    def test_tensordot_input_dtype_matrix(self, dtype1, dtype2):
+        a = numpy.array(
+            numpy.random.uniform(-10, 10, 60), dtype=dtype1
+        ).reshape(3, 4, 5)
+        b = numpy.array(
+            numpy.random.uniform(-10, 10, 40), dtype=dtype2
+        ).reshape(4, 5, 2)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.tensordot(ia, ib)
+        expected = numpy.tensordot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    def test_tensordot_strided(self):
+        for dim in [1, 2, 3, 4]:
+            axes = 1 if dim == 1 else 2
+            A = numpy.random.rand(*([10] * dim))
+            B = dpnp.asarray(A)
+            # positive stride
+            slices = tuple(slice(None, None, 2) for _ in range(dim))
+            a = A[slices]
+            b = B[slices]
+
+            result = dpnp.tensordot(b, b, axes=axes)
+            expected = numpy.tensordot(a, a, axes=axes)
+            assert_dtype_allclose(result, expected)
+
+            # negative stride
+            slices = tuple(slice(None, None, -2) for _ in range(dim))
+            a = A[slices]
+            b = B[slices]
+
+            result = dpnp.tensordot(b, b, axes=axes)
+            expected = numpy.tensordot(a, a, axes=axes)
+            assert_dtype_allclose(result, expected)
+
+    def test_tensordot_error(self):
+        a = 5
+        b = 2
+        # both inputs are scalar
+        with pytest.raises(TypeError):
+            dpnp.tensordot(a, b, axes=0)
+
+        a = dpnp.arange(24).reshape(2, 3, 4)
+        b = dpnp.arange(24).reshape(3, 4, 2)
+        # axes should be an integer
+        with pytest.raises(ValueError):
+            dpnp.tensordot(a, b, axes=2.0)
+
+        # Axes must consist of two sequences
+        with pytest.raises(ValueError):
+            dpnp.tensordot(a, b, axes=([0, 2],))
+
+        # Axes length mismatch
+        with pytest.raises(ValueError):
+            dpnp.tensordot(a, b, axes=([0, 2], [2]))
+
+        # shape of input arrays is not similar at requested axes
+        with pytest.raises(ValueError):
+            dpnp.tensordot(a, b, axes=([0, 2], [2, 0]))
+
+        # out of range index
+        with pytest.raises(IndexError):
+            dpnp.tensordot(a, b, axes=([0, 3], [2, 0]))
 
 
 class TestVdot:

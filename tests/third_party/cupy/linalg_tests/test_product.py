@@ -36,9 +36,6 @@ from tests.third_party.cupy import testing
         }
     )
 )
-# TODO: get rid of falls back on NumPy when tensordot
-# is implemented using OneMKL
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDot(unittest.TestCase):
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
@@ -161,9 +158,6 @@ class TestProduct:
         b = testing.shaped_arange((2,), xp, dtype)
         return xp.dot(a, b)
 
-    # TODO: get rid of falls back on NumPy when tensordot
-    # is implemented using OneMKL
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_dot_vec2(self, xp, dtype):
@@ -178,9 +172,6 @@ class TestProduct:
         b = testing.shaped_arange((2,), xp, dtype)
         return xp.dot(a, b)
 
-    # TODO: get rid of falls back on NumPy when tensordot
-    # is implemented using OneMKL
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_transposed_dot(self, xp, dtype):
@@ -188,9 +179,6 @@ class TestProduct:
         b = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(0, 2, 1)
         return xp.dot(a, b)
 
-    # TODO: get rid of falls back on NumPy when tensordot
-    # is implemented using OneMKL
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_transposed_dot_with_out(self, xp, dtype):
@@ -200,9 +188,6 @@ class TestProduct:
         xp.dot(a, b, out=c)
         return c
 
-    # TODO: get rid of falls back on NumPy when tensordot
-    # is implemented using OneMKL
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     def test_transposed_dot_with_out_f_contiguous(self, dtype):
         for xp in (numpy, cupy):
@@ -307,7 +292,6 @@ class TestProduct:
         b = testing.shaped_arange((4, 5), xp, dtype)
         return xp.outer(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot(self, xp, dtype):
@@ -322,7 +306,6 @@ class TestProduct:
         b = testing.shaped_arange((4, 3, 2), xp, dtype).transpose(2, 0, 1)
         return xp.tensordot(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot_with_int_axes(self, xp, dtype):
@@ -352,7 +335,6 @@ class TestProduct:
             )
             return xp.tensordot(a, b, axes=3)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot_with_list_axes(self, xp, dtype):
