@@ -840,8 +840,8 @@ def dpnp_inv_batched(a, res_type):
 
     _check_lapack_dev_info(dev_info)
 
-    ht_getrf_ev.wait()
     ht_getri_ev.wait()
+    ht_getrf_ev.wait()
     a_ht_copy_ev.wait()
 
     return a_h.reshape(orig_shape)
