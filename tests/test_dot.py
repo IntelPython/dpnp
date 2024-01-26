@@ -181,10 +181,10 @@ def test_dot_ndarray(dtype, array_info):
     assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes())
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 def test_dot_strided(dtype):
-    a = numpy.ones(25, dtype=dtype)
-    b = numpy.ones(25, dtype=dtype)
+    a = numpy.arange(25, dtype=dtype)
+    b = numpy.arange(25, dtype=dtype)
     ia = dpnp.array(a)
     ib = dpnp.array(b)
 
@@ -192,10 +192,17 @@ def test_dot_strided(dtype):
     expected = numpy.dot(a[::3], b[::3])
     assert_dtype_allclose(result, expected)
 
-    # TODO: unmute when the problem with negative stride is fixed
-    # result = dpnp.dot(ia, ib[::-1])
-    # expected = numpy.dot(a, b[::-1])
-    # assert_dtype_allclose(result, expected)
+    result = dpnp.dot(ia, ib[::-1])
+    expected = numpy.dot(a, b[::-1])
+    assert_dtype_allclose(result, expected)
+
+    result = dpnp.dot(ia[::-2], ib[::-2])
+    expected = numpy.dot(a[::-2], b[::-2])
+    assert_dtype_allclose(result, expected)
+
+    result = dpnp.dot(ia[::-5], ib[::-5])
+    expected = numpy.dot(a[::-5], b[::-5])
+    assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))

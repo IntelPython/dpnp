@@ -193,6 +193,15 @@ std::pair<sycl::event, sycl::event> dot(sycl::queue exec_q,
     char *b_typeless_ptr = vectorB.get_data();
     char *r_typeless_ptr = result.get_data();
 
+    const int a_elemsize = vectorA.get_elemsize();
+    const int b_elemsize = vectorB.get_elemsize();
+    if (str_a < 0) {
+        a_typeless_ptr -= (n - 1) * std::abs(str_a) * a_elemsize;
+    }
+    if (str_b < 0) {
+        b_typeless_ptr -= (n - 1) * std::abs(str_b) * b_elemsize;
+    }
+
     sycl::event dot_ev = dot_fn(exec_q, n, a_typeless_ptr, str_a,
                                 b_typeless_ptr, str_b, r_typeless_ptr, depends);
 
