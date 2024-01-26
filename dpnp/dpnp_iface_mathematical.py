@@ -491,6 +491,8 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
     if kwargs:
         raise NotImplementedError(f"kwargs={kwargs} is currently not supported")
+    elif a_min is None and a_max is None:
+        raise ValueError("One of max or min must be given")
 
     if order is None:
         order = "K"
