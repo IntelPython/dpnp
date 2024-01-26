@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.13.1dev2+18.gce61cf6e35 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=eaec58d4"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+              <div class="version">
+                0.13.1dev2+18.gce61cf6e35
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dpnp.dpnp_iface_statistics</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dpnp.dpnp_iface_statistics</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># *****************************************************************************</span>
+<span class="c1"># Copyright (c) 2016-2024, Intel Corporation</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Redistribution and use in source and binary forms, with or without</span>
+<span class="c1"># modification, are permitted provided that the following conditions are met:</span>
+<span class="c1"># - Redistributions of source code must retain the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer.</span>
+<span class="c1"># - Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer in the documentation</span>
+<span class="c1">#   and/or other materials provided with the distribution.</span>
+<span class="c1">#</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
+<span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
+<span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
+<span class="c1"># LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR</span>
+<span class="c1"># CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF</span>
+<span class="c1"># SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS</span>
+<span class="c1"># INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN</span>
+<span class="c1"># CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)</span>
+<span class="c1"># ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF</span>
+<span class="c1"># THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c1"># *****************************************************************************</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Interface of the statistics function of the DPNP</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">This module is a face or public interface file for the library</span>
+<span class="sd">it contains:</span>
+<span class="sd"> - Interface functions</span>
+<span class="sd"> - documentation for the functions</span>
+<span class="sd"> - The functions parameters check</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
+
+<span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils.dpnp_utils_statistics</span> <span class="kn">import</span> <span class="n">dpnp_cov</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;amax&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;amin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;average&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bincount&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;correlate&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cov&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;histogram&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;max&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;median&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;min&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ptp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;std&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;var&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_count_reduce_items</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the number of items used in a reduction operation along the specified axis or axes</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arr : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        axis or axes along which the number of items used in a reduction operation must be counted.</span>
+<span class="sd">        If a tuple of unique integers is given, the items are counted over multiple axes.</span>
+<span class="sd">        If ``None``, the variance is computed over the entire array.</span>
+<span class="sd">        Default: `None`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : int</span>
+<span class="sd">        The number of items should be used in a reduction operation.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `where` is only supported with its default value.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># no boolean mask given, calculate items according to axis</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="p">(</span><span class="n">axis</span><span class="p">,)</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">:</span>
+            <span class="n">items</span> <span class="o">*=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">items</span>
+
+
+<div class="viewcode-block" id="amax">
+<a class="viewcode-back" href="../../reference/generated/dpnp.amax.html#dpnp.amax">[docs]</a>
+<span class="k">def</span> <span class="nf">amax</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the maximum of an array or maximum along an axis.</span>
+
+<span class="sd">    `amax` is an alias of :obj:`dpnp.max`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.max` : alias of this function</span>
+<span class="sd">    :obj:`dpnp.ndarray.max` : equivalent method</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="amin">
+<a class="viewcode-back" href="../../reference/generated/dpnp.amin.html#dpnp.amin">[docs]</a>
+<span class="k">def</span> <span class="nf">amin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the minimum of an array or minimum along an axis.</span>
+
+<span class="sd">    `amin` is an alias of :obj:`dpnp.min`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.min` : alias of this function</span>
+<span class="sd">    :obj:`dpnp.ndarray.min` : equivalent method</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">min</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="average">
+<a class="viewcode-back" href="../../reference/generated/dpnp.average.html#dpnp.average">[docs]</a>
+<span class="k">def</span> <span class="nf">average</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">returned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the weighted average along the specified axis.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.average`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which the averages must be computed. If</span>
+<span class="sd">        a tuple of unique integers, the averages are computed over multiple</span>
+<span class="sd">        axes. If ``None``, the average is computed over the entire array.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    weights : array_like, optional</span>
+<span class="sd">        An array of weights associated with the values in `a`. Each value in</span>
+<span class="sd">        `a` contributes to the average according to its associated weight.</span>
+<span class="sd">        The weights array can either be 1-D (in which case its length must be</span>
+<span class="sd">        the size of `a` along the given axis) or of the same shape as `a`.</span>
+<span class="sd">        If `weights=None`, then all data in `a` are assumed to have a</span>
+<span class="sd">        weight equal to one.  The 1-D calculation is::</span>
+
+<span class="sd">            avg = sum(a * weights) / sum(weights)</span>
+
+<span class="sd">        The only constraint on `weights` is that `sum(weights)` must not be 0.</span>
+<span class="sd">    returned : bool, optional</span>
+<span class="sd">        Default is ``False``. If ``True``, the tuple (`average`, `sum_of_weights`)</span>
+<span class="sd">        is returned, otherwise only the average is returned.</span>
+<span class="sd">        If `weights=None`, `sum_of_weights` is equivalent to the number of</span>
+<span class="sd">        elements over which the average is taken.</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">        as singleton dimensions, so that the returned array remains</span>
+<span class="sd">        compatible with the input array according to Array Broadcasting</span>
+<span class="sd">        rules. Otherwise, if ``False``, the reduced axes are not included in</span>
+<span class="sd">        the returned array. Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out, [sum_of_weights] : dpnp.ndarray, dpnp.ndarray</span>
+<span class="sd">        Return the average along the specified axis. When `returned` is ``True``,</span>
+<span class="sd">        return a tuple with the average as the first element and the sum of the</span>
+<span class="sd">        weights as the second element. `sum_of_weights` is of the same type as</span>
+<span class="sd">        `out`. The result dtype follows a general pattern. If `weights` is</span>
+<span class="sd">        ``None``, the result dtype will be that of `a` , or default floating point</span>
+<span class="sd">        data type for the device where input array `a` is allocated. Otherwise,</span>
+<span class="sd">        if `weights` is not ``None`` and `a` is non-integral, the result type</span>
+<span class="sd">        will be the type of lowest precision capable of representing values of</span>
+<span class="sd">        both `a` and `weights`. If `a` happens to be integral, the previous rules</span>
+<span class="sd">        still applies but the result dtype will at least be default floating point</span>
+<span class="sd">        data type for the device where input array `a` is allocated.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.sum` : Sum of array elements over a given axis.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; data = np.arange(1, 5)</span>
+<span class="sd">    &gt;&gt;&gt; data</span>
+<span class="sd">    array([1, 2, 3, 4])</span>
+<span class="sd">    &gt;&gt;&gt; np.average(data)</span>
+<span class="sd">    array(2.5)</span>
+<span class="sd">    &gt;&gt;&gt; np.average(np.arange(1, 11), weights=np.arange(10, 0, -1))</span>
+<span class="sd">    array(4.0)</span>
+
+<span class="sd">    &gt;&gt;&gt; data = np.arange(6).reshape((3, 2))</span>
+<span class="sd">    &gt;&gt;&gt; data</span>
+<span class="sd">    array([[0, 1],</span>
+<span class="sd">        [2, 3],</span>
+<span class="sd">        [4, 5]])</span>
+<span class="sd">    &gt;&gt;&gt; np.average(data, axis=1, weights=[1./4, 3./4])</span>
+<span class="sd">    array([0.75, 2.75, 4.75])</span>
+<span class="sd">    &gt;&gt;&gt; np.average(data, weights=[1./4, 3./4])</span>
+<span class="sd">    TypeError: Axis must be specified when shapes of a and weights differ.</span>
+
+<span class="sd">    With ``keepdims=True``, the following result has shape (3, 1).</span>
+
+<span class="sd">    &gt;&gt;&gt; np.average(data, axis=1, keepdims=True)</span>
+<span class="sd">    array([[0.5],</span>
+<span class="sd">        [2.5],</span>
+<span class="sd">        [4.5]])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.ones(5, dtype=np.float64)</span>
+<span class="sd">    &gt;&gt;&gt; w = np.ones(5, dtype=np.complex64)</span>
+<span class="sd">    &gt;&gt;&gt; avg = np.average(a, weights=w)</span>
+<span class="sd">    &gt;&gt;&gt; print(avg.dtype)</span>
+<span class="sd">    complex128</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">avg</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
+        <span class="n">scl</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span>
+            <span class="n">avg</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="n">avg</span><span class="o">.</span><span class="n">size</span><span class="p">),</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
+            <span class="n">wgt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span>
+                <span class="n">weights</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">])</span>
+            <span class="n">wgt</span> <span class="o">=</span> <span class="n">weights</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+            <span class="n">default_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">result_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">wgt</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">default_dtype</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">wgt</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="c1"># Sanity checks</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">wgt</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Axis must be specified when shapes of input array and weights differ.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">wgt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;1D weights expected when shapes of input array and weights differ.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">wgt</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Length of weights not compatible with specified axis.&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># setup wgt to broadcast along axis</span>
+            <span class="n">wgt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">wgt</span><span class="p">,</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">wgt</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="n">wgt</span> <span class="o">=</span> <span class="n">wgt</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+
+        <span class="n">scl</span> <span class="o">=</span> <span class="n">wgt</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">result_dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">scl</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ZeroDivisionError</span><span class="p">(</span><span class="s2">&quot;Weights sum to zero, can&#39;t be normalized&quot;</span><span class="p">)</span>
+
+        <span class="c1"># result_datatype</span>
+        <span class="n">avg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">wgt</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">result_dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span>
+            <span class="p">)</span>
+            <span class="o">/</span> <span class="n">scl</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">returned</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scl</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">avg</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="n">scl</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">scl</span><span class="p">,</span> <span class="n">avg</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">avg</span><span class="p">,</span> <span class="n">scl</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">avg</span></div>
+
+
+
+<div class="viewcode-block" id="bincount">
+<a class="viewcode-back" href="../../reference/generated/dpnp.bincount.html#dpnp.bincount">[docs]</a>
+<span class="k">def</span> <span class="nf">bincount</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Count number of occurrences of each value in array of non-negative ints.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.bincount`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.unique` : Find the unique elements of an array.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; res = np.bincount(np.arange(5))</span>
+<span class="sd">    &gt;&gt;&gt; print(res)</span>
+<span class="sd">    [1, 1, 1, 1, 1]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">bincount</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="n">minlength</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="correlate">
+<a class="viewcode-back" href="../../reference/generated/dpnp.correlate.html#dpnp.correlate">[docs]</a>
+<span class="k">def</span> <span class="nf">correlate</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;valid&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cross-correlation of two 1-dimensional sequences.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.correlate`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Input arrays are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Size and shape of input arrays are supported to be equal.</span>
+<span class="sd">    Parameter `mode` is supported only with default value ``&quot;valid``.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.convolve` : Discrete, linear convolution of</span>
+<span class="sd">                           two one-dimensional sequences.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.correlate([1, 2, 3], [0, 1, 0.5])</span>
+<span class="sd">    &gt;&gt;&gt; [i for i in x]</span>
+<span class="sd">    [3.5]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">size</span> <span class="ow">or</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_correlate</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">correlate</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="cov">
+<a class="viewcode-back" href="../../reference/generated/dpnp.cov.html#dpnp.cov">[docs]</a>
+<span class="k">def</span> <span class="nf">cov</span><span class="p">(</span>
+    <span class="n">m</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">rowvar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">ddof</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fweights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">aweights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None, *, dtype=None)</span>
+
+<span class="sd">    Estimate a covariance matrix, given data and weights.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.cov`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The covariance matrix of the variables.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Input array ``m`` is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Dimension of input array ``m`` is limited by ``m.ndim &lt;= 2``.</span>
+<span class="sd">    Size and shape of input arrays are supported to be equal.</span>
+<span class="sd">    Parameter `y` is supported only with default value ``None``.</span>
+<span class="sd">    Parameter `bias` is supported only with default value ``False``.</span>
+<span class="sd">    Parameter `ddof` is supported only with default value ``None``.</span>
+<span class="sd">    Parameter `fweights` is supported only with default value ``None``.</span>
+<span class="sd">    Parameter `aweights` is supported only with default value ``None``.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.corrcoef` : Normalized covariance matrix</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([[0, 2], [1, 1], [2, 0]]).T</span>
+<span class="sd">    &gt;&gt;&gt; x.shape</span>
+<span class="sd">    (2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; [i for i in x]</span>
+<span class="sd">    [0, 1, 2, 2, 1, 0]</span>
+<span class="sd">    &gt;&gt;&gt; out = np.cov(x)</span>
+<span class="sd">    &gt;&gt;&gt; out.shape</span>
+<span class="sd">    (2, 2)</span>
+<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
+<span class="sd">    [1.0, -1.0, -1.0, 1.0]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">m</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">bias</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">ddof</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">fweights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">aweights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_cov</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="n">rowvar</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">cov</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rowvar</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">ddof</span><span class="p">,</span> <span class="n">fweights</span><span class="p">,</span> <span class="n">aweights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="histogram">
+<a class="viewcode-back" href="../../reference/generated/dpnp.histogram.html#dpnp.histogram">[docs]</a>
+<span class="k">def</span> <span class="nf">histogram</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the histogram of a dataset.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.histogram`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp</span>
+<span class="sd">    &gt;&gt;&gt; dpnp.histogram([1, 2, 1], bins=[0, 1, 2, 3])</span>
+<span class="sd">    (array([0, 2, 1]), array([0, 1, 2, 3]))</span>
+<span class="sd">    &gt;&gt;&gt; dpnp.histogram(dpnp.arange(4), bins=dpnp.arange(5), density=True)</span>
+<span class="sd">    (array([0.25, 0.25, 0.25, 0.25]), array([0, 1, 2, 3, 4]))</span>
+<span class="sd">    &gt;&gt;&gt; dpnp.histogram([[1, 2, 1], [1, 0, 1]], bins=[0,1,2,3])</span>
+<span class="sd">    (array([1, 4, 1]), array([0, 1, 2, 3]))</span>
+<span class="sd">    &gt;&gt;&gt; a = dpnp.arange(5)</span>
+<span class="sd">    &gt;&gt;&gt; hist, bin_edges = dpnp.histogram(a, density=True)</span>
+<span class="sd">    &gt;&gt;&gt; hist</span>
+<span class="sd">    array([0.5, 0. , 0.5, 0. , 0. , 0.5, 0. , 0.5, 0. , 0.5])</span>
+<span class="sd">    &gt;&gt;&gt; hist.sum()</span>
+<span class="sd">    2.4999999999999996</span>
+<span class="sd">    &gt;&gt;&gt; res = dpnp.sum(hist * dpnp.diff(bin_edges))</span>
+<span class="sd">    &gt;&gt;&gt; print(res)</span>
+<span class="sd">    1.0</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">histogram</span><span class="p">,</span>
+        <span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span>
+        <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span>
+        <span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">,</span>
+        <span class="n">density</span><span class="o">=</span><span class="n">density</span><span class="p">,</span>
+        <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="max">
+<a class="viewcode-back" href="../../reference/generated/dpnp.max.html#dpnp.max">[docs]</a>
+<span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the maximum of an array or maximum along an axis.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.max`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a :  {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which maximum values must be computed. By default,</span>
+<span class="sd">        the maximum value must be computed over the entire array. If a tuple of integers,</span>
+<span class="sd">        maximum values must be computed over multiple axes.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    out :  {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        If provided, the result will be inserted into this array. It should</span>
+<span class="sd">        be of the appropriate shape and dtype.</span>
+<span class="sd">    keepdims : bool</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) must be included in the</span>
+<span class="sd">        result as singleton dimensions, and, accordingly, the result must be</span>
+<span class="sd">        compatible with the input array. Otherwise, if ``False``, the reduced</span>
+<span class="sd">        axes (dimensions) must not be included in the result.</span>
+<span class="sd">        Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        If the maximum value was computed over the entire array, a zero-dimensional array</span>
+<span class="sd">        containing the maximum value; otherwise, a non-zero-dimensional array</span>
+<span class="sd">        containing the maximum values. The returned array must have</span>
+<span class="sd">        the same data type as `a`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Input array is only supported as either :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, and `initial` are only supported with their default values.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.min` : Return the minimum of an array.</span>
+<span class="sd">    :obj:`dpnp.maximum` : Element-wise maximum of two arrays, propagates NaNs.</span>
+<span class="sd">    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.</span>
+<span class="sd">    :obj:`dpnp.amax` : The maximum value of an array along a given axis, propagates NaNs.</span>
+<span class="sd">    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(4).reshape((2,2))</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[0, 1],</span>
+<span class="sd">           [2, 3]])</span>
+<span class="sd">    &gt;&gt;&gt; np.max(a)</span>
+<span class="sd">    array(3)</span>
+
+<span class="sd">    &gt;&gt;&gt; np.max(a, axis=0)   # Maxima along the first axis</span>
+<span class="sd">    array([2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.max(a, axis=1)   # Maxima along the second axis</span>
+<span class="sd">    array([1, 3])</span>
+
+<span class="sd">    &gt;&gt;&gt; b = np.arange(5, dtype=float)</span>
+<span class="sd">    &gt;&gt;&gt; b[2] = np.NaN</span>
+<span class="sd">    &gt;&gt;&gt; np.max(b)</span>
+<span class="sd">    array(nan)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;initial keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+            <span class="n">dpt</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="mean">
+<a class="viewcode-back" href="../../reference/generated/dpnp.mean.html#dpnp.mean">[docs]</a>
+<span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the arithmetic mean along the specified axis.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.mean`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which the arithmetic means must be computed. If</span>
+<span class="sd">        a tuple of unique integers, the means are computed over multiple</span>
+<span class="sd">        axes. If ``None``, the mean is computed over the entire array.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">        Type to use in computing the mean. By default, if `a` has a</span>
+<span class="sd">        floating-point data type, the returned array will have</span>
+<span class="sd">        the same data type as `a`.</span>
+<span class="sd">        If `a` has a boolean or integral data type, the returned array</span>
+<span class="sd">        will have the default floating point data type for the device</span>
+<span class="sd">        where input array `a` is allocated.</span>
+<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have</span>
+<span class="sd">        the same shape as the expected output but the type (of the calculated</span>
+<span class="sd">        values) will be cast if necessary. Default: ``None``.</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">        as singleton dimensions, so that the returned array remains</span>
+<span class="sd">        compatible with the input array according to Array Broadcasting</span>
+<span class="sd">        rules. Otherwise, if ``False``, the reduced axes are not included in</span>
+<span class="sd">        the returned array. Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        An array containing the arithmetic means along the specified axis(axes).</span>
+<span class="sd">        If the input is a zero-size array, an array containing NaN values is returned.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter `where` is only supported with its default value.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.average` : Weighted average.</span>
+<span class="sd">    :obj:`dpnp.std` : Compute the standard deviation along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.var` : Compute the variance along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.nanmean` : Compute the arithmetic mean along the specified axis,</span>
+<span class="sd">                          ignoring NaNs.</span>
+<span class="sd">    :obj:`dpnp.nanstd` : Compute the standard deviation along</span>
+<span class="sd">                         the specified axis, while ignoring NaNs.</span>
+<span class="sd">    :obj:`dpnp.nanvar` : Compute the variance along the specified axis,</span>
+<span class="sd">                         while ignoring NaNs.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; np.mean(a)</span>
+<span class="sd">    array(2.5)</span>
+<span class="sd">    &gt;&gt;&gt; np.mean(a, axis=0)</span>
+<span class="sd">    array([2., 3.])</span>
+<span class="sd">    &gt;&gt;&gt; np.mean(a, axis=1)</span>
+<span class="sd">    array([1.5, 3.5])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+            <span class="n">dpt</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="median">
+<a class="viewcode-back" href="../../reference/generated/dpnp.median.html#dpnp.median">[docs]</a>
+<span class="k">def</span> <span class="nf">median</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the median along the specified axis.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.median`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameter `axis` is supported only with default value ``None``.</span>
+<span class="sd">    Parameter `out` is supported only with default value ``None``.</span>
+<span class="sd">    Parameter `overwrite_input` is supported only with default value ``False``.</span>
+<span class="sd">    Parameter `keepdims` is supported only with default value ``False``.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.percentile` : Compute the q-th percentile of the data</span>
+<span class="sd">                             along the specified axis.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[10, 7, 4], [3, 2, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; np.median(a)</span>
+<span class="sd">    3.5</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">overwrite_input</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">keepdims</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_median</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">median</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="min">
+<a class="viewcode-back" href="../../reference/generated/dpnp.min.html#dpnp.min">[docs]</a>
+<span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the minimum of an array or maximum along an axis.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.min`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a :  {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which minimum values must be computed. By default,</span>
+<span class="sd">        the minimum value must be computed over the entire array. If a tuple of integers,</span>
+<span class="sd">        minimum values must be computed over multiple axes.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    out :  {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        If provided, the result will be inserted into this array. It should</span>
+<span class="sd">        be of the appropriate shape and dtype.</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) must be included in the</span>
+<span class="sd">        result as singleton dimensions, and, accordingly, the result must be</span>
+<span class="sd">        compatible with the input array. Otherwise, if ``False``, the reduced</span>
+<span class="sd">        axes (dimensions) must not be included in the result.</span>
+<span class="sd">        Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        If the minimum value was computed over the entire array, a zero-dimensional array</span>
+<span class="sd">        containing the minimum value; otherwise, a non-zero-dimensional array</span>
+<span class="sd">        containing the minimum values. The returned array must have</span>
+<span class="sd">        the same data type as `a`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Input array is only supported as either :class:`dpnp.ndarray`</span>
+<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `where`, and `initial` are only supported with their default values.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.max` : Return the maximum of an array.</span>
+<span class="sd">    :obj:`dpnp.minimum` : Element-wise minimum of two arrays, propagates NaNs.</span>
+<span class="sd">    :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.</span>
+<span class="sd">    :obj:`dpnp.amin` : The minimum value of an array along a given axis, propagates NaNs.</span>
+<span class="sd">    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(4).reshape((2,2))</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[0, 1],</span>
+<span class="sd">           [2, 3]])</span>
+<span class="sd">    &gt;&gt;&gt; np.min(a)</span>
+<span class="sd">    array(0)</span>
+
+<span class="sd">    &gt;&gt;&gt; np.min(a, axis=0)   # Minima along the first axis</span>
+<span class="sd">    array([0, 1])</span>
+<span class="sd">    &gt;&gt;&gt; np.min(a, axis=1)   # Minima along the second axis</span>
+<span class="sd">    array([0, 2])</span>
+
+<span class="sd">    &gt;&gt;&gt; b = np.arange(5, dtype=float)</span>
+<span class="sd">    &gt;&gt;&gt; b[2] = np.NaN</span>
+<span class="sd">    &gt;&gt;&gt; np.min(b)</span>
+<span class="sd">    array(nan)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;initial keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+            <span class="n">dpt</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ptp">
+<a class="viewcode-back" href="../../reference/generated/dpnp.ptp.html#dpnp.ptp">[docs]</a>
+<span class="k">def</span> <span class="nf">ptp</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Range of values (maximum - minimum) along an axis.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.ptp`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ptp : dpnp.ndarray</span>
+<span class="sd">        The range of a given array.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Input array is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([[4, 9, 2, 10],[6, 9, 7, 12]])</span>
+<span class="sd">    &gt;&gt;&gt; np.ptp(x, axis=1)</span>
+<span class="sd">    array([8, 6])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.ptp(x, axis=0)</span>
+<span class="sd">    array([2, 0, 5, 2])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.ptp(x)</span>
+<span class="sd">    array(10)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">),</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">),</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="std">
+<a class="viewcode-back" href="../../reference/generated/dpnp.std.html#dpnp.std">[docs]</a>
+<span class="k">def</span> <span class="nf">std</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the standard deviation along the specified axis.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.std`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which the standard deviations must be computed.</span>
+<span class="sd">        If a tuple of unique integers is given, the standard deviations</span>
+<span class="sd">        are computed over multiple axes. If ``None``, the standard deviation</span>
+<span class="sd">        is computed over the entire array.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">        Type to use in computing the standard deviation. By default,</span>
+<span class="sd">        if `a` has a floating-point data type, the returned array</span>
+<span class="sd">        will have the same data type as `a`.</span>
+<span class="sd">        If `a` has a boolean or integral data type, the returned array</span>
+<span class="sd">        will have the default floating point data type for the device</span>
+<span class="sd">        where input array `a` is allocated.</span>
+<span class="sd">    out : {dpnp_array, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have</span>
+<span class="sd">        the same shape as the expected output but the type (of the calculated</span>
+<span class="sd">        values) will be cast if necessary.</span>
+<span class="sd">    ddof : {int, float}, optional</span>
+<span class="sd">        Means Delta Degrees of Freedom.  The divisor used in calculations</span>
+<span class="sd">        is ``N - ddof``, where ``N`` corresponds to the total</span>
+<span class="sd">        number of elements over which the standard deviation is calculated.</span>
+<span class="sd">        Default: `0.0`.</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">        as singleton dimensions, so that the returned array remains</span>
+<span class="sd">        compatible with the input array according to Array Broadcasting</span>
+<span class="sd">        rules. Otherwise, if ``False``, the reduced axes are not included in</span>
+<span class="sd">        the returned array. Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        An array containing the standard deviations. If the standard</span>
+<span class="sd">        deviation was computed over the entire array, a zero-dimensional</span>
+<span class="sd">        array is returned.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `where` is only supported with its default value.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Note that, for complex numbers, the absolute value is taken before squaring,</span>
+<span class="sd">    so that the result is always real and nonnegative.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.ndarray.std` : corresponding function for ndarrays.</span>
+<span class="sd">    :obj:`dpnp.var` : Compute the variance along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.nanmean` : Compute the arithmetic mean along the specified axis,</span>
+<span class="sd">                          ignoring NaNs.</span>
+<span class="sd">    :obj:`dpnp.nanstd` : Compute the standard deviation along</span>
+<span class="sd">                         the specified axis, while ignoring NaNs.</span>
+<span class="sd">    :obj:`dpnp.nanvar` : Compute the variance along the specified axis,</span>
+<span class="sd">                         while ignoring NaNs.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; np.std(a)</span>
+<span class="sd">    array(1.118033988749895)</span>
+<span class="sd">    &gt;&gt;&gt; np.std(a, axis=0)</span>
+<span class="sd">    array([1.,  1.])</span>
+<span class="sd">    &gt;&gt;&gt; np.std(a, axis=1)</span>
+<span class="sd">    array([0.5,  0.5])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ddof</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;An integer or float is required, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ddof</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">var</span><span class="p">(</span>
+                <span class="n">a</span><span class="p">,</span>
+                <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+                <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span>
+                <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+                <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+                <span class="n">dpt</span><span class="o">.</span><span class="n">std</span><span class="p">(</span>
+                    <span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">correction</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="var">
+<a class="viewcode-back" href="../../reference/generated/dpnp.var.html#dpnp.var">[docs]</a>
+<span class="k">def</span> <span class="nf">var</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the variance along the specified axis.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.var`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">        axis or axes along which the variances must be computed. If a tuple</span>
+<span class="sd">        of unique integers is given, the variances are computed over multiple axes.</span>
+<span class="sd">        If ``None``, the variance is computed over the entire array.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">        Type to use in computing the variance. By default, if `a` has a</span>
+<span class="sd">        floating-point data type, the returned array will have</span>
+<span class="sd">        the same data type as `a`.</span>
+<span class="sd">        If `a` has a boolean or integral data type, the returned array</span>
+<span class="sd">        will have the default floating point data type for the device</span>
+<span class="sd">        where input array `a` is allocated.</span>
+<span class="sd">    out : {dpnp_array, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have</span>
+<span class="sd">        the same shape as the expected output but the type (of the calculated</span>
+<span class="sd">        values) will be cast if necessary.</span>
+<span class="sd">    ddof : {int, float}, optional</span>
+<span class="sd">        Means Delta Degrees of Freedom.  The divisor used in calculations</span>
+<span class="sd">        is ``N - ddof``, where ``N`` corresponds to the total</span>
+<span class="sd">        number of elements over which the variance is calculated.</span>
+<span class="sd">        Default: `0.0`.</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">        as singleton dimensions, so that the returned array remains</span>
+<span class="sd">        compatible with the input array according to Array Broadcasting</span>
+<span class="sd">        rules. Otherwise, if ``False``, the reduced axes are not included in</span>
+<span class="sd">        the returned array. Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        An array containing the variances. If the variance was computed</span>
+<span class="sd">        over the entire array, a zero-dimensional array is returned.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `where` is only supported with its default value.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Note that, for complex numbers, the absolute value is taken before squaring,</span>
+<span class="sd">    so that the result is always real and nonnegative.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.ndarray.var` : corresponding function for ndarrays.</span>
+<span class="sd">    :obj:`dpnp.std` : Compute the standard deviation along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.nanmean` : Compute the arithmetic mean along the specified axis,</span>
+<span class="sd">                          ignoring NaNs.</span>
+<span class="sd">    :obj:`dpnp.nanstd` : Compute the standard deviation along</span>
+<span class="sd">                         the specified axis, while ignoring NaNs.</span>
+<span class="sd">    :obj:`dpnp.nanvar` : Compute the variance along the specified axis,</span>
+<span class="sd">                         while ignoring NaNs.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; np.var(a)</span>
+<span class="sd">    array(1.25)</span>
+<span class="sd">    &gt;&gt;&gt; np.var(a, axis=0)</span>
+<span class="sd">    array([1.,  1.])</span>
+<span class="sd">    &gt;&gt;&gt; np.var(a, axis=1)</span>
+<span class="sd">    array([0.25,  0.25])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ddof</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;An integer or float is required, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ddof</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+            <span class="c1"># Note that if dtype is not of inexact type then arrmean will not be either.</span>
+            <span class="n">arrmean</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+                <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span>
+            <span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">arrmean</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">conj</span><span class="p">(),</span> <span class="n">out</span><span class="o">=</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="n">x</span><span class="p">,</span>
+                <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+                <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+                <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">cnt</span> <span class="o">=</span> <span class="n">_count_reduce_items</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
+            <span class="n">cnt</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">cnt</span> <span class="o">-</span> <span class="n">ddof</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">cnt</span><span class="p">:</span>
+                <span class="n">cnt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nan</span>
+
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">cnt</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+                <span class="n">dpt</span><span class="o">.</span><span class="n">var</span><span class="p">(</span>
+                    <span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">correction</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
