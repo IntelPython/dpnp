@@ -4,7 +4,11 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from tests.helper import assert_dtype_allclose, has_support_aspect64
+from tests.helper import (
+    assert_dtype_allclose,
+    has_support_aspect64,
+    is_cpu_device,
+)
 from tests.third_party.cupy import testing
 from tests.third_party.cupy.testing import condition
 
@@ -140,6 +144,9 @@ class TestInv(unittest.TestCase):
 
 
 class TestInvInvalid(unittest.TestCase):
+    # TODO: remove skipif when MKLD-16626 is resolved
+    # _gesv does not raise an error with singular matrices on CPU.
+    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
     @testing.for_dtypes("ifdFD")
     def test_inv(self, dtype):
         for xp in (numpy, cupy):
