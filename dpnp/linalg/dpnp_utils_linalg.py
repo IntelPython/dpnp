@@ -874,7 +874,8 @@ def dpnp_inv(a):
     a_shape = a.shape
 
     # oneMKL LAPACK gesv overwrites `a` and assumes fortran-like array as input.
-    # Allocate 'F' order memory for dpnp arrays to comply with these requirements.
+    # To use C-contiguous arrays, we transpose them before passing to gesv.
+    # This transposition is effective because the input array `a` is square.
     a_f = dpnp.empty_like(a, order=a_order, dtype=res_type)
 
     # use DPCTL tensor function to fill the coefficient matrix array
