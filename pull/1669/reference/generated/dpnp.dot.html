@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dot &mdash; Data Parallel Extension for NumPy 0.13.1dev2+25.gda86242f6c documentation</title>
+  <title>dpnp.dot &mdash; Data Parallel Extension for NumPy 0.13.1dev2+25.g8b27cc9469 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=488914af"></script>
+        <script src="../../_static/documentation_options.js?v=459d3a35"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+25.gda86242f6c
+                0.13.1dev2+25.g8b27cc9469
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -149,12 +149,6 @@ If <cite>out</cite> is given, then it is returned.</p>
 <dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
-<p class="rubric">Limitations</p>
-<p>Parameters <cite>x1</cite> and <cite>x2</cite> are supported as either scalar, <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
-or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>, but both <cite>x1</cite> and <cite>x2</cite> can not be scalars at the same time.
-Keyword argument <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> is currently unsupported.
-Otherwise the functions will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -163,6 +157,12 @@ Input array data types are limited by supported DPNP <span class="xref std std-r
 <dt><a class="reference internal" href="dpnp.tensordot.html#dpnp.tensordot" title="dpnp.tensordot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tensordot</span></code></a></dt><dd><p>Sum products over arbitrary axes.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.vdot.html#dpnp.vdot" title="dpnp.vdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vdot</span></code></a></dt><dd><p>Complex-conjugating dot product.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.einsum.html#dpnp.einsum" title="dpnp.einsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.einsum</span></code></a></dt><dd><p>Einstein summation convention.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.matmul.html#dpnp.matmul" title="dpnp.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.matmul</span></code></a></dt><dd><p>Matrix product of two arrays.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.linalg.multi_dot.html#dpnp.linalg.multi_dot" title="dpnp.linalg.multi_dot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.multi_dot</span></code></a></dt><dd><p>Chained dot product.</p>
 </dd>
 </dl>
 </div>
