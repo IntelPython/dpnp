@@ -146,6 +146,8 @@ def dot(a, b, out=None):
         # NumPy does not allow casting even if it is safe
         return dpnp.matmul(a, b, out=out, casting="no")
     else:
+        # TODO: investigate usage of matmul for some possible
+        # use cases instead of dpnp.tensordot
         result = dpnp.tensordot(a, b, axes=(-1, -2))
         # NumPy does not allow casting even if it is safe
         return dpnp.get_result_array(result, out, casting="no")
