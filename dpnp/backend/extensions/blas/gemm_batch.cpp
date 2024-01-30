@@ -47,7 +47,7 @@ namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
 typedef sycl::event (*gemm_batch_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     const std::int64_t,
     const std::int64_t,
     const std::int64_t,
@@ -69,7 +69,7 @@ static gemm_batch_impl_fn_ptr_t
     gemm_batch_dispatch_table[dpctl_td_ns::num_types][dpctl_td_ns::num_types];
 
 template <typename Tab, typename Tc>
-static sycl::event gemm_batch_impl(sycl::queue exec_q,
+static sycl::event gemm_batch_impl(sycl::queue &exec_q,
                                    const std::int64_t m,
                                    const std::int64_t n,
                                    const std::int64_t k,
@@ -145,7 +145,7 @@ static sycl::event gemm_batch_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    gemm_batch(sycl::queue exec_q,
+    gemm_batch(sycl::queue &exec_q,
                dpctl::tensor::usm_ndarray matrixA,
                dpctl::tensor::usm_ndarray matrixB,
                dpctl::tensor::usm_ndarray resultC,

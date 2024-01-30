@@ -116,21 +116,9 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, x1_is_2D, x2_is_2D, dev_tasks_list):
     x2_strides = x2.strides
     res_strides = res.strides
 
-    # when shape along any particular dimension is 1,
-    # the stride along that dimension is not a
-    # meaningful number and is undefined. Here, we
-    # standardizing strides before continuing,
-    # setting stride to 0 if the shape along that axis is <=1
-    if x1_is_2D:
-        x1_strides = tuple(
-            str_i if sh_i > 1 else 0
-            for sh_i, str_i in zip(x1.shape, x1_strides)
-        )
-    if x2_is_2D:
-        x2_strides = tuple(
-            str_i if sh_i > 1 else 0
-            for sh_i, str_i in zip(x2.shape, x2_strides)
-        )
+    # need to standardize to use in ti._contract_iter2
+    x1_strides = _standardize_strides(x1_strides, x1_is_2D, x1.shape, x1.ndim)
+    x2_strides = _standardize_strides(x2_strides, x2_is_2D, x2.shape, x2.ndim)
 
     batch_size = res.shape[:-2][0]
     stridea = x1_strides[0]
@@ -218,6 +206,37 @@ def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
     )
 
     return op_dtype, res_dtype
+
+
+def _standardize_strides(strides, inherently_2D, shape, ndim):
+    """
+    Standardizing the strides.
+
+    When shape of an array along any particular dimension is 1, the stride
+    along that dimension is undefined. This functions standardize the strides
+    in the following way:
+    For N-D arrays that are inherently 2D (all dimesnsion are one except for two of them),
+    we use zero as the stride for dimensions equal one.
+    For other N-D arrays, the non-zero value of strides is calculated and used.
+
+    """
+
+    if inherently_2D:
+        stndrd_strides = tuple(
+            str_i if sh_i > 1 else 0 for sh_i, str_i in zip(shape, strides)
+        )
+    else:
+        stndrd_strides = [
+            numpy.prod(shape[i + 1 :]) if strides[i] == 0 else strides[i]
+            for i in range(ndim - 1)
+        ]
+        # last dimension
+        stndrd_strides.append(
+            1 if strides[ndim - 1] == 0 else strides[ndim - 1]
+        )
+        stndrd_strides = tuple(stndrd_strides)
+
+    return stndrd_strides
 
 
 def dpnp_dot(a, b, /, out=None, *, conjugate=False):

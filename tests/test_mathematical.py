@@ -2634,6 +2634,57 @@ class TestMatmul:
         expected = numpy.matmul(a1, a2, dtype=dtype)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "axes",
+        [
+            [(-3, -1), (0, 2), (-2, -3)],
+            [(3, 1), (2, 0), (3, 1)],
+            [(3, 1), (2, 0), (0, 1)],
+        ],
+    )
+    def test_matmul_axes(self, dtype, axes):
+        a = numpy.array(
+            numpy.random.uniform(-10, 10, 120), dtype=dtype
+        ).reshape(2, 5, 3, 4)
+        b = numpy.array(
+            numpy.random.uniform(-10, 10, 120), dtype=dtype
+        ).reshape(4, 2, 5, 3)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.matmul(ia, ib, axes=axes)
+        print(result.shape)
+        expected = numpy.matmul(a, b, axes=axes)
+        # TODO: investigate the effect of factor, see SAT-6700
+        assert_dtype_allclose(result, expected, factor=24)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "axes, out_shape",
+        [
+            ([(-3, -1), (0, 2), (-2, -3)], (2, 5, 5, 3)),
+            ([(3, 1), (2, 0), (3, 1)], (2, 4, 3, 4)),
+            ([(3, 1), (2, 0), (1, 2)], (2, 4, 4, 3)),
+        ],
+    )
+    def test_matmul_axes_out(self, dtype, axes, out_shape):
+        a = numpy.array(
+            numpy.random.uniform(-10, 10, 120), dtype=dtype
+        ).reshape(2, 5, 3, 4)
+        b = numpy.array(
+            numpy.random.uniform(-10, 10, 120), dtype=dtype
+        ).reshape(4, 2, 5, 3)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        out_dp = dpnp.empty(out_shape, dtype=dtype)
+        result = dpnp.matmul(ia, ib, axes=axes, out=out_dp)
+        assert result is out_dp
+        expected = numpy.matmul(a, b, axes=axes)
+        # TODO: investigate the effect of factor, see SAT-6700
+        assert_dtype_allclose(result, expected, factor=24)
+
     @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
         "dtype2", get_all_dtypes(no_bool=True, no_none=True)
@@ -2822,9 +2873,52 @@ class TestMatmulInvalidCases:
         with pytest.raises(TypeError):
             dpnp.matmul(a1, a2, out=res, casting="safe")
 
-    def test_matmul_subok(self):
+    def test_matmul_not_implemented(self):
         a1 = dpnp.arange(2 * 4).reshape(2, 4)
         a2 = dpnp.arange(4 * 3).reshape(4, 3)
 
         with pytest.raises(NotImplementedError):
             dpnp.matmul(a1, a2, subok=False)
+
+        with pytest.raises(NotImplementedError):
+            dpnp.matmul(
+                a1, a2, signature=(dpnp.float32, dpnp.float32, dpnp.float32)
+            )
+
+        def custom_error_callback(err):
+            print("Custom error callback triggered with error:", err)
+
+        with pytest.raises(NotImplementedError):
+            dpnp.matmul(a1, a2, extobj=[32, 1, custom_error_callback])
+
+        with pytest.raises(NotImplementedError):
+            dpnp.matmul(a1, a2, axis=2)
+
+    def test_matmul_axes(self):
+        a1 = dpnp.arange(120).reshape(2, 5, 3, 4)
+        a2 = dpnp.arange(120).reshape(4, 2, 5, 3)
+
+        # axes must be a list
+        axes = ((3, 1), (2, 0), (0, 1))
+        with pytest.raises(TypeError):
+            dpnp.matmul(a1, a2, axes=axes)
+
+        # axes must be be a list of three tuples
+        axes = [(3, 1), (2, 0)]
+        with pytest.raises(ValueError):
+            dpnp.matmul(a1, a2, axes=axes)
+
+        # axes items should be a tuple
+        axes = [(3, 1), (2, 0), [0, 1]]
+        with pytest.raises(TypeError):
+            dpnp.matmul(a1, a2, axes=axes)
+
+        # axes items should be a tuple with 2 elements
+        axes = [(3, 1), (2, 0), (0, 1, 2)]
+        with pytest.raises(ValueError):
+            dpnp.matmul(a1, a2, axes=axes)
+
+        # axes must be an integer
+        axes = [(3, 1), (2, 0), (0.0, 1)]
+        with pytest.raises(TypeError):
+            dpnp.matmul(a1, a2, axes=axes)

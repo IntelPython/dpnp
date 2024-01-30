@@ -5,6 +5,7 @@ import numpy
 import pytest
 
 import dpnp
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -128,6 +129,15 @@ class TestMatmulOutOverlap:
         return xp.matmul(a, a, out=a)
 
 
+class TestMatmulStrides:
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
+    def test_relaxed_c_contiguous_input(self, xp, dtype):
+        x1 = testing.shaped_arange((2, 2, 3), xp, dtype)[:, None, :, :]
+        x2 = testing.shaped_arange((2, 1, 3, 1), xp, dtype)
+        return x1 @ x2
+
+
 @testing.parameterize(
     *testing.product(
         {
@@ -186,6 +196,42 @@ class TestMatmulLarge(unittest.TestCase):
         return xp.matmul(x1, x2)
 
 
+@pytest.mark.parametrize(
+    "shape1, shape2",
+    [
+        # TODO: include it when issue #1540 in dpctl is resolved
+        # ((256, 256, 3, 2), (256, 256, 2, 4)),
+        ((256, 256, 3, 2), (2, 4)),
+        ((3, 2), (256, 256, 2, 4)),
+    ],
+)
+class TestMatmulIntegralLargeBatch:
+    @testing.for_int_dtypes(name="dtype")
+    @testing.numpy_cupy_array_equal()
+    def test_operator_matmul(self, xp, dtype, shape1, shape2):
+        x1 = testing.shaped_random(shape1, xp, dtype)
+        x2 = testing.shaped_random(shape2, xp, dtype)
+        return operator.matmul(x1, x2)
+
+    @testing.for_int_dtypes(name="dtype")
+    @testing.numpy_cupy_array_equal()
+    def test_cupy_matmul(self, xp, dtype, shape1, shape2):
+        x1 = testing.shaped_random(shape1, xp, dtype)
+        x2 = testing.shaped_random(shape2, xp, dtype)
+        return xp.matmul(x1, x2)
+
+
+@pytest.mark.skip("until issue #1540 in dpctl is resolved")
+class TestMatmulOverflow(unittest.TestCase):
+    @testing.for_int_dtypes(name="dtype", no_bool=True)
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
+    def test_overflow(self, xp, dtype):
+        value = numpy.iinfo(dtype).max
+        a = xp.array([value - 10]).astype(dtype)
+        b = xp.array([value - 10]).astype(dtype)
+        return xp.matmul(a, b)
+
+
 @testing.parameterize(
     *testing.product(
         {
@@ -210,3 +256,54 @@ class TestMatmulInvalidShape(unittest.TestCase):
             x2 = testing.shaped_arange(shape2, xp, numpy.float32)
             with pytest.raises(ValueError):
                 xp.matmul(x1, x2)
+
+
+@testing.parameterize(
+    *testing.product(
+        {
+            "shapes_axes": [
+                (
+                    (
+                        (2, 5, 3, 2, 3, 4),
+                        (3, 5, 1, 1, 1, 4),
+                        (5, 5, 2, 2, 3, 4),
+                    ),
+                    [(1, 2), (0, 1), (0, 1)],
+                ),
+                (
+                    (
+                        (2, 5, 3, 2, 3, 4),
+                        (2, 5, 3, 1, 4, 1),
+                        (3, 1, 2, 5, 3, 2),
+                    ),
+                    [(-2, -1), (-2, -1), (0, 1)],
+                ),
+                (
+                    ((3, 2, 4, 4), (4, 4, 3, 2), (4, 4, 3, 3)),
+                    [(0, 1), (-1, -2), (-2, -1)],
+                ),
+                (
+                    ((3, 2, 4, 4), (2, 3, 4, 4), (4, 3, 3, 4)),
+                    [(0, 1), (0, 1), (1, 2)],
+                ),
+            ],
+        }
+    )
+)
+class TestMatmulAxes(unittest.TestCase):
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
+    def test_cupy_matmul_axes(self, xp):
+        x1 = testing.shaped_arange(self.shapes_axes[0][0], xp)
+        x2 = testing.shaped_arange(self.shapes_axes[0][1], xp)
+        return xp.matmul(x1, x2, axes=self.shapes_axes[1])
+
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
+    )  # required for uint8
+    def test_cupy_matmul_axes_out(self, xp):
+        x1 = testing.shaped_arange(self.shapes_axes[0][0], xp)
+        x2 = testing.shaped_arange(self.shapes_axes[0][1], xp)
+        out = xp.zeros(self.shapes_axes[0][2])
+        result = xp.matmul(x1, x2, axes=self.shapes_axes[1], out=out)
+        assert out is result
+        return out
