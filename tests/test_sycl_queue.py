@@ -1172,33 +1172,53 @@ def test_matrix_rank(device):
 
 
 @pytest.mark.parametrize(
+    "shape",
+    [
+        (4, 4),
+        (2, 0),
+        (2, 2, 3),
+        (0, 2, 3),
+        (1, 0, 3),
+    ],
+    ids=[
+        "(4, 4)",
+        "(2, 0)",
+        "(2, 2, 3)",
+        "(0, 2, 3)",
+        "(1, 0, 3)",
+    ],
+)
+@pytest.mark.parametrize(
+    "mode",
+    ["r", "raw", "complete", "reduced"],
+    ids=["r", "raw", "complete", "reduced"],
+)
+@pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_qr(device):
-    data = [[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]
-    dpnp_data = dpnp.array(data, device=device)
-    numpy_data = numpy.array(data, dtype=dpnp_data.dtype)
-
-    np_q, np_r = numpy.linalg.qr(numpy_data, "reduced")
-    dpnp_q, dpnp_r = dpnp.linalg.qr(dpnp_data, "reduced")
-
-    assert dpnp_q.dtype == np_q.dtype
-    assert dpnp_r.dtype == np_r.dtype
-    assert dpnp_q.shape == np_q.shape
-    assert dpnp_r.shape == np_r.shape
-
-    assert_dtype_allclose(dpnp_q, np_q)
-    assert_dtype_allclose(dpnp_r, np_r)
+def test_qr(shape, mode, device):
+    dtype = dpnp.default_float_type(device)
+    count_elems = numpy.prod(shape)
+    dpnp_data = dpnp.arange(count_elems, dtype=dtype, device=device).reshape(
+        shape
+    )
 
     expected_queue = dpnp_data.get_array().sycl_queue
-    dpnp_q_queue = dpnp_q.get_array().sycl_queue
-    dpnp_r_queue = dpnp_r.get_array().sycl_queue
 
-    # compare queue and device
-    assert_sycl_queue_equal(dpnp_q_queue, expected_queue)
-    assert_sycl_queue_equal(dpnp_r_queue, expected_queue)
+    if mode == "r":
+        dpnp_r = dpnp.linalg.qr(dpnp_data, mode=mode)
+        dpnp_r_queue = dpnp_r.get_array().sycl_queue
+        assert_sycl_queue_equal(dpnp_r_queue, expected_queue)
+    else:
+        dpnp_q, dpnp_r = dpnp.linalg.qr(dpnp_data, mode=mode)
+
+        dpnp_q_queue = dpnp_q.get_array().sycl_queue
+        dpnp_r_queue = dpnp_r.get_array().sycl_queue
+
+        assert_sycl_queue_equal(dpnp_q_queue, expected_queue)
+        assert_sycl_queue_equal(dpnp_r_queue, expected_queue)
 
 
 @pytest.mark.parametrize(

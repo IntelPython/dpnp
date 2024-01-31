@@ -806,18 +806,57 @@ def dpnp_qr_batch(a, mode="reduced"):
     if batch_size == 0 or k == 0:
         if mode == "reduced":
             return (
-                dpnp.empty(batch_shape + (m, k), dtype=res_type),
-                dpnp.empty(batch_shape + (k, n), dtype=res_type),
+                dpnp.empty(
+                    batch_shape + (m, k),
+                    dtype=res_type,
+                    sycl_queue=a_sycl_queue,
+                    usm_type=a_usm_type,
+                ),
+                dpnp.empty(
+                    batch_shape + (k, n),
+                    dtype=res_type,
+                    sycl_queue=a_sycl_queue,
+                    usm_type=a_usm_type,
+                ),
             )
         elif mode == "complete":
-            q = _stacked_identity(batch_shape, m, dtype=res_type)
-            return (q, dpnp.empty(batch_shape + (m, n), dtype=res_type))
+            q = _stacked_identity(
+                batch_shape,
+                m,
+                dtype=res_type,
+                usm_type=a_usm_type,
+                sycl_queue=a_sycl_queue,
+            )
+            return (
+                q,
+                dpnp.empty(
+                    batch_shape + (m, n),
+                    dtype=res_type,
+                    sycl_queue=a_sycl_queue,
+                    usm_type=a_usm_type,
+                ),
+            )
         elif mode == "r":
-            return dpnp.empty(batch_shape + (k, n), dtype=res_type)
+            return dpnp.empty(
+                batch_shape + (k, n),
+                dtype=res_type,
+                sycl_queue=a_sycl_queue,
+                usm_type=a_usm_type,
+            )
         elif mode == "raw":
             return (
-                dpnp.empty(batch_shape + (n, m), dtype=res_type),
-                dpnp.empty(batch_shape + (k,), dtype=res_type),
+                dpnp.empty(
+                    batch_shape + (n, m),
+                    dtype=res_type,
+                    sycl_queue=a_sycl_queue,
+                    usm_type=a_usm_type,
+                ),
+                dpnp.empty(
+                    batch_shape + (k,),
+                    dtype=res_type,
+                    sycl_queue=a_sycl_queue,
+                    usm_type=a_usm_type,
+                ),
             )
 
     # get 3d input arrays by reshape
@@ -826,7 +865,7 @@ def dpnp_qr_batch(a, mode="reduced"):
     a = a.swapaxes(-2, -1)
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
-    a_t = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
+    a_t = dpnp.empty_like(a, order="C", dtype=res_type)
 
     # use DPCTL tensor function to fill the matrix array
     # with content from the input array `a`
@@ -876,10 +915,20 @@ def dpnp_qr_batch(a, mode="reduced"):
 
     if mode == "complete" and m > n:
         mc = m
-        q = dpnp.empty((batch_size, m, m), dtype=res_type)
+        q = dpnp.empty(
+            (batch_size, m, m),
+            dtype=res_type,
+            sycl_queue=a_sycl_queue,
+            usm_type=a_usm_type,
+        )
     else:
         mc = k
-        q = dpnp.empty((batch_size, n, m), dtype=res_type)
+        q = dpnp.empty(
+            (batch_size, n, m),
+            dtype=res_type,
+            sycl_queue=a_sycl_queue,
+            usm_type=a_usm_type,
+        )
     q[..., :n, :] = a_t
 
     q_stride = q.strides[0]
@@ -977,7 +1026,7 @@ def dpnp_qr(a, mode="reduced"):
 
     a = a.T
     a_usm_arr = dpnp.get_usm_ndarray(a)
-    a_t = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
+    a_t = dpnp.empty_like(a, order="C", dtype=res_type)
 
     # use DPCTL tensor function to fill the matrix array
     # with content from the input array `a`
