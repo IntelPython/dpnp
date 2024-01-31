@@ -2585,9 +2585,7 @@ def tri(
         pass
     else:
         _dtype = (
-            dpnp.default_float_type()
-            if dtype in (dpnp.float, None)
-            else dtype
+            dpnp.default_float_type() if dtype in (dpnp.float, None) else dtype
         )
         if M is None:
             M = N
