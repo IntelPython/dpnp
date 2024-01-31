@@ -45,10 +45,12 @@ namespace py = pybind11;
 // populate dispatch vectors
 void init_dispatch_vectors(void)
 {
+    lapack_ext::init_geqrf_batch_dispatch_vector();
     lapack_ext::init_geqrf_dispatch_vector();
     lapack_ext::init_gesv_dispatch_vector();
     lapack_ext::init_getrf_batch_dispatch_vector();
     lapack_ext::init_getrf_dispatch_vector();
+    lapack_ext::init_orgqr_batch_dispatch_vector();
     lapack_ext::init_orgqr_dispatch_vector();
     lapack_ext::init_potrf_batch_dispatch_vector();
     lapack_ext::init_potrf_dispatch_vector();
@@ -70,6 +72,14 @@ PYBIND11_MODULE(_lapack_impl, m)
 
     init_dispatch_vectors();
     init_dispatch_tables();
+
+    m.def("_geqrf_batch", &lapack_ext::geqrf_batch,
+          "Call `geqrf_batch` from OneMKL LAPACK library to return "
+          "the QR factorization of a batch general matrix ",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("tau_array"),
+          py::arg("m"), py::arg("n"), py::arg("stride_a"),
+          py::arg("stride_tau"), py::arg("batch_size"),
+          py::arg("depends") = py::list());
 
     m.def("_geqrf", &lapack_ext::geqrf,
           "Call `geqrf` from OneMKL LAPACK library to return "
@@ -103,6 +113,15 @@ PYBIND11_MODULE(_lapack_impl, m)
           "the eigenvalues and eigenvectors of a complex Hermitian matrix",
           py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
           py::arg("eig_vecs"), py::arg("eig_vals"),
+          py::arg("depends") = py::list());
+
+    m.def("_orgqr_batch", &lapack_ext::orgqr_batch,
+          "Call `orgqr` from OneMKL LAPACK library to return "
+          "the real orthogonal matrix Qi of the QR factorization "
+          "for a batch of general matrices",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("tau_array"),
+          py::arg("m"), py::arg("n"), py::arg("k"), py::arg("stride_a"),
+          py::arg("stride_tau"), py::arg("batch_size"),
           py::arg("depends") = py::list());
 
     m.def("_orgqr", &lapack_ext::orgqr,

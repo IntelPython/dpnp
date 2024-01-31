@@ -47,6 +47,19 @@ extern std::pair<sycl::event, sycl::event>
           dpctl::tensor::usm_ndarray tau_array,
           const std::vector<sycl::event> &depends = {});
 
+extern std::pair<sycl::event, sycl::event>
+    orgqr_batch(sycl::queue exec_q,
+                dpctl::tensor::usm_ndarray a_array,
+                dpctl::tensor::usm_ndarray tau_array,
+                std::int64_t m,
+                std::int64_t n,
+                std::int64_t k,
+                std::int64_t stride_a,
+                std::int64_t stride_tau,
+                std::int64_t batch_size,
+                const std::vector<sycl::event> &depends = {});
+
+extern void init_orgqr_batch_dispatch_vector(void);
 extern void init_orgqr_dispatch_vector(void);
 } // namespace lapack
 } // namespace ext
