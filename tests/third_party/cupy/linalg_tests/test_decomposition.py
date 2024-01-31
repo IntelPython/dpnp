@@ -177,33 +177,33 @@ class TestQRDecomposition(unittest.TestCase):
         self.check_mode(numpy.random.randn(3, 3), mode=self.mode)
         self.check_mode(numpy.random.randn(5, 4), mode=self.mode)
 
-    # @testing.with_requires("numpy>=1.22")
-    # # @testing.fix_random()
-    # def test_mode_rank3(self):
-    #     self.check_mode(numpy.random.randn(3, 2, 4), mode=self.mode)
-    #     self.check_mode(numpy.random.randn(4, 3, 3), mode=self.mode)
-    #     self.check_mode(numpy.random.randn(2, 5, 4), mode=self.mode)
+    @testing.with_requires("numpy>=1.22")
+    @testing.fix_random()
+    def test_mode_rank3(self):
+        self.check_mode(numpy.random.randn(3, 2, 4), mode=self.mode)
+        self.check_mode(numpy.random.randn(4, 3, 3), mode=self.mode)
+        self.check_mode(numpy.random.randn(2, 5, 4), mode=self.mode)
 
-    # @testing.with_requires("numpy>=1.22")
-    # # @testing.fix_random()
-    # def test_mode_rank4(self):
-    #     self.check_mode(numpy.random.randn(2, 3, 2, 4), mode=self.mode)
-    #     self.check_mode(numpy.random.randn(2, 4, 3, 3), mode=self.mode)
-    #     self.check_mode(numpy.random.randn(2, 2, 5, 4), mode=self.mode)
+    @testing.with_requires("numpy>=1.22")
+    @testing.fix_random()
+    def test_mode_rank4(self):
+        self.check_mode(numpy.random.randn(2, 3, 2, 4), mode=self.mode)
+        self.check_mode(numpy.random.randn(2, 4, 3, 3), mode=self.mode)
+        self.check_mode(numpy.random.randn(2, 2, 5, 4), mode=self.mode)
 
-    # @testing.with_requires("numpy>=1.16")
-    # def test_empty_array(self):
-    #     self.check_mode(numpy.empty((0, 3)), mode=self.mode)
-    #     self.check_mode(numpy.empty((3, 0)), mode=self.mode)
+    @testing.with_requires("numpy>=1.16")
+    def test_empty_array(self):
+        self.check_mode(numpy.empty((0, 3)), mode=self.mode)
+        self.check_mode(numpy.empty((3, 0)), mode=self.mode)
 
-    # @testing.with_requires("numpy>=1.22")
-    # def test_empty_array_rank3(self):
-    #     self.check_mode(numpy.empty((0, 3, 2)), mode=self.mode)
-    #     self.check_mode(numpy.empty((3, 0, 2)), mode=self.mode)
-    #     self.check_mode(numpy.empty((3, 2, 0)), mode=self.mode)
-    #     self.check_mode(numpy.empty((0, 3, 3)), mode=self.mode)
-    #     self.check_mode(numpy.empty((3, 0, 3)), mode=self.mode)
-    #     self.check_mode(numpy.empty((3, 3, 0)), mode=self.mode)
-    #     self.check_mode(numpy.empty((0, 2, 3)), mode=self.mode)
-    #     self.check_mode(numpy.empty((2, 0, 3)), mode=self.mode)
-    #     self.check_mode(numpy.empty((2, 3, 0)), mode=self.mode)
+    @testing.with_requires("numpy>=1.22")
+    def test_empty_array_rank3(self):
+        self.check_mode(numpy.empty((0, 3, 2)), mode=self.mode)
+        self.check_mode(numpy.empty((3, 0, 2)), mode=self.mode)
+        self.check_mode(numpy.empty((3, 2, 0)), mode=self.mode)
+        self.check_mode(numpy.empty((0, 3, 3)), mode=self.mode)
+        self.check_mode(numpy.empty((3, 0, 3)), mode=self.mode)
+        self.check_mode(numpy.empty((3, 3, 0)), mode=self.mode)
+        self.check_mode(numpy.empty((0, 2, 3)), mode=self.mode)
+        self.check_mode(numpy.empty((2, 0, 3)), mode=self.mode)
+        self.check_mode(numpy.empty((2, 3, 0)), mode=self.mode)
