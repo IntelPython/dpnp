@@ -50,6 +50,7 @@ from .dpnp_utils_linalg import (
     dpnp_cholesky,
     dpnp_det,
     dpnp_eigh,
+    dpnp_qr,
     dpnp_slogdet,
     dpnp_solve,
 )
@@ -506,7 +507,7 @@ def norm(x1, ord=None, axis=None, keepdims=False):
     return call_origin(numpy.linalg.norm, x1, ord, axis, keepdims)
 
 
-def qr(x1, mode="reduced"):
+def qr(a, mode="reduced"):
     """
     Compute the qr factorization of a matrix.
 
@@ -515,25 +516,45 @@ def qr(x1, mode="reduced"):
 
     For full documentation refer to :obj:`numpy.linalg.qr`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter mode='reduced' is supported.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        The input array with the dimensionality of at least 2.
+    mode : {"reduced", "complete", "r", "raw"}, optional
+        If K = min(M, N), then
+        - "reduced" : returns Q, R with dimensions (…, M, K), (…, K, N)
+        - "complete" : returns Q, R with dimensions (…, M, M), (…, M, N)
+        - "r" : returns R only with dimensions (…, K, N)
+        - "raw" : returns h, tau with dimensions (…, N, M), (…, K,)
+        Default: "reduced".
+
+    Returns
+    -------
+    out : {dpnp.ndarray, tuple of dpnp.ndarray}
+        Although the type of returned object depends on the mode,
+        it returns a tuple of ``(Q, R)`` by default.
+        For details, please see the document of :func:`numpy.linalg.qr`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.random.randn(9, 6)
+    >>> Q, R = np.linalg.qr(a)
+    >>> np.allclose(a, np.dot(Q, R))
+    array([ True])
+    >>> R2 = np.linalg.qr(a, mode='r')
+    >>> np.allclose(R, R2)
+    array([ True])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.ndim != 2:
-            pass
-        elif mode != "reduced":
-            pass
-        else:
-            result_tup = dpnp_qr(x1_desc, mode)
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
 
-            return result_tup
+    if mode not in ("reduced", "complete", "r", "raw"):
+        raise ValueError(f"Unrecognized mode {mode}")
 
-    return call_origin(numpy.linalg.qr, x1, mode)
+    return dpnp_qr(a, mode)
 
 
 def solve(a, b):

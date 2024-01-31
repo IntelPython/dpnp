@@ -45,6 +45,33 @@ namespace types
 {
 /**
  * @brief A factory to define pairs of supported types for which
+ * MKL LAPACK library provides support in oneapi::mkl::lapack::geqrf<T>
+ * function.
+ *
+ * @tparam T Type of array containing the input matrix to be QR factorized.
+ * Upon execution, this matrix is transformed to output arrays representing
+ * the orthogonal matrix Q and the upper triangular matrix R.
+ */
+template <typename T>
+struct GeqrfTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
+        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<float>,
+                                          T,
+                                          std::complex<float>>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<double>,
+                                          T,
+                                          std::complex<double>>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
  * MKL LAPACK library provides support in oneapi::mkl::lapack::gesv<T>
  * function.
  *
@@ -138,6 +165,25 @@ struct HeevdTypePairSupportFactory
         dpctl_td_ns::
             TypePairDefinedEntry<T, std::complex<double>, RealT, double>,
         dpctl_td_ns::TypePairDefinedEntry<T, std::complex<float>, RealT, float>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL LAPACK library provides support in oneapi::mkl::lapack::orgqr<T>
+ * function.
+ *
+ * @tparam T Type of array containing the matrix A from which the
+ * elementary reflectors were generated (as in QR factorization).
+ * Upon execution, the array is overwritten with the orthonormal matrix Q.
+ */
+template <typename T>
+struct OrgqrTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
+        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };

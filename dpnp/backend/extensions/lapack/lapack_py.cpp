@@ -30,10 +30,12 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "geqrf.hpp"
 #include "gesv.hpp"
 #include "getrf.hpp"
 #include "heevd.hpp"
 #include "linalg_exceptions.hpp"
+#include "orgqr.hpp"
 #include "potrf.hpp"
 #include "syevd.hpp"
 
@@ -43,9 +45,11 @@ namespace py = pybind11;
 // populate dispatch vectors
 void init_dispatch_vectors(void)
 {
+    lapack_ext::init_geqrf_dispatch_vector();
     lapack_ext::init_gesv_dispatch_vector();
     lapack_ext::init_getrf_batch_dispatch_vector();
     lapack_ext::init_getrf_dispatch_vector();
+    lapack_ext::init_orgqr_dispatch_vector();
     lapack_ext::init_potrf_batch_dispatch_vector();
     lapack_ext::init_potrf_dispatch_vector();
     lapack_ext::init_syevd_dispatch_vector();
@@ -66,6 +70,12 @@ PYBIND11_MODULE(_lapack_impl, m)
 
     init_dispatch_vectors();
     init_dispatch_tables();
+
+    m.def("_geqrf", &lapack_ext::geqrf,
+          "Call `geqrf` from OneMKL LAPACK library to return "
+          "the QR factorization of a general m x n matrix ",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("tau_array"),
+          py::arg("depends") = py::list());
 
     m.def("_gesv", &lapack_ext::gesv,
           "Call `gesv` from OneMKL LAPACK library to return "
@@ -93,6 +103,13 @@ PYBIND11_MODULE(_lapack_impl, m)
           "the eigenvalues and eigenvectors of a complex Hermitian matrix",
           py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
           py::arg("eig_vecs"), py::arg("eig_vals"),
+          py::arg("depends") = py::list());
+
+    m.def("_orgqr", &lapack_ext::orgqr,
+          "Call `orgqr` from OneMKL LAPACK library to return "
+          "the real orthogonal matrix Q of the QR factorization",
+          py::arg("sycl_queue"), py::arg("m"), py::arg("n"), py::arg("k"),
+          py::arg("a_array"), py::arg("tau_array"),
           py::arg("depends") = py::list());
 
     m.def("_potrf", &lapack_ext::potrf,
