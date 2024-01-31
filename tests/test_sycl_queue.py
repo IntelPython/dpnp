@@ -1201,24 +1201,22 @@ def test_matrix_rank(device):
 def test_qr(shape, mode, device):
     dtype = dpnp.default_float_type(device)
     count_elems = numpy.prod(shape)
-    dpnp_data = dpnp.arange(count_elems, dtype=dtype, device=device).reshape(
-        shape
-    )
+    a = dpnp.arange(count_elems, dtype=dtype, device=device).reshape(shape)
 
-    expected_queue = dpnp_data.get_array().sycl_queue
+    expected_queue = a.get_array().sycl_queue
 
     if mode == "r":
-        dpnp_r = dpnp.linalg.qr(dpnp_data, mode=mode)
-        dpnp_r_queue = dpnp_r.get_array().sycl_queue
-        assert_sycl_queue_equal(dpnp_r_queue, expected_queue)
+        dp_r = dpnp.linalg.qr(a, mode=mode)
+        dp_r_queue = dp_r.get_array().sycl_queue
+        assert_sycl_queue_equal(dp_r_queue, expected_queue)
     else:
-        dpnp_q, dpnp_r = dpnp.linalg.qr(dpnp_data, mode=mode)
+        dp_q, dp_r = dpnp.linalg.qr(a, mode=mode)
 
-        dpnp_q_queue = dpnp_q.get_array().sycl_queue
-        dpnp_r_queue = dpnp_r.get_array().sycl_queue
+        dp_q_queue = dp_q.get_array().sycl_queue
+        dp_r_queue = dp_r.get_array().sycl_queue
 
-        assert_sycl_queue_equal(dpnp_q_queue, expected_queue)
-        assert_sycl_queue_equal(dpnp_r_queue, expected_queue)
+        assert_sycl_queue_equal(dp_q_queue, expected_queue)
+        assert_sycl_queue_equal(dp_r_queue, expected_queue)
 
 
 @pytest.mark.parametrize(

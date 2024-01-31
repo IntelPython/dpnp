@@ -710,3 +710,40 @@ def test_det(shape, is_empty, usm_type):
     det = dp.linalg.det(x)
 
     assert x.usm_type == det.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (4, 4),
+        (2, 0),
+        (2, 2, 3),
+        (0, 2, 3),
+        (1, 0, 3),
+    ],
+    ids=[
+        "(4, 4)",
+        "(2, 0)",
+        "(2, 2, 3)",
+        "(0, 2, 3)",
+        "(1, 0, 3)",
+    ],
+)
+@pytest.mark.parametrize(
+    "mode",
+    ["r", "raw", "complete", "reduced"],
+    ids=["r", "raw", "complete", "reduced"],
+)
+def test_qr(shape, mode, usm_type):
+    count_elems = numpy.prod(shape)
+    a = dp.arange(count_elems, usm_type=usm_type).reshape(shape)
+
+    if mode == "r":
+        dp_r = dp.linalg.qr(a, mode=mode)
+        assert a.usm_type == dp_r.usm_type
+    else:
+        dp_q, dp_r = dp.linalg.qr(a, mode=mode)
+
+        assert a.usm_type == dp_q.usm_type
+        assert a.usm_type == dp_r.usm_type
