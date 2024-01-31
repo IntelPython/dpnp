@@ -222,8 +222,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_PUT,            /**< Used in numpy.put() impl  */
     DPNP_FN_PUT_ALONG_AXIS, /**< Used in numpy.put_along_axis() impl  */
     DPNP_FN_QR,             /**< Used in numpy.linalg.qr() impl  */
-    DPNP_FN_QR_EXT,         /**< Used in numpy.linalg.qr() impl, requires extra
-                               parameters */
     DPNP_FN_RADIANS,        /**< Used in numpy.radians() impl  */
     DPNP_FN_RADIANS_EXT,    /**< Used in numpy.radians() impl, requires extra
                                parameters */
