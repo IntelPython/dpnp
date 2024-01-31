@@ -6,6 +6,7 @@ import pytest
 import dpnp as cupy
 from tests.helper import has_support_aspect64, is_cpu_device
 from tests.third_party.cupy import testing
+from tests.third_party.cupy.testing import _condition
 
 
 def random_matrix(shape, dtype, scale, sym=False):
@@ -135,3 +136,74 @@ class TestCholeskyInvalid(unittest.TestCase):
     def test_decomposition(self, dtype):
         A = numpy.array([[1, -2], [-2, 1]]).astype(dtype)
         self.check_L(A)
+
+
+@testing.parameterize(
+    *testing.product(
+        {
+            "mode": ["r", "raw", "complete", "reduced"],
+        }
+    )
+)
+class TestQRDecomposition(unittest.TestCase):
+    @testing.for_dtypes("fdFD")
+    def check_mode(self, array, mode, dtype):
+        if dtype in (numpy.complex64, numpy.complex128):
+            pytest.skip("ungqr unsupported")
+
+        a_cpu = numpy.asarray(array, dtype=dtype)
+        a_gpu = cupy.asarray(array, dtype=dtype)
+        result_gpu = cupy.linalg.qr(a_gpu, mode=mode)
+        if (
+            mode != "raw"
+            or numpy.lib.NumpyVersion(numpy.__version__) >= "1.22.0rc1"
+        ):
+            result_cpu = numpy.linalg.qr(a_cpu, mode=mode)
+            self._check_result(result_cpu, result_gpu)
+
+    def _check_result(self, result_cpu, result_gpu):
+        if isinstance(result_cpu, tuple):
+            for b_cpu, b_gpu in zip(result_cpu, result_gpu):
+                assert b_cpu.dtype == b_gpu.dtype
+                testing.assert_allclose(b_cpu, b_gpu, atol=1e-4)
+        else:
+            assert result_cpu.dtype == result_gpu.dtype
+            testing.assert_allclose(result_cpu, result_gpu, atol=1e-4)
+
+    @testing.fix_random()
+    @_condition.repeat(3, 10)
+    def test_mode(self):
+        self.check_mode(numpy.random.randn(2, 4), mode=self.mode)
+        self.check_mode(numpy.random.randn(3, 3), mode=self.mode)
+        self.check_mode(numpy.random.randn(5, 4), mode=self.mode)
+
+    # @testing.with_requires("numpy>=1.22")
+    # # @testing.fix_random()
+    # def test_mode_rank3(self):
+    #     self.check_mode(numpy.random.randn(3, 2, 4), mode=self.mode)
+    #     self.check_mode(numpy.random.randn(4, 3, 3), mode=self.mode)
+    #     self.check_mode(numpy.random.randn(2, 5, 4), mode=self.mode)
+
+    # @testing.with_requires("numpy>=1.22")
+    # # @testing.fix_random()
+    # def test_mode_rank4(self):
+    #     self.check_mode(numpy.random.randn(2, 3, 2, 4), mode=self.mode)
+    #     self.check_mode(numpy.random.randn(2, 4, 3, 3), mode=self.mode)
+    #     self.check_mode(numpy.random.randn(2, 2, 5, 4), mode=self.mode)
+
+    # @testing.with_requires("numpy>=1.16")
+    # def test_empty_array(self):
+    #     self.check_mode(numpy.empty((0, 3)), mode=self.mode)
+    #     self.check_mode(numpy.empty((3, 0)), mode=self.mode)
+
+    # @testing.with_requires("numpy>=1.22")
+    # def test_empty_array_rank3(self):
+    #     self.check_mode(numpy.empty((0, 3, 2)), mode=self.mode)
+    #     self.check_mode(numpy.empty((3, 0, 2)), mode=self.mode)
+    #     self.check_mode(numpy.empty((3, 2, 0)), mode=self.mode)
+    #     self.check_mode(numpy.empty((0, 3, 3)), mode=self.mode)
+    #     self.check_mode(numpy.empty((3, 0, 3)), mode=self.mode)
+    #     self.check_mode(numpy.empty((3, 3, 0)), mode=self.mode)
+    #     self.check_mode(numpy.empty((0, 2, 3)), mode=self.mode)
+    #     self.check_mode(numpy.empty((2, 0, 3)), mode=self.mode)
+    #     self.check_mode(numpy.empty((2, 3, 0)), mode=self.mode)
