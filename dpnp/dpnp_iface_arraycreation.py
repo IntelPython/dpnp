@@ -112,6 +112,30 @@ def arange(
 
     For full documentation refer to :obj:`numpy.arange`.
 
+    Parameters
+    ----------
+    start : {int, real}, optional
+        Start of interval. The interval includes this value. The default start value is 0.
+    stop : {int, real}
+        End of interval. The interval does not include this value, except in some cases
+        where step is not an integer and floating point round-off affects the length of out.
+    step : {int, real}, optional
+        Spacing between values. The default step size is 1. If step is specified as
+        a position argument, start must also be given.
+    dtype : dtype, optional
+        The desired dtype for the array. If not given, a default dtype will be used
+        that can represent the values (by applying promotion rules when necessary.)
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -129,12 +153,26 @@ def arange(
     Examples
     --------
     >>> import dpnp as np
-    >>> [i for i in np.arange(3)]
-    [0, 1, 2]
-    >>> [i for i in np.arange(3, 7)]
-    [3, 4, 5, 6]
-    >>> [i for i in np.arange(3, 7, 2)]
-    [3, 5]
+    >>> np.arange(3)
+    array([0, 1, 2])
+    >>> np.arange(3, 7)
+    array([3, 4, 5, 6])
+    >>> np.arange(3, 7, 2)
+    array([3, 5])
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.arange(3)
+    >>> x, x.device, x.usm_type
+    (array([0, 1, 2]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.arange(3, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([0, 1, 2]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.arange(3, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([0, 1, 2]), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -172,6 +210,29 @@ def array(
 
     For full documentation refer to :obj:`numpy.array`.
 
+    Parameters
+    ----------
+    a : array_like
+        Input data, in any form that can be converted to an array. This includes scalars,
+        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.
+    dtype : dtype, optional
+        The desired dtype for the array. If not given, a default dtype will be used
+        that can represent the values (by applying promotion rules when necessary.)
+    copy : bool, optional
+        If ``true`` (default), then the object is copied.
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array. Default: "K".
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -201,17 +262,31 @@ def array(
     >>> x = np.array([1, 2, 3])
     >>> x.ndim, x.size, x.shape
     (1, 3, (3,))
-    >>> print(x)
-    [1 2 3]
+    >>> x
+    array([1, 2, 3])
 
     More than one dimension:
 
     >>> x2 = np.array([[1, 2], [3, 4]])
     >>> x2.ndim, x2.size, x2.shape
     (2, 4, (2, 2))
-    >>> print(x2)
-    [[1 2]
-     [3 4]]
+    >>> x2
+    array([[1, 2],
+           [3, 4]])
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.array([1, 2, 3])
+    >>> x, x.device, x.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.array([1, 2, 3], device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([1, 2, 3]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.array([1, 2, 3], usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -262,6 +337,27 @@ def asanyarray(
 
     For full documentation refer to :obj:`numpy.asanyarray`.
 
+    Parameters
+    ----------
+    a : array_like
+        Input data, in any form that can be converted to an array. This includes scalars,
+        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.
+    dtype : dtype, optional
+        The desired dtype for the array. If not given, a default dtype will be used
+        that can represent the values (by applying promotion rules when necessary.)
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array. Default: "K".
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -290,6 +386,20 @@ def asanyarray(
     >>> import dpnp as np
     >>> np.asanyarray([1, 2, 3])
     array([1, 2, 3])
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.asanyarray([1, 2, 3])
+    >>> x, x.device, x.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.asanyarray([1, 2, 3], device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([1, 2, 3]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.asanyarray([1, 2, 3], usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -323,6 +433,27 @@ def asarray(
 
     For full documentation refer to :obj:`numpy.asarray`.
 
+    Parameters
+    ----------
+    a : array_like
+        Input data, in any form that can be converted to an array. This includes scalars,
+        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.
+    dtype : dtype, optional
+        The desired dtype for the array. If not given, a default dtype will be used
+        that can represent the values (by applying promotion rules when necessary.)
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array. Default: "K".
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -353,6 +484,20 @@ def asarray(
     >>> np.asarray([1, 2, 3])
     array([1, 2, 3])
 
+    Creating an array on different device and usm_type
+
+    >>> x = np.asarray([1, 2, 3])
+    >>> x, x.device, x.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.asarray([1, 2, 3], device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([1, 2, 3]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.asarray([1, 2, 3], usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'host')
+
     """
 
     if like is not None:
@@ -378,6 +523,24 @@ def ascontiguousarray(
     Return a contiguous array (ndim >= 1) in memory (C order).
 
     For full documentation refer to :obj:`numpy.ascontiguousarray`.
+
+    Parameters
+    ----------
+    a : array_like
+        Input array.
+    dtype : dtype, optional
+        The desired dtype for the array. If not given, a default dtype will be used
+        that can represent the values (by applying promotion rules when necessary.)
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
 
     Returns
     -------
@@ -424,6 +587,21 @@ def ascontiguousarray(
     >>> x is y
     True
 
+    Creating an array on different device and usm_type
+
+    >>> x0 = np.asarray([1, 2, 3])
+    >>> x = np.ascontiguousarray(x0)
+    >>> x, x.device, x.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.ascontiguousarray(x0, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([1, 2, 3]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.ascontiguousarray(x0, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'host')
+
     """
 
     if like is not None:
@@ -453,6 +631,24 @@ def asfortranarray(
     Return an array (ndim >= 1) laid out in Fortran order in memory.
 
     For full documentation refer to :obj:`numpy.asfortranarray`.
+
+    Parameters
+    ----------
+    a : array_like
+        Input array.
+    dtype : dtype, optional
+        The desired dtype for the array. If not given, a default dtype will be used
+        that can represent the values (by applying promotion rules when necessary.)
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
 
     Returns
     -------
@@ -501,6 +697,21 @@ def asfortranarray(
     >>> x is y
     True
 
+    Creating an array on different device and usm_type
+
+    >>> x0 = np.asarray([1, 2, 3])
+    >>> x = np.asfortranarray(x0)
+    >>> x, x.device, x.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.asfortranarray(x0, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([1, 2, 3]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.asfortranarray(x0, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'host')
+
     """
 
     if like is not None:
@@ -528,6 +739,13 @@ def copy(a, order="K", subok=False):
     Return an array copy of the given object.
 
     For full documentation refer to :obj:`numpy.copy`.
+
+    Parameters
+    ----------
+    a : array_like
+        Input data.
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array. Default: "K".
 
     Limitations
     -----------
@@ -586,6 +804,25 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
 
     For full documentation refer to :obj:`numpy.diag`.
 
+    Parameters
+    ----------
+    v : array_like
+        If v is a 2-D array, return a copy of its k-th diagonal. If v is a 1-D array,
+        return a 2-D array with v on the k-th diagonal.
+    k : int, optional
+        Diagonal in question. The default is 0. Use k > 0 for diagonals above the main diagonal,
+        and k < 0 for diagonals below the main diagonal.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -607,23 +844,37 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.arange(9).reshape((3,3))
-    >>> x
+    >>> x0 = np.arange(9).reshape((3, 3))
+    >>> x0
     array([[0, 1, 2],
            [3, 4, 5],
            [6, 7, 8]])
 
-    >>> np.diag(x)
+    >>> np.diag(x0)
     array([0, 4, 8])
-    >>> np.diag(x, k=1)
+    >>> np.diag(x0, k=1)
     array([1, 5])
-    >>> np.diag(x, k=-1)
+    >>> np.diag(x0, k=-1)
     array([3, 7])
 
-    >>> np.diag(np.diag(x))
+    >>> np.diag(np.diag(x0))
     array([[0, 0, 0],
            [0, 4, 0],
            [0, 0, 8]])
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.diag(x0)
+    >>> x, x.device, x.usm_type
+    (array([0, 4, 8]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.diag(x0, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([0, 4, 8]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.diag(x0, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([0, 4, 8]), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -670,6 +921,24 @@ def diagflat(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
 
     For full documentation refer to :obj:`numpy.diagflat`.
 
+    Parameters
+    ----------
+    v : array_like
+        Input data, which is flattened and set as the k-th diagonal of the output.
+    k : int, optional
+        Diagonal to set; 0, the default, corresponds to the "main" diagonal,
+        a positive (negative) k giving the number of the diagonal above (below) the main.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -689,19 +958,42 @@ def diagflat(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.array([[1,2], [3,4]])
-    >>> np.diagflat(x)
+    >>> x0 = np.array([[1, 2], [3, 4]])
+    >>> np.diagflat(x0)
     array([[1, 0, 0, 0],
            [0, 2, 0, 0],
            [0, 0, 3, 0],
            [0, 0, 0, 4]])
 
-    >>> np.diagflat(x, 1)
+    >>> np.diagflat(x0, 1)
     array([[0, 1, 0, 0, 0],
-        [0, 0, 2, 0, 0],
-        [0, 0, 0, 3, 0],
-        [0, 0, 0, 0, 4],
-        [0, 0, 0, 0, 0]])
+           [0, 0, 2, 0, 0],
+           [0, 0, 0, 3, 0],
+           [0, 0, 0, 0, 4],
+           [0, 0, 0, 0, 0]])
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.diagflat(x0)
+    >>> x, x.device, x.usm_type
+    array([[1, 0, 0, 0],
+           [0, 2, 0, 0],
+           [0, 0, 3, 0],
+           [0, 0, 0, 4]]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.diagflat(x0, device="cpu")
+    >>> y, y.device, y.usm_type
+    array([[1, 0, 0, 0],
+           [0, 2, 0, 0],
+           [0, 0, 3, 0],
+           [0, 0, 0, 4]]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.diagflat(x0, usm_type="host")
+    >>> z, z.device, z.usm_type
+    array([[1, 0, 0, 0],
+           [0, 2, 0, 0],
+           [0, 0, 3, 0],
+           [0, 0, 0, 4]]), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -730,6 +1022,30 @@ def empty(
 
     For full documentation refer to :obj:`numpy.empty`.
 
+    Parameters
+    ----------
+    shape : {int, sequence of ints}
+        Shape of the new array, e.g., (2, 3) or 2.
+    dtype : dtype, optional
+        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.
+    order : {"C", "F"}, optional
+        Memory layout of the newly output array. Default: "C".
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of uninitialized data of the given shape, dtype, and order.
+
     Limitations
     -----------
     Parameter `order` is supported only with values ``"C"`` and ``"F"``.
@@ -746,9 +1062,22 @@ def empty(
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.empty(4)
-    >>> print(x)
-    [0. 0. 0. 0.]
+    >>> np.empty(4)
+    array([9.03088525e-312, 9.03088525e-312, 9.03088525e-312, 9.03088525e-312])
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.empty((3, 3))
+    >>> x.shape, x.device, x.usm_type
+    ((3, 3), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.empty((3, 3), device="cpu")
+    >>> y.shape, y.device, y.usm_type
+    ((3, 3), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.empty((3, 3), usm_type="host")
+    >>> z.shape, z.device, z.usm_type
+    ((3, 3), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -786,6 +1115,32 @@ def empty_like(
 
     For full documentation refer to :obj:`numpy.empty_like`.
 
+    Parameters
+    ----------
+    x1 : array_like
+        The shape and dtype of a define these same attributes of the returned array.
+    dtype : dtype, optional
+        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.
+    order : {"C", "F"}, optional
+        Memory layout of the newly output array. Default: "C".
+    shape : {int, sequence of ints}
+        Overrides the shape of the result.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of uninitialized data with the same shape and type as prototype.
+
     Limitations
     -----------
     Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`
@@ -804,9 +1159,22 @@ def empty_like(
     --------
     >>> import dpnp as np
     >>> a = np.array([1, 2, 3])
+    >>> np.empty_like(a)
+    array([1, 2, 3])
+
+    Creating an array on different device and usm_type
+
     >>> x = np.empty_like(a)
-    >>> [i for i in x]
-    [0, 0, 0]
+    >>> x.shape, x.device, x.usm_type
+    ((3, ), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.empty_like(a, device="cpu")
+    >>> y.shape, y.device, y.usm_type
+    ((3, ), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.empty_like(a, usm_type="host")
+    >>> z.shape, z.device, z.usm_type
+    ((3, ), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -852,6 +1220,36 @@ def eye(
 
     For full documentation refer to :obj:`numpy.eye`.
 
+    Parameters
+    ----------
+    N : int
+        Number of rows in the output.
+    M : int, optional
+        Number of columns in the output. If None, defaults to `N`.
+    k : int, optional
+        Index of the diagonal: 0 (the default) refers to the main diagonal,
+        a positive value refers to an upper diagonal, and a negative value to a lower diagonal.
+    dtype : dtype, optional
+        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.
+    order : {"C", "F"}, optional
+        Memory layout of the newly output array. Default: "C".
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array where all elements are equal to zero, except for the k-th diagonal,
+        whose values are equal to one.
+
     Limitations
     -----------
     Parameter `order` is supported only with values ``"C"`` and ``"F"``.
@@ -869,6 +1267,23 @@ def eye(
     array([[0.,  1.,  0.],
            [0.,  0.,  1.],
            [0.,  0.,  0.]])
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.eye(2, dtype=int)
+    >>> x, x.device, x.usm_type
+    (array([[1, 0],
+            [0, 1]]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.eye(2, dtype=int, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([[1, 0],
+            [0, 1]]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.eye(2, dtype=int, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([[1, 0],
+            [0, 1]]), Device(level_zero:gpu:0), 'host')
 
     """
     if order not in ("C", "c", "F", "f", None):
@@ -990,6 +1405,32 @@ def full(
 
     For full documentation refer to :obj:`numpy.full`.
 
+    Parameters
+    ----------
+    shape : {int, sequence of ints}
+        Shape of the new array, e.g., (2, 3) or 2.
+    fill_value : {scalar, array_like}
+        Fill value.
+    dtype : dtype, optional
+        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.
+    order : {"C", "F"}, optional
+        Memory layout of the newly output array. Default: "C".
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of `fill_value` with the given shape, dtype, and order.
+
     Limitations
     -----------
     Parameter `order` is supported only with values ``"C"`` and ``"F"``.
@@ -1006,9 +1447,22 @@ def full(
     Examples
     --------
     >>> import dpnp as np
+    >>> np.full(4, 10)
+    array([10, 10, 10, 10])
+
+    Creating an array on different device and usm_type
+
     >>> x = np.full(4, 10)
-    >>> [i for i in x]
-    [10, 10, 10, 10]
+    >>> x, x.device, x.usm_type
+    (array([10, 10, 10, 10]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.full(4, 10, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([10, 10, 10, 10]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.full(4, 10, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([10, 10, 10, 10]), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -1048,6 +1502,34 @@ def full_like(
 
     For full documentation refer to :obj:`numpy.full_like`.
 
+    Parameters
+    ----------
+    x1 : array_like
+        The shape and dtype of a define these same attributes of the returned array.
+    fill_value : {scalar, array_like}
+        Fill value.
+    dtype : dtype, optional
+        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.
+    order : {"C", "F"}, optional
+        Memory layout of the newly output array. Default: "C".
+    shape : {int, sequence of ints}
+        Overrides the shape of the result.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of `fill_value with` the same shape and type as `x1`.
+
     Limitations
     -----------
     Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`
@@ -1066,9 +1548,22 @@ def full_like(
     --------
     >>> import dpnp as np
     >>> a = np.arange(6)
+    >>> np.full_like(a, 1)
+    array([1, 1, 1, 1, 1, 1])
+
+    Creating an array on different device and usm_type
+
     >>> x = np.full_like(a, 1)
-    >>> [i for i in x]
-    [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    >>> x, x.device, x.usm_type
+    (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.full_like(a, 1, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([1, 1, 1, 1, 1, 1]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.full_like(a, 1, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), 'host')
 
     """
     if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
@@ -1100,7 +1595,7 @@ def geomspace(
     start,
     stop,
     /,
-    num,
+    num=50,
     *,
     dtype=None,
     device=None,
@@ -1113,6 +1608,36 @@ def geomspace(
     Return numbers spaced evenly on a log scale (a geometric progression).
 
     For full documentation refer to :obj:`numpy.geomspace`.
+
+    Parameters
+    ----------
+    start : array_like
+        The starting value of the sequence.
+    stop : array_like
+        The final value of the sequence, unless endpoint is False. In that case, num + 1 values
+        are spaced over the interval in log-space, of which all but the last (a sequence of length num)
+        are returned.
+    num : int, optional
+        Number of samples to generate. Default is 50.
+    dtype : dtype, optional
+        The desired dtype for the array. If not given, a default dtype will be used
+        that can represent the values (by applying promotion rules when necessary.)
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+    endpoint : bool, optional
+        If True, stop is the last sample. Otherwise, it is not included. Default is True.
+    axis : int, optional
+        The axis in the result to store the samples. Relevant only if start or stop are array-like.
+        By default (0), the samples will be along a new axis inserted at the beginning.
+        Use -1 to get an axis at the end.
 
     Returns
     -------
@@ -1150,6 +1675,20 @@ def geomspace(
     >>> np.geomspace(-1000, -1, num=4)
     array([-1000.,  -100.,   -10.,    -1.])
 
+    Creating an array on different device and usm_type
+
+    >>> x = np.geomspace(1000, 1, num=4)
+    >>> x, x.device, x.usm_type
+    (array([1000.,  100.,   10.,    1.]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.geomspace(1000, 1, num=4, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([1000.,  100.,   10.,    1.]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.geomspace(1000, 1, num=4, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([1000.,  100.,   10.,    1.]), Device(level_zero:gpu:0), 'host')
+
     """
 
     return dpnp_geomspace(
@@ -1182,6 +1721,23 @@ def identity(
 
     For full documentation refer to :obj:`numpy.identity`.
 
+    Parameters
+    ----------
+    n : int
+        Number of rows (and columns) in `n` x `n` output.
+    dtype : dtype, optional
+        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -1207,21 +1763,41 @@ def identity(
            [0.,  1.,  0.],
            [0.,  0.,  1.]])
 
+    Creating an array on different device and usm_type
+
+    >>> x = np.identity(3)
+    >>> x, x.device, x.usm_type
+    (array([[1.,  0.,  0.],
+            [0.,  1.,  0.],
+            [0.,  0.,  1.]]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.identity(3, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([[1.,  0.,  0.],
+            [0.,  1.,  0.],
+            [0.,  0.,  1.]]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.identity(3, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([[1.,  0.,  0.],
+            [0.,  1.,  0.],
+            [0.,  0.,  1.]]), Device(level_zero:gpu:0), 'host')
+
     """
-    if not use_origin_backend():
-        if like is not None:
-            pass
-        elif n < 0:
-            raise ValueError("negative dimensions are not allowed")
-        else:
-            _dtype = dpnp.default_float_type() if dtype is None else dtype
-            return dpnp.eye(
-                n,
-                dtype=_dtype,
-                device=device,
-                usm_type=usm_type,
-                sycl_queue=sycl_queue,
-            )
+
+    if like is not None:
+        pass
+    elif n < 0:
+        raise ValueError("negative dimensions are not allowed")
+    else:
+        _dtype = dpnp.default_float_type() if dtype is None else dtype
+        return dpnp.eye(
+            n,
+            dtype=_dtype,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
     return call_origin(numpy.identity, n, dtype=dtype, like=like)
 
 
@@ -1243,6 +1819,36 @@ def linspace(
     Return evenly spaced numbers over a specified interval.
 
     For full documentation refer to :obj:`numpy.linspace`.
+
+    Parameters
+    ----------
+    start : array_like
+        The starting value of the sequence.
+    stop : array_like
+        The end value of the sequence, unless endpoint is set to False. In that case,
+        the sequence consists of all but the last of num + 1 evenly spaced samples,
+        so that stop is excluded.
+    dtype : dtype, optional
+        The desired dtype for the array. If not given, a default dtype will be used
+        that can represent the values (by applying promotion rules when necessary.)
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+    endpoint : bool, optional
+        If True, stop is the last sample. Otherwise, it is not included. Default is True.
+    retstep : bool, optional
+        If True, return (samples, step), where step is the spacing between samples.
+    axis : int, optional
+        The axis in the result to store the samples. Relevant only if start or stop are array-like.
+        By default (0), the samples will be along a new axis inserted at the beginning.
+        Use -1 to get an axis at the end.
 
     Returns
     -------
@@ -1274,6 +1880,20 @@ def linspace(
 
     >>> np.linspace(2.0, 3.0, num=5, retstep=True)
     (array([2.  , 2.25, 2.5 , 2.75, 3.  ]), array(0.25))
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.linspace(2.0, 3.0, num=3)
+    >>> x, x.device, x.usm_type
+    (array([2. , 2.5, 3. ]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.linspace(2.0, 3.0, num=3, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([2. , 2.5, 3. ]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.linspace(2.0, 3.0, num=3, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([2. , 2.5, 3. ]), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -1336,6 +1956,39 @@ def logspace(
 
     For full documentation refer to :obj:`numpy.logspace`.
 
+    Parameters
+    ----------
+    start : array_like
+        `base` ** `start` is the starting value of the sequence.
+    stop : array_like
+        `base` ** `stop` is the final value of the sequence, unless endpoint is False.
+        In that case, num + 1 values are spaced over the interval in log-space,
+        of which all but the last (a sequence of length num) are returned.
+    num : int, optional
+        Number of samples to generate. Default is 50.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+    endpoint : bool, optional
+        If True, stop is the last sample. Otherwise, it is not included. Default is True.
+    base : array_like, optional
+        The base of the log space. The step size between the elements in
+        ln(samples) / ln(base) (or log_base(samples)) is uniform. Default is 10.0.
+    dtype : dtype, optional
+        The desired dtype for the array. If not given, a default dtype will be used
+        that can represent the values (by applying promotion rules when necessary.)
+    axis : int, optional
+        The axis in the result to store the samples. Relevant only if start, stop,
+        or base are array-like. By default (0), the samples will be along a new axis inserted
+        at the beginning. Use -1 to get an axis at the end.
+
     Returns
     -------
     out: dpnp.ndarray
@@ -1367,6 +2020,20 @@ def logspace(
     >>> np.logspace(2.0, 3.0, num=4, base=[2.0, 3.0], axis=-1)
     array([[ 4.        ,  5.0396842 ,  6.34960421,  8.        ],
            [ 9.        , 12.98024613, 18.72075441, 27.        ]])
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.logspace(1.0, 3.0, num=3)
+    >>> x, x.device, x.usm_type
+    (array([  10.,  100., 1000.]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.logspace(1.0, 3.0, num=3, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([  10.,  100., 1000.]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.logspace(1.0, 3.0, num=3, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([  10.,  100., 1000.]), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -1486,17 +2153,19 @@ class MGridClass:
             [0, 1, 2, 3, 4],
             [0, 1, 2, 3, 4]]])
 
-    >>> x = np.mgrid[-1:1:5j]
-    >>> x
-    array([-1. , -0.5,  0. ,  0.5,  1. ])
-    >>> x.usm_type
-    'device'
+    Creating an array on different device and usm_type
 
-    >>> y = np.mgrid(usm_type="host")[-1:1:5j]
-    >>> y
-    array([-1. , -0.5,  0. ,  0.5,  1. ])
-    >>> x.usm_type
-    'host'
+    >>> x = np.mgrid[-1:1:5j]
+    >>> x, x.device, x.usm_type
+    (array([-1. , -0.5,  0. ,  0.5,  1. ]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.mgrid(device="cpu")[-1:1:5j]
+    >>> y, y.device, y.usm_type
+    (array([-1. , -0.5,  0. ,  0.5,  1. ]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.mgrid(usm_type="host")[-1:1:5j]
+    >>> z, z.device, z.usm_type
+    (array([-1. , -0.5,  0. ,  0.5,  1. ]), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -1550,17 +2219,19 @@ class OGridClass:
             [3],
             [4]]), array([[0, 1, 2, 3, 4]])]
 
-    >>> x = np.ogrid[-1:1:5j]
-    >>> x
-    array([-1. , -0.5,  0. ,  0.5,  1. ])
-    >>> x.usm_type
-    'device'
+    Creating an array on different device and usm_type
 
-    >>> y = np.ogrid(usm_type="host")[-1:1:5j]
-    >>> y
-    array([-1. , -0.5,  0. ,  0.5,  1. ])
-    >>> x.usm_type
-    'host'
+    >>> x = np.ogrid[-1:1:5j]
+    >>> x, x.device, x.usm_type
+    (array([-1. , -0.5,  0. ,  0.5,  1. ]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.ogrid(device="cpu")[-1:1:5j]
+    >>> y, y.device, y.usm_type
+    (array([-1. , -0.5,  0. ,  0.5,  1. ]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.ogrid(usm_type="host")[-1:1:5j]
+    >>> z, z.device, z.usm_type
+    (array([-1. , -0.5,  0. ,  0.5,  1. ]), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -1591,6 +2262,30 @@ def ones(
 
     For full documentation refer to :obj:`numpy.ones`.
 
+    Parameters
+    ----------
+    shape : {int, sequence of ints}
+        Shape of the new array, e.g., (2, 3) or 2.
+    dtype : dtype, optional
+        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.
+    order : {"C", "F"}, optional
+        Memory layout of the newly output array. Default: "C".
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of ones with the given shape, dtype, and order.
+
     Limitations
     -----------
     Parameter `order` is supported only with values ``"C"`` and ``"F"``.
@@ -1607,13 +2302,28 @@ def ones(
     Examples
     --------
     >>> import dpnp as np
-    >>> [i for i in np.ones(5)]
-    [1.0, 1.0, 1.0, 1.0, 1.0]
+    >>> np.ones(5)
+    array([1., 1., 1., 1., 1.])
     >>> x = np.ones((2, 1))
     >>> x.ndim, x.size, x.shape
     (2, 2, (2, 1))
-    >>> [i for i in x]
-    [1.0, 1.0]
+    >>> x
+    array([[1.],
+           [1.]])
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.ones(3)
+    >>> x, x.device, x.usm_type
+    (array([1., 1., 1.]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.ones(3, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([1., 1., 1.]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.ones(3, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([1., 1., 1.]), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -1651,6 +2361,32 @@ def ones_like(
 
     For full documentation refer to :obj:`numpy.ones_like`.
 
+    Parameters
+    ----------
+    x1 : array_like
+        The shape and dtype of a define these same attributes of the returned array.
+    dtype : dtype, optional
+        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.
+    order : {"C", "F"}, optional
+        Memory layout of the newly output array. Default: "C".
+    shape : {int, sequence of ints}
+        Overrides the shape of the result.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of ones with the same shape and type as `x1`.
+
     Limitations
     -----------
     Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`
@@ -1668,11 +2404,25 @@ def ones_like(
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.arange(6)
-    >>> [i for i in x]
-    [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
-    >>> [i for i in np.ones_like(x)]
-    [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    >>> x0 = np.arange(6)
+    >>> x0
+    array([0, 1, 2, 3, 4, 5])
+    >>> np.ones_like(x0)
+    array([1, 1, 1, 1, 1, 1])
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.ones_like(x0)
+    >>> x, x.device, x.usm_type
+    (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.ones_like(x0, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([1, 1, 1, 1, 1, 1]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.ones_like(x0, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), 'host')
 
     """
     if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
@@ -1748,9 +2498,31 @@ def tri(
 
     For full documentation refer to :obj:`numpy.tri`.
 
+    Parameters
+    ----------
+    N : int
+        Number of rows in the array.
+    M : int, optional
+        Number of columns in the array. By default, `M` is taken equal to `N`.
+    k : int, optional
+        The sub-diagonal at and below which the array is filled. k = 0 is the main diagonal,
+        while k < 0 is below it, and k > 0 is above. The default is 0.
+    dtype : dtype, optional
+        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
     Returns
     -------
-    out : ndarray of shape (N, M)
+    out : dpnp.ndarray of shape (N, M)
         Array with its lower triangle filled with ones and zeros elsewhere.
 
     Limitations
@@ -1777,38 +2549,57 @@ def tri(
            [1.,  0.,  0.,  0.,  0.],
            [1.,  1.,  0.,  0.,  0.]])
 
+    Creating an array on different device and usm_type
+
+    >>> x = np.tri(3, 2)
+    >>> x, x.device, x.usm_type
+    (array([[1., 0.],
+            [1., 1.],
+            [1., 1.]]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.tri(3, 2, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([[1., 0.],
+            [1., 1.],
+            [1., 1.]]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.tri(3, 2, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([[1., 0.],
+            [1., 1.],
+            [1., 1.]]), Device(level_zero:gpu:0), 'host')
+
     """
 
-    if not use_origin_backend():
-        if len(kwargs) != 0:
-            pass
-        elif not isinstance(N, int):
-            pass
-        elif N < 0:
-            pass
-        elif M is not None and not isinstance(M, int):
-            pass
-        elif M is not None and M < 0:
-            pass
-        elif not isinstance(k, int):
-            pass
-        else:
-            _dtype = (
-                dpnp.default_float_type()
-                if dtype in (dpnp.float, None)
-                else dtype
-            )
-            if M is None:
-                M = N
+    if len(kwargs) != 0:
+        pass
+    elif not isinstance(N, int):
+        pass
+    elif N < 0:
+        pass
+    elif M is not None and not isinstance(M, int):
+        pass
+    elif M is not None and M < 0:
+        pass
+    elif not isinstance(k, int):
+        pass
+    else:
+        _dtype = (
+            dpnp.default_float_type()
+            if dtype in (dpnp.float, None)
+            else dtype
+        )
+        if M is None:
+            M = N
 
-            m = dpnp.ones(
-                (N, M),
-                dtype=_dtype,
-                device=device,
-                usm_type=usm_type,
-                sycl_queue=sycl_queue,
-            )
-            return dpnp.tril(m, k=k)
+        m = dpnp.ones(
+            (N, M),
+            dtype=_dtype,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
+        return dpnp.tril(m, k=k)
 
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 
@@ -1821,6 +2612,19 @@ def tril(x1, /, *, k=0):
 
     For full documentation refer to :obj:`numpy.tril`.
 
+    Parameters
+    ----------
+    x1 : array_like, shape (…, M, N)
+        Input array.
+    k : int, optional
+        Diagonal above which to zero elements. k = 0 (the default) is the main diagonal,
+        k < 0 is below it and k > 0 is above.
+
+    Returns
+    -------
+    out : dpnp.ndarray of shape (N, M)
+        Lower triangle of `x1`, of same shape and dtype as `x1`.
+
     Limitations
     -----------
     Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
@@ -1830,7 +2634,7 @@ def tril(x1, /, *, k=0):
     Examples
     --------
     >>> import dpnp as np
-    >>> np.tril([[1,2,3],[4,5,6],[7,8,9],[10,11,12]], -1)
+    >>> np.tril([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]], -1)
     array([[ 0,  0,  0],
            [ 4,  0,  0],
            [ 7,  8,  0],
@@ -1865,6 +2669,19 @@ def triu(x1, /, *, k=0):
 
     For full documentation refer to :obj:`numpy.triu`.
 
+    Parameters
+    ----------
+    x1 : array_like, shape (…, M, N)
+        Input array.
+    k : int, optional
+        Diagonal below which to zero elements. k = 0 (the default) is the main diagonal,
+        k < 0 is below it and k > 0 is above.
+
+    Returns
+    -------
+    out : dpnp.ndarray of shape (N, M)
+        Upper triangle of `x1`, of same shape and dtype as `x1`.
+
     Limitations
     -----------
     Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
@@ -1874,7 +2691,7 @@ def triu(x1, /, *, k=0):
     Examples
     --------
     >>> import dpnp as np
-    >>> np.triu([[1,2,3],[4,5,6],[7,8,9],[10,11,12]], -1)
+    >>> np.triu([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]], -1)
     array([[ 1,  2,  3],
            [ 4,  5,  6],
            [ 0,  8,  9],
@@ -1915,6 +2732,26 @@ def vander(
 
     For full documentation refer to :obj:`numpy.vander`.
 
+    Parameters
+    ----------
+    x1 : array_like
+        1-D input array.
+    N : int, optional
+        Number of columns in the output. If `N` is not specified, a square array is returned (N = len(x)).
+    increasing : bool, optional
+        Order of the powers of the columns. If ``True,`` the powers increase from left to right,
+        if ``False`` (the default) they are reversed.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -1928,26 +2765,48 @@ def vander(
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.array([1, 2, 3, 5])
+    >>> x0 = np.array([1, 2, 3, 5])
     >>> N = 3
-    >>> np.vander(x, N)
+    >>> np.vander(x0, N)
     array([[ 1,  1,  1],
            [ 4,  2,  1],
            [ 9,  3,  1],
            [25,  5,  1]])
 
-    >>> x = np.array([1, 2, 3, 5])
-    >>> np.vander(x)
+    >>> np.vander(x0)
     array([[  1,   1,   1,   1],
            [  8,   4,   2,   1],
            [ 27,   9,   3,   1],
            [125,  25,   5,   1]])
 
-    >>> np.vander(x, increasing=True)
+    >>> np.vander(x0, increasing=True)
     array([[  1,   1,   1,   1],
            [  1,   2,   4,   8],
            [  1,   3,   9,  27],
            [  1,   5,  25, 125]])
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.vander(x0)
+    >>> x, x.device, x.usm_type
+    (array([[  1,   1,   1,   1],
+            [  8,   4,   2,   1],
+            [ 27,   9,   3,   1],
+            [125,  25,   5,   1]]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.vander(x0, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([[  1,   1,   1,   1],
+            [  8,   4,   2,   1],
+            [ 27,   9,   3,   1],
+            [125,  25,   5,   1]]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.vander(x0, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([[  1,   1,   1,   1],
+            [  8,   4,   2,   1],
+            [ 27,   9,   3,   1],
+            [125,  25,   5,   1]]), Device(level_zero:gpu:0), 'host')
     """
 
     x1 = dpnp.asarray(
@@ -1994,6 +2853,30 @@ def zeros(
 
     For full documentation refer to :obj:`numpy.zeros`.
 
+    Parameters
+    ----------
+    shape : {int, sequence of ints}
+        Shape of the new array, e.g., (2, 3) or 2.
+    dtype : dtype, optional
+        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.
+    order : {"C", "F"}, optional
+        Memory layout of the newly output array. Default: "C".
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of zeros with the given shape, dtype, and order.
+
     Limitations
     -----------
     Parameter `order` is supported only with values ``"C"`` and ``"F"``.
@@ -2010,13 +2893,28 @@ def zeros(
     Examples
     --------
     >>> import dpnp as np
-    >>> [i for i in np.zeros(5)]
-    [0.0, 0.0, 0.0, 0.0, 0.0]
+    >>> np.zeros(5)
+    array([0., 0., 0., 0., 0.])
     >>> x = np.zeros((2, 1))
     >>> x.ndim, x.size, x.shape
     (2, 2, (2, 1))
-    >>> [i for i in x]
-    [0.0, 0.0]
+    >>> x
+    array([[0.],
+           [0.]])
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.zeros(3)
+    >>> x, x.device, x.usm_type
+    (array([0., 0., 0.]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.zeros(3, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([0., 0., 0.]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.zeros(3, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([0., 0., 0.]), Device(level_zero:gpu:0), 'host')
 
     """
     if like is not None:
@@ -2053,6 +2951,32 @@ def zeros_like(
 
     For full documentation refer to :obj:`numpy.zeros_like`.
 
+    Parameters
+    ----------
+    x1 : array_like
+        The shape and dtype of a define these same attributes of the returned array.
+    dtype : dtype, optional
+        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.
+    order : {"C", "F"}, optional
+        Memory layout of the newly output array. Default: "C".
+    shape : {int, sequence of ints}
+        Overrides the shape of the result.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of zeros with the same shape and type as `x1`.
+
     Limitations
     -----------
     Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`
@@ -2070,11 +2994,25 @@ def zeros_like(
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.arange(6)
-    >>> [i for i in x]
-    [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
-    >>> [i for i in np.zeros_like(x)]
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    >>> x0 = np.arange(6)
+    >>> x0
+    array([0, 1, 2, 3, 4, 5])
+    >>> np.zeros_like(x0)
+    array([0, 0, 0, 0, 0, 0])
+
+    Creating an array on different device and usm_type
+
+    >>> x = np.zeros_like(x0)
+    >>> x, x.device, x.usm_type
+    (array([0, 0, 0, 0, 0, 0]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.zeros_like(x0, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([0, 0, 0, 0, 0, 0]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.zeros_like(x0, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([0, 0, 0, 0, 0, 0]), Device(level_zero:gpu:0), 'host')
 
     """
     if not isinstance(x1, (dpnp.ndarray, dpt.usm_ndarray)):
