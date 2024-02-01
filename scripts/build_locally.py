@@ -28,8 +28,6 @@ import os
 import subprocess
 import sys
 
-import dpctl
-
 
 def run(
     use_oneapi=True,
@@ -60,16 +58,12 @@ def run(
         cmake_args += [
             "--cmake-executable=" + cmake_executable,
         ]
-    dpctl_module_path = os.path.join(
-        dpctl.get_include(), "..", "resources", "cmake"
-    )
     cmake_args += [
         "--build-type=" + build_type,
         "--generator=" + build_system,
         "--",
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
-        "-DDPCTL_MODULE_PATH:PATH=" + dpctl_module_path,
     ]
     if verbose:
         cmake_args += [

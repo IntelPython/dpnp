@@ -110,8 +110,7 @@ jobs:
         run: conda list
 
       - name: Build library
-        run: |
-          CC=icx CXX=icpx python setup.py develop -G Ninja -- -DDPCTL_MODULE_PATH=$(python -m dpctl --cmakedir)
+        run: python scripts/build_locally.py
 
       - name: Build docs
         run: make html
