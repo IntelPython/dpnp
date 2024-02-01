@@ -50,17 +50,17 @@ PYBIND11_MODULE(_blas_impl, m)
     init_dispatch_tables();
 
     {
-        m.def("_dotu", &blas_ext::dotu,
-              "Call `dotu` from OneMKL LAPACK library to return "
-              "the dot product of two complex-valued vectors.",
+        m.def("_dot", &blas_ext::dot,
+              "Call `dot` from OneMKL LAPACK library to return "
+              "the dot product of two real-valued vectors.",
               py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
               py::arg("result"), py::arg("depends") = py::list());
     }
 
     {
-        m.def("_dot", &blas_ext::dot,
-              "Call `dot` from OneMKL LAPACK library to return "
-              "the dot product of two real-valued vectors.",
+        m.def("_dotu", &blas_ext::dotu,
+              "Call `dotu` from OneMKL LAPACK library to return "
+              "the dot product of two complex vectors.",
               py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
               py::arg("result"), py::arg("depends") = py::list());
     }

@@ -185,21 +185,16 @@ def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
     return op_dtype, res_dtype
 
 
-def dpnp_dot(
-    a,
-    b,
-    /,
-    out=None,
-):
+def dpnp_dot(a, b, /, out=None):
     """
-    dpnp_dot(a, b, out=None)
-
     Return the dot product of two arrays.
 
-    The main calculation is done by calling an extension function
-    for BLAS library of OneMKL. Depending on the data type of `a` and `b` arrays,
-    it will be either ``dot`` (for real-valued data types) or
-    ``dotc``(for complex-valued data types).
+    The routine that is used to perform the main calculation
+    depends on input array data types: 1) For integer data types,
+    `dpctl.tensor.vecdot` form the Data Parallel Control library is used,
+    2) For floating point real-valued data types, `dot` routines from
+    BLAS library of OneMKL is used, and 3) For complex data types,
+    `dotu` routines from BLAS library of OneMKL is used.
 
     """
 
@@ -273,8 +268,6 @@ def dpnp_matmul(
     dtype=None,
 ):
     """
-    dpnp_matmul(x1, x2, out=None, casting="same_kind", order="K", dtype=None)
-
     Return the matrix product of two arrays.
 
     The main calculation is done by calling an extension function
