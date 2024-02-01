@@ -94,12 +94,12 @@ def fix_random():
     """Decorator that fixes random numbers in a test.
 
     This decorator can be applied to either a test case class or a test method.
-    It should not be applied within ``condition.retry`` or
-    ``condition.repeat``.
+    It should not be applied within ``_condition.retry`` or
+    ``_condition.repeat``.
     """
 
     # TODO(niboshi): Prevent this decorator from being applied within
-    #    condition.repeat or condition.retry decorators. That would repeat
+    #    _condition.repeat or _condition.retry decorators. That would repeat
     #    tests with the same random seeds. It's okay to apply this outside
     #    these decorators.
 
