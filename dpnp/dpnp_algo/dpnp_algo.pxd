@@ -78,8 +78,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FMOD_EXT
         DPNP_FN_FULL
         DPNP_FN_FULL_LIKE
-        DPNP_FN_INV
-        DPNP_FN_INV_EXT
         DPNP_FN_KRON
         DPNP_FN_KRON_EXT
         DPNP_FN_MATRIX_RANK
