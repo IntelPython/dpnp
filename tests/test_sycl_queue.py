@@ -417,6 +417,9 @@ def test_meshgrid(device_x, device_y):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_1in_1out(func, data, device):
+    if func in ("std", "var") and "opencl:gpu" in device.filter_string:
+        pytest.skip("due to reproted crash on Windows: CMPLRLLVM-55640")
+
     x = dpnp.array(data, device=device)
     result = getattr(dpnp, func)(x)
 
@@ -1137,20 +1140,41 @@ def test_eigvals(device):
 
 
 @pytest.mark.parametrize(
+    "shape, is_empty",
+    [
+        ((2, 2), False),
+        ((3, 2, 2), False),
+        ((0, 0), True),
+        ((0, 2, 2), True),
+    ],
+    ids=[
+        "(2, 2)",
+        "(3, 2, 2)",
+        "(0, 0)",
+        "(0, 2, 2)",
+    ],
+)
+@pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_inv(device):
-    data = [[1.0, 2.0], [3.0, 4.0]]
-    numpy_data = numpy.array(data)
-    dpnp_data = dpnp.array(data, device=device)
+def test_inv(shape, is_empty, device):
+    if is_empty:
+        numpy_x = numpy.empty(shape, dtype=dpnp.default_float_type(device))
+    else:
+        count_elem = numpy.prod(shape)
+        numpy_x = numpy.arange(
+            1, count_elem + 1, dtype=dpnp.default_float_type()
+        ).reshape(shape)
 
-    result = dpnp.linalg.inv(dpnp_data)
-    expected = numpy.linalg.inv(numpy_data)
-    assert_allclose(expected, result)
+    dpnp_x = dpnp.array(numpy_x, device=device)
 
-    expected_queue = dpnp_data.get_array().sycl_queue
+    result = dpnp.linalg.inv(dpnp_x)
+    expected = numpy.linalg.inv(numpy_x)
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = dpnp_x.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)

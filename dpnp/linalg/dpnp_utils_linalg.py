@@ -37,6 +37,7 @@ __all__ = [
     "dpnp_cholesky",
     "dpnp_det",
     "dpnp_eigh",
+    "dpnp_inv",
     "dpnp_slogdet",
     "dpnp_solve",
 ]
@@ -94,6 +95,33 @@ def _calculate_determinant_sign(ipiv, diag, res_type, n):
         sign = sign * dpnp.prod(diag / dpnp.abs(diag), axis=-1)
 
     return sign.astype(res_type)
+
+
+def _check_lapack_dev_info(dev_info, error_msg=None):
+    """
+    Check `dev_info` from OneMKL LAPACK routines, raising an error for failures.
+
+    Parameters
+    ----------
+    dev_info : list of ints
+        Each element of the list indicates the status of OneMKL LAPACK routine calls.
+        A non-zero value signifies a failure.
+
+    error_message : str, optional
+        Custom error message for detected LAPACK errors.
+        Default: `Singular matrix`
+
+    Raises
+    ------
+    dpnp.linalg.LinAlgError
+        On non-zero elements in dev_info, indicating LAPACK errors.
+
+    """
+
+    if any(dev_info):
+        error_msg = error_msg or "Singular matrix"
+
+        raise dpnp.linalg.LinAlgError(error_msg)
 
 
 def _real_type(dtype, device=None):
@@ -782,6 +810,145 @@ def dpnp_eigh(a, UPLO):
         ht_copy_ev.wait()
 
         return w, out_v
+
+
+def dpnp_inv_batched(a, res_type):
+    """
+    dpnp_inv_batched(a, res_type)
+
+    Return the inverses of each matrix in a batch of matrices `a`.
+
+    The inverse of a matrix is such that if it is multiplied by the original matrix,
+    it results in the identity matrix. This function computes the inverses of a batch
+    of square matrices.
+    """
+
+    orig_shape = a.shape
+    # get 3d input arrays by reshape
+    a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
+    batch_size = a.shape[0]
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+    n = a.shape[1]
+
+    # oneMKL LAPACK getri_batch overwrites `a`
+    a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
+    ipiv_h = dpnp.empty(
+        (batch_size, n),
+        dtype=dpnp.int64,
+        usm_type=a_usm_type,
+        sycl_queue=a_sycl_queue,
+    )
+    dev_info = [0] * batch_size
+
+    # use DPCTL tensor function to fill the matrix array
+    # with content from the input array `a`
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
+    )
+
+    ipiv_stride = n
+    a_stride = a_h.strides[0]
+
+    # Call the LAPACK extension function _getrf_batch
+    # to perform LU decomposition of a batch of general matrices
+    ht_getrf_ev, getrf_ev = li._getrf_batch(
+        a_sycl_queue,
+        a_h.get_array(),
+        ipiv_h.get_array(),
+        dev_info,
+        n,
+        a_stride,
+        ipiv_stride,
+        batch_size,
+        [a_copy_ev],
+    )
+
+    _check_lapack_dev_info(dev_info)
+
+    # Call the LAPACK extension function _getri_batch
+    # to compute the inverse of a batch of matrices using the results
+    # from the LU decomposition performed by _getrf_batch
+    ht_getri_ev, _ = li._getri_batch(
+        a_sycl_queue,
+        a_h.get_array(),
+        ipiv_h.get_array(),
+        dev_info,
+        n,
+        a_stride,
+        ipiv_stride,
+        batch_size,
+        [getrf_ev],
+    )
+
+    _check_lapack_dev_info(dev_info)
+
+    ht_getri_ev.wait()
+    ht_getrf_ev.wait()
+    a_ht_copy_ev.wait()
+
+    return a_h.reshape(orig_shape)
+
+
+def dpnp_inv(a):
+    """
+    dpnp_inv(a)
+
+    Return the inverse of `a` matrix.
+
+    The inverse of a matrix is such that if it is multiplied by the original matrix,
+    it results in the identity matrix. This function computes the inverse of a single
+    square matrix.
+
+    """
+
+    res_type = _common_type(a)
+    if a.size == 0:
+        return dpnp.empty_like(a, dtype=res_type)
+
+    if a.ndim >= 3:
+        return dpnp_inv_batched(a, res_type)
+
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+
+    a_order = "C" if a.flags.c_contiguous else "F"
+    a_shape = a.shape
+
+    # oneMKL LAPACK gesv overwrites `a` and assumes fortran-like array as input.
+    # To use C-contiguous arrays, we transpose them before passing to gesv.
+    # This transposition is effective because the input array `a` is square.
+    a_f = dpnp.empty_like(a, order=a_order, dtype=res_type)
+
+    # use DPCTL tensor function to fill the coefficient matrix array
+    # with content from the input array `a`
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a_sycl_queue
+    )
+
+    b_f = dpnp.eye(
+        a_shape[0],
+        dtype=res_type,
+        order=a_order,
+        sycl_queue=a_sycl_queue,
+        usm_type=a_usm_type,
+    )
+
+    if a_order == "F":
+        ht_lapack_ev, _ = li._gesv(
+            a_sycl_queue, a_f.get_array(), b_f.get_array(), [a_copy_ev]
+        )
+    else:
+        ht_lapack_ev, _ = li._gesv(
+            a_sycl_queue, a_f.T.get_array(), b_f.T.get_array(), [a_copy_ev]
+        )
+
+    ht_lapack_ev.wait()
+    a_ht_copy_ev.wait()
+
+    return b_f
 
 
 def dpnp_qr_batch(a, mode="reduced"):

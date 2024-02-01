@@ -94,8 +94,8 @@ class TestArgsort:
         np_array = numpy.array(a, dtype=dtype)
         dp_array = dpnp.array(np_array)
 
-        result = dpnp.argsort(dp_array)
-        expected = numpy.argsort(np_array)
+        result = dpnp.argsort(dp_array, kind="stable")
+        expected = numpy.argsort(np_array, kind="stable")
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
