@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.tri &mdash; Data Parallel Extension for NumPy 0.13.1dev3+7.g3163ca8189 documentation</title>
+  <title>dpnp.tri &mdash; Data Parallel Extension for NumPy 0.13.1dev3+4.g1697b02b3a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=d35e2ec2"></script>
+        <script src="../../_static/documentation_options.js?v=9d5bc9ca"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev3+7.g3163ca8189
+                0.13.1dev3+4.g1697b02b3a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -131,11 +131,28 @@
 <dd><p>An array with ones at and below the given diagonal and zeros elsewhere.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tri.html#numpy.tri" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tri</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>out</strong> – Array with its lower triangle filled with ones and zeros elsewhere.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Number of rows in the array.</p></li>
+<li><p><strong>M</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of columns in the array. By default, <cite>M</cite> is taken equal to <cite>N</cite>.</p></li>
+<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – The sub-diagonal at and below which the array is filled. k = 0 is the main diagonal,
+while k &lt; 0 is below it, and k &gt; 0 is above. The default is 0.</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a><em>, </em><em>optional</em>) – The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point
+data type for the device where input array is allocated.</p></li>
+<li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – An array API concept of device where the output array is created.
+The <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), an OneAPI filter selector string,
+an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code> corresponding to a non-partitioned SYCL device,
+an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code>, or a <cite>Device</cite> object returned by
+<a class="reference internal" href="dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.device" title="dpnp.dpnp_array.dpnp_array.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dpnp_array.dpnp_array.device</span></code></a> property.</p></li>
+<li><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p></li>
+<li><p><strong>sycl_queue</strong> (<em>{None</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – A SYCL queue to use for output array allocation and copying.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>ndarray of shape (N, M)</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – Array with its lower triangle filled with ones and zeros elsewhere.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray of shape (N, M)</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
@@ -163,6 +180,28 @@ Otherwise the function will be executed sequentially on CPU.</p>
 <span class="go">array([[0.,  0.,  0.,  0.,  0.],</span>
 <span class="go">       [1.,  0.,  0.,  0.,  0.],</span>
 <span class="go">       [1.,  1.,  0.,  0.,  0.]])</span>
+</pre></div>
+</div>
+<p>Creating an array on different device and usm_type</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tri</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+<span class="go">(array([[1., 0.],</span>
+<span class="go">        [1., 1.],</span>
+<span class="go">        [1., 1.]]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tri</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">usm_type</span>
+<span class="go">(array([[1., 0.],</span>
+<span class="go">        [1., 1.],</span>
+<span class="go">        [1., 1.]]), Device(opencl:cpu:0), &#39;device&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tri</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;host&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">z</span><span class="o">.</span><span class="n">usm_type</span>
+<span class="go">(array([[1., 0.],</span>
+<span class="go">        [1., 1.],</span>
+<span class="go">        [1., 1.]]), Device(level_zero:gpu:0), &#39;host&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
