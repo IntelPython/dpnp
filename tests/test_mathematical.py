@@ -15,6 +15,7 @@ from numpy.testing import (
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
+from tests.third_party.cupy import testing
 
 from .helper import (
     assert_dtype_allclose,
@@ -125,6 +126,7 @@ class TestClip:
         expected = numpy.clip(np_a, -1, 1)
         assert_array_equal(result, expected)
 
+    @testing.with_requires("numpy>=1.25.0")
     @pytest.mark.parametrize(
         "kwargs",
         [
