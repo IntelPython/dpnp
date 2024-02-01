@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ogrid &mdash; Data Parallel Extension for NumPy 0.13.1dev3+4.g1697b02b3a documentation</title>
+  <title>dpnp.ogrid &mdash; Data Parallel Extension for NumPy 0.13.1dev3+10.gc38d462ad6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9d5bc9ca"></script>
+        <script src="../../_static/documentation_options.js?v=40df9b28"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev3+4.g1697b02b3a
+                0.13.1dev3+10.gc38d462ad6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -159,20 +159,18 @@ with dimensions[i] in the ith place.</p>
 <span class="go">        [4]]), array([[0, 1, 2, 3, 4]])]</span>
 </pre></div>
 </div>
-<p>Creating an array on different device and usm_type</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ogrid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="n">j</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
-<span class="go">(array([-1. , -0.5,  0. ,  0.5,  1. ]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([-1. , -0.5,  0. ,  0.5,  1. ])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+<span class="go">&#39;device&#39;</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ogrid</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="n">j</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">usm_type</span>
-<span class="go">(array([-1. , -0.5,  0. ,  0.5,  1. ]), Device(opencl:cpu:0), &#39;device&#39;)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ogrid</span><span class="p">(</span><span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;host&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="n">j</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">z</span><span class="o">.</span><span class="n">usm_type</span>
-<span class="go">(array([-1. , -0.5,  0. ,  0.5,  1. ]), Device(level_zero:gpu:0), &#39;host&#39;)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ogrid</span><span class="p">(</span><span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;host&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="n">j</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
+<span class="go">array([-1. , -0.5,  0. ,  0.5,  1. ])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+<span class="go">&#39;host&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
