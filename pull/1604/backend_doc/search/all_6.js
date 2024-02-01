@@ -19,5 +19,6 @@ var searchData=
   ['get_5fxyz_5fid_5fby_5fid_5finkernel_16',['get_xyz_id_by_id_inkernel',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#gad37eb9ce0ad29590cc931a9b6cd538e2',1,'dpnp_utils.hpp']]],
   ['getrfbatchtypepairsupportfactory_17',['GetrfBatchTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
   ['getrftypepairsupportfactory_18',['GetrfTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
-  ['gpu_5fselector_19',['GPU_SELECTOR',['../group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1a332c42fe262bf0855ca1de84d27049b1',1,'dpnp_iface.hpp']]]
+  ['getribatchtypepairsupportfactory_19',['GetriBatchTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
+  ['gpu_5fselector_20',['GPU_SELECTOR',['../group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1a332c42fe262bf0855ca1de84d27049b1',1,'dpnp_iface.hpp']]]
 ];
