@@ -33,7 +33,7 @@ import dpnp.backend.extensions.blas._blas_impl as bi
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 
-__all__ = ["dpnp_dot", "dpnp_matmul"]
+__all__ = ["dpnp_dot", "dpnp_matmul", "dpnp_vdot"]
 
 
 def _copy_array(x, dep_events, host_events, contig_copy=False, dtype=None):
@@ -175,7 +175,7 @@ def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
             res_dtype = dtype
         else:
             raise TypeError(
-                f"Cannot cast ufunc 'matmul' output from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
+                f"Cannot cast from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
             )
 
     op_dtype = (
@@ -190,11 +190,11 @@ def dpnp_dot(a, b, /, out=None):
     Return the dot product of two arrays.
 
     The routine that is used to perform the main calculation
-    depends on input array data types: 1) For integer and boolean data types,
+    depends on input arrays data type: 1) For integer and boolean data types,
     `dpctl.tensor.vecdot` form the Data Parallel Control library is used,
-    2) For floating point real-valued data types, `dot` routines from
-    BLAS library of OneMKL is used, and 3) For complex data types,
-    `dotu` routines from BLAS library of OneMKL is used.
+    2) For real-valued floating point data types, `dot` routines from
+    BLAS library of OneMKL are used, and 3) For complex data types,
+    `dotu` routines from BLAS library of OneMKL are used.
 
     """
 
@@ -447,3 +447,74 @@ def dpnp_matmul(
             return result
     else:
         return dpnp.get_result_array(result, out, casting=casting)
+
+
+def dpnp_vdot(a, b):
+    """
+    Return the dot product of two arrays.
+
+    The routine that is used to perform the main calculation
+    depends on input arrays data type: 1) For integer and boolean data types,
+    `dpctl.tensor.vecdot` form the Data Parallel Control library is used,
+    2) For real-valued floating point data types, `dot` routines from
+    BLAS library of OneMKL are used, and 3) For complex data types,
+    `dotc` routines from BLAS library of OneMKL are used.
+
+    """
+
+    if a.size != b.size:
+        raise ValueError(
+            "Input arrays have a mismatch in their size. "
+            f"(size {a.size} is different from {b.size})"
+        )
+
+    res_usm_type, exec_q = get_usm_allocations([a, b])
+
+    # Determine the appropriate data types
+    # casting is irrelevant here since dtype is `None`
+    dot_dtype, res_dtype = _op_res_dtype(
+        a, b, dtype=None, casting="no", sycl_queue=exec_q
+    )
+
+    # create result array
+    result = dpnp.empty(
+        (),
+        dtype=dot_dtype,
+        usm_type=res_usm_type,
+        sycl_queue=exec_q,
+    )
+
+    # input arrays should have the proper data type
+    dep_events_list = []
+    host_tasks_list = []
+    if dpnp.issubdtype(res_dtype, dpnp.inexact):
+        # copying is needed if dtypes of input arrays are different
+        a = _copy_array(a, dep_events_list, host_tasks_list, dtype=dot_dtype)
+        b = _copy_array(b, dep_events_list, host_tasks_list, dtype=dot_dtype)
+        if dpnp.issubdtype(res_dtype, dpnp.complexfloating):
+            ht_ev, _ = bi._dotc(
+                exec_q,
+                dpnp.get_usm_ndarray(a),
+                dpnp.get_usm_ndarray(b),
+                dpnp.get_usm_ndarray(result),
+                dep_events_list,
+            )
+        else:
+            ht_ev, _ = bi._dot(
+                exec_q,
+                dpnp.get_usm_ndarray(a),
+                dpnp.get_usm_ndarray(b),
+                dpnp.get_usm_ndarray(result),
+                dep_events_list,
+            )
+        host_tasks_list.append(ht_ev)
+        dpctl.SyclEvent.wait_for(host_tasks_list)
+    else:
+        dpt_a = dpnp.get_usm_ndarray(a)
+        dpt_b = dpnp.get_usm_ndarray(b)
+        result = dpnp_array._create_from_usm_ndarray(dpt.vecdot(dpt_a, dpt_b))
+
+    if dot_dtype != res_dtype:
+        result = result.astype(res_dtype, copy=False)
+
+    return result

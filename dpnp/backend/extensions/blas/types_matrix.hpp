@@ -64,6 +64,30 @@ struct DotTypePairSupportFactory
 
 /**
  * @brief A factory to define pairs of supported types for which
+ * MKL BLAS library provides support in oneapi::mkl::blas::dotc<Tab, Tc>
+ * function.
+ *
+ * @tparam Tab Type of arrays containing input vectors A and B.
+ * @tparam Tc Type of array containing output.
+ */
+template <typename Tab, typename Tc>
+struct DotcTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<Tab,
+                                          std::complex<float>,
+                                          Tc,
+                                          std::complex<float>>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab,
+                                          std::complex<double>,
+                                          Tc,
+                                          std::complex<double>>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
  * MKL BLAS library provides support in oneapi::mkl::blas::dotu<Tab, Tc>
  * function.
  *

@@ -43,7 +43,11 @@ import numpy
 import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
-from dpnp.dpnp_utils.dpnp_utils_linearalgebra import dpnp_dot, dpnp_matmul
+from dpnp.dpnp_utils.dpnp_utils_linearalgebra import (
+    dpnp_dot,
+    dpnp_matmul,
+    dpnp_vdot,
+)
 
 __all__ = [
     "dot",
@@ -444,19 +448,63 @@ def tensordot(x1, x2, axes=2):
     return call_origin(numpy.tensordot, x1, x2, axes)
 
 
-def vdot(*args, **kwargs):
+def vdot(a, b):
     """
     Return the dot product of two vectors.
 
-    For full documentation refer to :obj:`numpy.vdot`.
+    For full documentation refer to :obj:`numpy.dot`.
+
+    Parameters
+    ----------
+    a : {dpnp_array, usm_ndarray}
+        First input array. If `a` is complex the complex conjugate
+        is taken before the calculation of the dot product.
+    b : {dpnp_array, usm_ndarray, scalar}
+        Second input array.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Returns the dot product of `a` and `b`.
 
     See Also
     --------
     :obj:`dpnp.dot` : Returns the dot product.
 
-    Notes
-    -----
-    This function works the same as :obj:`dpnp.dot`.
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1+2j,3+4j])
+    >>> b = np.array([5+6j,7+8j])
+    >>> np.vdot(a, b)
+    array(70-8j)
+    >>> np.vdot(b, a)
+    array(70+8j)
+
+    Note that higher-dimensional arrays are flattened!
+
+    >>> a = np.array([[1, 4], [5, 6]])
+    >>> b = np.array([[4, 1], [2, 2]])
+    >>> np.vdot(a, b)
+    array(30)
+    >>> np.vdot(b, a)
+    array(30)
+    >>> 1*4 + 4*1 + 5*2 + 6*2
+    30
 
     """
-    return dpnp.dot(*args, **kwargs)
+
+    dpnp.check_supported_arrays_type(a)
+    dpnp.check_supported_arrays_type(b, scalar_type=True)
+
+    if dpnp.isscalar(b):
+        if a.size != 1:
+            raise ValueError("The first array should be of size one.")
+        # TODO: investigate usage of axpy (axpy_batch) or scal
+        # functions from BLAS here instead of dpnp.multiply
+        return dpnp.multiply(dpnp.conj(a), b)
+    elif a.ndim == 1 and b.ndim == 1:
+        return dpnp_vdot(a, b)
+    else:
+        # dot product of flatten arrays
+        return dpnp_vdot(dpnp.ravel(a), dpnp.ravel(b))
