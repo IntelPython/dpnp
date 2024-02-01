@@ -436,18 +436,128 @@ def test_eigvals(type):
         assert_allclose(expected, result, atol=0.5)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize(
-    "array",
-    [[[1.0, 2.0], [3.0, 4.0]], [[0, 1, 2], [3, 2, -1], [4, -2, 3]]],
-    ids=["[[1., 2.], [3., 4.]]", "[[0, 1, 2], [3, 2, -1], [4, -2, 3]]"],
-)
-def test_inv(type, array):
-    a = numpy.array(array, dtype=type)
-    ia = inp.array(a)
-    result = inp.linalg.inv(ia)
-    expected = numpy.linalg.inv(a)
-    assert_allclose(expected, result, rtol=1e-06)
+class TestInv:
+    @pytest.mark.parametrize(
+        "array",
+        [
+            [[1, 2], [3, 4]],
+            [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
+            [
+                [[[1, 2], [3, 4]], [[1, 2], [2, 1]]],
+                [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
+            ],
+        ],
+        ids=[
+            "2D_array",
+            "3D_array",
+            "4D_array",
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_inv(self, array, dtype):
+        a = numpy.array(array, dtype=dtype)
+        ia = inp.array(a)
+        result = inp.linalg.inv(ia)
+        expected = numpy.linalg.inv(a)
+        assert_dtype_allclose(result, expected)
+
+    def test_inv_strides(self):
+        a_np = numpy.array(
+            [
+                [2, 3, 1, 4, 5],
+                [5, 6, 7, 8, 9],
+                [9, 7, 7, 2, 3],
+                [1, 4, 5, 1, 8],
+                [8, 9, 8, 5, 3],
+            ]
+        )
+
+        a_dp = inp.array(a_np)
+
+        # positive strides
+        expected = numpy.linalg.inv(a_np[::2, ::2])
+        result = inp.linalg.inv(a_dp[::2, ::2])
+        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+
+        # negative strides
+        expected = numpy.linalg.inv(a_np[::-2, ::-2])
+        result = inp.linalg.inv(a_dp[::-2, ::-2])
+        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (0, 0),
+            (3, 0, 0),
+            (0, 2, 2),
+        ],
+        ids=[
+            "(0, 0)",
+            "(3, 0, 0)",
+            "(0, 2, 2)",
+        ],
+    )
+    def test_inv_empty(self, shape):
+        a = numpy.empty(shape)
+        ia = inp.array(a)
+        result = inp.linalg.inv(ia)
+        expected = numpy.linalg.inv(a)
+        assert_dtype_allclose(result, expected)
+
+    # TODO: remove skipif when MKLD-16626 is resolved
+    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
+    @pytest.mark.parametrize(
+        "matrix",
+        [
+            [[1, 2], [2, 4]],
+            [[0, 0], [0, 0]],
+            [[1, 1], [1, 1]],
+            [[2, 4], [1, 2]],
+            [[1, 2], [0, 0]],
+            [[1, 0], [2, 0]],
+        ],
+        ids=[
+            "Linearly dependent rows",
+            "Zero matrix",
+            "Identical rows",
+            "Linearly dependent columns",
+            "Zero row",
+            "Zero column",
+        ],
+    )
+    def test_inv_singular_matrix(self, matrix):
+        a_np = numpy.array(matrix, dtype="float32")
+        a_dp = inp.array(a_np)
+
+        assert_raises(numpy.linalg.LinAlgError, numpy.linalg.inv, a_np)
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp)
+
+    # TODO: remove skipif when MKLD-16626 is resolved
+    # _getrf_batch does not raise an error with singular matrices.
+    @pytest.mark.skip("MKLD-16626")
+    def test_inv_singular_matrix_3D(self):
+        a_np = numpy.array(
+            [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
+        )
+        a_dp = inp.array(a_np)
+
+        assert_raises(numpy.linalg.LinAlgError, numpy.linalg.inv, a_np)
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp)
+
+    def test_inv_errors(self):
+        a_dp = inp.array([[1, 2], [2, 5]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.inv, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp_ndim_1)
+
+        # a is not square
+        a_dp = inp.ones((2, 3))
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp)
 
 
 @pytest.mark.parametrize(

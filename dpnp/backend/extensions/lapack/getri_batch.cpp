@@ -29,7 +29,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/type_utils.hpp"
 
-#include "getrf.hpp"
+#include "getri.hpp"
 #include "types_matrix.hpp"
 
 #include "dpnp_utils.hpp"
@@ -46,7 +46,7 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
-typedef sycl::event (*getrf_batch_impl_fn_ptr_t)(
+typedef sycl::event (*getri_batch_impl_fn_ptr_t)(
     sycl::queue,
     std::int64_t,
     char *,
@@ -59,11 +59,11 @@ typedef sycl::event (*getrf_batch_impl_fn_ptr_t)(
     std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
-static getrf_batch_impl_fn_ptr_t
-    getrf_batch_dispatch_vector[dpctl_td_ns::num_types];
+static getri_batch_impl_fn_ptr_t
+    getri_batch_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
-static sycl::event getrf_batch_impl(sycl::queue exec_q,
+static sycl::event getri_batch_impl(sycl::queue exec_q,
                                     std::int64_t n,
                                     char *in_a,
                                     std::int64_t lda,
@@ -80,7 +80,7 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
     T *a = reinterpret_cast<T *>(in_a);
 
     const std::int64_t scratchpad_size =
-        mkl_lapack::getrf_batch_scratchpad_size<T>(exec_q, n, n, lda, stride_a,
+        mkl_lapack::getri_batch_scratchpad_size<T>(exec_q, n, lda, stride_a,
                                                    stride_ipiv, batch_size);
     T *scratchpad = nullptr;
 
@@ -88,15 +88,13 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
     std::int64_t info = 0;
     bool is_exception_caught = false;
 
-    sycl::event getrf_batch_event;
+    sycl::event getri_batch_event;
     try {
         scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
 
-        getrf_batch_event = mkl_lapack::getrf_batch(
+        getri_batch_event = mkl_lapack::getri_batch(
             exec_q,
             n, // The order of each square matrix in the batch; (0 ≤ n).
-               // It must be a non-negative integer.
-            n, // The number of columns in each matrix in the batch; (0 ≤ n).
                // It must be a non-negative integer.
             a, // Pointer to the batch of square matrices, each of size (n x n).
             lda,      // The leading dimension of each matrix in the batch.
@@ -105,7 +103,7 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
                   // the batch.
             stride_ipiv, // Stride between pivot indices: Spacing between pivot
                          // arrays in 'ipiv'.
-            batch_size,  // Stride between pivot index arrays in the batch.
+            batch_size,  // Total number of matrices in the batch.
             scratchpad,  // Pointer to scratchpad memory to be used by MKL
                          // routine for storing intermediate results.
             scratchpad_size, depends);
@@ -144,14 +142,14 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
                 << e.detail();
         }
         else {
-            error_msg << "Unexpected MKL exception caught during getrf_batch() "
+            error_msg << "Unexpected MKL exception caught during getri_batch() "
                          "call:\nreason: "
                       << e.what() << "\ninfo: " << e.info();
         }
     } catch (sycl::exception const &e) {
         is_exception_caught = true;
         error_msg
-            << "Unexpected SYCL exception caught during getrf_batch() call:\n"
+            << "Unexpected SYCL exception caught during getri_batch() call:\n"
             << e.what();
     }
 
@@ -165,16 +163,16 @@ static sycl::event getrf_batch_impl(sycl::queue exec_q,
     }
 
     sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(getrf_batch_event);
+        cgh.depends_on(getri_batch_event);
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad]() { sycl::free(scratchpad, ctx); });
     });
     host_task_events.push_back(clean_up_event);
-    return getrf_batch_event;
+    return getri_batch_event;
 }
 
 std::pair<sycl::event, sycl::event>
-    getrf_batch(sycl::queue exec_q,
+    getri_batch(sycl::queue exec_q,
                 dpctl::tensor::usm_ndarray a_array,
                 dpctl::tensor::usm_ndarray ipiv_array,
                 py::list dev_info,
@@ -234,11 +232,11 @@ std::pair<sycl::event, sycl::event>
     int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
 
-    getrf_batch_impl_fn_ptr_t getrf_batch_fn =
-        getrf_batch_dispatch_vector[a_array_type_id];
-    if (getrf_batch_fn == nullptr) {
+    getri_batch_impl_fn_ptr_t getri_batch_fn =
+        getri_batch_dispatch_vector[a_array_type_id];
+    if (getri_batch_fn == nullptr) {
         throw py::value_error(
-            "No getrf_batch implementation defined for the provided type "
+            "No getri_batch implementation defined for the provided type "
             "of the input matrix.");
     }
 
@@ -257,23 +255,23 @@ std::pair<sycl::event, sycl::event>
     std::int64_t *d_ipiv = reinterpret_cast<std::int64_t *>(ipiv_array_data);
 
     std::vector<sycl::event> host_task_events;
-    sycl::event getrf_batch_ev = getrf_batch_fn(
+    sycl::event getri_batch_ev = getri_batch_fn(
         exec_q, n, a_array_data, lda, stride_a, d_ipiv, stride_ipiv, batch_size,
         dev_info, host_task_events, depends);
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {a_array, ipiv_array}, host_task_events);
 
-    return std::make_pair(args_ev, getrf_batch_ev);
+    return std::make_pair(args_ev, getri_batch_ev);
 }
 
 template <typename fnT, typename T>
-struct GetrfBatchContigFactory
+struct GetriBatchContigFactory
 {
     fnT get()
     {
-        if constexpr (types::GetrfBatchTypePairSupportFactory<T>::is_defined) {
-            return getrf_batch_impl<T>;
+        if constexpr (types::GetriBatchTypePairSupportFactory<T>::is_defined) {
+            return getri_batch_impl<T>;
         }
         else {
             return nullptr;
@@ -281,13 +279,13 @@ struct GetrfBatchContigFactory
     }
 };
 
-void init_getrf_batch_dispatch_vector(void)
+void init_getri_batch_dispatch_vector(void)
 {
-    dpctl_td_ns::DispatchVectorBuilder<getrf_batch_impl_fn_ptr_t,
-                                       GetrfBatchContigFactory,
+    dpctl_td_ns::DispatchVectorBuilder<getri_batch_impl_fn_ptr_t,
+                                       GetriBatchContigFactory,
                                        dpctl_td_ns::num_types>
         contig;
-    contig.populate_dispatch_vector(getrf_batch_dispatch_vector);
+    contig.populate_dispatch_vector(getri_batch_dispatch_vector);
 }
 } // namespace lapack
 } // namespace ext

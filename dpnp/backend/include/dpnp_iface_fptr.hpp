@@ -174,8 +174,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_INITVAL_EXT, /**< Used in numpy ones, ones_like, zeros, zeros_like
                             impls  */
     DPNP_FN_INV,         /**< Used in numpy.linalg.inv() impl  */
-    DPNP_FN_INV_EXT,     /**< Used in numpy.linalg.inv() impl, requires extra
-                            parameters  */
     DPNP_FN_INVERT,      /**< Used in numpy.invert() impl  */
     DPNP_FN_KRON,        /**< Used in numpy.kron() impl  */
     DPNP_FN_KRON_EXT, /**< Used in numpy.kron() impl, requires extra parameters
