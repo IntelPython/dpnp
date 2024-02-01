@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.diag &mdash; Data Parallel Extension for NumPy 0.13.1dev2+21.g4e53d17306 documentation</title>
+  <title>dpnp.diag &mdash; Data Parallel Extension for NumPy 0.13.1dev3+4.g1697b02b3a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8d9ae783"></script>
+        <script src="../../_static/documentation_options.js?v=9d5bc9ca"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+21.g4e53d17306
+                0.13.1dev3+4.g1697b02b3a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -132,8 +132,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>v</strong> (<em>array_like</em>) – If v is a 2-D array, return a copy of its k-th diagonal. If v is a 1-D array,
-return a 2-D array with v on the k-th diagonal.</p></li>
+<li><p><strong>v</strong> (<em>array_like</em>) – Input data, in any form that can be converted to an array. This includes scalars,
+lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.
+If <cite>v</cite> is a 2-D array, return a copy of its k-th diagonal. If <cite>v</cite> is a 1-D array,
+return a 2-D array with <cite>v</cite> on the k-th diagonal.</p></li>
 <li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Diagonal in question. The default is 0. Use k &gt; 0 for diagonals above the main diagonal,
 and k &lt; 0 for diagonals below the main diagonal.</p></li>
 <li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – An array API concept of device where the output array is created.
@@ -152,9 +154,6 @@ an instance of <code class="xref py py-class docutils literal notranslate"><span
 <dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
-<p class="rubric">Limitations</p>
-<p>Parameter <cite>k</cite> is only supported as integer data type.
-Otherwise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> exception will be raised.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">

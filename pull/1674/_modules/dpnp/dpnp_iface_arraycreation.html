@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.13.1dev2+21.g4e53d17306 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.13.1dev3+4.g1697b02b3a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8d9ae783"></script>
+        <script src="../../_static/documentation_options.js?v=9d5bc9ca"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+21.g4e53d17306
+                0.13.1dev3+4.g1697b02b3a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -210,13 +210,13 @@
 <span class="sd">        Start of interval. The interval includes this value. The default start value is 0.</span>
 <span class="sd">    stop : {int, real}</span>
 <span class="sd">        End of interval. The interval does not include this value, except in some cases</span>
-<span class="sd">        where step is not an integer and floating point round-off affects the length of out.</span>
+<span class="sd">        where `step` is not an integer and floating point round-off affects the length of out.</span>
 <span class="sd">    step : {int, real}, optional</span>
-<span class="sd">        Spacing between values. The default step size is 1. If step is specified as</span>
-<span class="sd">        a position argument, start must also be given.</span>
+<span class="sd">        Spacing between values. The default `step` size is 1. If `step` is specified as</span>
+<span class="sd">        a position argument, `start` must also be given.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used</span>
-<span class="sd">        that can represent the values (by applying promotion rules when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
+<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
@@ -311,10 +311,10 @@
 <span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
 <span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used</span>
-<span class="sd">        that can represent the values (by applying promotion rules when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
+<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
 <span class="sd">    copy : bool, optional</span>
-<span class="sd">        If ``true`` (default), then the object is copied.</span>
+<span class="sd">        If ``True`` (default), then the object is copied.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;K&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -441,8 +441,8 @@
 <span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
 <span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used</span>
-<span class="sd">        that can represent the values (by applying promotion rules when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
+<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;K&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -540,8 +540,8 @@
 <span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
 <span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used</span>
-<span class="sd">        that can represent the values (by applying promotion rules when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
+<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;K&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -631,10 +631,11 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
-<span class="sd">        Input array.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
+<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used</span>
-<span class="sd">        that can represent the values (by applying promotion rules when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
+<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
@@ -742,10 +743,11 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
-<span class="sd">        Input array.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
+<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used</span>
-<span class="sd">        that can represent the values (by applying promotion rules when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
+<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
@@ -844,7 +846,9 @@
 
 <div class="viewcode-block" id="copy">
 <a class="viewcode-back" href="../../reference/generated/dpnp.copy.html#dpnp.copy">[docs]</a>
-<span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">copy</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array copy of the given object.</span>
 
@@ -853,9 +857,20 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
-<span class="sd">        Input data.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
+<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;K&quot;.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
+<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
+<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -902,10 +917,23 @@
             <span class="sa">f</span><span class="s2">&quot;default value ``False``, but got </span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="n">sycl_queue</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="p">):</span>
         <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">array</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+        <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
@@ -920,8 +948,10 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    v : array_like</span>
-<span class="sd">        If v is a 2-D array, return a copy of its k-th diagonal. If v is a 1-D array,</span>
-<span class="sd">        return a 2-D array with v on the k-th diagonal.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
+<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        If `v` is a 2-D array, return a copy of its k-th diagonal. If `v` is a 1-D array,</span>
+<span class="sd">        return a 2-D array with `v` on the k-th diagonal.</span>
 <span class="sd">    k : int, optional</span>
 <span class="sd">        Diagonal in question. The default is 0. Use k &gt; 0 for diagonals above the main diagonal,</span>
 <span class="sd">        and k &lt; 0 for diagonals below the main diagonal.</span>
@@ -940,11 +970,6 @@
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        The extracted diagonal or constructed diagonal array.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `k` is only supported as integer data type.</span>
-<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1040,7 +1065,9 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    v : array_like</span>
-<span class="sd">        Input data, which is flattened and set as the k-th diagonal of the output.</span>
+<span class="sd">        Input data, which is flattened and set as the k-th diagonal of the output,</span>
+<span class="sd">        in any form that can be converted to an array. This includes scalars,</span>
+<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">    k : int, optional</span>
 <span class="sd">        Diagonal to set; 0, the default, corresponds to the &quot;main&quot; diagonal,</span>
 <span class="sd">        a positive (negative) k giving the number of the diagonal above (below) the main.</span>
@@ -1146,7 +1173,8 @@
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
+<span class="sd">        data type for the device where input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -1221,7 +1249,7 @@
 <div class="viewcode-block" id="empty_like">
 <a class="viewcode-back" href="../../reference/generated/dpnp.empty_like.html#dpnp.empty_like">[docs]</a>
 <span class="k">def</span> <span class="nf">empty_like</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
+    <span class="n">a</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1239,10 +1267,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x1 : array_like</span>
-<span class="sd">        The shape and dtype of a define these same attributes of the returned array.</span>
+<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        The shape and dtype of `a` define these same attributes of the returned array.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
+<span class="sd">        data type for the device where input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    shape : {int, sequence of ints}</span>
@@ -1265,7 +1294,6 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Parameter `order` is supported with values ``&quot;C&quot;`` or ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
@@ -1300,18 +1328,18 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">_shape</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
-        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
-        <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
+        <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
+        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
+        <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
         <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
-            <span class="n">x1</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="n">_shape</span><span class="p">,</span>
@@ -1321,7 +1349,7 @@
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">empty_like</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">empty_like</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
 
 
 
@@ -1355,7 +1383,8 @@
 <span class="sd">        Index of the diagonal: 0 (the default) refers to the main diagonal,</span>
 <span class="sd">        a positive value refers to an upper diagonal, and a negative value to a lower diagonal.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
+<span class="sd">        data type for the device where input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -1553,9 +1582,11 @@
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
 <span class="sd">    fill_value : {scalar, array_like}</span>
-<span class="sd">        Fill value.</span>
+<span class="sd">        Fill value, in any form that can be converted to an array. This includes scalars,</span>
+<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
+<span class="sd">        data type for the device where input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -1631,7 +1662,7 @@
 <div class="viewcode-block" id="full_like">
 <a class="viewcode-back" href="../../reference/generated/dpnp.full_like.html#dpnp.full_like">[docs]</a>
 <span class="k">def</span> <span class="nf">full_like</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
+    <span class="n">a</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="n">fill_value</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -1650,12 +1681,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x1 : array_like</span>
-<span class="sd">        The shape and dtype of a define these same attributes of the returned array.</span>
+<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        The shape and dtype of `a` define these same attributes of the returned array.</span>
 <span class="sd">    fill_value : {scalar, array_like}</span>
-<span class="sd">        Fill value.</span>
+<span class="sd">        Fill value, in any form that can be converted to an array. This includes scalars,</span>
+<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
+<span class="sd">        data type for the device where input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    shape : {int, sequence of ints}</span>
@@ -1674,11 +1707,10 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Array of `fill_value with` the same shape and type as `x1`.</span>
+<span class="sd">        Array of `fill_value` with the same shape and type as `a`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;`` and ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
@@ -1712,18 +1744,18 @@
 <span class="sd">    (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), &#39;host&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">_shape</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
-        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
-        <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
+        <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
+        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
+        <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
         <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
-            <span class="n">x1</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
@@ -1734,7 +1766,7 @@
             <span class="n">usm_type</span><span class="o">=</span><span class="n">_usm_type</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">,</span>
         <span class="p">)</span>
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
 
 
 
@@ -1761,16 +1793,20 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    start : array_like</span>
-<span class="sd">        The starting value of the sequence.</span>
+<span class="sd">        The starting value of the sequence, in any form that can be converted to an array.</span>
+<span class="sd">        This includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    stop : array_like</span>
-<span class="sd">        The final value of the sequence, unless endpoint is False. In that case, num + 1 values</span>
-<span class="sd">        are spaced over the interval in log-space, of which all but the last (a sequence of length num)</span>
-<span class="sd">        are returned.</span>
+<span class="sd">        The final value of the sequence, in any form that can be converted to an array.</span>
+<span class="sd">        This includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays. If `endpoint` is ``False`` num + 1 values</span>
+<span class="sd">        are spaced over the interval in log-space, of which all but the last</span>
+<span class="sd">        (a sequence of length num) are returned.</span>
 <span class="sd">    num : int, optional</span>
 <span class="sd">        Number of samples to generate. Default is 50.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used</span>
-<span class="sd">        that can represent the values (by applying promotion rules when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
+<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
@@ -1782,7 +1818,7 @@
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 <span class="sd">    endpoint : bool, optional</span>
-<span class="sd">        If True, stop is the last sample. Otherwise, it is not included. Default is True.</span>
+<span class="sd">        If ``True``, `stop` is the last sample. Otherwise, it is not included. Default is ``True``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis in the result to store the samples. Relevant only if start or stop are array-like.</span>
 <span class="sd">        By default (0), the samples will be along a new axis inserted at the beginning.</span>
@@ -1878,7 +1914,8 @@
 <span class="sd">    n : int</span>
 <span class="sd">        Number of rows (and columns) in `n` x `n` output.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
+<span class="sd">        data type for the device where input array is allocated.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
@@ -1978,14 +2015,17 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    start : array_like</span>
-<span class="sd">        The starting value of the sequence.</span>
+<span class="sd">        The starting value of the sequence, in any form that can be converted to an array.</span>
+<span class="sd">        This includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    stop : array_like</span>
-<span class="sd">        The end value of the sequence, unless endpoint is set to False. In that case,</span>
-<span class="sd">        the sequence consists of all but the last of num + 1 evenly spaced samples,</span>
-<span class="sd">        so that stop is excluded.</span>
+<span class="sd">        The end value of the sequence, in any form that can be converted to an array.</span>
+<span class="sd">        This includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays. If `endpoint` is set to ``False`` the sequence consists</span>
+<span class="sd">        of all but the last of num + 1 evenly spaced samples, so that `stop` is excluded.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used</span>
-<span class="sd">        that can represent the values (by applying promotion rules when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
+<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
@@ -1997,9 +2037,9 @@
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 <span class="sd">    endpoint : bool, optional</span>
-<span class="sd">        If True, stop is the last sample. Otherwise, it is not included. Default is True.</span>
+<span class="sd">        If ``True``, `stop` is the last sample. Otherwise, it is not included. Default is ``True``.</span>
 <span class="sd">    retstep : bool, optional</span>
-<span class="sd">        If True, return (samples, step), where step is the spacing between samples.</span>
+<span class="sd">        If ``True``, return (samples, step), where step is the spacing between samples.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis in the result to store the samples. Relevant only if start or stop are array-like.</span>
 <span class="sd">        By default (0), the samples will be along a new axis inserted at the beginning.</span>
@@ -2120,9 +2160,13 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    start : array_like</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
+<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">        `base` ** `start` is the starting value of the sequence.</span>
 <span class="sd">    stop : array_like</span>
-<span class="sd">        `base` ** `stop` is the final value of the sequence, unless endpoint is False.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
+<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        `base` ** `stop` is the final value of the sequence, unless `endpoint` is ``False``.</span>
 <span class="sd">        In that case, num + 1 values are spaced over the interval in log-space,</span>
 <span class="sd">        of which all but the last (a sequence of length num) are returned.</span>
 <span class="sd">    num : int, optional</span>
@@ -2138,13 +2182,17 @@
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 <span class="sd">    endpoint : bool, optional</span>
-<span class="sd">        If True, stop is the last sample. Otherwise, it is not included. Default is True.</span>
+<span class="sd">        If ``True``, stop is the last sample. Otherwise, it is not included. Default is ``True``.</span>
 <span class="sd">    base : array_like, optional</span>
-<span class="sd">        The base of the log space. The step size between the elements in</span>
-<span class="sd">        ln(samples) / ln(base) (or log_base(samples)) is uniform. Default is 10.0.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
+<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        The base of the log space, in any form that can be converted to an array.This includes scalars,</span>
+<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        The `step` size between the elements in ln(samples) / ln(base) (or log_base(samples))</span>
+<span class="sd">        is uniform. Default is 10.0.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used</span>
-<span class="sd">        that can represent the values (by applying promotion rules when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
+<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis in the result to store the samples. Relevant only if start, stop,</span>
 <span class="sd">        or base are array-like. By default (0), the samples will be along a new axis inserted</span>
@@ -2434,7 +2482,8 @@
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
+<span class="sd">        data type for the device where input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -2515,7 +2564,7 @@
 <div class="viewcode-block" id="ones_like">
 <a class="viewcode-back" href="../../reference/generated/dpnp.ones_like.html#dpnp.ones_like">[docs]</a>
 <span class="k">def</span> <span class="nf">ones_like</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
+    <span class="n">a</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2533,10 +2582,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x1 : array_like</span>
-<span class="sd">        The shape and dtype of a define these same attributes of the returned array.</span>
+<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        The shape and dtype of `a` define these same attributes of the returned array.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
+<span class="sd">        data type for the device where input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    shape : {int, sequence of ints}</span>
@@ -2555,11 +2605,10 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Array of ones with the same shape and type as `x1`.</span>
+<span class="sd">        Array of ones with the same shape and type as `a`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Parameter `order` is supported with values ``&quot;C&quot;`` or ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
@@ -2595,18 +2644,18 @@
 <span class="sd">    (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), &#39;host&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">_shape</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
-        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
-        <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
+        <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
+        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
+        <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
         <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
-            <span class="n">x1</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
             <span class="n">_shape</span><span class="p">,</span>
@@ -2616,7 +2665,7 @@
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ones_like</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ones_like</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
 
 
 
@@ -2684,7 +2733,8 @@
 <span class="sd">        The sub-diagonal at and below which the array is filled. k = 0 is the main diagonal,</span>
 <span class="sd">        while k &lt; 0 is below it, and k &gt; 0 is above. The default is 0.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
+<span class="sd">        data type for the device where input array is allocated.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
@@ -2781,7 +2831,7 @@
 
 <div class="viewcode-block" id="tril">
 <a class="viewcode-back" href="../../reference/generated/dpnp.tril.html#dpnp.tril">[docs]</a>
-<span class="k">def</span> <span class="nf">tril</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">tril</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Lower triangle of an array.</span>
 
@@ -2791,7 +2841,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x1 : array_like, shape (…, M, N)</span>
+<span class="sd">    m : {dpnp_array, usm_ndarray}, shape (…, M, N)</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    k : int, optional</span>
 <span class="sd">        Diagonal above which to zero elements. k = 0 (the default) is the main diagonal,</span>
@@ -2800,18 +2850,18 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray of shape (N, M)</span>
-<span class="sd">        Lower triangle of `x1`, of same shape and dtype as `x1`.</span>
+<span class="sd">        Lower triangle of `m`, of same shape and dtype as `m`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.</span>
 <span class="sd">    Parameter `k` is supported only of integer data type.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.tril([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]], -1)</span>
+<span class="sd">    &gt;&gt;&gt; m = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]])</span>
+<span class="sd">    &gt;&gt;&gt; np.tril(m, k=-1)</span>
 <span class="sd">    array([[ 0,  0,  0],</span>
 <span class="sd">           [ 4,  0,  0],</span>
 <span class="sd">           [ 7,  8,  0],</span>
@@ -2825,22 +2875,22 @@
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="k">pass</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
         <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">m</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">_k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">_k</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">_k</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">tril</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">tril</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="triu">
 <a class="viewcode-back" href="../../reference/generated/dpnp.triu.html#dpnp.triu">[docs]</a>
-<span class="k">def</span> <span class="nf">triu</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">triu</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Upper triangle of an array.</span>
 
@@ -2851,7 +2901,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x1 : array_like, shape (…, M, N)</span>
+<span class="sd">    m : {dpnp_array, usm_ndarray}, shape (…, M, N)</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    k : int, optional</span>
 <span class="sd">        Diagonal below which to zero elements. k = 0 (the default) is the main diagonal,</span>
@@ -2860,18 +2910,18 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray of shape (N, M)</span>
-<span class="sd">        Upper triangle of `x1`, of same shape and dtype as `x1`.</span>
+<span class="sd">        Upper triangle of `m`, of same shape and dtype as `m`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.</span>
 <span class="sd">    Parameter `k` is supported only of integer data type.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.triu([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]], -1)</span>
+<span class="sd">    &gt;&gt;&gt; m = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]])</span>
+<span class="sd">    &gt;&gt;&gt; np.triu(m, k=-1)</span>
 <span class="sd">    array([[ 1,  2,  3],</span>
 <span class="sd">           [ 4,  5,  6],</span>
 <span class="sd">           [ 0,  8,  9],</span>
@@ -2885,23 +2935,23 @@
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="k">pass</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
         <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">m</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">_k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">_k</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">_k</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">triu</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">triu</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="vander">
 <a class="viewcode-back" href="../../reference/generated/dpnp.vander.html#dpnp.vander">[docs]</a>
 <span class="k">def</span> <span class="nf">vander</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
+    <span class="n">x</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="n">N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">increasing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -2917,8 +2967,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x1 : array_like</span>
-<span class="sd">        1-D input array.</span>
+<span class="sd">    x : array_like</span>
+<span class="sd">        1-D input array, in any form that can be converted to an array. This includes scalars,</span>
+<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">    N : int, optional</span>
 <span class="sd">        Number of columns in the output. If `N` is not specified, a square array is returned (N = len(x)).</span>
 <span class="sd">    increasing : bool, optional</span>
@@ -2992,29 +3043,27 @@
 <span class="sd">            [125,  25,   5,   1]]), Device(level_zero:gpu:0), &#39;host&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
-    <span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;An integer is required, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">N</span><span class="p">)))</span>
-    <span class="k">elif</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x1 must be a one-dimensional array or sequence.&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`x` must be a one-dimensional array or sequence.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">N</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
 
-        <span class="n">_dtype</span> <span class="o">=</span> <span class="nb">int</span> <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span> <span class="k">else</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="n">_dtype</span> <span class="o">=</span> <span class="nb">int</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span> <span class="k">else</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
         <span class="n">m</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x1</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">m</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">increasing</span> <span class="k">else</span> <span class="n">m</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span>
-            <span class="n">x1</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x1</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">),</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">),</span>
             <span class="n">out</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -3044,7 +3093,8 @@
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
+<span class="sd">        data type for the device where input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -3124,7 +3174,7 @@
 <div class="viewcode-block" id="zeros_like">
 <a class="viewcode-back" href="../../reference/generated/dpnp.zeros_like.html#dpnp.zeros_like">[docs]</a>
 <span class="k">def</span> <span class="nf">zeros_like</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
+    <span class="n">a</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -3142,10 +3192,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x1 : array_like</span>
-<span class="sd">        The shape and dtype of a define these same attributes of the returned array.</span>
+<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        The shape and dtype of `a` define these same attributes of the returned array.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is dpnp.float64.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
+<span class="sd">        data type for the device where input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    shape : {int, sequence of ints}</span>
@@ -3164,11 +3215,10 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Array of zeros with the same shape and type as `x1`.</span>
+<span class="sd">        Array of zeros with the same shape and type as `a`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`</span>
 <span class="sd">    Parameter `order` is supported with values ``&quot;C&quot;`` or ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
@@ -3204,18 +3254,18 @@
 <span class="sd">    (array([0, 0, 0, 0, 0, 0]), Device(level_zero:gpu:0), &#39;host&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">_shape</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
-        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
-        <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
+        <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
+        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
+        <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
         <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
-            <span class="n">x1</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
             <span class="n">_shape</span><span class="p">,</span>
@@ -3225,7 +3275,7 @@
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
 
 </pre></div>
 
