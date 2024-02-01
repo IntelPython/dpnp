@@ -2,7 +2,7 @@
 # cython: linetrace=True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ __all__ += [
     "dpnp_dot",
     "dpnp_inner",
     "dpnp_kron",
-    "dpnp_matmul",
 ]
 
 
@@ -56,14 +55,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_dot_t)(c_dpctl.DPCTLSyclQueueR
                                                          void * , const size_t, const size_t,
                                                          const shape_elem_type *, const shape_elem_type * ,
                                                          const c_dpctl.DPCTLEventVectorRef) except +
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_matmul_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                            void * , const size_t, const size_t,
-                                                            const shape_elem_type *, const shape_elem_type * ,
-                                                            void * , const size_t, const size_t,
-                                                            const shape_elem_type *, const shape_elem_type * ,
-                                                            void * , const size_t, const size_t,
-                                                            const shape_elem_type *, const shape_elem_type * ,
-                                                            const c_dpctl.DPCTLEventVectorRef)
 
 cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1,
                                      utils.dpnp_descriptor in_array2,
@@ -284,95 +275,6 @@ cpdef utils.dpnp_descriptor dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor
                                                     ndim,
                                                     NULL)  # dep_events_ref
 
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2, utils.dpnp_descriptor out=None):
-
-    cdef shape_type_c shape_result
-
-    cdef shape_type_c shape1 = in_array1.shape
-    cdef shape_type_c shape2 = in_array2.shape
-
-    cdef size_t size_m = 0
-    cdef size_t size_n = 0
-    cdef size_t size_k = 0
-
-    # Calling this function on an empty container causes undefined behavior.
-    if not shape1.empty():
-        size_m = shape1.front()
-    if not shape2.empty():
-        size_n = shape2.back()
-    if not shape1.empty():
-        size_k = shape1.back()
-
-    cdef size_t ndim_max = max(in_array1.ndim, in_array2.ndim)
-
-    if in_array1.ndim < ndim_max or ndim_max == 1:
-        """
-        shape1(2,), shape2(2,4)
-        test: pytest tests/test_matmul.py::test_matmul[shape_pair4-types0] -v -s
-        or
-        shape1(2,), shape2(2,)
-        test: pytest tests/test_matmul.py::test_matmul[shape_pair8-types0] -v -s
-        """
-        size_m = 1
-
-    if in_array2.ndim < ndim_max or ndim_max == 1:
-        """
-        shape1(5,2), shape2(2,)
-        test: pytest tests/test_matmul.py::test_matmul[shape_pair6-types0] -v -s
-        or
-        shape1(3,), shape2(3,)
-        test: pytest tests/test_matmul.py::test_matmul[shape_pair8-types0] -v -s
-        """
-        size_n = 1
-
-    shape_result = shape1[:-1] + shape2[-1:]
-
-    # convert string type names (array.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
-    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
-
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL_EXT, param1_type, param2_type)
-
-    # create result array with type given by FPTR data
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(in_array1, in_array2)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_result,
-                                                                       kernel_data.return_type,
-                                                                       out,
-                                                                       device=result_sycl_device,
-                                                                       usm_type=result_usm_type,
-                                                                       sycl_queue=result_sycl_queue)
-    if result.size == 0:
-        return result
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_2in_1out_matmul_t func = <fptr_2in_1out_matmul_t > kernel_data.ptr
-    # call FPTR function
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    result.get_data(),
-                                                    result.size,
-                                                    result.ndim,
-                                                    NULL,  # result_shape
-                                                    NULL,  # result_strides
-                                                    in_array1.get_data(),
-                                                    in_array1.size,
-                                                    in_array1.ndim,
-                                                    shape1.data(),
-                                                    NULL,  # in_array1_strides
-                                                    in_array2.get_data(),
-                                                    in_array2.size,
-                                                    in_array2.ndim,
-                                                    shape2.data(),
-                                                    NULL,  # in_array2_strides
-                                                    NULL)  # dep_event_vec_ref
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
 

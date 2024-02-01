@@ -4,6 +4,8 @@ from numpy.testing import assert_array_equal
 
 import dpnp as inp
 
+from .helper import assert_dtype_allclose, get_integer_dtypes
+
 
 @pytest.mark.parametrize(
     "lhs",
@@ -134,3 +136,15 @@ class TestBitwise:
             dp_a >>= dp_b
             np_a >>= np_b
             assert_array_equal(dp_a, np_a)
+
+
+@pytest.mark.parametrize("dtype", get_integer_dtypes())
+def test_invert_out(dtype):
+    np_a = numpy.arange(-5, 5, dtype=dtype)
+    dp_a = inp.array(np_a)
+
+    expected = numpy.invert(np_a)
+    dp_out = inp.empty(expected.shape, dtype=expected.dtype)
+    result = inp.invert(dp_a, out=dp_out)
+    assert result is dp_out
+    assert_dtype_allclose(result, expected)

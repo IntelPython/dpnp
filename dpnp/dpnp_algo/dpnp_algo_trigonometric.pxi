@@ -2,7 +2,7 @@
 # cython: linetrace=True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,17 +38,12 @@ and the rest of the library
 __all__ += [
     'dpnp_degrees',
     'dpnp_radians',
-    'dpnp_recip',
     'dpnp_unwrap'
 ]
 
 
 cpdef utils.dpnp_descriptor dpnp_degrees(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out_strides(DPNP_FN_DEGREES_EXT, x1)
-
-
-cpdef utils.dpnp_descriptor dpnp_recip(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_RECIP_EXT, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_radians(utils.dpnp_descriptor x1):

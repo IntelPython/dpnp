@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -1174,7 +1174,7 @@ def ravel(a, order="C"):
 
     Parameters
     ----------
-    x : {dpnp_array, usm_ndarray}
+    x : {dpnp.ndarray, usm_ndarray}
         Input array. The elements in `a` are read in the order specified by order,
         and packed as a 1-D array.
     order : {'C', 'F'}, optional
@@ -1187,7 +1187,7 @@ def ravel(a, order="C"):
 
     Returns
     -------
-    out : dpnp_array
+    out : dpnp.ndarray
         A contiguous 1-D array of the same subtype as `a`, with shape (a.size,).
 
     See Also
@@ -1220,7 +1220,7 @@ def repeat(a, repeats, axis=None):
 
     Parameters
     ----------
-    x : {dpnp_array, usm_ndarray}
+    x : {dpnp.ndarray, usm_ndarray}
         Input array.
     repeat : int or array of int
         The number of repetitions for each element. `repeats` is broadcasted to fit
@@ -1231,7 +1231,7 @@ def repeat(a, repeats, axis=None):
 
     Returns
     -------
-    out : dpnp_array
+    out : dpnp.ndarray
         Output array which has the same shape as `a`, except along the given axis.
 
     See Also
@@ -1380,7 +1380,9 @@ def result_type(*arrays_and_dtypes):
     """
 
     usm_arrays_and_dtypes = [
-        X.dtype if isinstance(X, (dpnp_array, dpt.usm_ndarray)) else X
+        dpnp.get_usm_ndarray(X)
+        if isinstance(X, (dpnp_array, dpt.usm_ndarray))
+        else X
         for X in arrays_and_dtypes
     ]
     return dpt.result_type(*usm_arrays_and_dtypes)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -52,6 +52,7 @@ from .dpnp_algo.dpnp_arraycreation import (
     dpnp_geomspace,
     dpnp_linspace,
     dpnp_logspace,
+    dpnp_nd_grid,
 )
 
 __all__ = [
@@ -787,7 +788,7 @@ def empty_like(
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
+    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`
     Parameter `order` is supported with values ``"C"`` or ``"F"``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -1049,7 +1050,7 @@ def full_like(
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
+    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`
     Parameter `order` is supported only with values ``"C"`` and ``"F"``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -1395,7 +1396,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
 
     Limitations
     -----------
-    Each array instance from `xi` is supported as either :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`.
+    Each array instance from `xi` is supported as either :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameter `copy` is supported only with default value ``True``.
     Parameter `sparse` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -1452,6 +1453,24 @@ class MGridClass:
 
     For full documentation refer to :obj:`numpy.mgrid`.
 
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : one dpnp.ndarray or tuple of dpnp.ndarray
+        Returns one array of grid indices, grid.shape = (len(dimensions),) + tuple(dimensions).
+
     Examples
     --------
     >>> import dpnp as np
@@ -1466,13 +1485,31 @@ class MGridClass:
             [0, 1, 2, 3, 4],
             [0, 1, 2, 3, 4],
             [0, 1, 2, 3, 4]]])
-    >>> np.mgrid[-1:1:5j]
+
+    >>> x = np.mgrid[-1:1:5j]
+    >>> x
     array([-1. , -0.5,  0. ,  0.5,  1. ])
+    >>> x.usm_type
+    'device'
+
+    >>> y = np.mgrid(usm_type="host")[-1:1:5j]
+    >>> y
+    array([-1. , -0.5,  0. ,  0.5,  1. ])
+    >>> x.usm_type
+    'host'
 
     """
 
     def __getitem__(self, key):
-        return dpnp.array(numpy.mgrid[key])
+        return dpnp_nd_grid(sparse=False)[key]
+
+    def __call__(self, device=None, usm_type="device", sycl_queue=None):
+        return dpnp_nd_grid(
+            sparse=False,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
 
 mgrid = MGridClass()
@@ -1484,23 +1521,56 @@ class OGridClass:
 
     For full documentation refer to :obj:`numpy.ogrid`.
 
+    Parameters
+    ----------
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : one dpnp.ndarray or tuple of dpnp.ndarray
+        Returns a tuple of arrays, with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
+        with dimensions[i] in the ith place.
+
     Examples
     --------
     >>> import dpnp as np
-    >>> from numpy import ogrid
-    >>> ogrid[-1:1:5j]
-    array([-1. , -0.5,  0. ,  0.5,  1. ])
-    >>> ogrid[0:5,0:5]
+    >>> np.ogrid[0:5, 0:5]
     [array([[0],
             [1],
             [2],
             [3],
             [4]]), array([[0, 1, 2, 3, 4]])]
 
+    >>> x = np.ogrid[-1:1:5j]
+    >>> x
+    array([-1. , -0.5,  0. ,  0.5,  1. ])
+    >>> x.usm_type
+    'device'
+
+    >>> y = np.ogrid(usm_type="host")[-1:1:5j]
+    >>> y
+    array([-1. , -0.5,  0. ,  0.5,  1. ])
+    >>> x.usm_type
+    'host'
+
     """
 
     def __getitem__(self, key):
-        return dpnp.array(numpy.ogrid[key])
+        return dpnp_nd_grid(sparse=True)[key]
+
+    def __call__(self, device=None, usm_type="device", sycl_queue=None):
+        return dpnp_nd_grid(
+            sparse=True, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+        )
 
 
 ogrid = OGridClass()
@@ -1583,7 +1653,7 @@ def ones_like(
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
+    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`
     Parameter `order` is supported with values ``"C"`` or ``"F"``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
@@ -1753,7 +1823,7 @@ def tril(x1, /, *, k=0):
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
+    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
     Parameter `k` is supported only of integer data type.
     Otherwise the function will be executed sequentially on CPU.
 
@@ -1797,7 +1867,7 @@ def triu(x1, /, *, k=0):
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
+    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` with two or more dimensions.
     Parameter `k` is supported only of integer data type.
     Otherwise the function will be executed sequentially on CPU.
 
@@ -1985,7 +2055,7 @@ def zeros_like(
 
     Limitations
     -----------
-    Parameter `x1` is supported as :class:`dpnp.dpnp_array` or :class:`dpctl.tensor.usm_ndarray`
+    Parameter `x1` is supported as :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`
     Parameter `order` is supported with values ``"C"`` or ``"F"``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.

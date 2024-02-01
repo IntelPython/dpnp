@@ -8,7 +8,6 @@ from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
-@testing.gpu
 class TestRounding(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(type_check=False, atol=1e-5)
@@ -26,7 +25,9 @@ class TestRounding(unittest.TestCase):
     def check_unary_complex_unsupported(self, name, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3), xp, dtype)
-            with pytest.raises(TypeError):
+            # NumPy returns TypeError while DPNP returns ValueError
+            # for these functions: "ceil", "floor", "trunc"
+            with pytest.raises((TypeError, ValueError)):
                 getattr(xp, name)(a)
 
     @testing.for_dtypes(["?", "b", "h", "i", "q", "e", "f", "d"])

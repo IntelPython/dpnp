@@ -1,10 +1,15 @@
 import numpy
 import pytest
-from numpy.testing import assert_array_equal, assert_equal
+from numpy.testing import assert_equal
 
 import dpnp
 
-from .helper import get_all_dtypes, get_complex_dtypes, get_float_complex_dtypes
+from .helper import (
+    assert_dtype_allclose,
+    get_all_dtypes,
+    get_complex_dtypes,
+    get_float_complex_dtypes,
+)
 
 
 @pytest.mark.parametrize("func", ["abs", "absolute"])
@@ -15,8 +20,13 @@ def test_abs(func, dtype):
 
     result = getattr(dpnp, func)(ia)
     expected = getattr(numpy, func)(a)
-    assert_array_equal(expected, result)
-    assert_equal(result.dtype, expected.dtype)
+    assert_dtype_allclose(result, expected)
+
+    # out keyword
+    dp_out = dpnp.empty(expected.shape, dtype=expected.dtype)
+    result = getattr(dpnp, func)(ia, out=dp_out)
+    assert result is dp_out
+    assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize("stride", [-4, -2, -1, 1, 2, 4])
