@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2023, Intel Corporation
+// Copyright (c) 2016-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,12 @@
 #include "dpnp_utils.hpp"
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
+
+// dpctl tensor headers
+#include "kernels/alignment.hpp"
+
+using dpctl::tensor::kernels::alignment_utils::is_aligned;
+using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
 #define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)         \
     template <typename _KernelNameSpecialization1,                             \
@@ -928,15 +934,6 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_RECIP][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_recip_c_default<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RECIP_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_recip_c_ext<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_RECIP_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_recip_c_ext<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_RECIP_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_recip_c_ext<float>};
-    fmap[DPNPFuncName::DPNP_FN_RECIP_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_recip_c_ext<double>};
-
     fmap[DPNPFuncName::DPNP_FN_SIGN][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_sign_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_SIGN][eft_LNG][eft_LNG] = {
@@ -1198,8 +1195,12 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                         (nd_it.get_group(0) * nd_it.get_local_range(0) +       \
                          sg.get_group_id()[0] * max_sg_size);                  \
                                                                                \
-                    if (start + static_cast<size_t>(vec_sz) * max_sg_size <    \
-                        result_size) {                                         \
+                    if (is_aligned<required_alignment>(input1_data) &&         \
+                        is_aligned<required_alignment>(input2_data) &&         \
+                        is_aligned<required_alignment>(result) &&              \
+                        (start + static_cast<size_t>(vec_sz) * max_sg_size <   \
+                         result_size))                                         \
+                    {                                                          \
                         auto input1_multi_ptr = sycl::address_space_cast<      \
                             sycl::access::address_space::global_space,         \
                             sycl::access::decorated::yes>(                     \

@@ -1,5 +1,5 @@
-{% set required_compiler_and_mkl_version = "2024.0" %}
-{% set required_dpctl_version = "0.15.1dev2" %}
+{% set required_compiler_and_mkl_version = "2024.1" %}
+{% set required_dpctl_version = "0.15.1dev3" %}
 
 package:
     name: dpnp
@@ -48,7 +48,8 @@ test:
       - tests
       - setup.cfg
     commands:
-      - python -c "import dpnp"
+      - python -c "import dpnp; print(dpnp.__version__)"
+      - python -m dpctl -f
       - pytest -s
 
 about:

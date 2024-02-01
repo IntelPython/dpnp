@@ -354,6 +354,39 @@ def test_coerced_usm_types_bitwise_op(op, usm_type_x, usm_type_y):
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "shape_pair",
+    [
+        ((2, 4), (4, 3)),
+        ((2, 0), (0, 3)),
+        ((2, 4), (4, 0)),
+        ((4, 2, 3), (4, 3, 5)),
+        ((6, 7, 4, 3), (6, 7, 3, 5)),
+    ],
+    ids=[
+        "((2, 4), (4, 3))",
+        "((2, 0), (0, 3))",
+        "((2, 4), (4, 0))",
+        "((4, 2, 3), (4, 3, 5))",
+        "((6, 7, 4, 3), (6, 7, 3, 5))",
+    ],
+)
+def test_matmul(usm_type_x, usm_type_y, shape_pair):
+    shape1, shape2 = shape_pair
+    x = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+    y = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+
+    x = dp.array(x, usm_type=usm_type_x)
+    y = dp.array(y, usm_type=usm_type_y)
+    z = dp.matmul(x, y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_meshgrid(usm_type_x, usm_type_y):
     x = dp.arange(100, usm_type=usm_type_x)
     y = dp.arange(100, usm_type=usm_type_y)
@@ -365,7 +398,9 @@ def test_meshgrid(usm_type_x, usm_type_y):
 @pytest.mark.parametrize(
     "func,data",
     [
+        pytest.param("average", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("abs", [-1.2, 1.2]),
+        pytest.param("angle", [[1.0 + 1.0j, 2.0 + 3.0j]]),
         pytest.param("arccos", [-0.5, 0.0, 0.5]),
         pytest.param("arccosh", [1.5, 3.5, 5.0]),
         pytest.param("arcsin", [-0.5, 0.0, 0.5]),
@@ -374,6 +409,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param("arctanh", [-0.5, 0.0, 0.5]),
         pytest.param("argmax", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("argmin", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("argsort", [2.0, 1.0, 7.0, 4.0]),
         pytest.param("cbrt", [1, 8, 27]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
@@ -401,8 +437,11 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param("nanargmax", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanargmin", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanmax", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nanmean", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanmin", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanprod", [1.0, 2.0, dp.nan]),
+        pytest.param("nanstd", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nansum", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanvar", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("negative", [1.0, 0.0, -1.0]),
         pytest.param("positive", [1.0, 0.0, -1.0]),
@@ -412,6 +451,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
+        pytest.param("reciprocal", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("reduce_hypot", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("rsqrt", [1, 8, 27]),
         pytest.param("sign", [-5.0, 0.0, 4.5]),
@@ -420,8 +460,11 @@ def test_meshgrid(usm_type_x, usm_type_y):
             "sin", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
         pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
+        pytest.param("sort", [2.0, 1.0, 7.0, 4.0]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
+        pytest.param("square", [1.0, 3.0, 9.0]),
         pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("sum", [1.0, 2.0]),
         pytest.param(
             "tan", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
@@ -522,6 +565,55 @@ def test_take(func, usm_type_x, usm_type_ind):
 
 
 @pytest.mark.parametrize(
+    "data, is_empty",
+    [
+        ([[1, -2], [2, 5]], False),
+        ([[[1, -2], [2, 5]], [[1, -2], [2, 5]]], False),
+        ((0, 0), True),
+        ((3, 0, 0), True),
+    ],
+    ids=["2D", "3D", "Empty_2D", "Empty_3D"],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_cholesky(data, is_empty, usm_type):
+    if is_empty:
+        x = dp.empty(data, dtype=dp.default_float_type(), usm_type=usm_type)
+    else:
+        x = dp.array(data, dtype=dp.default_float_type(), usm_type=usm_type)
+
+    result = dp.linalg.cholesky(x)
+
+    assert x.usm_type == result.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_indices(usm_type):
+    x = dp.indices((2,), usm_type=usm_type)
+    assert x.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("func", ["mgrid", "ogrid"])
+def test_grid(usm_type, func):
+    assert getattr(dp, func)(usm_type=usm_type)[0:4].usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("sparse", [True, False], ids=["True", "False"])
+def test_indices_sparse(usm_type, sparse):
+    x = dp.indices((2, 3), sparse=sparse, usm_type=usm_type)
+    for i in x:
+        assert i.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_clip(usm_type):
+    x = dp.arange(10, usm_type=usm_type)
+    y = dp.clip(x, 2, 7)
+    assert x.usm_type == y.usm_type
+
+
+@pytest.mark.parametrize(
     "usm_type_matrix", list_of_usm_types, ids=list_of_usm_types
 )
 @pytest.mark.parametrize(
@@ -560,7 +652,91 @@ def test_solve(matrix, vector, usm_type_matrix, usm_type_vector):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_clip(usm_type):
-    x = dp.arange(10, usm_type=usm_type)
-    y = dp.clip(x, 2, 7)
-    assert x.usm_type == y.usm_type
+@pytest.mark.parametrize(
+    "shape, is_empty",
+    [
+        ((2, 2), False),
+        ((3, 2, 2), False),
+        ((0, 0), True),
+        ((0, 2, 2), True),
+    ],
+    ids=[
+        "(2, 2)",
+        "(3, 2, 2)",
+        "(0, 0)",
+        "(0, 2, 2)",
+    ],
+)
+def test_slogdet(shape, is_empty, usm_type):
+    if is_empty:
+        x = dp.empty(shape, dtype=dp.default_float_type(), usm_type=usm_type)
+    else:
+        count_elem = numpy.prod(shape)
+        x = dp.arange(
+            1, count_elem + 1, dtype=dp.default_float_type(), usm_type=usm_type
+        ).reshape(shape)
+
+    sign, logdet = dp.linalg.slogdet(x)
+
+    assert x.usm_type == sign.usm_type
+    assert x.usm_type == logdet.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "shape, is_empty",
+    [
+        ((2, 2), False),
+        ((3, 2, 2), False),
+        ((0, 0), True),
+        ((0, 2, 2), True),
+    ],
+    ids=[
+        "(2, 2)",
+        "(3, 2, 2)",
+        "(0, 0)",
+        "(0, 2, 2)",
+    ],
+)
+def test_det(shape, is_empty, usm_type):
+    if is_empty:
+        x = dp.empty(shape, dtype=dp.default_float_type(), usm_type=usm_type)
+    else:
+        count_elem = numpy.prod(shape)
+        x = dp.arange(
+            1, count_elem + 1, dtype=dp.default_float_type(), usm_type=usm_type
+        ).reshape(shape)
+
+    det = dp.linalg.det(x)
+
+    assert x.usm_type == det.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "shape, is_empty",
+    [
+        ((2, 2), False),
+        ((3, 2, 2), False),
+        ((0, 0), True),
+        ((0, 2, 2), True),
+    ],
+    ids=[
+        "(2, 2)",
+        "(3, 2, 2)",
+        "(0, 0)",
+        "(0, 2, 2)",
+    ],
+)
+def test_inv(shape, is_empty, usm_type):
+    if is_empty:
+        x = dp.empty(shape, dtype=dp.default_float_type(), usm_type=usm_type)
+    else:
+        count_elem = numpy.prod(shape)
+        x = dp.arange(
+            1, count_elem + 1, dtype=dp.default_float_type(), usm_type=usm_type
+        ).reshape(shape)
+
+    result = dp.linalg.inv(x)
+
+    assert x.usm_type == result.usm_type

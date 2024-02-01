@@ -15,12 +15,17 @@ signed_int_types = [numpy.int32, numpy.int64]
 unsigned_int_types = []
 int_types = signed_int_types + unsigned_int_types
 all_types = float_types + int_types + complex_types
+negative_types_wo_fp16 = (
+    [numpy.bool_]
+    + [numpy.float32, numpy.float64]
+    + [numpy.int16, numpy.int32, numpy.int64]
+    + complex_types
+)
 negative_types = float_types + signed_int_types + complex_types
 negative_no_complex_types = float_types + signed_int_types
 no_complex_types = float_types + int_types
 
 
-@testing.gpu
 @testing.parameterize(
     *(
         testing.product(
@@ -53,7 +58,7 @@ no_complex_types = float_types + int_types
         )
     )
 )
-class TestArithmeticRaisesWithNumpyInput(unittest.TestCase):
+class TestArithmeticRaisesWithNumpyInput:
     def test_raises_with_numpy_input(self):
         nargs = self.nargs
         name = self.name
@@ -65,11 +70,10 @@ class TestArithmeticRaisesWithNumpyInput(unittest.TestCase):
                 # We don't test all-cupy-array inputs here
                 continue
             arys = [xp.array([2, -3]) for xp in input_xp_list]
-            with self.assertRaises(TypeError):
+            with pytest.raises(TypeError):
                 func(*arys)
 
 
-@testing.gpu
 @testing.parameterize(
     *(
         testing.product(
@@ -79,9 +83,32 @@ class TestArithmeticRaisesWithNumpyInput(unittest.TestCase):
                         testing.shaped_arange((2, 3), numpy, dtype=d)
                         for d in all_types
                     ]
-                    + [0, 0.0j, 0j, 2, 2.0, 2j, True, False]
                 ),
                 "name": ["conj", "conjugate", "real", "imag"],
+            }
+        )
+        + testing.product(
+            {
+                "arg1": (
+                    [
+                        testing.shaped_arange((2, 3), numpy, dtype=d)
+                        for d in all_types
+                    ]
+                ),
+                "deg": [True, False],
+                "name": ["angle"],
+            }
+        )
+        + testing.product(
+            {
+                "arg1": (
+                    [
+                        numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+                        for d in negative_types_wo_fp16
+                    ]
+                ),
+                "deg": [True, False],
+                "name": ["angle"],
             }
         )
         + testing.product(
@@ -91,21 +118,42 @@ class TestArithmeticRaisesWithNumpyInput(unittest.TestCase):
                         testing.shaped_arange((2, 3), numpy, dtype=d) + 1
                         for d in all_types
                     ]
-                    + [2, 2.0]
                 ),
                 "name": ["reciprocal"],
             }
         )
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestArithmeticUnary(unittest.TestCase):
+class TestArithmeticUnary:
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_unary(self, xp):
         arg1 = self.arg1
         if isinstance(arg1, numpy.ndarray):
             arg1 = xp.asarray(arg1)
-        y = getattr(xp, self.name)(arg1)
+
+        if self.name in ("reciprocal") and xp is numpy:
+            # In Numpy, for integer arguments with absolute value larger than 1 the result is always zero.
+            # We need to convert the input data type to float then compare the output with DPNP.
+            if isinstance(arg1, numpy.ndarray) and numpy.issubdtype(
+                arg1.dtype, numpy.integer
+            ):
+                np_dtype = (
+                    numpy.float64 if has_support_aspect64() else numpy.float32
+                )
+                arg1 = xp.asarray(arg1, dtype=np_dtype)
+
+        if self.name in {"angle"}:
+            y = getattr(xp, self.name)(arg1, self.deg)
+            # In Numpy, for boolean arguments the output data type is always default floating data type.
+            # while data type of output in DPNP is determined by Type Promotion Rules.
+            if (
+                isinstance(arg1, cupy.ndarray)
+                and cupy.issubdtype(arg1.dtype, cupy.bool)
+                and has_support_aspect64()
+            ):
+                y = y.astype(cupy.float64)
+        else:
+            y = getattr(xp, self.name)(arg1)
 
         # if self.name in ("real", "imag"):
         # Some NumPy functions return Python scalars for Python scalar

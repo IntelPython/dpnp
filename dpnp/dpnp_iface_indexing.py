@@ -2,7 +2,7 @@
 # distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -355,31 +355,117 @@ def fill_diagonal(x1, val, wrap=False):
     return call_origin(numpy.fill_diagonal, x1, val, wrap, dpnp_inplace=True)
 
 
-def indices(dimensions, dtype=int, sparse=False):
+def indices(
+    dimensions,
+    dtype=int,
+    sparse=False,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Return an array representing the indices of a grid.
 
+    Compute an array where the subarrays contain index values 0, 1, …
+    varying only along the corresponding axis.
+
     For full documentation refer to :obj:`numpy.indices`.
 
-    Limitations
-    -----------
-    Parameters `dtype` and `sparse` are supported only with default values.
-    Parameter `dimensions` is supported with len <=2.
+    Parameters
+    ----------
+    dimensions : sequence of ints
+        The shape of the grid.
+    dtype : dtype, optional
+        Data type of the result.
+    sparse : boolean, optional
+        Return a sparse representation of the grid instead of a dense representation.
+        Default is ``False``.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
+        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : one dpnp.ndarray or tuple of dpnp.ndarray
+        If sparse is ``False``:
+        Returns one array of grid indices, grid.shape = (len(dimensions),) + tuple(dimensions).
+
+        If sparse is ``True``:
+        Returns a tuple of arrays, with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
+        with dimensions[i] in the ith place.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> grid = np.indices((2, 3))
+    >>> grid.shape
+    (2, 2, 3)
+    >>> grid[0]
+    array([[0, 0, 0],
+           [1, 1, 1]])
+    >>> grid[1]
+    array([[0, 1, 2],
+           [0, 1, 2]])
+
+    The indices can be used as an index into an array.
+
+    >>> x = np.arange(20).reshape(5, 4)
+    >>> row, col = np.indices((2, 3))
+    >>> x[row, col]
+    array([[0, 1, 2],
+           [4, 5, 6]])
+
+    Note that it would be more straightforward in the above example to
+    extract the required elements directly with ``x[:2, :3]``.
+    If sparse is set to ``True``, the grid will be returned in a sparse
+    representation.
+
+    >>> i, j = np.indices((2, 3), sparse=True)
+    >>> i.shape
+    (2, 1)
+    >>> j.shape
+    (1, 3)
+    >>> i
+    array([[0],
+           [1]])
+    >>> j
+    array([[0, 1, 2]])
 
     """
 
-    if not isinstance(dimensions, (tuple, list)):
-        pass
-    elif len(dimensions) > 2 or len(dimensions) == 0:
-        pass
-    elif dtype != int:
-        pass
-    elif sparse:
-        pass
+    dimensions = tuple(dimensions)
+    N = len(dimensions)
+    shape = (1,) * N
+    if sparse:
+        res = ()
     else:
-        return dpnp_indices(dimensions)
-
-    return call_origin(numpy.indices, dimensions, dtype, sparse)
+        res = dpnp.empty(
+            (N,) + dimensions,
+            dtype=dtype,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
+    for i, dim in enumerate(dimensions):
+        idx = dpnp.arange(
+            dim,
+            dtype=dtype,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        ).reshape(shape[:i] + (dim,) + shape[i + 1 :])
+        if sparse:
+            res = res + (idx,)
+        else:
+            res[i] = idx
+    return res
 
 
 def nonzero(x, /):
@@ -765,6 +851,7 @@ def take_along_axis(a, indices, axis):
     --------
     :obj:`dpnp.take` : Take along an axis, using the same indices for every 1d slice.
     :obj:`dpnp.put_along_axis` : Put values into the destination array by matching 1d index and data slices.
+    :obj:`dpnp.argsort` : Return the indices that would sort an array.
 
     Examples
     --------

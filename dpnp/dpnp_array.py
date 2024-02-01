@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -510,39 +510,7 @@ class dpnp_array:
         """
         Return an ndarray of indices that sort the array along the specified axis.
 
-        Parameters
-        ----------
-        axis : int, optional
-            Axis along which to sort. If None, the default, the flattened array
-            is used.
-            ..  versionchanged:: 1.13.0
-                Previously, the default was documented to be -1, but that was
-                in error. At some future date, the default will change to -1, as
-                originally intended.
-                Until then, the axis should be given explicitly when
-                ``arr.ndim > 1``, to avoid a FutureWarning.
-        kind : {'quicksort', 'mergesort', 'heapsort', 'stable'}, optional
-            The sorting algorithm used.
-        order : list, optional
-            When `a` is an array with fields defined, this argument specifies
-            which fields to compare first, second, etc.  Not all fields need be
-            specified.
-
-        Returns
-        -------
-        index_array : ndarray, int
-            Array of indices that sort `a` along the specified axis.
-            In other words, ``a[index_array]`` yields a sorted `a`.
-
-        See Also
-        --------
-        MaskedArray.sort : Describes sorting algorithms used.
-        :obj:`dpnp.lexsort` : Indirect stable sort with multiple keys.
-        :obj:`numpy.ndarray.sort` : Inplace sort.
-
-        Notes
-        -----
-        See `sort` for notes on the different sorting algorithms.
+        Refer to :obj:`dpnp.argsort` for full documentation.
 
         """
         return dpnp.argsort(self, axis, kind, order)
@@ -1163,14 +1131,44 @@ class dpnp_array:
 
         return self._array_obj.size
 
-    # 'sort',
+    def sort(self, axis=-1, kind=None, order=None):
+        """
+        Sort an array in-place.
+
+        Refer to :obj:`dpnp.sort` for full documentation.
+
+        Note
+        ----
+        `axis` in :obj:`dpnp.sort` could be integr or ``None``. If ``None``,
+        the array is flattened before sorting. However, `axis` in :obj:`dpnp.ndarray.sort`
+        can only be integer since it sorts an array in-place.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.array([[1,4],[3,1]])
+        >>> a.sort(axis=1)
+        >>> a
+        array([[1, 4],
+              [1, 3]])
+        >>> a.sort(axis=0)
+        >>> a
+        array([[1, 1],
+              [3, 4]])
+
+        """
+
+        if axis is None:
+            raise TypeError(
+                "'NoneType' object cannot be interpreted as an integer"
+            )
+        self[...] = dpnp.sort(self, axis=axis, kind=kind, order=order)
 
     def squeeze(self, axis=None):
         """
         Remove single-dimensional entries from the shape of an array.
 
-        .. seealso::
-           :obj:`dpnp.squeeze` for full documentation
+        Refer to :obj:`dpnp.squeeze` for full documentation
 
         """
 

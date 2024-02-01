@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2023, Intel Corporation
+// Copyright (c) 2016-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -78,8 +78,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARGMAX,       /**< Used in numpy.argmax() impl  */
     DPNP_FN_ARGMIN,       /**< Used in numpy.argmin() impl  */
     DPNP_FN_ARGSORT,      /**< Used in numpy.argsort() impl  */
-    DPNP_FN_ARGSORT_EXT,  /**< Used in numpy.argsort() impl, requires extra
-                             parameters */
     DPNP_FN_AROUND,       /**< Used in numpy.around() impl  */
     DPNP_FN_ASTYPE,       /**< Used in numpy.astype() impl  */
     DPNP_FN_BITWISE_AND,  /**< Used in numpy.bitwise_and() impl  */
@@ -88,8 +86,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CBRT,         /**< Used in numpy.cbrt() impl  */
     DPNP_FN_CEIL,         /**< Used in numpy.ceil() impl  */
     DPNP_FN_CHOLESKY,     /**< Used in numpy.linalg.cholesky() impl  */
-    DPNP_FN_CHOLESKY_EXT, /**< Used in numpy.linalg.cholesky() impl, requires
-                             extra parameters */
     DPNP_FN_CONJUGATE,    /**< Used in numpy.conjugate() impl  */
     DPNP_FN_CHOOSE,       /**< Used in numpy.choose() impl  */
     DPNP_FN_CHOOSE_EXT,   /**< Used in numpy.choose() impl, requires extra
@@ -121,8 +117,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_DEGREES_EXT,   /**< Used in numpy.degrees() impl, requires extra
                               parameters */
     DPNP_FN_DET,           /**< Used in numpy.linalg.det() impl  */
-    DPNP_FN_DET_EXT,       /**< Used in numpy.linalg.det() impl, requires extra
-                              parameters */
     DPNP_FN_DIAG,          /**< Used in numpy.diag() impl  */
     DPNP_FN_DIAG_INDICES,  /**< Used in numpy.diag_indices() impl  */
     DPNP_FN_DIAG_INDICES_EXT, /**< Used in numpy.diag_indices() impl, requires
@@ -180,8 +174,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_INITVAL_EXT, /**< Used in numpy ones, ones_like, zeros, zeros_like
                             impls  */
     DPNP_FN_INV,         /**< Used in numpy.linalg.inv() impl  */
-    DPNP_FN_INV_EXT,     /**< Used in numpy.linalg.inv() impl, requires extra
-                            parameters  */
     DPNP_FN_INVERT,      /**< Used in numpy.invert() impl  */
     DPNP_FN_KRON,        /**< Used in numpy.kron() impl  */
     DPNP_FN_KRON_EXT, /**< Used in numpy.kron() impl, requires extra parameters
@@ -192,8 +184,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_LOG2,            /**< Used in numpy.log2() impl  */
     DPNP_FN_LOG1P,           /**< Used in numpy.log1p() impl  */
     DPNP_FN_MATMUL,          /**< Used in numpy.matmul() impl  */
-    DPNP_FN_MATMUL_EXT,      /**< Used in numpy.matmul() impl, requires extra
-                                parameters */
     DPNP_FN_MATRIX_RANK,     /**< Used in numpy.linalg.matrix_rank() impl  */
     DPNP_FN_MATRIX_RANK_EXT, /**< Used in numpy.linalg.matrix_rank() impl,
                                 requires extra parameters */
@@ -237,8 +227,6 @@ enum class DPNPFuncName : size_t
                                parameters */
     DPNP_FN_REMAINDER,      /**< Used in numpy.remainder() impl  */
     DPNP_FN_RECIP,          /**< Used in numpy.recip() impl  */
-    DPNP_FN_RECIP_EXT,      /**< Used in numpy.recip() impl, requires extra
-                               parameters */
     DPNP_FN_REPEAT,         /**< Used in numpy.repeat() impl  */
     DPNP_FN_RIGHT_SHIFT,    /**< Used in numpy.right_shift() impl  */
     DPNP_FN_RNG_BETA,       /**< Used in numpy.random.beta() impl  */
@@ -365,9 +353,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SIN,              /**< Used in numpy.sin() impl  */
     DPNP_FN_SINH,             /**< Used in numpy.sinh() impl  */
     DPNP_FN_SORT,             /**< Used in numpy.sort() impl  */
-    DPNP_FN_SORT_EXT, /**< Used in numpy.sort() impl, requires extra parameters
-                       */
-    DPNP_FN_SQRT,     /**< Used in numpy.sqrt() impl  */
+    DPNP_FN_SQRT,             /**< Used in numpy.sqrt() impl  */
     DPNP_FN_SQRT_EXT, /**< Used in numpy.sqrt() impl, requires extra parameters
                        */
     DPNP_FN_SQUARE,   /**< Used in numpy.square() impl  */
@@ -376,29 +362,28 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SUBTRACT_EXT, /**< Used in numpy.subtract() impl, requires extra
                              parameters */
     DPNP_FN_SUM,          /**< Used in numpy.sum() impl  */
-    DPNP_FN_SUM_EXT, /**< Used in numpy.sum() impl, requires extra parameters */
-    DPNP_FN_SVD,     /**< Used in numpy.linalg.svd() impl  */
-    DPNP_FN_SVD_EXT, /**< Used in numpy.linalg.svd() impl, requires extra
-                        parameters */
-    DPNP_FN_TAKE,    /**< Used in numpy.take() impl  */
-    DPNP_FN_TAN,     /**< Used in numpy.tan() impl  */
-    DPNP_FN_TANH,    /**< Used in numpy.tanh() impl  */
-    DPNP_FN_TRANSPOSE,  /**< Used in numpy.transpose() impl  */
-    DPNP_FN_TRACE,      /**< Used in numpy.trace() impl  */
-    DPNP_FN_TRACE_EXT,  /**< Used in numpy.trace() impl, requires extra
-                           parameters */
-    DPNP_FN_TRAPZ,      /**< Used in numpy.trapz() impl  */
-    DPNP_FN_TRAPZ_EXT,  /**< Used in numpy.trapz() impl, requires extra
-                           parameters */
-    DPNP_FN_TRI,        /**< Used in numpy.tri() impl  */
-    DPNP_FN_TRIL,       /**< Used in numpy.tril() impl  */
-    DPNP_FN_TRIU,       /**< Used in numpy.triu() impl  */
-    DPNP_FN_TRUNC,      /**< Used in numpy.trunc() impl  */
-    DPNP_FN_VANDER,     /**< Used in numpy.vander() impl  */
-    DPNP_FN_VAR,        /**< Used in numpy.var() impl  */
-    DPNP_FN_ZEROS,      /**< Used in numpy.zeros() impl */
-    DPNP_FN_ZEROS_LIKE, /**< Used in numpy.zeros_like() impl */
-    DPNP_FN_LAST,       /**< The latest element of the enumeration */
+    DPNP_FN_SVD,          /**< Used in numpy.linalg.svd() impl  */
+    DPNP_FN_SVD_EXT,      /**< Used in numpy.linalg.svd() impl, requires extra
+                             parameters */
+    DPNP_FN_TAKE,         /**< Used in numpy.take() impl  */
+    DPNP_FN_TAN,          /**< Used in numpy.tan() impl  */
+    DPNP_FN_TANH,         /**< Used in numpy.tanh() impl  */
+    DPNP_FN_TRANSPOSE,    /**< Used in numpy.transpose() impl  */
+    DPNP_FN_TRACE,        /**< Used in numpy.trace() impl  */
+    DPNP_FN_TRACE_EXT,    /**< Used in numpy.trace() impl, requires extra
+                             parameters */
+    DPNP_FN_TRAPZ,        /**< Used in numpy.trapz() impl  */
+    DPNP_FN_TRAPZ_EXT,    /**< Used in numpy.trapz() impl, requires extra
+                             parameters */
+    DPNP_FN_TRI,          /**< Used in numpy.tri() impl  */
+    DPNP_FN_TRIL,         /**< Used in numpy.tril() impl  */
+    DPNP_FN_TRIU,         /**< Used in numpy.triu() impl  */
+    DPNP_FN_TRUNC,        /**< Used in numpy.trunc() impl  */
+    DPNP_FN_VANDER,       /**< Used in numpy.vander() impl  */
+    DPNP_FN_VAR,          /**< Used in numpy.var() impl  */
+    DPNP_FN_ZEROS,        /**< Used in numpy.zeros() impl */
+    DPNP_FN_ZEROS_LIKE,   /**< Used in numpy.zeros_like() impl */
+    DPNP_FN_LAST,         /**< The latest element of the enumeration */
 };
 
 /**

@@ -6,7 +6,12 @@ from numpy.testing import assert_allclose
 
 import dpnp
 
-from .helper import assert_dtype_allclose, get_all_dtypes
+from .helper import (
+    assert_dtype_allclose,
+    get_all_dtypes,
+    get_complex_dtypes,
+    get_float_complex_dtypes,
+)
 
 
 def _getattr(ex, str_):
@@ -50,6 +55,7 @@ def test_strides(func_name, dtype):
         "arcsinh",
         "arctan",
         "arctanh",
+        "argsort",
         "cbrt",
         "ceil",
         "copy",
@@ -73,6 +79,7 @@ def test_strides(func_name, dtype):
         "sign",
         "sin",
         "sinh",
+        "sort",
         "sqrt",
         "square",
         "tan",
@@ -171,21 +178,27 @@ def test_strides_erf(dtype, shape):
     assert_allclose(result, expected, rtol=1e-06)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("shape", [(10,)], ids=["(10,)"])
-def test_strides_reciprocal(dtype, shape):
-    start, stop = 1, numpy.prod(shape) + 1
+@pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+def test_reciprocal(dtype):
+    dpa = dpnp.arange(1, 11, dtype=dtype)[::2]
+    a = numpy.arange(1, 11, dtype=dtype)[::2]
 
-    a = numpy.arange(start, stop, dtype=dtype).reshape(shape)
-    b = a[::2]
+    result = dpnp.reciprocal(dpa)
+    expected = numpy.reciprocal(a)
 
-    dpa = dpnp.reshape(dpnp.arange(start, stop, dtype=dtype), shape)
-    dpb = dpa[::2]
+    assert_dtype_allclose(result, expected)
 
-    result = dpnp.reciprocal(dpb)
-    expected = numpy.reciprocal(b)
 
-    assert_allclose(result, expected, rtol=1e-06)
+@pytest.mark.parametrize("dtype", get_complex_dtypes())
+def test_angle(dtype):
+    a = numpy.random.rand(10)
+    b = numpy.random.rand(10)
+    z = numpy.array(a + 1j * b, dtype=dtype)[::2]
+    dpz = dpnp.array(z)
+
+    result = dpnp.angle(dpz)
+    expected = numpy.angle(z)
+    assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize(

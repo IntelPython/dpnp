@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023, Intel Corporation
+// Copyright (c) 2023-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,11 @@
 #include <pybind11/stl.h>
 
 #include "gesv.hpp"
+#include "getrf.hpp"
+#include "getri.hpp"
 #include "heevd.hpp"
 #include "linalg_exceptions.hpp"
+#include "potrf.hpp"
 #include "syevd.hpp"
 
 namespace lapack_ext = dpnp::backend::ext::lapack;
@@ -42,6 +45,11 @@ namespace py = pybind11;
 void init_dispatch_vectors(void)
 {
     lapack_ext::init_gesv_dispatch_vector();
+    lapack_ext::init_getrf_batch_dispatch_vector();
+    lapack_ext::init_getrf_dispatch_vector();
+    lapack_ext::init_getri_batch_dispatch_vector();
+    lapack_ext::init_potrf_batch_dispatch_vector();
+    lapack_ext::init_potrf_dispatch_vector();
     lapack_ext::init_syevd_dispatch_vector();
 }
 
@@ -68,11 +76,47 @@ PYBIND11_MODULE(_lapack_impl, m)
           py::arg("sycl_queue"), py::arg("coeff_matrix"),
           py::arg("dependent_vals"), py::arg("depends") = py::list());
 
+    m.def("_getrf", &lapack_ext::getrf,
+          "Call `getrf` from OneMKL LAPACK library to return "
+          "the LU factorization of a general n x n matrix",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("ipiv_array"),
+          py::arg("dev_info"), py::arg("depends") = py::list());
+
+    m.def("_getrf_batch", &lapack_ext::getrf_batch,
+          "Call `getrf_batch` from OneMKL LAPACK library to return "
+          "the LU factorization of a batch of general n x n matrices",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("ipiv_array"),
+          py::arg("dev_info_array"), py::arg("n"), py::arg("stride_a"),
+          py::arg("stride_ipiv"), py::arg("batch_size"),
+          py::arg("depends") = py::list());
+
+    m.def("_getri_batch", &lapack_ext::getri_batch,
+          "Call `getri_batch` from OneMKL LAPACK library to return "
+          "the inverses of a batch of LU-factored matrices",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("ipiv_array"),
+          py::arg("dev_info"), py::arg("n"), py::arg("stride_a"),
+          py::arg("stride_ipiv"), py::arg("batch_size"),
+          py::arg("depends") = py::list());
+
     m.def("_heevd", &lapack_ext::heevd,
           "Call `heevd` from OneMKL LAPACK library to return "
           "the eigenvalues and eigenvectors of a complex Hermitian matrix",
           py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
           py::arg("eig_vecs"), py::arg("eig_vals"),
+          py::arg("depends") = py::list());
+
+    m.def("_potrf", &lapack_ext::potrf,
+          "Call `potrf` from OneMKL LAPACK library to return "
+          "the Cholesky factorization of a symmetric positive-definite matrix",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("upper_lower"),
+          py::arg("depends") = py::list());
+
+    m.def("_potrf_batch", &lapack_ext::potrf_batch,
+          "Call `potrf_batch` from OneMKL LAPACK library to return "
+          "the Cholesky factorization of a batch of symmetric "
+          "positive-definite matrix",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("upper_lower"),
+          py::arg("n"), py::arg("stride_a"), py::arg("batch_size"),
           py::arg("depends") = py::list());
 
     m.def("_syevd", &lapack_ext::syevd,
