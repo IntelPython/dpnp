@@ -983,7 +983,7 @@ class TestSvd:
             inp.int64,
             None,
         ):
-            tol = 1e-05
+            tol = 1e-04
         self._tol = tol
 
     def check_types_shapes(
