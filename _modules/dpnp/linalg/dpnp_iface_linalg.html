@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev2+26.g68218d008e documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev2+97.ge962d84650 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=202df2c0"></script>
+        <script src="../../../_static/documentation_options.js?v=6f88d416"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+26.g68218d008e
+                0.13.1dev2+97.ge962d84650
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -143,6 +143,7 @@
     <span class="n">dpnp_inv</span><span class="p">,</span>
     <span class="n">dpnp_slogdet</span><span class="p">,</span>
     <span class="n">dpnp_solve</span><span class="p">,</span>
+    <span class="n">dpnp_svd</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -742,11 +743,46 @@
 
 <div class="viewcode-block" id="svd">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.svd.html#dpnp.linalg.svd">[docs]</a>
-<span class="k">def</span> <span class="nf">svd</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">svd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Singular Value Decomposition.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.linalg.svd`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : (..., M, N) {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array with ``a.ndim &gt;= 2``.</span>
+<span class="sd">    full_matrices : bool, optional</span>
+<span class="sd">        If ``True``, it returns `u` and `Vh` with full-sized matrices.</span>
+<span class="sd">        If ``False``, the matrices are reduced in size.</span>
+<span class="sd">        Default: ``True``.</span>
+<span class="sd">    compute_uv : bool, optional</span>
+<span class="sd">        If ``False``, it only returns singular values.</span>
+<span class="sd">        Default: ``True``.</span>
+<span class="sd">    hermitian : bool, optional</span>
+<span class="sd">        If True, a is assumed to be Hermitian (symmetric if real-valued),</span>
+<span class="sd">        enabling a more efficient method for finding singular values.</span>
+<span class="sd">        Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    u : { (…, M, M), (…, M, K) } dpnp.ndarray</span>
+<span class="sd">        Unitary matrix, where M is the number of rows of the input array `a`.</span>
+<span class="sd">        The shape of the matrix `u` depends on the value of `full_matrices`.</span>
+<span class="sd">        If `full_matrices` is ``True``, `u` has the shape (…, M, M).</span>
+<span class="sd">        If `full_matrices` is ``False``, `u` has the shape (…, M, K),</span>
+<span class="sd">        where K = min(M, N), and N is the number of columns of the input array `a`.</span>
+<span class="sd">        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.</span>
+<span class="sd">    s : (…, K) dpnp.ndarray</span>
+<span class="sd">        Vector containing the singular values of `a`, sorted in descending order.</span>
+<span class="sd">        The length of `s` is min(M, N).</span>
+<span class="sd">    Vh : { (…, N, N), (…, K, N) } dpnp.ndarray</span>
+<span class="sd">        Unitary matrix, where N is the number of columns of the input array `a`.</span>
+<span class="sd">        The shape of the matrix `Vh` depends on the value of `full_matrices`.</span>
+<span class="sd">        If `full_matrices` is ``True``, `Vh` has the shape (…, N, N).</span>
+<span class="sd">        If `full_matrices` is ``False``, `Vh` has the shape (…, K, N).</span>
+<span class="sd">        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -760,11 +796,11 @@
 <span class="sd">    &gt;&gt;&gt; u.shape, s.shape, vh.shape</span>
 <span class="sd">    ((9, 9), (6,), (6, 6))</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(u[:, :6] * s, vh))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 <span class="sd">    &gt;&gt;&gt; smat = np.zeros((9, 6), dtype=complex)</span>
 <span class="sd">    &gt;&gt;&gt; smat[:6, :6] = np.diag(s)</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(u, np.dot(smat, vh)))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 
 <span class="sd">    Reconstruction based on reduced SVD, 2D case:</span>
 
@@ -772,10 +808,10 @@
 <span class="sd">    &gt;&gt;&gt; u.shape, s.shape, vh.shape</span>
 <span class="sd">    ((9, 6), (6,), (6, 6))</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(u * s, vh))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 <span class="sd">    &gt;&gt;&gt; smat = np.diag(s)</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(u, np.dot(smat, vh)))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 
 <span class="sd">    Reconstruction based on full SVD, 4D case:</span>
 
@@ -783,9 +819,9 @@
 <span class="sd">    &gt;&gt;&gt; u.shape, s.shape, vh.shape</span>
 <span class="sd">    ((2, 7, 8, 8), (2, 7, 3), (2, 7, 3, 3))</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(b, np.matmul(u[..., :3] * s[..., None, :], vh))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(b, np.matmul(u[..., :3], s[..., None] * vh))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 
 <span class="sd">    Reconstruction based on reduced SVD, 4D case:</span>
 
@@ -793,30 +829,16 @@
 <span class="sd">    &gt;&gt;&gt; u.shape, s.shape, vh.shape</span>
 <span class="sd">    ((2, 7, 8, 3), (2, 7, 3), (2, 7, 3, 3))</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(b, np.matmul(u * s[..., None, :], vh))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(b, np.matmul(u, s[..., None] * vh))</span>
-<span class="sd">    True</span>
+<span class="sd">    array([ True])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">full_matrices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">compute_uv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">hermitian</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">result_tup</span> <span class="o">=</span> <span class="n">dpnp_svd</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">full_matrices</span><span class="p">,</span> <span class="n">compute_uv</span><span class="p">,</span> <span class="n">hermitian</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">result_tup</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">full_matrices</span><span class="p">,</span> <span class="n">compute_uv</span><span class="p">,</span> <span class="n">hermitian</span>
-    <span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_svd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">full_matrices</span><span class="p">,</span> <span class="n">compute_uv</span><span class="p">,</span> <span class="n">hermitian</span><span class="p">)</span></div>
 
 
 
