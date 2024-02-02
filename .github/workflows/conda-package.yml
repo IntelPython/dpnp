@@ -72,6 +72,11 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          docker-images: false
+
       - name: Checkout DPNP repo
         uses: actions/checkout@v4.1.1
         with:
