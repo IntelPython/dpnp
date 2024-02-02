@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.meshgrid &mdash; Data Parallel Extension for NumPy 0.13.1dev3+1.g7180fe5187 documentation</title>
+  <title>dpnp.meshgrid &mdash; Data Parallel Extension for NumPy 0.13.1dev3+6.g90cf268bd4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=558820e8"></script>
+        <script src="../../_static/documentation_options.js?v=eb079c4c"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev3+1.g7180fe5187
+                0.13.1dev3+6.g90cf268bd4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -133,11 +133,32 @@
 N-D scalar/vector fields over N-D grids, given
 one-dimensional coordinate arrays x1, x2,…, xn.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.meshgrid</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>Each array instance from <cite>xi</cite> is supported as either <code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.dpnp.ndarray</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
-Parameter <cite>copy</cite> is supported only with default value <code class="docutils literal notranslate"><span class="pre">True</span></code>.
-Parameter <cite>sparse</cite> is supported only with default value <code class="docutils literal notranslate"><span class="pre">False</span></code>.
-Otherwise the function will be executed sequentially on CPU.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – 1-D arrays representing the coordinates of a grid.</p></li>
+<li><p><strong>x2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – 1-D arrays representing the coordinates of a grid.</p></li>
+<li><p><strong>...</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – 1-D arrays representing the coordinates of a grid.</p></li>
+<li><p><strong>xn</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – 1-D arrays representing the coordinates of a grid.</p></li>
+<li><p><strong>indexing</strong> (<em>{'xy'</em><em>, </em><em>'ij'}</em><em>, </em><em>optional</em>) – Cartesian (‘xy’, default) or matrix (‘ij’) indexing of output.</p></li>
+<li><p><strong>sparse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – If True the shape of the returned coordinate array for dimension <cite>i</cite>
+is reduced from <code class="docutils literal notranslate"><span class="pre">(N1,</span> <span class="pre">...,</span> <span class="pre">Ni,</span> <span class="pre">...</span> <span class="pre">Nn)</span></code> to
+<code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">...,</span> <span class="pre">1,</span> <span class="pre">Ni,</span> <span class="pre">1,</span> <span class="pre">...,</span> <span class="pre">1)</span></code>. Default is False.</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – If False, a view into the original arrays are returned in order to
+conserve memory.  Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>X1, X2,…, XN</strong> – For vectors <cite>x1</cite>, <cite>x2</cite>,…, <cite>xn</cite> with lengths <code class="docutils literal notranslate"><span class="pre">Ni=len(xi)</span></code>,
+returns <code class="docutils literal notranslate"><span class="pre">(N1,</span> <span class="pre">N2,</span> <span class="pre">N3,...,</span> <span class="pre">Nn)</span></code> shaped arrays if indexing=’ij’
+or <code class="docutils literal notranslate"><span class="pre">(N2,</span> <span class="pre">N1,</span> <span class="pre">N3,...,</span> <span class="pre">Nn)</span></code> shaped arrays if indexing=’xy’
+with the elements of <cite>xi</cite> repeated to fill the matrix along
+the first dimension for <cite>x1</cite>, the second for <cite>x2</cite> and so on.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a> of dpnp.ndarrays</p>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
