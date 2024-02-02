@@ -72,7 +72,8 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
-      - name: Free Disk Space (Ubuntu)
+      - if: matrix.os == 'ubuntu-20.04'
+        name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
           docker-images: false
