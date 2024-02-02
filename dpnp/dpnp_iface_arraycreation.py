@@ -1417,11 +1417,6 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
         with the elements of `xi` repeated to fill the matrix along
         the first dimension for `x1`, the second for `x2` and so on.
 
-    Limitations
-    -----------
-    Each array instance from `xi` is supported as either :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-
     Examples
     --------
     >>> import dpnp as np
