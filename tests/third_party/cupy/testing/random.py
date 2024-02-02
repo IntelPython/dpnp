@@ -20,12 +20,15 @@ def do_setup(deterministic=True):
     global _old_cupy_random_states
     _old_python_random_state = random.getstate()
     _old_numpy_random_state = numpy.random.get_state()
-    _old_cupy_random_states = cupy.random.generator._random_states
-    cupy.random.reset_states()
+    _old_cupy_random_states = cupy.random.dpnp_iface_random._dpnp_random_states
+    cupy.random.dpnp_iface_random._dpnp_random_states = {}
     # Check that _random_state has been recreated in
     # cupy.random.reset_states(). Otherwise the contents of
     # _old_cupy_random_states would be overwritten.
-    assert cupy.random.generator._random_states is not _old_cupy_random_states
+    assert (
+        cupy.random.dpnp_iface_random._dpnp_random_states
+        is not _old_cupy_random_states
+    )
 
     if not deterministic:
         random.seed()
@@ -43,7 +46,7 @@ def do_teardown():
     global _old_cupy_random_states
     random.setstate(_old_python_random_state)
     numpy.random.set_state(_old_numpy_random_state)
-    cupy.random.generator._random_states = _old_cupy_random_states
+    cupy.random.dpnp_iface_random._dpnp_random_states = _old_cupy_random_states
     _old_python_random_state = None
     _old_numpy_random_state = None
     _old_cupy_random_states = None
@@ -91,12 +94,12 @@ def fix_random():
     """Decorator that fixes random numbers in a test.
 
     This decorator can be applied to either a test case class or a test method.
-    It should not be applied within ``condition.retry`` or
-    ``condition.repeat``.
+    It should not be applied within ``_condition.retry`` or
+    ``_condition.repeat``.
     """
 
     # TODO(niboshi): Prevent this decorator from being applied within
-    #    condition.repeat or condition.retry decorators. That would repeat
+    #    _condition.repeat or _condition.retry decorators. That would repeat
     #    tests with the same random seeds. It's okay to apply this outside
     #    these decorators.
 

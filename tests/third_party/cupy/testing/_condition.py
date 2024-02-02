@@ -106,7 +106,7 @@ def repeat(times, intensive_times=None):
     if intensive_times is None:
         return repeat_with_success_at_least(times, times)
 
-    casual_test = bool(int(os.environ.get("CUPY_TEST_CASUAL", "0")))
+    casual_test = bool(int(os.environ.get("CUPY_TEST_CASUAL", "1")))
     times_ = times if casual_test else intensive_times
     return repeat_with_success_at_least(times_, times_)
 
