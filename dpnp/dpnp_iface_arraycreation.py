@@ -1454,34 +1454,32 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
 
     """
 
-    if not all((isinstance(x, (dpnp.ndarray, dpt.usm_ndarray)) for x in xi)):
-        pass
-    else:
-        ndim = len(xi)
+    if not dpnp.check_supported_arrays_type(*xi):
+        raise TypeError("Each input array must be any of supported type")
 
-        if indexing not in ["xy", "ij"]:
-            raise ValueError(
-                "Unrecognized indexing keyword value, expecting 'xy' or 'ij'."
-            )
+    ndim = len(xi)
 
-        s0 = (1,) * ndim
-        output = [
-            x.reshape(s0[:i] + (-1,) + s0[i + 1 :]) for i, x in enumerate(xi)
-        ]
+    if indexing not in ["xy", "ij"]:
+        raise ValueError(
+            "Unrecognized indexing keyword value, expecting 'xy' or 'ij'."
+        )
 
-        if indexing == "xy" and ndim > 1:
-            output[0].reshape((1, -1) + s0[2:])
-            output[1].reshape((-1, 1) + s0[2:])
+    s0 = (1,) * ndim
+    output = [
+        dpnp.reshape(x, s0[:i] + (-1,) + s0[i + 1 :]) for i, x in enumerate(xi)
+    ]
 
-        if not sparse:
-            output = dpnp.broadcast_arrays(*output)
+    if indexing == "xy" and ndim > 1:
+        output[0] = output[0].reshape((1, -1) + s0[2:])
+        output[1] = output[1].reshape((-1, 1) + s0[2:])
 
-        if copy:
-            output = tuple(x.copy() for x in output)
+    if not sparse:
+        output = dpnp.broadcast_arrays(*output)
 
-        return output
+    if copy:
+        output = [x.copy() for x in output]
 
-    return call_origin(numpy.meshgrid, xi, copy, sparse, indexing)
+    return output
 
 
 class MGridClass:
