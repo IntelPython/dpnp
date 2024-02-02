@@ -10,7 +10,7 @@ from tests.helper import (
     is_cpu_device,
 )
 from tests.third_party.cupy import testing
-from tests.third_party.cupy.testing import condition
+from tests.third_party.cupy.testing import _condition
 
 
 @testing.parameterize(
@@ -104,7 +104,7 @@ class TestSolve(unittest.TestCase):
 )
 class TestInv(unittest.TestCase):
     @testing.for_dtypes("ifdFD")
-    @condition.retry(10)
+    @_condition.retry(10)
     def check_x(self, a_shape, dtype):
         a_cpu = numpy.random.randint(0, 10, size=a_shape)
         a_cpu = a_cpu.astype(dtype, order=self.order)
