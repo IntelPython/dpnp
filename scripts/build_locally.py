@@ -58,12 +58,21 @@ def run(
         cmake_args += [
             "--cmake-executable=" + cmake_executable,
         ]
-    process = subprocess.Popen(['python', '-m', 'dpctl', '--cmakedir'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    process = subprocess.Popen(
+        ["python", "-m", "dpctl", "--cmakedir"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
     output, error = process.communicate()
     if process.returncode == 0:
-        cmake_dir = output.decode('utf-8').strip()
+        cmake_dir = output.decode("utf-8").strip()
     else:
-        raise RuntimeError("Failed to retrieve dpctl cmake directory: " + error.decode('utf-8').strip())
+        raise RuntimeError(
+            "Failed to retrieve dpctl cmake directory: "
+            + error.decode("utf-8").strip()
+        )
+
     cmake_args += [
         "--build-type=" + build_type,
         "--generator=" + build_system,
