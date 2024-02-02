@@ -59,6 +59,9 @@ def run(
             "--cmake-executable=" + cmake_executable,
         ]
 
+    # if dpctl is locally built using `script/build_locally.py`, it is needed
+    # to pass the -DDpctl_ROOT=$(python -m dpctl --cmakedir)
+    # if dpctl is conda installed, it is optional to pass this parameter
     process = subprocess.Popen(
         ["python", "-m", "dpctl", "--cmakedir"],
         stdout=subprocess.PIPE,
