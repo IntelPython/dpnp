@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.flags
-==================
-
-.. currentmodule:: dpnp
-
-.. autoproperty:: ndarray.flags
