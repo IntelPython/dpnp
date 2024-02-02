@@ -72,12 +72,6 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
-      - if: matrix.os == 'ubuntu-20.04'
-        name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          docker-images: false
-
       - name: Checkout DPNP repo
         uses: actions/checkout@v4.1.1
         with:
@@ -117,7 +111,12 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Build conda package
-        run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
+        run: |
+          conda config --set verbosity 3 --env
+          conda build --build-only --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
+          echo "printing some text"
+        env:
+          CONDA_VERBOSITY: 3
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.0
