@@ -1080,11 +1080,14 @@ def dpnp_qr_batch(a, mode="reduced"):
             r.astype(res_type, copy=False),
         )
 
+    # _orgqr supports only floating type
+    orgqr_type = _real_type(res_type)
+
     if mode == "complete" and m > n:
         mc = m
         q = dpnp.empty(
             (batch_size, m, m),
-            dtype=res_type,
+            dtype=orgqr_type,
             sycl_queue=a_sycl_queue,
             usm_type=a_usm_type,
         )
@@ -1092,7 +1095,7 @@ def dpnp_qr_batch(a, mode="reduced"):
         mc = k
         q = dpnp.empty(
             (batch_size, n, m),
-            dtype=res_type,
+            dtype=orgqr_type,
             sycl_queue=a_sycl_queue,
             usm_type=a_usm_type,
         )
@@ -1126,7 +1129,7 @@ def dpnp_qr_batch(a, mode="reduced"):
 
     return (
         q_reshape.astype(dtype=res_type, copy=False),
-        r_triu_reshape.astype(dtype=res_type, copy=False),
+        r_triu_reshape,
     )
 
 
