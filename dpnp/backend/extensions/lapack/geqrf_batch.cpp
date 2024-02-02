@@ -124,6 +124,11 @@ static sycl::event geqrf_batch_impl(sycl::queue exec_q,
                 << e.detail() << ", but current size is " << scratchpad_size
                 << ".";
         }
+        else if (info != 0 && e.detail() == 0) {
+            error_msg << "Error in batch processing. "
+                         "Number of failed calculations: "
+                      << info;
+        }
         else {
             error_msg << "Unexpected MKL exception caught during geqrf_batch() "
                          "call:\nreason: "
