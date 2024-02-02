@@ -96,7 +96,7 @@ jobs:
           (echo CONDA_BLD=%CONDA_PREFIX%\conda-bld\win-64\) >> %GITHUB_ENV%
 
       - name: Install conda-build
-        run: conda install conda-build
+        run: conda install conda-build=3.28.4
 
       - name: Cache conda packages
         uses: actions/cache@v4
@@ -111,12 +111,7 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Build conda package
-        run: |
-          conda config --set verbosity 3 --env
-          conda build --build-only --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
-          echo "printing some text"
-        env:
-          CONDA_VERBOSITY: 3
+        run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.0
