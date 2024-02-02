@@ -125,7 +125,8 @@ static sycl::event orgqr_batch_impl(sycl::queue exec_q,
         else if (info == scratchpad_size && e.detail() != 0) {
             error_msg
                 << "Insufficient scratchpad size. Required size is at least "
-                << e.detail();
+                << e.detail() << ", but current size is " << scratchpad_size
+                << ".";
         }
         else {
             error_msg << "Unexpected MKL exception caught during orgqr_batch() "
