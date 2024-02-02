@@ -189,6 +189,14 @@ std::pair<sycl::event, sycl::event>
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
+    int tau_array_type_id =
+        array_types.typenum_to_lookup_id(tau_array.get_typenum());
+
+    if (a_array_type_id != tau_array_type_id) {
+        throw py::value_error(
+            "The types of the input array and "
+            "the array of Householder scalars are mismatched");
+    }
 
     geqrf_impl_fn_ptr_t geqrf_fn = geqrf_dispatch_vector[a_array_type_id];
     if (geqrf_fn == nullptr) {
@@ -207,6 +215,15 @@ std::pair<sycl::event, sycl::event>
     const std::int64_t m = a_array_shape[1];
     const std::int64_t n = a_array_shape[0];
     const std::int64_t lda = std::max<size_t>(1UL, m);
+
+    const size_t tau_array_size = tau_array.get_size();
+    const size_t min_m_n = std::max<size_t>(1UL, std::min<size_t>(m, n));
+
+    if (tau_array_size != min_m_n) {
+        throw py::value_error("The array of Householder scalars has size=" +
+                              std::to_string(tau_array_size) + ", but a size=" +
+                              std::to_string(min_m_n) + " array is expected.");
+    }
 
     std::vector<sycl::event> host_task_events;
     sycl::event geqrf_ev = geqrf_fn(q, m, n, a_array_data, lda, tau_array_data,

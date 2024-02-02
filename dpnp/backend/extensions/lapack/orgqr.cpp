@@ -193,6 +193,15 @@ std::pair<sycl::event, sycl::event>
                               "must be contiguous");
     }
 
+    const size_t tau_array_size = tau_array.get_size();
+    const size_t min_m_n = std::max<size_t>(1UL, std::min<size_t>(m, n));
+
+    if (tau_array_size != min_m_n) {
+        throw py::value_error("The array of Householder scalars has size=" +
+                              std::to_string(tau_array_size) + ", but a size=" +
+                              std::to_string(min_m_n) + " array is expected.");
+    }
+
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());

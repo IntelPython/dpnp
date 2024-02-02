@@ -207,6 +207,14 @@ std::pair<sycl::event, sycl::event>
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
+    int tau_array_type_id =
+        array_types.typenum_to_lookup_id(tau_array.get_typenum());
+
+    if (a_array_type_id != tau_array_type_id) {
+        throw py::value_error(
+            "The types of the input array and "
+            "the array of Householder scalars are mismatched");
+    }
 
     geqrf_batch_impl_fn_ptr_t geqrf_batch_fn =
         geqrf_batch_dispatch_vector[a_array_type_id];
