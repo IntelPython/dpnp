@@ -146,10 +146,6 @@ class TestCholeskyInvalid(unittest.TestCase):
         self.check_L(A)
 
 
-# TODO: New packages that fix issue CMPLRLLVM-53771 are only available in internal CI.
-# Skip the tests on cpu until these packages are available for the external CI.
-# Specifically dpcpp_linux-64>=2024.1.0
-@pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
 @testing.parameterize(
     *testing.product(
         {
@@ -159,6 +155,14 @@ class TestCholeskyInvalid(unittest.TestCase):
 )
 @testing.fix_random()
 class TestSVD(unittest.TestCase):
+    # TODO: New packages that fix issue CMPLRLLVM-53771 are only available in internal CI.
+    # Skip the tests on cpu until these packages are available for the external CI.
+    # Specifically dpcpp_linux-64>=2024.1.0
+    @classmethod
+    def setUpClass(cls):
+        if is_cpu_device():
+            raise unittest.SkipTest("CMPLRLLVM-53771")
+
     def setUp(self):
         self.seed = testing.generate_seed()
 
