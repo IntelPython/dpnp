@@ -72,6 +72,28 @@ struct GesvTypePairSupportFactory
 
 /**
  * @brief A factory to define pairs of supported types for which
+ * MKL LAPACK library provides support in oneapi::mkl::lapack::gesvd<T, RealT>
+ * function.
+ *
+ * @tparam T Type of array containing input matrix A and output matrices U and
+ * VT of singular vectors.
+ * @tparam RealT Type of output array containing singular values of A.
+ */
+template <typename T, typename RealT>
+struct GesvdTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T, float, RealT, float>,
+        dpctl_td_ns::TypePairDefinedEntry<T, double, RealT, double>,
+        dpctl_td_ns::TypePairDefinedEntry<T, std::complex<float>, RealT, float>,
+        dpctl_td_ns::
+            TypePairDefinedEntry<T, std::complex<double>, RealT, double>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
  * MKL LAPACK library provides support in oneapi::mkl::lapack::getrf<T>
  * function.
  *
