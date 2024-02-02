@@ -31,17 +31,43 @@
 
 #include <dpctl4pybind11.hpp>
 
-namespace dpnp
+class EngineBase {
+public:
+    virtual ~EngineBase() {}
+    virtual sycl::queue get_queue() = 0;
+    virtual std::string print() = 0;
+    // auto get_engine() {
+    //     return nullptr;
+    // }
+};
+
+class MRG32k3a : public EngineBase {
+public:
+    sycl::queue q_;
+    const std::uint32_t seed_;
+    const std::uint64_t offset_;
+
+// public:
+    MRG32k3a(sycl::queue &q, std::uint32_t seed, std::uint64_t offset = 0) : q_(q), seed_(seed), offset_(offset) {}
+
+    sycl::queue get_queue() override {
+        return q_;
+    }
+
+    std::string print() override {
+        return "seed = " + std::to_string(seed_) + ", offset = " + std::to_string(offset_);
+    }
+
+    // auto get_engine() override {
+    //     return oneapi::mkl::rng::device::mrg32k3a<8>(seed_, offset_);
+    // }
+
+    // using engine_type = oneapi::mkl::rng::device::mrg32k3a<8>;
+};
+
+namespace dpnp::backend::ext::rng::device
 {
-namespace backend
-{
-namespace ext
-{
-namespace rng
-{
-namespace device
-{
-extern std::pair<sycl::event, sycl::event> gaussian(sycl::queue exec_q,
+extern std::pair<sycl::event, sycl::event> gaussian(EngineBase *engine,
                                              const std::uint8_t method_id,
                                              const std::uint32_t seed,
                                              const double mean,
@@ -51,8 +77,4 @@ extern std::pair<sycl::event, sycl::event> gaussian(sycl::queue exec_q,
                                              const std::vector<sycl::event> &depends = {});
 
 extern void init_gaussian_dispatch_table(void);
-} // namespace device
-} // namespace rng
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::backend::ext::rng::device

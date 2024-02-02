@@ -52,6 +52,29 @@ void init_dispatch_tables(void)
     rng_dev_ext::init_gaussian_dispatch_table();
 }
 
+class PyEngineBase : public EngineBase {
+public:
+    /* Inherit the constructors */
+    using EngineBase::EngineBase;
+
+    /* Trampoline (need one for each virtual function) */
+    sycl::queue get_queue() override {
+        PYBIND11_OVERRIDE_PURE(
+            sycl::queue, /* Return type */
+            EngineBase,  /* Parent class */
+            get_queue,       /* Name of function in C++ (must match Python name) */
+        );
+    }
+
+    std::string print() override {
+        PYBIND11_OVERRIDE_PURE(
+            std::string, /* Return type */
+            EngineBase,  /* Parent class */
+            print,       /* Name of function in C++ (must match Python name) */
+        );
+    }
+};
+
 
 PYBIND11_MODULE(_rng_dev_impl, m)
 {
@@ -79,9 +102,18 @@ PYBIND11_MODULE(_rng_dev_impl, m)
     //       py::arg("eig_vecs"), py::arg("eig_vals"),
     //       py::arg("depends") = py::list());
 
+    py::class_<EngineBase, PyEngineBase /* <--- trampoline */>(m, "EngineBase")
+        .def(py::init<>())
+        .def("print", &EngineBase::print);
+
+    py::class_<MRG32k3a, EngineBase>(m, "MRG32k3a")
+        .def(py::init<sycl::queue &, std::uint32_t, std::uint64_t>());
+
+
     m.def("_gaussian", &rng_dev_ext::gaussian,
           "",
-          py::arg("sycl_queue"), py::arg("method"), py::arg("seed"), py::arg("mean"), py::arg("stddev"),
+          py::arg("engine"),
+          py::arg("method"), py::arg("seed"), py::arg("mean"), py::arg("stddev"),
           py::arg("n"), py::arg("res"),
           py::arg("depends") = py::list());
 }

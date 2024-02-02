@@ -91,7 +91,26 @@ public:
     }
 };
 
-typedef sycl::event (*gaussian_impl_fn_ptr_t)(sycl::queue &,
+template <typename EngineBase, typename MklEngineT>
+struct EngineDistr
+{
+private:
+    EngineBase *engine_;
+
+public:
+    using engine_type = MklEngineT;
+
+    EngineDistr(EngineBase *engine) : engine_(engine)
+    {
+    }
+
+    inline auto operator()(void) const
+    {
+        return MklEngineT(engine_->seed_, engine_->offset_);
+    }
+};
+
+typedef sycl::event (*gaussian_impl_fn_ptr_t)(EngineBase *engine,
                                            const std::uint32_t,
                                            const double,
                                            const double,
@@ -101,11 +120,11 @@ typedef sycl::event (*gaussian_impl_fn_ptr_t)(sycl::queue &,
 
 static gaussian_impl_fn_ptr_t gaussian_dispatch_table[dpctl_td_ns::num_types][num_methods];
 
-template <typename DataT,  typename Method, unsigned int vec_sz, unsigned int items_per_wi>
+template <typename EngineT, typename DataT,  typename Method, unsigned int items_per_wi>
 class gaussian_kernel;
 
-template <typename DataT, typename Method>
-static sycl::event gaussian_impl(sycl::queue& exec_q,
+template <typename EngineT, typename DataT, typename Method>
+static sycl::event gaussian_impl(EngineBase *engine,
                                  const std::uint32_t seed,
                                  const double mean_val,
                                  const double stddev_val,
@@ -113,13 +132,14 @@ static sycl::event gaussian_impl(sycl::queue& exec_q,
                                  char *out_ptr,
                                  const std::vector<sycl::event> &depends)
 {
+    auto exec_q = engine->get_queue();
     type_utils::validate_type_for_device<DataT>(exec_q);
 
     DataT *out = reinterpret_cast<DataT *>(out_ptr);
     DataT mean = static_cast<DataT>(mean_val);
     DataT stddev = static_cast<DataT>(stddev_val);
 
-    constexpr std::size_t vec_sz = 8;
+    constexpr std::size_t vec_sz = EngineT::vec_size;
     constexpr std::size_t items_per_wi = 4;
     constexpr std::size_t local_size = 256;
     const std::size_t wg_items = local_size * vec_sz * items_per_wi;
@@ -131,23 +151,28 @@ static sycl::event gaussian_impl(sycl::queue& exec_q,
         distr_event = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
 
+            using EngineDistrT = EngineDistr<MRG32k3a, EngineT>;
+            EngineDistrT eng(static_cast<MRG32k3a*>(engine));
+
+            // EngineT engine = EngineT(seed, 0);
+
             using GaussianDistrT = GaussianDistr<DataT, Method>;
             GaussianDistrT distr(mean, stddev);
 
             if (is_aligned<required_alignment>(out_ptr)) {
                 constexpr bool enable_sg_load = true;
-                using KernelName = gaussian_kernel<DataT, Method, vec_sz, items_per_wi>;
+                using KernelName = gaussian_kernel<EngineT, DataT, Method, items_per_wi>;
 
                 cgh.parallel_for<KernelName>(sycl::nd_range<1>({global_size}, {local_size}),
-                    details::RngContigFunctor<DataT, GaussianDistrT, DataT, DataT, vec_sz, items_per_wi, enable_sg_load>(seed, distr, out, n));
+                    details::RngContigFunctor<EngineDistrT, DataT, GaussianDistrT, items_per_wi, enable_sg_load>(eng, distr, out, n));
             }
             else {
                 constexpr bool disable_sg_load = false;
-                using InnerKernelName = gaussian_kernel<DataT, Method, vec_sz, items_per_wi>;
+                using InnerKernelName = gaussian_kernel<EngineT, DataT, Method, items_per_wi>;
                 using KernelName = disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
 
                 cgh.parallel_for<KernelName>(sycl::nd_range<1>({global_size}, {local_size}),
-                    details::RngContigFunctor<DataT, GaussianDistrT, DataT, DataT, vec_sz, items_per_wi, disable_sg_load>(seed, distr, out, n));
+                    details::RngContigFunctor<EngineDistrT, DataT, GaussianDistrT, items_per_wi, disable_sg_load>(eng, distr, out, n));
             }
         });
     } catch (oneapi::mkl::exception const &e) {
@@ -164,7 +189,7 @@ static sycl::event gaussian_impl(sycl::queue& exec_q,
     return distr_event;
 }
 
-std::pair<sycl::event, sycl::event> gaussian(sycl::queue exec_q,
+std::pair<sycl::event, sycl::event> gaussian(EngineBase *engine,
                                              const std::uint8_t method_id,
                                              const std::uint32_t seed,
                                              const double mean,
@@ -173,6 +198,9 @@ std::pair<sycl::event, sycl::event> gaussian(sycl::queue exec_q,
                                              dpctl::tensor::usm_ndarray res,
                                              const std::vector<sycl::event> &depends)
 {
+    std::cout << engine->print() << std::endl;
+    auto exec_q = engine->get_queue();
+
     const int res_nd = res.get_ndim();
     const py::ssize_t *res_shape = res.get_shape_raw();
 
@@ -216,7 +244,7 @@ std::pair<sycl::event, sycl::event> gaussian(sycl::queue exec_q,
     }
 
     char *res_data = res.get_data();
-    sycl::event gaussian_ev = gaussian_fn(exec_q, seed, mean, stddev, n, res_data, depends);
+    sycl::event gaussian_ev = gaussian_fn(engine, seed, mean, stddev, n, res_data, depends);
 
     sycl::event ht_ev = dpctl::utils::keep_args_alive(exec_q, {res}, {gaussian_ev});
      return std::make_pair(ht_ev, gaussian_ev);
@@ -299,7 +327,7 @@ struct GaussianContigFactory
     fnT get()
     {
         if constexpr (GaussianTypePairSupportFactory<T, M>::is_defined) {
-            return gaussian_impl<T, M>;
+            return gaussian_impl<mkl_rng_dev::mrg32k3a<8>, T, M>;
         }
         else {
             return nullptr;
