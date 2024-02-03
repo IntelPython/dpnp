@@ -190,6 +190,10 @@ jobs:
 
     needs: build-and-deploy
 
+    permissions:
+      # Needed to remove docs for closed pull request from the repo
+      contents: write
+
     runs-on: ubuntu-20.04
 
     steps:
