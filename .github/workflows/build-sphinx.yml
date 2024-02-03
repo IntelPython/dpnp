@@ -27,6 +27,10 @@ jobs:
 
     runs-on: ubuntu-20.04
 
+    permissions:
+      # Needed to deploy your static files to GitHub Pages
+      contents: write
+
     env:
       python-ver: '3.9'
       CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
