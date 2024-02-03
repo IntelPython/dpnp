@@ -4,6 +4,8 @@ on:
   push:
     branches: [master]
 
+permissions: read-all
+
 jobs:
   generate-coverage:
     name: Generate coverage and push to Coveralls.io

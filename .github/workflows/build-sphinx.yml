@@ -6,6 +6,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
 
+permissions: read-all
+
 env:
   GH_BOT_NAME: 'github-actions[bot]'
   GH_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
