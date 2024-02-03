@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.13.1dev2+16.g0d2e21a139 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.13.1dev3+8.g48a554ae0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=6c1c29ad"></script>
+        <script src="../../_static/documentation_options.js?v=5436e994"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+16.g0d2e21a139
+                0.13.1dev3+8.g48a554ae0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -598,6 +598,8 @@
 
     <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;kwargs=</span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2"> is currently not supported&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">a_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">a_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;One of max or min must be given&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span>
@@ -2921,7 +2923,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp.ndarray, usm_ndarray}:</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    axis : int or tuple of ints, optional</span>
 <span class="sd">        Axis or axes along which sums must be computed. If a tuple</span>
@@ -2974,7 +2976,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `initial` and `where` are supported with their default values.</span>
+<span class="sd">    Parameters `initial` and `where` are only supported with their default values.</span>
 <span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="sd">    See Also</span>

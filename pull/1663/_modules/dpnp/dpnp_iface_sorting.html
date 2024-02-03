@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.13.1dev2+16.g0d2e21a139 documentation</title>
+  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.13.1dev3+8.g48a554ae0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=6c1c29ad"></script>
+        <script src="../../_static/documentation_options.js?v=5436e994"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+16.g0d2e21a139
+                0.13.1dev3+8.g48a554ae0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -130,10 +130,13 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
+<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argsort&quot;</span><span class="p">,</span> <span class="s2">&quot;partition&quot;</span><span class="p">,</span> <span class="s2">&quot;searchsorted&quot;</span><span class="p">,</span> <span class="s2">&quot;sort&quot;</span><span class="p">]</span>
@@ -141,24 +144,48 @@
 
 <div class="viewcode-block" id="argsort">
 <a class="viewcode-back" href="../../reference/generated/dpnp.argsort.html#dpnp.argsort">[docs]</a>
-<span class="k">def</span> <span class="nf">argsort</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the indices that would sort an array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.argsort`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Array to be sorted.</span>
+<span class="sd">    axis : int or None, optional</span>
+<span class="sd">        Axis along which to sort. If ``None``, the array is flattened before</span>
+<span class="sd">        sorting. The default is -1, which sorts along the last axis.</span>
+<span class="sd">    kind : {None, &quot;stable&quot;}, optional</span>
+<span class="sd">        Default is ``None``, which is equivalent to `&quot;stable&quot;`.</span>
+<span class="sd">        Unlike in NumPy any other options are not accepted here.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Array of indices that sort `a` along the specified `axis`.</span>
+<span class="sd">        If `a` is one-dimensional, ``a[index_array]`` yields a sorted `a`.</span>
+<span class="sd">        More generally, ``dpnp.take_along_axis(a, index_array, axis=axis)``</span>
+<span class="sd">        always yields the sorted `a`, irrespective of dimensionality.</span>
+<span class="sd">        The return array has default array index data type.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For zero-dimensional arrays, if `axis=None`, output is a one-dimensional</span>
+<span class="sd">    array with a single zero element. Otherwise, an ``AxisError`` is raised.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Parameter `axis` is supported only with default value ``-1``.</span>
-<span class="sd">    Parameter `kind` is supported only with default value ``None``.</span>
-<span class="sd">    Parameter `order` is supported only with default value ``None``.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Parameters `order` is only supported with its default value.</span>
+<span class="sd">    Parameters `kind` can only be ``None`` or ``&quot;stable&quot;`` which</span>
+<span class="sd">    are equivalent.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.sort` : Describes sorting algorithms used.</span>
+<span class="sd">    :obj:`dpnp.ndarray.argsort` : Equivalent method.</span>
+<span class="sd">    :obj:`dpnp.sort` : Return a sorted copy of an array.</span>
 <span class="sd">    :obj:`dpnp.lexsort` : Indirect stable sort with multiple keys.</span>
 <span class="sd">    :obj:`dpnp.argpartition` : Indirect partial sort.</span>
 <span class="sd">    :obj:`dpnp.take_along_axis` : Apply ``index_array`` from argsort to</span>
@@ -168,26 +195,50 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.array([3, 1, 2])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.argsort(x)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [1, 2, 0]</span>
+<span class="sd">    &gt;&gt;&gt; np.argsort(x)</span>
+<span class="sd">    array([1, 2, 0])</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([[0, 3], [2, 2]])</span>
+<span class="sd">    &gt;&gt;&gt; x</span>
+<span class="sd">    array([[0, 3],</span>
+<span class="sd">           [2, 2]])</span>
+
+<span class="sd">    &gt;&gt;&gt; ind = np.argsort(x, axis=0)  # sorts along first axis</span>
+<span class="sd">    &gt;&gt;&gt; ind</span>
+<span class="sd">    array([[0, 1],</span>
+<span class="sd">           [1, 0]])</span>
+<span class="sd">    &gt;&gt;&gt; np.take_along_axis(x, ind, axis=0)  # same as np.sort(x, axis=0)</span>
+<span class="sd">    array([[0, 2],</span>
+<span class="sd">           [2, 3]])</span>
+
+<span class="sd">    &gt;&gt;&gt; ind = np.argsort(x, axis=1)  # sorts along last axis</span>
+<span class="sd">    &gt;&gt;&gt; ind</span>
+<span class="sd">    array([[0, 1],</span>
+<span class="sd">           [0, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; np.take_along_axis(x, ind, axis=1)  # same as np.sort(x, axis=1)</span>
+<span class="sd">    array([[0, 3],</span>
+<span class="sd">           [2, 2]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">in_array1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_argsort</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;order keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">kind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kind</span> <span class="o">!=</span> <span class="s2">&quot;stable&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;kind keyword argument can only be None or &#39;stable&#39;.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">argsort</span><span class="p">,</span> <span class="n">in_array1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span></div>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+            <span class="n">dpt</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 
@@ -267,23 +318,44 @@
 
 <div class="viewcode-block" id="sort">
 <a class="viewcode-back" href="../../reference/generated/dpnp.sort.html#dpnp.sort">[docs]</a>
-<span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a sorted copy of an array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.sort`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Array to be sorted.</span>
+<span class="sd">    axis : int or None, optional</span>
+<span class="sd">        Axis along which to sort. If ``None``, the array is flattened before</span>
+<span class="sd">        sorting. The default is -1, which sorts along the last axis.</span>
+<span class="sd">    kind : {None, &quot;stable&quot;}, optional</span>
+<span class="sd">        Default is ``None``, which is equivalent to `&quot;stable&quot;`.</span>
+<span class="sd">        Unlike in NumPy any other options are not accepted here.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Sorted array with the same type and shape as `a`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For zero-dimensional arrays, if `axis=None`, output is the input array</span>
+<span class="sd">    returned as a one-dimensional array. Otherwise, an ``AxisError`` is raised.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword arguments ``kwargs`` are currently unsupported.</span>
-<span class="sd">    Dimension of input array is supported to be equal to ``1``.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Parameters `order` is only supported with its default value.</span>
+<span class="sd">    Parameters `kind` can only be ``None`` or ``&quot;stable&quot;`` which</span>
+<span class="sd">    are equivalent.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.argsort` : Indirect sort.</span>
+<span class="sd">    :obj:`dpnp.ndarray.sort` : Sort an array in-place.</span>
+<span class="sd">    :obj:`dpnp.argsort` : Return the indices that would sort an array.</span>
 <span class="sd">    :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.</span>
 <span class="sd">    :obj:`dpnp.searchsorted` : Find elements in a sorted array.</span>
 <span class="sd">    :obj:`dpnp.partition` : Partial sort.</span>
@@ -291,21 +363,36 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array([1, 4, 3, 1])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.sort(a)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [1, 1, 3, 4]</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1,4],[3,1]])</span>
+<span class="sd">    &gt;&gt;&gt; np.sort(a)                # sort along the last axis</span>
+<span class="sd">    array([[1, 4],</span>
+<span class="sd">           [1, 3]])</span>
+<span class="sd">    &gt;&gt;&gt; np.sort(a, axis=None)     # sort the flattened array</span>
+<span class="sd">    array([1, 1, 3, 4])</span>
+<span class="sd">    &gt;&gt;&gt; np.sort(a, axis=0)        # sort along the first axis</span>
+<span class="sd">    array([[1, 1],</span>
+<span class="sd">           [3, 4]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_sort</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;order keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">kind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kind</span> <span class="o">!=</span> <span class="s2">&quot;stable&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;kind keyword argument can only be None or &#39;stable&#39;.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sort</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+            <span class="n">dpt</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 </pre></div>
 
