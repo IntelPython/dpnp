@@ -6,6 +6,8 @@ on:
       - master
   pull_request:
 
+permissions: read-all
+
 env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
@@ -57,6 +59,10 @@ jobs:
       matrix:
         python: ['3.9', '3.10', '3.11']
         os: [ubuntu-20.04, windows-latest]
+
+    permissions:
+      # Needed to cancel any previous runs that are not completed for a given workflow
+      actions: write
 
     runs-on: ${{ matrix.os }}
 
