@@ -28,8 +28,12 @@ jobs:
     runs-on: ubuntu-20.04
 
     permissions:
-      # Needed to deploy your static files to GitHub Pages
+      # Needed to cancel any previous runs that are not completed for a given workflow
+      actions: write
+      # Needed to deploy static files to GitHub Pages
       contents: write
+      # Needed to add a comment to a pull request's issue
+      pull-requests: write
 
     env:
       python-ver: '3.9'
