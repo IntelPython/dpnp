@@ -96,7 +96,7 @@ jobs:
           (echo CONDA_BLD=%CONDA_PREFIX%\conda-bld\win-64\) >> %GITHUB_ENV%
 
       - name: Install conda-build
-        run: conda install conda-build
+        run: conda install conda-build=3.28.4
 
       - name: Cache conda packages
         uses: actions/cache@v4
@@ -167,7 +167,7 @@ jobs:
 
       # Needed to be able to run conda index
       - name: Install conda-build
-        run: conda install conda-build
+        run: conda install conda-build=3.28.4
 
       - name: Create conda channel
         run: conda index ${{ env.channel-path }}
@@ -283,7 +283,7 @@ jobs:
 
       # Needed to be able to run conda index
       - name: Install conda-build
-        run: conda install conda-build
+        run: conda install conda-build=3.28.4
 
       - name: Create conda channel
         run: conda index ${{ env.channel-path }}
