@@ -60,7 +60,7 @@ jobs:
 
       - name: Build dpnp with coverage
         id: build_coverage
-        uses: nick-fields/retry@v2.9.0
+        uses: nick-fields/retry@v3.0.0
         with:
           shell: bash
           timeout_minutes: 60
