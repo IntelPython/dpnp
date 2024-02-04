@@ -217,6 +217,14 @@ std::pair<sycl::event, sycl::event>
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
+    int tau_array_type_id =
+        array_types.typenum_to_lookup_id(tau_array.get_typenum());
+
+    if (a_array_type_id != tau_array_type_id) {
+        throw py::value_error(
+            "The types of the input array and "
+            "the array of Householder scalars are mismatched");
+    }
 
     orgqr_batch_impl_fn_ptr_t orgqr_batch_fn =
         orgqr_batch_dispatch_vector[a_array_type_id];
@@ -225,15 +233,6 @@ std::pair<sycl::event, sycl::event>
             "No orgqr_batch implementation defined for the provided type "
             "of the input matrix.");
     }
-
-    // auto tau_types = dpctl_td_ns::usm_ndarray_types();
-    // int tau_array_type_id =
-    //     tau_types.typenum_to_lookup_id(tau_array.get_typenum());
-
-    // if (tau_array_type_id != static_cast<int>(dpctl_td_ns::typenum_t::INT64))
-    // {
-    //     throw py::value_error("The type of 'tau_array' must be int64.");
-    // }
 
     char *a_array_data = a_array.get_data();
     char *tau_array_data = tau_array.get_data();
