@@ -19,7 +19,6 @@ var NAVTREEINDEX2 =
 "log10_8hpp_source.html":[2,0,0,3,22],
 "log1p_8hpp_source.html":[2,0,0,3,23],
 "log2_8hpp_source.html":[2,0,0,3,24],
-"modules.html":[0],
 "mul_8hpp_source.html":[2,0,0,3,25],
 "pages.html":[],
 "potrf_8hpp_source.html":[2,0,0,1,7],
@@ -172,6 +171,7 @@ var NAVTREEINDEX2 =
 "syevd_8hpp_source.html":[2,0,0,1,8],
 "tan_8hpp_source.html":[2,0,0,3,33],
 "tanh_8hpp_source.html":[2,0,0,3,34],
+"topics.html":[0],
 "trunc_8hpp_source.html":[2,0,0,3,35],
 "verbose_8hpp_source.html":[2,0,2,8],
 "vm_2types__matrix_8hpp_source.html":[2,0,0,3,36]
