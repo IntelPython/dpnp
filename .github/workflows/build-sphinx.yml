@@ -193,6 +193,8 @@ jobs:
     permissions:
       # Needed to remove docs for closed pull request from the repo
       contents: write
+      # Needed to modify a comment in the pull request's issue
+      pull-requests: write
 
     runs-on: ubuntu-20.04
 
