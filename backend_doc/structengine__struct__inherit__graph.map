@@ -1,5 +1,7 @@
 <map id="engine_struct" name="engine_struct">
-<area shape="rect" id="node1" title=" " alt="" coords="71,5,171,31"/>
-<area shape="rect" id="node2" href="$structmcg59__struct.html" title=" " alt="" coords="5,79,107,104"/>
-<area shape="rect" id="node3" href="$structmt19937__struct.html" title=" " alt="" coords="131,79,243,104"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="70,5,169,31"/>
+<area shape="rect" id="Node000002" href="$structmcg59__struct.html" title=" " alt="" coords="5,79,106,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,44,68,80,64,77,97,40"/>
+<area shape="rect" id="Node000003" href="$structmt19937__struct.html" title=" " alt="" coords="129,79,241,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="142,40,176,77,172,80,138,44"/>
 </map>
