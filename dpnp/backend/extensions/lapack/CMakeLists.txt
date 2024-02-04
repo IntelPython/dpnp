@@ -39,6 +39,7 @@ set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/potrf.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/potrf_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/syevd.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ungqr.cpp
 )
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})

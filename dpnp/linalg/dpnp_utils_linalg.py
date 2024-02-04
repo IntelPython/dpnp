@@ -1227,9 +1227,6 @@ def dpnp_qr(a, mode="reduced"):
             tau_h.astype(res_type, copy=False),
         )
 
-    # _orgqr supports only floating type
-    orgqr_type = _real_type(res_type)
-
     # mc is the total number of columns in the q matrix.
     # In `complete` mode, mc equals the number of rows.
     # In `reduced` mode, mc is the lesser of the row count or column count.
@@ -1237,7 +1234,7 @@ def dpnp_qr(a, mode="reduced"):
         mc = m
         q = dpnp.empty(
             (m, m),
-            dtype=orgqr_type,
+            dtype=res_type,
             order="C",
             sycl_queue=a_sycl_queue,
             usm_type=a_usm_type,
@@ -1246,20 +1243,28 @@ def dpnp_qr(a, mode="reduced"):
         mc = k
         q = dpnp.empty(
             (n, m),
-            dtype=orgqr_type,
+            dtype=res_type,
             order="C",
             sycl_queue=a_sycl_queue,
             usm_type=a_usm_type,
         )
     q[:n] = a_t
 
-    # Call the LAPACK extension function _orgqr to generate the real orthogonal matrix
-    # `Q` of the QR factorization
-    ht_orgqr_ev, _ = li._orgqr(
+    # Get LAPACK function (_orgqr for real or _ungqf for complex data types)
+    # for QR factorization
+    lapack_func = (
+        "_ungqr"
+        if dpnp.issubdtype(res_type, dpnp.complexfloating)
+        else "_orgqr"
+    )
+
+    # Call the LAPACK extension function _orgqr/_ungqf to generate the real orthogonal/
+    # complex unitary matrix `Q` of the QR factorization
+    ht_lapack_ev, _ = getattr(li, lapack_func)(
         a_sycl_queue, m, mc, k, q.get_array(), tau_h.get_array(), [geqrf_ev]
     )
 
-    ht_orgqr_ev.wait()
+    ht_lapack_ev.wait()
 
     q = q[:mc].transpose()
     r = a_t[:, :mc].transpose()

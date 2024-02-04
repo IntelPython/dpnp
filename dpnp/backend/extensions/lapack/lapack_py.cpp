@@ -39,6 +39,7 @@
 #include "orgqr.hpp"
 #include "potrf.hpp"
 #include "syevd.hpp"
+#include "ungqr.hpp"
 
 namespace lapack_ext = dpnp::backend::ext::lapack;
 namespace py = pybind11;
@@ -57,6 +58,7 @@ void init_dispatch_vectors(void)
     lapack_ext::init_potrf_batch_dispatch_vector();
     lapack_ext::init_potrf_dispatch_vector();
     lapack_ext::init_syevd_dispatch_vector();
+    lapack_ext::init_ungqr_dispatch_vector();
 }
 
 // populate dispatch tables
@@ -160,5 +162,12 @@ PYBIND11_MODULE(_lapack_impl, m)
           "the eigenvalues and eigenvectors of a real symmetric matrix",
           py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
           py::arg("eig_vecs"), py::arg("eig_vals"),
+          py::arg("depends") = py::list());
+
+    m.def("_ungqr", &lapack_ext::ungqr,
+          "Call `ungqr` from OneMKL LAPACK library to return "
+          "the complex unitary matrix Q of the QR factorization",
+          py::arg("sycl_queue"), py::arg("m"), py::arg("n"), py::arg("k"),
+          py::arg("a_array"), py::arg("tau_array"),
           py::arg("depends") = py::list());
 }
