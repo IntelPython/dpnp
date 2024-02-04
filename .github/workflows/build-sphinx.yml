@@ -176,7 +176,7 @@ jobs:
         if: env.GH_EVENT_OPEN_PR_UPSTREAM
         env:
           PR_NUM: ${{ github.event.number }}
-        uses: mshick/add-pr-comment@v2.8.1
+        uses: mshick/add-pr-comment@v2.8.2
         with:
           message: |
             View rendered docs @ https://intelpython.github.io/dpnp/pull/${{ env.PR_NUM }}/index.html
@@ -218,7 +218,7 @@ jobs:
           git push tokened_docs gh-pages
 
       - name: Modify the comment with URL to official documentation
-        uses: mshick/add-pr-comment@v2.8.1
+        uses: mshick/add-pr-comment@v2.8.2
         with:
           find: |
             View rendered docs @.+
