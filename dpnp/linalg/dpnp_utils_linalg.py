@@ -973,17 +973,15 @@ def dpnp_qr_batch(a, mode="reduced"):
     if batch_size == 0 or k == 0:
         if mode == "reduced":
             return (
-                dpnp.empty(
-                    batch_shape + (m, k),
+                dpnp.empty_like(
+                    a,
+                    shape=batch_shape + (m, k),
                     dtype=res_type,
-                    sycl_queue=a_sycl_queue,
-                    usm_type=a_usm_type,
                 ),
-                dpnp.empty(
-                    batch_shape + (k, n),
+                dpnp.empty_like(
+                    a,
+                    shape=batch_shape + (k, n),
                     dtype=res_type,
-                    sycl_queue=a_sycl_queue,
-                    usm_type=a_usm_type,
                 ),
             )
         elif mode == "complete":
@@ -996,33 +994,29 @@ def dpnp_qr_batch(a, mode="reduced"):
             )
             return (
                 q,
-                dpnp.empty(
-                    batch_shape + (m, n),
+                dpnp.empty_like(
+                    a,
+                    shape=batch_shape + (m, n),
                     dtype=res_type,
-                    sycl_queue=a_sycl_queue,
-                    usm_type=a_usm_type,
                 ),
             )
         elif mode == "r":
-            return dpnp.empty(
-                batch_shape + (k, n),
+            return dpnp.empty_like(
+                a,
+                shape=batch_shape + (k, n),
                 dtype=res_type,
-                sycl_queue=a_sycl_queue,
-                usm_type=a_usm_type,
             )
         elif mode == "raw":
             return (
-                dpnp.empty(
-                    batch_shape + (n, m),
+                dpnp.empty_like(
+                    a,
+                    shape=batch_shape + (n, m),
                     dtype=res_type,
-                    sycl_queue=a_sycl_queue,
-                    usm_type=a_usm_type,
                 ),
-                dpnp.empty(
-                    batch_shape + (k,),
+                dpnp.empty_like(
+                    a,
+                    shape=batch_shape + (k,),
                     dtype=res_type,
-                    sycl_queue=a_sycl_queue,
-                    usm_type=a_usm_type,
                 ),
             )
 
@@ -1040,11 +1034,10 @@ def dpnp_qr_batch(a, mode="reduced"):
         src=a_usm_arr, dst=a_t.get_array(), sycl_queue=a_sycl_queue
     )
 
-    tau_h = dpnp.empty(
-        (batch_size, k),
+    tau_h = dpnp.empty_like(
+        a_t,
+        shape=(batch_size, k),
         dtype=res_type,
-        sycl_queue=a_sycl_queue,
-        usm_type=a_usm_type,
     )
 
     a_stride = a_t.strides[0]
@@ -1079,19 +1072,17 @@ def dpnp_qr_batch(a, mode="reduced"):
 
     if mode == "complete" and m > n:
         mc = m
-        q = dpnp.empty(
-            (batch_size, m, m),
+        q = dpnp.empty_like(
+            a_t,
+            shape=(batch_size, m, m),
             dtype=res_type,
-            sycl_queue=a_sycl_queue,
-            usm_type=a_usm_type,
         )
     else:
         mc = k
-        q = dpnp.empty(
-            (batch_size, n, m),
+        q = dpnp.empty_like(
+            a_t,
+            shape=(batch_size, n, m),
             dtype=res_type,
-            sycl_queue=a_sycl_queue,
-            usm_type=a_usm_type,
         )
     q[..., :n, :] = a_t
 
@@ -1156,44 +1147,38 @@ def dpnp_qr(a, mode="reduced"):
     k = min(m, n)
     if k == 0:
         if mode == "reduced":
-            return dpnp.empty(
-                (m, 0),
+            return dpnp.empty_like(
+                a,
+                shape=(m, 0),
                 dtype=res_type,
-                sycl_queue=a_sycl_queue,
-                usm_type=a_usm_type,
-            ), dpnp.empty(
-                (0, n),
+            ), dpnp.empty_like(
+                a,
+                shape=(0, n),
                 dtype=res_type,
-                sycl_queue=a_sycl_queue,
-                usm_type=a_usm_type,
             )
         elif mode == "complete":
             return dpnp.identity(
                 m, dtype=res_type, sycl_queue=a_sycl_queue, usm_type=a_usm_type
-            ), dpnp.empty(
-                (m, n),
+            ), dpnp.empty_like(
+                a,
+                shape=(m, n),
                 dtype=res_type,
-                sycl_queue=a_sycl_queue,
-                usm_type=a_usm_type,
             )
         elif mode == "r":
-            return dpnp.empty(
-                (0, n),
+            return dpnp.empty_like(
+                a,
+                shape=(0, n),
                 dtype=res_type,
-                sycl_queue=a_sycl_queue,
-                usm_type=a_usm_type,
             )
         else:  # mode == "raw"
-            return dpnp.empty(
-                (n, m),
+            return dpnp.empty_like(
+                a,
+                shape=(n, m),
                 dtype=res_type,
-                sycl_queue=a_sycl_queue,
-                usm_type=a_usm_type,
-            ), dpnp.empty(
-                (0,),
+            ), dpnp.empty_like(
+                a,
+                shape=(0,),
                 dtype=res_type,
-                sycl_queue=a_sycl_queue,
-                usm_type=a_usm_type,
             )
 
     a = a.T
@@ -1206,8 +1191,10 @@ def dpnp_qr(a, mode="reduced"):
         src=a_usm_arr, dst=a_t.get_array(), sycl_queue=a_sycl_queue
     )
 
-    tau_h = dpnp.empty(
-        k, dtype=res_type, sycl_queue=a_sycl_queue, usm_type=a_usm_type
+    tau_h = dpnp.empty_like(
+        a,
+        shape=(k,),
+        dtype=res_type,
     )
 
     # Call the LAPACK extension function _geqrf to compute the QR factorization
@@ -1231,21 +1218,17 @@ def dpnp_qr(a, mode="reduced"):
     # In `reduced` mode, mc is the lesser of the row count or column count.
     if mode == "complete" and m > n:
         mc = m
-        q = dpnp.empty(
-            (m, m),
+        q = dpnp.empty_like(
+            a_t,
+            shape=(m, m),
             dtype=res_type,
-            order="C",
-            sycl_queue=a_sycl_queue,
-            usm_type=a_usm_type,
         )
     else:
         mc = k
-        q = dpnp.empty(
-            (n, m),
+        q = dpnp.empty_like(
+            a_t,
+            shape=(n, m),
             dtype=res_type,
-            order="C",
-            sycl_queue=a_sycl_queue,
-            usm_type=a_usm_type,
         )
     q[:n] = a_t
 
