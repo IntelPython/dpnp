@@ -1,4 +1,5 @@
 <map id="backend_sycl::backend_sycl_queue_init" name="backend_sycl::backend_sycl_queue_init">
-<area shape="rect" id="node1" title=" " alt="" coords="220,5,376,45"/>
-<area shape="rect" id="node2" href="$classbackend__sycl.html#aaf630c30c2f39dfbc40aa66d12e43b52" title=" " alt="" coords="5,13,172,38"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="220,5,375,46"/>
+<area shape="rect" id="Node000002" href="$classbackend__sycl.html#aaf630c30c2f39dfbc40aa66d12e43b52" title=" " alt="" coords="5,13,172,39"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="204,28,172,28,172,23,204,23"/>
 </map>
