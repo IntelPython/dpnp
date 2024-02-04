@@ -187,12 +187,14 @@ std::pair<sycl::event, sycl::event>
 
     bool is_tau_array_c_contig = tau_array.is_c_contiguous();
     bool is_tau_array_f_contig = tau_array.is_f_contiguous();
+
     if (!is_tau_array_c_contig || !is_tau_array_f_contig) {
         throw py::value_error("The array of Householder scalars "
                               "must be contiguous");
     }
 
     const size_t tau_array_size = tau_array.get_size();
+
     if (static_cast<std::int64_t>(tau_array_size) != k) {
         throw py::value_error("The array of Householder scalars has size=" +
                               std::to_string(tau_array_size) +

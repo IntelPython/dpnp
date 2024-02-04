@@ -194,12 +194,12 @@ std::pair<sycl::event, sycl::event>
     }
 
     const size_t tau_array_size = tau_array.get_size();
-    const size_t min_m_n = std::max<size_t>(1UL, std::min<size_t>(m, n));
 
-    if (tau_array_size != min_m_n) {
+    if (static_cast<std::int64_t>(tau_array_size) != k) {
         throw py::value_error("The array of Householder scalars has size=" +
-                              std::to_string(tau_array_size) + ", but a size=" +
-                              std::to_string(min_m_n) + " array is expected.");
+                              std::to_string(tau_array_size) +
+                              ", but an array of size=" + std::to_string(k) +
+                              " is expected.");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
