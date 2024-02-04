@@ -709,27 +709,32 @@ class TestQr:
 
             # check decomposition
             if mode in ("complete", "reduced"):
-                # _orgqr doesn`t support complex type
-                if not inp.issubdtype(dtype, inp.complexfloating):
-                    if a.ndim == 2:
+                if a.ndim == 2:
+                    # TODO: remove it when dpnp.dot() supports complex types
+                    if inp.issubdtype(dtype, inp.complexfloating):
+                        dpnp_as_np_q = inp.asnumpy(dpnp_q)
+                        dpnp_as_np_r = inp.asnumpy(dpnp_r)
+
+                        assert_almost_equal(
+                            numpy.dot(dpnp_as_np_q, dpnp_as_np_r),
+                            a,
+                            decimal=5,
+                        )
+                    else:
                         assert_almost_equal(
                             inp.dot(dpnp_q, dpnp_r),
                             a,
                             decimal=5,
                         )
-                    else:
-                        batch_size = a.shape[0]
-                        for i in range(batch_size):
-                            assert_almost_equal(
-                                inp.dot(dpnp_q[i], dpnp_r[i]),
-                                a[i],
-                                decimal=5,
-                            )
+                else:  # a.ndim > 2
+                    assert_almost_equal(
+                        inp.matmul(dpnp_q, dpnp_r),
+                        a,
+                        decimal=5,
+                    )
             else:  # mode=="raw"
-                # _orgqr doesn`t support complex type
-                if not inp.issubdtype(dtype, inp.complexfloating):
-                    assert_dtype_allclose(dpnp_q, np_q)
-                    assert_dtype_allclose(dpnp_r, np_r)
+                assert_dtype_allclose(dpnp_q, np_q)
+
         if mode in ("raw", "r"):
             assert_dtype_allclose(dpnp_r, np_r)
 
