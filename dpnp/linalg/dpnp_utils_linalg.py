@@ -1069,16 +1069,13 @@ def dpnp_qr_batch(a, mode="reduced"):
 
     if mode == "r":
         r = a_t[..., :k].swapaxes(-2, -1)
-        out_r = dpnp.triu(r).astype(res_type, copy=False)
+        out_r = dpnp.triu(r)
         return out_r.reshape(batch_shape + out_r.shape[-2:])
 
     if mode == "raw":
         q = a_t.reshape(batch_shape + a_t.shape[-2:])
         r = tau_h.reshape(batch_shape + tau_h.shape[-1:])
-        return (
-            q.astype(res_type, copy=False),
-            r.astype(res_type, copy=False),
-        )
+        return (q, r)
 
     if mode == "complete" and m > n:
         mc = m
@@ -1130,14 +1127,11 @@ def dpnp_qr_batch(a, mode="reduced"):
     q = q[..., :mc, :].swapaxes(-2, -1)
     r = a_t[..., :mc].swapaxes(-2, -1)
 
-    r_triu = dpnp.triu(r).astype(res_type, copy=False)
-
-    q_reshape = q.reshape(batch_shape + q.shape[-2:])
-    r_triu_reshape = r_triu.reshape(batch_shape + r_triu.shape[-2:])
+    r_triu = dpnp.triu(r)
 
     return (
-        q_reshape.astype(dtype=res_type, copy=False),
-        r_triu_reshape,
+        q.reshape(batch_shape + q.shape[-2:]),
+        r_triu.reshape(batch_shape + r_triu.shape[-2:]),
     )
 
 
@@ -1227,13 +1221,10 @@ def dpnp_qr(a, mode="reduced"):
 
     if mode == "r":
         r = a_t[:, :k].transpose()
-        return dpnp.triu(r).astype(res_type, copy=False)
+        return dpnp.triu(r)
 
     if mode == "raw":
-        return (
-            a_t.astype(res_type, copy=False),
-            tau_h.astype(res_type, copy=False),
-        )
+        return (a_t, tau_h)
 
     # mc is the total number of columns in the q matrix.
     # In `complete` mode, mc equals the number of rows.
@@ -1276,10 +1267,7 @@ def dpnp_qr(a, mode="reduced"):
 
     q = q[:mc].transpose()
     r = a_t[:, :mc].transpose()
-    return (
-        q.astype(dtype=res_type, copy=False),
-        dpnp.triu(r).astype(dtype=res_type, copy=False),
-    )
+    return (q, dpnp.triu(r))
 
 
 def dpnp_solve(a, b):
