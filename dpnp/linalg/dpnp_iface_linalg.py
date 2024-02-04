@@ -562,10 +562,18 @@ def qr(a, mode="reduced"):
     >>> import dpnp as np
     >>> a = np.random.randn(9, 6)
     >>> Q, R = np.linalg.qr(a)
-    >>> np.allclose(a, np.dot(Q, R))
+    >>> np.allclose(a, np.dot(Q, R))  # a does equal QR
     array([ True])
     >>> R2 = np.linalg.qr(a, mode='r')
-    >>> np.allclose(R, R2)
+    >>> np.allclose(R, R2)  # mode='r' returns the same R as mode='full'
+    array([ True])
+    >>> a = np.random.normal(size=(3, 2, 2)) # Stack of 2 x 2 matrices as input
+    >>> Q, R = np.linalg.qr(a)
+    >>> Q.shape
+    (3, 2, 2)
+    >>> R.shape
+    (3, 2, 2)
+    >>> np.allclose(a, np.matmul(Q, R))
     array([ True])
 
     """
