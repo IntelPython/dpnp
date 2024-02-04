@@ -335,6 +335,33 @@ struct SyevdTypePairSupportFactory
 
 /**
  * @brief A factory to define pairs of supported types for which
+ * MKL LAPACK library provides support in oneapi::mkl::lapack::ungqr_batch<T>
+ * function.
+ *
+ * @tparam T Type of array containing the matrix A,
+ * each from a separate instance in the batch, from which the
+ * elementary reflectors were generated (as in QR factorization).
+ * Upon execution, each array in the batch is overwritten with
+ * its respective complex unitary matrix Q.
+ */
+template <typename T>
+struct UngqrBatchTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<float>,
+                                          T,
+                                          std::complex<float>>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<double>,
+                                          T,
+                                          std::complex<double>>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
  * MKL LAPACK library provides support in oneapi::mkl::lapack::ungqr<T>
  * function.
  *

@@ -1052,7 +1052,7 @@ def dpnp_qr_batch(a, mode="reduced"):
 
     # Call the LAPACK extension function _geqrf_batch to compute the QR factorization
     # of a general m x n matrix.
-    ht_lapack_ev, geqrf_batch_ev = li._geqrf_batch(
+    ht_geqrf_batch_ev, geqrf_batch_ev = li._geqrf_batch(
         a_sycl_queue,
         a_t.get_array(),
         tau_h.get_array(),
@@ -1064,7 +1064,7 @@ def dpnp_qr_batch(a, mode="reduced"):
         [a_copy_ev],
     )
 
-    ht_lapack_ev.wait()
+    ht_geqrf_batch_ev.wait()
     a_ht_copy_ev.wait()
 
     if mode == "r":
@@ -1080,14 +1080,11 @@ def dpnp_qr_batch(a, mode="reduced"):
             r.astype(res_type, copy=False),
         )
 
-    # _orgqr supports only floating type
-    orgqr_type = _real_type(res_type)
-
     if mode == "complete" and m > n:
         mc = m
         q = dpnp.empty(
             (batch_size, m, m),
-            dtype=orgqr_type,
+            dtype=res_type,
             sycl_queue=a_sycl_queue,
             usm_type=a_usm_type,
         )
@@ -1095,7 +1092,7 @@ def dpnp_qr_batch(a, mode="reduced"):
         mc = k
         q = dpnp.empty(
             (batch_size, n, m),
-            dtype=orgqr_type,
+            dtype=res_type,
             sycl_queue=a_sycl_queue,
             usm_type=a_usm_type,
         )
@@ -1104,9 +1101,18 @@ def dpnp_qr_batch(a, mode="reduced"):
     q_stride = q.strides[0]
     tau_stride = tau_h.strides[0]
 
-    # Call the LAPACK extension function _orgqr to generate the orthogonal/unitary matrix
-    # `Qi` of the QR factorization for a batch of general matrices.
-    ht_lapack_ev, _ = li._orgqr_batch(
+    # Get LAPACK function (_orgqr_batch for real or _ungqf_batch for complex data types)
+    # for QR factorization
+    lapack_func = (
+        "_ungqr_batch"
+        if dpnp.issubdtype(res_type, dpnp.complexfloating)
+        else "_orgqr_batch"
+    )
+
+    # Call the LAPACK extension function _orgqr_batch/ to generate the real orthogonal/
+    # complex unitary matrices `Qi` of the QR factorization
+    # for a batch of general matrices.
+    ht_lapack_ev, _ = getattr(li, lapack_func)(
         a_sycl_queue,
         q.get_array(),
         tau_h.get_array(),
@@ -1118,6 +1124,8 @@ def dpnp_qr_batch(a, mode="reduced"):
         batch_size,
         [geqrf_batch_ev],
     )
+
+    ht_lapack_ev.wait()
 
     q = q[..., :mc, :].swapaxes(-2, -1)
     r = a_t[..., :mc].swapaxes(-2, -1)

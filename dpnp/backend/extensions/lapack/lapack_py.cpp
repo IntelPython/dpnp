@@ -58,6 +58,7 @@ void init_dispatch_vectors(void)
     lapack_ext::init_potrf_batch_dispatch_vector();
     lapack_ext::init_potrf_dispatch_vector();
     lapack_ext::init_syevd_dispatch_vector();
+    lapack_ext::init_ungqr_batch_dispatch_vector();
     lapack_ext::init_ungqr_dispatch_vector();
 }
 
@@ -128,7 +129,7 @@ PYBIND11_MODULE(_lapack_impl, m)
           py::arg("depends") = py::list());
 
     m.def("_orgqr_batch", &lapack_ext::orgqr_batch,
-          "Call `orgqr` from OneMKL LAPACK library to return "
+          "Call `_orgqr_batch` from OneMKL LAPACK library to return "
           "the real orthogonal matrix Qi of the QR factorization "
           "for a batch of general matrices",
           py::arg("sycl_queue"), py::arg("a_array"), py::arg("tau_array"),
@@ -162,6 +163,15 @@ PYBIND11_MODULE(_lapack_impl, m)
           "the eigenvalues and eigenvectors of a real symmetric matrix",
           py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
           py::arg("eig_vecs"), py::arg("eig_vals"),
+          py::arg("depends") = py::list());
+
+    m.def("_ungqr_batch", &lapack_ext::ungqr_batch,
+          "Call `_ungqr_batch` from OneMKL LAPACK library to return "
+          "the complex unitary matrices matrix Qi of the QR factorization "
+          "for a batch of general matrices",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("tau_array"),
+          py::arg("m"), py::arg("n"), py::arg("k"), py::arg("stride_a"),
+          py::arg("stride_tau"), py::arg("batch_size"),
           py::arg("depends") = py::list());
 
     m.def("_ungqr", &lapack_ext::ungqr,
