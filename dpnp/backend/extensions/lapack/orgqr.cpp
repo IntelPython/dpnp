@@ -75,7 +75,7 @@ static sycl::event orgqr_impl(sycl::queue exec_q,
     T *tau = reinterpret_cast<T *>(in_tau);
 
     const std::int64_t scratchpad_size =
-        oneapi::mkl::lapack::orgqr_scratchpad_size<T>(exec_q, m, n, k, lda);
+        mkl_lapack::orgqr_scratchpad_size<T>(exec_q, m, n, k, lda);
     T *scratchpad = nullptr;
 
     std::stringstream error_msg;
@@ -86,7 +86,7 @@ static sycl::event orgqr_impl(sycl::queue exec_q,
     try {
         scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
 
-        orgqr_event = oneapi::mkl::lapack::orgqr(
+        orgqr_event = mkl_lapack::orgqr(
             exec_q,
             m,          // The number of rows in the matrix; (0 ≤ m).
             n,          // The number of columns in the matrix; (0 ≤ n).

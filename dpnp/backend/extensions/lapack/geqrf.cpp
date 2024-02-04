@@ -73,7 +73,7 @@ static sycl::event geqrf_impl(sycl::queue exec_q,
     T *tau = reinterpret_cast<T *>(in_tau);
 
     const std::int64_t scratchpad_size =
-        oneapi::mkl::lapack::geqrf_scratchpad_size<T>(exec_q, m, n, lda);
+        mkl_lapack::geqrf_scratchpad_size<T>(exec_q, m, n, lda);
     T *scratchpad = nullptr;
 
     std::stringstream error_msg;
@@ -84,7 +84,7 @@ static sycl::event geqrf_impl(sycl::queue exec_q,
     try {
         scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
 
-        geqrf_event = oneapi::mkl::lapack::geqrf(
+        geqrf_event = mkl_lapack::geqrf(
             exec_q,
             m,          // The number of rows in the matrix; (0 ≤ m).
             n,          // The number of columns in the matrix; (0 ≤ n).
