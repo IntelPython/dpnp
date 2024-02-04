@@ -312,8 +312,8 @@ class TestDet:
         a_np = numpy.array(matrix, dtype="float32")
         a_dp = inp.array(a_np)
 
-        expected = numpy.linalg.slogdet(a_np)
-        result = inp.linalg.slogdet(a_dp)
+        expected = numpy.linalg.det(a_np)
+        result = inp.linalg.det(a_dp)
 
         assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
