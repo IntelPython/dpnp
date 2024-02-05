@@ -878,3 +878,35 @@ def test_logspace_axis(axis):
         [2, 3], [20, 15], num=2, base=[[1, 3], [5, 7]], axis=axis
     )
     assert_dtype_allclose(func(dpnp), func(numpy))
+
+
+@pytest.mark.parametrize(
+    "data", [(), 1, (2, 3), [4], numpy.array(5), numpy.array([6, 7])]
+)
+def test_ascontiguousarray(data):
+    func = lambda xp: xp.ascontiguousarray(data)
+    assert_dtype_allclose(func(dpnp), func(numpy))
+
+
+@pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
+def test_ascontiguousarray1(data):
+    func = lambda xp, x: xp.ascontiguousarray(x)
+    a = dpnp.array(data)
+    a_np = numpy.array(data)
+    assert_dtype_allclose(func(dpnp, a), func(numpy, a_np))
+
+
+@pytest.mark.parametrize(
+    "data", [(), 1, (2, 3), [4], numpy.array(5), numpy.array([6, 7])]
+)
+def test_asfortranarray(data):
+    func = lambda xp: xp.asfortranarray(data)
+    assert_dtype_allclose(func(dpnp), func(numpy))
+
+
+@pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
+def test_asfortranarray1(data):
+    func = lambda xp, x: xp.asfortranarray(x)
+    a = dpnp.array(data)
+    a_np = numpy.array(data)
+    assert_dtype_allclose(func(dpnp, a), func(numpy, a_np))
