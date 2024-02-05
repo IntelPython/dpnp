@@ -612,7 +612,7 @@ def ascontiguousarray(
         )
 
     # at least 1-d array has to be returned
-    if a.ndim == 0:
+    if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
         a = [a]
 
     return asarray(
@@ -723,7 +723,7 @@ def asfortranarray(
         )
 
     # at least 1-d array has to be returned
-    if a.ndim == 0:
+    if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
         a = [a]
 
     return asarray(
