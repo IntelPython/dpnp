@@ -1,7 +1,5 @@
 #!/bin/bash
 
-THEDIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
-
 echo +++++++++++++++++++++++++ Python prerequisites +++++++++++++++++++++++++++++++++
 
 echo ========================= Conda: install prerequisites =========================
@@ -19,7 +17,7 @@ echo ========================= SW versions =====================================
 conda list
 
 python --version
-which python
+command -v python
 
 python -c "import numpy as sw; print(f\"sw.__version__={sw.__version__}\nsw.get_include={sw.get_include()}\")"
 python -c "import dpctl as sw; print(f\"sw.__version__={sw.__version__}\nsw.get_include={sw.get_include()}\")"

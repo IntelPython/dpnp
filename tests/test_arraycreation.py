@@ -914,3 +914,12 @@ def test_asfortranarray1(data):
     expected = numpy.asfortranarray(numpy.array(data))
     assert_dtype_allclose(result, expected)
     assert result.shape == expected.shape
+
+
+def test_meshgrid_raise_error():
+    a = numpy.array([1, 2, 3, 4])
+    with pytest.raises(TypeError):
+        dpnp.meshgrid(a)
+    b = dpnp.array([1, 2, 3, 4])
+    with pytest.raises(ValueError):
+        dpnp.meshgrid(b, indexing="ab")

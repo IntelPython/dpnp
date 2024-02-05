@@ -2123,12 +2123,28 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
 
     For full documentation refer to :obj:`numpy.meshgrid`.
 
-    Limitations
-    -----------
-    Each array instance from `xi` is supported as either :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter `copy` is supported only with default value ``True``.
-    Parameter `sparse` is supported only with default value ``False``.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    x1, x2,..., xn : {dpnp.ndarray, usm_ndarray}
+        1-D arrays representing the coordinates of a grid.
+    indexing : {'xy', 'ij'}, optional
+        Cartesian ('xy', default) or matrix ('ij') indexing of output.
+    sparse : bool, optional
+        If True the shape of the returned coordinate array for dimension `i`
+        is reduced from ``(N1, ..., Ni, ... Nn)`` to
+        ``(1, ..., 1, Ni, 1, ..., 1)``. Default is False.
+    copy : bool, optional
+        If False, a view into the original arrays are returned in order to
+        conserve memory.  Default is True.
+
+    Returns
+    -------
+    X1, X2,..., XN : tuple of dpnp.ndarrays
+        For vectors `x1`, `x2`,..., `xn` with lengths ``Ni=len(xi)``,
+        returns ``(N1, N2, N3,..., Nn)`` shaped arrays if indexing='ij'
+        or ``(N2, N1, N3,..., Nn)`` shaped arrays if indexing='xy'
+        with the elements of `xi` repeated to fill the matrix along
+        the first dimension for `x1`, the second for `x2` and so on.
 
     Examples
     --------
@@ -2162,18 +2178,32 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
 
     """
 
-    if not all((isinstance(x, (dpnp.ndarray, dpt.usm_ndarray)) for x in xi)):
-        pass
-    elif indexing not in ["ij", "xy"]:
-        pass
-    elif copy is not True:
-        pass
-    elif sparse is not False:
-        pass
-    else:
-        return dpnp_container.meshgrid(*xi, indexing=indexing)
+    if not dpnp.check_supported_arrays_type(*xi):
+        raise TypeError("Each input array must be any of supported type")
 
-    return call_origin(numpy.meshgrid, xi, copy, sparse, indexing)
+    ndim = len(xi)
+
+    if indexing not in ["xy", "ij"]:
+        raise ValueError(
+            "Unrecognized indexing keyword value, expecting 'xy' or 'ij'."
+        )
+
+    s0 = (1,) * ndim
+    output = [
+        dpnp.reshape(x, s0[:i] + (-1,) + s0[i + 1 :]) for i, x in enumerate(xi)
+    ]
+
+    if indexing == "xy" and ndim > 1:
+        output[0] = output[0].reshape((1, -1) + s0[2:])
+        output[1] = output[1].reshape((-1, 1) + s0[2:])
+
+    if not sparse:
+        output = dpnp.broadcast_arrays(*output)
+
+    if copy:
+        output = [x.copy() for x in output]
+
+    return output
 
 
 class MGridClass:
