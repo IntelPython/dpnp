@@ -25,7 +25,7 @@
 var NAVTREE =
 [
   [ "DPNP C++ backend kernel library", "index.html", [
-    [ "Topics", "topics.html", "topics" ],
+    [ "Modules", "modules.html", "modules" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -34,7 +34,7 @@ var NAVTREE =
         [ "All", "functions.html", null ],
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ],
-        [ "Related Symbols", "functions_rela.html", null ]
+        [ "Related Functions", "functions_rela.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
@@ -46,8 +46,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "abs_8hpp_source.html",
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1beebad63439e4d24242fad6185d1ffd",
-"group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga1e1d9e72e8f1a92a6e25d7f563562b11"
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1d17f8b62bec77729d3be9fac1cc8aa0",
+"group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga2d677a923f4dc4c31e302b0c3bb692f0"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
