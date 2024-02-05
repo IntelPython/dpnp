@@ -53,6 +53,7 @@ from .dpnp_utils_linalg import (
     dpnp_inv,
     dpnp_slogdet,
     dpnp_solve,
+    dpnp_svd,
 )
 
 __all__ = [
@@ -611,11 +612,46 @@ def solve(a, b):
     return dpnp_solve(a, b)
 
 
-def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
+def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     """
     Singular Value Decomposition.
 
     For full documentation refer to :obj:`numpy.linalg.svd`.
+
+    Parameters
+    ----------
+    a : (..., M, N) {dpnp.ndarray, usm_ndarray}
+        Input array with ``a.ndim >= 2``.
+    full_matrices : bool, optional
+        If ``True``, it returns `u` and `Vh` with full-sized matrices.
+        If ``False``, the matrices are reduced in size.
+        Default: ``True``.
+    compute_uv : bool, optional
+        If ``False``, it only returns singular values.
+        Default: ``True``.
+    hermitian : bool, optional
+        If True, a is assumed to be Hermitian (symmetric if real-valued),
+        enabling a more efficient method for finding singular values.
+        Default: ``False``.
+
+    Returns
+    -------
+    u : { (…, M, M), (…, M, K) } dpnp.ndarray
+        Unitary matrix, where M is the number of rows of the input array `a`.
+        The shape of the matrix `u` depends on the value of `full_matrices`.
+        If `full_matrices` is ``True``, `u` has the shape (…, M, M).
+        If `full_matrices` is ``False``, `u` has the shape (…, M, K),
+        where K = min(M, N), and N is the number of columns of the input array `a`.
+        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.
+    s : (…, K) dpnp.ndarray
+        Vector containing the singular values of `a`, sorted in descending order.
+        The length of `s` is min(M, N).
+    Vh : { (…, N, N), (…, K, N) } dpnp.ndarray
+        Unitary matrix, where N is the number of columns of the input array `a`.
+        The shape of the matrix `Vh` depends on the value of `full_matrices`.
+        If `full_matrices` is ``True``, `Vh` has the shape (…, N, N).
+        If `full_matrices` is ``False``, `Vh` has the shape (…, K, N).
+        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.
 
     Examples
     --------
@@ -629,11 +665,11 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     >>> u.shape, s.shape, vh.shape
     ((9, 9), (6,), (6, 6))
     >>> np.allclose(a, np.dot(u[:, :6] * s, vh))
-    True
+    array([ True])
     >>> smat = np.zeros((9, 6), dtype=complex)
     >>> smat[:6, :6] = np.diag(s)
     >>> np.allclose(a, np.dot(u, np.dot(smat, vh)))
-    True
+    array([ True])
 
     Reconstruction based on reduced SVD, 2D case:
 
@@ -641,10 +677,10 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     >>> u.shape, s.shape, vh.shape
     ((9, 6), (6,), (6, 6))
     >>> np.allclose(a, np.dot(u * s, vh))
-    True
+    array([ True])
     >>> smat = np.diag(s)
     >>> np.allclose(a, np.dot(u, np.dot(smat, vh)))
-    True
+    array([ True])
 
     Reconstruction based on full SVD, 4D case:
 
@@ -652,9 +688,9 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     >>> u.shape, s.shape, vh.shape
     ((2, 7, 8, 8), (2, 7, 3), (2, 7, 3, 3))
     >>> np.allclose(b, np.matmul(u[..., :3] * s[..., None, :], vh))
-    True
+    array([ True])
     >>> np.allclose(b, np.matmul(u[..., :3], s[..., None] * vh))
-    True
+    array([ True])
 
     Reconstruction based on reduced SVD, 4D case:
 
@@ -662,30 +698,16 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     >>> u.shape, s.shape, vh.shape
     ((2, 7, 8, 3), (2, 7, 3), (2, 7, 3, 3))
     >>> np.allclose(b, np.matmul(u * s[..., None, :], vh))
-    True
+    array([ True])
     >>> np.allclose(b, np.matmul(u, s[..., None] * vh))
-    True
+    array([ True])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not x1_desc.ndim == 2:
-            pass
-        elif full_matrices is not True:
-            pass
-        elif compute_uv is not True:
-            pass
-        elif hermitian is not False:
-            pass
-        else:
-            result_tup = dpnp_svd(x1_desc, full_matrices, compute_uv, hermitian)
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
 
-            return result_tup
-
-    return call_origin(
-        numpy.linalg.svd, x1, full_matrices, compute_uv, hermitian
-    )
+    return dpnp_svd(a, full_matrices, compute_uv, hermitian)
 
 
 def slogdet(a):

@@ -4,6 +4,7 @@
 [![Conda package](https://github.com/IntelPython/dpnp/actions/workflows/conda-package.yml/badge.svg?branch=master&event=push)](https://github.com/IntelPython/dpnp/actions/workflows/conda-package.yml)
 [![Coverage Status](https://coveralls.io/repos/github/IntelPython/dpnp/badge.svg?branch=master)](https://coveralls.io/github/IntelPython/dpnp?branch=master)
 [![Build Sphinx](https://github.com/IntelPython/dpnp/workflows/Build%20Sphinx/badge.svg)](https://intelpython.github.io/dpnp)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/IntelPython/dpnp/badge)](https://securityscorecards.dev/viewer/?uri=github.com/IntelPython/dpnp)
 
 # DPNP - Data Parallel Extension for NumPy*
 [API coverage summary](https://intelpython.github.io/dpnp/reference/comparison.html#summary)

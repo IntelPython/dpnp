@@ -878,3 +878,12 @@ def test_logspace_axis(axis):
         [2, 3], [20, 15], num=2, base=[[1, 3], [5, 7]], axis=axis
     )
     assert_dtype_allclose(func(dpnp), func(numpy))
+
+
+def test_meshgrid_raise_error():
+    a = numpy.array([1, 2, 3, 4])
+    with pytest.raises(TypeError):
+        dpnp.meshgrid(a)
+    b = dpnp.array([1, 2, 3, 4])
+    with pytest.raises(ValueError):
+        dpnp.meshgrid(b, indexing="ab")
