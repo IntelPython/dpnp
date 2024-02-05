@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.13.1dev2+25.g70f53f7755 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.13.1dev2+24.g0987f19220 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7cd2b1ee"></script>
+        <script src="../../_static/documentation_options.js?v=293eb9a8"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+25.g70f53f7755
+                0.13.1dev2+24.g0987f19220
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -909,6 +909,21 @@
 <span class="sd">    &gt;&gt;&gt; x[0] == z[0]</span>
 <span class="sd">    array(False)</span>
 
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
+
+<span class="sd">    &gt;&gt;&gt; x0 = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.copy(x0) # default case</span>
+<span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
+<span class="sd">    (array([1, 2, 3]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.copy(x0, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
+<span class="sd">    (array([1, 2, 3]), Device(opencl:cpu:0), &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; z = np.copy(x0, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
+<span class="sd">    (array([1, 2, 3]), Device(level_zero:gpu:0), &#39;host&#39;)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
@@ -917,13 +932,14 @@
             <span class="sa">f</span><span class="s2">&quot;default value ``False``, but got </span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="ow">and</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="ow">and</span> <span class="n">sycl_queue</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="n">sycl_queue_normalized</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">usm_type</span> <span class="o">==</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
+        <span class="p">)</span> <span class="ow">and</span> <span class="n">sycl_queue_normalized</span> <span class="o">==</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">array</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span>
