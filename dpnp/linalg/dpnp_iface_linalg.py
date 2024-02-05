@@ -552,10 +552,21 @@ def qr(a, mode="reduced"):
 
     Returns
     -------
-    out : {dpnp.ndarray, tuple of dpnp.ndarray}
-        Although the type of returned object depends on the mode,
-        it returns a tuple of ``(Q, R)`` by default.
-        For details, please see the document of :func:`numpy.linalg.qr`.
+    When mode is "reduced" or "complete", the result will be a namedtuple with
+    the attributes Q and R.
+    Q : dpnp.ndarray
+        A matrix with orthonormal columns.
+        When mode = "complete" the result is an orthogonal/unitary matrix
+        depending on whether or not a is real/complex.
+        The determinant may be either +/- 1 in that case.
+        In case the number of dimensions in the input array is greater
+        than 2 then a stack of the matrices with above properties is returned.
+    R : dpnp.ndarray
+        The upper-triangular matrix or a stack of upper-triangular matrices
+        if the number of dimensions in the input array is greater than 2.
+    (h, tau) : tuple of dpnp.ndarray
+        The h array contains the Householder reflectors that generate Q along with R.
+        The tau array contains scaling factors for the reflectors.
 
     Examples
     --------
