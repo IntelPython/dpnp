@@ -1057,18 +1057,19 @@ def dpnp_qr_batch(a, mode="reduced"):
         [a_copy_ev],
     )
 
-    ht_geqrf_batch_ev.wait()
-    a_ht_copy_ev.wait()
+    if mode in ["r", "raw"]:
+        ht_geqrf_batch_ev.wait()
+        a_ht_copy_ev.wait()
 
-    if mode == "r":
-        r = a_t[..., :k].swapaxes(-2, -1)
-        out_r = dpnp.triu(r)
-        return out_r.reshape(batch_shape + out_r.shape[-2:])
+        if mode == "r":
+            r = a_t[..., :k].swapaxes(-2, -1)
+            out_r = dpnp.triu(r)
+            return out_r.reshape(batch_shape + out_r.shape[-2:])
 
-    if mode == "raw":
-        q = a_t.reshape(batch_shape + a_t.shape[-2:])
-        r = tau_h.reshape(batch_shape + tau_h.shape[-1:])
-        return (q, r)
+        if mode == "raw":
+            q = a_t.reshape(batch_shape + a_t.shape[-2:])
+            r = tau_h.reshape(batch_shape + tau_h.shape[-1:])
+            return (q, r)
 
     if mode == "complete" and m > n:
         mc = m
@@ -1114,6 +1115,8 @@ def dpnp_qr_batch(a, mode="reduced"):
     )
 
     ht_lapack_ev.wait()
+    ht_geqrf_batch_ev.wait()
+    a_ht_copy_ev.wait()
 
     q = q[..., :mc, :].swapaxes(-2, -1)
     r = a_t[..., :mc].swapaxes(-2, -1)
@@ -1203,15 +1206,16 @@ def dpnp_qr(a, mode="reduced"):
         a_sycl_queue, a_t.get_array(), tau_h.get_array(), [a_copy_ev]
     )
 
-    ht_geqrf_ev.wait()
-    a_ht_copy_ev.wait()
+    if mode in ["r", "raw"]:
+        ht_geqrf_ev.wait()
+        a_ht_copy_ev.wait()
 
-    if mode == "r":
-        r = a_t[:, :k].transpose()
-        return dpnp.triu(r)
+        if mode == "r":
+            r = a_t[:, :k].transpose()
+            return dpnp.triu(r)
 
-    if mode == "raw":
-        return (a_t, tau_h)
+        if mode == "raw":
+            return (a_t, tau_h)
 
     # mc is the total number of columns in the q matrix.
     # In `complete` mode, mc equals the number of rows.
@@ -1247,6 +1251,8 @@ def dpnp_qr(a, mode="reduced"):
     )
 
     ht_lapack_ev.wait()
+    ht_geqrf_ev.wait()
+    a_ht_copy_ev.wait()
 
     q = q[:mc].transpose()
     r = a_t[:, :mc].transpose()
