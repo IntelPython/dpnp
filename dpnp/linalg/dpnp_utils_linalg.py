@@ -24,6 +24,7 @@
 # *****************************************************************************
 
 
+import dpctl
 import dpctl.tensor._tensor_impl as ti
 from numpy import issubdtype, prod
 
@@ -1057,9 +1058,10 @@ def dpnp_qr_batch(a, mode="reduced"):
         [a_copy_ev],
     )
 
+    ht_list_ev = [ht_geqrf_batch_ev, a_ht_copy_ev]
+
     if mode in ["r", "raw"]:
-        ht_geqrf_batch_ev.wait()
-        a_ht_copy_ev.wait()
+        dpctl.SyclEvent.wait_for(ht_list_ev)
 
         if mode == "r":
             r = a_t[..., :k].swapaxes(-2, -1)
@@ -1114,9 +1116,8 @@ def dpnp_qr_batch(a, mode="reduced"):
         [geqrf_batch_ev],
     )
 
-    ht_lapack_ev.wait()
-    ht_geqrf_batch_ev.wait()
-    a_ht_copy_ev.wait()
+    ht_list_ev.append(ht_lapack_ev)
+    dpctl.SyclEvent.wait_for(ht_list_ev)
 
     q = q[..., :mc, :].swapaxes(-2, -1)
     r = a_t[..., :mc].swapaxes(-2, -1)
@@ -1206,9 +1207,10 @@ def dpnp_qr(a, mode="reduced"):
         a_sycl_queue, a_t.get_array(), tau_h.get_array(), [a_copy_ev]
     )
 
+    ht_list_ev = [ht_geqrf_ev, a_ht_copy_ev]
+
     if mode in ["r", "raw"]:
-        ht_geqrf_ev.wait()
-        a_ht_copy_ev.wait()
+        dpctl.SyclEvent.wait_for(ht_list_ev)
 
         if mode == "r":
             r = a_t[:, :k].transpose()
@@ -1250,9 +1252,8 @@ def dpnp_qr(a, mode="reduced"):
         a_sycl_queue, m, mc, k, q.get_array(), tau_h.get_array(), [geqrf_ev]
     )
 
-    ht_lapack_ev.wait()
-    ht_geqrf_ev.wait()
-    a_ht_copy_ev.wait()
+    ht_list_ev.append(ht_lapack_ev)
+    dpctl.SyclEvent.wait_for(ht_list_ev)
 
     q = q[:mc].transpose()
     r = a_t[:, :mc].transpose()
