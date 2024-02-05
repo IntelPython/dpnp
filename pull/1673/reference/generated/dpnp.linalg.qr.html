@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.qr &mdash; Data Parallel Extension for NumPy 0.13.1dev2+31.g284c3e1ecf documentation</title>
+  <title>dpnp.linalg.qr &mdash; Data Parallel Extension for NumPy 0.13.1dev3+49.ga4013d830f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=1d874b6c"></script>
+        <script src="../../_static/documentation_options.js?v=42d76da1"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+31.g284c3e1ecf
+                0.13.1dev3+49.ga4013d830f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -145,22 +145,39 @@ Default: “reduced”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – Although the type of returned object depends on the mode,
-it returns a tuple of <code class="docutils literal notranslate"><span class="pre">(Q,</span> <span class="pre">R)</span></code> by default.
-For details, please see the document of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.qr.html#numpy.linalg.qr" title="(in NumPy v1.26)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.linalg.qr()</span></code></a>.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>{dpnp.ndarray, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a> of dpnp.ndarray}</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>When mode is “reduced” or “complete”, the result will be a namedtuple with</em></p></li>
+<li><p><em>the attributes Q and R.</em></p></li>
+<li><p><strong>Q</strong> (<em>dpnp.ndarray</em>) – A matrix with orthonormal columns.
+When mode = “complete” the result is an orthogonal/unitary matrix
+depending on whether or not a is real/complex.
+The determinant may be either +/- 1 in that case.
+In case the number of dimensions in the input array is greater
+than 2 then a stack of the matrices with above properties is returned.</p></li>
+<li><p><strong>R</strong> (<em>dpnp.ndarray</em>) – The upper-triangular matrix or a stack of upper-triangular matrices
+if the number of dimensions in the input array is greater than 2.</p></li>
+<li><p><strong>(h, tau)</strong> (<em>tuple of dpnp.ndarray</em>) – The h array contains the Householder reflectors that generate Q along with R.
+The tau array contains scaling factors for the reflectors.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">))</span>  <span class="c1"># a does equal QR</span>
 <span class="go">array([ True])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">R2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">R2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">R2</span><span class="p">)</span>  <span class="c1"># mode=&#39;r&#39; returns the same R as mode=&#39;full&#39;</span>
+<span class="go">array([ True])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="c1"># Stack of 2 x 2 matrices as input</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(3, 2, 2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">R</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(3, 2, 2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">))</span>
 <span class="go">array([ True])</span>
 </pre></div>
 </div>
