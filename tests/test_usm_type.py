@@ -140,6 +140,7 @@ def test_coerced_usm_types_power(usm_type_x, usm_type_y):
 @pytest.mark.parametrize(
     "func, args",
     [
+        pytest.param("copy", ["x0"]),
         pytest.param("diag", ["x0"]),
         pytest.param("empty_like", ["x0"]),
         pytest.param("full", ["10", "x0[3]"]),
