@@ -132,7 +132,7 @@ def arange(
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+        The type of SYCL USM allocation for the output array. Default is "device".
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -160,9 +160,9 @@ def arange(
     >>> np.arange(3, 7, 2)
     array([3, 5])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.arange(3)
+    >>> x = np.arange(3)  # default case
     >>> x, x.device, x.usm_type
     (array([0, 1, 2]), Device(level_zero:gpu:0), 'device')
 
@@ -228,8 +228,8 @@ def array(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -274,9 +274,9 @@ def array(
     array([[1, 2],
            [3, 4]])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.array([1, 2, 3])
+    >>> x = np.array([1, 2, 3]) # default case
     >>> x, x.device, x.usm_type
     (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
 
@@ -353,8 +353,8 @@ def asanyarray(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -387,9 +387,9 @@ def asanyarray(
     >>> np.asanyarray([1, 2, 3])
     array([1, 2, 3])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.asanyarray([1, 2, 3])
+    >>> x = np.asanyarray([1, 2, 3]) # default case
     >>> x, x.device, x.usm_type
     (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
 
@@ -449,8 +449,8 @@ def asarray(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -484,9 +484,9 @@ def asarray(
     >>> np.asarray([1, 2, 3])
     array([1, 2, 3])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.asarray([1, 2, 3])
+    >>> x = np.asarray([1, 2, 3]) # default case
     >>> x, x.device, x.usm_type
     (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
 
@@ -538,8 +538,8 @@ def ascontiguousarray(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -588,10 +588,10 @@ def ascontiguousarray(
     >>> x is y
     True
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
     >>> x0 = np.asarray([1, 2, 3])
-    >>> x = np.ascontiguousarray(x0)
+    >>> x = np.ascontiguousarray(x0) # default case
     >>> x, x.device, x.usm_type
     (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
 
@@ -647,8 +647,8 @@ def asfortranarray(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -699,10 +699,10 @@ def asfortranarray(
     >>> x is y
     True
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
     >>> x0 = np.asarray([1, 2, 3])
-    >>> x = np.asfortranarray(x0)
+    >>> x = np.asfortranarray(x0) # default case
     >>> x, x.device, x.usm_type
     (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
 
@@ -757,8 +757,8 @@ def copy(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -848,8 +848,8 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -887,9 +887,9 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
            [0, 4, 0],
            [0, 0, 8]])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.diag(x0)
+    >>> x = np.diag(x0) # default case
     >>> x, x.device, x.usm_type
     (array([0, 4, 8]), Device(level_zero:gpu:0), 'device')
 
@@ -961,8 +961,8 @@ def diagflat(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -999,9 +999,9 @@ def diagflat(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
            [0, 0, 0, 0, 4],
            [0, 0, 0, 0, 0]])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.diagflat(x0)
+    >>> x = np.diagflat(x0) # default case
     >>> x, x.device, x.usm_type
     array([[1, 0, 0, 0],
            [0, 2, 0, 0],
@@ -1065,7 +1065,7 @@ def empty(
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+        The type of SYCL USM allocation for the output array. Default is "device".
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1076,7 +1076,6 @@ def empty(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise the function will be executed sequentially on CPU.
 
@@ -1093,9 +1092,9 @@ def empty(
     >>> np.empty(4)
     array([9.03088525e-312, 9.03088525e-312, 9.03088525e-312, 9.03088525e-312])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.empty((3, 3))
+    >>> x = np.empty((3, 3)) # default case
     >>> x.shape, x.device, x.usm_type
     ((3, 3), Device(level_zero:gpu:0), 'device')
 
@@ -1160,8 +1159,8 @@ def empty_like(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1172,7 +1171,6 @@ def empty_like(
 
     Limitations
     -----------
-    Parameter `order` is supported with values ``"C"`` or ``"F"``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
 
@@ -1190,9 +1188,9 @@ def empty_like(
     >>> np.empty_like(a)
     array([1, 2, 3])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.empty_like(a)
+    >>> x = np.empty_like(a) # default case
     >>> x.shape, x.device, x.usm_type
     ((3, ), Device(level_zero:gpu:0), 'device')
 
@@ -1269,7 +1267,7 @@ def eye(
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+        The type of SYCL USM allocation for the output array. Default is "device".
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1297,9 +1295,9 @@ def eye(
            [0.,  0.,  1.],
            [0.,  0.,  0.]])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.eye(2, dtype=int)
+    >>> x = np.eye(2, dtype=int) # default case
     >>> x, x.device, x.usm_type
     (array([[1, 0],
             [0, 1]]), Device(level_zero:gpu:0), 'device')
@@ -1452,8 +1450,8 @@ def full(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1481,9 +1479,9 @@ def full(
     >>> np.full(4, 10)
     array([10, 10, 10, 10])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.full(4, 10)
+    >>> x = np.full(4, 10) # default case
     >>> x, x.device, x.usm_type
     (array([10, 10, 10, 10]), Device(level_zero:gpu:0), 'device')
 
@@ -1553,8 +1551,8 @@ def full_like(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1583,9 +1581,9 @@ def full_like(
     >>> np.full_like(a, 1)
     array([1, 1, 1, 1, 1, 1])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.full_like(a, 1)
+    >>> x = np.full_like(a, 1) # default case
     >>> x, x.device, x.usm_type
     (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), 'device')
 
@@ -1664,8 +1662,8 @@ def geomspace(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
     endpoint : bool, optional
@@ -1711,9 +1709,9 @@ def geomspace(
     >>> np.geomspace(-1000, -1, num=4)
     array([-1000.,  -100.,   -10.,    -1.])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.geomspace(1000, 1, num=4)
+    >>> x = np.geomspace(1000, 1, num=4) # default case
     >>> x, x.device, x.usm_type
     (array([1000.,  100.,   10.,    1.]), Device(level_zero:gpu:0), 'device')
 
@@ -1771,7 +1769,7 @@ def identity(
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+        The type of SYCL USM allocation for the output array. Default is "device".
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1800,9 +1798,9 @@ def identity(
            [0.,  1.,  0.],
            [0.,  0.,  1.]])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.identity(3)
+    >>> x = np.identity(3) # default case
     >>> x, x.device, x.usm_type
     (array([[1.,  0.,  0.],
             [0.,  1.,  0.],
@@ -1877,8 +1875,8 @@ def linspace(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
     endpoint : bool, optional
@@ -1921,9 +1919,9 @@ def linspace(
     >>> np.linspace(2.0, 3.0, num=5, retstep=True)
     (array([2.  , 2.25, 2.5 , 2.75, 3.  ]), array(0.25))
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.linspace(2.0, 3.0, num=3)
+    >>> x = np.linspace(2.0, 3.0, num=3) # default case
     >>> x, x.device, x.usm_type
     (array([2. , 2.5, 3. ]), Device(level_zero:gpu:0), 'device')
 
@@ -2016,8 +2014,8 @@ def logspace(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
     endpoint : bool, optional
@@ -2069,9 +2067,9 @@ def logspace(
     array([[ 4.        ,  5.0396842 ,  6.34960421,  8.        ],
            [ 9.        , 12.98024613, 18.72075441, 27.        ]])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.logspace(1.0, 3.0, num=3)
+    >>> x = np.logspace(1.0, 3.0, num=3) # default case
     >>> x, x.device, x.usm_type
     (array([  10.,  100., 1000.]), Device(level_zero:gpu:0), 'device')
 
@@ -2177,7 +2175,7 @@ class MGridClass:
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+        The type of SYCL USM allocation for the output array. Default is "device".
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2201,9 +2199,9 @@ class MGridClass:
             [0, 1, 2, 3, 4],
             [0, 1, 2, 3, 4]]])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.mgrid[-1:1:5j]
+    >>> x = np.mgrid[-1:1:5j] # default case
     >>> x, x.device, x.usm_type
     (array([-1. , -0.5,  0. ,  0.5,  1. ]), Device(level_zero:gpu:0), 'device')
 
@@ -2247,7 +2245,7 @@ class OGridClass:
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+        The type of SYCL USM allocation for the output array. Default is "device".
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2267,9 +2265,9 @@ class OGridClass:
             [3],
             [4]]), array([[0, 1, 2, 3, 4]])]
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.ogrid[-1:1:5j]
+    >>> x = np.ogrid[-1:1:5j] # default case
     >>> x, x.device, x.usm_type
     (array([-1. , -0.5,  0. ,  0.5,  1. ]), Device(level_zero:gpu:0), 'device')
 
@@ -2326,7 +2324,7 @@ def ones(
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+        The type of SYCL USM allocation for the output array. Default is "device".
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2360,9 +2358,9 @@ def ones(
     array([[1.],
            [1.]])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.ones(3)
+    >>> x = np.ones(3) # default case
     >>> x, x.device, x.usm_type
     (array([1., 1., 1.]), Device(level_zero:gpu:0), 'device')
 
@@ -2427,8 +2425,8 @@ def ones_like(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2439,7 +2437,6 @@ def ones_like(
 
     Limitations
     -----------
-    Parameter `order` is supported with values ``"C"`` or ``"F"``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
 
@@ -2459,9 +2456,9 @@ def ones_like(
     >>> np.ones_like(x0)
     array([1, 1, 1, 1, 1, 1])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.ones_like(x0)
+    >>> x = np.ones_like(x0) # default case
     >>> x, x.device, x.usm_type
     (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), 'device')
 
@@ -2566,7 +2563,7 @@ def tri(
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+        The type of SYCL USM allocation for the output array. Default is "device".
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2599,9 +2596,9 @@ def tri(
            [1.,  0.,  0.,  0.,  0.],
            [1.,  1.,  0.,  0.,  0.]])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.tri(3, 2)
+    >>> x = np.tri(3, 2) # default case
     >>> x, x.device, x.usm_type
     (array([[1., 0.],
             [1., 1.],
@@ -2796,8 +2793,8 @@ def vander(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2834,9 +2831,9 @@ def vander(
            [  1,   3,   9,  27],
            [  1,   5,  25, 125]])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.vander(x0)
+    >>> x = np.vander(x0) # default case
     >>> x, x.device, x.usm_type
     (array([[  1,   1,   1,   1],
             [  8,   4,   2,   1],
@@ -2916,7 +2913,7 @@ def zeros(
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+        The type of SYCL USM allocation for the output array. Default is "device".
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2950,9 +2947,9 @@ def zeros(
     array([[0.],
            [0.]])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.zeros(3)
+    >>> x = np.zeros(3) # default case
     >>> x, x.device, x.usm_type
     (array([0., 0., 0.]), Device(level_zero:gpu:0), 'device')
 
@@ -3016,8 +3013,8 @@ def zeros_like(
         an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
         an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
-        The type of SYCL USM allocation for the output array.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array. Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -3028,7 +3025,6 @@ def zeros_like(
 
     Limitations
     -----------
-    Parameter `order` is supported with values ``"C"`` or ``"F"``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise the function will be executed sequentially on CPU.
 
@@ -3048,9 +3044,9 @@ def zeros_like(
     >>> np.zeros_like(x0)
     array([0, 0, 0, 0, 0, 0])
 
-    Creating an array on different device and usm_type
+    Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.zeros_like(x0)
+    >>> x = np.zeros_like(x0) # default case
     >>> x, x.device, x.usm_type
     (array([0, 0, 0, 0, 0, 0]), Device(level_zero:gpu:0), 'device')
 
