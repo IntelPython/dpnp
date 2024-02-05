@@ -24,9 +24,6 @@ def run(
         )
 
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    dpctl_cmake_dir = subprocess.check_output(
-        [sys.executable, "-m", "dpctl", "--cmakedir"]
-    )
 
     cmake_args = [
         sys.executable,
@@ -36,7 +33,6 @@ def run(
         "--",
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
-        "-DDPCTL_MODULE_PATH=" + dpctl_cmake_dir.decode().rstrip(),
         "-DCMAKE_VERBOSE_MAKEFILE=ON",
         "-DDPNP_GENERATE_COVERAGE=ON",
     ]

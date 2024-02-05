@@ -32,6 +32,7 @@
 
 #include "geqrf.hpp"
 #include "gesv.hpp"
+#include "gesvd.hpp"
 #include "getrf.hpp"
 #include "getri.hpp"
 #include "heevd.hpp"
@@ -65,6 +66,7 @@ void init_dispatch_vectors(void)
 // populate dispatch tables
 void init_dispatch_tables(void)
 {
+    lapack_ext::init_gesvd_dispatch_table();
     lapack_ext::init_heevd_dispatch_table();
 }
 
@@ -98,6 +100,13 @@ PYBIND11_MODULE(_lapack_impl, m)
           "a square coefficient matrix A and multiple dependent variables",
           py::arg("sycl_queue"), py::arg("coeff_matrix"),
           py::arg("dependent_vals"), py::arg("depends") = py::list());
+
+    m.def("_gesvd", &lapack_ext::gesvd,
+          "Call `gesvd` from OneMKL LAPACK library to return "
+          "the singular value decomposition of a general rectangular matrix",
+          py::arg("sycl_queue"), py::arg("jobu_val"), py::arg("jobvt_val"),
+          py::arg("a_array"), py::arg("res_s"), py::arg("res_u"),
+          py::arg("res_vt"), py::arg("depends") = py::list());
 
     m.def("_getrf", &lapack_ext::getrf,
           "Call `getrf` from OneMKL LAPACK library to return "

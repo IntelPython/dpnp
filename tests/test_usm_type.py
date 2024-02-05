@@ -744,6 +744,56 @@ def test_inv(shape, is_empty, usm_type):
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
+    "full_matrices_param", [True, False], ids=["True", "False"]
+)
+@pytest.mark.parametrize(
+    "compute_uv_param", [True, False], ids=["True", "False"]
+)
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (1, 4),
+        (3, 2),
+        (4, 4),
+        (2, 0),
+        (0, 2),
+        (2, 2, 3),
+        (3, 3, 0),
+        (0, 2, 3),
+        (1, 0, 3),
+    ],
+    ids=[
+        "(1, 4)",
+        "(3, 2)",
+        "(4, 4)",
+        "(2, 0)",
+        "(0, 2)",
+        "(2, 2, 3)",
+        "(3, 3, 0)",
+        "(0, 2, 3)",
+        "(1, 0, 3)",
+    ],
+)
+def test_svd(usm_type, shape, full_matrices_param, compute_uv_param):
+    x = dp.ones(shape, usm_type=usm_type)
+
+    if compute_uv_param:
+        u, s, vt = dp.linalg.svd(
+            x, full_matrices=full_matrices_param, compute_uv=compute_uv_param
+        )
+
+        assert x.usm_type == u.usm_type
+        assert x.usm_type == vt.usm_type
+    else:
+        s = dp.linalg.svd(
+            x, full_matrices=full_matrices_param, compute_uv=compute_uv_param
+        )
+
+    assert x.usm_type == s.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
     "shape",
     [
         (4, 4),

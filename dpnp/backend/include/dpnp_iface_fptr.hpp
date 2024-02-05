@@ -361,8 +361,6 @@ enum class DPNPFuncName : size_t
                              parameters */
     DPNP_FN_SUM,          /**< Used in numpy.sum() impl  */
     DPNP_FN_SVD,          /**< Used in numpy.linalg.svd() impl  */
-    DPNP_FN_SVD_EXT,      /**< Used in numpy.linalg.svd() impl, requires extra
-                             parameters */
     DPNP_FN_TAKE,         /**< Used in numpy.take() impl  */
     DPNP_FN_TAN,          /**< Used in numpy.tan() impl  */
     DPNP_FN_TANH,         /**< Used in numpy.tanh() impl  */

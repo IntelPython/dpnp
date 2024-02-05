@@ -1248,53 +1248,62 @@ def test_qr(shape, mode, device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_svd(device):
-    shape = (2, 2)
+@pytest.mark.parametrize("full_matrices", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize("compute_uv", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (1, 4),
+        (3, 2),
+        (4, 4),
+        (2, 0),
+        (0, 2),
+        (2, 2, 3),
+        (3, 3, 0),
+        (0, 2, 3),
+        (1, 0, 3),
+    ],
+    ids=[
+        "(1, 4)",
+        "(3, 2)",
+        "(4, 4)",
+        "(2, 0)",
+        "(0, 2)",
+        "(2, 2, 3)",
+        "(3, 3, 0)",
+        "(0, 2, 3)",
+        "(1, 0, 3)",
+    ],
+)
+def test_svd(shape, full_matrices, compute_uv, device):
     dtype = dpnp.default_float_type(device)
-    numpy_data = numpy.arange(shape[0] * shape[1], dtype=dtype).reshape(shape)
-    dpnp_data = dpnp.arange(
-        shape[0] * shape[1], dtype=dtype, device=device
-    ).reshape(shape)
 
-    np_u, np_s, np_vt = numpy.linalg.svd(numpy_data)
-    dpnp_u, dpnp_s, dpnp_vt = dpnp.linalg.svd(dpnp_data)
-
-    assert dpnp_u.dtype == np_u.dtype
-    assert dpnp_s.dtype == np_s.dtype
-    assert dpnp_vt.dtype == np_vt.dtype
-    assert dpnp_u.shape == np_u.shape
-    assert dpnp_s.shape == np_s.shape
-    assert dpnp_vt.shape == np_vt.shape
-
-    # check decomposition
-    dpnp_diag_s = dpnp.zeros(shape, dtype=dpnp_s.dtype, device=device)
-    for i in range(dpnp_s.size):
-        dpnp_diag_s[i, i] = dpnp_s[i]
-
-    # check decomposition
-    assert_dtype_allclose(
-        dpnp_data, dpnp.dot(dpnp_u, dpnp.dot(dpnp_diag_s, dpnp_vt))
+    count_elems = numpy.prod(shape)
+    dpnp_data = dpnp.arange(count_elems, dtype=dtype, device=device).reshape(
+        shape
     )
-
-    for i in range(min(shape[0], shape[1])):
-        if np_u[0, i] * dpnp_u[0, i] < 0:
-            np_u[:, i] = -np_u[:, i]
-            np_vt[i, :] = -np_vt[i, :]
-
-    # compare vectors for non-zero values
-    for i in range(numpy.count_nonzero(np_s)):
-        assert_dtype_allclose(dpnp_u[:, i], np_u[:, i])
-        assert_dtype_allclose(dpnp_vt[i, :], np_vt[i, :])
-
     expected_queue = dpnp_data.get_array().sycl_queue
-    dpnp_u_queue = dpnp_u.get_array().sycl_queue
-    dpnp_s_queue = dpnp_s.get_array().sycl_queue
-    dpnp_vt_queue = dpnp_vt.get_array().sycl_queue
 
-    # compare queue and device
-    assert_sycl_queue_equal(dpnp_u_queue, expected_queue)
-    assert_sycl_queue_equal(dpnp_s_queue, expected_queue)
-    assert_sycl_queue_equal(dpnp_vt_queue, expected_queue)
+    if compute_uv:
+        dpnp_u, dpnp_s, dpnp_vt = dpnp.linalg.svd(
+            dpnp_data, full_matrices=full_matrices, compute_uv=compute_uv
+        )
+
+        dpnp_u_queue = dpnp_u.get_array().sycl_queue
+        dpnp_vt_queue = dpnp_vt.get_array().sycl_queue
+        dpnp_s_queue = dpnp_s.get_array().sycl_queue
+
+        assert_sycl_queue_equal(dpnp_u_queue, expected_queue)
+        assert_sycl_queue_equal(dpnp_vt_queue, expected_queue)
+        assert_sycl_queue_equal(dpnp_s_queue, expected_queue)
+
+    else:
+        dpnp_s = dpnp.linalg.svd(
+            dpnp_data, full_matrices=full_matrices, compute_uv=compute_uv
+        )
+        dpnp_s_queue = dpnp_s.get_array().sycl_queue
+
+        assert_sycl_queue_equal(dpnp_s_queue, expected_queue)
 
 
 @pytest.mark.parametrize(
