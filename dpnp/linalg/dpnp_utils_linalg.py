@@ -952,6 +952,47 @@ def dpnp_inv(a):
     return b_f
 
 
+def _triu_inplace(a, host_tasks, depends=None):
+    """
+    _triu_inplace(a, host_tasks, depends=None)
+
+    Computes the upper triangular part of an array in-place,
+    but currently allocates extra memory for the result.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array from which the upper triangular part is to be extracted.
+    host_tasks : list
+        A list to which the function appends the host event corresponding to the computation.
+        This allows for dependency management and synchronization with other tasks.
+    depends : list, optional
+        A list of events that the triangular operation depends on.
+        These tasks are completed before the triangular computation starts.
+        If ``None``, defaults to an empty list.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A new array containing the upper triangular part of the input array `a`.
+
+    """
+
+    # TODO: implement a dedicated kernel for in-place triu instead of extra memory allocation for result
+    if depends is None:
+        depends = []
+    out = dpnp.empty_like(a, order="C")
+    ht_triu_ev, _ = ti._triu(
+        src=a.get_array(),
+        dst=out.get_array(),
+        k=0,
+        sycl_queue=a.sycl_queue,
+        depends=depends,
+    )
+    host_tasks.append(ht_triu_ev)
+    return out
+
+
 def dpnp_qr_batch(a, mode="reduced"):
     """
     dpnp_qr_batch(a, mode="reduced")
@@ -1065,10 +1106,12 @@ def dpnp_qr_batch(a, mode="reduced"):
 
         if mode == "r":
             r = a_t[..., :k].swapaxes(-2, -1)
-            out_r = dpnp.triu(r)
-            return out_r.reshape(batch_shape + out_r.shape[-2:])
+            r = _triu_inplace(r, ht_list_ev, [geqrf_batch_ev])
+            dpctl.SyclEvent.wait_for(ht_list_ev)
+            return r.reshape(batch_shape + r.shape[-2:])
 
         if mode == "raw":
+            dpctl.SyclEvent.wait_for(ht_list_ev)
             q = a_t.reshape(batch_shape + a_t.shape[-2:])
             r = tau_h.reshape(batch_shape + tau_h.shape[-1:])
             return (q, r)
@@ -1214,13 +1257,14 @@ def dpnp_qr(a, mode="reduced"):
     ht_list_ev = [ht_geqrf_ev, a_ht_copy_ev]
 
     if mode in ["r", "raw"]:
-        dpctl.SyclEvent.wait_for(ht_list_ev)
-
         if mode == "r":
             r = a_t[:, :k].transpose()
-            return dpnp.triu(r)
+            r = _triu_inplace(r, ht_list_ev, [geqrf_ev])
+            dpctl.SyclEvent.wait_for(ht_list_ev)
+            return r
 
         if mode == "raw":
+            dpctl.SyclEvent.wait_for(ht_list_ev)
             return (a_t, tau_h)
 
     # mc is the total number of columns in the q matrix.
