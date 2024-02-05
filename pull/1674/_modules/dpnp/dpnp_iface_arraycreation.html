@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.13.1dev3+4.g1697b02b3a documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.13.1dev3+20.g469ca6e321 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9d5bc9ca"></script>
+        <script src="../../_static/documentation_options.js?v=ca113034"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev3+4.g1697b02b3a
+                0.13.1dev3+20.g469ca6e321
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -224,7 +224,7 @@
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -252,9 +252,9 @@
 <span class="sd">    &gt;&gt;&gt; np.arange(3, 7, 2)</span>
 <span class="sd">    array([3, 5])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.arange(3)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.arange(3)  # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([0, 1, 2]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -323,8 +323,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -369,9 +369,9 @@
 <span class="sd">    array([[1, 2],</span>
 <span class="sd">           [3, 4]])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([1, 2, 3]) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([1, 2, 3]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -451,8 +451,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -485,9 +485,9 @@
 <span class="sd">    &gt;&gt;&gt; np.asanyarray([1, 2, 3])</span>
 <span class="sd">    array([1, 2, 3])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.asanyarray([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.asanyarray([1, 2, 3]) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([1, 2, 3]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -550,8 +550,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -585,9 +585,9 @@
 <span class="sd">    &gt;&gt;&gt; np.asarray([1, 2, 3])</span>
 <span class="sd">    array([1, 2, 3])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.asarray([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.asarray([1, 2, 3]) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([1, 2, 3]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -642,8 +642,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -692,10 +692,10 @@
 <span class="sd">    &gt;&gt;&gt; x is y</span>
 <span class="sd">    True</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
 <span class="sd">    &gt;&gt;&gt; x0 = np.asarray([1, 2, 3])</span>
-<span class="sd">    &gt;&gt;&gt; x = np.ascontiguousarray(x0)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.ascontiguousarray(x0) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([1, 2, 3]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -754,8 +754,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -806,10 +806,10 @@
 <span class="sd">    &gt;&gt;&gt; x is y</span>
 <span class="sd">    True</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
 <span class="sd">    &gt;&gt;&gt; x0 = np.asarray([1, 2, 3])</span>
-<span class="sd">    &gt;&gt;&gt; x = np.asfortranarray(x0)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.asfortranarray(x0) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([1, 2, 3]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -867,8 +867,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -961,8 +961,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1000,9 +1000,9 @@
 <span class="sd">           [0, 4, 0],</span>
 <span class="sd">           [0, 0, 8]])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.diag(x0)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.diag(x0) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([0, 4, 8]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -1077,8 +1077,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1115,9 +1115,9 @@
 <span class="sd">           [0, 0, 0, 0, 4],</span>
 <span class="sd">           [0, 0, 0, 0, 0]])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.diagflat(x0)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.diagflat(x0) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    array([[1, 0, 0, 0],</span>
 <span class="sd">           [0, 2, 0, 0],</span>
@@ -1184,7 +1184,7 @@
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1195,7 +1195,6 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;`` and ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
@@ -1212,9 +1211,9 @@
 <span class="sd">    &gt;&gt;&gt; np.empty(4)</span>
 <span class="sd">    array([9.03088525e-312, 9.03088525e-312, 9.03088525e-312, 9.03088525e-312])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.empty((3, 3))</span>
+<span class="sd">    &gt;&gt;&gt; x = np.empty((3, 3)) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x.shape, x.device, x.usm_type</span>
 <span class="sd">    ((3, 3), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -1282,8 +1281,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1294,7 +1293,6 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported with values ``&quot;C&quot;`` or ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
@@ -1312,9 +1310,9 @@
 <span class="sd">    &gt;&gt;&gt; np.empty_like(a)</span>
 <span class="sd">    array([1, 2, 3])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.empty_like(a)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.empty_like(a) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x.shape, x.device, x.usm_type</span>
 <span class="sd">    ((3, ), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -1394,7 +1392,7 @@
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1422,9 +1420,9 @@
 <span class="sd">           [0.,  0.,  1.],</span>
 <span class="sd">           [0.,  0.,  0.]])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.eye(2, dtype=int)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.eye(2, dtype=int) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([[1, 0],</span>
 <span class="sd">            [0, 1]]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
@@ -1595,8 +1593,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1624,9 +1622,9 @@
 <span class="sd">    &gt;&gt;&gt; np.full(4, 10)</span>
 <span class="sd">    array([10, 10, 10, 10])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.full(4, 10)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.full(4, 10) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([10, 10, 10, 10]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -1699,8 +1697,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1729,9 +1727,9 @@
 <span class="sd">    &gt;&gt;&gt; np.full_like(a, 1)</span>
 <span class="sd">    array([1, 1, 1, 1, 1, 1])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.full_like(a, 1)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.full_like(a, 1) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -1813,8 +1811,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 <span class="sd">    endpoint : bool, optional</span>
@@ -1860,9 +1858,9 @@
 <span class="sd">    &gt;&gt;&gt; np.geomspace(-1000, -1, num=4)</span>
 <span class="sd">    array([-1000.,  -100.,   -10.,    -1.])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.geomspace(1000, 1, num=4)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.geomspace(1000, 1, num=4) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([1000.,  100.,   10.,    1.]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -1923,7 +1921,7 @@
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1952,9 +1950,9 @@
 <span class="sd">           [0.,  1.,  0.],</span>
 <span class="sd">           [0.,  0.,  1.]])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.identity(3)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.identity(3) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([[1.,  0.,  0.],</span>
 <span class="sd">            [0.,  1.,  0.],</span>
@@ -2032,8 +2030,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 <span class="sd">    endpoint : bool, optional</span>
@@ -2076,9 +2074,9 @@
 <span class="sd">    &gt;&gt;&gt; np.linspace(2.0, 3.0, num=5, retstep=True)</span>
 <span class="sd">    (array([2.  , 2.25, 2.5 , 2.75, 3.  ]), array(0.25))</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.linspace(2.0, 3.0, num=3)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.linspace(2.0, 3.0, num=3) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([2. , 2.5, 3. ]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -2177,8 +2175,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 <span class="sd">    endpoint : bool, optional</span>
@@ -2230,9 +2228,9 @@
 <span class="sd">    array([[ 4.        ,  5.0396842 ,  6.34960421,  8.        ],</span>
 <span class="sd">           [ 9.        , 12.98024613, 18.72075441, 27.        ]])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.logspace(1.0, 3.0, num=3)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.logspace(1.0, 3.0, num=3) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([  10.,  100., 1000.]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -2273,12 +2271,28 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.meshgrid`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Each array instance from `xi` is supported as either :class:`dpnp.dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameter `copy` is supported only with default value ``True``.</span>
-<span class="sd">    Parameter `sparse` is supported only with default value ``False``.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1, x2,..., xn : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        1-D arrays representing the coordinates of a grid.</span>
+<span class="sd">    indexing : {&#39;xy&#39;, &#39;ij&#39;}, optional</span>
+<span class="sd">        Cartesian (&#39;xy&#39;, default) or matrix (&#39;ij&#39;) indexing of output.</span>
+<span class="sd">    sparse : bool, optional</span>
+<span class="sd">        If True the shape of the returned coordinate array for dimension `i`</span>
+<span class="sd">        is reduced from ``(N1, ..., Ni, ... Nn)`` to</span>
+<span class="sd">        ``(1, ..., 1, Ni, 1, ..., 1)``. Default is False.</span>
+<span class="sd">    copy : bool, optional</span>
+<span class="sd">        If False, a view into the original arrays are returned in order to</span>
+<span class="sd">        conserve memory.  Default is True.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    X1, X2,..., XN : tuple of dpnp.ndarrays</span>
+<span class="sd">        For vectors `x1`, `x2`,..., `xn` with lengths ``Ni=len(xi)``,</span>
+<span class="sd">        returns ``(N1, N2, N3,..., Nn)`` shaped arrays if indexing=&#39;ij&#39;</span>
+<span class="sd">        or ``(N2, N1, N3,..., Nn)`` shaped arrays if indexing=&#39;xy&#39;</span>
+<span class="sd">        with the elements of `xi` repeated to fill the matrix along</span>
+<span class="sd">        the first dimension for `x1`, the second for `x2` and so on.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2312,18 +2326,32 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">((</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xi</span><span class="p">)):</span>
-        <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">indexing</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ij&quot;</span><span class="p">,</span> <span class="s2">&quot;xy&quot;</span><span class="p">]:</span>
-        <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">copy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">sparse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">xi</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="n">indexing</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">xi</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Each input array must be any of supported type&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">sparse</span><span class="p">,</span> <span class="n">indexing</span><span class="p">)</span></div>
+    <span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xi</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">indexing</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;xy&quot;</span><span class="p">,</span> <span class="s2">&quot;ij&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Unrecognized indexing keyword value, expecting &#39;xy&#39; or &#39;ij&#39;.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">s0</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">ndim</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s0</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">s0</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:])</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">xi</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">indexing</span> <span class="o">==</span> <span class="s2">&quot;xy&quot;</span> <span class="ow">and</span> <span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">s0</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="n">output</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">s0</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sparse</span><span class="p">:</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">output</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">output</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
 
 
 
@@ -2342,7 +2370,7 @@
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -2366,9 +2394,9 @@
 <span class="sd">            [0, 1, 2, 3, 4],</span>
 <span class="sd">            [0, 1, 2, 3, 4]]])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.mgrid[-1:1:5j]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.mgrid[-1:1:5j] # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([-1. , -0.5,  0. ,  0.5,  1. ]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -2412,7 +2440,7 @@
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -2432,9 +2460,9 @@
 <span class="sd">            [3],</span>
 <span class="sd">            [4]]), array([[0, 1, 2, 3, 4]])]</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.ogrid[-1:1:5j]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.ogrid[-1:1:5j] # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([-1. , -0.5,  0. ,  0.5,  1. ]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -2493,7 +2521,7 @@
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -2527,9 +2555,9 @@
 <span class="sd">    array([[1.],</span>
 <span class="sd">           [1.]])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.ones(3)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.ones(3) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([1., 1., 1.]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -2597,8 +2625,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -2609,7 +2637,6 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported with values ``&quot;C&quot;`` or ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
@@ -2629,9 +2656,9 @@
 <span class="sd">    &gt;&gt;&gt; np.ones_like(x0)</span>
 <span class="sd">    array([1, 1, 1, 1, 1, 1])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.ones_like(x0)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.ones_like(x0) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -2742,7 +2769,7 @@
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -2775,9 +2802,9 @@
 <span class="sd">           [1.,  0.,  0.,  0.,  0.],</span>
 <span class="sd">           [1.,  1.,  0.,  0.,  0.]])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.tri(3, 2)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.tri(3, 2) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([[1., 0.],</span>
 <span class="sd">            [1., 1.],</span>
@@ -2981,8 +3008,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -3019,9 +3046,9 @@
 <span class="sd">           [  1,   3,   9,  27],</span>
 <span class="sd">           [  1,   5,  25, 125]])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.vander(x0)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.vander(x0) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([[  1,   1,   1,   1],</span>
 <span class="sd">            [  8,   4,   2,   1],</span>
@@ -3104,7 +3131,7 @@
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -3138,9 +3165,9 @@
 <span class="sd">    array([[0.],</span>
 <span class="sd">           [0.]])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.zeros(3)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.zeros(3) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([0., 0., 0.]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
@@ -3207,8 +3234,8 @@
 <span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
 <span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -3219,7 +3246,6 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported with values ``&quot;C&quot;`` or ``&quot;F&quot;``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
@@ -3239,9 +3265,9 @@
 <span class="sd">    &gt;&gt;&gt; np.zeros_like(x0)</span>
 <span class="sd">    array([0, 0, 0, 0, 0, 0])</span>
 
-<span class="sd">    Creating an array on different device and usm_type</span>
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.zeros_like(x0)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.zeros_like(x0) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([0, 0, 0, 0, 0, 0]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 

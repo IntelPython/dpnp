@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.vander &mdash; Data Parallel Extension for NumPy 0.13.1dev3+4.g1697b02b3a documentation</title>
+  <title>dpnp.vander &mdash; Data Parallel Extension for NumPy 0.13.1dev3+20.g469ca6e321 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9d5bc9ca"></script>
+        <script src="../../_static/documentation_options.js?v=ca113034"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev3+4.g1697b02b3a
+                0.13.1dev3+20.g469ca6e321
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -143,7 +143,7 @@ The <cite>device</cite> can be <code class="docutils literal notranslate"><span 
 an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code> corresponding to a non-partitioned SYCL device,
 an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code>, or a <cite>Device</cite> object returned by
 <a class="reference internal" href="dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.device" title="dpnp.dpnp_array.dpnp_array.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dpnp_array.dpnp_array.device</span></code></a> property.</p></li>
-<li><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.</p></li>
+<li><p><strong>usm_type</strong> (<em>{None</em><em>, </em><em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>sycl_queue</strong> (<em>{None</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – A SYCL queue to use for output array allocation and copying.</p></li>
 </ul>
 </dd>
@@ -182,8 +182,8 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">TypeError
 <span class="go">       [  1,   5,  25, 125]])</span>
 </pre></div>
 </div>
-<p>Creating an array on different device and usm_type</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vander</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+<p>Creating an array on a different device or with a specified usm_type</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vander</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span> <span class="c1"># default case</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
 <span class="go">(array([[  1,   1,   1,   1],</span>
 <span class="go">        [  8,   4,   2,   1],</span>
