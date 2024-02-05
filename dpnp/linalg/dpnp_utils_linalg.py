@@ -1185,6 +1185,10 @@ def dpnp_qr(a, mode="reduced"):
                 dtype=res_type,
             )
 
+    # Transpose the input matrix to convert from row-major to column-major order.
+    # This adjustment is necessary for compatibility with oneAPI MKL LAPACK routines,
+    # which expect matrices in column-major format.
+    # This allows data to be handled efficiently without the need for additional conversion.
     a = a.T
     a_usm_arr = dpnp.get_usm_ndarray(a)
     a_t = dpnp.empty_like(a, order="C", dtype=res_type)
