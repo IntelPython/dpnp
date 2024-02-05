@@ -46,7 +46,7 @@ namespace mkl_blas = oneapi::mkl::blas;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
-typedef sycl::event (*dotu_impl_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*dotu_impl_fn_ptr_t)(sycl::queue &,
                                           const std::int64_t,
                                           char *,
                                           const std::int64_t,
@@ -59,7 +59,7 @@ static dotu_impl_fn_ptr_t dotu_dispatch_table[dpctl_td_ns::num_types]
                                              [dpctl_td_ns::num_types];
 
 template <typename Tab, typename Tc>
-static sycl::event dotu_impl(sycl::queue exec_q,
+static sycl::event dotu_impl(sycl::queue &exec_q,
                              const std::int64_t n,
                              char *vectorA,
                              const std::int64_t stride_a,
@@ -108,7 +108,7 @@ static sycl::event dotu_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    dotu(sycl::queue exec_q,
+    dotu(sycl::queue &exec_q,
          dpctl::tensor::usm_ndarray vectorA,
          dpctl::tensor::usm_ndarray vectorB,
          dpctl::tensor::usm_ndarray result,
