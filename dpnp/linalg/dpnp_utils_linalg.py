@@ -1151,7 +1151,7 @@ def dpnp_qr_batch(a, mode="reduced"):
     # Call the LAPACK extension function _orgqr_batch/ to generate the real orthogonal/
     # complex unitary matrices `Qi` of the QR factorization
     # for a batch of general matrices.
-    ht_lapack_ev, _ = getattr(li, lapack_func)(
+    ht_lapack_ev, lapack_ev = getattr(li, lapack_func)(
         a_sycl_queue,
         q.get_array(),
         tau_h.get_array(),
@@ -1170,11 +1170,14 @@ def dpnp_qr_batch(a, mode="reduced"):
     q = q[..., :mc, :].swapaxes(-2, -1)
     r = a_t[..., :mc].swapaxes(-2, -1)
 
-    r_triu = dpnp.triu(r)
+    ht_list_ev.append(ht_lapack_ev)
+
+    r = _triu_inplace(r, ht_list_ev, [lapack_ev])
+    dpctl.SyclEvent.wait_for(ht_list_ev)
 
     return (
         q.reshape(batch_shape + q.shape[-2:]),
-        r_triu.reshape(batch_shape + r_triu.shape[-2:]),
+        r.reshape(batch_shape + r.shape[-2:]),
     )
 
 
@@ -1301,16 +1304,19 @@ def dpnp_qr(a, mode="reduced"):
 
     # Call the LAPACK extension function _orgqr/_ungqf to generate the real orthogonal/
     # complex unitary matrix `Q` of the QR factorization
-    ht_lapack_ev, _ = getattr(li, lapack_func)(
+    ht_lapack_ev, lapack_ev = getattr(li, lapack_func)(
         a_sycl_queue, m, mc, k, q.get_array(), tau_h.get_array(), [geqrf_ev]
     )
 
-    ht_list_ev.append(ht_lapack_ev)
-    dpctl.SyclEvent.wait_for(ht_list_ev)
-
     q = q[:mc].transpose()
     r = a_t[:, :mc].transpose()
-    return (q, dpnp.triu(r))
+
+    ht_list_ev.append(ht_lapack_ev)
+
+    r = _triu_inplace(r, ht_list_ev, [lapack_ev])
+    dpctl.SyclEvent.wait_for(ht_list_ev)
+
+    return (q, r)
 
 
 def dpnp_solve(a, b):
