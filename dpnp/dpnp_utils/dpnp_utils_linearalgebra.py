@@ -190,7 +190,7 @@ def dpnp_dot(a, b, /, out=None):
     Return the dot product of two arrays.
 
     The routine that is used to perform the main calculation
-    depends on input array data types: 1) For integer data types,
+    depends on input array data types: 1) For integer and boolean data types,
     `dpctl.tensor.vecdot` form the Data Parallel Control library is used,
     2) For floating point real-valued data types, `dot` routines from
     BLAS library of OneMKL is used, and 3) For complex data types,
