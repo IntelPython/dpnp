@@ -1237,7 +1237,7 @@ def dpnp_qr(a, mode="reduced"):
             )
 
     # Transpose the input matrix to convert from row-major to column-major order.
-    # This adjustment is necessary for compatibility with oneAPI MKL LAPACK routines,
+    # This adjustment is necessary for compatibility with OneMKL LAPACK routines,
     # which expect matrices in column-major format.
     # This allows data to be handled efficiently without the need for additional conversion.
     a = a.T
