@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.qr &mdash; Data Parallel Extension for NumPy 0.13.1dev3+49.ga4013d830f documentation</title>
+  <title>dpnp.linalg.qr &mdash; Data Parallel Extension for NumPy 0.13.1dev3+19.ge096303d51 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=42d76da1"></script>
+        <script src="../../_static/documentation_options.js?v=212b09c4"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev3+49.ga4013d830f
+                0.13.1dev3+19.ge096303d51
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -127,60 +127,14 @@
 <h1>dpnp.linalg.qr<a class="headerlink" href="#dpnp-linalg-qr" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.linalg.qr">
-<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">qr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'reduced'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#qr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.qr" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">qr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'reduced'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#qr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.qr" title="Link to this definition"></a></dt>
 <dd><p>Compute the qr factorization of a matrix.</p>
 <p>Factor the matrix <cite>a</cite> as <em>qr</em>, where <cite>q</cite> is orthonormal and <cite>r</cite> is
 upper-triangular.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.qr.html#numpy.linalg.qr" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.qr</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – The input array with the dimensionality of at least 2.</p></li>
-<li><p><strong>mode</strong> (<em>{&quot;reduced&quot;</em><em>, </em><em>&quot;complete&quot;</em><em>, </em><em>&quot;r&quot;</em><em>, </em><em>&quot;raw&quot;}</em><em>, </em><em>optional</em>) – If K = min(M, N), then
-- “reduced” : returns Q, R with dimensions (…, M, K), (…, K, N)
-- “complete” : returns Q, R with dimensions (…, M, M), (…, M, N)
-- “r” : returns R only with dimensions (…, K, N)
-- “raw” : returns h, tau with dimensions (…, N, M), (…, K,)
-Default: “reduced”.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>When mode is “reduced” or “complete”, the result will be a namedtuple with</em></p></li>
-<li><p><em>the attributes Q and R.</em></p></li>
-<li><p><strong>Q</strong> (<em>dpnp.ndarray</em>) – A matrix with orthonormal columns.
-When mode = “complete” the result is an orthogonal/unitary matrix
-depending on whether or not a is real/complex.
-The determinant may be either +/- 1 in that case.
-In case the number of dimensions in the input array is greater
-than 2 then a stack of the matrices with above properties is returned.</p></li>
-<li><p><strong>R</strong> (<em>dpnp.ndarray</em>) – The upper-triangular matrix or a stack of upper-triangular matrices
-if the number of dimensions in the input array is greater than 2.</p></li>
-<li><p><strong>(h, tau)</strong> (<em>tuple of dpnp.ndarray</em>) – The h array contains the Householder reflectors that generate Q along with R.
-The tau array contains scaling factors for the reflectors.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">))</span>  <span class="c1"># a does equal QR</span>
-<span class="go">array([ True])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">R2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">R2</span><span class="p">)</span>  <span class="c1"># mode=&#39;r&#39; returns the same R as mode=&#39;full&#39;</span>
-<span class="go">array([ True])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="c1"># Stack of 2 x 2 matrices as input</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Q</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(3, 2, 2)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">R</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(3, 2, 2)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">R</span><span class="p">))</span>
-<span class="go">array([ True])</span>
-</pre></div>
-</div>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Parameter mode=’reduced’ is supported.</p>
 </dd></dl>
 
 </section>
