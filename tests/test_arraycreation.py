@@ -884,29 +884,33 @@ def test_logspace_axis(axis):
     "data", [(), 1, (2, 3), [4], numpy.array(5), numpy.array([6, 7])]
 )
 def test_ascontiguousarray(data):
-    func = lambda xp: xp.ascontiguousarray(data)
-    assert_dtype_allclose(func(dpnp), func(numpy))
+    result = dpnp.ascontiguousarray(data)
+    expected = numpy.ascontiguousarray(data)
+    assert_dtype_allclose(result, expected)
+    assert result.shape == expected.shape
 
 
 @pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
 def test_ascontiguousarray1(data):
-    func = lambda xp, x: xp.ascontiguousarray(x)
-    a = dpnp.array(data)
-    a_np = numpy.array(data)
-    assert_dtype_allclose(func(dpnp, a), func(numpy, a_np))
+    result = dpnp.ascontiguousarray(dpnp.array(data))
+    expected = numpy.ascontiguousarray(numpy.array(data))
+    assert_dtype_allclose(result, expected)
+    assert result.shape == expected.shape
 
 
 @pytest.mark.parametrize(
     "data", [(), 1, (2, 3), [4], numpy.array(5), numpy.array([6, 7])]
 )
 def test_asfortranarray(data):
-    func = lambda xp: xp.asfortranarray(data)
-    assert_dtype_allclose(func(dpnp), func(numpy))
+    result = dpnp.asfortranarray(data)
+    expected = numpy.asfortranarray(data)
+    assert_dtype_allclose(result, expected)
+    assert result.shape == expected.shape
 
 
 @pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
 def test_asfortranarray1(data):
-    func = lambda xp, x: xp.asfortranarray(x)
-    a = dpnp.array(data)
-    a_np = numpy.array(data)
-    assert_dtype_allclose(func(dpnp, a), func(numpy, a_np))
+    result = dpnp.asfortranarray(dpnp.array(data))
+    expected = numpy.asfortranarray(numpy.array(data))
+    assert_dtype_allclose(result, expected)
+    assert result.shape == expected.shape
