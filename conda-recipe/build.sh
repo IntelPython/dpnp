@@ -5,8 +5,12 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${BUILD_PREFIX}/lib"
 
 # Intel LLVM must cooperate with compiler and sysroot from conda
 echo "--gcc-toolchain=${BUILD_PREFIX} --sysroot=${BUILD_PREFIX}/${HOST}/sysroot -target ${HOST}" > icpx_for_conda.cfg
-export ICPXCFG="$(pwd)/icpx_for_conda.cfg"
-export ICXCFG="$(pwd)/icpx_for_conda.cfg"
+
+ICPXCFG="$(pwd)/icpx_for_conda.cfg"
+export ICPXCFG
+
+ICXCFG="$(pwd)/icpx_for_conda.cfg"
+export ICXCFG
 
 export CMAKE_GENERATOR="Ninja"
 export TBB_ROOT_HINT=$PREFIX
@@ -22,8 +26,8 @@ else
     WHEELS_BUILD_ARGS="-p manylinux2014_x86_64"
 fi
 if [ -n "${WHEELS_OUTPUT_FOLDER}" ]; then
-    $PYTHON setup.py install bdist_wheel ${WHEELS_BUILD_ARGS} ${SKBUILD_ARGS}
-    cp dist/dpnp*.whl ${WHEELS_OUTPUT_FOLDER}
+    $PYTHON setup.py install bdist_wheel "${WHEELS_BUILD_ARGS}" "${SKBUILD_ARGS}"
+    cp dist/dpnp*.whl "${WHEELS_OUTPUT_FOLDER}"
 else
-    $PYTHON setup.py install ${SKBUILD_ARGS}
+    $PYTHON setup.py install "${SKBUILD_ARGS}"
 fi
