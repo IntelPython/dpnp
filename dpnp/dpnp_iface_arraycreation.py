@@ -799,6 +799,21 @@ def copy(
     >>> x[0] == z[0]
     array(False)
 
+    Creating an array on a different device or with a specified usm_type
+
+    >>> x0 = np.array([1, 2, 3])
+    >>> x = np.copy(x0) # default case
+    >>> x, x.device, x.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.copy(x0, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([1, 2, 3]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.copy(x0, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'host')
+
     """
 
     if subok is not False:
@@ -807,13 +822,14 @@ def copy(
             f"default value ``False``, but got {subok}"
         )
 
-    if (
-        device is None
-        and usm_type is None
-        and sycl_queue is None
-        and dpnp.is_supported_array_type(a)
-    ):
-        return dpnp_container.copy(a, order=order)
+    if dpnp.is_supported_array_type(a):
+        sycl_queue_normalized = dpnp.get_normalized_queue_device(
+            a, device=device, sycl_queue=sycl_queue
+        )
+        if (
+            usm_type is None or usm_type == a.usm_type
+        ) and sycl_queue_normalized == a.sycl_queue:
+            return dpnp_container.copy(a, order=order)
 
     return array(
         a,
