@@ -140,6 +140,7 @@ def test_coerced_usm_types_power(usm_type_x, usm_type_y):
 @pytest.mark.parametrize(
     "func, args",
     [
+        pytest.param("copy", ["x0"]),
         pytest.param("diag", ["x0"]),
         pytest.param("empty_like", ["x0"]),
         pytest.param("full", ["10", "x0[3]"]),
@@ -493,8 +494,8 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param(
             "dot",
-            [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
-            [[4.0, 4.0], [4.0, 4.0], [4.0, 4.0]],
+            [3.0, 4.0, 5.0],
+            [1.0, 2.0, 3.0],
         ),
         pytest.param("fmax", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
         pytest.param("fmin", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
