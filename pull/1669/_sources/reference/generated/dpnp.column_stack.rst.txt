@@ -1,6 +1,0 @@
-﻿dpnp.column\_stack
-==================
-
-.. currentmodule:: dpnp
-
-.. autofunction:: column_stack
