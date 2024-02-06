@@ -222,11 +222,17 @@ def dpnp_dot(a, b, /, out=None):
     out_is_used = False
     if out is not None:
         dpnp.check_supported_arrays_type(out)
+        a_usm = dpnp.get_usm_ndarray(a)
+        b_usm = dpnp.get_usm_ndarray(b)
+        out_usm = dpnp.get_usm_ndarray(out)
+
         if (
             out.dtype == dot_dtype
             and out.shape == ()
             and out.usm_type == res_usm_type
             and out.sycl_queue == exec_q
+            and not ti._array_overlap(a_usm, out_usm)
+            and not ti._array_overlap(b_usm, out_usm)
         ):
             result = out
             out_is_used = True
@@ -382,14 +388,22 @@ def dpnp_matmul(
         usm_type=res_usm_type,
         sycl_queue=exec_q,
     )
+
     out_is_used = False
     if out is not None:
         dpnp.check_supported_arrays_type(out)
+        x1_usm = dpnp.get_usm_ndarray(x1)
+        x2_usm = dpnp.get_usm_ndarray(x2)
+        out_usm = dpnp.get_usm_ndarray(out)
+
         if (
             out.dtype == gemm_dtype
             and out.shape == res_shape
             and out.usm_type == res_usm_type
             and out.sycl_queue == exec_q
+            and (out.flags.c_contiguous or out.flags.f_contiguous)
+            and not ti._array_overlap(x1_usm, out_usm)
+            and not ti._array_overlap(x2_usm, out_usm)
         ):
             result = out
             out_is_used = True
