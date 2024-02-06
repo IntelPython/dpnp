@@ -1135,7 +1135,17 @@ def dpnp_qr_batch(a, mode="reduced"):
             shape=(batch_size, n, m),
             dtype=res_type,
         )
-    q[..., :n, :] = a_t
+
+    # use DPCTL tensor function to fill the matrix array `q[..., :n, :]`
+    # with content from the array `a_t` overwritten by geqrf_batch
+    a_t_ht_copy_ev, a_t_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_t.get_array(),
+        dst=q[..., :n, :].get_array(),
+        sycl_queue=a_sycl_queue,
+        depends=[geqrf_batch_ev],
+    )
+
+    ht_list_ev.append(a_t_ht_copy_ev)
 
     q_stride = q.strides[0]
     tau_stride = tau_h.strides[0]
@@ -1161,7 +1171,7 @@ def dpnp_qr_batch(a, mode="reduced"):
         q_stride,
         tau_stride,
         batch_size,
-        [geqrf_batch_ev],
+        [a_t_copy_ev],
     )
 
     ht_list_ev.append(ht_lapack_ev)
@@ -1292,7 +1302,17 @@ def dpnp_qr(a, mode="reduced"):
             shape=(n, m),
             dtype=res_type,
         )
-    q[:n] = a_t
+
+    # use DPCTL tensor function to fill the matrix array `q[:n]`
+    # with content from the array `a_t` overwritten by geqrf
+    a_t_ht_copy_ev, a_t_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_t.get_array(),
+        dst=q[:n].get_array(),
+        sycl_queue=a_sycl_queue,
+        depends=[geqrf_ev],
+    )
+
+    ht_list_ev.append(a_t_ht_copy_ev)
 
     # Get LAPACK function (_orgqr for real or _ungqf for complex data types)
     # for QR factorization
@@ -1305,7 +1325,7 @@ def dpnp_qr(a, mode="reduced"):
     # Call the LAPACK extension function _orgqr/_ungqf to generate the real orthogonal/
     # complex unitary matrix `Q` of the QR factorization
     ht_lapack_ev, lapack_ev = getattr(li, lapack_func)(
-        a_sycl_queue, m, mc, k, q.get_array(), tau_h.get_array(), [geqrf_ev]
+        a_sycl_queue, m, mc, k, q.get_array(), tau_h.get_array(), [a_t_copy_ev]
     )
 
     q = q[:mc].transpose()
