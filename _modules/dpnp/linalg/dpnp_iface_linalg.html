@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev3+35.g1e67f26abf documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev3+56.g92c8aab6a4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=65841457"></script>
+        <script src="../../../_static/documentation_options.js?v=81f45833"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev3+35.g1e67f26abf
+                0.13.1dev3+56.g92c8aab6a4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -141,6 +141,7 @@
     <span class="n">dpnp_det</span><span class="p">,</span>
     <span class="n">dpnp_eigh</span><span class="p">,</span>
     <span class="n">dpnp_inv</span><span class="p">,</span>
+    <span class="n">dpnp_qr</span><span class="p">,</span>
     <span class="n">dpnp_slogdet</span><span class="p">,</span>
     <span class="n">dpnp_solve</span><span class="p">,</span>
     <span class="n">dpnp_svd</span><span class="p">,</span>
@@ -654,7 +655,7 @@
 
 <div class="viewcode-block" id="qr">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.qr.html#dpnp.linalg.qr">[docs]</a>
-<span class="k">def</span> <span class="nf">qr</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reduced&quot;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">qr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reduced&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the qr factorization of a matrix.</span>
 
@@ -663,25 +664,64 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.linalg.qr`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Parameter mode=&#39;reduced&#39; is supported.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        The input array with the dimensionality of at least 2.</span>
+<span class="sd">    mode : {&quot;reduced&quot;, &quot;complete&quot;, &quot;r&quot;, &quot;raw&quot;}, optional</span>
+<span class="sd">        If K = min(M, N), then</span>
+<span class="sd">        - &quot;reduced&quot; : returns Q, R with dimensions (…, M, K), (…, K, N)</span>
+<span class="sd">        - &quot;complete&quot; : returns Q, R with dimensions (…, M, M), (…, M, N)</span>
+<span class="sd">        - &quot;r&quot; : returns R only with dimensions (…, K, N)</span>
+<span class="sd">        - &quot;raw&quot; : returns h, tau with dimensions (…, N, M), (…, K,)</span>
+<span class="sd">        Default: &quot;reduced&quot;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    When mode is &quot;reduced&quot; or &quot;complete&quot;, the result will be a namedtuple with</span>
+<span class="sd">    the attributes Q and R.</span>
+<span class="sd">    Q : dpnp.ndarray</span>
+<span class="sd">        A matrix with orthonormal columns.</span>
+<span class="sd">        When mode = &quot;complete&quot; the result is an orthogonal/unitary matrix</span>
+<span class="sd">        depending on whether or not a is real/complex.</span>
+<span class="sd">        The determinant may be either +/- 1 in that case.</span>
+<span class="sd">        In case the number of dimensions in the input array is greater</span>
+<span class="sd">        than 2 then a stack of the matrices with above properties is returned.</span>
+<span class="sd">    R : dpnp.ndarray</span>
+<span class="sd">        The upper-triangular matrix or a stack of upper-triangular matrices</span>
+<span class="sd">        if the number of dimensions in the input array is greater than 2.</span>
+<span class="sd">    (h, tau) : tuple of dpnp.ndarray</span>
+<span class="sd">        The h array contains the Householder reflectors that generate Q along with R.</span>
+<span class="sd">        The tau array contains scaling factors for the reflectors.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.random.randn(9, 6)</span>
+<span class="sd">    &gt;&gt;&gt; Q, R = np.linalg.qr(a)</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(Q, R))  # a does equal QR</span>
+<span class="sd">    array([ True])</span>
+<span class="sd">    &gt;&gt;&gt; R2 = np.linalg.qr(a, mode=&#39;r&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(R, R2)  # mode=&#39;r&#39; returns the same R as mode=&#39;full&#39;</span>
+<span class="sd">    array([ True])</span>
+<span class="sd">    &gt;&gt;&gt; a = np.random.normal(size=(3, 2, 2)) # Stack of 2 x 2 matrices as input</span>
+<span class="sd">    &gt;&gt;&gt; Q, R = np.linalg.qr(a)</span>
+<span class="sd">    &gt;&gt;&gt; Q.shape</span>
+<span class="sd">    (3, 2, 2)</span>
+<span class="sd">    &gt;&gt;&gt; R.shape</span>
+<span class="sd">    (3, 2, 2)</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(a, np.matmul(Q, R))</span>
+<span class="sd">    array([ True])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;reduced&quot;</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">result_tup</span> <span class="o">=</span> <span class="n">dpnp_qr</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">result_tup</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;reduced&quot;</span><span class="p">,</span> <span class="s2">&quot;complete&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized mode </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_qr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
 
 
 

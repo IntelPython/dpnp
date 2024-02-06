@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.13.1dev3+35.g1e67f26abf documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.13.1dev3+56.g92c8aab6a4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=65841457"></script>
+        <script src="../../_static/documentation_options.js?v=81f45833"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev3+35.g1e67f26abf
+                0.13.1dev3+56.g92c8aab6a4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -133,11 +133,7 @@
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils.dpnp_utils_linearalgebra</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">dpnp_dot</span><span class="p">,</span>
-    <span class="n">dpnp_matmul</span><span class="p">,</span>
-    <span class="n">dpnp_vdot</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils.dpnp_utils_linearalgebra</span> <span class="kn">import</span> <span class="n">dpnp_dot</span><span class="p">,</span> <span class="n">dpnp_matmul</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;dot&quot;</span><span class="p">,</span>
@@ -564,66 +560,22 @@
 
 <div class="viewcode-block" id="vdot">
 <a class="viewcode-back" href="../../reference/generated/dpnp.vdot.html#dpnp.vdot">[docs]</a>
-<span class="k">def</span> <span class="nf">vdot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">vdot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the dot product of two vectors.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.dot`.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
-<span class="sd">        First input array. If `a` is complex the complex conjugate</span>
-<span class="sd">        is taken before the calculation of the dot product.</span>
-<span class="sd">    b : {dpnp_array, usm_ndarray, scalar}</span>
-<span class="sd">        Second input array.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Returns the dot product of `a` and `b`.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.vdot`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.dot` : Returns the dot product.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array([1+2j,3+4j])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([5+6j,7+8j])</span>
-<span class="sd">    &gt;&gt;&gt; np.vdot(a, b)</span>
-<span class="sd">    array(70-8j)</span>
-<span class="sd">    &gt;&gt;&gt; np.vdot(b, a)</span>
-<span class="sd">    array(70+8j)</span>
-
-<span class="sd">    Note that higher-dimensional arrays are flattened!</span>
-
-<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 4], [5, 6]])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([[4, 1], [2, 2]])</span>
-<span class="sd">    &gt;&gt;&gt; np.vdot(a, b)</span>
-<span class="sd">    array(30)</span>
-<span class="sd">    &gt;&gt;&gt; np.vdot(b, a)</span>
-<span class="sd">    array(30)</span>
-<span class="sd">    &gt;&gt;&gt; 1*4 + 4*1 + 5*2 + 6*2</span>
-<span class="sd">    30</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function works the same as :obj:`dpnp.dot`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The first array should be of size one.&quot;</span><span class="p">)</span>
-        <span class="c1"># TODO: investigate usage of axpy (axpy_batch) or scal</span>
-        <span class="c1"># functions from BLAS here instead of dpnp.multiply</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">b</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_vdot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># dot product of flatten arrays</span>
-        <span class="k">return</span> <span class="n">dpnp_vdot</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">b</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 </pre></div>
 
