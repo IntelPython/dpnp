@@ -219,6 +219,17 @@ def dpnp_dot(a, b, /, out=None):
         usm_type=res_usm_type,
         sycl_queue=exec_q,
     )
+    out_is_used = False
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        if (
+            out.dtype == dot_dtype
+            and out.shape == ()
+            and out.usm_type == res_usm_type
+            and out.sycl_queue == exec_q
+        ):
+            result = out
+            out_is_used = True
 
     # input arrays should have the proper data type
     dep_events_list = []
@@ -253,8 +264,11 @@ def dpnp_dot(a, b, /, out=None):
     if dot_dtype != res_dtype:
         result = result.astype(res_dtype, copy=False)
 
-    # NumPy does not allow casting even if it is safe
-    return dpnp.get_result_array(result, out, casting="no")
+    if out_is_used:
+        return out
+    else:
+        # NumPy does not allow casting even if it is safe
+        return dpnp.get_result_array(result, out, casting="no")
 
 
 def dpnp_matmul(
@@ -361,13 +375,26 @@ def dpnp_matmul(
         x2_shape = x2.shape
         res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
 
-    # calculate results
+    # create result array
     result = dpnp.empty(
         res_shape,
         dtype=gemm_dtype,
         usm_type=res_usm_type,
         sycl_queue=exec_q,
     )
+    out_is_used = False
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        if (
+            out.dtype == gemm_dtype
+            and out.shape == res_shape
+            and out.usm_type == res_usm_type
+            and out.sycl_queue == exec_q
+        ):
+            result = out
+            out_is_used = True
+
+    # calculate result
     if result.size == 0:
         pass
     elif x1.size == 0 or x2.size == 0:
@@ -446,4 +473,7 @@ def dpnp_matmul(
         else:
             return result
     else:
-        return dpnp.get_result_array(result, out, casting=casting)
+        if out_is_used:
+            return out
+        else:
+            return dpnp.get_result_array(result, out, casting=casting)
