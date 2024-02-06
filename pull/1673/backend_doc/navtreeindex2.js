@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga1e1d9e72e8f1a92a6e25d7f563562b11":[0,4,4],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga2d677a923f4dc4c31e302b0c3bb692f0":[0,4,10],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga4706968b8ce210d69309a0cae330cea5":[0,4,7],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga5f47f787627aa8dbd02301760482d7d6":[0,4,3],
@@ -36,8 +37,10 @@ var NAVTREEINDEX2 =
 "struct_d_p_n_p_func_data.html#aa88f90ce507ebffe7462bba4d2df6c76":[0,2,0,1],
 "struct_d_p_n_p_func_data.html#af40fd22f5954384788121f817fb02f0d":[0,2,0,0],
 "structare__same.html":[1,0,1],
-"structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html":[1,0,0,0,0,0,0,0],
-"structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html":[1,0,0,0,0,0,0,1],
+"structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html":[1,0,0,0,0,0,0,0],
+"structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html":[1,0,0,0,0,0,0,1],
+"structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html":[1,0,0,0,0,0,0,2],
+"structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html":[1,0,0,0,0,0,0,3],
 "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of.html":[1,0,0,0,0,1,0,0],
 "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html":[1,0,0,0,0,1,0,1],
 "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_geqrf_batch_type_pair_support_factory.html":[1,0,0,0,0,1,1,0],
