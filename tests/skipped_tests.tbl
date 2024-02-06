@@ -151,13 +151,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_ones_like_s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_strides
 
-tests/third_party/cupy/creation_tests/test_matrix.py::TestTriLowerAndUpper_param_0_{shape=(2,)}::test_tril
-tests/third_party/cupy/creation_tests/test_matrix.py::TestTriLowerAndUpper_param_0_{shape=(2,)}::test_tril_nega
-tests/third_party/cupy/creation_tests/test_matrix.py::TestTriLowerAndUpper_param_0_{shape=(2,)}::test_tril_posi
-tests/third_party/cupy/creation_tests/test_matrix.py::TestTriLowerAndUpper_param_0_{shape=(2,)}::test_triu
-tests/third_party/cupy/creation_tests/test_matrix.py::TestTriLowerAndUpper_param_0_{shape=(2,)}::test_triu_nega
-tests/third_party/cupy/creation_tests/test_matrix.py::TestTriLowerAndUpper_param_0_{shape=(2,)}::test_triu_posi
-
 tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_AxisConcatenator_init1
 tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_len
 tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_1

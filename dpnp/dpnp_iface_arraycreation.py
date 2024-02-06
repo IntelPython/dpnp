@@ -94,6 +94,37 @@ __all__ = [
 ]
 
 
+def _check_limitations(order=None, subok=False, like=None):
+    """
+    Checking limitation kwargs for their supported values.
+
+    Parameter `order` is supported only with values ``"C"``, ``"F"`` and ``None``.
+    Parameter `subok` is supported only with default value ``False``.
+    Parameter `like` is supported only with default value ``None``.
+
+    Raises
+    ------
+    NotImplementedError
+        If any input kwargs is of unsupported value.
+    """
+
+    if order not in ("C", "c", "F", "f", None):
+        raise NotImplementedError(
+            "Keyword argument `order` is supported only with "
+            f"values ``'C'`` and ``'F'``, but got {order}"
+        )
+    elif like is not None:
+        raise NotImplementedError(
+            "Keyword argument `like` is supported only with "
+            f"default value ``None``, but got {like}"
+        )
+    elif subok is not False:
+        raise NotImplementedError(
+            "Keyword argument `subok` is supported only with "
+            f"default value ``False``, but got {subok}"
+        )
+
+
 def arange(
     start,
     /,
@@ -175,7 +206,7 @@ def arange(
 
     """
 
-    dpnp.check_limitations(like=like)
+    _check_limitations(like=like)
 
     return dpnp_container.arange(
         start,
@@ -286,7 +317,7 @@ def array(
 
     """
 
-    dpnp.check_limitations(subok=subok, like=like)
+    _check_limitations(subok=subok, like=like)
     if ndmin != 0:
         raise NotImplementedError(
             "Keyword argument `ndmin` is supported only with "
@@ -390,7 +421,7 @@ def asanyarray(
 
     """
 
-    dpnp.check_limitations(like=like)
+    _check_limitations(like=like)
 
     return asarray(
         a,
@@ -483,7 +514,7 @@ def asarray(
 
     """
 
-    dpnp.check_limitations(like=like)
+    _check_limitations(like=like)
 
     return dpnp_container.asarray(
         a,
@@ -584,7 +615,7 @@ def ascontiguousarray(
 
     """
 
-    dpnp.check_limitations(like=like)
+    _check_limitations(like=like)
 
     # at least 1-d array has to be returned
     if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
@@ -691,7 +722,7 @@ def asfortranarray(
 
     """
 
-    dpnp.check_limitations(like=like)
+    _check_limitations(like=like)
 
     # at least 1-d array has to be returned
     if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
@@ -787,7 +818,7 @@ def copy(
 
     """
 
-    dpnp.check_limitations(subok=subok)
+    _check_limitations(subok=subok)
 
     if dpnp.is_supported_array_type(a):
         sycl_queue_normalized = dpnp.get_normalized_queue_device(
@@ -1086,7 +1117,7 @@ def empty(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    _check_limitations(order=order, like=like)
     return dpnp_container.empty(
         shape,
         dtype=dtype,
@@ -1176,12 +1207,8 @@ def empty_like(
 
     """
 
-    if not dpnp.check_supported_arrays_type(a):
-        raise TypeError(
-            f"Input array must be any of supported type, but got {type(a)}"
-        )
-
-    dpnp.check_limitations(order=order, subok=subok)
+    dpnp.check_supported_arrays_type(a)
+    _check_limitations(order=order, subok=subok)
 
     _shape = a.shape if shape is None else shape
     _dtype = a.dtype if dtype is None else dtype
@@ -1283,7 +1310,7 @@ def eye(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    _check_limitations(order=order, like=like)
 
     return dpnp_container.eye(
         N,
@@ -1457,7 +1484,7 @@ def full(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    _check_limitations(order=order, like=like)
 
     return dpnp_container.full(
         shape,
@@ -1552,12 +1579,9 @@ def full_like(
     (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), 'host')
 
     """
-    if not dpnp.check_supported_arrays_type(a):
-        raise TypeError(
-            f"Input array must be any of supported type, but got {type(a)}"
-        )
 
-    dpnp.check_limitations(order=order, subok=subok)
+    dpnp.check_supported_arrays_type(a)
+    _check_limitations(order=order, subok=subok)
 
     _shape = a.shape if shape is None else shape
     _dtype = a.dtype if dtype is None else dtype
@@ -1778,7 +1802,7 @@ def identity(
     if n < 0:
         raise ValueError("negative dimensions are not allowed")
 
-    dpnp.check_limitations(like=like)
+    _check_limitations(like=like)
 
     _dtype = dpnp.default_float_type() if dtype is None else dtype
     return dpnp.eye(
@@ -2116,8 +2140,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
 
     """
 
-    if not dpnp.check_supported_arrays_type(*xi):
-        raise TypeError("Each input array must be any of supported type")
+    dpnp.check_supported_arrays_type(*xi)
 
     ndim = len(xi)
 
@@ -2357,7 +2380,7 @@ def ones(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    _check_limitations(order=order, like=like)
 
     return dpnp_container.ones(
         shape,
@@ -2449,12 +2472,8 @@ def ones_like(
     (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), 'host')
 
     """
-    if not dpnp.check_supported_arrays_type(a):
-        raise TypeError(
-            f"Input array must be any of supported type, but got {type(a)}"
-        )
-
-    dpnp.check_limitations(order=order, subok=subok)
+    dpnp.check_supported_arrays_type(a)
+    _check_limitations(order=order, subok=subok)
 
     _shape = a.shape if shape is None else shape
     _dtype = a.dtype if dtype is None else dtype
@@ -2663,10 +2682,7 @@ def tril(m, /, *, k=0):
     if _k is None:
         raise TypeError(f"`k` must be a integer data type, but got {type(k)}")
 
-    if not dpnp.check_supported_arrays_type(m):
-        raise TypeError(
-            f"Input array must be any of supported type, but got {type(m)}"
-        )
+    dpnp.check_supported_arrays_type(m)
 
     if m.ndim < 2:
         raise ValueError("Input array must have 2 or more dimensions")
@@ -2716,10 +2732,7 @@ def triu(m, /, *, k=0):
     if _k is None:
         raise TypeError(f"`k` must be a integer data type, but got {type(k)}")
 
-    if not dpnp.check_supported_arrays_type(m):
-        raise TypeError(
-            f"Input array must be any of supported type, but got {type(m)}"
-        )
+    dpnp.check_supported_arrays_type(m)
 
     if m.ndim < 2:
         raise ValueError("Input array must have 2 or more dimensions")
@@ -2922,7 +2935,7 @@ def zeros(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    _check_limitations(order=order, like=like)
 
     return dpnp_container.zeros(
         shape,
@@ -3015,12 +3028,8 @@ def zeros_like(
 
     """
 
-    if not dpnp.check_supported_arrays_type(a):
-        raise TypeError(
-            f"Input array must be any of supported type, but got {type(a)}"
-        )
-
-    dpnp.check_limitations(order=order, subok=subok)
+    dpnp.check_supported_arrays_type(a)
+    _check_limitations(order=order, subok=subok)
 
     _shape = a.shape if shape is None else shape
     _dtype = a.dtype if dtype is None else dtype
