@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,49 @@ namespace blas
 {
 namespace types
 {
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL BLAS library provides support in oneapi::mkl::blas::dot<Tab, Tc>
+ * function.
+ *
+ * @tparam Tab Type of arrays containing input vectors A and B.
+ * @tparam Tc Type of array containing output.
+ */
+template <typename Tab, typename Tc>
+struct DotTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<Tab, float, Tc, float>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab, float, Tc, double>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab, double, Tc, double>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL BLAS library provides support in oneapi::mkl::blas::dotu<Tab, Tc>
+ * function.
+ *
+ * @tparam Tab Type of arrays containing input vectors A and B.
+ * @tparam Tc Type of array containing output.
+ */
+template <typename Tab, typename Tc>
+struct DotuTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<Tab,
+                                          std::complex<float>,
+                                          Tc,
+                                          std::complex<float>>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab,
+                                          std::complex<double>,
+                                          Tc,
+                                          std::complex<double>>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
 /**
  * @brief A factory to define pairs of supported types for which
  * MKL BLAS library provides support in oneapi::mkl::blas::gemm<Tab, Tc>

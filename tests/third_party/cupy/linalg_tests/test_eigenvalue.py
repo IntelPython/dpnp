@@ -15,12 +15,6 @@ def _get_hermitian(xp, a, UPLO):
         return xp.tril(a) + xp.tril(a, k=-1).swapaxes(-2, -1).conj()
 
 
-# TODO:
-# remove once dpnp.dot and dpnp.matmul support complex types
-def _wrap_as_numpy_array(xp, a):
-    return a.asnumpy() if xp is cupy else a
-
-
 @testing.parameterize(
     *testing.product(
         {
@@ -57,20 +51,12 @@ class TestEigenvalue(unittest.TestCase):
         else:
             tol = 1e-5
 
-        # TODO: remove _wrap_as_numpy_array() once @ support complex types
-        testing.assert_allclose(
-            _wrap_as_numpy_array(xp, A) @ _wrap_as_numpy_array(xp, v),
-            _wrap_as_numpy_array(xp, v)
-            @ numpy.diag(_wrap_as_numpy_array(xp, w)),
-            atol=tol,
-            rtol=tol,
-        )
+        testing.assert_allclose(A @ v, v @ xp.diag(w), atol=tol, rtol=tol)
 
         # Check if v @ vt is an identity matrix
         testing.assert_allclose(
-            _wrap_as_numpy_array(xp, v)
-            @ _wrap_as_numpy_array(xp, v).swapaxes(-2, -1).conj(),
-            numpy.identity(_wrap_as_numpy_array(xp, A).shape[-1], _dtype),
+            v @ v.swapaxes(-2, -1).conj(),
+            xp.identity(A.shape[-1], _dtype),
             atol=tol,
             rtol=tol,
         )
@@ -120,11 +106,6 @@ class TestEigenvalue(unittest.TestCase):
         # eigenvectors, so v's are not directly comparible and we verify
         # them through the eigen equation A*v=w*v.
         A = _get_hermitian(xp, a, self.UPLO)
-
-        # TODO: remove _wrap_as_numpy_array() once dpnp.dot() support complex types
-        A = _wrap_as_numpy_array(xp, A)
-        v = _wrap_as_numpy_array(xp, v)
-        w = _wrap_as_numpy_array(xp, w)
 
         for i in range(a.shape[0]):
             testing.assert_allclose(

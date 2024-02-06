@@ -2517,6 +2517,7 @@ class TestMatmul:
             ((4,), (4,)),
             ((4,), (4, 2)),
             ((2, 4), (4,)),
+            ((1, 4), (4,)),  # output should be 1-d not 0-d
             ((2, 4), (4, 3)),
             ((1, 2, 3), (1, 3, 5)),
             ((4, 2, 3), (4, 3, 5)),
@@ -2672,7 +2673,7 @@ class TestMatmul:
             "((6, 7, 4, 3), (6, 7, 3, 5))",
         ],
     )
-    def test_matmul_dtype_matrix_inputs(self, dtype1, dtype2, shape_pair):
+    def test_matmul_dtype_matrix_inout(self, dtype1, dtype2, shape_pair):
         shape1, shape2 = shape_pair
         a1 = numpy.arange(numpy.prod(shape1), dtype=dtype1).reshape(shape1)
         a2 = numpy.arange(numpy.prod(shape2), dtype=dtype1).reshape(shape2)
@@ -2703,7 +2704,7 @@ class TestMatmul:
             "((6, 7, 4, 3), (6, 7, 3, 5))",
         ],
     )
-    def test_matmul_dtype_matrix_inout(self, dtype1, dtype2, shape_pair):
+    def test_matmul_dtype_matrix_inputs(self, dtype1, dtype2, shape_pair):
         shape1, shape2 = shape_pair
         a1 = numpy.arange(numpy.prod(shape1), dtype=dtype1).reshape(shape1)
         a2 = numpy.arange(numpy.prod(shape2), dtype=dtype2).reshape(shape2)
