@@ -47,7 +47,6 @@ var hierarchy =
     ] ],
     [ "dpnp::backend::ext::vm::DivContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_div_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::DivOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_div_output_type.html", null ],
-    [ "dpnp::backend::ext::blas::types::DotcTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::blas::types::DotTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::blas::types::DotuTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
     [ "dpnp_less_comp", "classdpnp__less__comp.html", null ],
