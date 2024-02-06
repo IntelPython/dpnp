@@ -31,18 +31,52 @@ from .helper import (
         pytest.param("ascontiguousarray", {"like": dpnp.zeros(4)}),
         pytest.param("asfortranarray", {"like": dpnp.empty((2, 4))}),
         pytest.param("copy", {"subok": True}),
+        pytest.param("empty_like", {"subok": True}),
+        pytest.param("empty_like", {"order": "K"}),
+        pytest.param("ones_like", {"subok": True}),
+        pytest.param("ones_like", {"order": "K"}),
+        pytest.param("zeros_like", {"subok": True}),
+        pytest.param("zeros_like", {"order": "K"}),
     ],
 )
-def test_array_copy_exception(func, kwargs):
+def test_exception_from_array(func, kwargs):
     sh = (3, 5)
     x = dpnp.arange(1, prod(sh) + 1, 1).reshape(sh)
 
-    with pytest.raises(
-        ValueError,
-        match=f"Keyword argument `{list(kwargs.keys())[0]}` is supported "
-        "only with default value",
-    ):
+    with pytest.raises(NotImplementedError):
         getattr(dpnp, func)(x, **kwargs)
+
+
+@pytest.mark.parametrize(
+    "func, kwargs",
+    [
+        pytest.param("arange", {"like": dpnp.array(7)}),
+        pytest.param("empty", {"like": dpnp.array(7)}),
+        pytest.param("empty", {"order": "K"}),
+        pytest.param("eye", {"like": dpnp.array(7)}),
+        pytest.param("eye", {"order": "K"}),
+        pytest.param("identity", {"like": dpnp.array(7)}),
+        pytest.param("ones", {"like": dpnp.array(7)}),
+        pytest.param("ones", {"order": "K"}),
+        pytest.param("zeros", {"like": dpnp.array(7)}),
+        pytest.param("zeros", {"order": "K"}),
+    ],
+)
+def test_exception(func, kwargs):
+    with pytest.raises(NotImplementedError):
+        getattr(dpnp, func)(3, **kwargs)
+
+
+def test_exception_full():
+    x = dpnp.ones(5)
+    with pytest.raises(NotImplementedError):
+        dpnp.full(1, 1, like=dpnp.array(7))
+    with pytest.raises(NotImplementedError):
+        dpnp.full(1, 1, order="K")
+    with pytest.raises(NotImplementedError):
+        dpnp.full_like(x, 1, subok="True")
+    with pytest.raises(NotImplementedError):
+        dpnp.full_like(x, 1, order="K")
 
 
 @pytest.mark.parametrize(
@@ -923,3 +957,30 @@ def test_meshgrid_raise_error():
     b = dpnp.array([1, 2, 3, 4])
     with pytest.raises(ValueError):
         dpnp.meshgrid(b, indexing="ab")
+
+
+def test_exception_tri():
+    x = dpnp.ones((2, 2))
+    with pytest.raises(TypeError):
+        dpnp.tri(x)
+    with pytest.raises(TypeError):
+        dpnp.tri(1, x)
+    with pytest.raises(TypeError):
+        dpnp.tri(1, 1, k=1.2)
+    with pytest.raises(TypeError):
+        dpnp.tril(x, k=1.2)
+    with pytest.raises(TypeError):
+        dpnp.triu(x, k=1.2)
+    with pytest.raises(TypeError):
+        dpnp.tril(1)
+    with pytest.raises(TypeError):
+        dpnp.triu(1)
+
+    with pytest.raises(ValueError):
+        dpnp.tri(-1)
+    with pytest.raises(ValueError):
+        dpnp.tri(1, -1)
+    with pytest.raises(ValueError):
+        dpnp.tril(dpnp.ones(5))
+    with pytest.raises(ValueError):
+        dpnp.triu(dpnp.ones(5))

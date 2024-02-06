@@ -40,7 +40,6 @@ it contains:
 
 import operator
 
-import dpctl.tensor as dpt
 import numpy
 
 import dpnp
@@ -144,7 +143,7 @@ def arange(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -176,19 +175,16 @@ def arange(
 
     """
 
-    if like is None:
-        return dpnp_container.arange(
-            start,
-            stop=stop,
-            step=step,
-            dtype=dtype,
-            device=device,
-            usm_type=usm_type,
-            sycl_queue=sycl_queue,
-        )
+    dpnp.check_limitations(like=like)
 
-    return call_origin(
-        numpy.arange, start, stop=stop, step=step, dtype=dtype, like=like
+    return dpnp_container.arange(
+        start,
+        stop=stop,
+        step=step,
+        dtype=dtype,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
     )
 
 
@@ -243,7 +239,7 @@ def array(
     Parameter `subok` is supported only with default value ``False``.
     Parameter `ndmin` is supported only with default value ``0``.
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `ValueError` exception.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -290,20 +286,11 @@ def array(
 
     """
 
-    if subok is not False:
-        raise ValueError(
-            "Keyword argument `subok` is supported only with "
-            f"default value ``False``, but got {subok}"
-        )
-    elif ndmin != 0:
-        raise ValueError(
+    dpnp.check_limitations(subok=subok, like=like)
+    if ndmin != 0:
+        raise NotImplementedError(
             "Keyword argument `ndmin` is supported only with "
             f"default value ``0``, but got {ndmin}"
-        )
-    elif like is not None:
-        raise ValueError(
-            "Keyword argument `like` is supported only with "
-            f"default value ``None``, but got {like}"
         )
 
     # `False`` in numpy means exactly the same like `None` in python array API:
@@ -366,7 +353,7 @@ def asanyarray(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `ValueError` exception.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -403,11 +390,7 @@ def asanyarray(
 
     """
 
-    if like is not None:
-        raise ValueError(
-            "Keyword argument `like` is supported only with "
-            f"default value ``None``, but got {like}"
-        )
+    dpnp.check_limitations(like=like)
 
     return asarray(
         a,
@@ -463,7 +446,7 @@ def asarray(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `ValueError` exception.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -500,11 +483,7 @@ def asarray(
 
     """
 
-    if like is not None:
-        raise ValueError(
-            "Keyword argument `like` is supported only with "
-            f"default value ``None``, but got {like}"
-        )
+    dpnp.check_limitations(like=like)
 
     return dpnp_container.asarray(
         a,
@@ -552,7 +531,7 @@ def ascontiguousarray(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `ValueError` exception.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -605,11 +584,7 @@ def ascontiguousarray(
 
     """
 
-    if like is not None:
-        raise ValueError(
-            "Keyword argument `like` is supported only with "
-            f"default value ``None``, but got {like}"
-        )
+    dpnp.check_limitations(like=like)
 
     # at least 1-d array has to be returned
     if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
@@ -660,7 +635,7 @@ def asfortranarray(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `ValueError` exception.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -716,11 +691,7 @@ def asfortranarray(
 
     """
 
-    if like is not None:
-        raise ValueError(
-            "Keyword argument `like` is supported only with "
-            f"default value ``None``, but got {like}"
-        )
+    dpnp.check_limitations(like=like)
 
     # at least 1-d array has to be returned
     if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
@@ -765,7 +736,7 @@ def copy(
     Limitations
     -----------
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise, the function raises `ValueError` exception.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     Returns
     -------
@@ -816,11 +787,7 @@ def copy(
 
     """
 
-    if subok is not False:
-        raise ValueError(
-            "Keyword argument `subok` is supported only with "
-            f"default value ``False``, but got {subok}"
-        )
+    dpnp.check_limitations(subok=subok)
 
     if dpnp.is_supported_array_type(a):
         sycl_queue_normalized = dpnp.get_normalized_queue_device(
@@ -993,11 +960,6 @@ def diagflat(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     :obj:`diagonal` : Return specified diagonals.
     :obj:`trace` : Return sum along diagonals.
 
-    Limitations
-    -----------
-    Parameter `k` is only supported as integer data type.
-    Otherwise ``TypeError`` exception will be raised.
-
     Examples
     --------
     >>> import dpnp as np
@@ -1093,7 +1055,7 @@ def empty(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -1124,21 +1086,15 @@ def empty(
 
     """
 
-    if like is not None:
-        pass
-    elif order not in ("C", "c", "F", "f", None):
-        pass
-    else:
-        return dpnp_container.empty(
-            shape,
-            dtype=dtype,
-            order=order,
-            device=device,
-            usm_type=usm_type,
-            sycl_queue=sycl_queue,
-        )
-
-    return call_origin(numpy.empty, shape, dtype=dtype, order=order, like=like)
+    dpnp.check_limitations(order=order, like=like)
+    return dpnp_container.empty(
+        shape,
+        dtype=dtype,
+        order=order,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
 def empty_like(
@@ -1188,7 +1144,7 @@ def empty_like(
     Limitations
     -----------
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -1220,28 +1176,26 @@ def empty_like(
 
     """
 
-    if not isinstance(a, (dpnp.ndarray, dpt.usm_ndarray)):
-        pass
-    elif order not in ("C", "c", "F", "f", None):
-        pass
-    elif subok is not False:
-        pass
-    else:
-        _shape = a.shape if shape is None else shape
-        _dtype = a.dtype if dtype is None else dtype
-        _usm_type = a.usm_type if usm_type is None else usm_type
-        _sycl_queue = dpnp.get_normalized_queue_device(
-            a, sycl_queue=sycl_queue, device=device
-        )
-        return dpnp_container.empty(
-            _shape,
-            dtype=_dtype,
-            order=order,
-            usm_type=_usm_type,
-            sycl_queue=_sycl_queue,
+    if not dpnp.check_supported_arrays_type(a):
+        raise TypeError(
+            f"Input array must be any of supported type, but got {type(a)}"
         )
 
-    return call_origin(numpy.empty_like, a, dtype, order, subok, shape)
+    dpnp.check_limitations(order=order, subok=subok)
+
+    _shape = a.shape if shape is None else shape
+    _dtype = a.dtype if dtype is None else dtype
+    _usm_type = a.usm_type if usm_type is None else usm_type
+    _sycl_queue = dpnp.get_normalized_queue_device(
+        a, sycl_queue=sycl_queue, device=device
+    )
+    return dpnp_container.empty(
+        _shape,
+        dtype=_dtype,
+        order=order,
+        usm_type=_usm_type,
+        sycl_queue=_sycl_queue,
+    )
 
 
 def eye(
@@ -1295,9 +1249,8 @@ def eye(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
     Parameter `like` is supported only with default value ``None``.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     Examples
     --------
@@ -1329,24 +1282,18 @@ def eye(
             [0, 1]]), Device(level_zero:gpu:0), 'host')
 
     """
-    if order not in ("C", "c", "F", "f", None):
-        pass
-    elif like is not None:
-        pass
-    else:
-        return dpnp_container.eye(
-            N,
-            M,
-            k=k,
-            dtype=dtype,
-            order=order,
-            device=device,
-            usm_type=usm_type,
-            sycl_queue=sycl_queue,
-        )
 
-    return call_origin(
-        numpy.eye, N, M, k=k, dtype=dtype, order=order, like=None
+    dpnp.check_limitations(order=order, like=like)
+
+    return dpnp_container.eye(
+        N,
+        M,
+        k=k,
+        dtype=dtype,
+        order=order,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
     )
 
 
@@ -1478,9 +1425,8 @@ def full(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
     Parameter `like` is supported only with default value ``None``.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -1511,22 +1457,17 @@ def full(
 
     """
 
-    if like is not None:
-        pass
-    elif order not in ("C", "c", "F", "f", None):
-        pass
-    else:
-        return dpnp_container.full(
-            shape,
-            fill_value,
-            dtype=dtype,
-            order=order,
-            device=device,
-            usm_type=usm_type,
-            sycl_queue=sycl_queue,
-        )
+    dpnp.check_limitations(order=order, like=like)
 
-    return call_origin(numpy.full, shape, fill_value, dtype, order, like=like)
+    return dpnp_container.full(
+        shape,
+        fill_value,
+        dtype=dtype,
+        order=order,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
 def full_like(
@@ -1579,9 +1520,8 @@ def full_like(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -1612,29 +1552,28 @@ def full_like(
     (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), 'host')
 
     """
-    if not isinstance(a, (dpnp.ndarray, dpt.usm_ndarray)):
-        pass
-    elif order not in ("C", "c", "F", "f", None):
-        pass
-    elif subok is not False:
-        pass
-    else:
-        _shape = a.shape if shape is None else shape
-        _dtype = a.dtype if dtype is None else dtype
-        _usm_type = a.usm_type if usm_type is None else usm_type
-        _sycl_queue = dpnp.get_normalized_queue_device(
-            a, sycl_queue=sycl_queue, device=device
+    if not dpnp.check_supported_arrays_type(a):
+        raise TypeError(
+            f"Input array must be any of supported type, but got {type(a)}"
         )
 
-        return dpnp_container.full(
-            _shape,
-            fill_value,
-            dtype=_dtype,
-            order=order,
-            usm_type=_usm_type,
-            sycl_queue=_sycl_queue,
-        )
-    return numpy.full_like(a, fill_value, dtype, order, subok, shape)
+    dpnp.check_limitations(order=order, subok=subok)
+
+    _shape = a.shape if shape is None else shape
+    _dtype = a.dtype if dtype is None else dtype
+    _usm_type = a.usm_type if usm_type is None else usm_type
+    _sycl_queue = dpnp.get_normalized_queue_device(
+        a, sycl_queue=sycl_queue, device=device
+    )
+
+    return dpnp_container.full(
+        _shape,
+        fill_value,
+        dtype=_dtype,
+        order=order,
+        usm_type=_usm_type,
+        sycl_queue=_sycl_queue,
+    )
 
 
 def geomspace(
@@ -1798,7 +1737,7 @@ def identity(
     Limitations
     -----------
     Parameter `like` is currently not supported.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -1836,20 +1775,19 @@ def identity(
 
     """
 
-    if like is not None:
-        pass
-    elif n < 0:
+    if n < 0:
         raise ValueError("negative dimensions are not allowed")
-    else:
-        _dtype = dpnp.default_float_type() if dtype is None else dtype
-        return dpnp.eye(
-            n,
-            dtype=_dtype,
-            device=device,
-            usm_type=usm_type,
-            sycl_queue=sycl_queue,
-        )
-    return call_origin(numpy.identity, n, dtype=dtype, like=like)
+
+    dpnp.check_limitations(like=like)
+
+    _dtype = dpnp.default_float_type() if dtype is None else dtype
+    return dpnp.eye(
+        n,
+        dtype=_dtype,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
 def linspace(
@@ -2381,9 +2319,8 @@ def ones(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
     Parameter `like` is supported only with default value ``None``.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -2420,21 +2357,16 @@ def ones(
 
     """
 
-    if like is not None:
-        pass
-    elif order not in ("C", "c", "F", "f", None):
-        pass
-    else:
-        return dpnp_container.ones(
-            shape,
-            dtype=dtype,
-            order=order,
-            device=device,
-            usm_type=usm_type,
-            sycl_queue=sycl_queue,
-        )
+    dpnp.check_limitations(order=order, like=like)
 
-    return call_origin(numpy.ones, shape, dtype=dtype, order=order, like=like)
+    return dpnp_container.ones(
+        shape,
+        dtype=dtype,
+        order=order,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
 def ones_like(
@@ -2484,7 +2416,7 @@ def ones_like(
     Limitations
     -----------
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -2517,28 +2449,26 @@ def ones_like(
     (array([1, 1, 1, 1, 1, 1]), Device(level_zero:gpu:0), 'host')
 
     """
-    if not isinstance(a, (dpnp.ndarray, dpt.usm_ndarray)):
-        pass
-    elif order not in ("C", "c", "F", "f", None):
-        pass
-    elif subok is not False:
-        pass
-    else:
-        _shape = a.shape if shape is None else shape
-        _dtype = a.dtype if dtype is None else dtype
-        _usm_type = a.usm_type if usm_type is None else usm_type
-        _sycl_queue = dpnp.get_normalized_queue_device(
-            a, sycl_queue=sycl_queue, device=device
-        )
-        return dpnp_container.ones(
-            _shape,
-            dtype=_dtype,
-            order=order,
-            usm_type=_usm_type,
-            sycl_queue=_sycl_queue,
+    if not dpnp.check_supported_arrays_type(a):
+        raise TypeError(
+            f"Input array must be any of supported type, but got {type(a)}"
         )
 
-    return call_origin(numpy.ones_like, a, dtype, order, subok, shape)
+    dpnp.check_limitations(order=order, subok=subok)
+
+    _shape = a.shape if shape is None else shape
+    _dtype = a.dtype if dtype is None else dtype
+    _usm_type = a.usm_type if usm_type is None else usm_type
+    _sycl_queue = dpnp.get_normalized_queue_device(
+        a, sycl_queue=sycl_queue, device=device
+    )
+    return dpnp_container.ones(
+        _shape,
+        dtype=_dtype,
+        order=order,
+        usm_type=_usm_type,
+        sycl_queue=_sycl_queue,
+    )
 
 
 def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
@@ -2583,7 +2513,6 @@ def tri(
     device=None,
     usm_type="device",
     sycl_queue=None,
-    **kwargs,
 ):
     """
     An array with ones at and below the given diagonal and zeros elsewhere.
@@ -2617,12 +2546,6 @@ def tri(
     -------
     out : dpnp.ndarray of shape (N, M)
         Array with its lower triangle filled with ones and zeros elsewhere.
-
-    Limitations
-    -----------
-    Parameter `M`, `N`, and `k` are only supported as integer data type and when they are positive.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -2664,35 +2587,39 @@ def tri(
 
     """
 
-    if len(kwargs) != 0:
-        pass
-    elif not isinstance(N, int):
-        pass
+    if not isinstance(N, int):
+        raise TypeError(f"`N` must be a integer data type, but got {type(N)}")
     elif N < 0:
-        pass
-    elif M is not None and not isinstance(M, int):
-        pass
-    elif M is not None and M < 0:
-        pass
-    elif not isinstance(k, int):
-        pass
+        raise ValueError("negative dimensions are not allowed")
+
+    if M is not None:
+        if not isinstance(M, int):
+            raise TypeError(
+                f"`M` must be a integer data type, but got {type(M)}"
+            )
+        elif M < 0:
+            raise ValueError("negative dimensions are not allowed")
     else:
-        _dtype = (
-            dpnp.default_float_type() if dtype in (dpnp.float, None) else dtype
-        )
-        if M is None:
-            M = N
+        M = N
 
-        m = dpnp.ones(
-            (N, M),
-            dtype=_dtype,
-            device=device,
-            usm_type=usm_type,
-            sycl_queue=sycl_queue,
-        )
-        return dpnp.tril(m, k=k)
+    _k = None
+    try:
+        _k = operator.index(k)
+    except TypeError:
+        pass
+    if _k is None:
+        raise TypeError(f"`k` must be a integer data type, but got {type(k)}")
 
-    return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
+    _dtype = dpnp.default_float_type() if dtype in (dpnp.float, None) else dtype
+
+    m = dpnp.ones(
+        (N, M),
+        dtype=_dtype,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
+    return dpnp.tril(m, k=_k)
 
 
 def tril(m, /, *, k=0):
@@ -2716,11 +2643,6 @@ def tril(m, /, *, k=0):
     out : dpnp.ndarray of shape (N, M)
         Lower triangle of `m`, of same shape and dtype as `m`.
 
-    Limitations
-    -----------
-    Parameter `k` is supported only of integer data type.
-    Otherwise the function will be executed sequentially on CPU.
-
     Examples
     --------
     >>> import dpnp as np
@@ -2738,17 +2660,18 @@ def tril(m, /, *, k=0):
         _k = operator.index(k)
     except TypeError:
         pass
+    if _k is None:
+        raise TypeError(f"`k` must be a integer data type, but got {type(k)}")
 
-    if not isinstance(m, (dpnp.ndarray, dpt.usm_ndarray)):
-        pass
-    elif m.ndim < 2:
-        pass
-    elif _k is None:
-        pass
-    else:
-        return dpnp_container.tril(m, k=_k)
+    if not dpnp.check_supported_arrays_type(m):
+        raise TypeError(
+            f"Input array must be any of supported type, but got {type(m)}"
+        )
 
-    return call_origin(numpy.tril, m, k)
+    if m.ndim < 2:
+        raise ValueError("Input array must have 2 or more dimensions")
+
+    return dpnp_container.tril(m, k=_k)
 
 
 def triu(m, /, *, k=0):
@@ -2773,11 +2696,6 @@ def triu(m, /, *, k=0):
     out : dpnp.ndarray of shape (N, M)
         Upper triangle of `m`, of same shape and dtype as `m`.
 
-    Limitations
-    -----------
-    Parameter `k` is supported only of integer data type.
-    Otherwise the function will be executed sequentially on CPU.
-
     Examples
     --------
     >>> import dpnp as np
@@ -2795,17 +2713,18 @@ def triu(m, /, *, k=0):
         _k = operator.index(k)
     except TypeError:
         pass
+    if _k is None:
+        raise TypeError(f"`k` must be a integer data type, but got {type(k)}")
 
-    if not isinstance(m, (dpnp.ndarray, dpt.usm_ndarray)):
-        pass
-    elif m.ndim < 2:
-        pass
-    elif _k is None:
-        pass
-    else:
-        return dpnp_container.triu(m, k=_k)
+    if not dpnp.check_supported_arrays_type(m):
+        raise TypeError(
+            f"Input array must be any of supported type, but got {type(m)}"
+        )
 
-    return call_origin(numpy.triu, m, k)
+    if m.ndim < 2:
+        raise ValueError("Input array must have 2 or more dimensions")
+
+    return dpnp_container.triu(m, k=_k)
 
 
 def vander(
@@ -2848,11 +2767,6 @@ def vander(
     -------
     out : dpnp.ndarray
         Vandermonde matrix.
-
-    Limitations
-    -----------
-    Parameter `N`, if it is not ``None``, is only supported as integer data type.
-    Otherwise ``TypeError`` exception will be raised.
 
     Examples
     --------
@@ -2970,9 +2884,8 @@ def zeros(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
     Parameter `like` is supported only with default value ``None``.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -3008,21 +2921,17 @@ def zeros(
     (array([0., 0., 0.]), Device(level_zero:gpu:0), 'host')
 
     """
-    if like is not None:
-        pass
-    elif order not in ("C", "c", "F", "f", None):
-        pass
-    else:
-        return dpnp_container.zeros(
-            shape,
-            dtype=dtype,
-            order=order,
-            device=device,
-            usm_type=usm_type,
-            sycl_queue=sycl_queue,
-        )
 
-    return call_origin(numpy.zeros, shape, dtype=dtype, order=order, like=like)
+    dpnp.check_limitations(order=order, like=like)
+
+    return dpnp_container.zeros(
+        shape,
+        dtype=dtype,
+        order=order,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
 def zeros_like(
@@ -3072,7 +2981,7 @@ def zeros_like(
     Limitations
     -----------
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise the function will be executed sequentially on CPU.
+    Otherwise, the function raises `NotImplementedError` exception.
 
     See Also
     --------
@@ -3105,25 +3014,24 @@ def zeros_like(
     (array([0, 0, 0, 0, 0, 0]), Device(level_zero:gpu:0), 'host')
 
     """
-    if not isinstance(a, (dpnp.ndarray, dpt.usm_ndarray)):
-        pass
-    elif order not in ("C", "c", "F", "f", None):
-        pass
-    elif subok is not False:
-        pass
-    else:
-        _shape = a.shape if shape is None else shape
-        _dtype = a.dtype if dtype is None else dtype
-        _usm_type = a.usm_type if usm_type is None else usm_type
-        _sycl_queue = dpnp.get_normalized_queue_device(
-            a, sycl_queue=sycl_queue, device=device
-        )
-        return dpnp_container.zeros(
-            _shape,
-            dtype=_dtype,
-            order=order,
-            usm_type=_usm_type,
-            sycl_queue=_sycl_queue,
+
+    if not dpnp.check_supported_arrays_type(a):
+        raise TypeError(
+            f"Input array must be any of supported type, but got {type(a)}"
         )
 
-    return call_origin(numpy.zeros_like, a, dtype, order, subok, shape)
+    dpnp.check_limitations(order=order, subok=subok)
+
+    _shape = a.shape if shape is None else shape
+    _dtype = a.dtype if dtype is None else dtype
+    _usm_type = a.usm_type if usm_type is None else usm_type
+    _sycl_queue = dpnp.get_normalized_queue_device(
+        a, sycl_queue=sycl_queue, device=device
+    )
+    return dpnp_container.zeros(
+        _shape,
+        dtype=_dtype,
+        order=order,
+        usm_type=_usm_type,
+        sycl_queue=_sycl_queue,
+    )

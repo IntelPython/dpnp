@@ -57,6 +57,7 @@ __all__ = [
     "asnumpy",
     "astype",
     "check_supported_arrays_type",
+    "check_limitations",
     "convert_single_elem_array_to_scalar",
     "default_float_type",
     "dpnp_queue_initialize",
@@ -239,6 +240,37 @@ def check_supported_arrays_type(*arrays, scalar_type=False):
             "An array must be any of supported type, but got {}".format(type(a))
         )
     return True
+
+
+def check_limitations(order=None, subok=False, like=None):
+    """
+    Checking limitation kwargs for their supported values.
+
+    Parameter `order` is supported only with values ``"C"``, ``"F"`` and ``None``.
+    Parameter `subok` is supported only with default value ``False``.
+    Parameter `like` is supported only with default value ``None``.
+
+    Raises
+    ------
+    NotImplementedError
+        If any input kwargs is of unsupported value.
+    """
+
+    if order not in ("C", "c", "F", "f", None):
+        raise NotImplementedError(
+            "Keyword argument `order` is supported only with "
+            f"values ``'C'`` and ``'F'``, but got {order}"
+        )
+    elif like is not None:
+        raise NotImplementedError(
+            "Keyword argument `like` is supported only with "
+            f"default value ``None``, but got {like}"
+        )
+    elif subok is not False:
+        raise NotImplementedError(
+            "Keyword argument `subok` is supported only with "
+            f"default value ``False``, but got {subok}"
+        )
 
 
 def convert_single_elem_array_to_scalar(obj, keepdims=False):
