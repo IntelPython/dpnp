@@ -384,6 +384,10 @@ class TestVdot:
         expected = numpy.vdot(a, b)
         assert_allclose(result, expected)
 
+        result = dpnp.vdot(b, ia)
+        expected = numpy.vdot(b, a)
+        assert_allclose(result, expected)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
         "array_info",
@@ -505,3 +509,7 @@ class TestVdot:
         # The first array should be of size one
         with pytest.raises(ValueError):
             dpnp.vdot(a, b)
+
+        # The second array should be of size one
+        with pytest.raises(ValueError):
+            dpnp.vdot(b, a)

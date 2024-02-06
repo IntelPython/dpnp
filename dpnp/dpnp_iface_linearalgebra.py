@@ -43,11 +43,7 @@ import numpy
 import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
-from dpnp.dpnp_utils.dpnp_utils_linearalgebra import (
-    dpnp_dot,
-    dpnp_matmul,
-    dpnp_vdot,
-)
+from dpnp.dpnp_utils.dpnp_utils_linearalgebra import dpnp_dot, dpnp_matmul
 
 __all__ = [
     "dot",
@@ -456,11 +452,13 @@ def vdot(a, b):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
-        First input array. If `a` is complex the complex conjugate
-        is taken before the calculation of the dot product.
+    a : {dpnp_array, usm_ndarray, scalar}
+        First input array. Both inputs `a` and `b` can not be
+        scalars at the same time. If `a` is complex, the complex
+        conjugate is taken before the calculation of the dot product.
     b : {dpnp_array, usm_ndarray, scalar}
-        Second input array.
+        Second input array. Both inputs `a` and `b` can not be
+        scalars at the same time.
 
     Returns
     -------
@@ -494,17 +492,19 @@ def vdot(a, b):
 
     """
 
-    dpnp.check_supported_arrays_type(a)
+    dpnp.check_supported_arrays_type(a, scalar_type=True)
     dpnp.check_supported_arrays_type(b, scalar_type=True)
 
-    if dpnp.isscalar(b):
-        if a.size != 1:
+    if dpnp.isscalar(a) or dpnp.isscalar(b):
+        if dpnp.isscalar(b) and a.size != 1:
             raise ValueError("The first array should be of size one.")
+        if dpnp.isscalar(a) and b.size != 1:
+            raise ValueError("The second array should be of size one.")
         # TODO: investigate usage of axpy (axpy_batch) or scal
         # functions from BLAS here instead of dpnp.multiply
-        return dpnp.multiply(dpnp.conj(a), b)
+        return dpnp.multiply(numpy.conj(a), b)
     elif a.ndim == 1 and b.ndim == 1:
-        return dpnp_vdot(a, b)
+        return dpnp_dot(a, b, out=None, conjugate=True)
     else:
         # dot product of flatten arrays
-        return dpnp_vdot(dpnp.ravel(a), dpnp.ravel(b))
+        return dpnp_dot(dpnp.ravel(a), dpnp.ravel(b), out=None, conjugate=True)
