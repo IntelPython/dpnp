@@ -36,6 +36,42 @@ from dpnp.dpnp_utils import get_usm_allocations
 __all__ = ["dpnp_dot", "dpnp_matmul"]
 
 
+def _create_resul_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
+    """
+    Create the result array.
+
+    If `out` is not ``None`` and its features match the specified `shape`, `dtype,
+    `usm_type`, and `sycl_queue` and it is C-contiguous or F-contiguous and
+    does not have any memory overlap with `x1` and `x2`, `out` itself is returned.
+    If these conditions are not statisfied, an empty array is returned with the
+    specified `shape`, `dtype, `usm_type`, and `sycl_queue`.
+    """
+
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        x1_usm = dpnp.get_usm_ndarray(x1)
+        x2_usm = dpnp.get_usm_ndarray(x2)
+        out_usm = dpnp.get_usm_ndarray(out)
+
+        if (
+            out.dtype == dtype
+            and out.shape == shape
+            and out.usm_type == usm_type
+            and out.sycl_queue == sycl_queue
+            and (out.flags.c_contiguous or out.flags.f_contiguous)
+            and not ti._array_overlap(x1_usm, out_usm)
+            and not ti._array_overlap(x2_usm, out_usm)
+        ):
+            return out
+
+    return dpnp.empty(
+        shape,
+        dtype=dtype,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
+
+
 def _copy_array(x, dep_events, host_events, contig_copy=False, dtype=None):
     """
     Creating a copy of input array if needed.
@@ -212,31 +248,7 @@ def dpnp_dot(a, b, /, out=None):
         a, b, dtype=None, casting="no", sycl_queue=exec_q
     )
 
-    # create result array
-    result = dpnp.empty(
-        (),
-        dtype=dot_dtype,
-        usm_type=res_usm_type,
-        sycl_queue=exec_q,
-    )
-    out_is_used = False
-    if out is not None:
-        dpnp.check_supported_arrays_type(out)
-        a_usm = dpnp.get_usm_ndarray(a)
-        b_usm = dpnp.get_usm_ndarray(b)
-        out_usm = dpnp.get_usm_ndarray(out)
-
-        if (
-            out.dtype == dot_dtype
-            and out.shape == ()
-            and out.usm_type == res_usm_type
-            and out.sycl_queue == exec_q
-            and not ti._array_overlap(a_usm, out_usm)
-            and not ti._array_overlap(b_usm, out_usm)
-        ):
-            result = out
-            out_is_used = True
-
+    result = _create_resul_array(a, b, out, (), dot_dtype, res_usm_type, exec_q)
     # input arrays should have the proper data type
     dep_events_list = []
     host_tasks_list = []
@@ -270,11 +282,8 @@ def dpnp_dot(a, b, /, out=None):
     if dot_dtype != res_dtype:
         result = result.astype(res_dtype, copy=False)
 
-    if out_is_used:
-        return out
-    else:
-        # NumPy does not allow casting even if it is safe
-        return dpnp.get_result_array(result, out, casting="no")
+    # NumPy does not allow casting even if it is safe
+    return dpnp.get_result_array(result, out, casting="no")
 
 
 def dpnp_matmul(
@@ -381,33 +390,9 @@ def dpnp_matmul(
         x2_shape = x2.shape
         res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
 
-    # create result array
-    result = dpnp.empty(
-        res_shape,
-        dtype=gemm_dtype,
-        usm_type=res_usm_type,
-        sycl_queue=exec_q,
+    result = _create_resul_array(
+        x1, x2, out, res_shape, gemm_dtype, res_usm_type, exec_q
     )
-
-    out_is_used = False
-    if out is not None:
-        dpnp.check_supported_arrays_type(out)
-        x1_usm = dpnp.get_usm_ndarray(x1)
-        x2_usm = dpnp.get_usm_ndarray(x2)
-        out_usm = dpnp.get_usm_ndarray(out)
-
-        if (
-            out.dtype == gemm_dtype
-            and out.shape == res_shape
-            and out.usm_type == res_usm_type
-            and out.sycl_queue == exec_q
-            and (out.flags.c_contiguous or out.flags.f_contiguous)
-            and not ti._array_overlap(x1_usm, out_usm)
-            and not ti._array_overlap(x2_usm, out_usm)
-        ):
-            result = out
-            out_is_used = True
-
     # calculate result
     if result.size == 0:
         pass
@@ -487,7 +472,4 @@ def dpnp_matmul(
         else:
             return result
     else:
-        if out_is_used:
-            return out
-        else:
-            return dpnp.get_result_array(result, out, casting=casting)
+        return dpnp.get_result_array(result, out, casting=casting)
