@@ -678,6 +678,10 @@ def test_norm3(array, ord, axis):
 
 
 class TestQr:
+    # TODO: New packages that fix issue CMPLRLLVM-53771 are only available in internal CI.
+    # Skip the tests on cpu until these packages are available for the external CI.
+    # Specifically dpcpp_linux-64>=2024.1.0
+    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
         "shape",
@@ -711,22 +715,11 @@ class TestQr:
             # check decomposition
             if mode in ("complete", "reduced"):
                 if a.ndim == 2:
-                    # TODO: remove it when dpnp.dot() supports complex types
-                    if inp.issubdtype(dtype, inp.complexfloating):
-                        dpnp_as_np_q = inp.asnumpy(dpnp_q)
-                        dpnp_as_np_r = inp.asnumpy(dpnp_r)
-
-                        assert_almost_equal(
-                            numpy.dot(dpnp_as_np_q, dpnp_as_np_r),
-                            a,
-                            decimal=5,
-                        )
-                    else:
-                        assert_almost_equal(
-                            inp.dot(dpnp_q, dpnp_r),
-                            a,
-                            decimal=5,
-                        )
+                    assert_almost_equal(
+                        inp.dot(dpnp_q, dpnp_r),
+                        a,
+                        decimal=5,
+                    )
                 else:  # a.ndim > 2
                     assert_almost_equal(
                         inp.matmul(dpnp_q, dpnp_r),
@@ -772,6 +765,7 @@ class TestQr:
 
         assert_dtype_allclose(dpnp_r, np_r)
 
+    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
     @pytest.mark.parametrize(
         "mode",
         ["r", "raw", "complete", "reduced"],
