@@ -36,7 +36,7 @@ from dpnp.dpnp_utils import get_usm_allocations
 __all__ = ["dpnp_dot", "dpnp_matmul"]
 
 
-def _create_resul_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
+def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
     """
     Create the result array.
 
@@ -248,7 +248,9 @@ def dpnp_dot(a, b, /, out=None):
         a, b, dtype=None, casting="no", sycl_queue=exec_q
     )
 
-    result = _create_resul_array(a, b, out, (), dot_dtype, res_usm_type, exec_q)
+    result = _create_result_array(
+        a, b, out, (), dot_dtype, res_usm_type, exec_q
+    )
     # input arrays should have the proper data type
     dep_events_list = []
     host_tasks_list = []
@@ -390,7 +392,7 @@ def dpnp_matmul(
         x2_shape = x2.shape
         res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
 
-    result = _create_resul_array(
+    result = _create_result_array(
         x1, x2, out, res_shape, gemm_dtype, res_usm_type, exec_q
     )
     # calculate result
