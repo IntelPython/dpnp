@@ -48,7 +48,6 @@ def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
     """
 
     if out is not None:
-        dpnp.check_supported_arrays_type(out)
         x1_usm = dpnp.get_usm_ndarray(x1)
         x2_usm = dpnp.get_usm_ndarray(x2)
         out_usm = dpnp.get_usm_ndarray(out)
