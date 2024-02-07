@@ -1065,7 +1065,7 @@ def empty(
     dtype : dtype, optional
         The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point
         data type for the device where input array is allocated.
-    order : {"C", "F"}, optional
+    order : {"C", "F", None}, optional
         Memory layout of the newly output array. Default: "C".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -1085,6 +1085,7 @@ def empty(
 
     Limitations
     -----------
+    Parameter `order` is supported only with values ``"C"``, ``"F"`` and ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -1152,7 +1153,7 @@ def empty_like(
     dtype : dtype, optional
         The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point
         data type for the device where input array is allocated.
-    order : {"C", "F"}, optional
+    order : {"C", "F", None}, optional
         Memory layout of the newly output array. Default: "C".
     shape : {int, sequence of ints}
         Overrides the shape of the result.
@@ -1174,6 +1175,7 @@ def empty_like(
 
     Limitations
     -----------
+    Parameter `order` is supported only with values ``"C"``, ``"F"`` and ``None``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -1255,7 +1257,7 @@ def eye(
     dtype : dtype, optional
         The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point
         data type for the device where input array is allocated.
-    order : {"C", "F"}, optional
+    order : {"C", "F", None}, optional
         Memory layout of the newly output array. Default: "C".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -1276,6 +1278,7 @@ def eye(
 
     Limitations
     -----------
+    Parameter `order` is supported only with values ``"C"``, ``"F"`` and ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -1432,7 +1435,7 @@ def full(
     dtype : dtype, optional
         The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point
         data type for the device where input array is allocated.
-    order : {"C", "F"}, optional
+    order : {"C", "F", None}, optional
         Memory layout of the newly output array. Default: "C".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -1452,6 +1455,7 @@ def full(
 
     Limitations
     -----------
+    Parameter `order` is supported only with values ``"C"``, ``"F"`` and ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -1525,7 +1529,7 @@ def full_like(
     dtype : dtype, optional
         The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point
         data type for the device where input array is allocated.
-    order : {"C", "F"}, optional
+    order : {"C", "F", None}, optional
         Memory layout of the newly output array. Default: "C".
     shape : {int, sequence of ints}
         Overrides the shape of the result.
@@ -1547,6 +1551,7 @@ def full_like(
 
     Limitations
     -----------
+    Parameter `order` is supported only with values ``"C"``, ``"F"`` and ``None``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -2322,7 +2327,7 @@ def ones(
     dtype : dtype, optional
         The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point
         data type for the device where input array is allocated.
-    order : {"C", "F"}, optional
+    order : {"C", "F", None}, optional
         Memory layout of the newly output array. Default: "C".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -2342,6 +2347,7 @@ def ones(
 
     Limitations
     -----------
+    Parameter `order` is supported only with values ``"C"``, ``"F"`` and ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -2416,7 +2422,7 @@ def ones_like(
     dtype : dtype, optional
         The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point
         data type for the device where input array is allocated.
-    order : {"C", "F"}, optional
+    order : {"C", "F", None}, optional
         Memory layout of the newly output array. Default: "C".
     shape : {int, sequence of ints}
         Overrides the shape of the result.
@@ -2438,6 +2444,7 @@ def ones_like(
 
     Limitations
     -----------
+    Parameter `order` is supported only with values ``"C"``, ``"F"`` and ``None``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -2684,8 +2691,11 @@ def tril(m, /, *, k=0):
 
     dpnp.check_supported_arrays_type(m)
 
-    if m.ndim < 2:
-        raise ValueError("Input array must have 2 or more dimensions")
+    if m.ndim == 0:
+        raise ValueError("Input array must have 1 or more dimensions")
+
+    if m.ndim == 1:
+        m = dpnp.broadcast_to(m, (m.shape[0], m.shape[0]))
 
     return dpnp_container.tril(m, k=_k)
 
@@ -2734,8 +2744,11 @@ def triu(m, /, *, k=0):
 
     dpnp.check_supported_arrays_type(m)
 
-    if m.ndim < 2:
-        raise ValueError("Input array must have 2 or more dimensions")
+    if m.ndim == 0:
+        raise ValueError("Input array must have 1 or more dimensions")
+
+    if m.ndim == 1:
+        m = dpnp.broadcast_to(m, (m.shape[0], m.shape[0]))
 
     return dpnp_container.triu(m, k=_k)
 
@@ -2877,7 +2890,7 @@ def zeros(
     dtype : dtype, optional
         The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point
         data type for the device where input array is allocated.
-    order : {"C", "F"}, optional
+    order : {"C", "F", None}, optional
         Memory layout of the newly output array. Default: "C".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -2897,6 +2910,7 @@ def zeros(
 
     Limitations
     -----------
+    Parameter `order` is supported only with values ``"C"``, ``"F"`` and ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -2971,7 +2985,7 @@ def zeros_like(
     dtype : dtype, optional
         The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point
         data type for the device where input array is allocated.
-    order : {"C", "F"}, optional
+    order : {"C", "F", None}, optional
         Memory layout of the newly output array. Default: "C".
     shape : {int, sequence of ints}
         Overrides the shape of the result.
@@ -2993,6 +3007,7 @@ def zeros_like(
 
     Limitations
     -----------
+    Parameter `order` is supported only with values ``"C"``, ``"F"`` and ``None``.
     Parameter `subok` is supported only with default value ``False``.
     Otherwise, the function raises `NotImplementedError` exception.
 

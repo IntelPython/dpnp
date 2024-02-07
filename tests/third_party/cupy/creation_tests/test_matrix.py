@@ -136,8 +136,6 @@ class TestTriLowerAndUpper(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_tril(self, xp, dtype):
-        if self.shape == (2,):
-            pytest.skip("1D input array is not supported")
         m = testing.shaped_arange(self.shape, xp, dtype)
         return xp.tril(m)
 
@@ -149,24 +147,18 @@ class TestTriLowerAndUpper(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_tril_nega(self, xp, dtype):
-        if self.shape == (2,):
-            pytest.skip("1D input array is not supported")
         m = testing.shaped_arange(self.shape, xp, dtype)
         return xp.tril(m, k=-1)
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_tril_posi(self, xp, dtype):
-        if self.shape == (2,):
-            pytest.skip("1D input array is not supported")
         m = testing.shaped_arange(self.shape, xp, dtype)
         return xp.tril(m, k=1)
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_triu(self, xp, dtype):
-        if self.shape == (2,):
-            pytest.skip("1D input array is not supported")
         m = testing.shaped_arange(self.shape, xp, dtype)
         return xp.triu(m)
 
@@ -178,16 +170,12 @@ class TestTriLowerAndUpper(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_triu_nega(self, xp, dtype):
-        if self.shape == (2,):
-            pytest.skip("1D input array is not supported")
         m = testing.shaped_arange(self.shape, xp, dtype)
         return xp.triu(m, k=-1)
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_triu_posi(self, xp, dtype):
-        if self.shape == (2,):
-            pytest.skip("1D input array is not supported")
         m = testing.shaped_arange(self.shape, xp, dtype)
         return xp.triu(m, k=1)
 

@@ -981,6 +981,6 @@ def test_exception_tri():
     with pytest.raises(ValueError):
         dpnp.tri(1, -1)
     with pytest.raises(ValueError):
-        dpnp.tril(dpnp.ones(5))
+        dpnp.tril(dpnp.array(5))
     with pytest.raises(ValueError):
-        dpnp.triu(dpnp.ones(5))
+        dpnp.triu(dpnp.array(5))
