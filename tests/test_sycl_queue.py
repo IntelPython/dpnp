@@ -141,6 +141,7 @@ def test_empty_like(device_x, device_y):
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [
+        pytest.param("copy", ["x0"], {}),
         pytest.param("diag", ["x0"], {}),
         pytest.param("full_like", ["x0"], {"fill_value": 5}),
         pytest.param("geomspace", ["x0[0:3]", "8", "4"], {}),
@@ -225,6 +226,7 @@ def test_array_creation_follow_device_2d_array(func, args, kwargs, device):
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [
+        pytest.param("copy", ["x0"], {}),
         pytest.param("diag", ["x0"], {}),
         pytest.param("full", ["10", "x0[3]"], {}),
         pytest.param("full_like", ["x0"], {"fill_value": 5}),
@@ -532,8 +534,8 @@ def test_reduce_hypot(device):
         ),
         pytest.param(
             "dot",
-            [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
-            [[4.0, 4.0], [4.0, 4.0], [4.0, 4.0]],
+            [3.0, 4.0, 5.0],
+            [1.0, 2.0, 3.0],
         ),
         pytest.param(
             "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
@@ -840,8 +842,8 @@ def test_out_1in_1out(func, data, device):
         ),
         pytest.param(
             "dot",
-            [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
-            [[4.0, 4.0], [4.0, 4.0], [4.0, 4.0]],
+            [3.0, 4.0, 5.0],
+            [1.0, 2.0, 3.0],
         ),
         pytest.param(
             "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
