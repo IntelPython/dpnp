@@ -229,15 +229,6 @@ std::pair<sycl::event, sycl::event>
             "of the input matrix.");
     }
 
-    // auto tau_types = dpctl_td_ns::usm_ndarray_types();
-    // int tau_array_type_id =
-    //     tau_types.typenum_to_lookup_id(tau_array.get_typenum());
-
-    // if (tau_array_type_id != static_cast<int>(dpctl_td_ns::typenum_t::INT64))
-    // {
-    //     throw py::value_error("The type of 'tau_array' must be int64.");
-    // }
-
     char *a_array_data = a_array.get_data();
     char *tau_array_data = tau_array.get_data();
 

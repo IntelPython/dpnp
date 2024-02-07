@@ -1053,7 +1053,7 @@ def dpnp_qr_batch(a, mode="reduced"):
                 shape=batch_shape + (k, n),
                 dtype=res_type,
             )
-        elif mode == "raw":
+        else:  # mode=="raw"
             return (
                 dpnp.empty_like(
                     a,
@@ -1113,11 +1113,11 @@ def dpnp_qr_batch(a, mode="reduced"):
             dpctl.SyclEvent.wait_for(ht_list_ev)
             return r.reshape(batch_shape + r.shape[-2:])
 
-        if mode == "raw":
-            dpctl.SyclEvent.wait_for(ht_list_ev)
-            q = a_t.reshape(batch_shape + a_t.shape[-2:])
-            r = tau_h.reshape(batch_shape + tau_h.shape[-1:])
-            return (q, r)
+        # mode=="raw"
+        dpctl.SyclEvent.wait_for(ht_list_ev)
+        q = a_t.reshape(batch_shape + a_t.shape[-2:])
+        r = tau_h.reshape(batch_shape + tau_h.shape[-1:])
+        return (q, r)
 
     if mode == "complete" and m > n:
         mc = m
@@ -1278,9 +1278,9 @@ def dpnp_qr(a, mode="reduced"):
             dpctl.SyclEvent.wait_for(ht_list_ev)
             return r
 
-        if mode == "raw":
-            dpctl.SyclEvent.wait_for(ht_list_ev)
-            return (a_t, tau_h)
+        # mode == "raw":
+        dpctl.SyclEvent.wait_for(ht_list_ev)
+        return (a_t, tau_h)
 
     # mc is the total number of columns in the q matrix.
     # In `complete` mode, mc equals the number of rows.
