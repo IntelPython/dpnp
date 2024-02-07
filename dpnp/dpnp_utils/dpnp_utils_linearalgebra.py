@@ -231,21 +231,16 @@ def dpnp_dot(a, b, /, out=None, *, conjugate=False):
         b = _copy_array(b, dep_events_list, host_tasks_list, dtype=dot_dtype)
         if dpnp.issubdtype(res_dtype, dpnp.complexfloating):
             if conjugate:
-                ht_ev, _ = bi._dotc(
-                    exec_q,
-                    dpnp.get_usm_ndarray(a),
-                    dpnp.get_usm_ndarray(b),
-                    dpnp.get_usm_ndarray(result),
-                    dep_events_list,
-                )
+                dot_func = "_dotc"
             else:
-                ht_ev, _ = bi._dotu(
-                    exec_q,
-                    dpnp.get_usm_ndarray(a),
-                    dpnp.get_usm_ndarray(b),
-                    dpnp.get_usm_ndarray(result),
-                    dep_events_list,
-                )
+                dot_func = "_dotu"
+            ht_ev, _ = getattr(bi, dot_func)(
+                exec_q,
+                dpnp.get_usm_ndarray(a),
+                dpnp.get_usm_ndarray(b),
+                dpnp.get_usm_ndarray(result),
+                dep_events_list,
+            )
         else:
             ht_ev, _ = bi._dot(
                 exec_q,

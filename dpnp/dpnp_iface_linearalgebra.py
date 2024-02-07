@@ -121,8 +121,7 @@ def dot(a, b, out=None):
 
     """
 
-    dpnp.check_supported_arrays_type(a, scalar_type=True)
-    dpnp.check_supported_arrays_type(b, scalar_type=True)
+    dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
     if out is not None:
         dpnp.check_supported_arrays_type(out)
@@ -333,8 +332,7 @@ def matmul(
 
     """
 
-    dpnp.check_supported_arrays_type(x1)
-    dpnp.check_supported_arrays_type(x2)
+    dpnp.check_supported_arrays_type(x1, x2)
     if subok is False:
         raise NotImplementedError(
             "subok keyword argument is only supported by its default value."
@@ -468,6 +466,7 @@ def vdot(a, b):
     See Also
     --------
     :obj:`dpnp.dot` : Returns the dot product.
+    :obj:`dpnp.matmul` : Returns the matrix product.
 
     Examples
     --------
@@ -492,17 +491,17 @@ def vdot(a, b):
 
     """
 
-    dpnp.check_supported_arrays_type(a, scalar_type=True)
-    dpnp.check_supported_arrays_type(b, scalar_type=True)
+    dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
     if dpnp.isscalar(a) or dpnp.isscalar(b):
         if dpnp.isscalar(b) and a.size != 1:
             raise ValueError("The first array should be of size one.")
         if dpnp.isscalar(a) and b.size != 1:
             raise ValueError("The second array should be of size one.")
+        a_conj = numpy.conj(a) if dpnp.isscalar(a) else dpnp.conj(a)
         # TODO: investigate usage of axpy (axpy_batch) or scal
         # functions from BLAS here instead of dpnp.multiply
-        return dpnp.multiply(numpy.conj(a), b)
+        return dpnp.multiply(a_conj, b)
     elif a.ndim == 1 and b.ndim == 1:
         return dpnp_dot(a, b, out=None, conjugate=True)
     else:

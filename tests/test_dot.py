@@ -376,7 +376,7 @@ def test_multi_dot(type):
 class TestVdot:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_vdot_scalar(self, dtype):
-        a = numpy.array(3.5, dtype=dtype)
+        a = numpy.array([3.5], dtype=dtype)
         ia = dpnp.array(a)
         b = 2 + 3j
 
