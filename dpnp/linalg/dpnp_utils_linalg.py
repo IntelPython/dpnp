@@ -1107,8 +1107,6 @@ def dpnp_qr_batch(a, mode="reduced"):
     ht_list_ev = [ht_geqrf_batch_ev, a_ht_copy_ev]
 
     if mode in ["r", "raw"]:
-        dpctl.SyclEvent.wait_for(ht_list_ev)
-
         if mode == "r":
             r = a_t[..., :k].swapaxes(-2, -1)
             r = _triu_inplace(r, ht_list_ev, [geqrf_batch_ev])
@@ -1175,7 +1173,6 @@ def dpnp_qr_batch(a, mode="reduced"):
     )
 
     ht_list_ev.append(ht_lapack_ev)
-    dpctl.SyclEvent.wait_for(ht_list_ev)
 
     q = q[..., :mc, :].swapaxes(-2, -1)
     r = a_t[..., :mc].swapaxes(-2, -1)
