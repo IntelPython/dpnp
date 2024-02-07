@@ -8,7 +8,7 @@ import dpnp
 from .helper import assert_dtype_allclose, get_all_dtypes, get_complex_dtypes
 
 
-class Testdot:
+class TestDot:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_dot_ones(self, dtype):
         n = 10**5
@@ -371,3 +371,145 @@ def test_multi_dot(type):
     result = dpnp.linalg.multi_dot([a, b, c, d])
     expected = numpy.linalg.multi_dot([a1, b1, c1, d1])
     assert_array_equal(expected, result)
+
+
+class TestVdot:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_vdot_scalar(self, dtype):
+        a = numpy.array([3.5], dtype=dtype)
+        ia = dpnp.array(a)
+        b = 2 + 3j
+
+        result = dpnp.vdot(ia, b)
+        expected = numpy.vdot(a, b)
+        assert_allclose(result, expected)
+
+        result = dpnp.vdot(b, ia)
+        expected = numpy.vdot(b, a)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "array_info",
+        [
+            (1, 1, (), ()),
+            (10, 10, (10,), (10,)),
+            (12, 12, (4, 3), (3, 4)),
+            (12, 12, (4, 3), (12,)),
+            (60, 60, (5, 4, 3), (60,)),
+            (8, 8, (8,), (4, 2)),
+            (60, 60, (5, 3, 4), (3, 4, 5)),
+        ],
+        ids=[
+            "0d_0d",
+            "1d_1d",
+            "2d_2d",
+            "2d_1d",
+            "3d_1d",
+            "1d_2d",
+            "3d_3d",
+        ],
+    )
+    def test_vdot(self, dtype, array_info):
+        size1, size2, shape1, shape2 = array_info
+        a = numpy.array(
+            numpy.random.uniform(-5, 5, size1), dtype=dtype
+        ).reshape(shape1)
+        b = numpy.array(
+            numpy.random.uniform(-5, 5, size2), dtype=dtype
+        ).reshape(shape2)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vdot(ia, ib)
+        expected = numpy.vdot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize(
+        "array_info",
+        [
+            (1, 1, (), ()),
+            (10, 10, (10,), (10,)),
+            (12, 12, (4, 3), (3, 4)),
+            (12, 12, (4, 3), (12,)),
+            (60, 60, (5, 4, 3), (60,)),
+            (8, 8, (8,), (4, 2)),
+            (60, 60, (5, 3, 4), (3, 4, 5)),
+        ],
+        ids=[
+            "0d_0d",
+            "1d_1d",
+            "2d_2d",
+            "2d_1d",
+            "3d_1d",
+            "1d_2d",
+            "3d_3d",
+        ],
+    )
+    def test_vdot_complex(self, dtype, array_info):
+        size1, size2, shape1, shape2 = array_info
+        x11 = numpy.random.uniform(-5, 5, size1)
+        x12 = numpy.random.uniform(-5, 5, size1)
+        x21 = numpy.random.uniform(-5, 5, size2)
+        x22 = numpy.random.uniform(-5, 5, size2)
+        a = numpy.array(x11 + 1j * x12, dtype=dtype).reshape(shape1)
+        b = numpy.array(x21 + 1j * x22, dtype=dtype).reshape(shape2)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vdot(ia, ib)
+        expected = numpy.vdot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_vdot_strided(self, dtype):
+        a = numpy.arange(25, dtype=dtype)
+        b = numpy.arange(25, dtype=dtype)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vdot(ia[::3], ib[::3])
+        expected = numpy.vdot(a[::3], b[::3])
+        assert_dtype_allclose(result, expected)
+
+        result = dpnp.vdot(ia, ib[::-1])
+        expected = numpy.vdot(a, b[::-1])
+        assert_dtype_allclose(result, expected)
+
+        result = dpnp.vdot(ia[::-2], ib[::-2])
+        expected = numpy.vdot(a[::-2], b[::-2])
+        assert_dtype_allclose(result, expected)
+
+        result = dpnp.vdot(ia[::-5], ib[::-5])
+        expected = numpy.vdot(a[::-5], b[::-5])
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype1", get_all_dtypes())
+    @pytest.mark.parametrize("dtype2", get_all_dtypes())
+    def test_vdot_input_dtype_matrix(self, dtype1, dtype2):
+        a = numpy.array(numpy.random.uniform(-5, 5, 10), dtype=dtype1)
+        b = numpy.array(numpy.random.uniform(-5, 5, 10), dtype=dtype2)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vdot(ia, ib)
+        expected = numpy.vdot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    def test_vdot_error(self):
+        a = dpnp.ones(25)
+        b = dpnp.ones(24)
+        # size of input arrays differ
+        with pytest.raises(ValueError):
+            dpnp.vdot(a, b)
+
+        a = dpnp.ones(25)
+        b = 2
+        # The first array should be of size one
+        with pytest.raises(ValueError):
+            dpnp.vdot(a, b)
+
+        # The second array should be of size one
+        with pytest.raises(ValueError):
+            dpnp.vdot(b, a)

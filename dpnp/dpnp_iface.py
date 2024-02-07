@@ -205,7 +205,7 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True):
     return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
-def check_supported_arrays_type(*arrays, scalar_type=False):
+def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
     """
     Return ``True`` if each array has either type of scalar,
     :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
@@ -216,7 +216,9 @@ def check_supported_arrays_type(*arrays, scalar_type=False):
     arrays : {dpnp_array, usm_ndarray}
         Input arrays to check for supported types.
     scalar_type : {bool}, optional
-        A scalar type is also considered as supported if flag is True.
+        A scalar type is also considered as supported if flag is ``True``.
+    all_scalars : {bool}, optional
+        All the input arrays can be scalar if flag is ``True``.
 
     Returns
     -------
@@ -231,12 +233,21 @@ def check_supported_arrays_type(*arrays, scalar_type=False):
 
     """
 
+    any_is_array = False
     for a in arrays:
-        if scalar_type and dpnp.isscalar(a) or is_supported_array_type(a):
+        if is_supported_array_type(a):
+            any_is_array = True
+            continue
+        elif scalar_type and dpnp.isscalar(a):
             continue
 
         raise TypeError(
             "An array must be any of supported type, but got {}".format(type(a))
+        )
+
+    if len(arrays) > 1 and not (all_scalars or any_is_array):
+        raise TypeError(
+            "At least one input must be of supported array type, but got all scalars."
         )
     return True
 

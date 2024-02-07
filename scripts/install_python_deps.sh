@@ -11,7 +11,7 @@ echo ========================= Conda: remove mkl ===============================
 conda remove mkl --force -y || true
 
 echo ========================= PIP3: install prerequisites ==========================
-pip3 install pytest-valgrind
+pip3 install pytest-valgrind==0.2.0
 
 echo ========================= SW versions ==========================================
 conda list
