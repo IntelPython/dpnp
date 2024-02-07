@@ -1076,14 +1076,6 @@ class TestSvd:
             dpnp_diag_s = inp.zeros_like(dp_a, dtype=dp_s.dtype)
             for i in range(min(dp_a.shape[-2], dp_a.shape[-1])):
                 dpnp_diag_s[..., i, i] = dp_s[..., i]
-            # TODO: remove it when dpnp.dot is updated
-            # dpnp.dot does not support complex type
-            if inp.issubdtype(dp_a.dtype, inp.complexfloating):
-                reconstructed = numpy.dot(
-                    inp.asnumpy(dp_u),
-                    numpy.dot(inp.asnumpy(dpnp_diag_s), inp.asnumpy(dp_vt)),
-                )
-            else:
                 reconstructed = inp.dot(dp_u, inp.dot(dpnp_diag_s, dp_vt))
             # TODO: use assert dpnp.allclose() inside check_decomposition()
             # when it will support complex dtypes
