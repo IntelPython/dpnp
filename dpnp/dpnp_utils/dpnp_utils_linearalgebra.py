@@ -175,7 +175,7 @@ def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
             res_dtype = dtype
         else:
             raise TypeError(
-                f"Cannot cast ufunc 'matmul' output from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
+                f"Cannot cast from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
             )
 
     op_dtype = (
@@ -185,16 +185,18 @@ def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
     return op_dtype, res_dtype
 
 
-def dpnp_dot(a, b, /, out=None):
+def dpnp_dot(a, b, /, out=None, *, conjugate=False):
     """
     Return the dot product of two arrays.
 
     The routine that is used to perform the main calculation
-    depends on input array data types: 1) For integer and boolean data types,
+    depends on input arrays data type: 1) For integer and boolean data types,
     `dpctl.tensor.vecdot` form the Data Parallel Control library is used,
-    2) For floating point real-valued data types, `dot` routines from
-    BLAS library of OneMKL is used, and 3) For complex data types,
-    `dotu` routines from BLAS library of OneMKL is used.
+    2) For real-valued floating point data types, `dot` routines from
+    BLAS library of OneMKL are used, and 3) For complex data types,
+    `dotu` or `dotc` routines from BLAS library of OneMKL are used.
+    If `conjugate` is ``False``, `dotu` is used. Otherwise, `dotc` is used,
+    for which the first array is conjugated before calculating the dot product.
 
     """
 
@@ -228,7 +230,11 @@ def dpnp_dot(a, b, /, out=None):
         a = _copy_array(a, dep_events_list, host_tasks_list, dtype=dot_dtype)
         b = _copy_array(b, dep_events_list, host_tasks_list, dtype=dot_dtype)
         if dpnp.issubdtype(res_dtype, dpnp.complexfloating):
-            ht_ev, _ = bi._dotu(
+            if conjugate:
+                dot_func = "_dotc"
+            else:
+                dot_func = "_dotu"
+            ht_ev, _ = getattr(bi, dot_func)(
                 exec_q,
                 dpnp.get_usm_ndarray(a),
                 dpnp.get_usm_ndarray(b),
@@ -253,7 +259,7 @@ def dpnp_dot(a, b, /, out=None):
     if dot_dtype != res_dtype:
         result = result.astype(res_dtype, copy=False)
 
-    # NumPy does not allow casting even if it is safe
+    # numpy.dot does not allow casting even if it is safe
     return dpnp.get_result_array(result, out, casting="no")
 
 
