@@ -58,6 +58,9 @@
    .. automethod:: choose
 
 
+   .. automethod:: clip
+
+
    .. automethod:: conj
 
 
@@ -119,6 +122,9 @@
 
 
    .. automethod:: round
+
+
+   .. automethod:: sort
 
 
    .. automethod:: squeeze

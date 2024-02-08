@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['value_5ftype_5fof_0',['value_type_of',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of.html',1,'dpnp::backend::ext::lapack::helper']]],
-  ['value_5ftype_5fof_3c_20std_3a_3acomplex_3c_20t_20_3e_20_3e_1',['value_type_of&lt; std::complex&lt; T &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html',1,'dpnp::backend::ext::lapack::helper']]]
+  ['ungqrbatchtypepairsupportfactory_0',['UngqrBatchTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_ungqr_batch_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
+  ['ungqrtypepairsupportfactory_1',['UngqrTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
+  ['usmarraymatcher_2',['UsmArrayMatcher',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_usm_array_matcher.html',1,'dpnp::backend::ext::sycl_ext']]]
 ];
