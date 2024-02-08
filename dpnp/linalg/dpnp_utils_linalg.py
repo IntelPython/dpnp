@@ -39,6 +39,7 @@ __all__ = [
     "dpnp_det",
     "dpnp_eigh",
     "dpnp_inv",
+    "dpnp_pinv",
     "dpnp_slogdet",
     "dpnp_solve",
     "dpnp_svd",
@@ -953,6 +954,36 @@ def dpnp_inv(a):
     a_ht_copy_ev.wait()
 
     return b_f
+
+
+def dpnp_pinv(a, rcond=1e-15, hermitian=False):
+    """
+    dpnp_pinv(a, rcond=1e-15, hermitian=False):
+
+    Compute the Moore-Penrose pseudoinverse of `a` matrix.
+
+    It computes a pseudoinverse of a matrix `a`, which is a generalization
+    of the inverse matrix with Singular Value Decomposition (SVD).
+
+    """
+
+    rcond = dpnp.array(rcond, device=a.sycl_device, sycl_queue=a.sycl_queue)
+    if a.size == 0:
+        res_type = _common_type(a)
+        m, n = a.shape[-2:]
+        if m == 0 or n == 0:
+            res_type = a.dtype
+        return dpnp.empty_like(a, shape=(a.shape[:-2] + (n, m)), dtype=res_type)
+
+    u, s, vt = dpnp_svd(a.conj(), full_matrices=False, hermitian=hermitian)
+
+    # discard small singular values
+    cutoff = rcond * dpnp.amax(s, axis=-1)
+    leq = s <= cutoff[..., None]
+    dpnp.reciprocal(s, out=s)
+    s[leq] = 0
+
+    return dpnp.matmul(vt.swapaxes(-2, -1), s[..., None] * u.swapaxes(-2, -1))
 
 
 def dpnp_solve(a, b):
