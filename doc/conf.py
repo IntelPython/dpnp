@@ -55,7 +55,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinxcontrib.googleanalytics",
-    "sphinx.ext.mathjax",
 ]
 
 googleanalytics_id = "G-554F8VNE28"
