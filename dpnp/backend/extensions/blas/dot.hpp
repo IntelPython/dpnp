@@ -46,6 +46,13 @@ extern std::pair<sycl::event, sycl::event>
         const std::vector<sycl::event> &depends);
 
 extern std::pair<sycl::event, sycl::event>
+    dotc(sycl::queue &exec_q,
+         dpctl::tensor::usm_ndarray vectorA,
+         dpctl::tensor::usm_ndarray vectorB,
+         dpctl::tensor::usm_ndarray result,
+         const std::vector<sycl::event> &depends);
+
+extern std::pair<sycl::event, sycl::event>
     dotu(sycl::queue &exec_q,
          dpctl::tensor::usm_ndarray vectorA,
          dpctl::tensor::usm_ndarray vectorB,
@@ -53,6 +60,7 @@ extern std::pair<sycl::event, sycl::event>
          const std::vector<sycl::event> &depends);
 
 extern void init_dot_dispatch_table(void);
+extern void init_dotc_dispatch_table(void);
 extern void init_dotu_dispatch_table(void);
 } // namespace blas
 } // namespace ext

@@ -36,6 +36,41 @@ from dpnp.dpnp_utils import get_usm_allocations
 __all__ = ["dpnp_dot", "dpnp_matmul"]
 
 
+def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
+    """
+    Create the result array.
+
+    If `out` is not ``None`` and its features match the specified `shape`, `dtype,
+    `usm_type`, and `sycl_queue` and it is C-contiguous or F-contiguous and
+    does not have any memory overlap with `x1` and `x2`, `out` itself is returned.
+    If these conditions are not statisfied, an empty array is returned with the
+    specified `shape`, `dtype, `usm_type`, and `sycl_queue`.
+    """
+
+    if out is not None:
+        x1_usm = dpnp.get_usm_ndarray(x1)
+        x2_usm = dpnp.get_usm_ndarray(x2)
+        out_usm = dpnp.get_usm_ndarray(out)
+
+        if (
+            out.dtype == dtype
+            and out.shape == shape
+            and out.usm_type == usm_type
+            and out.sycl_queue == sycl_queue
+            and (out.flags.c_contiguous or out.flags.f_contiguous)
+            and not ti._array_overlap(x1_usm, out_usm)
+            and not ti._array_overlap(x2_usm, out_usm)
+        ):
+            return out
+
+    return dpnp.empty(
+        shape,
+        dtype=dtype,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
+
+
 def _copy_array(x, dep_events, host_events, contig_copy=False, dtype=None):
     """
     Creating a copy of input array if needed.
@@ -175,7 +210,7 @@ def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
             res_dtype = dtype
         else:
             raise TypeError(
-                f"Cannot cast ufunc 'matmul' output from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
+                f"Cannot cast from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
             )
 
     op_dtype = (
@@ -185,16 +220,18 @@ def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
     return op_dtype, res_dtype
 
 
-def dpnp_dot(a, b, /, out=None):
+def dpnp_dot(a, b, /, out=None, *, conjugate=False):
     """
     Return the dot product of two arrays.
 
     The routine that is used to perform the main calculation
-    depends on input array data types: 1) For integer and boolean data types,
+    depends on input arrays data type: 1) For integer and boolean data types,
     `dpctl.tensor.vecdot` form the Data Parallel Control library is used,
-    2) For floating point real-valued data types, `dot` routines from
-    BLAS library of OneMKL is used, and 3) For complex data types,
-    `dotu` routines from BLAS library of OneMKL is used.
+    2) For real-valued floating point data types, `dot` routines from
+    BLAS library of OneMKL are used, and 3) For complex data types,
+    `dotu` or `dotc` routines from BLAS library of OneMKL are used.
+    If `conjugate` is ``False``, `dotu` is used. Otherwise, `dotc` is used,
+    for which the first array is conjugated before calculating the dot product.
 
     """
 
@@ -212,14 +249,9 @@ def dpnp_dot(a, b, /, out=None):
         a, b, dtype=None, casting="no", sycl_queue=exec_q
     )
 
-    # create result array
-    result = dpnp.empty(
-        (),
-        dtype=dot_dtype,
-        usm_type=res_usm_type,
-        sycl_queue=exec_q,
+    result = _create_result_array(
+        a, b, out, (), dot_dtype, res_usm_type, exec_q
     )
-
     # input arrays should have the proper data type
     dep_events_list = []
     host_tasks_list = []
@@ -228,7 +260,11 @@ def dpnp_dot(a, b, /, out=None):
         a = _copy_array(a, dep_events_list, host_tasks_list, dtype=dot_dtype)
         b = _copy_array(b, dep_events_list, host_tasks_list, dtype=dot_dtype)
         if dpnp.issubdtype(res_dtype, dpnp.complexfloating):
-            ht_ev, _ = bi._dotu(
+            if conjugate:
+                dot_func = "_dotc"
+            else:
+                dot_func = "_dotu"
+            ht_ev, _ = getattr(bi, dot_func)(
                 exec_q,
                 dpnp.get_usm_ndarray(a),
                 dpnp.get_usm_ndarray(b),
@@ -253,7 +289,7 @@ def dpnp_dot(a, b, /, out=None):
     if dot_dtype != res_dtype:
         result = result.astype(res_dtype, copy=False)
 
-    # NumPy does not allow casting even if it is safe
+    # numpy.dot does not allow casting even if it is safe
     return dpnp.get_result_array(result, out, casting="no")
 
 
@@ -361,13 +397,10 @@ def dpnp_matmul(
         x2_shape = x2.shape
         res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
 
-    # calculate results
-    result = dpnp.empty(
-        res_shape,
-        dtype=gemm_dtype,
-        usm_type=res_usm_type,
-        sycl_queue=exec_q,
+    result = _create_result_array(
+        x1, x2, out, res_shape, gemm_dtype, res_usm_type, exec_q
     )
+    # calculate result
     if result.size == 0:
         pass
     elif x1.size == 0 or x2.size == 0:
