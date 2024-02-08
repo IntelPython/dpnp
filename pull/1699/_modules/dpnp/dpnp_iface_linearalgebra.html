@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.13.1dev3+24.ga9d552f9b5 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.13.1dev3+29.g6362607cd2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=de31dde2"></script>
+        <script src="../../_static/documentation_options.js?v=aca11e64"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev3+24.ga9d552f9b5
+                0.13.1dev3+29.g6362607cd2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -159,9 +159,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray, scalar}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        First input array. Both inputs `a` and `b` can not be scalars at the same time.</span>
-<span class="sd">    b : {dpnp_array, usm_ndarray, scalar}</span>
+<span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        Second input array. Both inputs `a` and `b` can not be scalars at the same time.</span>
 <span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
@@ -526,9 +526,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray, scalar}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        First input array. Both inputs `a` and `b` can not be scalars at the same time.</span>
-<span class="sd">    b : {dpnp_array, usm_ndarray, scalar}</span>
+<span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        Second input array. Both inputs `a` and `b` can not be scalars at the same time.</span>
 <span class="sd">    axes : int or (2,) array_like</span>
 <span class="sd">        * integer_like</span>
@@ -615,7 +615,7 @@
         <span class="nb">iter</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Axes must be an integer.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Axes must be an integer.&quot;</span><span class="p">)</span>
         <span class="n">axes_a</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">axes</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
         <span class="n">axes_b</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">axes</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
@@ -677,11 +677,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray, scalar}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        First input array. Both inputs `a` and `b` can not be</span>
 <span class="sd">        scalars at the same time. If `a` is complex, the complex</span>
 <span class="sd">        conjugate is taken before the calculation of the dot product.</span>
-<span class="sd">    b : {dpnp_array, usm_ndarray, scalar}</span>
+<span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        Second input array. Both inputs `a` and `b` can not be</span>
 <span class="sd">        scalars at the same time.</span>
 
