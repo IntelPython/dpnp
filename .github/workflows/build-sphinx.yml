@@ -103,7 +103,7 @@ jobs:
       - name: Install sphinx dependencies
         run: |
           conda install sphinx sphinx_rtd_theme
-          pip install sphinxcontrib-googleanalytics==0.4
+          pip install --require-hashes sphinxcontrib-googleanalytics==0.4
 
       - name: Install dpnp dependencies
         run: |

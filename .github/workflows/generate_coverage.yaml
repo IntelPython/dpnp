@@ -79,7 +79,7 @@ jobs:
       - name: Install coverall dependencies
         run: |
           sudo gem install coveralls-lcov
-          pip install coveralls==3.3.1
+          pip install --require-hashes coveralls==3.3.1
 
       - name: Upload coverage data to coveralls.io
         run: |
@@ -102,7 +102,7 @@ jobs:
     steps:
     - name: Finished
       run: |
-        pip3 install --upgrade coveralls==3.3.1
+        pip3 install --require-hashes --upgrade coveralls==3.3.1
         coveralls --service=github --finish
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
