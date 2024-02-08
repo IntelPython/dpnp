@@ -94,6 +94,9 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::index_on_axis< idx, DispatchT, Matcher, Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis.html", null ],
     [ "dpnp::backend::ext::sycl_ext::index_on_axis< idx, DispatchT, Matcher, std::tuple< AxisData... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis_3_01idx_00_01_dispatch_t_00_01_matc014615cac12293ef2d15243fdee2c449.html", null ],
     [ "dpnp::backend::ext::sycl_ext::index_on_axis< idx, DispatchT, Matcher, std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis_3_01idx_00_01_dispatch_t_00_01_matcafd2cf8593c2aa4d8a9103f019cc37b1.html", null ],
+    [ "std::integral_constant", null, [
+      [ "is_complex< _Tp >", "structis__complex.html", null ]
+    ] ],
     [ "dpnp::backend::ext::vm::LnContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ln_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::LnOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ln_output_type.html", null ],
     [ "dpnp::backend::ext::vm::Log10ContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_log10_contig_factory.html", null ],
