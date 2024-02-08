@@ -13,7 +13,7 @@ requirements:
     host:
       - python
       - setuptools
-      - numpy >=1.19,<1.25a0
+      - numpy >=1.19,<1.27a0
       - cython
       - cmake >=3.21
       - ninja
@@ -58,6 +58,7 @@ about:
     home: https://github.com/IntelPython/dpnp
     license: BSD-2-Clause
     license_file: LICENSE.txt
+    summary: 'Data Parallel Extension for NumPy'
     description: |
         <strong>LEGAL NOTICE: Use of this software package is subject to the
         software license agreement (as set forth above, in the license section of
@@ -67,3 +68,11 @@ about:
         <br/><br/>
         EULA: <a href="https://opensource.org/licenses/BSD-2-Clause" target="_blank">BSD-2-Clause</a>
         <br/><br/>
+
+extra:
+    recipe-maintainers:
+        - oleksandr-pavlyk
+        - antonwolfy
+        - npolina4
+        - vtavana
+        - vlad-perevezentsev

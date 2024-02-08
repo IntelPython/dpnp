@@ -77,6 +77,61 @@ class TestMatmul(unittest.TestCase):
     *testing.product(
         {
             "shape_pair": [
+                # dot test
+                ((2, 3), (3, 4), (2, 4)),
+                # ((0,), (0,), (0,)),
+                # matmul test
+                ((5, 3, 2), (5, 2, 4), (5, 3, 4)),
+                ((0, 3, 2), (0, 2, 4), (0, 3, 4)),
+            ],
+        }
+    )
+)
+class TestMatmulOut(unittest.TestCase):
+    @testing.for_all_dtypes(name="dtype1")
+    @testing.for_all_dtypes(name="dtype2")
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-3, accept_error=TypeError  # required for uint8
+    )
+    def test_cupy_matmul_noncontiguous(self, xp, dtype1, dtype2):
+        x1 = testing.shaped_arange(self.shape_pair[0], xp, dtype1)
+        x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype2)
+        out = xp.zeros(self.shape_pair[2], dtype=dtype1)[::-1]
+        ret = xp.matmul(x1, x2, out=out)
+        assert ret is out
+        return ret
+
+    @testing.for_all_dtypes(name="dtype1")
+    @testing.for_all_dtypes(name="dtype2")
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
+    def test_cupy_matmul_out_cast(self, xp, dtype1, dtype2):
+        x1 = testing.shaped_arange(self.shape_pair[0], xp, dtype1)
+        x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype2)
+        out = xp.zeros(self.shape_pair[2], dtype=bool)
+        ret = xp.matmul(x1, x2, out=out, casting="unsafe")
+        assert ret is out
+        return ret
+
+
+class TestMatmulOutOverlap:
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (900, 900),
+            (2, 600, 600),
+        ],
+    )
+    @testing.for_dtypes([numpy.int32, numpy.float64])
+    @testing.numpy_cupy_allclose(rtol=1e-5, atol=1e-5)
+    def test_overlap_both(self, xp, dtype, shape):
+        a = xp.ones(shape, dtype=dtype)
+        return xp.matmul(a, a, out=a)
+
+
+@testing.parameterize(
+    *testing.product(
+        {
+            "shape_pair": [
                 ((6, 5, 3, 2), (6, 5, 2, 4)),
                 ((6, 5, 3, 2), (6, 1, 2, 4)),
                 ((6, 5, 3, 2), (1, 5, 2, 4)),

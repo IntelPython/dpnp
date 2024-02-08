@@ -880,6 +880,42 @@ def test_logspace_axis(axis):
     assert_dtype_allclose(func(dpnp), func(numpy))
 
 
+@pytest.mark.parametrize(
+    "data", [(), 1, (2, 3), [4], numpy.array(5), numpy.array([6, 7])]
+)
+def test_ascontiguousarray(data):
+    result = dpnp.ascontiguousarray(data)
+    expected = numpy.ascontiguousarray(data)
+    assert_dtype_allclose(result, expected)
+    assert result.shape == expected.shape
+
+
+@pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
+def test_ascontiguousarray1(data):
+    result = dpnp.ascontiguousarray(dpnp.array(data))
+    expected = numpy.ascontiguousarray(numpy.array(data))
+    assert_dtype_allclose(result, expected)
+    assert result.shape == expected.shape
+
+
+@pytest.mark.parametrize(
+    "data", [(), 1, (2, 3), [4], numpy.array(5), numpy.array([6, 7])]
+)
+def test_asfortranarray(data):
+    result = dpnp.asfortranarray(data)
+    expected = numpy.asfortranarray(data)
+    assert_dtype_allclose(result, expected)
+    assert result.shape == expected.shape
+
+
+@pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
+def test_asfortranarray1(data):
+    result = dpnp.asfortranarray(dpnp.array(data))
+    expected = numpy.asfortranarray(numpy.array(data))
+    assert_dtype_allclose(result, expected)
+    assert result.shape == expected.shape
+
+
 def test_meshgrid_raise_error():
     a = numpy.array([1, 2, 3, 4])
     with pytest.raises(TypeError):

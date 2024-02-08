@@ -74,17 +74,17 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.12.0
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
         with:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 0
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v3.0.1
+        uses: conda-incubator/setup-miniconda@11b562958363ec5770fef326fe8ef0366f8cbf8a # v3.0.1
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -105,7 +105,7 @@ jobs:
         run: conda install conda-build=3.28.4
 
       - name: Cache conda packages
-        uses: actions/cache@v4
+        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -120,7 +120,7 @@ jobs:
         run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.3.0
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
@@ -153,7 +153,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4.1.1
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -164,7 +164,7 @@ jobs:
           tar -xvf ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.tar.bz2 -C ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v3.0.1
+        uses: conda-incubator/setup-miniconda@11b562958363ec5770fef326fe8ef0366f8cbf8a # v3.0.1
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -196,7 +196,7 @@ jobs:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
       - name: Cache conda packages
-        uses: actions/cache@v4
+        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
         env:
           CACHE_NUMBER: 1 # Increase to reset cache
         with:
@@ -254,7 +254,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4.1.1
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -274,7 +274,7 @@ jobs:
           dir ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v3.0.1
+        uses: conda-incubator/setup-miniconda@11b562958363ec5770fef326fe8ef0366f8cbf8a # v3.0.1
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -320,7 +320,7 @@ jobs:
         run: more lockfile
 
       - name: Cache conda packages
-        uses: actions/cache@v4
+        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -388,12 +388,12 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4.1.1
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v3.0.1
+        uses: conda-incubator/setup-miniconda@11b562958363ec5770fef326fe8ef0366f8cbf8a # v3.0.1
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -416,7 +416,7 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
-      - uses: conda-incubator/setup-miniconda@v3.0.1
+      - uses: conda-incubator/setup-miniconda@11b562958363ec5770fef326fe8ef0366f8cbf8a # v3.0.1
         with:
           run-post: false
           channel-priority: "disabled"
@@ -427,7 +427,7 @@ jobs:
         run: conda install anaconda-client
 
       - name: Checkout repo
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0

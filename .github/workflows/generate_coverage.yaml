@@ -25,17 +25,17 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.12.0
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
         with:
           access_token: ${{ github.token }}
 
       - name: Checkout repo
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 0
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v3.0.1
+        uses: conda-incubator/setup-miniconda@11b562958363ec5770fef326fe8ef0366f8cbf8a # v3.0.1
         with:
           auto-update-conda: true
           python-version: ${{ env.python-ver }}
@@ -60,7 +60,7 @@ jobs:
 
       - name: Build dpnp with coverage
         id: build_coverage
-        uses: nick-fields/retry@v2.9.0
+        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
           shell: bash
           timeout_minutes: 60
@@ -79,7 +79,7 @@ jobs:
       - name: Install coverall dependencies
         run: |
           sudo gem install coveralls-lcov
-          pip install coveralls==3.2.0
+          pip install coveralls==3.3.1
 
       - name: Upload coverage data to coveralls.io
         run: |
@@ -102,7 +102,7 @@ jobs:
     steps:
     - name: Finished
       run: |
-        pip3 install --upgrade coveralls
-        coveralls --finish
+        pip3 install --upgrade coveralls==3.3.1
+        coveralls --service=github --finish
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
