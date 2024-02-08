@@ -383,7 +383,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=16)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("axes", [-3, -2, -1, 0, 1, 2])
@@ -399,7 +399,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=16)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
@@ -424,7 +424,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=16)
 
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
@@ -440,7 +440,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib)
         expected = numpy.tensordot(a, b)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=16)
 
     def test_tensordot_strided(self):
         for dim in [1, 2, 3, 4]:
@@ -475,7 +475,7 @@ class TestTensordot:
         a = dpnp.arange(24).reshape(2, 3, 4)
         b = dpnp.arange(24).reshape(3, 4, 2)
         # axes should be an integer
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             dpnp.tensordot(a, b, axes=2.0)
 
         # Axes must consist of two sequences

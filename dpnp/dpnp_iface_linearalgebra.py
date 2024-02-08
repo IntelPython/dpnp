@@ -67,9 +67,9 @@ def dot(a, b, out=None):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray, scalar}
+    a : {dpnp.ndarray, usm_ndarray, scalar}
         First input array. Both inputs `a` and `b` can not be scalars at the same time.
-    b : {dpnp_array, usm_ndarray, scalar}
+    b : {dpnp.ndarray, usm_ndarray, scalar}
         Second input array. Both inputs `a` and `b` can not be scalars at the same time.
     out : {dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
@@ -413,9 +413,9 @@ def tensordot(a, b, axes=2):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray, scalar}
+    a : {dpnp.ndarray, usm_ndarray, scalar}
         First input array. Both inputs `a` and `b` can not be scalars at the same time.
-    b : {dpnp_array, usm_ndarray, scalar}
+    b : {dpnp.ndarray, usm_ndarray, scalar}
         Second input array. Both inputs `a` and `b` can not be scalars at the same time.
     axes : int or (2,) array_like
         * integer_like
@@ -502,7 +502,7 @@ def tensordot(a, b, axes=2):
         iter(axes)
     except Exception:
         if not isinstance(axes, int):
-            raise ValueError("Axes must be an integer.")
+            raise TypeError("Axes must be an integer.")
         axes_a = tuple(range(-axes, 0))
         axes_b = tuple(range(0, axes))
     else:
@@ -561,11 +561,11 @@ def vdot(a, b):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray, scalar}
+    a : {dpnp.ndarray, usm_ndarray, scalar}
         First input array. Both inputs `a` and `b` can not be
         scalars at the same time. If `a` is complex, the complex
         conjugate is taken before the calculation of the dot product.
-    b : {dpnp_array, usm_ndarray, scalar}
+    b : {dpnp.ndarray, usm_ndarray, scalar}
         Second input array. Both inputs `a` and `b` can not be
         scalars at the same time.
 

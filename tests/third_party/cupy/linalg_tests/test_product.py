@@ -415,8 +415,6 @@ class TestProduct:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestProductZeroLength(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
