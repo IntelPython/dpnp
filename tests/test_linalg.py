@@ -1,7 +1,12 @@
 import dpctl
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_array_equal, assert_raises
+from numpy.testing import (
+    assert_allclose,
+    assert_almost_equal,
+    assert_array_equal,
+    assert_raises,
+)
 
 import dpnp as inp
 from tests.third_party.cupy import testing
@@ -308,8 +313,8 @@ class TestDet:
         a_np = numpy.array(matrix, dtype="float32")
         a_dp = inp.array(a_np)
 
-        expected = numpy.linalg.slogdet(a_np)
-        result = inp.linalg.slogdet(a_dp)
+        expected = numpy.linalg.det(a_np)
+        result = inp.linalg.det(a_dp)
 
         assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
@@ -672,88 +677,141 @@ def test_norm3(array, ord, axis):
     assert_allclose(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize(
-    "shape",
-    [(2, 2), (3, 4), (5, 3), (16, 16), (0, 0), (0, 2), (2, 0)],
-    ids=["(2,2)", "(3,4)", "(5,3)", "(16,16)", "(0,0)", "(0,2)", "(2,0)"],
-)
-@pytest.mark.parametrize(
-    "mode", ["complete", "reduced"], ids=["complete", "reduced"]
-)
-def test_qr(type, shape, mode):
-    a = numpy.arange(shape[0] * shape[1], dtype=type).reshape(shape)
-    ia = inp.array(a)
-
-    np_q, np_r = numpy.linalg.qr(a, mode)
-    dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
-
-    support_aspect64 = has_support_aspect64()
-
-    if support_aspect64:
-        assert dpnp_q.dtype == np_q.dtype
-        assert dpnp_r.dtype == np_r.dtype
-    assert dpnp_q.shape == np_q.shape
-    assert dpnp_r.shape == np_r.shape
-
-    tol = 1e-6
-    if type == inp.float32:
-        tol = 1e-02
-    elif not support_aspect64 and type in (inp.int32, inp.int64, None):
-        tol = 1e-02
-
-    # check decomposition
-    assert_allclose(
-        ia,
-        inp.dot(dpnp_q, dpnp_r),
-        rtol=tol,
-        atol=tol,
+class TestQr:
+    # TODO: New packages that fix issue CMPLRLLVM-53771 are only available in internal CI.
+    # Skip the tests on cpu until these packages are available for the external CI.
+    # Specifically dpcpp_linux-64>=2024.1.0
+    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (3, 4), (5, 3), (16, 16), (2, 2, 2), (2, 4, 2), (2, 2, 4)],
+        ids=[
+            "(2, 2)",
+            "(3, 4)",
+            "(5, 3)",
+            "(16, 16)",
+            "(2, 2, 2)",
+            "(2, 4, 2)",
+            "(2, 2, 4)",
+        ],
     )
+    @pytest.mark.parametrize(
+        "mode",
+        ["r", "raw", "complete", "reduced"],
+        ids=["r", "raw", "complete", "reduced"],
+    )
+    def test_qr(self, dtype, shape, mode):
+        a = numpy.random.rand(*shape).astype(dtype)
+        ia = inp.array(a)
 
-    # NP change sign for comparison
-    ncols = min(a.shape[0], a.shape[1])
-    for i in range(ncols):
-        j = numpy.where(numpy.abs(np_q[:, i]) > tol)[0][0]
-        if np_q[j, i] * dpnp_q[j, i] < 0:
-            np_q[:, i] = -np_q[:, i]
-            np_r[i, :] = -np_r[i, :]
+        if mode == "r":
+            np_r = numpy.linalg.qr(a, mode)
+            dpnp_r = inp.linalg.qr(ia, mode)
+        else:
+            np_q, np_r = numpy.linalg.qr(a, mode)
+            dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
 
-        if numpy.any(numpy.abs(np_r[i, :]) > tol):
-            assert_allclose(
-                inp.asnumpy(dpnp_q)[:, i], np_q[:, i], rtol=tol, atol=tol
-            )
+            # check decomposition
+            if mode in ("complete", "reduced"):
+                if a.ndim == 2:
+                    assert_almost_equal(
+                        inp.dot(dpnp_q, dpnp_r),
+                        a,
+                        decimal=5,
+                    )
+                else:  # a.ndim > 2
+                    assert_almost_equal(
+                        inp.matmul(dpnp_q, dpnp_r),
+                        a,
+                        decimal=5,
+                    )
+            else:  # mode=="raw"
+                assert_dtype_allclose(dpnp_q, np_q)
 
-    assert_allclose(dpnp_r, np_r, rtol=tol, atol=tol)
+        if mode in ("raw", "r"):
+            assert_dtype_allclose(dpnp_r, np_r)
 
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(0, 0), (0, 2), (2, 0), (2, 0, 3), (2, 3, 0), (0, 2, 3)],
+        ids=[
+            "(0, 0)",
+            "(0, 2)",
+            "(2 ,0)",
+            "(2, 0, 3)",
+            "(2, 3, 0)",
+            "(0, 2, 3)",
+        ],
+    )
+    @pytest.mark.parametrize(
+        "mode",
+        ["r", "raw", "complete", "reduced"],
+        ids=["r", "raw", "complete", "reduced"],
+    )
+    def test_qr_empty(self, dtype, shape, mode):
+        a = numpy.empty(shape, dtype=dtype)
+        ia = inp.array(a)
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-def test_qr_not_2D():
-    a = numpy.arange(12, dtype=numpy.float32).reshape((3, 2, 2))
-    ia = inp.array(a)
+        if mode == "r":
+            np_r = numpy.linalg.qr(a, mode)
+            dpnp_r = inp.linalg.qr(ia, mode)
+        else:
+            np_q, np_r = numpy.linalg.qr(a, mode)
+            dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
 
-    np_q, np_r = numpy.linalg.qr(a)
-    dpnp_q, dpnp_r = inp.linalg.qr(ia)
+            assert_dtype_allclose(dpnp_q, np_q)
 
-    assert dpnp_q.dtype == np_q.dtype
-    assert dpnp_r.dtype == np_r.dtype
-    assert dpnp_q.shape == np_q.shape
-    assert dpnp_r.shape == np_r.shape
+        assert_dtype_allclose(dpnp_r, np_r)
 
-    assert_allclose(ia, inp.matmul(dpnp_q, dpnp_r))
+    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
+    @pytest.mark.parametrize(
+        "mode",
+        ["r", "raw", "complete", "reduced"],
+        ids=["r", "raw", "complete", "reduced"],
+    )
+    def test_qr_strides(self, mode):
+        a = numpy.random.rand(5, 5)
+        ia = inp.array(a)
 
-    a = numpy.empty((0, 3, 2), dtype=numpy.float32)
-    ia = inp.array(a)
+        # positive strides
+        if mode == "r":
+            np_r = numpy.linalg.qr(a[::2, ::2], mode)
+            dpnp_r = inp.linalg.qr(ia[::2, ::2], mode)
+        else:
+            np_q, np_r = numpy.linalg.qr(a[::2, ::2], mode)
+            dpnp_q, dpnp_r = inp.linalg.qr(ia[::2, ::2], mode)
 
-    np_q, np_r = numpy.linalg.qr(a)
-    dpnp_q, dpnp_r = inp.linalg.qr(ia)
+            assert_dtype_allclose(dpnp_q, np_q)
 
-    assert dpnp_q.dtype == np_q.dtype
-    assert dpnp_r.dtype == np_r.dtype
-    assert dpnp_q.shape == np_q.shape
-    assert dpnp_r.shape == np_r.shape
+        assert_dtype_allclose(dpnp_r, np_r)
 
-    assert_allclose(ia, inp.matmul(dpnp_q, dpnp_r))
+        # negative strides
+        if mode == "r":
+            np_r = numpy.linalg.qr(a[::-2, ::-2], mode)
+            dpnp_r = inp.linalg.qr(ia[::-2, ::-2], mode)
+        else:
+            np_q, np_r = numpy.linalg.qr(a[::-2, ::-2], mode)
+            dpnp_q, dpnp_r = inp.linalg.qr(ia[::-2, ::-2], mode)
+
+            assert_dtype_allclose(dpnp_q, np_q)
+
+        assert_dtype_allclose(dpnp_r, np_r)
+
+    def test_qr_errors(self):
+        a_dp = inp.array([[1, 2], [3, 5]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.qr, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.qr, a_dp_ndim_1)
+
+        # invalid mode
+        assert_raises(ValueError, inp.linalg.qr, a_dp, "c")
 
 
 class TestSolve:
@@ -1018,14 +1076,6 @@ class TestSvd:
             dpnp_diag_s = inp.zeros_like(dp_a, dtype=dp_s.dtype)
             for i in range(min(dp_a.shape[-2], dp_a.shape[-1])):
                 dpnp_diag_s[..., i, i] = dp_s[..., i]
-            # TODO: remove it when dpnp.dot is updated
-            # dpnp.dot does not support complex type
-            if inp.issubdtype(dp_a.dtype, inp.complexfloating):
-                reconstructed = numpy.dot(
-                    inp.asnumpy(dp_u),
-                    numpy.dot(inp.asnumpy(dpnp_diag_s), inp.asnumpy(dp_vt)),
-                )
-            else:
                 reconstructed = inp.dot(dp_u, inp.dot(dpnp_diag_s, dp_vt))
             # TODO: use assert dpnp.allclose() inside check_decomposition()
             # when it will support complex dtypes

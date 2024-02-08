@@ -201,38 +201,31 @@ class TestSVD(unittest.TestCase):
         # reconstruct the matrix
         k = s_cpu.shape[-1]
 
-        # dpnp.dot/matmul does not support complex type and unstable on cpu
-        # TODO: remove it and use xp.dot/matmul when dpnp.dot/matmul is updated
-        u_gpu = u_gpu.asnumpy()
-        vh_gpu = vh_gpu.asnumpy()
-        s_gpu = s_gpu.asnumpy()
-        xp = numpy
-
         if len(shape) == 2:
             if self.full_matrices:
-                a_gpu_usv = numpy.dot(u_gpu[:, :k] * s_gpu, vh_gpu[:k, :])
+                a_gpu_usv = cupy.dot(u_gpu[:, :k] * s_gpu, vh_gpu[:k, :])
             else:
-                a_gpu_usv = numpy.dot(u_gpu * s_gpu, vh_gpu)
+                a_gpu_usv = cupy.dot(u_gpu * s_gpu, vh_gpu)
         else:
             if self.full_matrices:
-                a_gpu_usv = numpy.matmul(
+                a_gpu_usv = cupy.matmul(
                     u_gpu[..., :k] * s_gpu[..., None, :], vh_gpu[..., :k, :]
                 )
             else:
-                a_gpu_usv = numpy.matmul(u_gpu * s_gpu[..., None, :], vh_gpu)
+                a_gpu_usv = cupy.matmul(u_gpu * s_gpu[..., None, :], vh_gpu)
         testing.assert_allclose(a_gpu, a_gpu_usv, rtol=1e-4, atol=1e-4)
 
         # assert unitary
         u_len = u_gpu.shape[-1]
         vh_len = vh_gpu.shape[-2]
         testing.assert_allclose(
-            xp.matmul(u_gpu.swapaxes(-1, -2).conj(), u_gpu),
-            stacked_identity(xp, shape[:-2], u_len, dtype),
+            cupy.matmul(u_gpu.swapaxes(-1, -2).conj(), u_gpu),
+            stacked_identity(cupy, shape[:-2], u_len, dtype),
             atol=1e-4,
         )
         testing.assert_allclose(
-            xp.matmul(vh_gpu, vh_gpu.swapaxes(-1, -2).conj()),
-            stacked_identity(xp, shape[:-2], vh_len, dtype),
+            cupy.matmul(vh_gpu, vh_gpu.swapaxes(-1, -2).conj()),
+            stacked_identity(cupy, shape[:-2], vh_len, dtype),
             atol=1e-4,
         )
 
@@ -385,3 +378,77 @@ class TestSVD(unittest.TestCase):
         self.check_usv((0, 2, 3, 4))
         self.check_usv((1, 2, 0, 4))
         self.check_usv((1, 2, 3, 0))
+
+
+@testing.parameterize(
+    *testing.product(
+        {
+            "mode": ["r", "raw", "complete", "reduced"],
+        }
+    )
+)
+class TestQRDecomposition(unittest.TestCase):
+    @testing.for_dtypes("fdFD")
+    def check_mode(self, array, mode, dtype):
+        a_cpu = numpy.asarray(array, dtype=dtype)
+        a_gpu = cupy.asarray(array, dtype=dtype)
+        result_gpu = cupy.linalg.qr(a_gpu, mode=mode)
+        if (
+            mode != "raw"
+            or numpy.lib.NumpyVersion(numpy.__version__) >= "1.22.0rc1"
+        ):
+            result_cpu = numpy.linalg.qr(a_cpu, mode=mode)
+            self._check_result(result_cpu, result_gpu)
+
+    def _check_result(self, result_cpu, result_gpu):
+        if isinstance(result_cpu, tuple):
+            for b_cpu, b_gpu in zip(result_cpu, result_gpu):
+                assert b_cpu.dtype == b_gpu.dtype
+                testing.assert_allclose(b_cpu, b_gpu, atol=1e-4)
+        else:
+            assert result_cpu.dtype == result_gpu.dtype
+            testing.assert_allclose(result_cpu, result_gpu, atol=1e-4)
+
+    # TODO: New packages that fix issue CMPLRLLVM-53771 are only available in internal CI.
+    # Skip the tests on cpu until these packages are available for the external CI.
+    # Specifically dpcpp_linux-64>=2024.1.0
+    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
+    @testing.fix_random()
+    @_condition.repeat(3, 10)
+    def test_mode(self):
+        self.check_mode(numpy.random.randn(2, 4), mode=self.mode)
+        self.check_mode(numpy.random.randn(3, 3), mode=self.mode)
+        self.check_mode(numpy.random.randn(5, 4), mode=self.mode)
+
+    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
+    @testing.with_requires("numpy>=1.22")
+    @testing.fix_random()
+    def test_mode_rank3(self):
+        self.check_mode(numpy.random.randn(3, 2, 4), mode=self.mode)
+        self.check_mode(numpy.random.randn(4, 3, 3), mode=self.mode)
+        self.check_mode(numpy.random.randn(2, 5, 4), mode=self.mode)
+
+    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
+    @testing.with_requires("numpy>=1.22")
+    @testing.fix_random()
+    def test_mode_rank4(self):
+        self.check_mode(numpy.random.randn(2, 3, 2, 4), mode=self.mode)
+        self.check_mode(numpy.random.randn(2, 4, 3, 3), mode=self.mode)
+        self.check_mode(numpy.random.randn(2, 2, 5, 4), mode=self.mode)
+
+    @testing.with_requires("numpy>=1.16")
+    def test_empty_array(self):
+        self.check_mode(numpy.empty((0, 3)), mode=self.mode)
+        self.check_mode(numpy.empty((3, 0)), mode=self.mode)
+
+    @testing.with_requires("numpy>=1.22")
+    def test_empty_array_rank3(self):
+        self.check_mode(numpy.empty((0, 3, 2)), mode=self.mode)
+        self.check_mode(numpy.empty((3, 0, 2)), mode=self.mode)
+        self.check_mode(numpy.empty((3, 2, 0)), mode=self.mode)
+        self.check_mode(numpy.empty((0, 3, 3)), mode=self.mode)
+        self.check_mode(numpy.empty((3, 0, 3)), mode=self.mode)
+        self.check_mode(numpy.empty((3, 3, 0)), mode=self.mode)
+        self.check_mode(numpy.empty((0, 2, 3)), mode=self.mode)
+        self.check_mode(numpy.empty((2, 0, 3)), mode=self.mode)
+        self.check_mode(numpy.empty((2, 3, 0)), mode=self.mode)
