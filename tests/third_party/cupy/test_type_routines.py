@@ -103,18 +103,26 @@ class TestResultType(unittest.TestCase):
         flag2 = isinstance(input2, (numpy.ndarray, cupy.ndarray))
         dt1 = cupy.dtype(input1) if not flag1 else None
         dt2 = cupy.dtype(input2) if not flag2 else None
-        # dpnp takes into account devices capabilities only if one of the
+        # dpnp takes into account device capabilities only if one of the
         # inputs is an array, for such a case, if the other dtype is not
         # supported by device, dpnp raise ValueError. So, we skip the test.
         if flag1 or flag2:
             if (
                 dt1 in [cupy.float64, cupy.complex128]
                 or dt2 in [cupy.float64, cupy.complex128]
-                and not has_support_aspect64()
-            ):
+            ) and not has_support_aspect64():
                 pytest.skip("No fp64 support by device.")
 
         ret = xp.result_type(input1, input2)
+
+        # dpnp takes into account device capabilities if one of the inputs
+        # is an array, for such a case, we have to modify the results for
+        # NumPy to align it with device capabilities.
+        if (flag1 or flag2) and xp == numpy and not has_support_aspect64():
+            ret = numpy.dtype(numpy.float32) if ret == numpy.float64 else ret
+            ret = (
+                numpy.dtype(numpy.complex64) if ret == numpy.complex128 else ret
+            )
 
         assert isinstance(ret, numpy.dtype)
         return ret
