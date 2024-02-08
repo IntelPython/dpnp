@@ -154,8 +154,6 @@ class TestPutAlongAxis:
 
 
 class TestTakeAlongAxis:
-    # TODO: remove fixture once `dpnp.sort` is fully implemented
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "func, argfunc, kwargs",
         [
@@ -261,6 +259,7 @@ def test_choose():
     assert_array_equal(expected, result)
 
 
+@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_bool=True))
 @pytest.mark.parametrize("offset", [0, 1], ids=["0", "1"])
 @pytest.mark.parametrize(
     "array",
@@ -296,8 +295,8 @@ def test_choose():
         "[[[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]]]",
     ],
 )
-def test_diagonal(array, offset):
-    a = numpy.array(array)
+def test_diagonal(array, arr_dtype, offset):
+    a = numpy.array(array, dtype=arr_dtype)
     ia = dpnp.array(a)
     expected = numpy.diagonal(a, offset)
     result = dpnp.diagonal(ia, offset)
@@ -363,10 +362,13 @@ def test_fill_diagonal(array, val):
         "[3, 2]",
     ],
 )
-def test_indices(dimension):
-    expected = numpy.indices(dimension)
-    result = dpnp.indices(dimension)
-    assert_array_equal(expected, result)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize("sparse", [True, False], ids=["True", "False"])
+def test_indices(dimension, dtype, sparse):
+    expected = numpy.indices(dimension, dtype=dtype, sparse=sparse)
+    result = dpnp.indices(dimension, dtype=dtype, sparse=sparse)
+    for Xnp, X in zip(expected, result):
+        assert_array_equal(Xnp, X)
 
 
 @pytest.mark.parametrize(

@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2023, Intel Corporation
+// Copyright (c) 2016-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -129,15 +129,6 @@ void (*dpnp_cholesky_default_c)(void *, void *, const size_t, const size_t) =
     dpnp_cholesky_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_cholesky_ext_c)(DPCTLSyclQueueRef,
-                                         void *,
-                                         void *,
-                                         const size_t,
-                                         const size_t,
-                                         const DPCTLEventVectorRef) =
-    dpnp_cholesky_c<_DataType>;
-
-template <typename _DataType>
 DPCTLSyclEventRef dpnp_det_c(DPCTLSyclQueueRef q_ref,
                              void *array1_in,
                              void *result1,
@@ -172,50 +163,52 @@ DPCTLSyclEventRef dpnp_det_c(DPCTLSyclQueueRef q_ref,
     _DataType *array_1 = input1_ptr.get_ptr();
     _DataType *result = result_ptr.get_ptr();
 
+    _DataType *matrix = new _DataType[n * n];
+    _DataType *elems = new _DataType[n * n];
+
     for (size_t i = 0; i < size_out; i++) {
-        _DataType matrix[n][n];
         if (size_out > 1) {
-            _DataType elems[n * n];
             for (size_t j = i * n * n; j < (i + 1) * n * n; j++) {
                 elems[j - i * n * n] = array_1[j];
             }
 
             for (size_t j = 0; j < n; j++) {
                 for (size_t k = 0; k < n; k++) {
-                    matrix[j][k] = elems[j * n + k];
+                    matrix[j * n + k] = elems[j * n + k];
                 }
             }
         }
         else {
             for (size_t j = 0; j < n; j++) {
                 for (size_t k = 0; k < n; k++) {
-                    matrix[j][k] = array_1[j * n + k];
+                    matrix[j * n + k] = array_1[j * n + k];
                 }
             }
         }
 
         _DataType det_val = 1;
         for (size_t l = 0; l < n; l++) {
-            if (matrix[l][l] == 0) {
+            if (matrix[l * n + l] == 0) {
                 for (size_t j = l; j < n; j++) {
-                    if (matrix[j][l] != 0) {
+                    if (matrix[j * n + l] != 0) {
                         for (size_t k = l; k < n; k++) {
-                            _DataType c = matrix[l][k];
-                            matrix[l][k] = -1 * matrix[j][k];
-                            matrix[j][k] = c;
+                            _DataType c = matrix[l * n + k];
+                            matrix[l * n + k] = -1 * matrix[j * n + k];
+                            matrix[j * n + k] = c;
                         }
                         break;
                     }
-                    if (j == n - 1 and matrix[j][l] == 0) {
+                    if (j == n - 1 and matrix[j * n + l] == 0) {
                         det_val = 0;
                     }
                 }
             }
             if (det_val != 0) {
                 for (size_t j = l + 1; j < n; j++) {
-                    _DataType quotient = -(matrix[j][l] / matrix[l][l]);
+                    _DataType quotient =
+                        -(matrix[j * n + l] / matrix[l * n + l]);
                     for (size_t k = l + 1; k < n; k++) {
-                        matrix[j][k] += quotient * matrix[l][k];
+                        matrix[j * n + k] += quotient * matrix[l * n + k];
                     }
                 }
             }
@@ -223,13 +216,15 @@ DPCTLSyclEventRef dpnp_det_c(DPCTLSyclQueueRef q_ref,
 
         if (det_val != 0) {
             for (size_t l = 0; l < n; l++) {
-                det_val *= matrix[l][l];
+                det_val *= matrix[l * n + l];
             }
         }
 
         result[i] = det_val;
     }
 
+    delete[] elems;
+    delete[] matrix;
     return event_ref;
 }
 
@@ -291,50 +286,50 @@ DPCTLSyclEventRef dpnp_inv_c(DPCTLSyclQueueRef q_ref,
 
     size_t n = shape[0];
 
-    _ResultType a_arr[n][n];
-    _ResultType e_arr[n][n];
+    _ResultType *a_arr = new _ResultType[n * n];
+    _ResultType *e_arr = new _ResultType[n * n];
 
     for (size_t i = 0; i < n; ++i) {
         for (size_t j = 0; j < n; ++j) {
-            a_arr[i][j] = array_1[i * n + j];
+            a_arr[i * n + j] = array_1[i * n + j];
             if (i == j) {
-                e_arr[i][j] = 1;
+                e_arr[i * n + j] = 1;
             }
             else {
-                e_arr[i][j] = 0;
+                e_arr[i * n + j] = 0;
             }
         }
     }
 
     for (size_t k = 0; k < n; ++k) {
-        if (a_arr[k][k] == 0) {
+        if (a_arr[k * n + k] == 0) {
             for (size_t i = k; i < n; ++i) {
-                if (a_arr[i][k] != 0) {
+                if (a_arr[i * n + k] != 0) {
                     for (size_t j = 0; j < n; ++j) {
-                        float c = a_arr[k][j];
-                        a_arr[k][j] = a_arr[i][j];
-                        a_arr[i][j] = c;
-                        float c_e = e_arr[k][j];
-                        e_arr[k][j] = e_arr[i][j];
-                        e_arr[i][j] = c_e;
+                        float c = a_arr[k * n + j];
+                        a_arr[k * n + j] = a_arr[i * n + j];
+                        a_arr[i * n + j] = c;
+                        float c_e = e_arr[k * n + j];
+                        e_arr[k * n + j] = e_arr[i * n + j];
+                        e_arr[i * n + j] = c_e;
                     }
                     break;
                 }
             }
         }
 
-        float temp = a_arr[k][k];
+        float temp = a_arr[k * n + k];
 
         for (size_t j = 0; j < n; ++j) {
-            a_arr[k][j] = a_arr[k][j] / temp;
-            e_arr[k][j] = e_arr[k][j] / temp;
+            a_arr[k * n + j] = a_arr[k * n + j] / temp;
+            e_arr[k * n + j] = e_arr[k * n + j] / temp;
         }
 
         for (size_t i = k + 1; i < n; ++i) {
-            temp = a_arr[i][k];
+            temp = a_arr[i * n + k];
             for (size_t j = 0; j < n; j++) {
-                a_arr[i][j] = a_arr[i][j] - a_arr[k][j] * temp;
-                e_arr[i][j] = e_arr[i][j] - e_arr[k][j] * temp;
+                a_arr[i * n + j] = a_arr[i * n + j] - a_arr[k * n + j] * temp;
+                e_arr[i * n + j] = e_arr[i * n + j] - e_arr[k * n + j] * temp;
             }
         }
     }
@@ -344,20 +339,24 @@ DPCTLSyclEventRef dpnp_inv_c(DPCTLSyclQueueRef q_ref,
         for (size_t i = 0; i < ind_k; ++i) {
             size_t ind_i = ind_k - 1 - i;
 
-            float temp = a_arr[ind_i][ind_k];
+            float temp = a_arr[ind_i * n + ind_k];
             for (size_t j = 0; j < n; ++j) {
-                a_arr[ind_i][j] = a_arr[ind_i][j] - a_arr[ind_k][j] * temp;
-                e_arr[ind_i][j] = e_arr[ind_i][j] - e_arr[ind_k][j] * temp;
+                a_arr[ind_i * n + j] =
+                    a_arr[ind_i * n + j] - a_arr[ind_k * n + j] * temp;
+                e_arr[ind_i * n + j] =
+                    e_arr[ind_i * n + j] - e_arr[ind_k * n + j] * temp;
             }
         }
     }
 
     for (size_t i = 0; i < n; ++i) {
         for (size_t j = 0; j < n; ++j) {
-            result[i * n + j] = e_arr[i][j];
+            result[i * n + j] = e_arr[i * n + j];
         }
     }
 
+    delete[] a_arr;
+    delete[] e_arr;
     return event_ref;
 }
 
@@ -377,15 +376,6 @@ void dpnp_inv_c(void *array1_in,
 
 template <typename _DataType, typename _ResultType>
 void (*dpnp_inv_default_c)(void *, void *, shape_elem_type *, size_t) =
-    dpnp_inv_c<_DataType, _ResultType>;
-
-template <typename _DataType, typename _ResultType>
-DPCTLSyclEventRef (*dpnp_inv_ext_c)(DPCTLSyclQueueRef,
-                                    void *,
-                                    void *,
-                                    shape_elem_type *,
-                                    size_t,
-                                    const DPCTLEventVectorRef) =
     dpnp_inv_c<_DataType, _ResultType>;
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
@@ -732,17 +722,6 @@ template <typename _InputDT, typename _ComputeDT>
 void (*dpnp_qr_default_c)(void *, void *, void *, void *, size_t, size_t) =
     dpnp_qr_c<_InputDT, _ComputeDT>;
 
-template <typename _InputDT, typename _ComputeDT>
-DPCTLSyclEventRef (*dpnp_qr_ext_c)(DPCTLSyclQueueRef,
-                                   void *,
-                                   void *,
-                                   void *,
-                                   void *,
-                                   size_t,
-                                   size_t,
-                                   const DPCTLEventVectorRef) =
-    dpnp_qr_c<_InputDT, _ComputeDT>;
-
 template <typename _InputDT, typename _ComputeDT, typename _SVDT>
 DPCTLSyclEventRef dpnp_svd_c(DPCTLSyclQueueRef q_ref,
                              void *array1_in,
@@ -834,28 +813,12 @@ template <typename _InputDT, typename _ComputeDT, typename _SVDT>
 void (*dpnp_svd_default_c)(void *, void *, void *, void *, size_t, size_t) =
     dpnp_svd_c<_InputDT, _ComputeDT, _SVDT>;
 
-template <typename _InputDT, typename _ComputeDT, typename _SVDT>
-DPCTLSyclEventRef (*dpnp_svd_ext_c)(DPCTLSyclQueueRef,
-                                    void *,
-                                    void *,
-                                    void *,
-                                    void *,
-                                    size_t,
-                                    size_t,
-                                    const DPCTLEventVectorRef) =
-    dpnp_svd_c<_InputDT, _ComputeDT, _SVDT>;
-
 void func_map_init_linalg_func(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_FLT][eft_FLT] = {
         eft_FLT, (void *)dpnp_cholesky_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_cholesky_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_cholesky_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_cholesky_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_DET][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_det_default_c<int32_t>};
@@ -866,15 +829,6 @@ void func_map_init_linalg_func(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_DET][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_det_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_DET_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_det_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DET_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_det_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DET_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_det_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_DET_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_det_ext_c<double>};
-
     fmap[DPNPFuncName::DPNP_FN_INV][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_inv_default_c<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_INV][eft_LNG][eft_LNG] = {
@@ -883,27 +837,6 @@ void func_map_init_linalg_func(func_map_t &fmap)
         eft_DBL, (void *)dpnp_inv_default_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_INV][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_inv_default_c<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_INV_EXT][eft_INT][eft_INT] = {
-        get_default_floating_type(),
-        (void *)dpnp_inv_ext_c<
-            int32_t, func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)dpnp_inv_ext_c<
-            int32_t, func_type_map_t::find_type<
-                         get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_INV_EXT][eft_LNG][eft_LNG] = {
-        get_default_floating_type(),
-        (void *)dpnp_inv_ext_c<
-            int64_t, func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)dpnp_inv_ext_c<
-            int64_t, func_type_map_t::find_type<
-                         get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_INV_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_inv_ext_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_INV_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_inv_ext_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_kron_default_c<int32_t, int32_t, int32_t>};
@@ -1056,29 +989,6 @@ void func_map_init_linalg_func(func_map_t &fmap)
     // fmap[DPNPFuncName::DPNP_FN_QR][eft_C128][eft_C128] = {
     // eft_C128, (void*)dpnp_qr_c<std::complex<double>, std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_QR_EXT][eft_INT][eft_INT] = {
-        get_default_floating_type(),
-        (void *)dpnp_qr_ext_c<
-            int32_t, func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)dpnp_qr_ext_c<
-            int32_t, func_type_map_t::find_type<
-                         get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_QR_EXT][eft_LNG][eft_LNG] = {
-        get_default_floating_type(),
-        (void *)dpnp_qr_ext_c<
-            int64_t, func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)dpnp_qr_ext_c<
-            int64_t, func_type_map_t::find_type<
-                         get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_QR_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_qr_ext_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_QR_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_qr_ext_c<double, double>};
-    // fmap[DPNPFuncName::DPNP_FN_QR_EXT][eft_C128][eft_C128] = {
-    // eft_C128, (void*)dpnp_qr_c<std::complex<double>, std::complex<double>>};
-
     fmap[DPNPFuncName::DPNP_FN_SVD][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_svd_default_c<int32_t, double, double>};
     fmap[DPNPFuncName::DPNP_FN_SVD][eft_LNG][eft_LNG] = {
@@ -1090,39 +1000,6 @@ void func_map_init_linalg_func(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_SVD][eft_C128][eft_C128] = {
         eft_C128, (void *)dpnp_svd_default_c<std::complex<double>,
                                              std::complex<double>, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_INT][eft_INT] = {
-        get_default_floating_type(),
-        (void *)dpnp_svd_ext_c<
-            int32_t, func_type_map_t::find_type<get_default_floating_type()>,
-            func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)
-            dpnp_svd_ext_c<int32_t,
-                           func_type_map_t::find_type<
-                               get_default_floating_type<std::false_type>()>,
-                           func_type_map_t::find_type<
-                               get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_LNG][eft_LNG] = {
-        get_default_floating_type(),
-        (void *)dpnp_svd_ext_c<
-            int64_t, func_type_map_t::find_type<get_default_floating_type()>,
-            func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)
-            dpnp_svd_ext_c<int64_t,
-                           func_type_map_t::find_type<
-                               get_default_floating_type<std::false_type>()>,
-                           func_type_map_t::find_type<
-                               get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_svd_ext_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_svd_ext_c<double, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_SVD_EXT][eft_C128][eft_C128] = {
-        eft_C128,
-        (void *)
-            dpnp_svd_ext_c<std::complex<double>, std::complex<double>, double>};
 
     return;
 }

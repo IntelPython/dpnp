@@ -7,7 +7,7 @@ import pytest
 import dpnp as cupy
 from dpnp import random
 from tests.third_party.cupy import testing
-from tests.third_party.cupy.testing import condition, hypothesis
+from tests.third_party.cupy.testing import _condition, hypothesis
 
 
 @testing.gpu
@@ -43,7 +43,7 @@ class TestRandint(unittest.TestCase):
 @testing.gpu
 class TestRandint2(unittest.TestCase):
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_bound_1(self):
         vals = [random.randint(0, 10, (2, 3)) for _ in range(10)]
         for val in vals:
@@ -52,7 +52,7 @@ class TestRandint2(unittest.TestCase):
         self.assertEqual(max(_.max() for _ in vals), 9)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_bound_2(self):
         vals = [random.randint(0, 2) for _ in range(20)]
         for val in vals:
@@ -61,7 +61,7 @@ class TestRandint2(unittest.TestCase):
         self.assertEqual(max(_.max() for _ in vals), 1)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_bound_overflow(self):
         # 100 - (-100) exceeds the range of int8
         val = random.randint(numpy.int8(-100), numpy.int8(100), size=20)
@@ -70,7 +70,7 @@ class TestRandint2(unittest.TestCase):
         self.assertLess(val.max(), 100)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_bound_float1(self):
         # generate floats s.t. int(low) < int(high)
         low, high = sorted(numpy.random.uniform(-5, 5, size=2))
@@ -90,7 +90,7 @@ class TestRandint2(unittest.TestCase):
         self.assertEqual(min(_.min() for _ in vals), -1)
         self.assertEqual(max(_.max() for _ in vals), 0)
 
-    @condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_goodness_of_fit(self):
         mx = 5
         trial = 100
@@ -99,7 +99,7 @@ class TestRandint2(unittest.TestCase):
         expected = numpy.array([float(trial) / mx] * mx)
         self.assertTrue(hypothesis.chi_square_test(counts, expected))
 
-    @condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_goodness_of_fit_2(self):
         mx = 5
         vals = random.randint(mx, size=(5, 20))
@@ -169,7 +169,7 @@ class TestRandomIntegers(unittest.TestCase):
 @testing.fix_random()
 @testing.gpu
 class TestRandomIntegers2(unittest.TestCase):
-    @condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_bound_1(self):
         vals = [random.random_integers(0, 10, (2, 3)).get() for _ in range(10)]
         for val in vals:
@@ -177,7 +177,7 @@ class TestRandomIntegers2(unittest.TestCase):
         self.assertEqual(min(_.min() for _ in vals), 0)
         self.assertEqual(max(_.max() for _ in vals), 10)
 
-    @condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_bound_2(self):
         vals = [random.random_integers(0, 2).get() for _ in range(20)]
         for val in vals:
@@ -185,7 +185,7 @@ class TestRandomIntegers2(unittest.TestCase):
         self.assertEqual(min(vals), 0)
         self.assertEqual(max(vals), 2)
 
-    @condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_goodness_of_fit(self):
         mx = 5
         trial = 100
@@ -194,7 +194,7 @@ class TestRandomIntegers2(unittest.TestCase):
         expected = numpy.array([float(trial) / mx] * mx)
         self.assertTrue(hypothesis.chi_square_test(counts, expected))
 
-    @condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_goodness_of_fit_2(self):
         mx = 5
         vals = random.randint(0, mx, (5, 20)).get()
@@ -289,7 +289,7 @@ class TestRandomSample(unittest.TestCase):
 @testing.fix_random()
 @testing.gpu
 class TestMultinomial(unittest.TestCase):
-    @condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose(rtol=0.05)
     def test_multinomial(self, xp, dtype):

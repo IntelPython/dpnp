@@ -5,6 +5,8 @@ on:
   push:
     branches: [master]
 
+permissions: read-all
+
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
@@ -16,8 +18,8 @@ jobs:
           sudo ln -s /usr/bin/clang-format-12 /usr/bin/clang-format
           clang-format --version
 
-      - uses: actions/checkout@v3.5.2
-      - uses: actions/setup-python@v4.6.1
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:
           python-version: '3.11'
-      - uses: pre-commit/action@v3.0.0
+      - uses: pre-commit/action@646c83fcd040023954eafda54b4db0192ce70507 # v3.0.0

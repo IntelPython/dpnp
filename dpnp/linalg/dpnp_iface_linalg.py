@@ -1,8 +1,5 @@
-# cython: language_level=3
-# distutils: language = c++
-# -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -50,8 +47,14 @@ from dpnp.linalg.dpnp_algo_linalg import *
 from .dpnp_utils_linalg import (
     check_stacked_2d,
     check_stacked_square,
+    dpnp_cholesky,
+    dpnp_det,
     dpnp_eigh,
+    dpnp_inv,
+    dpnp_qr,
+    dpnp_slogdet,
     dpnp_solve,
+    dpnp_svd,
 )
 
 __all__ = [
@@ -69,55 +72,68 @@ __all__ = [
     "qr",
     "solve",
     "svd",
+    "slogdet",
 ]
 
 
-def cholesky(input):
+def cholesky(a, upper=False):
     """
     Cholesky decomposition.
 
-    Return the Cholesky decomposition, `L * L.H`, of the square matrix `input`,
-    where `L` is lower-triangular and .H is the conjugate transpose operator
-    (which is the ordinary transpose if `input` is real-valued).  `input` must be
-    Hermitian (symmetric if real-valued) and positive-definite. No
-    checking is performed to verify whether `a` is Hermitian or not.
-    In addition, only the lower-triangular and diagonal elements of `input`
-    are used. Only `L` is actually returned.
+    Return the lower or upper Cholesky decomposition, ``L * L.H`` or
+    ``U.H * U``, of the square matrix ``a``, where ``L`` is lower-triangular,
+    ``U`` is upper-triangular, and ``.H`` is the conjugate transpose operator
+    (which is the ordinary transpose if ``a`` is real-valued). ``a`` must be
+    Hermitian (symmetric if real-valued) and positive-definite. No checking is
+    performed to verify whether ``a`` is Hermitian or not. In addition, only
+    the lower or upper-triangular and diagonal elements of ``a`` are used.
+    Only ``L`` or ``U`` is actually returned.
+
+    For full documentation refer to :obj:`numpy.linalg.cholesky`.
 
     Parameters
     ----------
-    input : (..., M, M) array_like
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         Hermitian (symmetric if all elements are real), positive-definite
         input matrix.
+    upper : bool, optional
+        If ``True``, the result must be the upper-triangular Cholesky factor.
+        If ``False``, the result must be the lower-triangular Cholesky factor.
+        Default: ``False``.
 
     Returns
     -------
-    L : (..., M, M) array_like
-        Upper or lower-triangular Cholesky factor of `input`.  Returns a
-        matrix object if `input` is a matrix object.
+    L : (..., M, M) dpnp.ndarray
+        Lower or upper-triangular Cholesky factor of `a`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> A = np.array([[1.0, 2.0],[2.0, 5.0]])
+    >>> A
+    array([[1., 2.],
+           [2., 5.]])
+    >>> L = np.linalg.cholesky(A)
+    >>> L
+    array([[1., 0.],
+           [2., 1.]])
+    >>> np.dot(L, L.T.conj()) # verify that L * L.H = A
+    array([[1., 2.],
+           [2., 5.]])
+
+    The upper-triangular Cholesky factor can also be obtained:
+
+    >>> np.linalg.cholesky(A, upper=True)
+    array([[ 1.+0.j, -0.-2.j],
+           [ 0.+0.j,  1.+0.j]]
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.shape[-1] != x1_desc.shape[-2]:
-            pass
-        else:
-            if input.dtype == dpnp.int32 or input.dtype == dpnp.int64:
-                dev = x1_desc.get_array().sycl_device
-                if dev.has_aspect_fp64:
-                    dtype = dpnp.float64
-                else:
-                    dtype = dpnp.float32
-                # TODO memory copy. needs to move into DPNPC
-                input_ = dpnp.get_dpnp_descriptor(
-                    dpnp.astype(input, dtype=dtype),
-                    copy_when_nondefault_queue=False,
-                )
-            else:
-                input_ = x1_desc
-            return dpnp_cholesky(input_).get_pyobj()
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-    return call_origin(numpy.linalg.cholesky, input)
+    return dpnp_cholesky(a, upper=upper)
 
 
 def cond(input, p=None):
@@ -148,32 +164,50 @@ def cond(input, p=None):
     return call_origin(numpy.linalg.cond, input, p)
 
 
-def det(input):
+def det(a):
     """
     Compute the determinant of an array.
 
+    For full documentation refer to :obj:`numpy.linalg.det`.
+
     Parameters
     ----------
-    input : (..., M, M) array_like
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         Input array to compute determinants for.
 
     Returns
     -------
-    det : (...) array_like
-        Determinant of `input`.
+    det : (...) dpnp.ndarray
+        Determinant of `a`.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.slogdet` : Returns sign and logarithm of the determinant of an array.
+
+    Examples
+    --------
+    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 4]])
+    >>> dp.linalg.det(a)
+    array(-2.)
+
+    Computing determinants for a stack of matrices:
+
+    >>> a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])
+    >>> a.shape
+    (3, 2, 2)
+    >>> dp.linalg.det(a)
+    array([-2., -3., -8.])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.ndim < 2:
-            pass
-        elif x1_desc.shape[-1] == x1_desc.shape[-2]:
-            result_obj = dpnp_det(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-            return result
-
-    return call_origin(numpy.linalg.det, input)
+    return dpnp_det(a)
 
 
 def eig(x1):
@@ -285,30 +319,51 @@ def eigvals(input):
     return call_origin(numpy.linalg.eigvals, input)
 
 
-def inv(input):
+def inv(a):
     """
-    Divide arguments element-wise.
+    Compute the (multiplicative) inverse of a matrix.
+
+    Given a square matrix a, return the matrix ainv
+    satisfying ``dot(a, ainv) = dot(ainv, a) = eye(a.shape[0])``.
 
     For full documentation refer to :obj:`numpy.linalg.inv`.
 
-    Limitations
-    -----------
-        Input array is supported as :obj:`dpnp.ndarray`.
-        Dimension of input array is supported to be equal to ``2``.
-        Shape of input array is limited by ``input.shape[0] == input.shape[1]``, ``input.shape[0] >= 2``.
-        Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Matrix to be inverted.
+
+    Returns
+    -------
+    out : (..., M, M) dpnp.ndarray
+        (Multiplicative) inverse of the matrix a.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1., 2.], [3., 4.]])
+    >>> ainv = np.linalg.inv(a)
+    >>> np.allclose(np.dot(a, ainv), np.eye(2))
+    array([ True])
+    >>> np.allclose(np.dot(ainv, a), np.eye(2))
+    array([ True])
+
+    Inverses of several matrices can be computed at once:
+    >>> a = np.array([[[1., 2.], [3., 4.]], [[1, 3], [3, 5]]])
+    >>> np.linalg.inv(a)
+    array([[[-2.  ,  1.  ],
+            [ 1.5 , -0.5 ]],
+
+          [[-1.25,  0.75],
+            [ 0.75, -0.25]]])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if (
-            x1_desc.ndim == 2
-            and x1_desc.shape[0] == x1_desc.shape[1]
-            and x1_desc.shape[0] >= 2
-        ):
-            return dpnp_inv(x1_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-    return call_origin(numpy.linalg.inv, input)
+    return dpnp_inv(a)
 
 
 def matrix_power(input, count):
@@ -475,7 +530,7 @@ def norm(x1, ord=None, axis=None, keepdims=False):
     return call_origin(numpy.linalg.norm, x1, ord, axis, keepdims)
 
 
-def qr(x1, mode="reduced"):
+def qr(a, mode="reduced"):
     """
     Compute the qr factorization of a matrix.
 
@@ -484,25 +539,64 @@ def qr(x1, mode="reduced"):
 
     For full documentation refer to :obj:`numpy.linalg.qr`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter mode='reduced' is supported.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        The input array with the dimensionality of at least 2.
+    mode : {"reduced", "complete", "r", "raw"}, optional
+        If K = min(M, N), then
+        - "reduced" : returns Q, R with dimensions (…, M, K), (…, K, N)
+        - "complete" : returns Q, R with dimensions (…, M, M), (…, M, N)
+        - "r" : returns R only with dimensions (…, K, N)
+        - "raw" : returns h, tau with dimensions (…, N, M), (…, K,)
+        Default: "reduced".
+
+    Returns
+    -------
+    When mode is "reduced" or "complete", the result will be a namedtuple with
+    the attributes Q and R.
+    Q : dpnp.ndarray
+        A matrix with orthonormal columns.
+        When mode = "complete" the result is an orthogonal/unitary matrix
+        depending on whether or not a is real/complex.
+        The determinant may be either +/- 1 in that case.
+        In case the number of dimensions in the input array is greater
+        than 2 then a stack of the matrices with above properties is returned.
+    R : dpnp.ndarray
+        The upper-triangular matrix or a stack of upper-triangular matrices
+        if the number of dimensions in the input array is greater than 2.
+    (h, tau) : tuple of dpnp.ndarray
+        The h array contains the Householder reflectors that generate Q along with R.
+        The tau array contains scaling factors for the reflectors.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.random.randn(9, 6)
+    >>> Q, R = np.linalg.qr(a)
+    >>> np.allclose(a, np.dot(Q, R))  # a does equal QR
+    array([ True])
+    >>> R2 = np.linalg.qr(a, mode='r')
+    >>> np.allclose(R, R2)  # mode='r' returns the same R as mode='full'
+    array([ True])
+    >>> a = np.random.normal(size=(3, 2, 2)) # Stack of 2 x 2 matrices as input
+    >>> Q, R = np.linalg.qr(a)
+    >>> Q.shape
+    (3, 2, 2)
+    >>> R.shape
+    (3, 2, 2)
+    >>> np.allclose(a, np.matmul(Q, R))
+    array([ True])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.ndim != 2:
-            pass
-        elif mode != "reduced":
-            pass
-        else:
-            result_tup = dpnp_qr(x1_desc, mode)
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
 
-            return result_tup
+    if mode not in ("reduced", "complete", "r", "raw"):
+        raise ValueError(f"Unrecognized mode {mode}")
 
-    return call_origin(numpy.linalg.qr, x1, mode)
+    return dpnp_qr(a, mode)
 
 
 def solve(a, b):
@@ -558,11 +652,46 @@ def solve(a, b):
     return dpnp_solve(a, b)
 
 
-def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
+def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     """
     Singular Value Decomposition.
 
     For full documentation refer to :obj:`numpy.linalg.svd`.
+
+    Parameters
+    ----------
+    a : (..., M, N) {dpnp.ndarray, usm_ndarray}
+        Input array with ``a.ndim >= 2``.
+    full_matrices : bool, optional
+        If ``True``, it returns `u` and `Vh` with full-sized matrices.
+        If ``False``, the matrices are reduced in size.
+        Default: ``True``.
+    compute_uv : bool, optional
+        If ``False``, it only returns singular values.
+        Default: ``True``.
+    hermitian : bool, optional
+        If True, a is assumed to be Hermitian (symmetric if real-valued),
+        enabling a more efficient method for finding singular values.
+        Default: ``False``.
+
+    Returns
+    -------
+    u : { (…, M, M), (…, M, K) } dpnp.ndarray
+        Unitary matrix, where M is the number of rows of the input array `a`.
+        The shape of the matrix `u` depends on the value of `full_matrices`.
+        If `full_matrices` is ``True``, `u` has the shape (…, M, M).
+        If `full_matrices` is ``False``, `u` has the shape (…, M, K),
+        where K = min(M, N), and N is the number of columns of the input array `a`.
+        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.
+    s : (…, K) dpnp.ndarray
+        Vector containing the singular values of `a`, sorted in descending order.
+        The length of `s` is min(M, N).
+    Vh : { (…, N, N), (…, K, N) } dpnp.ndarray
+        Unitary matrix, where N is the number of columns of the input array `a`.
+        The shape of the matrix `Vh` depends on the value of `full_matrices`.
+        If `full_matrices` is ``True``, `Vh` has the shape (…, N, N).
+        If `full_matrices` is ``False``, `Vh` has the shape (…, K, N).
+        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.
 
     Examples
     --------
@@ -576,11 +705,11 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     >>> u.shape, s.shape, vh.shape
     ((9, 9), (6,), (6, 6))
     >>> np.allclose(a, np.dot(u[:, :6] * s, vh))
-    True
+    array([ True])
     >>> smat = np.zeros((9, 6), dtype=complex)
     >>> smat[:6, :6] = np.diag(s)
     >>> np.allclose(a, np.dot(u, np.dot(smat, vh)))
-    True
+    array([ True])
 
     Reconstruction based on reduced SVD, 2D case:
 
@@ -588,10 +717,10 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     >>> u.shape, s.shape, vh.shape
     ((9, 6), (6,), (6, 6))
     >>> np.allclose(a, np.dot(u * s, vh))
-    True
+    array([ True])
     >>> smat = np.diag(s)
     >>> np.allclose(a, np.dot(u, np.dot(smat, vh)))
-    True
+    array([ True])
 
     Reconstruction based on full SVD, 4D case:
 
@@ -599,9 +728,9 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     >>> u.shape, s.shape, vh.shape
     ((2, 7, 8, 8), (2, 7, 3), (2, 7, 3, 3))
     >>> np.allclose(b, np.matmul(u[..., :3] * s[..., None, :], vh))
-    True
+    array([ True])
     >>> np.allclose(b, np.matmul(u[..., :3], s[..., None] * vh))
-    True
+    array([ True])
 
     Reconstruction based on reduced SVD, 4D case:
 
@@ -609,27 +738,69 @@ def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     >>> u.shape, s.shape, vh.shape
     ((2, 7, 8, 3), (2, 7, 3), (2, 7, 3, 3))
     >>> np.allclose(b, np.matmul(u * s[..., None, :], vh))
-    True
+    array([ True])
     >>> np.allclose(b, np.matmul(u, s[..., None] * vh))
-    True
+    array([ True])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not x1_desc.ndim == 2:
-            pass
-        elif full_matrices is not True:
-            pass
-        elif compute_uv is not True:
-            pass
-        elif hermitian is not False:
-            pass
-        else:
-            result_tup = dpnp_svd(x1_desc, full_matrices, compute_uv, hermitian)
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
 
-            return result_tup
+    return dpnp_svd(a, full_matrices, compute_uv, hermitian)
 
-    return call_origin(
-        numpy.linalg.svd, x1, full_matrices, compute_uv, hermitian
-    )
+
+def slogdet(a):
+    """
+    Compute the sign and (natural) logarithm of the determinant of an array.
+
+    For full documentation refer to :obj:`numpy.linalg.slogdet`.
+
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Input array, has to be a square 2-D array.
+
+    Returns
+    -------
+    sign : (...) dpnp.ndarray
+        A number representing the sign of the determinant. For a real matrix,
+        this is 1, 0, or -1. For a complex matrix, this is a complex number
+        with absolute value 1 (i.e., it is on the unit circle), or else 0.
+    logabsdet : (...) dpnp.ndarray
+        The natural log of the absolute value of the determinant.
+
+    See Also
+    --------
+    :obj:`dpnp.det` : Returns the determinant of an array.
+
+    Examples
+    --------
+    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+
+    >>> import dpnp as dp
+    >>> a = dp.array([[1, 2], [3, 4]])
+    >>> (sign, logabsdet) = dp.linalg.slogdet(a)
+    >>> (sign, logabsdet)
+    (array(-1.), array(0.69314718))
+    >>> sign * dp.exp(logabsdet)
+    array(-2.)
+
+    Computing log-determinants for a stack of matrices:
+
+    >>> a = dp.array([ [[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]] ])
+    >>> a.shape
+    (3, 2, 2)
+    >>> sign, logabsdet = dp.linalg.slogdet(a)
+    >>> (sign, logabsdet)
+    (array([-1., -1., -1.]), array([0.69314718, 1.09861229, 2.07944154]))
+    >>> sign * dp.exp(logabsdet)
+    array([-2., -3., -8.])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
+
+    return dpnp_slogdet(a)

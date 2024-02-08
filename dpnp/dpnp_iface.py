@@ -1,8 +1,6 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -92,6 +90,8 @@ from dpnp.dpnp_iface_manipulation import *
 from dpnp.dpnp_iface_manipulation import __all__ as __all__manipulation
 from dpnp.dpnp_iface_mathematical import *
 from dpnp.dpnp_iface_mathematical import __all__ as __all__mathematical
+from dpnp.dpnp_iface_nanfunctions import *
+from dpnp.dpnp_iface_nanfunctions import __all__ as __all__nanfunctions
 from dpnp.dpnp_iface_searching import *
 from dpnp.dpnp_iface_searching import __all__ as __all__searching
 from dpnp.dpnp_iface_sorting import *
@@ -110,6 +110,7 @@ __all__ += __all__linearalgebra
 __all__ += __all__logic
 __all__ += __all__manipulation
 __all__ += __all__mathematical
+__all__ += __all__nanfunctions
 __all__ += __all__searching
 __all__ += __all__sorting
 __all__ += __all__statistics
@@ -204,7 +205,7 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True):
     return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
-def check_supported_arrays_type(*arrays, scalar_type=False):
+def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
     """
     Return ``True`` if each array has either type of scalar,
     :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
@@ -215,7 +216,9 @@ def check_supported_arrays_type(*arrays, scalar_type=False):
     arrays : {dpnp_array, usm_ndarray}
         Input arrays to check for supported types.
     scalar_type : {bool}, optional
-        A scalar type is also considered as supported if flag is True.
+        A scalar type is also considered as supported if flag is ``True``.
+    all_scalars : {bool}, optional
+        All the input arrays can be scalar if flag is ``True``.
 
     Returns
     -------
@@ -230,12 +233,21 @@ def check_supported_arrays_type(*arrays, scalar_type=False):
 
     """
 
+    any_is_array = False
     for a in arrays:
-        if scalar_type and dpnp.isscalar(a) or is_supported_array_type(a):
+        if is_supported_array_type(a):
+            any_is_array = True
+            continue
+        elif scalar_type and dpnp.isscalar(a):
             continue
 
         raise TypeError(
             "An array must be any of supported type, but got {}".format(type(a))
+        )
+
+    if len(arrays) > 1 and not (all_scalars or any_is_array):
+        raise TypeError(
+            "At least one input must be of supported array type, but got all scalars."
         )
     return True
 
@@ -456,7 +468,7 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
     )
 
 
-def get_result_array(a, out=None):
+def get_result_array(a, out=None, casting="safe"):
     """
     If `out` is provided, value of `a` array will be copied into the
     `out` array according to ``safe`` casting rule.
@@ -466,11 +478,12 @@ def get_result_array(a, out=None):
     ----------
     a : {dpnp_array}
         Input array.
-
     out : {dpnp_array, usm_ndarray}
         If provided, value of `a` array will be copied into it
         according to ``safe`` casting rule.
         It should be of the appropriate shape.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur.
 
     Returns
     -------
@@ -482,23 +495,20 @@ def get_result_array(a, out=None):
     if out is None:
         return a
     else:
-        if out.shape != a.shape:
-            raise ValueError(
-                f"Output array of shape {a.shape} is needed, got {out.shape}."
-            )
-        elif not isinstance(out, dpnp_array):
-            if isinstance(out, dpt.usm_ndarray):
-                out = dpnp_array._create_from_usm_ndarray(out)
-            else:
-                raise TypeError(
-                    "Output array must be any of supported type, but got {}".format(
-                        type(out)
-                    )
+        if a is out:
+            return out
+        else:
+            dpnp.check_supported_arrays_type(out)
+            if out.shape != a.shape:
+                raise ValueError(
+                    f"Output array of shape {a.shape} is needed, got {out.shape}."
                 )
+            elif isinstance(out, dpt.usm_ndarray):
+                out = dpnp_array._create_from_usm_ndarray(out)
 
-        dpnp.copyto(out, a, casting="safe")
+            dpnp.copyto(out, a, casting=casting)
 
-        return out
+            return out
 
 
 def get_usm_ndarray(a):

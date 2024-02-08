@@ -1,8 +1,6 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -56,6 +54,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     check_nd_call_func,
     dpnp_abs,
     dpnp_add,
+    dpnp_angle,
     dpnp_ceil,
     dpnp_conj,
     dpnp_copysign,
@@ -84,8 +83,10 @@ __all__ = [
     "abs",
     "absolute",
     "add",
+    "angle",
     "around",
     "ceil",
+    "clip",
     "conj",
     "conjugate",
     "convolve",
@@ -109,10 +110,6 @@ __all__ = [
     "mod",
     "modf",
     "multiply",
-    "nancumprod",
-    "nancumsum",
-    "nanprod",
-    "nansum",
     "negative",
     "positive",
     "power",
@@ -138,8 +135,8 @@ def _append_to_diff_array(a, axis, combined, values):
 
     Scalar value (including case with 0d array) is expanded to an array
     with length=1 in the direction of axis and the shape of the input array `a`
-    in along all other axes.
-    Note, if `values` is a scalar. then it is converted to 0d array allocating
+    along all other axes.
+    Note, if `values` is a scalar, then it is converted to 0d array allocating
     on the same SYCL queue as the input array `a` and with the same USM type.
 
     """
@@ -296,6 +293,56 @@ def add(
     )
 
 
+def angle(z, deg=False):
+    """
+    Return the angle of the complex argument.
+
+    For full documentation refer to :obj:`numpy.angle`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array, expected to have a complex-valued floating-point data type.
+    deg : bool, optional
+        Return angle in degrees if True, radians if False (default).
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The counterclockwise angle from the positive real axis on
+        the complex plane in the range `(-pi, pi]`.
+        The returned array has a floating-point data type determined
+        by the Type Promotion Rules.
+
+    Notes
+    -----
+    Although the angle of the complex number 0 is undefined, `dpnp.angle(0)` returns the value 0.
+
+    See Also
+    --------
+    :obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
+    :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+    :obj:`dpnp.absolute` : Calculate the absolute value element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1.0, 1.0j, 1+1j])
+    >>> np.angle(a) # in radians
+    array([0.        , 1.57079633, 0.78539816]) # may vary
+
+    >>> np.angle(a, deg=True) # in degrees
+    array([ 0., 90., 45.])
+
+    """
+
+    dpnp.check_supported_arrays_type(z)
+    res = dpnp_angle(z)
+    if deg is True:
+        res = res * (180 / dpnp.pi)
+    return res
+
+
 def around(x, /, decimals=0, out=None):
     """
     Round an array to the given number of decimals.
@@ -385,6 +432,80 @@ def ceil(
         subok=subok,
         **kwargs,
     )
+
+
+def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
+    """
+    Clip (limit) the values in an array.
+
+    For full documentation refer to :obj:`numpy.clip`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Array containing elements to clip.
+    a_min, a_max : {dpnp.ndarray, usm_ndarray, None}
+        Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.
+        Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.
+    out : {dpnp.ndarray, usm_ndarray}, optional
+        The results will be placed in this array. It may be the input array for in-place clipping.
+        `out` must be of the right shape to hold the output. Its type is preserved.
+    order : {"C", "F", "A", "K", None}, optional
+        Memory layout of the newly output array, if parameter `out` is `None`.
+        If `order` is ``None``, the default value "K" will be used.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array with the elements of `a`, but where values < `a_min` are replaced with `a_min`,
+        and those > `a_max` with `a_max`.
+
+    Limitations
+    -----------
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise ``NotImplementedError`` exception will be raised.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(10)
+    >>> a
+    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    >>> np.clip(a, 1, 8)
+    array([1, 1, 2, 3, 4, 5, 6, 7, 8, 8])
+    >>> np.clip(a, 8, 1)
+    array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+    >>> np.clip(a, 3, 6, out=a)
+    array([3, 3, 3, 3, 4, 5, 6, 6, 6, 6])
+    >>> a
+    array([3, 3, 3, 3, 4, 5, 6, 6, 6, 6])
+
+    >>> a = np.arange(10)
+    >>> a
+    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    >>> min = np.array([3, 4, 1, 1, 1, 4, 4, 4, 4, 4])
+    >>> np.clip(a, min, 8)
+    array([3, 4, 2, 3, 4, 5, 6, 7, 8, 8])
+
+    """
+
+    if kwargs:
+        raise NotImplementedError(f"kwargs={kwargs} is currently not supported")
+    elif a_min is None and a_max is None:
+        raise ValueError("One of max or min must be given")
+
+    if order is None:
+        order = "K"
+
+    usm_arr = dpnp.get_usm_ndarray(a)
+    usm_min = None if a_min is None else dpnp.get_usm_ndarray_or_scalar(a_min)
+    usm_max = None if a_max is None else dpnp.get_usm_ndarray_or_scalar(a_max)
+
+    usm_out = None if out is None else dpnp.get_usm_ndarray(out)
+    usm_res = dpt.clip(usm_arr, usm_min, usm_max, out=usm_out, order=order)
+    if out is not None and isinstance(out, dpnp_array):
+        return out
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def conjugate(
@@ -507,7 +628,7 @@ def copysign(
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported real data types.
+    Input array data types are limited by supported real-valued data types.
 
     See Also
     --------
@@ -1065,7 +1186,9 @@ def fmax(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     See Also
     --------
     :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.
-    :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignore NaNs.
+    :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignores NaNs.
+    :obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs..
+    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
     :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
@@ -1170,7 +1293,9 @@ def fmin(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     See Also
     --------
     :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.
-    :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignore NaNs.
+    :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignores NaNs.
+    :obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
+    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
     :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
@@ -1407,21 +1532,23 @@ def gradient(x1, *varargs, **kwargs):
     return call_origin(numpy.gradient, x1, *varargs, **kwargs)
 
 
-def imag(x):
+def imag(val):
     """
     Return the imaginary part of the complex argument.
 
     For full documentation refer to :obj:`numpy.imag`.
 
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+
     Returns
     -------
     out : dpnp.ndarray
-        The imaginary component of the complex argument.
-
-    Limitations
-    -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+        The imaginary component of the complex argument. If `val` is real,
+        the type of `val` is used for the output. If `val` has complex
+        elements, the returned type is float.
 
     See Also
     --------
@@ -1445,12 +1572,8 @@ def imag(x):
 
     """
 
-    if dpnp.isscalar(x):
-        # input has to be an array
-        pass
-    else:
-        return dpnp_imag(x)
-    return call_origin(numpy.imag, x)
+    dpnp.check_supported_arrays_type(val)
+    return dpnp_imag(val)
 
 
 def maximum(
@@ -1769,179 +1892,6 @@ def multiply(
     )
 
 
-def nancumprod(x1, **kwargs):
-    """
-    Return the cumulative product of array elements over a given axis treating Not a Numbers (NaNs) as one.
-
-    For full documentation refer to :obj:`numpy.nancumprod`.
-
-    Limitations
-    -----------
-    Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    .. seealso:: :obj:`dpnp.cumprod` : Return the cumulative product of elements along a given axis.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([1., np.nan])
-    >>> result = np.nancumprod(a)
-    >>> [x for x in result]
-    [1.0, 1.0]
-    >>> b = np.array([[1., 2., np.nan], [4., np.nan, 6.]])
-    >>> result = np.nancumprod(b)
-    >>> [x for x in result]
-    [1.0, 2.0, 2.0, 8.0, 8.0, 48.0]
-
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_nancumprod(x1_desc).get_pyobj()
-
-    return call_origin(numpy.nancumprod, x1, **kwargs)
-
-
-def nancumsum(x1, **kwargs):
-    """
-    Return the cumulative sum of the elements along a given axis.
-
-    For full documentation refer to :obj:`numpy.nancumsum`.
-
-    Limitations
-    -----------
-    Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along a given axis.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([1., np.nan])
-    >>> result = np.nancumsum(a)
-    >>> [x for x in result]
-    [1.0, 1.0]
-    >>> b = np.array([[1., 2., np.nan], [4., np.nan, 6.]])
-    >>> result = np.nancumprod(b)
-    >>> [x for x in result]
-    [1.0, 3.0, 3.0, 7.0, 7.0, 13.0]
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_nancumsum(x1_desc).get_pyobj()
-
-    return call_origin(numpy.nancumsum, x1, **kwargs)
-
-
-def nanprod(
-    a,
-    axis=None,
-    dtype=None,
-    out=None,
-    keepdims=False,
-    initial=None,
-    where=True,
-):
-    """
-    Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
-
-    For full documentation refer to :obj:`numpy.nanprod`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        A new array holding the result is returned unless `out` is specified, in which case it is returned.
-
-    See Also
-    --------
-    :obj:`dpnp.prod` : Returns product across array propagating NaNs.
-    :obj:`dpnp.isnan` : Test element-wise for NaN and return result as a boolean array.
-
-    Limitations
-    -----------
-    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `initial`, and `where` are only supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.nanprod(np.array(1))
-    array(1)
-    >>> np.nanprod(np.array([1]))
-    array(1)
-    >>> np.nanprod(np.array([1, np.nan]))
-    array(1.0)
-    >>> a = np.array([[1, 2], [3, np.nan]])
-    >>> np.nanprod(a)
-    array(6.0)
-    >>> np.nanprod(a, axis=0)
-    array([3., 2.])
-
-    """
-
-    dpnp.check_supported_arrays_type(a)
-
-    if issubclass(a.dtype.type, dpnp.inexact):
-        mask = dpnp.isnan(a)
-        a = dpnp.array(a, copy=True)
-        dpnp.copyto(a, 1, where=mask)
-
-    return dpnp.prod(
-        a,
-        axis=axis,
-        dtype=dtype,
-        out=out,
-        keepdims=keepdims,
-        initial=initial,
-        where=where,
-    )
-
-
-def nansum(x1, **kwargs):
-    """
-    Calculate sum() function treating 'Not a Numbers' (NaN) as zero.
-
-    For full documentation refer to :obj:`numpy.nansum`.
-
-    Limitations
-    -----------
-    Parameter `x1` is supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.nansum(np.array([1, 2]))
-    3
-    >>> np.nansum(np.array([[1, 2], [3, 4]]))
-    10
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        result_obj = dpnp_nansum(x1_desc).get_pyobj()
-        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
-        return result
-
-    return call_origin(numpy.nansum, x1, **kwargs)
-
-
 def negative(
     x,
     /,
@@ -2221,7 +2171,7 @@ def prod(
         du.intel_device_info(a.sycl_device).get("device_id", 0) & 0xFF00
     )
     if _any_complex and device_mask in [0x3E00, 0x9B00]:
-        return call_origin(
+        res = call_origin(
             numpy.prod,
             a,
             axis=axis,
@@ -2231,13 +2181,17 @@ def prod(
             initial=initial,
             where=where,
         )
+        if dpnp.isscalar(res):
+            # numpy may return a scalar, convert it back to dpnp array
+            return dpnp.array(res, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
+        return res
     elif initial is not None:
         raise NotImplementedError(
-            "initial keyword argument is only supported by its default value."
+            "initial keyword argument is only supported with its default value."
         )
     elif where is not True:
         raise NotImplementedError(
-            "where keyword argument is only supported by its default value."
+            "where keyword argument is only supported with its default value."
         )
     else:
         dpt_array = dpnp.get_usm_ndarray(a)
@@ -2308,21 +2262,23 @@ def proj(
     )
 
 
-def real(x):
+def real(val):
     """
     Return the real part of the complex argument.
 
     For full documentation refer to :obj:`numpy.real`.
 
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+
     Returns
     -------
     out : dpnp.ndarray
-        The real component of the complex argument.
-
-    Limitations
-    -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+        The real component of the complex argument.  If `val` is real,
+        the type of `val` is used for the output. If `val` has complex
+        elements, the returned type is float.
 
     See Also
     --------
@@ -2349,15 +2305,12 @@ def real(x):
     array(1.)
 
     """
-    if dpnp.isscalar(x):
-        # input has to be an array
-        pass
+
+    dpnp.check_supported_arrays_type(val)
+    if dpnp.issubsctype(val.dtype, dpnp.complexfloating):
+        return dpnp_real(val)
     else:
-        if dpnp.issubsctype(x.dtype, dpnp.complexfloating):
-            return dpnp_real(x)
-        else:
-            return x
-    return call_origin(numpy.real, x)
+        return val
 
 
 def remainder(
@@ -2741,7 +2694,7 @@ def subtract(
 
 
 def sum(
-    x,
+    a,
     /,
     *,
     axis=None,
@@ -2756,31 +2709,86 @@ def sum(
 
     For full documentation refer to :obj:`numpy.sum`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : int or tuple of ints, optional
+        Axis or axes along which sums must be computed. If a tuple
+        of unique integers, sums are computed over multiple axes.
+        If ``None``, the sum is computed over the entire array.
+        Default: ``None``.
+    dtype : dtype, optional
+        Data type of the returned array. If ``None``, the default data
+        type is inferred from the "kind" of the input array data type.
+            * If `a` has a real-valued floating-point data type,
+                the returned array will have the default real-valued
+                floating-point data type for the device where input
+                array `a` is allocated.
+            * If `a` has signed integral data type, the returned array
+                will have the default signed integral type for the device
+                where input array `a` is allocated.
+            * If `a` has unsigned integral data type, the returned array
+                will have the default unsigned integral type for the device
+                where input array `a` is allocated.
+            * If `a` has a complex-valued floating-point data type,
+                the returned array will have the default complex-valued
+                floating-pointer data type for the device where input
+                array `a` is allocated.
+            * If `a` has a boolean data type, the returned array will
+                have the default signed integral type for the device
+                where input array `a` is allocated.
+        If the data type (either specified or resolved) differs from the
+        data type of `a`, the input array elements are cast to the
+        specified data type before computing the sum.
+        Default: ``None``.
+    out : {dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must
+        have the same shape as the expected output, but the type of
+        the output values will be cast if necessary.
+        Default: ``None``.
+    keepdims : bool, optional
+        If ``True``, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input array according to Array Broadcasting
+        rules. Otherwise, if ``False``, the reduced axes are not included in
+        the returned array. Default: ``False``.
+
     Returns
     -------
     out : dpnp.ndarray
-        an array containing the sums. If the sum was computed over the
+        An array containing the sums. If the sum is computed over the
         entire array, a zero-dimensional array is returned. The returned
         array has the data type as described in the `dtype` parameter
-        of the Python Array API standard for the `sum` function.
+        description above.
 
     Limitations
     -----------
-    Parameters `x` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `out`, `initial` and `where` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters `initial` and `where` are only supported with their default values.
+    Otherwise ``NotImplementedError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.sum` : Equivalent method.
+    :obj:`dpnp.cumsum` : Cumulative sum of array elements.
+    :obj:`dpnp.trapz` : Integration of array values using the composite trapezoidal rule.
+    :obj:`dpnp.mean` : Compute the arithmetic mean.
+    :obj:`dpnp.average` : Compute the weighted average.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> np.sum(np.array([1, 2, 3, 4, 5]))
-    array(15)
-    >>> np.sum(np.array(5))
-    array(5)
-    >>> result = np.sum(np.array([[0, 1], [0, 5]]), axis=0)
+    >>> np.sum(np.array([0.5, 1.5]))
+    array(2.)
+    >>> np.sum(np.array([0.5, 0.7, 0.2, 1.5]), dtype=np.int32)
+    array(1)
+    >>> a = np.array([[0, 1], [0, 5]])
+    >>> np.sum(a)
+    array(6)
+    >>> np.sum(a, axis=0)
     array([0, 6])
+    >>> np.sum(a, axis=1)
+    array([1, 5])
 
     """
 
@@ -2788,30 +2796,32 @@ def sum(
         if not isinstance(axis, (tuple, list)):
             axis = (axis,)
 
-        axis = normalize_axis_tuple(axis, x.ndim, "axis")
+        axis = normalize_axis_tuple(axis, a.ndim, "axis")
 
-    if out is not None:
-        pass
-    elif initial != 0:
-        pass
+    if initial != 0:
+        raise NotImplementedError(
+            "initial keyword argument is only supported with its default value."
+        )
     elif where is not True:
-        pass
+        raise NotImplementedError(
+            "where keyword argument is only supported with its default value."
+        )
     else:
         if (
-            len(x.shape) == 2
-            and x.itemsize == 4
+            len(a.shape) == 2
+            and a.itemsize == 4
             and (
                 (
                     axis == (0,)
-                    and x.flags.c_contiguous
-                    and 32 <= x.shape[1] <= 1024
-                    and x.shape[0] > x.shape[1]
+                    and a.flags.c_contiguous
+                    and 32 <= a.shape[1] <= 1024
+                    and a.shape[0] > a.shape[1]
                 )
                 or (
                     axis == (1,)
-                    and x.flags.f_contiguous
-                    and 32 <= x.shape[0] <= 1024
-                    and x.shape[1] > x.shape[0]
+                    and a.flags.f_contiguous
+                    and 32 <= a.shape[0] <= 1024
+                    and a.shape[1] > a.shape[0]
                 )
             )
         ):
@@ -2819,7 +2829,7 @@ def sum(
 
             from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
 
-            input = x
+            input = a
             if axis == (1,):
                 input = input.T
             input = dpnp.get_usm_ndarray(input)
@@ -2851,20 +2861,10 @@ def sum(
                 return result
 
         y = dpt.sum(
-            dpnp.get_usm_ndarray(x), axis=axis, dtype=dtype, keepdims=keepdims
+            dpnp.get_usm_ndarray(a), axis=axis, dtype=dtype, keepdims=keepdims
         )
-        return dpnp_array._create_from_usm_ndarray(y)
-
-    return call_origin(
-        numpy.sum,
-        x,
-        axis=axis,
-        dtype=dtype,
-        out=out,
-        keepdims=keepdims,
-        initial=initial,
-        where=where,
-    )
+        result = dpnp_array._create_from_usm_ndarray(y)
+        return dpnp.get_result_array(result, out, casting="same_kind")
 
 
 def trapz(y1, x1=None, dx=1.0, axis=-1):

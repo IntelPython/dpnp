@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2023, Intel Corporation
+// Copyright (c) 2016-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -97,14 +97,6 @@ template <typename _DataType, typename _idx_DataType>
 void (*dpnp_argsort_default_c)(void *, void *, size_t) =
     dpnp_argsort_c<_DataType, _idx_DataType>;
 
-template <typename _DataType, typename _idx_DataType>
-DPCTLSyclEventRef (*dpnp_argsort_ext_c)(DPCTLSyclQueueRef,
-                                        void *,
-                                        void *,
-                                        size_t,
-                                        const DPCTLEventVectorRef) =
-    dpnp_argsort_c<_DataType, _idx_DataType>;
-
 // template void dpnp_argsort_c<double, long>(void* array1_in, void* result1,
 // size_t size); template void dpnp_argsort_c<float, long>(void* array1_in,
 // void* result1, size_t size); template void dpnp_argsort_c<long, long>(void*
@@ -192,11 +184,12 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
     auto arr_to_result_event = q.memcpy(result, arr, size * sizeof(_DataType));
     arr_to_result_event.wait();
 
+    _DataType *matrix = new _DataType[shape_[ndim - 1]];
+
     for (size_t i = 0; i < size_; ++i) {
         size_t ind_begin = i * shape_[ndim - 1];
         size_t ind_end = (i + 1) * shape_[ndim - 1] - 1;
 
-        _DataType matrix[shape_[ndim - 1]];
         for (size_t j = ind_begin; j < ind_end + 1; ++j) {
             size_t ind = j - ind_begin;
             matrix[ind] = arr2[j];
@@ -242,6 +235,7 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
 
     event.wait();
 
+    delete[] matrix;
     sycl::free(shape, q);
 
     return event_ref;
@@ -469,14 +463,6 @@ void dpnp_sort_c(void *array1_in, void *result1, size_t size)
 template <typename _DataType>
 void (*dpnp_sort_default_c)(void *, void *, size_t) = dpnp_sort_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_sort_ext_c)(DPCTLSyclQueueRef,
-                                     void *,
-                                     void *,
-                                     size_t,
-                                     const DPCTLEventVectorRef) =
-    dpnp_sort_c<_DataType>;
-
 void func_map_init_sorting(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_INT][eft_INT] = {
@@ -487,15 +473,6 @@ void func_map_init_sorting(func_map_t &fmap)
         eft_LNG, (void *)dpnp_argsort_default_c<float, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_DBL][eft_DBL] = {
         eft_LNG, (void *)dpnp_argsort_default_c<double, int64_t>};
-
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT_EXT][eft_INT][eft_INT] = {
-        eft_LNG, (void *)dpnp_argsort_ext_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_argsort_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT_EXT][eft_FLT][eft_FLT] = {
-        eft_LNG, (void *)dpnp_argsort_ext_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT_EXT][eft_DBL][eft_DBL] = {
-        eft_LNG, (void *)dpnp_argsort_ext_c<double, int64_t>};
 
     fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_partition_default_c<int32_t>};
@@ -547,15 +524,6 @@ void func_map_init_sorting(func_map_t &fmap)
         eft_FLT, (void *)dpnp_sort_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_sort_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_SORT_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_sort_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_SORT_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_sort_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SORT_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_sort_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_SORT_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_sort_ext_c<double>};
 
     return;
 }

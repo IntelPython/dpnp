@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -269,18 +269,6 @@ def linspace(
         endpoint=endpoint,
     )
     return dpnp_array(array_obj.shape, buffer=array_obj)
-
-
-def meshgrid(*xi, indexing="xy"):
-    """Creates list of `dpnp_array` coordinate matrices from vectors."""
-    if len(xi) == 0:
-        return []
-    arrays = tuple(dpnp.get_usm_ndarray(x) for x in xi)
-    arrays_obj = dpt.meshgrid(*arrays, indexing=indexing)
-    return [
-        dpnp_array._create_from_usm_ndarray(array_obj)
-        for array_obj in arrays_obj
-    ]
 
 
 def ones(

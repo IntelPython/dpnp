@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,9 +27,21 @@
 set(python_module_name _lapack_impl)
 set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/lapack_py.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/geqrf.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/geqrf_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gesv.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gesvd.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/getrf.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/getrf_batch.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/getri_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/heevd.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/orgqr.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/orgqr_batch.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/potrf.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/potrf_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/syevd.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ungqr.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ungqr_batch.cpp
 )
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
@@ -48,7 +60,7 @@ set_target_properties(${python_module_name} PROPERTIES CMAKE_POSITION_INDEPENDEN
 target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../src)
 
-target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
+target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIR})
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})
 
 if (WIN32)
