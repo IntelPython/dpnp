@@ -1167,3 +1167,132 @@ class TestSvd:
         # a.ndim < 2
         a_dp_ndim_1 = a_dp.flatten()
         assert_raises(inp.linalg.LinAlgError, inp.linalg.svd, a_dp_ndim_1)
+
+
+class TestPinv:
+    def get_tol(self, dtype):
+        tol = 1e-06
+        if dtype in (inp.float32, inp.complex64):
+            tol = 1e-04
+        elif not has_support_aspect64() and dtype in (
+            inp.int32,
+            inp.int64,
+            None,
+        ):
+            tol = 1e-05
+        self._tol = tol
+
+    def check_types_shapes(self, dp_B, np_B):
+        if has_support_aspect64():
+            assert dp_B.dtype == np_B.dtype
+        else:
+            assert dp_B.dtype.kind == np_B.dtype.kind
+
+        assert dp_B.shape == np_B.shape
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (3, 4), (5, 3), (16, 16), (2, 2, 2), (2, 4, 2), (2, 2, 4)],
+        ids=[
+            "(2, 2)",
+            "(3, 4)",
+            "(5, 3)",
+            "(16, 16)",
+            "(2, 2, 2)",
+            "(2, 4, 2)",
+            "(2, 2, 4)",
+        ],
+    )
+    def test_pinv(self, dtype, shape):
+        a = numpy.random.rand(*shape).astype(dtype)
+        a_dp = inp.array(a)
+
+        B = numpy.linalg.pinv(a)
+        B_dp = inp.linalg.pinv(a_dp)
+
+        self.check_types_shapes(B_dp, B)
+        self.get_tol(dtype)
+        tol = self._tol
+        assert_allclose(B_dp, B, rtol=tol, atol=tol)
+
+        if a.ndim == 2:
+            reconstructed = inp.dot(a_dp, inp.dot(B_dp, a_dp))
+        else:  # a.ndim > 2
+            reconstructed = inp.matmul(a_dp, inp.matmul(B_dp, a_dp))
+
+        assert_allclose(reconstructed, a, rtol=tol, atol=tol)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (16, 16)],
+        ids=["(2,2)", "(16, 16)"],
+    )
+    def test_pinv_hermitian(self, dtype, shape):
+        a = numpy.random.randn(*shape) + 1j * numpy.random.randn(*shape)
+        a = numpy.conj(a.T) @ a
+
+        a = a.astype(dtype)
+        a_dp = inp.array(a)
+
+        B = numpy.linalg.pinv(a)
+        B_dp = inp.linalg.pinv(a_dp)
+
+        self.check_types_shapes(B_dp, B)
+        self.get_tol(dtype)
+        tol = self._tol
+        assert_allclose(B_dp, B, rtol=tol, atol=tol)
+
+        reconstructed = inp.dot(a_dp, inp.dot(B_dp, a_dp))
+        assert_allclose(reconstructed, a, rtol=tol, atol=1e-03)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(0, 0), (0, 2), (2, 0), (2, 0, 3), (2, 3, 0), (0, 2, 3)],
+        ids=[
+            "(0, 0)",
+            "(0, 2)",
+            "(2 ,0)",
+            "(2, 0, 3)",
+            "(2, 3, 0)",
+            "(0, 2, 3)",
+        ],
+    )
+    def test_pinv_empty(self, dtype, shape):
+        a = numpy.empty(shape, dtype=dtype)
+        a_dp = inp.array(a)
+
+        B = numpy.linalg.pinv(a)
+        B_dp = inp.linalg.pinv(a_dp)
+
+        assert_dtype_allclose(B_dp, B)
+
+    def test_pinv_strides(self):
+        a = numpy.random.rand(5, 5)
+        a_dp = inp.array(a)
+
+        self.get_tol(a_dp.dtype)
+        tol = self._tol
+
+        # positive strides
+        B = numpy.linalg.pinv(a[::2, ::2])
+        B_dp = inp.linalg.pinv(a_dp[::2, ::2])
+        assert_allclose(B_dp, B, rtol=tol, atol=tol)
+
+        # negative strides
+        B = numpy.linalg.pinv(a[::-2, ::-2])
+        B_dp = inp.linalg.pinv(a_dp[::-2, ::-2])
+        assert_allclose(B_dp, B, rtol=tol, atol=tol)
+
+    def test_pinv_errors(self):
+        a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.pinv, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.pinv, a_dp_ndim_1)
