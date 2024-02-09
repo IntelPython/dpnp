@@ -442,7 +442,7 @@ cdef class MT19937(_Engine):
                 try:
                     for i in range(vector_seed_len):
                         vector_seed[i] = <uint32_t> seed[i]
-                except (ValueError, TypeError) as e:
+                except Exception as e:
                     free(vector_seed)
                     raise e
         else:
