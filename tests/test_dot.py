@@ -383,6 +383,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
+        # TODO: investigate the effect of factor, see SAT-6700
         assert_dtype_allclose(result, expected, factor=24)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
@@ -399,6 +400,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
+        # TODO: investigate the effect of factor, see SAT-6700
         assert_dtype_allclose(result, expected, factor=24)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
@@ -424,6 +426,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
+        # TODO: investigate the effect of factor, see SAT-6700
         assert_dtype_allclose(result, expected, factor=24)
 
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
@@ -440,6 +443,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib)
         expected = numpy.tensordot(a, b)
+        # TODO: investigate the effect of factor, see SAT-6700
         assert_dtype_allclose(result, expected, factor=24)
 
     def test_tensordot_strided(self):
