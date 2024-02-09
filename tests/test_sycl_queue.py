@@ -579,6 +579,11 @@ def test_reduce_hypot(device):
             [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
             [0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0],
         ),
+        pytest.param(
+            "tensordot",
+            [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
+            [[4.0, 4.0, 4.0], [4.0, 4.0, 4.0]],
+        ),
         # dpnp.vdot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("vdot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
@@ -1520,24 +1525,52 @@ def test_clip(device):
     assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
 
 
-@pytest.mark.parametrize("func", ["take", "take_along_axis"])
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_take(func, device):
+def test_take(device):
     numpy_data = numpy.arange(5)
     dpnp_data = dpnp.array(numpy_data, device=device)
 
     dpnp_ind = dpnp.array([0, 2, 4], device=device)
     np_ind = dpnp_ind.asnumpy()
 
-    result = getattr(dpnp, func)(dpnp_data, dpnp_ind, axis=None)
-    expected = getattr(numpy, func)(numpy_data, np_ind, axis=None)
+    result = dpnp.take(dpnp_data, dpnp_ind, axis=None)
+    expected = numpy.take(numpy_data, np_ind, axis=None)
     assert_allclose(expected, result)
 
     expected_queue = dpnp_data.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "data, ind, axis",
+    [
+        (numpy.arange(6), numpy.array([0, 2, 4]), None),
+        (
+            numpy.arange(6).reshape((2, 3)),
+            numpy.array([0, 1]).reshape((2, 1)),
+            1,
+        ),
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_take_along_axis(data, ind, axis, device):
+    dp_data = dpnp.array(data, device=device)
+    dp_ind = dpnp.array(ind, device=device)
+
+    result = dpnp.take_along_axis(dp_data, dp_ind, axis=axis)
+    expected = numpy.take_along_axis(data, ind, axis=axis)
+    assert_allclose(expected, result)
+
+    expected_queue = dp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 

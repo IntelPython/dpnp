@@ -505,6 +505,11 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param("maximum", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
         pytest.param("minimum", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
+        pytest.param(
+            "tensordot",
+            [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
+            [[4.0, 4.0, 4.0], [4.0, 4.0, 4.0]],
+        ),
         # dpnp.vdot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("vdot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
@@ -564,6 +569,32 @@ def test_take(func, usm_type_x, usm_type_ind):
     x = dp.arange(5, usm_type=usm_type_x)
     ind = dp.array([0, 2, 4], usm_type=usm_type_ind)
     z = getattr(dp, func)(x, ind, axis=None)
+
+    assert x.usm_type == usm_type_x
+    assert ind.usm_type == usm_type_ind
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
+
+
+@pytest.mark.parametrize(
+    "data, ind, axis",
+    [
+        (numpy.arange(6), numpy.array([0, 2, 4]), None),
+        (
+            numpy.arange(6).reshape((2, 3)),
+            numpy.array([0, 1]).reshape((2, 1)),
+            1,
+        ),
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "usm_type_ind", list_of_usm_types, ids=list_of_usm_types
+)
+def test_take_along_axis(data, ind, axis, usm_type_x, usm_type_ind):
+    x = dp.array(data, usm_type=usm_type_x)
+    ind = dp.array(ind, usm_type=usm_type_ind)
+
+    z = dp.take_along_axis(x, ind, axis=axis)
 
     assert x.usm_type == usm_type_x
     assert ind.usm_type == usm_type_ind
