@@ -1632,3 +1632,45 @@ def test_slogdet(shape, is_empty, device):
 
     assert_sycl_queue_equal(sign_queue, dpnp_x.sycl_queue)
     assert_sycl_queue_equal(logdet_queue, dpnp_x.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "shape, hermitian",
+    [
+        ((4, 4), False),
+        ((2, 0), False),
+        ((4, 4), True),
+        ((2, 2, 3), False),
+        ((0, 2, 3), False),
+        ((1, 0, 3), False),
+    ],
+    ids=[
+        "(4, 4)",
+        "(2, 0)",
+        "(2, 2), hermitian)",
+        "(2, 2, 3)",
+        "(0, 2, 3)",
+        "(1, 0, 3)",
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_pinv(shape, hermitian, device):
+    if hermitian:
+        a_np = numpy.random.randn(*shape) + 1j * numpy.random.randn(*shape)
+        a_np = numpy.conj(a_np.T) @ a_np
+    else:
+        a_np = numpy.random.randn(*shape)
+
+    a_dp = dpnp.array(a_np, device=device)
+
+    B_result = dpnp.linalg.pinv(a_dp, hermitian=hermitian)
+    B_expected = numpy.linalg.pinv(a_np, hermitian=hermitian)
+    assert_allclose(B_expected, B_result, rtol=1e-3, atol=1e-4)
+
+    B_queue = B_result.sycl_queue
+
+    assert_sycl_queue_equal(B_queue, a_dp.sycl_queue)
