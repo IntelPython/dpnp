@@ -1541,25 +1541,28 @@ def test_take(device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
-@pytest.mark.parametrize("axis", [None, 1], ids=["axis_None", "axis_1"])
+@pytest.mark.parametrize(
+    "data, ind, axis",
+    [
+        (numpy.arange(6), numpy.array([0, 2, 4]), None),
+        (
+            numpy.arange(6).reshape((2, 3)),
+            numpy.array([0, 1]).reshape((2, 1)),
+            1,
+        ),
+    ],
+)
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_take_along_axis(axis, device):
-    if axis is None:
-        np_data = numpy.arange(6)
-        np_ind = numpy.array([0, 2, 4])
-    else:  # create 2d array
-        np_data = numpy.arange(6).reshape((2, 3))
-        np_ind = numpy.array([0, 1]).reshape((2, 1))
-
-    dp_data = dpnp.array(np_data, device=device)
-    dp_ind = dpnp.array(np_ind, device=device)
+def test_take_along_axis(data, ind, axis, device):
+    dp_data = dpnp.array(data, device=device)
+    dp_ind = dpnp.array(ind, device=device)
 
     result = dpnp.take_along_axis(dp_data, dp_ind, axis=axis)
-    expected = numpy.take_along_axis(np_data, np_ind, axis=axis)
+    expected = numpy.take_along_axis(data, ind, axis=axis)
     assert_allclose(expected, result)
 
     expected_queue = dp_data.get_array().sycl_queue

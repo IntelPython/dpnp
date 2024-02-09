@@ -570,18 +570,24 @@ def test_take(func, usm_type_x, usm_type_ind):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
 
 
-@pytest.mark.parametrize("axis", [None, 1], ids=["axis_None", "axis_1"])
+@pytest.mark.parametrize(
+    "data, ind, axis",
+    [
+        (numpy.arange(6), numpy.array([0, 2, 4]), None),
+        (
+            numpy.arange(6).reshape((2, 3)),
+            numpy.array([0, 1]).reshape((2, 1)),
+            1,
+        ),
+    ],
+)
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
     "usm_type_ind", list_of_usm_types, ids=list_of_usm_types
 )
-def test_take_along_axis(axis, usm_type_x, usm_type_ind):
-    if axis is None:
-        x = dp.arange(6, usm_type=usm_type_x)
-        ind = dp.array([0, 2, 4], usm_type=usm_type_ind)
-    else:  # create 2d array
-        x = dp.arange(6, usm_type=usm_type_x).reshape((2, 3))
-        ind = dp.array([0, 1], usm_type=usm_type_ind).reshape((2, 1))
+def test_take_along_axis(data, ind, axis, usm_type_x, usm_type_ind):
+    x = dp.array(data, usm_type=usm_type_x)
+    ind = dp.array(ind, usm_type=usm_type_ind)
 
     z = dp.take_along_axis(x, ind, axis=axis)
 
