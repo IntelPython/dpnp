@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.14.0] - MM/DD/2024
 
+This release will require DPC++ `2024.1.0`, which no longer supports Intel Gen9 integrated GPUs found in Intel CPUs of 10th generation and older.
+
 ### Added
 
+* Added implementation of `dpnp.tensordot` function [#1699](https://github.com/IntelPython/dpnp/pull/1699)
 * Added implementation of `dpnp.nanmean` and `dpnp.nanstd` functions [#1654](https://github.com/IntelPython/dpnp/pull/1654)
 * Added implementation of `dpnp.angle` function [#1650](https://github.com/IntelPython/dpnp/pull/1650)
 * Added implementation of `dpnp.logsumexp` and `dpnp.reduce_hypot` functions [#1648](https://github.com/IntelPython/dpnp/pull/1648)
@@ -26,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Changed exception type from `ValueError` to `NotImplementedError` for unsupporting keyword arguments in array creation functions [#1695](https://github.com/IntelPython/dpnp/pull/1695)
 * Enabled compatibility support against numpy `1.26.4` [#1690](https://github.com/IntelPython/dpnp/pull/1690)
 * Implemented `dpnp.true_divide` as an alias on `dpnp.divide` function [#1641](https://github.com/IntelPython/dpnp/pull/1641)
 * Added support of more number of data types and dimensions for input array in `dpnp.vdot` function [#1692](https://github.com/IntelPython/dpnp/pull/1692)
@@ -40,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added support of more number of data types and dimensions for input array in `dpnp.linalg.svd` function, as well as implementing support of `full_matrices`, `compute_uv` and `hermitian` keywords [#1604](https://github.com/IntelPython/dpnp/pull/1604)
 * Accepted different data types and dimensions of input arrays in `dpnp.put_along_axis` and `dpnp.take_along_axis` functions, as well as available values of `axis` keyword [#1636](https://github.com/IntelPython/dpnp/pull/1636)
 * Added `keepdims`, `initial` and `where` keywords to `dpnp.amax` and `dpnp.amin` functions [#1639](https://github.com/IntelPython/dpnp/pull/1639)
-* Extended `dpnp.mesgrid` function to support `sparse` and `copy` keyword arguments [#1675](https://github.com/IntelPython/dpnp/pull/1675)
+* Extended `dpnp.meshgrid` function to support `sparse` and `copy` keyword arguments [#1675](https://github.com/IntelPython/dpnp/pull/1675)
 * Extended `dpnp.average` function to support `axis`, `weights`, `returned` and `keepdims` keywords and `dpnp.nansum` function with `axis`, `dtype`, `keepdims` and `out` keyword arguments [#1654](https://github.com/IntelPython/dpnp/pull/1654)
 * Extended `dpnp.std`, `dpnp.var` and `nanvar` functions to support `axis`, `dtype`, `out` and `keepdims` keyword arguments [#1635](https://github.com/IntelPython/dpnp/pull/1635)
 * Extended `dpnp.ogrid` and `dpnp.mgrid` functions with support of device-aware keywords of compute follows data paradigm [#1622](https://github.com/IntelPython/dpnp/pull/1622)
