@@ -60,6 +60,4 @@ from tests.third_party.cupy.testing.parameterized import (
     product,
     product_dict,
 )
-from tests.third_party.cupy.testing.random import fix_random
-
-# from tests.third_party.cupy.testing.random import generate_seed
+from tests.third_party.cupy.testing.random import fix_random, generate_seed

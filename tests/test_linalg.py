@@ -1,7 +1,12 @@
 import dpctl
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_array_equal, assert_raises
+from numpy.testing import (
+    assert_allclose,
+    assert_almost_equal,
+    assert_array_equal,
+    assert_raises,
+)
 
 import dpnp as inp
 from tests.third_party.cupy import testing
@@ -9,6 +14,7 @@ from tests.third_party.cupy import testing
 from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
+    get_complex_dtypes,
     has_support_aspect64,
     is_cpu_device,
 )
@@ -307,8 +313,8 @@ class TestDet:
         a_np = numpy.array(matrix, dtype="float32")
         a_dp = inp.array(a_np)
 
-        expected = numpy.linalg.slogdet(a_np)
-        result = inp.linalg.slogdet(a_dp)
+        expected = numpy.linalg.det(a_np)
+        result = inp.linalg.det(a_dp)
 
         assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
@@ -671,146 +677,141 @@ def test_norm3(array, ord, axis):
     assert_allclose(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize(
-    "shape",
-    [(2, 2), (3, 4), (5, 3), (16, 16), (0, 0), (0, 2), (2, 0)],
-    ids=["(2,2)", "(3,4)", "(5,3)", "(16,16)", "(0,0)", "(0,2)", "(2,0)"],
-)
-@pytest.mark.parametrize(
-    "mode", ["complete", "reduced"], ids=["complete", "reduced"]
-)
-def test_qr(type, shape, mode):
-    a = numpy.arange(shape[0] * shape[1], dtype=type).reshape(shape)
-    ia = inp.array(a)
-
-    np_q, np_r = numpy.linalg.qr(a, mode)
-    dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
-
-    support_aspect64 = has_support_aspect64()
-
-    if support_aspect64:
-        assert dpnp_q.dtype == np_q.dtype
-        assert dpnp_r.dtype == np_r.dtype
-    assert dpnp_q.shape == np_q.shape
-    assert dpnp_r.shape == np_r.shape
-
-    tol = 1e-6
-    if type == inp.float32:
-        tol = 1e-02
-    elif not support_aspect64 and type in (inp.int32, inp.int64, None):
-        tol = 1e-02
-
-    # check decomposition
-    assert_allclose(
-        ia,
-        inp.dot(dpnp_q, dpnp_r),
-        rtol=tol,
-        atol=tol,
+class TestQr:
+    # TODO: New packages that fix issue CMPLRLLVM-53771 are only available in internal CI.
+    # Skip the tests on cpu until these packages are available for the external CI.
+    # Specifically dpcpp_linux-64>=2024.1.0
+    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (3, 4), (5, 3), (16, 16), (2, 2, 2), (2, 4, 2), (2, 2, 4)],
+        ids=[
+            "(2, 2)",
+            "(3, 4)",
+            "(5, 3)",
+            "(16, 16)",
+            "(2, 2, 2)",
+            "(2, 4, 2)",
+            "(2, 2, 4)",
+        ],
     )
-
-    # NP change sign for comparison
-    ncols = min(a.shape[0], a.shape[1])
-    for i in range(ncols):
-        j = numpy.where(numpy.abs(np_q[:, i]) > tol)[0][0]
-        if np_q[j, i] * dpnp_q[j, i] < 0:
-            np_q[:, i] = -np_q[:, i]
-            np_r[i, :] = -np_r[i, :]
-
-        if numpy.any(numpy.abs(np_r[i, :]) > tol):
-            assert_allclose(
-                inp.asnumpy(dpnp_q)[:, i], np_q[:, i], rtol=tol, atol=tol
-            )
-
-    assert_allclose(dpnp_r, np_r, rtol=tol, atol=tol)
-
-
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-def test_qr_not_2D():
-    a = numpy.arange(12, dtype=numpy.float32).reshape((3, 2, 2))
-    ia = inp.array(a)
-
-    np_q, np_r = numpy.linalg.qr(a)
-    dpnp_q, dpnp_r = inp.linalg.qr(ia)
-
-    assert dpnp_q.dtype == np_q.dtype
-    assert dpnp_r.dtype == np_r.dtype
-    assert dpnp_q.shape == np_q.shape
-    assert dpnp_r.shape == np_r.shape
-
-    assert_allclose(ia, inp.matmul(dpnp_q, dpnp_r))
-
-    a = numpy.empty((0, 3, 2), dtype=numpy.float32)
-    ia = inp.array(a)
-
-    np_q, np_r = numpy.linalg.qr(a)
-    dpnp_q, dpnp_r = inp.linalg.qr(ia)
-
-    assert dpnp_q.dtype == np_q.dtype
-    assert dpnp_r.dtype == np_r.dtype
-    assert dpnp_q.shape == np_q.shape
-    assert dpnp_r.shape == np_r.shape
-
-    assert_allclose(ia, inp.matmul(dpnp_q, dpnp_r))
-
-
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize(
-    "shape",
-    [(2, 2), (3, 4), (5, 3), (16, 16)],
-    ids=["(2,2)", "(3,4)", "(5,3)", "(16,16)"],
-)
-def test_svd(type, shape):
-    a = numpy.arange(shape[0] * shape[1], dtype=type).reshape(shape)
-    ia = inp.array(a)
-
-    np_u, np_s, np_vt = numpy.linalg.svd(a)
-    dpnp_u, dpnp_s, dpnp_vt = inp.linalg.svd(ia)
-
-    support_aspect64 = has_support_aspect64()
-
-    if support_aspect64:
-        assert dpnp_u.dtype == np_u.dtype
-        assert dpnp_s.dtype == np_s.dtype
-        assert dpnp_vt.dtype == np_vt.dtype
-    assert dpnp_u.shape == np_u.shape
-    assert dpnp_s.shape == np_s.shape
-    assert dpnp_vt.shape == np_vt.shape
-
-    tol = 1e-12
-    if type == inp.float32:
-        tol = 1e-03
-    elif not support_aspect64 and type in (inp.int32, inp.int64, None):
-        tol = 1e-03
-
-    # check decomposition
-    dpnp_diag_s = inp.zeros(shape, dtype=dpnp_s.dtype)
-    for i in range(dpnp_s.size):
-        dpnp_diag_s[i, i] = dpnp_s[i]
-
-    # check decomposition
-    assert_allclose(
-        ia, inp.dot(dpnp_u, inp.dot(dpnp_diag_s, dpnp_vt)), rtol=tol, atol=tol
+    @pytest.mark.parametrize(
+        "mode",
+        ["r", "raw", "complete", "reduced"],
+        ids=["r", "raw", "complete", "reduced"],
     )
+    def test_qr(self, dtype, shape, mode):
+        a = numpy.random.rand(*shape).astype(dtype)
+        ia = inp.array(a)
 
-    # compare singular values
-    # assert_allclose(dpnp_s, np_s, rtol=tol, atol=tol)
+        if mode == "r":
+            np_r = numpy.linalg.qr(a, mode)
+            dpnp_r = inp.linalg.qr(ia, mode)
+        else:
+            np_q, np_r = numpy.linalg.qr(a, mode)
+            dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
 
-    # change sign of vectors
-    for i in range(min(shape[0], shape[1])):
-        if np_u[0, i] * dpnp_u[0, i] < 0:
-            np_u[:, i] = -np_u[:, i]
-            np_vt[i, :] = -np_vt[i, :]
+            # check decomposition
+            if mode in ("complete", "reduced"):
+                if a.ndim == 2:
+                    assert_almost_equal(
+                        inp.dot(dpnp_q, dpnp_r),
+                        a,
+                        decimal=5,
+                    )
+                else:  # a.ndim > 2
+                    assert_almost_equal(
+                        inp.matmul(dpnp_q, dpnp_r),
+                        a,
+                        decimal=5,
+                    )
+            else:  # mode=="raw"
+                assert_dtype_allclose(dpnp_q, np_q)
 
-    # compare vectors for non-zero values
-    for i in range(numpy.count_nonzero(np_s > tol)):
-        assert_allclose(
-            inp.asnumpy(dpnp_u)[:, i], np_u[:, i], rtol=tol, atol=tol
-        )
-        assert_allclose(
-            inp.asnumpy(dpnp_vt)[i, :], np_vt[i, :], rtol=tol, atol=tol
-        )
+        if mode in ("raw", "r"):
+            assert_dtype_allclose(dpnp_r, np_r)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(0, 0), (0, 2), (2, 0), (2, 0, 3), (2, 3, 0), (0, 2, 3)],
+        ids=[
+            "(0, 0)",
+            "(0, 2)",
+            "(2 ,0)",
+            "(2, 0, 3)",
+            "(2, 3, 0)",
+            "(0, 2, 3)",
+        ],
+    )
+    @pytest.mark.parametrize(
+        "mode",
+        ["r", "raw", "complete", "reduced"],
+        ids=["r", "raw", "complete", "reduced"],
+    )
+    def test_qr_empty(self, dtype, shape, mode):
+        a = numpy.empty(shape, dtype=dtype)
+        ia = inp.array(a)
+
+        if mode == "r":
+            np_r = numpy.linalg.qr(a, mode)
+            dpnp_r = inp.linalg.qr(ia, mode)
+        else:
+            np_q, np_r = numpy.linalg.qr(a, mode)
+            dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
+
+            assert_dtype_allclose(dpnp_q, np_q)
+
+        assert_dtype_allclose(dpnp_r, np_r)
+
+    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
+    @pytest.mark.parametrize(
+        "mode",
+        ["r", "raw", "complete", "reduced"],
+        ids=["r", "raw", "complete", "reduced"],
+    )
+    def test_qr_strides(self, mode):
+        a = numpy.random.rand(5, 5)
+        ia = inp.array(a)
+
+        # positive strides
+        if mode == "r":
+            np_r = numpy.linalg.qr(a[::2, ::2], mode)
+            dpnp_r = inp.linalg.qr(ia[::2, ::2], mode)
+        else:
+            np_q, np_r = numpy.linalg.qr(a[::2, ::2], mode)
+            dpnp_q, dpnp_r = inp.linalg.qr(ia[::2, ::2], mode)
+
+            assert_dtype_allclose(dpnp_q, np_q)
+
+        assert_dtype_allclose(dpnp_r, np_r)
+
+        # negative strides
+        if mode == "r":
+            np_r = numpy.linalg.qr(a[::-2, ::-2], mode)
+            dpnp_r = inp.linalg.qr(ia[::-2, ::-2], mode)
+        else:
+            np_q, np_r = numpy.linalg.qr(a[::-2, ::-2], mode)
+            dpnp_q, dpnp_r = inp.linalg.qr(ia[::-2, ::-2], mode)
+
+            assert_dtype_allclose(dpnp_q, np_q)
+
+        assert_dtype_allclose(dpnp_r, np_r)
+
+    def test_qr_errors(self):
+        a_dp = inp.array([[1, 2], [3, 5]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.qr, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.qr, a_dp_ndim_1)
+
+        # invalid mode
+        assert_raises(ValueError, inp.linalg.qr, a_dp, "c")
 
 
 class TestSolve:
@@ -1028,3 +1029,141 @@ class TestSlogdet:
         # unsupported type
         a_np = inp.asnumpy(a_dp)
         assert_raises(TypeError, inp.linalg.slogdet, a_np)
+
+
+class TestSvd:
+    def get_tol(self, dtype):
+        tol = 1e-06
+        if dtype in (inp.float32, inp.complex64):
+            tol = 1e-04
+        elif not has_support_aspect64() and dtype in (
+            inp.int32,
+            inp.int64,
+            None,
+        ):
+            tol = 1e-04
+        self._tol = tol
+
+    def check_types_shapes(
+        self, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt=True
+    ):
+        if has_support_aspect64():
+            if compute_vt:
+                assert dp_u.dtype == np_u.dtype
+                assert dp_vt.dtype == np_vt.dtype
+            assert dp_s.dtype == np_s.dtype
+        else:
+            if compute_vt:
+                assert dp_u.dtype.kind == np_u.dtype.kind
+                assert dp_vt.dtype.kind == np_vt.dtype.kind
+            assert dp_s.dtype.kind == np_s.dtype.kind
+
+        if compute_vt:
+            assert dp_u.shape == np_u.shape
+            assert dp_vt.shape == np_vt.shape
+        assert dp_s.shape == np_s.shape
+
+    # Checks the accuracy of singular value decomposition (SVD).
+    # Compares the reconstructed matrix from the decomposed components
+    # with the original matrix.
+    # Additionally checks for equality of singular values
+    # between dpnp and numpy decompositions
+    def check_decomposition(
+        self, dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
+    ):
+        tol = self._tol
+        if compute_vt:
+            dpnp_diag_s = inp.zeros_like(dp_a, dtype=dp_s.dtype)
+            for i in range(min(dp_a.shape[-2], dp_a.shape[-1])):
+                dpnp_diag_s[..., i, i] = dp_s[..., i]
+                reconstructed = inp.dot(dp_u, inp.dot(dpnp_diag_s, dp_vt))
+            # TODO: use assert dpnp.allclose() inside check_decomposition()
+            # when it will support complex dtypes
+            assert_allclose(dp_a, reconstructed, rtol=tol, atol=1e-4)
+
+        assert_allclose(dp_s, np_s, rtol=tol, atol=1e-03)
+
+        if compute_vt:
+            for i in range(min(dp_a.shape[-2], dp_a.shape[-1])):
+                if np_u[..., 0, i] * dp_u[..., 0, i] < 0:
+                    np_u[..., :, i] = -np_u[..., :, i]
+                    np_vt[..., i, :] = -np_vt[..., i, :]
+            for i in range(numpy.count_nonzero(np_s > tol)):
+                assert_allclose(
+                    inp.asnumpy(dp_u[..., :, i]),
+                    np_u[..., :, i],
+                    rtol=tol,
+                    atol=tol,
+                )
+                assert_allclose(
+                    inp.asnumpy(dp_vt[..., i, :]),
+                    np_vt[..., i, :],
+                    rtol=tol,
+                    atol=tol,
+                )
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (3, 4), (5, 3), (16, 16)],
+        ids=["(2,2)", "(3,4)", "(5,3)", "(16,16)"],
+    )
+    def test_svd(self, dtype, shape):
+        a = numpy.arange(shape[0] * shape[1], dtype=dtype).reshape(shape)
+        dp_a = inp.array(a)
+
+        np_u, np_s, np_vt = numpy.linalg.svd(a)
+        dp_u, dp_s, dp_vt = inp.linalg.svd(dp_a)
+
+        self.check_types_shapes(dp_u, dp_s, dp_vt, np_u, np_s, np_vt)
+        self.get_tol(dtype)
+        self.check_decomposition(
+            dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, True
+        )
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize("compute_vt", [True, False], ids=["True", "False"])
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (16, 16)],
+        ids=["(2,2)", "(16, 16)"],
+    )
+    def test_svd_hermitian(self, dtype, compute_vt, shape):
+        a = numpy.random.randn(*shape) + 1j * numpy.random.randn(*shape)
+        a = numpy.conj(a.T) @ a
+
+        a = a.astype(dtype)
+        dp_a = inp.array(a)
+
+        if compute_vt:
+            np_u, np_s, np_vt = numpy.linalg.svd(
+                a, compute_uv=compute_vt, hermitian=True
+            )
+            dp_u, dp_s, dp_vt = inp.linalg.svd(
+                dp_a, compute_uv=compute_vt, hermitian=True
+            )
+        else:
+            np_s = numpy.linalg.svd(a, compute_uv=compute_vt, hermitian=True)
+            dp_s = inp.linalg.svd(dp_a, compute_uv=compute_vt, hermitian=True)
+            np_u = np_vt = dp_u = dp_vt = None
+
+        self.check_types_shapes(
+            dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
+        )
+
+        self.get_tol(dtype)
+
+        self.check_decomposition(
+            dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
+        )
+
+    def test_svd_errors(self):
+        a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.svd, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.svd, a_dp_ndim_1)

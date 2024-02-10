@@ -36,10 +36,9 @@ from tests.third_party.cupy import testing
         }
     )
 )
-@testing.gpu
 class TestDot(unittest.TestCase):
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_dot(self, xp, dtype_a, dtype_b):
         shape_a, shape_b = self.shape
         if self.trans_a:
@@ -71,8 +70,13 @@ class TestDot(unittest.TestCase):
         else:
             shape_c = shape_a[:-1] + shape_b[:-2] + shape_b[-1:]
         c = xp.empty(shape_c, dtype=dtype_c)
-        out = xp.dot(a, b, out=c)
-        self.assertIs(out, c)
+        try:
+            out = xp.dot(a, b, out=c)
+        except TypeError:
+            # When output dtype is incorrect, NumPy raises ValueError
+            # While DPNP raises TypeError, so we change it to ValueError
+            raise ValueError
+        assert out is c
         return c
 
 
@@ -128,10 +132,11 @@ class TestCrossProduct(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestDotFor0Dim(unittest.TestCase):
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
-    @testing.numpy_cupy_allclose(contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        type_check=has_support_aspect64(), contiguous_check=False
+    )
     def test_dot(self, xp, dtype_a, dtype_b):
         shape_a, shape_b = self.shape
         if self.trans_a:
@@ -145,8 +150,7 @@ class TestDotFor0Dim(unittest.TestCase):
         return xp.dot(a, b)
 
 
-@testing.gpu
-class TestProduct(unittest.TestCase):
+class TestProduct:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_dot_vec1(self, xp, dtype):
@@ -288,7 +292,6 @@ class TestProduct(unittest.TestCase):
         b = testing.shaped_arange((4, 5), xp, dtype)
         return xp.outer(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot(self, xp, dtype):
@@ -303,7 +306,6 @@ class TestProduct(unittest.TestCase):
         b = testing.shaped_arange((4, 3, 2), xp, dtype).transpose(2, 0, 1)
         return xp.tensordot(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot_with_int_axes(self, xp, dtype):
@@ -333,7 +335,6 @@ class TestProduct(unittest.TestCase):
             )
             return xp.tensordot(a, b, axes=3)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot_with_list_axes(self, xp, dtype):
@@ -414,8 +415,6 @@ class TestProduct(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestProductZeroLength(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()

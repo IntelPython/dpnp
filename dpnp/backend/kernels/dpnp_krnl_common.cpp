@@ -1040,6 +1040,7 @@ void func_map_init_linalg(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_dot_default_c<double, double, double>};
 
+    // needed for "dpnp_correlate_c" function in dpnp_krnl_statistics.cpp
     fmap[DPNPFuncName::DPNP_FN_DOT_EXT][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_dot_ext_c<int32_t, int32_t, int32_t>};
     fmap[DPNPFuncName::DPNP_FN_DOT_EXT][eft_INT][eft_LNG] = {

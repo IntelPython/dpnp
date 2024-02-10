@@ -8,7 +8,11 @@ import dpnp
 
 
 def assert_dtype_allclose(
-    dpnp_arr, numpy_arr, check_type=True, check_only_type_kind=False
+    dpnp_arr,
+    numpy_arr,
+    check_type=True,
+    check_only_type_kind=False,
+    factor=8,
 ):
     """
     Assert DPNP and NumPy array based on maximum dtype resolution of input arrays
@@ -28,6 +32,7 @@ def assert_dtype_allclose(
     The 'check_only_type_kind' parameter (False by default) asserts only equal type kinds
     for all data types supported by DPNP when set to True.
     It is effective only when 'check_type' is also set to True.
+    The parameter `factor` scales the resolution used for comparing the arrays.
 
     """
 
@@ -44,7 +49,7 @@ def assert_dtype_allclose(
             if is_inexact(numpy_arr)
             else -dpnp.inf
         )
-        tol = 8 * max(tol_dpnp, tol_numpy)
+        tol = factor * max(tol_dpnp, tol_numpy)
         assert_allclose(dpnp_arr.asnumpy(), numpy_arr, atol=tol, rtol=tol)
         if check_type:
             numpy_arr_dtype = numpy_arr.dtype

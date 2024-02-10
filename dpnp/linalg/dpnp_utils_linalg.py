@@ -24,8 +24,9 @@
 # *****************************************************************************
 
 
+import dpctl
 import dpctl.tensor._tensor_impl as ti
-from numpy import issubdtype
+from numpy import prod
 
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
@@ -38,8 +39,10 @@ __all__ = [
     "dpnp_det",
     "dpnp_eigh",
     "dpnp_inv",
+    "dpnp_qr",
     "dpnp_slogdet",
     "dpnp_solve",
+    "dpnp_svd",
 ]
 
 _jobz = {"N": 0, "V": 1}
@@ -124,99 +127,6 @@ def _check_lapack_dev_info(dev_info, error_msg=None):
         raise dpnp.linalg.LinAlgError(error_msg)
 
 
-def _real_type(dtype, device=None):
-    """
-    Returns the real data type corresponding to a given dpnp data type.
-
-    Parameters
-    ----------
-    dtype : dpnp.dtype
-        The dtype for which to find the corresponding real data type.
-    device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API concept of device where an array of default floating type might be created.
-
-    Returns
-    -------
-    out : str
-        The name of the real data type.
-
-    """
-
-    default = dpnp.default_float_type(device)
-    real_type = _real_types_map.get(dtype.name, default)
-    return dpnp.dtype(real_type)
-
-
-def check_stacked_2d(*arrays):
-    """
-    Return ``True`` if each array in `arrays` has at least two dimensions.
-
-    If any array is less than two-dimensional, `dpnp.linalg.LinAlgError` will be raised.
-
-    Parameters
-    ----------
-    arrays : {dpnp.ndarray, usm_ndarray}
-        A sequence of input arrays to check for dimensionality.
-
-    Returns
-    -------
-    out : bool
-        ``True`` if each array in `arrays` is at least two-dimensional.
-
-    Raises
-    ------
-    dpnp.linalg.LinAlgError
-        If any array in `arrays` is less than two-dimensional.
-
-    """
-
-    for a in arrays:
-        if a.ndim < 2:
-            raise dpnp.linalg.LinAlgError(
-                f"{a.ndim}-dimensional array given. The input "
-                "array must be at least two-dimensional"
-            )
-
-
-def check_stacked_square(*arrays):
-    """
-    Return ``True`` if each array in `arrays` is a square matrix.
-
-    If any array does not form a square matrix, `dpnp.linalg.LinAlgError` will be raised.
-
-    Precondition: `arrays` are at least 2d. The caller should assert it
-    beforehand. For example,
-
-    >>> def solve(a):
-    ...     check_stacked_2d(a)
-    ...     check_stacked_square(a)
-    ...     ...
-
-    Parameters
-    ----------
-    arrays : {dpnp.ndarray, usm_ndarray}
-        A sequence of input arrays to check for square matrix shape.
-
-    Returns
-    -------
-    out : bool
-        ``True`` if each array in `arrays` forms a square matrix.
-
-    Raises
-    ------
-    dpnp.linalg.LinAlgError
-        If any array in `arrays` does not form a square matrix.
-
-    """
-
-    for a in arrays:
-        m, n = a.shape[-2:]
-        if m != n:
-            raise dpnp.linalg.LinAlgError(
-                "Last 2 dimensions of the input array must be square"
-            )
-
-
 def _common_type(*arrays):
     """
     Common type for linear algebra operations.
@@ -245,7 +155,8 @@ def _common_type(*arrays):
 
     dtypes = [arr.dtype for arr in arrays]
 
-    default = dpnp.default_float_type(device=arrays[0].device)
+    _, sycl_queue = get_usm_allocations(arrays)
+    default = dpnp.default_float_type(sycl_queue=sycl_queue)
     dtype_common = _common_inexact_type(default, *dtypes)
 
     return dtype_common
@@ -275,7 +186,8 @@ def _common_inexact_type(default_dtype, *dtypes):
     """
 
     inexact_dtypes = [
-        dt if issubdtype(dt, dpnp.inexact) else default_dtype for dt in dtypes
+        dt if dpnp.issubdtype(dt, dpnp.inexact) else default_dtype
+        for dt in dtypes
     ]
     return dpnp.result_type(*inexact_dtypes)
 
@@ -467,6 +379,185 @@ def _lu_factor(a, res_type):
         # pivot indices 'ipiv_h'
         # and the status 'dev_info_h' from the LAPACK getrf call
         return (a_h, ipiv_h, dev_info_array)
+
+
+def _real_type(dtype, device=None):
+    """
+    Returns the real data type corresponding to a given dpnp data type.
+
+    Parameters
+    ----------
+    dtype : dpnp.dtype
+        The dtype for which to find the corresponding real data type.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where an array of default floating type might be created.
+
+    Returns
+    -------
+    out : str
+        The name of the real data type.
+
+    """
+
+    default = dpnp.default_float_type(device)
+    real_type = _real_types_map.get(dtype.name, default)
+    return dpnp.dtype(real_type)
+
+
+def _stacked_identity(
+    batch_shape, n, dtype, usm_type="device", sycl_queue=None
+):
+    """
+    Create stacked identity matrices of size `n x n`.
+
+    Forms multiple identity matrices based on `batch_shape`.
+
+    Parameters
+    ----------
+    batch_shape : tuple
+        Shape of the batch determining the stacking of identity matrices.
+    n : int
+        Dimension of each identity matrix.
+    dtype : dtype
+        Data type of the matrix element.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of stacked `n x n` identity matrices as per `batch_shape`.
+
+    Example
+    -------
+    >>> _stacked_identity((2,), 2, dtype=dpnp.int64)
+    array([[[1, 0],
+            [0, 1]],
+
+           [[1, 0],
+            [0, 1]]])
+
+    """
+
+    shape = batch_shape + (n, n)
+    idx = dpnp.arange(n, usm_type=usm_type, sycl_queue=sycl_queue)
+    x = dpnp.zeros(shape, dtype=dtype, usm_type=usm_type, sycl_queue=sycl_queue)
+    x[..., idx, idx] = 1
+    return x
+
+
+def _triu_inplace(a, host_tasks, depends=None):
+    """
+    _triu_inplace(a, host_tasks, depends=None)
+
+    Computes the upper triangular part of an array in-place,
+    but currently allocates extra memory for the result.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array from which the upper triangular part is to be extracted.
+    host_tasks : list
+        A list to which the function appends the host event corresponding to the computation.
+        This allows for dependency management and synchronization with other tasks.
+    depends : list, optional
+        A list of events that the triangular operation depends on.
+        These tasks are completed before the triangular computation starts.
+        If ``None``, defaults to an empty list.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A new array containing the upper triangular part of the input array `a`.
+
+    """
+
+    # TODO: implement a dedicated kernel for in-place triu instead of
+    # extra memory allocation for result
+    if depends is None:
+        depends = []
+    out = dpnp.empty_like(a, order="C")
+    ht_triu_ev, _ = ti._triu(
+        src=a.get_array(),
+        dst=out.get_array(),
+        k=0,
+        sycl_queue=a.sycl_queue,
+        depends=depends,
+    )
+    host_tasks.append(ht_triu_ev)
+    return out
+
+
+def check_stacked_2d(*arrays):
+    """
+    Return ``True`` if each array in `arrays` has at least two dimensions.
+
+    If any array is less than two-dimensional, `dpnp.linalg.LinAlgError` will be raised.
+
+    Parameters
+    ----------
+    arrays : {dpnp.ndarray, usm_ndarray}
+        A sequence of input arrays to check for dimensionality.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if each array in `arrays` is at least two-dimensional.
+
+    Raises
+    ------
+    dpnp.linalg.LinAlgError
+        If any array in `arrays` is less than two-dimensional.
+
+    """
+
+    for a in arrays:
+        if a.ndim < 2:
+            raise dpnp.linalg.LinAlgError(
+                f"{a.ndim}-dimensional array given. The input "
+                "array must be at least two-dimensional"
+            )
+
+
+def check_stacked_square(*arrays):
+    """
+    Return ``True`` if each array in `arrays` is a square matrix.
+
+    If any array does not form a square matrix, `dpnp.linalg.LinAlgError` will be raised.
+
+    Precondition: `arrays` are at least 2d. The caller should assert it
+    beforehand. For example,
+
+    >>> def solve(a):
+    ...     check_stacked_2d(a)
+    ...     check_stacked_square(a)
+    ...     ...
+
+    Parameters
+    ----------
+    arrays : {dpnp.ndarray, usm_ndarray}
+        A sequence of input arrays to check for square matrix shape.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if each array in `arrays` forms a square matrix.
+
+    Raises
+    ------
+    dpnp.linalg.LinAlgError
+        If any array in `arrays` does not form a square matrix.
+
+    """
+
+    for a in arrays:
+        m, n = a.shape[-2:]
+        if m != n:
+            raise dpnp.linalg.LinAlgError(
+                "Last 2 dimensions of the input array must be square"
+            )
 
 
 def dpnp_cholesky_batch(a, upper_lower, res_type):
@@ -907,6 +998,344 @@ def dpnp_inv(a):
     return b_f
 
 
+def dpnp_qr_batch(a, mode="reduced"):
+    """
+    dpnp_qr_batch(a, mode="reduced")
+
+    Return the batched qr factorization of `a` matrix.
+
+    """
+
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+
+    m, n = a.shape[-2:]
+    k = min(m, n)
+
+    batch_shape = a.shape[:-2]
+    batch_size = prod(batch_shape)
+
+    res_type = _common_type(a)
+
+    if batch_size == 0 or k == 0:
+        if mode == "reduced":
+            return (
+                dpnp.empty_like(
+                    a,
+                    shape=batch_shape + (m, k),
+                    dtype=res_type,
+                ),
+                dpnp.empty_like(
+                    a,
+                    shape=batch_shape + (k, n),
+                    dtype=res_type,
+                ),
+            )
+        elif mode == "complete":
+            q = _stacked_identity(
+                batch_shape,
+                m,
+                dtype=res_type,
+                usm_type=a_usm_type,
+                sycl_queue=a_sycl_queue,
+            )
+            return (
+                q,
+                dpnp.empty_like(
+                    a,
+                    shape=batch_shape + (m, n),
+                    dtype=res_type,
+                ),
+            )
+        elif mode == "r":
+            return dpnp.empty_like(
+                a,
+                shape=batch_shape + (k, n),
+                dtype=res_type,
+            )
+        else:  # mode=="raw"
+            return (
+                dpnp.empty_like(
+                    a,
+                    shape=batch_shape + (n, m),
+                    dtype=res_type,
+                ),
+                dpnp.empty_like(
+                    a,
+                    shape=batch_shape + (k,),
+                    dtype=res_type,
+                ),
+            )
+
+    # get 3d input arrays by reshape
+    a = a.reshape(-1, m, n)
+
+    a = a.swapaxes(-2, -1)
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+
+    a_t = dpnp.empty_like(a, order="C", dtype=res_type)
+
+    # use DPCTL tensor function to fill the matrix array
+    # with content from the input array `a`
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_t.get_array(), sycl_queue=a_sycl_queue
+    )
+
+    tau_h = dpnp.empty_like(
+        a_t,
+        shape=(batch_size, k),
+        dtype=res_type,
+    )
+
+    a_stride = a_t.strides[0]
+    tau_stride = tau_h.strides[0]
+
+    # Call the LAPACK extension function _geqrf_batch to compute the QR factorization
+    # of a general m x n matrix.
+    ht_geqrf_batch_ev, geqrf_batch_ev = li._geqrf_batch(
+        a_sycl_queue,
+        a_t.get_array(),
+        tau_h.get_array(),
+        m,
+        n,
+        a_stride,
+        tau_stride,
+        batch_size,
+        [a_copy_ev],
+    )
+
+    ht_list_ev = [ht_geqrf_batch_ev, a_ht_copy_ev]
+
+    if mode in ["r", "raw"]:
+        if mode == "r":
+            r = a_t[..., :k].swapaxes(-2, -1)
+            r = _triu_inplace(r, ht_list_ev, [geqrf_batch_ev])
+            dpctl.SyclEvent.wait_for(ht_list_ev)
+            return r.reshape(batch_shape + r.shape[-2:])
+
+        # mode=="raw"
+        dpctl.SyclEvent.wait_for(ht_list_ev)
+        q = a_t.reshape(batch_shape + a_t.shape[-2:])
+        r = tau_h.reshape(batch_shape + tau_h.shape[-1:])
+        return (q, r)
+
+    if mode == "complete" and m > n:
+        mc = m
+        q = dpnp.empty_like(
+            a_t,
+            shape=(batch_size, m, m),
+            dtype=res_type,
+        )
+    else:
+        mc = k
+        q = dpnp.empty_like(
+            a_t,
+            shape=(batch_size, n, m),
+            dtype=res_type,
+        )
+
+    # use DPCTL tensor function to fill the matrix array `q[..., :n, :]`
+    # with content from the array `a_t` overwritten by geqrf_batch
+    a_t_ht_copy_ev, a_t_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_t.get_array(),
+        dst=q[..., :n, :].get_array(),
+        sycl_queue=a_sycl_queue,
+        depends=[geqrf_batch_ev],
+    )
+
+    ht_list_ev.append(a_t_ht_copy_ev)
+
+    q_stride = q.strides[0]
+    tau_stride = tau_h.strides[0]
+
+    # Get LAPACK function (_orgqr_batch for real or _ungqf_batch for complex data types)
+    # for QR factorization
+    lapack_func = (
+        "_ungqr_batch"
+        if dpnp.issubdtype(res_type, dpnp.complexfloating)
+        else "_orgqr_batch"
+    )
+
+    # Call the LAPACK extension function _orgqr_batch/ to generate the real orthogonal/
+    # complex unitary matrices `Qi` of the QR factorization
+    # for a batch of general matrices.
+    ht_lapack_ev, lapack_ev = getattr(li, lapack_func)(
+        a_sycl_queue,
+        q.get_array(),
+        tau_h.get_array(),
+        m,
+        mc,
+        k,
+        q_stride,
+        tau_stride,
+        batch_size,
+        [a_t_copy_ev],
+    )
+
+    ht_list_ev.append(ht_lapack_ev)
+
+    q = q[..., :mc, :].swapaxes(-2, -1)
+    r = a_t[..., :mc].swapaxes(-2, -1)
+
+    ht_list_ev.append(ht_lapack_ev)
+
+    r = _triu_inplace(r, ht_list_ev, [lapack_ev])
+    dpctl.SyclEvent.wait_for(ht_list_ev)
+
+    return (
+        q.reshape(batch_shape + q.shape[-2:]),
+        r.reshape(batch_shape + r.shape[-2:]),
+    )
+
+
+def dpnp_qr(a, mode="reduced"):
+    """
+    dpnp_qr(a, mode="reduced")
+
+    Return the qr factorization of `a` matrix.
+
+    """
+
+    if a.ndim > 2:
+        return dpnp_qr_batch(a, mode=mode)
+
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+
+    res_type = _common_type(a)
+
+    m, n = a.shape
+    k = min(m, n)
+    if k == 0:
+        if mode == "reduced":
+            return dpnp.empty_like(
+                a,
+                shape=(m, 0),
+                dtype=res_type,
+            ), dpnp.empty_like(
+                a,
+                shape=(0, n),
+                dtype=res_type,
+            )
+        elif mode == "complete":
+            return dpnp.identity(
+                m, dtype=res_type, sycl_queue=a_sycl_queue, usm_type=a_usm_type
+            ), dpnp.empty_like(
+                a,
+                shape=(m, n),
+                dtype=res_type,
+            )
+        elif mode == "r":
+            return dpnp.empty_like(
+                a,
+                shape=(0, n),
+                dtype=res_type,
+            )
+        else:  # mode == "raw"
+            return dpnp.empty_like(
+                a,
+                shape=(n, m),
+                dtype=res_type,
+            ), dpnp.empty_like(
+                a,
+                shape=(0,),
+                dtype=res_type,
+            )
+
+    # Transpose the input matrix to convert from row-major to column-major order.
+    # This adjustment is necessary for compatibility with OneMKL LAPACK routines,
+    # which expect matrices in column-major format.
+    # This allows data to be handled efficiently without the need for additional conversion.
+    a = a.T
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+    a_t = dpnp.empty_like(a, order="C", dtype=res_type)
+
+    # use DPCTL tensor function to fill the matrix array
+    # with content from the input array `a`
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_t.get_array(), sycl_queue=a_sycl_queue
+    )
+
+    tau_h = dpnp.empty_like(
+        a,
+        shape=(k,),
+        dtype=res_type,
+    )
+
+    # Call the LAPACK extension function _geqrf to compute the QR factorization
+    # of a general m x n matrix.
+    ht_geqrf_ev, geqrf_ev = li._geqrf(
+        a_sycl_queue, a_t.get_array(), tau_h.get_array(), [a_copy_ev]
+    )
+
+    ht_list_ev = [ht_geqrf_ev, a_ht_copy_ev]
+
+    if mode in ["r", "raw"]:
+        if mode == "r":
+            r = a_t[:, :k].transpose()
+            r = _triu_inplace(r, ht_list_ev, [geqrf_ev])
+            dpctl.SyclEvent.wait_for(ht_list_ev)
+            return r
+
+        # mode == "raw":
+        dpctl.SyclEvent.wait_for(ht_list_ev)
+        return (a_t, tau_h)
+
+    # mc is the total number of columns in the q matrix.
+    # In `complete` mode, mc equals the number of rows.
+    # In `reduced` mode, mc is the lesser of the row count or column count.
+    if mode == "complete" and m > n:
+        mc = m
+        q = dpnp.empty_like(
+            a_t,
+            shape=(m, m),
+            dtype=res_type,
+        )
+    else:
+        mc = k
+        q = dpnp.empty_like(
+            a_t,
+            shape=(n, m),
+            dtype=res_type,
+        )
+
+    # use DPCTL tensor function to fill the matrix array `q[:n]`
+    # with content from the array `a_t` overwritten by geqrf
+    a_t_ht_copy_ev, a_t_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_t.get_array(),
+        dst=q[:n].get_array(),
+        sycl_queue=a_sycl_queue,
+        depends=[geqrf_ev],
+    )
+
+    ht_list_ev.append(a_t_ht_copy_ev)
+
+    # Get LAPACK function (_orgqr for real or _ungqf for complex data types)
+    # for QR factorization
+    lapack_func = (
+        "_ungqr"
+        if dpnp.issubdtype(res_type, dpnp.complexfloating)
+        else "_orgqr"
+    )
+
+    # Call the LAPACK extension function _orgqr/_ungqf to generate the real orthogonal/
+    # complex unitary matrix `Q` of the QR factorization
+    ht_lapack_ev, lapack_ev = getattr(li, lapack_func)(
+        a_sycl_queue, m, mc, k, q.get_array(), tau_h.get_array(), [a_t_copy_ev]
+    )
+
+    q = q[:mc].transpose()
+    r = a_t[:, :mc].transpose()
+
+    ht_list_ev.append(ht_lapack_ev)
+
+    r = _triu_inplace(r, ht_list_ev, [lapack_ev])
+    dpctl.SyclEvent.wait_for(ht_list_ev)
+
+    return (q, r)
+
+
 def dpnp_solve(a, b):
     """
     dpnp_solve(a, b)
@@ -1088,3 +1517,290 @@ def dpnp_slogdet(a):
         dpnp.where(singular, res_type.type(0), sign).reshape(shape),
         dpnp.where(singular, logdet_dtype.type("-inf"), logdet).reshape(shape),
     )
+
+
+def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
+    """
+    dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True)
+
+    Return the batched singular value decomposition (SVD) of a stack of matrices.
+
+    """
+
+    a_usm_type = a.usm_type
+    a_sycl_queue = a.sycl_queue
+    reshape = False
+    batch_shape_orig = a.shape[:-2]
+
+    if a.ndim > 3:
+        # get 3d input arrays by reshape
+        a = a.reshape(prod(a.shape[:-2]), a.shape[-2], a.shape[-1])
+        reshape = True
+
+    batch_size = a.shape[0]
+    m, n = a.shape[-2:]
+
+    if batch_size == 0:
+        k = min(m, n)
+        s = dpnp.empty(
+            batch_shape_orig + (k,),
+            dtype=s_type,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+        if compute_uv:
+            if full_matrices:
+                u_shape = batch_shape_orig + (m, m)
+                vt_shape = batch_shape_orig + (n, n)
+            else:
+                u_shape = batch_shape_orig + (m, k)
+                vt_shape = batch_shape_orig + (k, n)
+
+            u = dpnp.empty(
+                u_shape,
+                dtype=uv_type,
+                usm_type=a_usm_type,
+                sycl_queue=a_sycl_queue,
+            )
+            vt = dpnp.empty(
+                vt_shape,
+                dtype=uv_type,
+                usm_type=a_usm_type,
+                sycl_queue=a_sycl_queue,
+            )
+            return u, s, vt
+        else:
+            return s
+    elif m == 0 or n == 0:
+        s = dpnp.empty(
+            batch_shape_orig + (0,),
+            dtype=s_type,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+        if compute_uv:
+            if full_matrices:
+                u = _stacked_identity(
+                    batch_shape_orig,
+                    m,
+                    dtype=uv_type,
+                    usm_type=a_usm_type,
+                    sycl_queue=a_sycl_queue,
+                )
+                vt = _stacked_identity(
+                    batch_shape_orig,
+                    n,
+                    dtype=uv_type,
+                    usm_type=a_usm_type,
+                    sycl_queue=a_sycl_queue,
+                )
+            else:
+                u = dpnp.empty(
+                    batch_shape_orig + (m, 0),
+                    dtype=uv_type,
+                    usm_type=a_usm_type,
+                    sycl_queue=a_sycl_queue,
+                )
+                vt = dpnp.empty(
+                    batch_shape_orig + (0, n),
+                    dtype=uv_type,
+                    usm_type=a_usm_type,
+                    sycl_queue=a_sycl_queue,
+                )
+            return u, s, vt
+        else:
+            return s
+
+    u_matrices = [None] * batch_size
+    s_matrices = [None] * batch_size
+    vt_matrices = [None] * batch_size
+    ht_list_ev = [None] * batch_size * 2
+    for i in range(batch_size):
+        if compute_uv:
+            (
+                u_matrices[i],
+                s_matrices[i],
+                vt_matrices[i],
+                ht_list_ev[2 * i],
+                ht_list_ev[2 * i + 1],
+            ) = dpnp_svd(a[i], full_matrices, compute_uv=True, batch_call=True)
+        else:
+            s_matrices[i], ht_list_ev[2 * i], ht_list_ev[2 * i + 1] = dpnp_svd(
+                a[i], full_matrices, compute_uv=False, batch_call=True
+            )
+
+    dpctl.SyclEvent.wait_for(ht_list_ev)
+
+    # TODO: Need to return C-contiguous array to match the output of numpy.linalg.svd
+    # Allocate 'F' order memory for dpnp output arrays to be aligned with dpnp_svd
+    out_s = dpnp.array(s_matrices, order="F")
+    if reshape:
+        out_s = out_s.reshape(batch_shape_orig + out_s.shape[-1:])
+
+    if compute_uv:
+        out_u = dpnp.array(u_matrices, order="F")
+        out_vt = dpnp.array(vt_matrices, order="F")
+        if reshape:
+            return (
+                out_u.reshape(batch_shape_orig + out_u.shape[-2:]),
+                out_s,
+                out_vt.reshape(batch_shape_orig + out_vt.shape[-2:]),
+            )
+        else:
+            return out_u, out_s, out_vt
+    else:
+        return out_s
+
+
+def dpnp_svd(
+    a, full_matrices=True, compute_uv=True, hermitian=False, batch_call=False
+):
+    """
+    dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False, batch_call=False)
+
+    Return the singular value decomposition (SVD).
+
+    """
+
+    if hermitian:
+        check_stacked_square(a)
+
+        # _gesvd returns eigenvalues with s ** 2 sorted descending,
+        # but dpnp.linalg.eigh returns s sorted ascending so we re-order the eigenvalues
+        # and related arrays to have the correct order
+        if compute_uv:
+            s, u = dpnp.linalg.eigh(a)
+            sgn = dpnp.sign(s)
+            s = dpnp.absolute(s)
+            sidx = dpnp.argsort(s)[..., ::-1]
+            # Rearrange the signs according to sorted indices
+            sgn = dpnp.take_along_axis(sgn, sidx, axis=-1)
+            # Sort the singular values in descending order
+            s = dpnp.take_along_axis(s, sidx, axis=-1)
+            # Rearrange the eigenvectors according to sorted indices
+            u = dpnp.take_along_axis(u, sidx[..., None, :], axis=-1)
+            # Singular values are unsigned, move the sign into v
+            # Compute V^T adjusting for the sign and conjugating
+            vt = dpnp.transpose(u * sgn[..., None, :]).conjugate()
+            return u, s, vt
+        else:
+            # TODO: use dpnp.linalg.eighvals when it is updated
+            s, _ = dpnp.linalg.eigh(a)
+            s = dpnp.abs(s)
+            return dpnp.sort(s)[..., ::-1]
+
+    uv_type = _common_type(a)
+    s_type = _real_type(uv_type)
+
+    if a.ndim > 2:
+        return dpnp_svd_batch(a, uv_type, s_type, full_matrices, compute_uv)
+
+    a_usm_type = a.usm_type
+    a_sycl_queue = a.sycl_queue
+    m, n = a.shape
+
+    if m == 0 or n == 0:
+        s = dpnp.empty(
+            (0,),
+            dtype=s_type,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+        if compute_uv:
+            if full_matrices:
+                u_shape = (m,)
+                vt_shape = (n,)
+            else:
+                u_shape = (m, 0)
+                vt_shape = (0, n)
+
+            u = dpnp.eye(
+                *u_shape,
+                dtype=uv_type,
+                usm_type=a_usm_type,
+                sycl_queue=a_sycl_queue,
+            )
+            vt = dpnp.eye(
+                *vt_shape,
+                dtype=uv_type,
+                usm_type=a_usm_type,
+                sycl_queue=a_sycl_queue,
+            )
+            return u, s, vt
+        else:
+            return s
+
+    # oneMKL LAPACK gesvd destroys `a` and assumes fortran-like array as input.
+    # Allocate 'F' order memory for dpnp arrays to comply with these requirements.
+    a_h = dpnp.empty_like(a, order="F", dtype=uv_type)
+
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+
+    # use DPCTL tensor function to fill the сopy of the input array
+    # from the input array
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+    )
+
+    k = min(m, n)
+    if compute_uv:
+        if full_matrices:
+            u_shape = (m, m)
+            vt_shape = (n, n)
+            jobu = ord("A")
+            jobvt = ord("A")
+        else:
+            u_shape = (m, k)
+            vt_shape = (k, n)
+            jobu = ord("S")
+            jobvt = ord("S")
+    else:
+        u_shape = vt_shape = ()
+        jobu = ord("N")
+        jobvt = ord("N")
+
+    # oneMKL LAPACK assumes fortran-like array as input.
+    # Allocate 'F' order memory for dpnp output arrays to comply with these requirements.
+    u_h = dpnp.empty(
+        u_shape,
+        dtype=uv_type,
+        order="F",
+        usm_type=a_usm_type,
+        sycl_queue=a_sycl_queue,
+    )
+    vt_h = dpnp.empty(
+        vt_shape,
+        dtype=uv_type,
+        order="F",
+        usm_type=a_usm_type,
+        sycl_queue=a_sycl_queue,
+    )
+    s_h = dpnp.empty(
+        k, dtype=s_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+    )
+
+    ht_lapack_ev, _ = li._gesvd(
+        a_sycl_queue,
+        jobu,
+        jobvt,
+        a_h.get_array(),
+        s_h.get_array(),
+        u_h.get_array(),
+        vt_h.get_array(),
+        [a_copy_ev],
+    )
+
+    if batch_call:
+        if compute_uv:
+            return u_h, s_h, vt_h, ht_lapack_ev, a_ht_copy_ev
+        else:
+            return s_h, ht_lapack_ev, a_ht_copy_ev
+
+    ht_lapack_ev.wait()
+    a_ht_copy_ev.wait()
+
+    # TODO: Need to return C-contiguous array to match the output of numpy.linalg.svd
+    if compute_uv:
+        return u_h, s_h, vt_h
+    else:
+        return s_h

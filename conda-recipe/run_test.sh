@@ -10,16 +10,19 @@ fi
 
 # if DPCPPROOT is specified (work with custom DPCPP)
 if [ -n "${DPCPPROOT}" ]; then
-    . ${DPCPPROOT}/env/vars.sh
+    # shellcheck source=/dev/null
+    . "${DPCPPROOT}"/env/vars.sh
 fi
 
 # if MKLROOT is specified (work with custom math library)
 if [ -n "${MKLROOT}" ]; then
-    . ${MKLROOT}/env/vars.sh
+    # shellcheck source=/dev/null
+    . "${MKLROOT}"/env/vars.sh
 fi
 
 # have to activate while SYCL CPU device/driver needs paths
 # if TBBROOT is specified
 if [ -n "${TBBROOT}" ]; then
-    . ${TBBROOT}/env/vars.sh
+    # shellcheck source=/dev/null
+    . "${TBBROOT}"/env/vars.sh
 fi

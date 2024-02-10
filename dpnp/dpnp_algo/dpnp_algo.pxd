@@ -54,8 +54,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_DIAG_INDICES_EXT
         DPNP_FN_DIAGONAL
         DPNP_FN_DIAGONAL_EXT
-        DPNP_FN_DOT
-        DPNP_FN_DOT_EXT
         DPNP_FN_EDIFF1D
         DPNP_FN_EDIFF1D_EXT
         DPNP_FN_EIG
@@ -96,8 +94,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_PARTITION
         DPNP_FN_PARTITION_EXT
         DPNP_FN_PLACE
-        DPNP_FN_QR
-        DPNP_FN_QR_EXT
         DPNP_FN_RADIANS
         DPNP_FN_RADIANS_EXT
         DPNP_FN_RNG_BETA
@@ -171,8 +167,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_ZIPF_EXT
         DPNP_FN_SEARCHSORTED
         DPNP_FN_SEARCHSORTED_EXT
-        DPNP_FN_SVD
-        DPNP_FN_SVD_EXT
         DPNP_FN_TRACE
         DPNP_FN_TRACE_EXT
         DPNP_FN_TRANSPOSE
@@ -283,11 +277,6 @@ Logic functions
 cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input2,
                                    double rtol=*, double atol=*, cpp_bool equal_nan=*)
 
-
-"""
-Linear algebra
-"""
-cpdef dpnp_descriptor dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2)
 
 """
 Array creation routines
