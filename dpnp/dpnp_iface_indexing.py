@@ -111,7 +111,12 @@ def _build_along_axis_index(a, indices, axis):
         else:
             ind_shape = shape_ones[:dim] + (-1,) + shape_ones[dim + 1 :]
             fancy_index.append(
-                dpnp.arange(n, dtype=indices.dtype).reshape(ind_shape)
+                dpnp.arange(
+                    n,
+                    dtype=indices.dtype,
+                    usm_type=indices.usm_type,
+                    sycl_queue=indices.sycl_queue,
+                ).reshape(ind_shape)
             )
 
     return tuple(fancy_index)

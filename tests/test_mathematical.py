@@ -15,6 +15,7 @@ from numpy.testing import (
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
+from tests.third_party.cupy import testing
 
 from .helper import (
     assert_dtype_allclose,
@@ -25,7 +26,6 @@ from .helper import (
     get_integer_dtypes,
     has_support_aspect64,
     is_cpu_device,
-    is_win_platform,
 )
 
 
@@ -125,8 +125,7 @@ class TestClip:
         expected = numpy.clip(np_a, -1, 1)
         assert_array_equal(result, expected)
 
-    # TODO: unmute the test once dpctl resolves the issue
-    @pytest.mark.skip(reason="dpctl-1489 issue")
+    @testing.with_requires("numpy>=1.25.0")
     @pytest.mark.parametrize(
         "kwargs",
         [
@@ -138,7 +137,7 @@ class TestClip:
         ],
     )
     def test_nan_edges(self, kwargs):
-        np_a = numpy.arange(7)
+        np_a = numpy.arange(7.0)
         dp_a = dpnp.asarray(np_a)
 
         result = dp_a.clip(**kwargs)
@@ -424,7 +423,6 @@ class TestMathematical:
     def test_arctan2(self, dtype, lhs, rhs):
         self._test_mathematical("arctan2", dtype, lhs, rhs)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
@@ -564,7 +562,7 @@ def test_op_with_scalar(array, val, func, data_type, val_type):
             pytest.skip(
                 "(0j ** 0) is different: (NaN + NaNj) in dpnp and (1 + 0j) in numpy"
             )
-        # TODO: Remove when #1378 (dpctl) is solved
+        # TODO: Remove when #1378 (dpctl) is solved and 2024.1 is released (coverage is failing otherwise)
         elif (
             is_cpu_device()
             and dpnp_a.dtype == dpnp.complex128
@@ -1002,7 +1000,7 @@ def test_power(array, val, data_type, val_type):
     dpnp_a = dpnp.array(array, dtype=data_type)
     val_ = val_type(val)
 
-    # TODO: Remove when #1378 (dpctl) is solved
+    # TODO: Remove when #1378 (dpctl) is solved and 2024.1 is released (coverage is failing otherwise)
     if (
         is_cpu_device()
         and (
@@ -1201,9 +1199,7 @@ class TestCeil:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        # TODO: change it to ValueError, when dpctl
-        # is being used in internal CI
-        with pytest.raises((TypeError, ValueError)):
+        with pytest.raises(ValueError):
             dpnp.ceil(dp_array, out=dp_out)
 
     @pytest.mark.parametrize("dtype", get_float_dtypes())
@@ -1243,9 +1239,7 @@ class TestFloor:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        # TODO: change it to ValueError, when dpctl
-        # is being used in internal CI
-        with pytest.raises((TypeError, ValueError)):
+        with pytest.raises(ValueError):
             dpnp.floor(dp_array, out=dp_out)
 
     @pytest.mark.parametrize("dtype", get_float_dtypes())
@@ -1285,9 +1279,7 @@ class TestTrunc:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        # TODO: change it to ValueError, when dpctl
-        # is being used in internal CI
-        with pytest.raises((TypeError, ValueError)):
+        with pytest.raises(ValueError):
             dpnp.trunc(dp_array, out=dp_out)
 
     @pytest.mark.parametrize("dtype", get_float_dtypes())
@@ -1338,9 +1330,7 @@ class TestAdd:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            # TODO: change it to ValueError, when dpctl
-            # is being used in internal CI
-            with pytest.raises((TypeError, ValueError)):
+            with pytest.raises(ValueError):
                 dpnp.add(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -1437,9 +1427,7 @@ class TestDivide:
         check_dtype = True
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            # TODO: change it to ValueError, when dpctl
-            # is being used in internal CI
-            with pytest.raises((TypeError, ValueError)):
+            with pytest.raises(ValueError):
                 dpnp.divide(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -1540,9 +1528,7 @@ class TestFloorDivide:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            # TODO: change it to ValueError, when dpctl
-            # is being used in internal CI
-            with pytest.raises((TypeError, ValueError)):
+            with pytest.raises(ValueError):
                 dpnp.floor_divide(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -1802,9 +1788,7 @@ class TestHypot:
         dp_out = dpnp.empty(size, dtype=dpnp.float32)
         if dtype != dpnp.float32:
             # dtype of out mismatches types of input arrays
-            # TODO: change it to ValueError, when dpctl
-            # is being used in internal CI
-            with pytest.raises((TypeError, ValueError)):
+            with pytest.raises(ValueError):
                 dpnp.hypot(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -1972,9 +1956,7 @@ class TestMaximum:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            # TODO: change it to ValueError, when dpctl
-            # is being used in internal CI
-            with pytest.raises((TypeError, ValueError)):
+            with pytest.raises(ValueError):
                 dpnp.maximum(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -2055,9 +2037,7 @@ class TestMinimum:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            # TODO: change it to ValueError, when dpctl
-            # is being used in internal CI
-            with pytest.raises((TypeError, ValueError)):
+            with pytest.raises(ValueError):
                 dpnp.minimum(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -2138,9 +2118,7 @@ class TestMultiply:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            # TODO: change it to ValueError, when dpctl
-            # is being used in internal CI
-            with pytest.raises((TypeError, ValueError)):
+            with pytest.raises(ValueError):
                 dpnp.multiply(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -2235,9 +2213,7 @@ class TestPower:
         dp_out = dpnp.empty(size, dtype=dpnp.complex64)
         if dtype != dpnp.complex64:
             # dtype of out mismatches types of input arrays
-            # TODO: change it to ValueError, when dpctl
-            # is being used in internal CI
-            with pytest.raises((TypeError, ValueError)):
+            with pytest.raises(ValueError):
                 dpnp.power(dp_array1, dp_array2, out=dp_out)
 
             # allocate new out with expected type
@@ -2305,12 +2281,6 @@ class TestPower:
         np_arr = numpy.array([0j, 1 + 1j, 0 + 2j, 1 + 2j, numpy.nan, numpy.inf])
         dp_arr = dpnp.array(np_arr)
         func = lambda x: x**2
-
-        # TODO: unmute the test once it's available
-        if is_win_platform():
-            pytest.skip(
-                "Until the latest dpctl is available on internal channel"
-            )
 
         assert_dtype_allclose(func(dp_arr), func(np_arr))
 
@@ -2525,6 +2495,7 @@ class TestMatmul:
             ((4,), (4,)),
             ((4,), (4, 2)),
             ((2, 4), (4,)),
+            ((1, 4), (4,)),  # output should be 1-d not 0-d
             ((2, 4), (4, 3)),
             ((1, 2, 3), (1, 3, 5)),
             ((4, 2, 3), (4, 3, 5)),
@@ -2680,7 +2651,7 @@ class TestMatmul:
             "((6, 7, 4, 3), (6, 7, 3, 5))",
         ],
     )
-    def test_matmul_dtype_matrix_inputs(self, dtype1, dtype2, shape_pair):
+    def test_matmul_dtype_matrix_inout(self, dtype1, dtype2, shape_pair):
         shape1, shape2 = shape_pair
         a1 = numpy.arange(numpy.prod(shape1), dtype=dtype1).reshape(shape1)
         a2 = numpy.arange(numpy.prod(shape2), dtype=dtype1).reshape(shape2)
@@ -2696,9 +2667,6 @@ class TestMatmul:
             with pytest.raises(TypeError):
                 dpnp.matmul(b1, b2, dtype=dtype2)
 
-    # TODO: Temporary skipping the test, until Internal CI is updated with
-    # recent changed in dpctl regarding dpt.result_type function
-    @pytest.mark.skip("Temporary skipping the test")
     @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("dtype2", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
@@ -2714,7 +2682,7 @@ class TestMatmul:
             "((6, 7, 4, 3), (6, 7, 3, 5))",
         ],
     )
-    def test_matmul_dtype_matrix_inout(self, dtype1, dtype2, shape_pair):
+    def test_matmul_dtype_matrix_inputs(self, dtype1, dtype2, shape_pair):
         shape1, shape2 = shape_pair
         a1 = numpy.arange(numpy.prod(shape1), dtype=dtype1).reshape(shape1)
         a2 = numpy.arange(numpy.prod(shape2), dtype=dtype2).reshape(shape2)
@@ -2758,7 +2726,7 @@ class TestMatmul:
         for dim in [1, 2, 3, 4]:
             A = numpy.random.rand(*([20] * dim))
             B = dpnp.asarray(A)
-            # positive strides
+            # positive stride
             slices = tuple(slice(None, None, 2) for _ in range(dim))
             a = A[slices]
             b = B[slices]
@@ -2767,7 +2735,7 @@ class TestMatmul:
             expected = numpy.matmul(a, a)
             assert_dtype_allclose(result, expected)
 
-            # negative strides
+            # negative stride
             slices = tuple(slice(None, None, -2) for _ in range(dim))
             a = A[slices]
             b = B[slices]
@@ -2846,9 +2814,6 @@ class TestMatmulInvalidCases:
         with pytest.raises(ValueError):
             dpnp.matmul(x1, x2)
 
-    # TODO: Temporary skipping the test, until Internal CI is updated with
-    # recent changed in dpctl regarding dpt.result_type function
-    @pytest.mark.skip("Temporary skipping the test")
     def test_matmul_casting(self):
         a1 = dpnp.arange(2 * 4, dtype=dpnp.float32).reshape(2, 4)
         a2 = dpnp.arange(4 * 3).reshape(4, 3)

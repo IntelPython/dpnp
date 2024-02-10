@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "dot.hpp"
 #include "gemm.hpp"
 
 namespace blas_ext = dpnp::backend::ext::blas;
@@ -38,6 +39,9 @@ namespace py = pybind11;
 // populate dispatch tables
 void init_dispatch_tables(void)
 {
+    blas_ext::init_dot_dispatch_table();
+    blas_ext::init_dotc_dispatch_table();
+    blas_ext::init_dotu_dispatch_table();
     blas_ext::init_gemm_batch_dispatch_table();
     blas_ext::init_gemm_dispatch_table();
 }
@@ -45,6 +49,31 @@ void init_dispatch_tables(void)
 PYBIND11_MODULE(_blas_impl, m)
 {
     init_dispatch_tables();
+
+    {
+        m.def("_dot", &blas_ext::dot,
+              "Call `dot` from OneMKL LAPACK library to return "
+              "the dot product of two real-valued vectors.",
+              py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
+              py::arg("result"), py::arg("depends") = py::list());
+    }
+
+    {
+        m.def("_dotc", &blas_ext::dotc,
+              "Call `dotc` from OneMKL LAPACK library to return "
+              "the dot product of two complex vectors, "
+              "conjugating the first vector.",
+              py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
+              py::arg("result"), py::arg("depends") = py::list());
+    }
+
+    {
+        m.def("_dotu", &blas_ext::dotu,
+              "Call `dotu` from OneMKL LAPACK library to return "
+              "the dot product of two complex vectors.",
+              py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
+              py::arg("result"), py::arg("depends") = py::list());
+    }
 
     {
         m.def("_gemm", &blas_ext::gemm,

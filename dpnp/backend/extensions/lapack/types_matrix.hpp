@@ -45,6 +45,61 @@ namespace types
 {
 /**
  * @brief A factory to define pairs of supported types for which
+ * MKL LAPACK library provides support in oneapi::mkl::lapack::geqrf_batch<T>
+ * function.
+ *
+ * @tparam T Type of array containing the input matrices to be QR factorized in
+ * batch mode. Upon execution, each matrix in the batch is transformed to output
+ * arrays representing their respective orthogonal matrix Q and upper triangular
+ * matrix R.
+ */
+template <typename T>
+struct GeqrfBatchTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
+        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<float>,
+                                          T,
+                                          std::complex<float>>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<double>,
+                                          T,
+                                          std::complex<double>>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL LAPACK library provides support in oneapi::mkl::lapack::geqrf<T>
+ * function.
+ *
+ * @tparam T Type of array containing the input matrix to be QR factorized.
+ * Upon execution, this matrix is transformed to output arrays representing
+ * the orthogonal matrix Q and the upper triangular matrix R.
+ */
+template <typename T>
+struct GeqrfTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
+        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<float>,
+                                          T,
+                                          std::complex<float>>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<double>,
+                                          T,
+                                          std::complex<double>>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
  * MKL LAPACK library provides support in oneapi::mkl::lapack::gesv<T>
  * function.
  *
@@ -66,6 +121,28 @@ struct GesvTypePairSupportFactory
                                           std::complex<double>,
                                           T,
                                           std::complex<double>>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL LAPACK library provides support in oneapi::mkl::lapack::gesvd<T, RealT>
+ * function.
+ *
+ * @tparam T Type of array containing input matrix A and output matrices U and
+ * VT of singular vectors.
+ * @tparam RealT Type of output array containing singular values of A.
+ */
+template <typename T, typename RealT>
+struct GesvdTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T, float, RealT, float>,
+        dpctl_td_ns::TypePairDefinedEntry<T, double, RealT, double>,
+        dpctl_td_ns::TypePairDefinedEntry<T, std::complex<float>, RealT, float>,
+        dpctl_td_ns::
+            TypePairDefinedEntry<T, std::complex<double>, RealT, double>,
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
@@ -170,6 +247,46 @@ struct HeevdTypePairSupportFactory
 
 /**
  * @brief A factory to define pairs of supported types for which
+ * MKL LAPACK library provides support in oneapi::mkl::lapack::orgqr_batch<T>
+ * function.
+ *
+ * @tparam T Type of array containing the matrix A,
+ * each from a separate instance in the batch, from which the
+ * elementary reflectors were generated (as in QR factorization).
+ * Upon execution, each array in the batch is overwritten with
+ * its respective orthonormal matrix Q.
+ */
+template <typename T>
+struct OrgqrBatchTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
+        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL LAPACK library provides support in oneapi::mkl::lapack::orgqr<T>
+ * function.
+ *
+ * @tparam T Type of array containing the matrix A from which the
+ * elementary reflectors were generated (as in QR factorization).
+ * Upon execution, the array is overwritten with the orthonormal matrix Q.
+ */
+template <typename T>
+struct OrgqrTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
+        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
  * MKL LAPACK library provides support in oneapi::mkl::lapack::potrf<T>
  * function.
  *
@@ -234,6 +351,58 @@ struct SyevdTypePairSupportFactory
     static constexpr bool is_defined = std::disjunction<
         dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
         dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL LAPACK library provides support in oneapi::mkl::lapack::ungqr_batch<T>
+ * function.
+ *
+ * @tparam T Type of array containing the matrix A,
+ * each from a separate instance in the batch, from which the
+ * elementary reflectors were generated (as in QR factorization).
+ * Upon execution, each array in the batch is overwritten with
+ * its respective complex unitary matrix Q.
+ */
+template <typename T>
+struct UngqrBatchTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<float>,
+                                          T,
+                                          std::complex<float>>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<double>,
+                                          T,
+                                          std::complex<double>>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL LAPACK library provides support in oneapi::mkl::lapack::ungqr<T>
+ * function.
+ *
+ * @tparam T Type of array containing the matrix A from which the
+ * elementary reflectors were generated (as in QR factorization).
+ * Upon execution, the array is overwritten with the complex unitary matrix Q.
+ */
+template <typename T>
+struct UngqrTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<float>,
+                                          T,
+                                          std::complex<float>>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<double>,
+                                          T,
+                                          std::complex<double>>,
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
