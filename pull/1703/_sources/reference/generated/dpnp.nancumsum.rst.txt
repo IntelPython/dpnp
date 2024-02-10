@@ -1,6 +1,0 @@
-﻿dpnp.nancumsum
-==============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: nancumsum
