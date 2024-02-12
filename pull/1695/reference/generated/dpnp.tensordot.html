@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.tensordot &mdash; Data Parallel Extension for NumPy 0.13.1dev3+24.g92ec6cda4b documentation</title>
+  <title>dpnp.tensordot &mdash; Data Parallel Extension for NumPy 0.13.1dev4+9.ga701a182a4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,9 +24,10 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=6dbd6109"></script>
+        <script src="../../_static/documentation_options.js?v=6315b0fd"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -46,7 +47,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev3+24.g92ec6cda4b
+                0.13.1dev4+9.ga701a182a4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -127,15 +128,32 @@
 <h1>dpnp.tensordot<a class="headerlink" href="#dpnp-tensordot" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.tensordot">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">tensordot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_linearalgebra.html#tensordot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.tensordot" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">tensordot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_linearalgebra.html#tensordot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.tensordot" title="Link to this definition"></a></dt>
 <dd><p>Compute tensor dot product along specified axes.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tensordot.html#numpy.tensordot" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tensordot</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>Parameters <cite>x1</cite> and <cite>x2</cite> are supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Keyword argument <cite>kwargs</cite> is currently unsupported.
-Parameter <cite>axes</cite> is supported only with value <code class="docutils literal notranslate"><span class="pre">1</span></code>.
-Otherwise the functions will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) – First input array. Both inputs <cite>a</cite> and <cite>b</cite> can not be scalars at the same time.</p></li>
+<li><p><strong>b</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) – Second input array. Both inputs <cite>a</cite> and <cite>b</cite> can not be scalars at the same time.</p></li>
+<li><p><strong>axes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>(</em><em>2</em><em>,</em><em>) </em><em>array_like</em>) – <ul>
+<li><p>integer_like
+If an int <cite>N</cite>, sum over the last <cite>N</cite> axes of <cite>a</cite> and the first <cite>N</cite> axes
+of <cite>b</cite> in order. The sizes of the corresponding axes must match.</p></li>
+<li><p>(2,) array_like
+Or, a list of axes to be summed over, first sequence applying to <cite>a</cite>,
+second to <cite>b</cite>. Both elements array_like must be of the same length.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – Returns the tensordot product of <cite>a</cite> and <cite>b</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray</p>
+</dd>
+</dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -145,13 +163,58 @@ Input array data types are limited by supported DPNP <span class="xref std std-r
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>Three common use cases are:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">axes</span> <span class="pre">=</span> <span class="pre">0</span></code> : tensor product <span class="math notranslate nohighlight">\(a \otimes b\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axes</span> <span class="pre">=</span> <span class="pre">1</span></code> : tensor dot product <span class="math notranslate nohighlight">\(a \cdot b\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axes</span> <span class="pre">=</span> <span class="pre">2</span></code> : (default) tensor double contraction <span class="math notranslate nohighlight">\(a:b\)</span></p></li>
+</ul>
+</dd>
+</dl>
+<p>When <cite>axes</cite> is integer, the sequence for evaluation will be: first
+the -Nth axis in <cite>a</cite> and 0th axis in <cite>b</cite>, and the -1th axis in <cite>a</cite> and
+Nth axis in <cite>b</cite> last.</p>
+<p>When there is more than one axis to sum over - and they are not the last
+(first) axes of <cite>a</cite> (<cite>b</cite>) - the argument <cite>axes</cite> should consist of
+two sequences of the same length, with the first axis to sum over given
+first in both sequences, the second axis second, and so forth.</p>
+<p>The shape of the result consists of the non-contracted axes of the
+first tensor, followed by the non-contracted axes of the second.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
-<span class="go">[14, 32, 50]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">array([14, 32, 50])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">60.</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">24.</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(5, 2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span>
+<span class="go">array([[4400., 4730.],</span>
+<span class="go">       [4532., 4874.],</span>
+<span class="go">       [4664., 5018.],</span>
+<span class="go">       [4796., 5162.],</span>
+<span class="go">       [4928., 5306.]])</span>
+</pre></div>
+</div>
+<p>A slower but equivalent way of computing the same…</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>      <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">==</span> <span class="n">d</span>
+<span class="go">array([[ True,  True],</span>
+<span class="go">       [ True,  True],</span>
+<span class="go">       [ True,  True],</span>
+<span class="go">       [ True,  True],</span>
+<span class="go">       [ True,  True]])</span>
 </pre></div>
 </div>
 </dd></dl>
