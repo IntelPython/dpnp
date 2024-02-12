@@ -50,12 +50,12 @@ def test_exception_order(func, args):
         pytest.param("asarray", [2]),
         pytest.param("ascontiguousarray", [2]),
         pytest.param("asfortranarray", [2]),
-        pytest.param("empty", [(2, )]),
+        pytest.param("empty", [(2,)]),
         pytest.param("eye", [2]),
-        pytest.param("full", [(2, ), 4]),
+        pytest.param("full", [(2,), 4]),
         pytest.param("identity", [2]),
-        pytest.param("ones", [(2, )]),
-        pytest.param("zeros", [(2, )]),
+        pytest.param("ones", [(2,)]),
+        pytest.param("zeros", [(2,)]),
     ],
 )
 def test_exception_like(func, args):
@@ -76,7 +76,7 @@ def test_exception_like(func, args):
     ],
 )
 def test_exception_subok(func, args):
-    x = dpnp.ones((3, ))
+    x = dpnp.ones((3,))
     with pytest.raises(NotImplementedError):
         getattr(dpnp, func)(x, *args, subok=True)
 

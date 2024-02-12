@@ -114,7 +114,7 @@ def _check_limitations(order=None, subok=False, like=None):
             f"values ``'C'`` and ``'F'``, but got {order}"
         )
     elif order not in ("C", "c", "F", "f", None):
-        raise ValueError (
+        raise ValueError(
             "Unrecognized `order` keyword value, expecting "
             f"``'C'`` or ``'F'``, but got {order}"
         )
