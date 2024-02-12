@@ -505,6 +505,11 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param("maximum", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
         pytest.param("minimum", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
+        pytest.param(
+            "tensordot",
+            [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
+            [[4.0, 4.0, 4.0], [4.0, 4.0, 4.0]],
+        ),
         # dpnp.vdot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("vdot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
