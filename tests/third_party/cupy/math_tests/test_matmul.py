@@ -4,7 +4,7 @@ import unittest
 import numpy
 import pytest
 
-import dpnp
+import dpnp as cupy
 from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
@@ -60,17 +60,23 @@ from tests.third_party.cupy import testing
 )
 class TestMatmul(unittest.TestCase):
     @testing.for_all_dtypes(name="dtype1")
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
-    def test_operator_matmul(self, xp, dtype1):
+    @testing.for_all_dtypes(name="dtype2")
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
+    )  # required for uint8
+    def test_operator_matmul(self, xp, dtype1, dtype2):
         x1 = testing.shaped_arange(self.shape_pair[0], xp, dtype1)
-        x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype1)
+        x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype2)
         return operator.matmul(x1, x2)
 
     @testing.for_all_dtypes(name="dtype1")
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
-    def test_cupy_matmul(self, xp, dtype1):
+    @testing.for_all_dtypes(name="dtype2")
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
+    )  # required for uint8
+    def test_cupy_matmul(self, xp, dtype1, dtype2):
         x1 = testing.shaped_arange(self.shape_pair[0], xp, dtype1)
-        x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype1)
+        x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype2)
         return xp.matmul(x1, x2)
 
 
@@ -80,7 +86,7 @@ class TestMatmul(unittest.TestCase):
             "shape_pair": [
                 # dot test
                 ((2, 3), (3, 4), (2, 4)),
-                # ((0,), (0,), (0,)),
+                ((0,), (0,), (0,)),
                 # matmul test
                 ((5, 3, 2), (5, 2, 4), (5, 3, 4)),
                 ((0, 3, 2), (0, 2, 4), (0, 3, 4)),
@@ -171,20 +177,26 @@ class TestMatmulLarge(unittest.TestCase):
     }
 
     @testing.for_all_dtypes(name="dtype1")
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
-    def test_operator_matmul(self, xp, dtype1):
+    @testing.for_all_dtypes(name="dtype2")
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
+    )  # required for uint8
+    def test_operator_matmul(self, xp, dtype1, dtype2):
         if (dtype1, dtype1) in self.skip_dtypes or (
             dtype1,
             dtype1,
         ) in self.skip_dtypes:
             return xp.array([])
         x1 = testing.shaped_random(self.shape_pair[0], xp, dtype1)
-        x2 = testing.shaped_random(self.shape_pair[1], xp, dtype1)
+        x2 = testing.shaped_random(self.shape_pair[1], xp, dtype2)
         return operator.matmul(x1, x2)
 
     @testing.for_all_dtypes(name="dtype1")
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
-    def test_cupy_matmul(self, xp, dtype1):
+    @testing.for_all_dtypes(name="dtype2")
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
+    )  # required for uint8
+    def test_cupy_matmul(self, xp, dtype1, dtype2):
         if (dtype1, dtype1) in self.skip_dtypes or (
             dtype1,
             dtype1,
@@ -192,7 +204,7 @@ class TestMatmulLarge(unittest.TestCase):
             return xp.array([])
         shape1, shape2 = self.shape_pair
         x1 = testing.shaped_random(shape1, xp, dtype1)
-        x2 = testing.shaped_random(shape2, xp, dtype1)
+        x2 = testing.shaped_random(shape2, xp, dtype2)
         return xp.matmul(x1, x2)
 
 
@@ -250,7 +262,7 @@ class TestMatmulOverflow(unittest.TestCase):
 )
 class TestMatmulInvalidShape(unittest.TestCase):
     def test_invalid_shape(self):
-        for xp in (numpy, dpnp):
+        for xp in (numpy, cupy):
             shape1, shape2 = self.shape_pair
             x1 = testing.shaped_arange(shape1, xp, numpy.float32)
             x2 = testing.shaped_arange(shape2, xp, numpy.float32)

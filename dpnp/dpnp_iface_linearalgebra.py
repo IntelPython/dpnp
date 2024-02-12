@@ -386,54 +386,15 @@ def matmul(
             "axis keyword argument is only supported by its default value."
         )
     else:
-        if axes is not None:
-            if not isinstance(axes, list):
-                raise TypeError("Axes should be a list.")
-            else:
-                if len(axes) != 3:
-                    raise ValueError(
-                        "Axes should be a list of three tuples for inputs and output."
-                    )
-
-                for i in range(3):
-                    if not isinstance(axes[i], tuple):
-                        raise TypeError(f"Axes item {i} should be a tuple.")
-                    if len(axes[i]) != 2:
-                        raise ValueError(
-                            f"Axes item {i} should be a tuple with 2 elements."
-                        )
-
-                    for j in range(2):
-                        if not isinstance(axes[i][j], int):
-                            raise TypeError("Axes must be an integer.")
-
-                axes_x1, axes_x2, axes_res = axes
-                # Move the axes that are going to be used in matrix product,
-                # to the end of "x1" and "x2"
-                x1 = dpnp.moveaxis(x1, axes_x1, (-2, -1))
-                x2 = dpnp.moveaxis(x2, axes_x2, (-2, -1))
-                out_orig = out
-                if out is not None:
-                    dpnp.check_supported_arrays_type(x1, x2)
-                    # out that is passed to the backend should have the correct shape
-                    out = dpnp.moveaxis(out, axes_res, (-2, -1))
-
-        result = dpnp_matmul(
+        return dpnp_matmul(
             x1,
             x2,
             out=out,
             casting=casting,
             order=order,
             dtype=dtype,
+            axes=axes,
         )
-        if axes is not None:
-            if out is result:
-                # out and out_orig contain the same data but they have different shape
-                return out_orig
-            # Move the result to the appropriate axes of out array
-            result = dpnp.moveaxis(result, (-2, -1), axes_res)
-
-        return result
 
 
 def outer(x1, x2, out=None):

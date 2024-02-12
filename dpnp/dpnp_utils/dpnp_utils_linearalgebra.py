@@ -27,6 +27,7 @@ import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import numpy
+from numpy.core.numeric import normalize_axis_tuple
 
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi
@@ -43,7 +44,7 @@ def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
     If `out` is not ``None`` and its features match the specified `shape`, `dtype,
     `usm_type`, and `sycl_queue` and it is C-contiguous or F-contiguous and
     does not have any memory overlap with `x1` and `x2`, `out` itself is returned.
-    If these conditions are not statisfied, an empty array is returned with the
+    If these conditions are not satisfied, an empty array is returned with the
     specified `shape`, `dtype, `usm_type`, and `sycl_queue`.
     """
 
@@ -239,6 +240,61 @@ def _standardize_strides(strides, inherently_2D, shape, ndim):
     return stndrd_strides
 
 
+def _validate_axes(x1, x2, axes):
+    """Check axes is valid for matmul function."""
+
+    def _validate_internal(axes, i, ndim):
+        if ndim == 1:
+            iter = 1
+            if isinstance(axes, int):
+                axes = (axes,)
+            elif not isinstance(axes, tuple):
+                raise TypeError(
+                    f"Axes item {i}: {type(axes)} object cannot be interpreted as an integer."
+                )
+
+            if len(axes) != 1:
+                raise ValueError(
+                    f"Axes item {i} should be a tuple with a single element, or an integer."
+                )
+        else:
+            iter = 2
+            if not isinstance(axes, tuple):
+                raise TypeError(f"Axes item {i} should be a tuple.")
+            if len(axes) != 2:
+                raise ValueError(
+                    f"Axes item {i} should be a tuple with 2 elements."
+                )
+
+        for j in range(iter):
+            if not isinstance(axes[j], int):
+                raise TypeError(
+                    f"Axes item {i}: {type(axes[j])} object cannot be interpreted as an integer."
+                )
+        return axes
+
+    if not isinstance(axes, list):
+        raise TypeError("Axes should be a list.")
+    else:
+        if len(axes) != 3:
+            raise ValueError(
+                "Axes should be a list of three tuples for inputs and output."
+            )
+
+    axes[0] = _validate_internal(axes[0], 0, x1.ndim)
+    axes[1] = _validate_internal(axes[1], 1, x2.ndim)
+
+    if x1.ndim == 1 and x2.ndim == 1:
+        if axes[2] != ():
+            raise TypeError("Axes item 2 should be an empty tuple.")
+    elif x1.ndim == 1 or x2.ndim == 1:
+        axes[2] = _validate_internal(axes[2], 2, 1)
+    else:
+        axes[2] = _validate_internal(axes[2], 2, 2)
+
+    return axes
+
+
 def dpnp_dot(a, b, /, out=None, *, conjugate=False):
     """
     Return the dot product of two arrays.
@@ -321,6 +377,7 @@ def dpnp_matmul(
     casting="same_kind",
     order="K",
     dtype=None,
+    axes=None,
 ):
     """
     Return the matrix product of two arrays.
@@ -345,6 +402,22 @@ def dpnp_matmul(
         )
 
     res_usm_type, exec_q = get_usm_allocations([x1, x2])
+
+    if axes is not None:
+        axes = _validate_axes(x1, x2, axes)
+
+        axes_x1, axes_x2, axes_res = axes
+        axes_x1 = normalize_axis_tuple(axes_x1, x1.ndim, "axis")
+        axes_x2 = normalize_axis_tuple(axes_x2, x2.ndim, "axis")
+        # Move the axes that are going to be used in matrix product,
+        # to the end of "x1" and "x2"
+        x1 = dpnp.moveaxis(x1, axes_x1, (-2, -1)) if x1.ndim != 1 else x1
+        x2 = dpnp.moveaxis(x2, axes_x2, (-2, -1)) if x2.ndim != 1 else x2
+        out_orig = out
+        if out is not None:
+            dpnp.check_supported_arrays_type(out)
+            # out that is passed to the backend should have the correct shape
+            out = dpnp.moveaxis(out, axes_res, (-2, -1))
 
     appended_axes = []
     if x1_ndim == 1:
@@ -416,9 +489,15 @@ def dpnp_matmul(
         x2_shape = x2.shape
         res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
 
+    # handling a special case to provide a similar result to NumPy
+    if out is not None and x1.shape == (1, 0) and x2.shape == (0, 1):
+        res_shape = (0,)
+        appended_axes = []
+
     result = _create_result_array(
         x1, x2, out, res_shape, gemm_dtype, res_usm_type, exec_q
     )
+
     # calculate result
     if result.size == 0:
         pass
@@ -490,12 +569,25 @@ def dpnp_matmul(
 
     if gemm_dtype != res_dtype:
         result = dpnp.astype(result, res_dtype, copy=False)
+
     if out is None:
+        if axes is not None:
+            # Move the result to the appropriate axes of out array
+            if len(axes_res) == 2:
+                result = dpnp.moveaxis(result, (-2, -1), axes_res)
+            elif len(axes_res) == 1:
+                result = dpnp.moveaxis(result, (-1,), axes_res)
+            return result
         # If `order` was not passed as default
         # we need to update it to match the passed `order`.
-        if order not in ["k", "K"]:
+        elif order not in ["k", "K"]:
             return dpnp.array(result, copy=False, order=order)
         else:
             return result
     else:
-        return dpnp.get_result_array(result, out, casting=casting)
+        result = dpnp.get_result_array(result, out, casting=casting)
+        if axes is not None:
+            if out is result:
+                # out and out_orig contain the same data but they have different shape
+                return out_orig
+        return result
