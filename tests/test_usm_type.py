@@ -857,7 +857,7 @@ def test_pinv(shape, hermitian, usm_type):
         a = dp.random.randn(*shape)
 
     a = dp.array(a, usm_type=usm_type)
-    B = dp.lialg.pinv(a, hermitian=hermitian)
+    B = dp.linalg.pinv(a, hermitian=hermitian)
 
     assert a.usm_type == B.usm_type
 
