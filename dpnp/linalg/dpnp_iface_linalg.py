@@ -489,7 +489,7 @@ def pinv(a, rcond=1e-15, hermitian=False):
     ----------
     a : (..., M, N) {dpnp.ndarray, usm_ndarray}
         Matrix or stack of matrices to be pseudo-inverted.
-    rcond : float or dpnp.ndarray of float, optional
+    rcond : {float, array_like}, optional
         Cutoff for small singular values.
         Singular values less than or equal to ``rcond * largest_singular_value``
         are set to zero.

@@ -880,7 +880,7 @@ def test_pinv(shape, hermitian, usm_type):
     ["r", "raw", "complete", "reduced"],
     ids=["r", "raw", "complete", "reduced"],
 )
-def test_pinv(shape, mode, usm_type):
+def test_qr(shape, mode, usm_type):
     count_elems = numpy.prod(shape)
     a = dp.arange(count_elems, usm_type=usm_type).reshape(shape)
 

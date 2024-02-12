@@ -1010,18 +1010,19 @@ def dpnp_pinv(a, rcond=1e-15, hermitian=False):
 
     """
 
-    rcond = dpnp.array(rcond, device=a.sycl_device, sycl_queue=a.sycl_queue)
+    rcond = dpnp.array(rcond, usm_type=a.usm_type, sycl_queue=a.sycl_queue)
     if a.size == 0:
-        res_type = _common_type(a)
         m, n = a.shape[-2:]
         if m == 0 or n == 0:
             res_type = a.dtype
+        else:
+            res_type = _common_type(a)
         return dpnp.empty_like(a, shape=(a.shape[:-2] + (n, m)), dtype=res_type)
 
     u, s, vt = dpnp_svd(a.conj(), full_matrices=False, hermitian=hermitian)
 
     # discard small singular values
-    cutoff = rcond * dpnp.amax(s, axis=-1)
+    cutoff = rcond * dpnp.max(s, axis=-1)
     leq = s <= cutoff[..., None]
     dpnp.reciprocal(s, out=s)
     s[leq] = 0
