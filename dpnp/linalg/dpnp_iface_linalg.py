@@ -489,10 +489,10 @@ def pinv(a, rcond=1e-15, hermitian=False):
     ----------
     a : (..., M, N) {dpnp.ndarray, usm_ndarray}
         Matrix or stack of matrices to be pseudo-inverted.
-    rcond : {float, array_like}, optional
+    rcond : {float, dpnp.ndarray, usm_ndarray}, optional
         Cutoff for small singular values.
         Singular values less than or equal to ``rcond * largest_singular_value``
-        are set to zero.
+        are set to zero. Broadcasts against the stack of matrices.
         Default: ``1e-15``.
     hermitian : bool, optional
         If ``True``, a is assumed to be Hermitian (symmetric if real-valued),
@@ -520,6 +520,7 @@ def pinv(a, rcond=1e-15, hermitian=False):
     """
 
     dpnp.check_supported_arrays_type(a)
+    dpnp.check_supported_arrays_type(rcond, scalar_type=True)
     check_stacked_2d(a)
 
     return dpnp_pinv(a, rcond=rcond, hermitian=hermitian)

@@ -1010,7 +1010,6 @@ def dpnp_pinv(a, rcond=1e-15, hermitian=False):
 
     """
 
-    rcond = dpnp.array(rcond, usm_type=a.usm_type, sycl_queue=a.sycl_queue)
     if a.size == 0:
         m, n = a.shape[-2:]
         if m == 0 or n == 0:
@@ -1018,6 +1017,14 @@ def dpnp_pinv(a, rcond=1e-15, hermitian=False):
         else:
             res_type = _common_type(a)
         return dpnp.empty_like(a, shape=(a.shape[:-2] + (n, m)), dtype=res_type)
+
+    if dpnp.is_supported_array_type(rcond):
+        # Check that `a` and `rcond` are allocated on the same device
+        # and have the same queue. Otherwise, `ValueError`` will be raised.
+        get_usm_allocations([a, rcond])
+    else:
+        # Allocate dpnp.ndarray if rcond is a scalar
+        rcond = dpnp.array(rcond, usm_type=a.usm_type, sycl_queue=a.sycl_queue)
 
     u, s, vt = dpnp_svd(a.conj(), full_matrices=False, hermitian=hermitian)
 

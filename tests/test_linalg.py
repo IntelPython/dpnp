@@ -1289,10 +1289,26 @@ class TestPinv:
     def test_pinv_errors(self):
         a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
 
-        # unsupported type
+        # unsupported type `a`
         a_np = inp.asnumpy(a_dp)
         assert_raises(TypeError, inp.linalg.pinv, a_np)
+
+        # unsupported type `rcond`
+        rcond = numpy.array(0.5, dtype="float32")
+        assert_raises(TypeError, inp.linalg.pinv, a_dp, rcond)
+        assert_raises(TypeError, inp.linalg.pinv, a_dp, [0.5])
+
+        # non-broadcastable `rcond`
+        rcond_dp = inp.array([0.5], dtype="float32")
+        assert_raises(ValueError, inp.linalg.pinv, a_dp, rcond_dp)
 
         # a.ndim < 2
         a_dp_ndim_1 = a_dp.flatten()
         assert_raises(inp.linalg.LinAlgError, inp.linalg.pinv, a_dp_ndim_1)
+
+        # diffetent queue
+        a_queue = dpctl.SyclQueue()
+        rcond_queue = dpctl.SyclQueue()
+        a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
+        rcond_dp_q = inp.array([0.5], dtype="float32", sycl_queue=rcond_queue)
+        assert_raises(ValueError, inp.linalg.pinv, a_dp_q, rcond_dp_q)
