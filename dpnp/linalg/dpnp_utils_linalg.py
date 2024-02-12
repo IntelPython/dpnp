@@ -1034,7 +1034,9 @@ def dpnp_pinv(a, rcond=1e-15, hermitian=False):
     dpnp.reciprocal(s, out=s)
     s[leq] = 0
 
-    return dpnp.matmul(vt.swapaxes(-2, -1), s[..., None] * u.swapaxes(-2, -1))
+    u = u.swapaxes(-2, -1)
+    dpnp.multiply(s[..., None], u, out=u)
+    return dpnp.matmul(vt.swapaxes(-2, -1), u)
 
 
 def dpnp_qr_batch(a, mode="reduced"):
