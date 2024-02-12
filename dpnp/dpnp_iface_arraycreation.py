@@ -108,10 +108,15 @@ def _check_limitations(order=None, subok=False, like=None):
         If any input kwargs is of unsupported value.
     """
 
-    if order not in ("C", "c", "F", "f", None):
+    if order in ("A", "a", "K", "k"):
         raise NotImplementedError(
             "Keyword argument `order` is supported only with "
             f"values ``'C'`` and ``'F'``, but got {order}"
+        )
+    elif order not in ("C", "c", "F", "f", None):
+        raise ValueError (
+            "Unrecognized `order` keyword value, expecting "
+            f"``'C'`` or ``'F'``, but got {order}"
         )
     elif like is not None:
         raise NotImplementedError(

@@ -21,62 +21,64 @@ from .helper import (
 
 
 @pytest.mark.parametrize(
-    "func, kwargs",
+    "func, args",
     [
-        pytest.param("array", {"subok": True}),
-        pytest.param("array", {"ndmin": 1}),
-        pytest.param("array", {"like": dpnp.ones(10)}),
-        pytest.param("asanyarray", {"like": dpnp.array(7)}),
-        pytest.param("asarray", {"like": dpnp.array([1, 5])}),
-        pytest.param("ascontiguousarray", {"like": dpnp.zeros(4)}),
-        pytest.param("asfortranarray", {"like": dpnp.empty((2, 4))}),
-        pytest.param("copy", {"subok": True}),
-        pytest.param("empty_like", {"subok": True}),
-        pytest.param("empty_like", {"order": "K"}),
-        pytest.param("ones_like", {"subok": True}),
-        pytest.param("ones_like", {"order": "K"}),
-        pytest.param("zeros_like", {"subok": True}),
-        pytest.param("zeros_like", {"order": "K"}),
+        pytest.param("empty", [3]),
+        pytest.param("empty_like", [dpnp.ones(10)]),
+        pytest.param("eye", [3]),
+        pytest.param("full", [3, 7]),
+        pytest.param("full_like", [dpnp.ones(10), 7]),
+        pytest.param("ones", [3]),
+        pytest.param("ones_like", [dpnp.ones(10)]),
+        pytest.param("zeros", [3]),
+        pytest.param("zeros_like", [dpnp.ones(10)]),
     ],
 )
-def test_exception_from_array(func, kwargs):
-    sh = (3, 5)
-    x = dpnp.arange(1, prod(sh) + 1, 1).reshape(sh)
-
+def test_exception_order(func, args):
     with pytest.raises(NotImplementedError):
-        getattr(dpnp, func)(x, **kwargs)
+        getattr(dpnp, func)(*args, order="K")
+    with pytest.raises(ValueError):
+        getattr(dpnp, func)(*args, order="S")
 
 
 @pytest.mark.parametrize(
-    "func, kwargs",
+    "func, args",
     [
-        pytest.param("arange", {"like": dpnp.array(7)}),
-        pytest.param("empty", {"like": dpnp.array(7)}),
-        pytest.param("empty", {"order": "K"}),
-        pytest.param("eye", {"like": dpnp.array(7)}),
-        pytest.param("eye", {"order": "K"}),
-        pytest.param("identity", {"like": dpnp.array(7)}),
-        pytest.param("ones", {"like": dpnp.array(7)}),
-        pytest.param("ones", {"order": "K"}),
-        pytest.param("zeros", {"like": dpnp.array(7)}),
-        pytest.param("zeros", {"order": "K"}),
+        pytest.param("arange", [2]),
+        pytest.param("array", [2]),
+        pytest.param("asanyarray", [2]),
+        pytest.param("asarray", [2]),
+        pytest.param("ascontiguousarray", [2]),
+        pytest.param("asfortranarray", [2]),
+        pytest.param("empty", [(2, )]),
+        pytest.param("eye", [2]),
+        pytest.param("full", [(2, ), 4]),
+        pytest.param("identity", [2]),
+        pytest.param("ones", [(2, )]),
+        pytest.param("zeros", [(2, )]),
     ],
 )
-def test_exception(func, kwargs):
+def test_exception_like(func, args):
+    like = dpnp.array([1, 2])
     with pytest.raises(NotImplementedError):
-        getattr(dpnp, func)(3, **kwargs)
+        getattr(dpnp, func)(*args, like=like)
 
 
-def test_exception_full():
-    x = dpnp.ones(5)
+@pytest.mark.parametrize(
+    "func, args",
+    [
+        pytest.param("array", []),
+        pytest.param("copy", []),
+        pytest.param("empty_like", []),
+        pytest.param("full_like", [5]),
+        pytest.param("ones_like", []),
+        pytest.param("zeros_like", []),
+    ],
+)
+def test_exception_subok(func, args):
+    x = dpnp.ones((3, ))
     with pytest.raises(NotImplementedError):
-        dpnp.full(1, 1, like=dpnp.array(7))
-    with pytest.raises(NotImplementedError):
-        dpnp.full(1, 1, order="K")
-    with pytest.raises(NotImplementedError):
-        dpnp.full_like(x, 1, subok="True")
-    with pytest.raises(NotImplementedError):
-        dpnp.full_like(x, 1, order="K")
+        getattr(dpnp, func)(x, *args, subok=True)
 
 
 @pytest.mark.parametrize(
