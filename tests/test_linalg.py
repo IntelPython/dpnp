@@ -1122,18 +1122,19 @@ class TestSvd:
             dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, True
         )
 
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("compute_vt", [True, False], ids=["True", "False"])
     @pytest.mark.parametrize(
         "shape",
         [(2, 2), (16, 16)],
-        ids=["(2,2)", "(16, 16)"],
+        ids=["(2, 2)", "(16, 16)"],
     )
     def test_svd_hermitian(self, dtype, compute_vt, shape):
-        a = numpy.random.randn(*shape) + 1j * numpy.random.randn(*shape)
-        a = numpy.conj(a.T) @ a
+        a = numpy.random.randn(*shape).astype(dtype)
+        if numpy.issubdtype(dtype, numpy.complexfloating):
+            a += 1j * numpy.random.randn(*shape)
+        a = (a + a.conj().T) / 2
 
-        a = a.astype(dtype)
         dp_a = inp.array(a)
 
         if compute_vt:
