@@ -209,6 +209,31 @@ def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
     return op_dtype, res_dtype
 
 
+def _shape_error(a, b, core_dim, err_msg):
+    if err_msg == 0:
+        raise ValueError(
+            "Input arrays have a mismatch in their core dimensions. "
+            "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
+            f"(size {a} is different from {b})"
+        )
+    elif err_msg == 1:
+        raise ValueError(
+            f"Output array has a mismatch in its core dimension {core_dim}. "
+            "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
+            f"(size {a} is different from {b})"
+        )
+    elif err_msg == 2:
+        raise ValueError(
+            "Input arrays could not be broadcast together with remapped shapes, "
+            f"{a} is different from {b}."
+        )
+    elif err_msg == 3:
+        raise ValueError(
+            "Output array could not be broadcast to input arrays with remapped shapes, "
+            f"{a} is different from {b}."
+        )
+
+
 def _standardize_strides(strides, inherently_2D, shape, ndim):
     """
     Standardizing the strides.
@@ -436,42 +461,22 @@ def dpnp_matmul(
     x1_shape = x1.shape
     x2_shape = x2.shape
     if x1_shape[-1] != x2_shape[-2]:
-        raise ValueError(
-            "Input arrays have a mismatch in their core dimensions. "
-            "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
-            f"(size {x1_shape[-1]} is different from {x2_shape[-2]})"
-        )
+        _shape_error(x1_shape[-1], x2_shape[-2], None, 0)
 
     if out is not None:
         out_shape = out.shape
         if not appended_axes:
             if out_shape[-2] != x1_shape[-2]:
-                raise ValueError(
-                    "Output array has a mismatch in its core dimension 0. "
-                    "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
-                    f"(size {out_shape[-2]} is different from {x1_shape[-2]})"
-                )
+                _shape_error(out_shape[-2], x1_shape[-2], 0, 1)
             if out_shape[-1] != x2_shape[-1]:
-                raise ValueError(
-                    "Output array has a mismatch in its core dimension 1. "
-                    "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
-                    f"(size {out_shape[-1]} is different from {x2_shape[-1]})"
-                )
+                _shape_error(out_shape[-1], x2_shape[-1], 1, 1)
         elif len(appended_axes) == 1:
             if appended_axes[0] == -1:
                 if out_shape[-1] != x1_shape[-2]:
-                    raise ValueError(
-                        "Output array has a mismatch in its core dimension 0. "
-                        "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
-                        f"(size {out_shape[-1]} is different from {x1_shape[-2]})"
-                    )
+                    _shape_error(out_shape[-1], x1_shape[-2], 0, 1)
             elif appended_axes[0] == -2:
                 if out_shape[-1] != x2_shape[-1]:
-                    raise ValueError(
-                        "Output array has a mismatch in its core dimension 0. "
-                        "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
-                        f"(size {out_shape[-1]} is different from {x2_shape[-1]})"
-                    )
+                    _shape_error(out_shape[-1], x2_shape[-1], 0, 1)
 
     # Determine the appropriate data types
     gemm_dtype, res_dtype = _op_res_dtype(
@@ -516,10 +521,7 @@ def dpnp_matmul(
                     if not x2_is_2D:
                         x2 = dpnp.repeat(x2, x1_shape[i], axis=i)
                 else:
-                    raise ValueError(
-                        "Input arrays could not be broadcast together with remapped shapes, "
-                        f"{x1_shape[:-2]} is different from {x2_shape[:-2]}."
-                    )
+                    _shape_error(x1_shape[:-2], x2_shape[:-2], None, 2)
 
         x1_shape = x1.shape
         x2_shape = x2.shape
@@ -527,15 +529,10 @@ def dpnp_matmul(
             for i in range(x1_ndim - 2):
                 if tmp_shape[i] != out_shape[i]:
                     if not appended_axes:
-                        raise ValueError(
-                            "Output array could not be broadcast together with remapped shapes, "
-                            f"{tmp_shape[:-2]} is different from {out_shape[:-2]}."
-                        )
+                        _shape_error(tuple(tmp_shape), out_shape[:-2], None, 3)
                     elif len(appended_axes) == 1:
-                        raise ValueError(
-                            "Output array could not be broadcast together with remapped shapes, "
-                            f"{tmp_shape[:-2]} is different from {out_shape[:-1]}."
-                        )
+                        _shape_error(tuple(tmp_shape), out_shape[:-1], None, 3)
+
         res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
 
     # handling a special case to provide a similar result to NumPy
