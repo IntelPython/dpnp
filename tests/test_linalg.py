@@ -15,6 +15,7 @@ from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
     get_complex_dtypes,
+    get_float_complex_dtypes,
     has_support_aspect64,
     is_cpu_device,
 )
@@ -1223,29 +1224,29 @@ class TestPinv:
 
         assert_allclose(reconstructed, a_dp, rtol=tol, atol=tol)
 
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize(
         "shape",
         [(2, 2), (16, 16)],
-        ids=["(2,2)", "(16, 16)"],
+        ids=["(2, 2)", "(16, 16)"],
     )
     def test_pinv_hermitian(self, dtype, shape):
-        a = numpy.random.randn(*shape) + 1j * numpy.random.randn(*shape)
-        a = numpy.conj(a.T) @ a
+        a = numpy.random.randn(*shape).astype(dtype)
+        if numpy.issubdtype(dtype, numpy.complexfloating):
+            a += 1j * numpy.random.randn(*shape)
+        a = (a + a.conj().T) / 2
 
-        a = a.astype(dtype)
         a_dp = inp.array(a)
 
-        B = numpy.linalg.pinv(a)
-        B_dp = inp.linalg.pinv(a_dp)
+        B = numpy.linalg.pinv(a, hermitian=True)
+        B_dp = inp.linalg.pinv(a_dp, hermitian=True)
 
         self.check_types_shapes(B_dp, B)
         self.get_tol(dtype)
+        tol = self._tol
 
         reconstructed = inp.dot(inp.dot(a_dp, B_dp), a_dp)
-        # TODO : calculation accuracy decreases for matrix shape (16,16)
-        # Find out why
-        assert_allclose(reconstructed, a_dp, rtol=1e-02, atol=1e-02)
+        assert_allclose(reconstructed, a_dp, rtol=tol, atol=tol)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
