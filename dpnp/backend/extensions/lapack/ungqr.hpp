@@ -36,33 +36,32 @@ namespace backend
 {
 namespace ext
 {
-namespace blas
+namespace lapack
 {
 extern std::pair<sycl::event, sycl::event>
-    dot(sycl::queue &exec_q,
-        dpctl::tensor::usm_ndarray vectorA,
-        dpctl::tensor::usm_ndarray vectorB,
-        dpctl::tensor::usm_ndarray result,
-        const std::vector<sycl::event> &depends);
+    ungqr(sycl::queue exec_q,
+          const std::int64_t m,
+          const std::int64_t n,
+          const std::int64_t k,
+          dpctl::tensor::usm_ndarray a_array,
+          dpctl::tensor::usm_ndarray tau_array,
+          const std::vector<sycl::event> &depends = {});
 
 extern std::pair<sycl::event, sycl::event>
-    dotc(sycl::queue &exec_q,
-         dpctl::tensor::usm_ndarray vectorA,
-         dpctl::tensor::usm_ndarray vectorB,
-         dpctl::tensor::usm_ndarray result,
-         const std::vector<sycl::event> &depends);
+    ungqr_batch(sycl::queue exec_q,
+                dpctl::tensor::usm_ndarray a_array,
+                dpctl::tensor::usm_ndarray tau_array,
+                std::int64_t m,
+                std::int64_t n,
+                std::int64_t k,
+                std::int64_t stride_a,
+                std::int64_t stride_tau,
+                std::int64_t batch_size,
+                const std::vector<sycl::event> &depends = {});
 
-extern std::pair<sycl::event, sycl::event>
-    dotu(sycl::queue &exec_q,
-         dpctl::tensor::usm_ndarray vectorA,
-         dpctl::tensor::usm_ndarray vectorB,
-         dpctl::tensor::usm_ndarray result,
-         const std::vector<sycl::event> &depends);
-
-extern void init_dot_dispatch_table(void);
-extern void init_dotc_dispatch_table(void);
-extern void init_dotu_dispatch_table(void);
-} // namespace blas
+extern void init_ungqr_batch_dispatch_vector(void);
+extern void init_ungqr_dispatch_vector(void);
+} // namespace lapack
 } // namespace ext
 } // namespace backend
 } // namespace dpnp
