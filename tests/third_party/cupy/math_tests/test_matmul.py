@@ -182,11 +182,11 @@ class TestMatmulLarge(unittest.TestCase):
         rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
     )  # required for uint8
     def test_operator_matmul(self, xp, dtype1, dtype2):
-        if (dtype1, dtype1) in self.skip_dtypes or (
-            dtype1,
+        if (dtype1, dtype2) in self.skip_dtypes or (
+            dtype2,
             dtype1,
         ) in self.skip_dtypes:
-            return xp.array([])
+            pytest.skip()
         x1 = testing.shaped_random(self.shape_pair[0], xp, dtype1)
         x2 = testing.shaped_random(self.shape_pair[1], xp, dtype2)
         return operator.matmul(x1, x2)
@@ -197,11 +197,11 @@ class TestMatmulLarge(unittest.TestCase):
         rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
     )  # required for uint8
     def test_cupy_matmul(self, xp, dtype1, dtype2):
-        if (dtype1, dtype1) in self.skip_dtypes or (
-            dtype1,
+        if (dtype1, dtype2) in self.skip_dtypes or (
+            dtype2,
             dtype1,
         ) in self.skip_dtypes:
-            return xp.array([])
+            pytest.skip()
         shape1, shape2 = self.shape_pair
         x1 = testing.shaped_random(shape1, xp, dtype1)
         x2 = testing.shaped_random(shape2, xp, dtype2)
@@ -211,7 +211,7 @@ class TestMatmulLarge(unittest.TestCase):
 @pytest.mark.parametrize(
     "shape1, shape2",
     [
-        # TODO: include it when issue #1540 in dpctl is resolved
+        # the first one causes overflow which is undefined behavior
         # ((256, 256, 3, 2), (256, 256, 2, 4)),
         ((256, 256, 3, 2), (2, 4)),
         ((3, 2), (256, 256, 2, 4)),
@@ -233,7 +233,7 @@ class TestMatmulIntegralLargeBatch:
         return xp.matmul(x1, x2)
 
 
-@pytest.mark.skip("until issue #1540 in dpctl is resolved")
+@pytest.mark.skip("overflow is undefined behavior.")
 class TestMatmulOverflow(unittest.TestCase):
     @testing.for_int_dtypes(name="dtype", no_bool=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8

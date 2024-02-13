@@ -58,7 +58,7 @@ def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
             and out.shape == shape
             and out.usm_type == usm_type
             and out.sycl_queue == sycl_queue
-            and (out.flags.c_contiguous or out.flags.f_contiguous)
+            and out.flags.c_contiguous
             and not ti._array_overlap(x1_usm, out_usm)
             and not ti._array_overlap(x2_usm, out_usm)
         ):
@@ -417,7 +417,10 @@ def dpnp_matmul(
         if out is not None:
             dpnp.check_supported_arrays_type(out)
             # out that is passed to the backend should have the correct shape
-            out = dpnp.moveaxis(out, axes_res, (-2, -1))
+            if len(axes_res) == 2:
+                out = dpnp.moveaxis(out, axes_res, (-2, -1))
+            elif len(axes_res) == 1:
+                out = dpnp.moveaxis(out, axes_res, (-1,))
 
     appended_axes = []
     if x1_ndim == 1:
@@ -438,6 +441,37 @@ def dpnp_matmul(
             "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
             f"(size {x1_shape[-1]} is different from {x2_shape[-2]})"
         )
+
+    if out is not None:
+        out_shape = out.shape
+        if not appended_axes:
+            if out_shape[-2] != x1_shape[-2]:
+                raise ValueError(
+                    "Output array has a mismatch in its core dimension 0. "
+                    "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
+                    f"(size {out_shape[-2]} is different from {x1_shape[-2]})"
+                )
+            if out_shape[-1] != x2_shape[-1]:
+                raise ValueError(
+                    "Output array has a mismatch in its core dimension 1. "
+                    "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
+                    f"(size {out_shape[-1]} is different from {x2_shape[-1]})"
+                )
+        elif len(appended_axes) == 1:
+            if appended_axes[0] == -1:
+                if out_shape[-1] != x1_shape[-2]:
+                    raise ValueError(
+                        "Output array has a mismatch in its core dimension 0. "
+                        "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
+                        f"(size {out_shape[-1]} is different from {x1_shape[-2]})"
+                    )
+            elif appended_axes[0] == -2:
+                if out_shape[-1] != x2_shape[-1]:
+                    raise ValueError(
+                        "Output array has a mismatch in its core dimension 0. "
+                        "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
+                        f"(size {out_shape[-1]} is different from {x2_shape[-1]})"
+                    )
 
     # Determine the appropriate data types
     gemm_dtype, res_dtype = _op_res_dtype(
@@ -483,10 +517,25 @@ def dpnp_matmul(
                         x2 = dpnp.repeat(x2, x1_shape[i], axis=i)
                 else:
                     raise ValueError(
-                        "arrays could not be broadcast together with remapped shapes."
+                        "Input arrays could not be broadcast together with remapped shapes, "
+                        f"{x1_shape[:-2]} is different from {x2_shape[:-2]}."
                     )
+
         x1_shape = x1.shape
         x2_shape = x2.shape
+        if out is not None:
+            for i in range(x1_ndim - 2):
+                if x1_shape[i] != out_shape[i]:
+                    if not appended_axes:
+                        raise ValueError(
+                            "Output array could not be broadcast together with remapped shapes, "
+                            f"{x1_shape[:-2]} is different from {out_shape[:-2]}."
+                        )
+                    elif len(appended_axes) == 1:
+                        raise ValueError(
+                            "Output array could not be broadcast together with remapped shapes, "
+                            f"{x1_shape[:-2]} is different from {out_shape[:-1]}."
+                        )
         res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
 
     # handling a special case to provide a similar result to NumPy
@@ -559,6 +608,8 @@ def dpnp_matmul(
 
     if appended_axes:
         result = dpnp.squeeze(result, tuple(appended_axes))
+        if len(appended_axes) == 2 and out is not None:
+            result = dpnp.tile(result, out.shape)
 
     if x1_is_2D and x2_is_2D:
         # add new axes only if one of the input arrays
@@ -572,7 +623,7 @@ def dpnp_matmul(
 
     if out is None:
         if axes is not None:
-            # Move the result to the appropriate axes of out array
+            # Move the data to the appropriate axes of the result array
             if len(axes_res) == 2:
                 result = dpnp.moveaxis(result, (-2, -1), axes_res)
             elif len(axes_res) == 1:
@@ -586,8 +637,7 @@ def dpnp_matmul(
             return result
     else:
         result = dpnp.get_result_array(result, out, casting=casting)
-        if axes is not None:
-            if out is result:
-                # out and out_orig contain the same data but they have different shape
-                return out_orig
+        if axes is not None and out is result:
+            # out and out_orig contain the same data but they have different shape
+            return out_orig
         return result

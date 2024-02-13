@@ -2729,6 +2729,29 @@ class TestMatmul:
         # TODO: investigate the effect of factor, see SAT-6700
         assert_dtype_allclose(result, expected, factor=24)
 
+    @pytest.mark.parametrize(
+        "axes, b_shape, out_shape",
+        [
+            ([(1, 0), 0, 0], (3,), (4, 5)),
+            ([(1, 0), 0, 1], (3,), (5, 4)),
+            ([(1, 0), (0, 1), (1, 2)], (3, 1), (5, 4, 1)),
+            ([(1, 0), (0, 1), (0, 2)], (3, 1), (4, 5, 1)),
+            ([(1, 0), (0, 1), (1, 0)], (3, 1), (1, 4, 5)),
+        ],
+    )
+    def test_matmul_axes_out_1D(self, axes, b_shape, out_shape):
+        a = numpy.arange(3 * 4 * 5).reshape(3, 4, 5)
+        b = numpy.arange(3).reshape(b_shape)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        out_dp = dpnp.empty(out_shape)
+        out_np = numpy.empty(out_shape)
+        result = dpnp.matmul(ia, ib, axes=axes, out=out_dp)
+        assert result is out_dp
+        expected = numpy.matmul(a, b, axes=axes, out=out_np)
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
         "dtype2", get_all_dtypes(no_bool=True, no_none=True)
@@ -2855,6 +2878,25 @@ class TestMatmul:
         assert result is dpnp_out
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize(
+        "out_shape",
+        [
+            ((4, 5)),
+            ((6,)),
+            ((4, 7, 2)),
+        ],
+    )
+    def test_matmul_out_0D(self, out_shape):
+        a = numpy.arange(3)
+        b = dpnp.asarray(a)
+
+        numpy_out = numpy.empty(out_shape)
+        dpnp_out = dpnp.empty(out_shape)
+        result = dpnp.matmul(b, b, out=dpnp_out)
+        expected = numpy.matmul(a, a, out=numpy_out)
+        assert result is dpnp_out
+        assert_dtype_allclose(result, expected)
+
 
 class TestMatmulInvalidCases:
     @pytest.mark.parametrize(
@@ -2891,6 +2933,27 @@ class TestMatmulInvalidCases:
             x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
             with pytest.raises(ValueError):
                 xp.matmul(x1, x2)
+
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((5, 4, 3), (3, 1), (3, 4, 1)),
+            ((5, 4, 3), (3, 1), (5, 6, 1)),
+            ((5, 4, 3), (3, 1), (5, 4, 2)),
+            ((5, 4, 3), (3,), (5, 3)),
+            ((5, 4, 3), (3,), (6, 4)),
+            ((3,), (3, 4, 5), (3, 5)),
+            ((3,), (3, 4, 5), (4, 6)),
+        ],
+    )
+    def test_invalid_shape_out(self, shape_pair):
+        for xp in (numpy, dpnp):
+            shape1, shape2, out_shape = shape_pair
+            x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
+            x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
+            res = xp.empty(out_shape)
+            with pytest.raises(ValueError):
+                xp.matmul(x1, x2, out=res)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True)[:-2])
     def test_invalid_dtype(self, dtype):
