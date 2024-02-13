@@ -525,16 +525,16 @@ def dpnp_matmul(
         x2_shape = x2.shape
         if out is not None:
             for i in range(x1_ndim - 2):
-                if x1_shape[i] != out_shape[i]:
+                if tmp_shape[i] != out_shape[i]:
                     if not appended_axes:
                         raise ValueError(
                             "Output array could not be broadcast together with remapped shapes, "
-                            f"{x1_shape[:-2]} is different from {out_shape[:-2]}."
+                            f"{tmp_shape[:-2]} is different from {out_shape[:-2]}."
                         )
                     elif len(appended_axes) == 1:
                         raise ValueError(
                             "Output array could not be broadcast together with remapped shapes, "
-                            f"{x1_shape[:-2]} is different from {out_shape[:-1]}."
+                            f"{tmp_shape[:-2]} is different from {out_shape[:-1]}."
                         )
         res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
 
