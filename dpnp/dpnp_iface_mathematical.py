@@ -48,6 +48,7 @@ from numpy.core.numeric import (
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import get_usm_allocations
 
 from .dpnp_algo import *
 from .dpnp_algo.dpnp_elementwise_common import (
@@ -667,52 +668,193 @@ def copysign(
     )
 
 
-def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
+def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     """
     Return the cross product of two (arrays of) vectors.
 
     For full documentation refer to :obj:`numpy.cross`.
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Sizes of input arrays are limited by `x1.size == 3 and x2.size == 3`.
-    Shapes of input arrays are limited by `x1.shape == (3,) and x2.shape == (3,)`.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        First input array.
+    b : {dpnp.ndarray, usm_ndarray}
+        Second input array.
+    axisa : int, optional
+        Axis of `a` that defines the vector(s).  By default, the last axis.
+    axisb : int, optional
+        Axis of `b` that defines the vector(s).  By default, the last axis.
+    axisc : int, optional
+        Axis of `c` containing the cross product vector(s).  Ignored if
+        both input vectors have dimension 2, as the return is scalar.
+        By default, the last axis.
+    axis : int, optional
+        If defined, the axis of `a`, `b` and `c` that defines the vector(s)
+        and cross product(s).  Overrides `axisa`, `axisb` and `axisc`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Vector cross product(s).
+
+    See Also
+    --------
+    :obj:`dpnp.inner` : Inner product.
+    :obj:`dpnp.outer` : Outer product.
 
     Examples
     --------
+    Vector cross-product.
+
     >>> import dpnp as np
-    >>> x = [1, 2, 3]
-    >>> y = [4, 5, 6]
-    >>> result = np.cross(x, y)
-    >>> [x for x in result]
-    [-3,  6, -3]
+    >>> x = np.array([1, 2, 3])
+    >>> y = np.array([4, 5, 6])
+    >>> np.cross(x, y)
+    array([-3,  6, -3])
+
+    One vector with dimension 2.
+
+    >>> x = np.array([1, 2])
+    >>> y = np.array([4, 5, 6])
+    >>> np.cross(x, y)
+    array([12, -6, -3])
+
+    Equivalently:
+
+    >>> x = np.array([1, 2, 0])
+    >>> y = np.array([4, 5, 6])
+    >>> np.cross(x, y)
+    array([12, -6, -3])
+
+    Both vectors with dimension 2.
+
+    >>> x = np.array([1, 2])
+    >>> y = np.array([4, 5])
+    >>> np.cross(x, y)
+    array(-3)
+
+    Multiple vector cross-products. Note that the direction of the cross
+    product vector is defined by the *right-hand rule*.
+
+    >>> x = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> y = np.array([[4, 5, 6], [1, 2, 3]])
+    >>> np.cross(x, y)
+    array([[-3,  6, -3],
+           [ 3, -6,  3]])
+
+    The orientation of `c` can be changed using the `axisc` keyword.
+
+    >>> np.cross(x, y, axisc=0)
+    array([[-3,  3],
+           [ 6, -6],
+           [-3,  3]])
+
+    Change the vector definition of `x` and `y` using `axisa` and `axisb`.
+
+    >>> x = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    >>> y = np.array([[7, 8, 9], [4, 5, 6], [1, 2, 3]])
+    >>> np.cross(x, y)
+    array([[ -6,  12,  -6],
+           [  0,   0,   0],
+           [  6, -12,   6]])
+    >>> np.cross(x, y, axisa=0, axisb=0)
+    array([[-24,  48, -24],
+           [-30,  60, -30],
+           [-36,  72, -36]])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
+    if axis is not None:
+        if not isinstance(axis, int):
+            raise TypeError(f"axis should be an integer but got, {type(axis)}.")
+        axisa, axisb, axisc = (axis,) * 3
+    dpnp.check_supported_arrays_type(a, b)
+    # Check axisa and axisb are within bounds
+    axisa = normalize_axis_index(axisa, a.ndim, msg_prefix="axisa")
+    axisb = normalize_axis_index(axisb, b.ndim, msg_prefix="axisb")
 
-    if x1_desc and x2_desc:
-        if x1_desc.size != 3 or x2_desc.size != 3:
-            pass
-        elif x1_desc.shape != (3,) or x2_desc.shape != (3,):
-            pass
-        elif axisa != -1:
-            pass
-        elif axisb != -1:
-            pass
-        elif axisc != -1:
-            pass
-        elif axis is not None:
-            pass
+    # Move working axis to the end of the shape
+    a = dpnp.moveaxis(a, axisa, -1)
+    b = dpnp.moveaxis(b, axisb, -1)
+    if a.shape[-1] not in (2, 3) or b.shape[-1] not in (2, 3):
+        raise ValueError(
+            "Incompatible vector dimensions for cross product\n"
+            "(the dimension of vector used in cross product must be 2 or 3)"
+        )
+
+    # Create the output array
+    shape = numpy.broadcast_shapes(a[..., 0].shape, b[..., 0].shape)
+    if a.shape[-1] == 3 or b.shape[-1] == 3:
+        shape += (3,)
+        # Check axisc is within bounds
+        axisc = normalize_axis_index(axisc, len(shape), msg_prefix="axisc")
+    dtype = dpnp.result_type(a, b)
+    res_usm_type, exec_q = get_usm_allocations([a, b])
+    cp = dpnp.empty(
+        shape, dtype=dtype, sycl_queue=exec_q, usm_type=res_usm_type
+    )
+
+    # recast arrays as dtype
+    a = a.astype(dtype, copy=False)
+    b = b.astype(dtype, copy=False)
+
+    # create local aliases for readability
+    a0 = a[..., 0]
+    a1 = a[..., 1]
+    if a.shape[-1] == 3:
+        a2 = a[..., 2]
+    b0 = b[..., 0]
+    b1 = b[..., 1]
+    if b.shape[-1] == 3:
+        b2 = b[..., 2]
+    if cp.ndim != 0 and cp.shape[-1] == 3:
+        cp0 = cp[..., 0]
+        cp1 = cp[..., 1]
+        cp2 = cp[..., 2]
+
+    if a.shape[-1] == 2:
+        if b.shape[-1] == 2:
+            # a0 * b1 - a1 * b0
+            multiply(a0, b1, out=cp)
+            cp -= a1 * b0
+            return cp
         else:
-            return dpnp_cross(x1_desc, x2_desc).get_pyobj()
+            assert b.shape[-1] == 3
+            # cp0 = a1 * b2 - 0  (a2 = 0)
+            # cp1 = 0 - a0 * b2  (a2 = 0)
+            # cp2 = a0 * b1 - a1 * b0
+            multiply(a1, b2, out=cp0)
+            multiply(a0, b2, out=cp1)
+            negative(cp1, out=cp1)
+            multiply(a0, b1, out=cp2)
+            cp2 -= a1 * b0
+    else:
+        assert a.shape[-1] == 3
+        if b.shape[-1] == 3:
+            # cp0 = a1 * b2 - a2 * b1
+            # cp1 = a2 * b0 - a0 * b2
+            # cp2 = a0 * b1 - a1 * b0
+            multiply(a1, b2, out=cp0)
+            tmp = a2 * b1
+            cp0 -= tmp
+            multiply(a2, b0, out=cp1)
+            multiply(a0, b2, out=tmp)
+            cp1 -= tmp
+            multiply(a0, b1, out=cp2)
+            multiply(a1, b0, out=tmp)
+            cp2 -= tmp
+        else:
+            assert b.shape[-1] == 2
+            # cp0 = 0 - a2 * b1  (b2 = 0)
+            # cp1 = a2 * b0 - 0  (b2 = 0)
+            # cp2 = a0 * b1 - a1 * b0
+            multiply(a2, b1, out=cp0)
+            negative(cp0, out=cp0)
+            multiply(a2, b0, out=cp1)
+            multiply(a0, b1, out=cp2)
+            cp2 -= a1 * b0
 
-    return call_origin(numpy.cross, x1, x2, axisa, axisb, axisc, axis)
+    return dpnp.moveaxis(cp, -1, axisc)
 
 
 def cumprod(x1, **kwargs):

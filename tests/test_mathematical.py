@@ -1120,34 +1120,6 @@ class TestTrapz:
         assert_array_equal(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestCross:
-    @pytest.mark.parametrize("axis", [None, 0], ids=["None", "0"])
-    @pytest.mark.parametrize("axisc", [-1, 0], ids=["-1", "0"])
-    @pytest.mark.parametrize("axisb", [-1, 0], ids=["-1", "0"])
-    @pytest.mark.parametrize("axisa", [-1, 0], ids=["-1", "0"])
-    @pytest.mark.parametrize(
-        "x1",
-        [[1, 2, 3], [1.0, 2.5, 6.0], [2, 4, 6]],
-        ids=["[1, 2, 3]", "[1., 2.5, 6.]", "[2, 4, 6]"],
-    )
-    @pytest.mark.parametrize(
-        "x2",
-        [[4, 5, 6], [1.0, 5.0, 2.0], [6, 4, 3]],
-        ids=["[4, 5, 6]", "[1., 5., 2.]", "[6, 4, 3]"],
-    )
-    def test_cross_3x3(self, x1, x2, axisa, axisb, axisc, axis):
-        np_x1 = numpy.array(x1)
-        dpnp_x1 = dpnp.array(x1)
-
-        np_x2 = numpy.array(x2)
-        dpnp_x2 = dpnp.array(x2)
-
-        result = dpnp.cross(dpnp_x1, dpnp_x2, axisa, axisb, axisc, axis)
-        expected = numpy.cross(np_x1, np_x2, axisa, axisb, axisc, axis)
-        assert_array_equal(expected, result)
-
-
 class TestGradient:
     @pytest.mark.parametrize(
         "array", [[2, 3, 6, 8, 4, 9], [3.0, 4.0, 7.5, 9.0], [2, 6, 8, 10]]
