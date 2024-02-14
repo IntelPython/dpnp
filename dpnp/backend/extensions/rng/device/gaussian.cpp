@@ -33,17 +33,15 @@
 // dpctl tensor headers
 #include "kernels/alignment.hpp"
 
-using dpctl::tensor::kernels::alignment_utils::disabled_sg_loadstore_wrapper_krn;
-using dpctl::tensor::kernels::alignment_utils::is_aligned;
-using dpctl::tensor::kernels::alignment_utils::required_alignment;
-
 #include "common_impl.hpp"
 #include "gaussian.hpp"
 
 #include "engine/engine_base.hpp"
 #include "engine/engine_builder.hpp"
 
-// #include "dpnp_utils.hpp"
+#include "dispatch/matrix.hpp"
+#include "dispatch/table_builder.hpp"
+
 
 namespace dpnp
 {
@@ -55,26 +53,31 @@ namespace rng
 {
 namespace device
 {
+namespace dpctl_krn_ns = dpctl::tensor::kernels::alignment_utils;
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 namespace mkl_rng_dev = oneapi::mkl::rng::device;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
+using dpctl_krn_ns::disabled_sg_loadstore_wrapper_krn;
+using dpctl_krn_ns::is_aligned;
+using dpctl_krn_ns::required_alignment;
+
 constexpr int no_of_methods = 2; // number of methods of gaussian distribution
 
 template <typename DataT, typename Method>
-struct GaussianDistr
+struct DistributorBuilder
 {
 private:
     const DataT mean_;
     const DataT stddev_;
 
 public:
-    using method_type = Method;
     using result_type = DataT;
+    using method_type = Method;
     using distr_type = typename mkl_rng_dev::gaussian<DataT, Method>;
 
-    GaussianDistr(const DataT mean, const DataT stddev)
+    DistributorBuilder(const DataT mean, const DataT stddev)
         : mean_(mean), stddev_(stddev)
     {
     }
@@ -128,15 +131,15 @@ static sycl::event gaussian_impl(engine::EngineBase *engine,
             EngineBuilderT eng_builder(engine);
             eng_builder.print(); // TODO: remove
 
-            using GaussianDistrT = GaussianDistr<DataT, Method>;
-            GaussianDistrT distr(mean, stddev);
+            using DistributorBuilderT = DistributorBuilder<DataT, Method>;
+            DistributorBuilderT dist_builder(mean, stddev);
 
             if (is_aligned<required_alignment>(out_ptr)) {
                 constexpr bool enable_sg_load = true;
                 using KernelName = gaussian_kernel<EngineT, DataT, Method, items_per_wi>;
 
                 cgh.parallel_for<KernelName>(sycl::nd_range<1>({global_size}, {local_size}),
-                    details::RngContigFunctor<EngineBuilderT, DataT, GaussianDistrT, items_per_wi, enable_sg_load>(eng_builder, distr, out, n));
+                    details::RngContigFunctor<EngineBuilderT, DistributorBuilderT, items_per_wi, enable_sg_load>(eng_builder, dist_builder, out, n));
             }
             else {
                 constexpr bool disable_sg_load = false;
@@ -144,7 +147,7 @@ static sycl::event gaussian_impl(engine::EngineBase *engine,
                 using KernelName = disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
 
                 cgh.parallel_for<KernelName>(sycl::nd_range<1>({global_size}, {local_size}),
-                    details::RngContigFunctor<EngineBuilderT, DataT, GaussianDistrT, items_per_wi, disable_sg_load>(eng_builder, distr, out, n));
+                    details::RngContigFunctor<EngineBuilderT, DistributorBuilderT, items_per_wi, disable_sg_load>(eng_builder, dist_builder, out, n));
             }
         });
     } catch (oneapi::mkl::exception const &e) {
@@ -225,97 +228,12 @@ std::pair<sycl::event, sycl::event> gaussian(engine::EngineBase *engine,
      return std::make_pair(ht_ev, gaussian_ev);
 }
 
-template <typename funcPtrT,
-          template <typename fnT, typename E, typename T, typename M> typename factory,
-          int _no_of_engines,
-          int _no_of_types,
-          int _no_of_methods>
-class Dispatch3DTableBuilder
-{
-private:
-    template <typename E, typename T>
-    const std::vector<funcPtrT> row_per_method() const
-    {
-        std::vector<funcPtrT> per_method = {
-            factory<funcPtrT, E, T, mkl_rng_dev::gaussian_method::by_default>{}.get(),
-            factory<funcPtrT, E, T, mkl_rng_dev::gaussian_method::box_muller2>{}.get(),
-        };
-        assert(per_method.size() == _no_of_methods);
-        return per_method;
-    }
-
-    template <typename E>
-    auto table_per_type_and_method() const
-    {
-        std::vector<std::vector<funcPtrT>>
-                   table_by_type = {row_per_method<E, bool>(),
-                                    row_per_method<E, int8_t>(),
-                                    row_per_method<E, uint8_t>(),
-                                    row_per_method<E, int16_t>(),
-                                    row_per_method<E, uint16_t>(),
-                                    row_per_method<E, int32_t>(),
-                                    row_per_method<E, uint32_t>(),
-                                    row_per_method<E, int64_t>(),
-                                    row_per_method<E, uint64_t>(),
-                                    row_per_method<E, sycl::half>(),
-                                    row_per_method<E, float>(),
-                                    row_per_method<E, double>(),
-                                    row_per_method<E, std::complex<float>>(),
-                                    row_per_method<E, std::complex<double>>()};
-        assert(table_by_type.size() == _no_of_types);
-        return table_by_type;
-    }
-
-public:
-    Dispatch3DTableBuilder() = default;
-    ~Dispatch3DTableBuilder() = default;
-
-    void populate(funcPtrT table[][_no_of_types][_no_of_methods]) const
-    {
-        const auto map_by_engine = {table_per_type_and_method<mkl_rng_dev::mrg32k3a<8>>()};
-        assert(map_by_engine.size() == _no_of_engines);
-
-        std::uint16_t engine_id = 0;
-        for (auto &table_by_type : map_by_engine) {
-            std::uint16_t type_id = 0;
-            for (auto &row_by_method : table_by_type) {
-                std::uint16_t method_id = 0;
-                for (auto &fn_ptr : row_by_method) {
-                    table[engine_id][type_id][method_id] = fn_ptr;
-                    ++method_id;
-                }
-                ++type_id;
-            }
-            ++engine_id;
-        }
-    }
-};
-
-template <typename Ty, typename ArgTy, typename Method, typename argMethod>
-struct TypePairDefinedEntry : std::bool_constant<std::is_same_v<Ty, ArgTy> &&
-                                                 std::is_same_v<Method, argMethod>>
-{
-    static constexpr bool is_defined = true;
-};
-
-template <typename T, typename M>
-struct GaussianTypePairSupportFactory
-{
-    static constexpr bool is_defined = std::disjunction<
-        TypePairDefinedEntry<T, double, M, mkl_rng_dev::gaussian_method::by_default>,
-        TypePairDefinedEntry<T, double, M, mkl_rng_dev::gaussian_method::box_muller2>,
-        TypePairDefinedEntry<T, float, M, mkl_rng_dev::gaussian_method::by_default>,
-        TypePairDefinedEntry<T, float, M, mkl_rng_dev::gaussian_method::box_muller2>,
-        // fall-through
-        dpctl_td_ns::NotDefinedEntry>::is_defined;
-};
-
 template <typename fnT, typename E, typename T, typename M>
 struct GaussianContigFactory
 {
     fnT get()
     {
-        if constexpr (GaussianTypePairSupportFactory<T, M>::is_defined) {
+        if constexpr (dispatch::GaussianTypePairSupportFactory<T, M>::is_defined) {
             return gaussian_impl<E, T, M>;
         }
         else {
@@ -326,7 +244,7 @@ struct GaussianContigFactory
 
 void init_gaussian_dispatch_table(void)
 {
-    Dispatch3DTableBuilder<gaussian_impl_fn_ptr_t, GaussianContigFactory, engine::no_of_engines, dpctl_td_ns::num_types, no_of_methods> contig;
+    dispatch::Dispatch3DTableBuilder<gaussian_impl_fn_ptr_t, GaussianContigFactory, engine::no_of_engines, dpctl_td_ns::num_types, no_of_methods> contig;
     contig.populate(gaussian_dispatch_table);
 }
 } // namespace device
