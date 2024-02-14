@@ -26,23 +26,50 @@
 #pragma once
 
 #include <sycl/sycl.hpp>
-#include <oneapi/mkl.hpp>
-#include <oneapi/mkl/rng/device.hpp>
-
-#include <dpctl4pybind11.hpp>
-
-#include "engine/engine_base.hpp"
 
 
-namespace dpnp::backend::ext::rng::device
+namespace dpnp::backend::ext::rng::device::engine
 {
-extern std::pair<sycl::event, sycl::event> gaussian(engine::EngineBase *engine,
-                                                    const std::uint8_t method_id,
-                                                    const double mean,
-                                                    const double stddev,
-                                                    const std::uint64_t n,
-                                                    dpctl::tensor::usm_ndarray res,
-                                                    const std::vector<sycl::event> &depends = {});
+class EngineType {
+public:
+    enum Type : std::uint8_t {
+        MRG32k3a = 0,
+        Base, // must be the last always
+    };
 
-extern void init_gaussian_dispatch_table(void);
-} // namespace dpnp::backend::ext::rng::device
+    EngineType() = default;
+    constexpr EngineType(Type type) : type_(type) {}
+
+    constexpr std::uint8_t id() const {
+        return static_cast<std::uint8_t>(type_);
+    }
+
+    static constexpr std::uint8_t base_id() {
+        return EngineType(Base).id();
+    }
+
+private:
+  Type type_;
+};
+
+// A total number of supported engines == EngineType::Base
+constexpr int no_of_engines = EngineType::base_id();
+
+class EngineBase {
+public:
+    virtual ~EngineBase() {}
+    virtual sycl::queue &get_queue() = 0;
+
+    virtual EngineType get_type() const noexcept {
+        return EngineType::Base;
+    }
+
+    virtual std::vector<std::uint64_t> get_seeds() const noexcept {
+        return std::vector<std::uint64_t>();
+    }
+
+    virtual std::vector<std::uint64_t> get_offsets() const noexcept {
+        return std::vector<std::uint64_t>();
+    }
+};
+} // dpnp::backend::ext::rng::device::engine

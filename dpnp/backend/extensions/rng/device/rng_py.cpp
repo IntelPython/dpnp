@@ -35,9 +35,11 @@
 #include <oneapi/mkl/rng.hpp>
 
 #include "gaussian.hpp"
+#include "engine/mrg32k3a_engine.hpp"
 
 namespace mkl_rng = oneapi::mkl::rng;
 namespace rng_dev_ext = dpnp::backend::ext::rng::device;
+namespace rng_dev_engine = dpnp::backend::ext::rng::device::engine;
 namespace py = pybind11;
 
 // populate dispatch vectors
@@ -52,25 +54,17 @@ void init_dispatch_tables(void)
     rng_dev_ext::init_gaussian_dispatch_table();
 }
 
-class PyEngineBase : public EngineBase {
+class PyEngineBase : public rng_dev_engine::EngineBase {
 public:
     /* Inherit the constructors */
-    using EngineBase::EngineBase;
+    using rng_dev_engine::EngineBase::EngineBase;
 
     /* Trampoline (need one for each virtual function) */
-    sycl::queue get_queue() override {
+    sycl::queue &get_queue() override {
         PYBIND11_OVERRIDE_PURE(
-            sycl::queue, /* Return type */
+            sycl::queue&, /* Return type */
             EngineBase,  /* Parent class */
-            get_queue,       /* Name of function in C++ (must match Python name) */
-        );
-    }
-
-    std::string print() override {
-        PYBIND11_OVERRIDE_PURE(
-            std::string, /* Return type */
-            EngineBase,  /* Parent class */
-            print,       /* Name of function in C++ (must match Python name) */
+            get_queue,   /* Name of function in C++ (must match Python name) */
         );
     }
 };
@@ -78,42 +72,21 @@ public:
 
 PYBIND11_MODULE(_rng_dev_impl, m)
 {
-    // using engine_base_t = rng_ext::EngineBase;
-    // py::class_<engine_base_t> engine_base(m, "EngineBase");
-    // engine_base.def(py::init<sycl::queue>())
-    //            .def("get_queue", &engine_base_t::get_queue);
-
-    // using mt19937_engine_t = rng_ext::EngineProxy<mkl_rng::mt19937, std::uint32_t>;
-    // py::class_<mt19937_engine_t>(m, "mt19937", engine_base)
-    //     .def(py::init<sycl::queue, std::uint32_t>())
-    //     .def(py::init<sycl::queue, std::vector<std::uint32_t>>());
-
-    // using mcg59_engine_t = rng_ext::EngineProxy<mkl_rng::mcg59, std::uint64_t>;
-    // py::class_<mcg59_engine_t>(m, "mcg59", engine_base)
-    //     .def(py::init<sycl::queue, std::uint64_t>());
-
     init_dispatch_vectors();
     init_dispatch_tables();
 
-    // m.def("_heevd", &lapack_ext::heevd,
-    //       "Call `heevd` from OneMKL LAPACK library to return "
-    //       "the eigenvalues and eigenvectors of a complex Hermitian matrix",
-    //       py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
-    //       py::arg("eig_vecs"), py::arg("eig_vals"),
-    //       py::arg("depends") = py::list());
-
-    py::class_<EngineBase, PyEngineBase /* <--- trampoline */>(m, "EngineBase")
+    py::class_<rng_dev_engine::EngineBase, PyEngineBase /* <--- trampoline */>(m, "EngineBase")
         .def(py::init<>())
-        .def("print", &EngineBase::print);
+        .def("get_queue", &rng_dev_engine::EngineBase::get_queue);
 
-    py::class_<MRG32k3a, EngineBase>(m, "MRG32k3a")
+    py::class_<rng_dev_engine::MRG32k3a, rng_dev_engine::EngineBase>(m, "MRG32k3a")
         .def(py::init<sycl::queue &, std::uint32_t, std::uint64_t>());
 
 
     m.def("_gaussian", &rng_dev_ext::gaussian,
           "",
           py::arg("engine"),
-          py::arg("method"), py::arg("seed"), py::arg("mean"), py::arg("stddev"),
+          py::arg("method"), py::arg("mean"), py::arg("stddev"),
           py::arg("n"), py::arg("res"),
           py::arg("depends") = py::list());
 }

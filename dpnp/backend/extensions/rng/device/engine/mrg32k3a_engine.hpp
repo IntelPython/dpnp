@@ -25,24 +25,37 @@
 
 #pragma once
 
-#include <sycl/sycl.hpp>
-#include <oneapi/mkl.hpp>
-#include <oneapi/mkl/rng/device.hpp>
-
-#include <dpctl4pybind11.hpp>
-
-#include "engine/engine_base.hpp"
+#include "engine_base.hpp"
 
 
-namespace dpnp::backend::ext::rng::device
+namespace dpnp::backend::ext::rng::device::engine
 {
-extern std::pair<sycl::event, sycl::event> gaussian(engine::EngineBase *engine,
-                                                    const std::uint8_t method_id,
-                                                    const double mean,
-                                                    const double stddev,
-                                                    const std::uint64_t n,
-                                                    dpctl::tensor::usm_ndarray res,
-                                                    const std::vector<sycl::event> &depends = {});
+class MRG32k3a : public EngineBase {
+private:
+    sycl::queue q_;
+    std::vector<std::uint64_t> seed_vec;
+    std::vector<std::uint64_t> offset_vec;
 
-extern void init_gaussian_dispatch_table(void);
-} // namespace dpnp::backend::ext::rng::device
+public:
+    MRG32k3a(sycl::queue &q, std::uint32_t seed, std::uint64_t offset = 0) : q_(q) {
+        seed_vec.push_back(seed);
+        offset_vec.push_back(offset);
+    }
+
+    sycl::queue &get_queue() override {
+        return q_;
+    }
+
+    virtual EngineType get_type() const noexcept override {
+        return EngineType::MRG32k3a;
+    }
+
+    virtual std::vector<std::uint64_t> get_seeds() const noexcept override {
+        return seed_vec;
+    }
+
+    virtual std::vector<std::uint64_t> get_offsets() const noexcept override {
+        return offset_vec;
+    }
+};
+} // dpnp::backend::ext::rng::device::engine

@@ -25,24 +25,20 @@
 
 #pragma once
 
-#include <sycl/sycl.hpp>
-#include <oneapi/mkl.hpp>
 #include <oneapi/mkl/rng/device.hpp>
 
-#include <dpctl4pybind11.hpp>
+#include "engine_base.hpp"
+#include "base_builder.hpp"
 
-#include "engine/engine_base.hpp"
-
-
-namespace dpnp::backend::ext::rng::device
+namespace dpnp::backend::ext::rng::device::engine
 {
-extern std::pair<sycl::event, sycl::event> gaussian(engine::EngineBase *engine,
-                                                    const std::uint8_t method_id,
-                                                    const double mean,
-                                                    const double stddev,
-                                                    const std::uint64_t n,
-                                                    dpctl::tensor::usm_ndarray res,
-                                                    const std::vector<sycl::event> &depends = {});
+namespace mkl_rng_dev = oneapi::mkl::rng::device;
 
-extern void init_gaussian_dispatch_table(void);
-} // namespace dpnp::backend::ext::rng::device
+template <std::int32_t VecSize>
+class Builder<mkl_rng_dev::mrg32k3a<VecSize>> : public BaseBuilder<mkl_rng_dev::mrg32k3a<VecSize>, std::uint32_t, std::uint64_t> {
+public:
+    using EngineType = mkl_rng_dev::mrg32k3a<VecSize>;
+
+    Builder(EngineBase *engine) : BaseBuilder<EngineType, std::uint32_t, std::uint64_t>(engine) {}
+};
+} // dpnp::backend::ext::rng::device::engine
