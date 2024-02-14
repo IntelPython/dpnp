@@ -703,7 +703,10 @@ class TestQr:
         ids=["r", "raw", "complete", "reduced"],
     )
     def test_qr(self, dtype, shape, mode):
-        a = numpy.random.rand(*shape).astype(dtype)
+        numpy.random.seed(76)
+        a = numpy.random.randn(*shape).astype(dtype)
+        if numpy.issubdtype(dtype, numpy.complexfloating):
+            a += 1j * numpy.random.randn(*shape)
         ia = inp.array(a)
 
         if mode == "r":
@@ -773,7 +776,8 @@ class TestQr:
         ids=["r", "raw", "complete", "reduced"],
     )
     def test_qr_strides(self, mode):
-        a = numpy.random.rand(5, 5)
+        numpy.random.seed(76)
+        a = numpy.random.randn(5, 5)
         ia = inp.array(a)
 
         # positive strides
@@ -1130,6 +1134,7 @@ class TestSvd:
         ids=["(2, 2)", "(16, 16)"],
     )
     def test_svd_hermitian(self, dtype, compute_vt, shape):
+        numpy.random.seed(76)
         a = numpy.random.randn(*shape).astype(dtype)
         if numpy.issubdtype(dtype, numpy.complexfloating):
             a += 1j * numpy.random.randn(*shape)
@@ -1207,7 +1212,10 @@ class TestPinv:
         ],
     )
     def test_pinv(self, dtype, shape):
-        a = numpy.random.rand(*shape).astype(dtype)
+        numpy.random.seed(76)
+        a = numpy.random.randn(*shape).astype(dtype)
+        if numpy.issubdtype(dtype, numpy.complexfloating):
+            a += 1j * numpy.random.randn(*shape)
         a_dp = inp.array(a)
 
         B = numpy.linalg.pinv(a)
@@ -1232,6 +1240,7 @@ class TestPinv:
         ids=["(2, 2)", "(16, 16)"],
     )
     def test_pinv_hermitian(self, dtype, shape):
+        numpy.random.seed(76)
         a = numpy.random.randn(*shape).astype(dtype)
         if numpy.issubdtype(dtype, numpy.complexfloating):
             a += 1j * numpy.random.randn(*shape)
@@ -1272,7 +1281,8 @@ class TestPinv:
         assert_dtype_allclose(B_dp, B)
 
     def test_pinv_strides(self):
-        a = numpy.random.rand(5, 5)
+        numpy.random.seed(76)
+        a = numpy.random.randn(5, 5)
         a_dp = inp.array(a)
 
         self.get_tol(a_dp.dtype)
