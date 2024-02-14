@@ -49,24 +49,22 @@ namespace py = pybind11;
 
 namespace mkl_rng_dev = oneapi::mkl::rng::device;
 
-/*! @brief Functor for unary function evaluation on contiguous array */
 template <typename EngineBuilderT,
-          typename DataT,
-          typename GaussianDistrT,
+          typename DistributorBuilderT,
           unsigned int items_per_wi = 4,
           bool enable_sg_load = true>
 struct RngContigFunctor
 {
 private:
-    // const std::uint32_t seed_;
+    using DataT = typename DistributorBuilderT::result_type;
+
     EngineBuilderT engine_;
-    GaussianDistrT distr_;
+    DistributorBuilderT distr_;
     DataT * const res_ = nullptr;
     const size_t nelems_;
 
 public:
-
-    RngContigFunctor(EngineBuilderT& engine, GaussianDistrT& distr, DataT *res, const size_t n_elems)
+    RngContigFunctor(EngineBuilderT& engine, DistributorBuilderT& distr, DataT *res, const size_t n_elems)
         : engine_(engine), distr_(distr), res_(res), nelems_(n_elems)
     {
     }
@@ -82,7 +80,7 @@ public:
         using EngineT = typename EngineBuilderT::EngineType;
         EngineT engine = engine_(nelems_ * global_id); // offset is questionable...
 
-        using DistrT = typename GaussianDistrT::distr_type;
+        using DistrT = typename DistributorBuilderT::distr_type;
         DistrT distr = distr_();
 
         constexpr std::size_t vec_sz = EngineT::vec_size;

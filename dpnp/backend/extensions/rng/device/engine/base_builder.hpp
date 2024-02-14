@@ -67,7 +67,7 @@ public:
         }
     }
 
-    inline auto operator()() const
+    inline auto operator()(void) const
     {
         switch (no_of_seeds) {
             case 1: {
