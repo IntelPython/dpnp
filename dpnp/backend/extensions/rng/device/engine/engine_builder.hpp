@@ -25,24 +25,14 @@
 
 #pragma once
 
-#include <sycl/sycl.hpp>
-#include <oneapi/mkl.hpp>
-#include <oneapi/mkl/rng/device.hpp>
 
-#include <dpctl4pybind11.hpp>
-
-#include "engine/engine_base.hpp"
-
-
-namespace dpnp::backend::ext::rng::device
+namespace dpnp::backend::ext::rng::device::engine
 {
-extern std::pair<sycl::event, sycl::event> gaussian(engine::EngineBase *engine,
-                                                    const std::uint8_t method_id,
-                                                    const double mean,
-                                                    const double stddev,
-                                                    const std::uint64_t n,
-                                                    dpctl::tensor::usm_ndarray res,
-                                                    const std::vector<sycl::event> &depends = {});
+template <typename Type>
+class Builder {};
+} // dpnp::backend::ext::rng::device::engine
 
-extern void init_gaussian_dispatch_table(void);
-} // namespace dpnp::backend::ext::rng::device
+#include "mrg32k3a_builder.hpp"
+#include "philox4x32x10_builder.hpp"
+#include "mcg31m1_builder.hpp"
+#include "mcg59_builder.hpp"

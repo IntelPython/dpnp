@@ -50,7 +50,7 @@ namespace py = pybind11;
 namespace mkl_rng_dev = oneapi::mkl::rng::device;
 
 /*! @brief Functor for unary function evaluation on contiguous array */
-template <typename EngineDistrT,
+template <typename EngineBuilderT,
           typename DataT,
           typename GaussianDistrT,
           unsigned int items_per_wi = 4,
@@ -59,32 +59,28 @@ struct RngContigFunctor
 {
 private:
     // const std::uint32_t seed_;
-    EngineDistrT engine_;
+    EngineBuilderT engine_;
     GaussianDistrT distr_;
     DataT * const res_ = nullptr;
     const size_t nelems_;
 
 public:
 
-    RngContigFunctor(EngineDistrT& engine, GaussianDistrT& distr, DataT *res, const size_t n_elems)
+    RngContigFunctor(EngineBuilderT& engine, GaussianDistrT& distr, DataT *res, const size_t n_elems)
         : engine_(engine), distr_(distr), res_(res), nelems_(n_elems)
     {
     }
 
     void operator()(sycl::nd_item<1> nd_it) const
     {
-        // auto global_id = nd_it.get_global_id();
-
-        // constexpr std::size_t vec_sz = EngineT::vec_size;
+        auto global_id = nd_it.get_global_id();
         
         auto sg = nd_it.get_sub_group();
         const std::uint8_t sg_size = sg.get_local_range()[0];
         const std::uint8_t max_sg_size = sg.get_max_local_range()[0];
 
-        // auto engine = EngineT(seed_, nelems_ * global_id);  // offset is questionable...
-
-        using EngineT = typename EngineDistrT::engine_type;
-        EngineT engine = engine_();
+        using EngineT = typename EngineBuilderT::EngineType;
+        EngineT engine = engine_(nelems_ * global_id); // offset is questionable...
 
         using DistrT = typename GaussianDistrT::distr_type;
         DistrT distr = distr_();
@@ -121,39 +117,6 @@ public:
         }
     }
 };
-
-// template <typename DataT,
-//           typename ResT = DataT,
-//           typename Method = mkl_rng_dev::gaussian_method::by_default,
-//           typename IndexerT = ResT,
-//           typename UnaryOpT = ResT>
-// struct RngStridedFunctor
-// {
-// private:
-//     const std::uint32_t seed_;
-//     const double mean_;
-//     const double stddev_;
-//     ResT *res_ = nullptr;
-//     IndexerT out_indexer_;
-
-// public:
-//     RngStridedFunctor(const std::uint32_t seed, const double mean, const double stddev, ResT *res_p, IndexerT out_indexer)
-//         : seed_(seed), mean_(mean), stddev_(stddev), res_(res_p), out_indexer_(out_indexer)
-//     {
-//     }
-
-//     void operator()(sycl::id<1> wid) const
-//     {
-//         const auto res_offset = out_indexer_(wid.get(0));
-
-//         // UnaryOpT op{};
-
-//         auto engine = mkl_rng_dev::mrg32k3a(seed_);
-//         mkl_rng_dev::gaussian<DataT, Method> distr(mean_, stddev_);
-
-//         res_[res_offset] = mkl_rng_dev::generate(distr, engine);
-//     }
-// };
 } // namespace details
 } // namespace device
 } // namespace rng
