@@ -1,0 +1,6 @@
+﻿dpnp.exp
+========
+
+.. currentmodule:: dpnp
+
+.. autodata:: exp

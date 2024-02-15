@@ -1,0 +1,6 @@
+﻿dpnp.isinf
+==========
+
+.. currentmodule:: dpnp
+
+.. autodata:: isinf

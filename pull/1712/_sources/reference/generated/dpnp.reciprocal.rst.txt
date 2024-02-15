@@ -1,0 +1,6 @@
+﻿dpnp.reciprocal
+===============
+
+.. currentmodule:: dpnp
+
+.. autodata:: reciprocal

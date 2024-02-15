@@ -1,0 +1,6 @@
+﻿dpnp.hypot
+==========
+
+.. currentmodule:: dpnp
+
+.. autodata:: hypot

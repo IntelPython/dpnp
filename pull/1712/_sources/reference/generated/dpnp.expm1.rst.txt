@@ -1,0 +1,6 @@
+﻿dpnp.expm1
+==========
+
+.. currentmodule:: dpnp
+
+.. autodata:: expm1

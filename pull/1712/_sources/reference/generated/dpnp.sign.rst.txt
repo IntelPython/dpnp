@@ -1,0 +1,6 @@
+﻿dpnp.sign
+=========
+
+.. currentmodule:: dpnp
+
+.. autodata:: sign

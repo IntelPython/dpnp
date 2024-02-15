@@ -1,0 +1,6 @@
+﻿dpnp.isnan
+==========
+
+.. currentmodule:: dpnp
+
+.. autodata:: isnan

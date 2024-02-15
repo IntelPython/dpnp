@@ -1,0 +1,6 @@
+﻿dpnp.arcsin
+===========
+
+.. currentmodule:: dpnp
+
+.. autodata:: arcsin

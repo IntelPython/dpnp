@@ -1,0 +1,6 @@
+﻿dpnp.floor
+==========
+
+.. currentmodule:: dpnp
+
+.. autodata:: floor

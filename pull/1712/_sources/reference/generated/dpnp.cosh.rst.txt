@@ -1,0 +1,6 @@
+﻿dpnp.cosh
+=========
+
+.. currentmodule:: dpnp
+
+.. autodata:: cosh

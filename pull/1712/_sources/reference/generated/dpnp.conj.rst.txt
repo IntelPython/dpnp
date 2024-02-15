@@ -1,0 +1,6 @@
+﻿dpnp.conj
+=========
+
+.. currentmodule:: dpnp
+
+.. autodata:: conj

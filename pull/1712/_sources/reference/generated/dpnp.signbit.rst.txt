@@ -1,0 +1,6 @@
+﻿dpnp.signbit
+============
+
+.. currentmodule:: dpnp
+
+.. autodata:: signbit

@@ -1,0 +1,6 @@
+﻿dpnp.right\_shift
+=================
+
+.. currentmodule:: dpnp
+
+.. autodata:: right_shift

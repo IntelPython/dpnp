@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.flat
+=================
+
+.. currentmodule:: dpnp
+
+.. autoproperty:: ndarray.flat
