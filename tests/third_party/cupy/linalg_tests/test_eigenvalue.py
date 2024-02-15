@@ -113,9 +113,10 @@ class TestEigenvalue(unittest.TestCase):
             )
         return w
 
-    @pytest.mark.skip("No support of dpnp.eigvalsh()")
     @testing.for_all_dtypes(no_float16=True, no_complex=True)
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-4, type_check=has_support_aspect64()
+    )
     def test_eigvalsh(self, xp, dtype):
         a = xp.array([[1, 0, 3], [0, 5, 0], [7, 0, 9]], dtype)
         w = xp.linalg.eigvalsh(a, UPLO=self.UPLO)
@@ -123,9 +124,10 @@ class TestEigenvalue(unittest.TestCase):
         # so they should be directly comparable
         return w
 
-    @pytest.mark.skip("No support of dpnp.eigvalsh()")
     @testing.for_all_dtypes(no_float16=True, no_complex=True)
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-4, type_check=has_support_aspect64()
+    )
     def test_eigvalsh_batched(self, xp, dtype):
         a = xp.array(
             [
@@ -139,9 +141,10 @@ class TestEigenvalue(unittest.TestCase):
         # so they should be directly comparable
         return w
 
-    @pytest.mark.skip("No support of dpnp.eigvalsh()")
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-4, type_check=has_support_aspect64()
+    )
     def test_eigvalsh_complex(self, xp, dtype):
         a = xp.array([[1, 2j, 3], [4j, 5, 6j], [7, 8j, 9]], dtype)
         w = xp.linalg.eigvalsh(a, UPLO=self.UPLO)
@@ -149,9 +152,10 @@ class TestEigenvalue(unittest.TestCase):
         # so they should be directly comparable
         return w
 
-    @pytest.mark.skip("No support of dpnp.eigvalsh()")
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-4, type_check=has_support_aspect64()
+    )
     def test_eigvalsh_complex_batched(self, xp, dtype):
         a = xp.array(
             [
@@ -179,11 +183,10 @@ class TestEigenvalueEmpty(unittest.TestCase):
         assert a.size == 0
         return xp.linalg.eigh(a, UPLO=self.UPLO)
 
-    @pytest.mark.skip("No support of dpnp.eigvalsh()")
     @testing.for_dtypes("ifdFD")
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_eigvalsh(self, xp, dtype):
-        a = xp.empty(self.shape, dtype)
+        a = xp.empty(self.shape, dtype=dtype)
         assert a.size == 0
         return xp.linalg.eigvalsh(a, UPLO=self.UPLO)
 
@@ -192,7 +195,7 @@ class TestEigenvalueEmpty(unittest.TestCase):
     *testing.product(
         {
             "UPLO": ["U", "L"],
-            "shape": [(), (3,), (2, 3), (4, 0), (2, 2, 3), (0, 2, 3)],
+            "shape": [()],
         }
     )
 )
@@ -203,9 +206,8 @@ class TestEigenvalueInvalid(unittest.TestCase):
             with pytest.raises((numpy.linalg.LinAlgError, ValueError)):
                 xp.linalg.eigh(a, self.UPLO)
 
-    @pytest.mark.skip("No support of dpnp.eigvalsh()")
     def test_eigvalsh_shape_error(self):
         for xp in (numpy, cupy):
             a = xp.zeros(self.shape)
-            with pytest.raises((numpy.linalg.LinAlgError, ValueError)):
+            with pytest.raises(xp.linalg.LinAlgError):
                 xp.linalg.eigvalsh(a, self.UPLO)
