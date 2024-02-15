@@ -59,20 +59,52 @@ private:
 constexpr int no_of_engines = EngineType::base_id();
 
 class EngineBase {
+private:
+    sycl::queue q_{};
+    std::vector<std::uint64_t> seed_vec{};
+    std::vector<std::uint64_t> offset_vec{};
+
 public:
+    EngineBase() {}
+
+    EngineBase(sycl::queue &q, std::uint64_t seed, std::uint64_t offset) :
+        q_(q), seed_vec(1, seed), offset_vec(1, offset) {}
+
+    EngineBase(sycl::queue &q, std::vector<std::uint64_t> &seeds, std::uint64_t offset) :
+        q_(q), seed_vec(seeds), offset_vec(1, offset) {}
+
+    EngineBase(sycl::queue &q, std::vector<std::uint32_t> &seeds, std::uint64_t offset) : q_(q), offset_vec(1, offset) {
+        seed_vec.reserve(seeds.size());
+        seed_vec.assign(seeds.begin(), seeds.end());
+    }
+
+    EngineBase(sycl::queue &q, std::uint64_t seed, std::vector<std::uint64_t> &offsets) :
+        q_(q), seed_vec(1, seed), offset_vec(offsets) {}
+
+    EngineBase(sycl::queue &q, std::vector<std::uint64_t> &seeds, std::vector<std::uint64_t> &offsets) :
+        q_(q), seed_vec(seeds), offset_vec(offsets) {}
+
+    EngineBase(sycl::queue &q, std::vector<std::uint32_t> &seeds, std::vector<std::uint64_t> &offsets) : q_(q), offset_vec(offsets) {
+        seed_vec.reserve(seeds.size());
+        seed_vec.assign(seeds.begin(), seeds.end());
+    }
+
     virtual ~EngineBase() {}
-    virtual sycl::queue &get_queue() = 0;
 
     virtual EngineType get_type() const noexcept {
         return EngineType::Base;
     }
 
-    virtual std::vector<std::uint64_t> get_seeds() const noexcept {
-        return std::vector<std::uint64_t>();
+    sycl::queue &get_queue() noexcept {
+        return q_;
     }
 
-    virtual std::vector<std::uint64_t> get_offsets() const noexcept {
-        return std::vector<std::uint64_t>();
+    std::vector<std::uint64_t>& get_seeds() noexcept {
+        return seed_vec;
+    }
+
+    std::vector<std::uint64_t>& get_offsets() noexcept {
+        return offset_vec;
     }
 };
 } // dpnp::backend::ext::rng::device::engine

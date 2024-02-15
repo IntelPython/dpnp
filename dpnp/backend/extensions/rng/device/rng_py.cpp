@@ -31,7 +31,6 @@
 #include <pybind11/stl.h>
 
 #include <dpctl4pybind11.hpp>
-
 #include <oneapi/mkl/rng.hpp>
 
 #include "gaussian.hpp"
@@ -47,54 +46,56 @@ namespace rng_dev_ext = dpnp::backend::ext::rng::device;
 namespace rng_dev_engine = dpnp::backend::ext::rng::device::engine;
 namespace py = pybind11;
 
-// populate dispatch vectors
-void init_dispatch_vectors(void)
-{
-    // rng_dev_ext::init_gaussian_dispatch_vector();
-}
 
-// populate dispatch tables
-void init_dispatch_tables(void)
+// populate dispatch 3-D tables
+void init_dispatch_3d_tables(void)
 {
-    rng_dev_ext::init_gaussian_dispatch_table();
+    rng_dev_ext::init_gaussian_dispatch_3d_table();
 }
 
 class PyEngineBase : public rng_dev_engine::EngineBase {
 public:
-    /* Inherit the constructors */
-    using rng_dev_engine::EngineBase::EngineBase;
+    // inherit the constructor
+    using EngineBase::EngineBase;
 
-    /* Trampoline (need one for each virtual function) */
-    sycl::queue &get_queue() override {
-        PYBIND11_OVERRIDE_PURE(
-            sycl::queue&, /* Return type */
-            EngineBase,  /* Parent class */
-            get_queue,   /* Name of function in C++ (must match Python name) */
-        );
-    }
+    // trampoline (need one for each virtual function)
+    // sycl::queue &get_queue() {
+    //     PYBIND11_OVERRIDE_PURE(
+    //         sycl::queue&, /* Return type */
+    //         EngineBase,   /* Parent class */
+    //         get_queue,    /* Name of function in C++ (must match Python name) */
+    //     );
+    // }
 };
 
 
 PYBIND11_MODULE(_rng_dev_impl, m)
 {
-    init_dispatch_vectors();
-    init_dispatch_tables();
+    init_dispatch_3d_tables();
 
     py::class_<rng_dev_engine::EngineBase, PyEngineBase /* <--- trampoline */>(m, "EngineBase")
         .def(py::init<>())
         .def("get_queue", &rng_dev_engine::EngineBase::get_queue);
 
     py::class_<rng_dev_engine::MRG32k3a, rng_dev_engine::EngineBase>(m, "MRG32k3a")
-        .def(py::init<sycl::queue &, std::uint32_t, std::uint64_t>());
+        .def(py::init<sycl::queue &, std::uint32_t, std::uint64_t>(), py::arg("sycl_queue"), py::arg("seed"), py::arg("offset") = 0)
+        .def(py::init<sycl::queue &, std::vector<std::uint32_t> &, std::uint64_t>(), py::arg("sycl_queue"), py::arg("seed"), py::arg("offset") = 0)
+        .def(py::init<sycl::queue &, std::uint32_t, std::vector<std::uint64_t> &>(), py::arg("sycl_queue"), py::arg("seed"), py::arg("offset") = py::list())
+        .def(py::init<sycl::queue &, std::vector<std::uint32_t> &, std::vector<std::uint64_t> &>(), py::arg("sycl_queue"), py::arg("seed"), py::arg("offset") = py::list());
 
     py::class_<rng_dev_engine::PHILOX4x32x10, rng_dev_engine::EngineBase>(m, "PHILOX4x32x10")
-        .def(py::init<sycl::queue &, std::uint64_t, std::uint64_t>());
+        .def(py::init<sycl::queue &, std::uint64_t, std::uint64_t>(), py::arg("sycl_queue"), py::arg("seed"), py::arg("offset") = 0)
+        .def(py::init<sycl::queue &, std::vector<std::uint64_t> &, std::uint64_t>(), py::arg("sycl_queue"), py::arg("seed"), py::arg("offset") = 0)
+        .def(py::init<sycl::queue &, std::uint64_t, std::vector<std::uint64_t> &>(), py::arg("sycl_queue"), py::arg("seed"), py::arg("offset") = py::list())
+        .def(py::init<sycl::queue &, std::vector<std::uint64_t> &, std::vector<std::uint64_t> &>(), py::arg("sycl_queue"), py::arg("seed"), py::arg("offset") = py::list());
 
     py::class_<rng_dev_engine::MCG31M1, rng_dev_engine::EngineBase>(m, "MCG31M1")
-        .def(py::init<sycl::queue &, std::uint32_t, std::uint64_t>());
+        .def(py::init<sycl::queue &, std::uint32_t, std::uint64_t>(), py::arg("sycl_queue"), py::arg("seed"), py::arg("offset") = 0)
+        .def(py::init<sycl::queue &, std::vector<std::uint32_t> &, std::uint64_t>(), py::arg("sycl_queue"), py::arg("seed"), py::arg("offset") = 0);
 
     py::class_<rng_dev_engine::MCG59, rng_dev_engine::EngineBase>(m, "MCG59")
-        .def(py::init<sycl::queue &, std::uint32_t, std::uint64_t>());
+        .def(py::init<sycl::queue &, std::uint32_t, std::uint64_t>(), py::arg("sycl_queue"), py::arg("seed"), py::arg("offset") = 0)
+        .def(py::init<sycl::queue &, std::vector<std::uint32_t> &, std::uint64_t>(), py::arg("sycl_queue"), py::arg("seed"), py::arg("offset") = 0);
 
     m.def("_gaussian", &rng_dev_ext::gaussian,
           "",

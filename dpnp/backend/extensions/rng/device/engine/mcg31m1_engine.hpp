@@ -31,31 +31,15 @@
 namespace dpnp::backend::ext::rng::device::engine
 {
 class MCG31M1 : public EngineBase {
-private:
-    sycl::queue q_;
-    std::vector<std::uint64_t> seed_vec{};
-    std::vector<std::uint64_t> offset_vec{};
-
 public:
-    MCG31M1(sycl::queue &q, std::uint32_t seed, std::uint64_t offset = 0) : q_(q) {
-        seed_vec.push_back(seed);
-        offset_vec.push_back(offset);
-    }
+    MCG31M1(sycl::queue &q, std::uint32_t seed, std::uint64_t offset = 0) :
+        EngineBase(q, seed, offset) {}
 
-    sycl::queue &get_queue() override {
-        return q_;
-    }
+    MCG31M1(sycl::queue &q, std::vector<std::uint32_t> &seeds, std::uint64_t offset = 0) :
+        EngineBase(q, seeds, offset) {}
 
     virtual EngineType get_type() const noexcept override {
         return EngineType::MCG31M1;
-    }
-
-    virtual std::vector<std::uint64_t> get_seeds() const noexcept override {
-        return seed_vec;
-    }
-
-    virtual std::vector<std::uint64_t> get_offsets() const noexcept override {
-        return offset_vec;
     }
 };
 } // dpnp::backend::ext::rng::device::engine
