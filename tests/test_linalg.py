@@ -681,7 +681,7 @@ class TestQr:
     # Set numpy.random.seed for test methods to prevent
     # random generation of the input singular matrix
     def setup_method(self):
-        numpy.random.seed(76)
+        numpy.random.seed(81)
 
     # TODO: New packages that fix issue CMPLRLLVM-53771 are only available in internal CI.
     # Skip the tests on cpu until these packages are available for the external CI.
@@ -1042,7 +1042,7 @@ class TestSvd:
     # Set numpy.random.seed for test methods to prevent
     # random generation of the input singular matrix
     def setup_method(self):
-        numpy.random.seed(76)
+        numpy.random.seed(81)
 
     def get_tol(self, dtype):
         tol = 1e-06
@@ -1186,7 +1186,7 @@ class TestPinv:
     # Set numpy.random.seed for test methods to prevent
     # random generation of the input singular matrix
     def setup_method(self):
-        numpy.random.seed(76)
+        numpy.random.seed(81)
 
     def get_tol(self, dtype):
         tol = 1e-06
