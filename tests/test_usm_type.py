@@ -651,6 +651,53 @@ def test_clip(usm_type):
 
 
 @pytest.mark.parametrize(
+    "func",
+    [
+        "eigh",
+        "eigvalsh",
+    ],
+)
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (4, 4),
+        (0, 0),
+        (2, 3, 3),
+        (0, 2, 2),
+        (1, 0, 0),
+    ],
+    ids=[
+        "(4, 4)",
+        "(0, 0)",
+        "(2, 3, 3)",
+        "(0, 2, 2)",
+        "(1, 0, 0)",
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_eigenvalue_symm(func, shape, usm_type):
+    dp.random.seed(81)
+    a = dp.random.randn(*shape)
+    if a.size > 0:
+        if a.ndim > 2:
+            for i in range(a.shape[0]):
+                a[i] = dp.conj(a[i].T) @ a[i]
+        else:
+            a = dp.conj(a.T) @ a
+
+    a = dp.array(a, usm_type=usm_type)
+
+    if func == "eigh":
+        dp_val, dp_vec = dp.linalg.eigh(a)
+        assert a.usm_type == dp_vec.usm_type
+
+    else:  # eighvalsh
+        dp_val = dp.linalg.eigvalsh(a)
+
+    assert a.usm_type == dp_val.usm_type
+
+
+@pytest.mark.parametrize(
     "usm_type_matrix", list_of_usm_types, ids=list_of_usm_types
 )
 @pytest.mark.parametrize(

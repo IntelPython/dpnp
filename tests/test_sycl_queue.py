@@ -1087,43 +1087,71 @@ def test_eig(device):
     assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.parametrize(
+    "func",
+    [
+        "eigh",
+        "eigvalsh",
+    ],
+)
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (4, 4),
+        (0, 0),
+        (2, 3, 3),
+        (0, 2, 2),
+        (1, 0, 0),
+    ],
+    ids=[
+        "(4, 4)",
+        "(0, 0)",
+        "(2, 3, 3)",
+        "(0, 2, 2)",
+        "(1, 0, 0)",
+    ],
+)
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_eigh(device):
-    size = 4
+def test_eigenvalue_symm(func, shape, device):
     dtype = dpnp.default_float_type(device)
-    a = numpy.arange(size * size, dtype=dtype).reshape((size, size))
-    symm_orig = (
-        numpy.tril(a)
-        + numpy.tril(a, -1).T
-        + numpy.diag(numpy.full((size,), size * size, dtype=dtype))
-    )
-    numpy_data = symm_orig
-    dpnp_symm_orig = dpnp.array(numpy_data, device=device)
-    dpnp_data = dpnp_symm_orig
+    numpy.random.seed(81)
+    a = numpy.random.randn(*shape).astype(dtype)
+    if a.size > 0:
+        if a.ndim > 2:
+            for i in range(a.shape[0]):
+                a[i] = numpy.conj(a[i].T) @ a[i]
+        else:
+            a = numpy.conj(a.T) @ a
 
-    dpnp_val, dpnp_vec = dpnp.linalg.eigh(dpnp_data)
-    numpy_val, numpy_vec = numpy.linalg.eigh(numpy_data)
+    dp_a = dpnp.array(a, device=device)
 
-    assert_allclose(dpnp_val, numpy_val, rtol=1e-05, atol=1e-05)
-    assert_allclose(dpnp_vec, numpy_vec, rtol=1e-05, atol=1e-05)
+    expected_queue = dp_a.get_array().sycl_queue
 
-    assert dpnp_val.dtype == numpy_val.dtype
-    assert dpnp_vec.dtype == numpy_vec.dtype
-    assert dpnp_val.shape == numpy_val.shape
-    assert dpnp_vec.shape == numpy_vec.shape
+    if func == "eigh":
+        dp_val, dp_vec = dpnp.linalg.eigh(dp_a)
+        np_val, np_vec = numpy.linalg.eigh(a)
 
-    expected_queue = dpnp_data.get_array().sycl_queue
-    dpnp_val_queue = dpnp_val.get_array().sycl_queue
-    dpnp_vec_queue = dpnp_vec.get_array().sycl_queue
+        assert_allclose(dp_vec, np_vec, rtol=1e-05, atol=1e-05)
+        assert dp_vec.shape == np_vec.shape
 
+        dpnp_vec_queue = dp_vec.get_array().sycl_queue
+        # compare queue and device
+        assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
+
+    else:  # eighvalsh
+        dp_val = dpnp.linalg.eigvalsh(dp_a)
+        np_val = numpy.linalg.eigvalsh(a)
+
+    assert_allclose(dp_val, np_val, rtol=1e-05, atol=1e-05)
+    assert dp_val.shape == np_val.shape
+
+    dpnp_val_queue = dp_val.get_array().sycl_queue
     # compare queue and device
     assert_sycl_queue_equal(dpnp_val_queue, expected_queue)
-    assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
 
 
 @pytest.mark.parametrize(
