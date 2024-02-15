@@ -28,17 +28,17 @@
 #include <oneapi/mkl/rng/device.hpp>
 
 #include "engine_base.hpp"
-#include "base_builder.hpp"
+#include "base.hpp"
 
-namespace dpnp::backend::ext::rng::device::engine
+namespace dpnp::backend::ext::rng::device::engine::builder
 {
 namespace mkl_rng_dev = oneapi::mkl::rng::device;
 
 template <std::int32_t VecSize>
-class Builder<mkl_rng_dev::mcg59<VecSize>> : public BaseBuilder<mkl_rng_dev::mcg59<VecSize>, std::uint32_t, std::uint64_t> {
+class Builder<mkl_rng_dev::philox4x32x10<VecSize>> : public BaseBuilder<mkl_rng_dev::philox4x32x10<VecSize>, std::uint64_t, std::uint64_t> {
 public:
-    using EngineType = mkl_rng_dev::mcg59<VecSize>;
+    using EngineType = mkl_rng_dev::philox4x32x10<VecSize>;
 
     Builder(EngineBase *engine) : BaseBuilder<EngineType, std::uint32_t, std::uint64_t>(engine) {}
 };
-} // dpnp::backend::ext::rng::device::engine
+} // dpnp::backend::ext::rng::device::engine::builder

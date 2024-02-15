@@ -25,14 +25,20 @@
 
 #pragma once
 
+#include <oneapi/mkl/rng/device.hpp>
 
-namespace dpnp::backend::ext::rng::device::engine
+#include "engine_base.hpp"
+#include "base.hpp"
+
+namespace dpnp::backend::ext::rng::device::engine::builder
 {
-template <typename Type>
-class Builder {};
-} // dpnp::backend::ext::rng::device::engine
+namespace mkl_rng_dev = oneapi::mkl::rng::device;
 
-#include "mrg32k3a_builder.hpp"
-#include "philox4x32x10_builder.hpp"
-#include "mcg31m1_builder.hpp"
-#include "mcg59_builder.hpp"
+template <std::int32_t VecSize>
+class Builder<mkl_rng_dev::mcg31m1<VecSize>> : public BaseBuilder<mkl_rng_dev::mcg31m1<VecSize>, std::uint32_t, std::uint64_t> {
+public:
+    using EngineType = mkl_rng_dev::mcg31m1<VecSize>;
+
+    Builder(EngineBase *engine) : BaseBuilder<EngineType, std::uint32_t, std::uint64_t>(engine) {}
+};
+} // dpnp::backend::ext::rng::device::engine::builder
