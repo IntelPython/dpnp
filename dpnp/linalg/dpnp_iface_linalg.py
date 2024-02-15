@@ -50,6 +50,7 @@ from .dpnp_utils_linalg import (
     dpnp_cholesky,
     dpnp_det,
     dpnp_eigh,
+    dpnp_eigvalsh,
     dpnp_inv,
     dpnp_qr,
     dpnp_slogdet,
@@ -64,6 +65,7 @@ __all__ = [
     "eig",
     "eigh",
     "eigvals",
+    "eigvalsh",
     "inv",
     "matrix_power",
     "matrix_rank",
@@ -317,6 +319,63 @@ def eigvals(input):
             return dpnp_eigvals(x1_desc).get_pyobj()
 
     return call_origin(numpy.linalg.eigvals, input)
+
+
+def eigvalsh(a, UPLO="L"):
+    """
+    eigvalsh(a, UPLO="L")
+
+    Return the eigenvalues of a complex Hermitian or real symmetric matrix.
+
+    Main difference from :obj:`dpnp.linalg.eigh`: the eigenvectors are not computed.
+
+    For full documentation refer to :obj:`numpy.linalg.eigvalsh`.
+
+    Parameters
+    ----------
+    a : (..., M) {dpnp.ndarray, usm_ndarray}
+        A complex- or real-valued array whose eigenvalues are to be computed.
+    UPLO : {"L", "U"}, optional
+        Specifies the calculation uses either the lower ("L") or upper ("U")
+        triangular part of the matrix.
+        Regardless of this choice, only the real parts of the diagonal are
+        considered to preserve the Hermite matrix property.
+        It therefore follows that the imaginary part of the diagonal
+        will always be treated as zero.
+        Default: "L".
+
+    Returns
+    -------
+    w : (..., M) dpnp.ndarray
+        The eigenvalues in ascending order, each repeated according to
+        its multiplicity.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.eigh` : Returns the eigenvalues and eigenvectors of real symmetric
+                              or complex Hermitian (conjugate symmetric) arrays.
+    :obj:`dpnp.linalg.eigvals` : Returns the eigenvalues of general real or complex arrays.
+    :obj:`dpnp.linalg.eig` : Returns the eigenvalues and right eigenvectors of
+                             general real or complex arrays.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> from dpnp import linalg as LA
+    >>> a = np.array([[1, -2j], [2j, 5]])
+    >>> LA.eigvalsh(a)
+    array([0.17157288, 5.82842712])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
+
+    if UPLO not in ("L", "U"):
+        raise ValueError("UPLO argument must be 'L' or 'U'")
+
+    return dpnp_eigvalsh(a, UPLO=UPLO)
 
 
 def inv(a):

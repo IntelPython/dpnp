@@ -38,6 +38,7 @@ __all__ = [
     "dpnp_cholesky",
     "dpnp_det",
     "dpnp_eigh",
+    "dpnp_eigvalsh",
     "dpnp_inv",
     "dpnp_qr",
     "dpnp_slogdet",
@@ -731,9 +732,9 @@ def dpnp_det(a):
     return det.reshape(shape)
 
 
-def dpnp_eigh(a, UPLO):
+def dpnp_eigh(a, UPLO, eigen_mode="V"):
     """
-    dpnp_eigh(a, UPLO)
+    dpnp_eigh(a, UPLO, eigen_mode="V")
 
     Return the eigenvalues and eigenvectors of a complex Hermitian
     (conjugate symmetric) or a real symmetric matrix.
@@ -749,8 +750,11 @@ def dpnp_eigh(a, UPLO):
     a_order = "C" if a.flags.c_contiguous else "F"
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
-    # 'V' means both eigenvectors and eigenvalues will be calculated
-    jobz = _jobz["V"]
+    # `eigen_mode` can be either "N" or "V", specifying the computation mode
+    # for OneMKL LAPACK `syevd` and `heevd` routines.
+    # "V" (default) means both eigenvectors and eigenvalues will be calculated
+    # "N" means only eigenvalues will be calculated
+    jobz = _jobz[eigen_mode]
     uplo = _upper_lower[UPLO]
 
     # get resulting type of arrays with eigenvalues and eigenvectors
@@ -857,6 +861,21 @@ def dpnp_eigh(a, UPLO):
         ht_copy_ev.wait()
 
         return w, out_v
+
+
+def dpnp_eigvalsh(a, UPLO):
+    """
+    dpnp_eigvalsh(a, UPLO)
+
+    Return the eigenvalues of a complex Hermitian or real symmetric matrix.
+
+    """
+
+    if a.size == 0:
+        res_type = _real_type(_common_type(a))
+        return dpnp.empty_like(a, shape=a.shape[:-1], dtype=res_type)
+
+    return dpnp_eigh(a, UPLO=UPLO, eigen_mode="N")[0]
 
 
 def dpnp_inv_batched(a, res_type):
