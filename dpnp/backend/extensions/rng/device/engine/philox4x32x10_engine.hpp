@@ -30,14 +30,14 @@
 
 namespace dpnp::backend::ext::rng::device::engine
 {
-class MCG59 : public EngineBase {
+class PHILOX4x32x10 : public EngineBase {
 private:
     sycl::queue q_;
     std::vector<std::uint64_t> seed_vec{};
     std::vector<std::uint64_t> offset_vec{};
 
 public:
-    MCG59(sycl::queue &q, std::uint32_t seed, std::uint64_t offset = 0) : q_(q) {
+    PHILOX4x32x10(sycl::queue &q, std::uint64_t seed, std::uint64_t offset = 0) : q_(q) {
         seed_vec.push_back(seed);
         offset_vec.push_back(offset);
     }
@@ -47,7 +47,7 @@ public:
     }
 
     virtual EngineType get_type() const noexcept override {
-        return EngineType::MCG59;
+        return EngineType::PHILOX4x32x10;
     }
 
     virtual std::vector<std::uint64_t> get_seeds() const noexcept override {

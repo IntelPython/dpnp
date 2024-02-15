@@ -33,8 +33,8 @@ namespace dpnp::backend::ext::rng::device::engine
 class MRG32k3a : public EngineBase {
 private:
     sycl::queue q_;
-    std::vector<std::uint64_t> seed_vec;
-    std::vector<std::uint64_t> offset_vec;
+    std::vector<std::uint64_t> seed_vec{};
+    std::vector<std::uint64_t> offset_vec{};
 
 public:
     MRG32k3a(sycl::queue &q, std::uint32_t seed, std::uint64_t offset = 0) : q_(q) {
