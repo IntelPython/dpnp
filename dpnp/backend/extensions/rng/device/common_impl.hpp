@@ -30,9 +30,6 @@
 #include <sycl/sycl.hpp>
 #include <oneapi/mkl/rng/device.hpp>
 
-// dpctl tensor headers
-// #include "utils/offset_utils.hpp"
-
 namespace dpnp
 {
 namespace backend
@@ -71,14 +68,15 @@ public:
 
     void operator()(sycl::nd_item<1> nd_it) const
     {
-        auto global_id = nd_it.get_global_id();
+        // auto global_id = nd_it.get_global_id();
         
         auto sg = nd_it.get_sub_group();
         const std::uint8_t sg_size = sg.get_local_range()[0];
         const std::uint8_t max_sg_size = sg.get_max_local_range()[0];
 
         using EngineT = typename EngineBuilderT::EngineType;
-        EngineT engine = engine_(nelems_ * global_id); // offset is questionable...
+        // EngineT engine = engine_(nelems_ * global_id); // offset is questionable...
+        EngineT engine = engine_();
 
         using DistrT = typename DistributorBuilderT::distr_type;
         DistrT distr = distr_();

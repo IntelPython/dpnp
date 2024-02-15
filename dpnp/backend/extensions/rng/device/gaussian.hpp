@@ -25,10 +25,6 @@
 
 #pragma once
 
-#include <sycl/sycl.hpp>
-#include <oneapi/mkl.hpp>
-#include <oneapi/mkl/rng/device.hpp>
-
 #include <dpctl4pybind11.hpp>
 
 #include "engine/base_engine.hpp"
@@ -44,5 +40,5 @@ extern std::pair<sycl::event, sycl::event> gaussian(engine::EngineBase *engine,
                                                     dpctl::tensor::usm_ndarray res,
                                                     const std::vector<sycl::event> &depends = {});
 
-extern void init_gaussian_dispatch_table(void);
+extern void init_gaussian_dispatch_3d_table(void);
 } // namespace dpnp::backend::ext::rng::device

@@ -26,38 +26,26 @@
 #include <pybind11/pybind11.h>
 
 // dpctl tensor headers
-// #include "utils/memory_overlap.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
-
-// dpctl tensor headers
 #include "kernels/alignment.hpp"
 
-#include "common_impl.hpp"
 #include "gaussian.hpp"
+#include "common_impl.hpp"
 
-#include "engine/base_engine.hpp"
 #include "engine/builder/builder.hpp"
 
 #include "dispatch/matrix.hpp"
 #include "dispatch/table_builder.hpp"
 
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace rng
-{
-namespace device
+namespace dpnp::backend::ext::rng::device
 {
 namespace dpctl_krn_ns = dpctl::tensor::kernels::alignment_utils;
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+namespace dpctl_tu_ns = dpctl::tensor::type_utils;
 namespace mkl_rng_dev = oneapi::mkl::rng::device;
 namespace py = pybind11;
-namespace type_utils = dpctl::tensor::type_utils;
 
 using dpctl_krn_ns::disabled_sg_loadstore_wrapper_krn;
 using dpctl_krn_ns::is_aligned;
@@ -109,7 +97,7 @@ static sycl::event gaussian_impl(engine::EngineBase *engine,
                                  const std::vector<sycl::event> &depends)
 {
     auto &exec_q = engine->get_queue();
-    type_utils::validate_type_for_device<DataT>(exec_q);
+    dpctl_tu_ns::validate_type_for_device<DataT>(exec_q);
 
     DataT *out = reinterpret_cast<DataT *>(out_ptr);
     DataT mean = static_cast<DataT>(mean_val);
@@ -242,13 +230,9 @@ struct GaussianContigFactory
     }
 };
 
-void init_gaussian_dispatch_table(void)
+void init_gaussian_dispatch_3d_table(void)
 {
     dispatch::Dispatch3DTableBuilder<gaussian_impl_fn_ptr_t, GaussianContigFactory, engine::no_of_engines, dpctl_td_ns::num_types, no_of_methods> contig;
     contig.populate(gaussian_dispatch_table);
 }
-} // namespace device
-} // namespace rng
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // dpnp::backend::ext::rng::device

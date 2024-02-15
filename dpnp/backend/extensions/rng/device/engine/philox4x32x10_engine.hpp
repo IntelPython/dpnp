@@ -31,31 +31,21 @@
 namespace dpnp::backend::ext::rng::device::engine
 {
 class PHILOX4x32x10 : public EngineBase {
-private:
-    sycl::queue q_;
-    std::vector<std::uint64_t> seed_vec{};
-    std::vector<std::uint64_t> offset_vec{};
-
 public:
-    PHILOX4x32x10(sycl::queue &q, std::uint64_t seed, std::uint64_t offset = 0) : q_(q) {
-        seed_vec.push_back(seed);
-        offset_vec.push_back(offset);
-    }
+    PHILOX4x32x10(sycl::queue &q, std::uint64_t seed, std::uint64_t offset = 0) :
+        EngineBase(q, seed, offset) {}
 
-    sycl::queue &get_queue() override {
-        return q_;
-    }
+    PHILOX4x32x10(sycl::queue &q, std::vector<std::uint64_t> &seeds, std::uint64_t offset = 0) :
+        EngineBase(q, seeds, offset) {}
+
+    PHILOX4x32x10(sycl::queue &q, std::uint64_t seed, std::vector<std::uint64_t> &offsets) :
+        EngineBase(q, seed, offsets) {}
+
+    PHILOX4x32x10(sycl::queue &q, std::vector<std::uint64_t> &seeds, std::vector<std::uint64_t> &offsets) :
+        EngineBase(q, seeds, offsets) {}
 
     virtual EngineType get_type() const noexcept override {
         return EngineType::PHILOX4x32x10;
-    }
-
-    virtual std::vector<std::uint64_t> get_seeds() const noexcept override {
-        return seed_vec;
-    }
-
-    virtual std::vector<std::uint64_t> get_offsets() const noexcept override {
-        return offset_vec;
     }
 };
 } // dpnp::backend::ext::rng::device::engine
