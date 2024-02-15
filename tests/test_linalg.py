@@ -383,47 +383,32 @@ def test_eig_arange(type, size):
     assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_none=True))
-@pytest.mark.parametrize("size", [2, 4, 8])
-def test_eigh_arange(type, size):
-    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
-        pytest.skip(
-            "eig function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
-        )
-    a = numpy.arange(size * size, dtype=type).reshape((size, size))
-    symm_orig = (
-        numpy.tril(a)
-        + numpy.tril(a, -1).T
-        + numpy.diag(numpy.full((size,), size * size, dtype=type))
+class TestEigenvalueSymm:
+    @pytest.mark.parametrize(
+        "func",
+        [
+            "eigh",
+            "eigvalsh",
+        ],
     )
-    symm = symm_orig
-    dpnp_symm_orig = inp.array(symm)
-    dpnp_symm = dpnp_symm_orig
+    def test_eigenvalue_errors(self, func):
+        a_dp = inp.array([[1, 3], [3, 2]], dtype="float32")
 
-    dpnp_val, dpnp_vec = inp.linalg.eigh(dpnp_symm)
-    np_val, np_vec = numpy.linalg.eigh(symm)
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        dpnp_func = getattr(inp.linalg, func)
+        assert_raises(TypeError, dpnp_func, a_np)
 
-    # DPNP sort val/vec by abs value
-    vvsort(dpnp_val, dpnp_vec, size, inp)
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, dpnp_func, a_dp_ndim_1)
 
-    # NP sort val/vec by abs value
-    vvsort(np_val, np_vec, size, numpy)
+        # a is not square
+        a_dp = inp.ones((2, 3))
+        assert_raises(inp.linalg.LinAlgError, dpnp_func, a_dp)
 
-    # NP change sign of vectors
-    for i in range(np_vec.shape[1]):
-        if (np_vec[0, i] * dpnp_vec[0, i]).asnumpy() < 0:
-            np_vec[:, i] = -np_vec[:, i]
-
-    assert_array_equal(symm_orig, symm)
-    assert_array_equal(dpnp_symm_orig, dpnp_symm)
-
-    assert dpnp_val.shape == np_val.shape
-    assert dpnp_vec.shape == np_vec.shape
-    assert dpnp_val.usm_type == dpnp_symm.usm_type
-    assert dpnp_vec.usm_type == dpnp_symm.usm_type
-
-    assert_allclose(dpnp_val, np_val, rtol=1e-05, atol=1e-04)
-    assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-04)
+        # invalid UPLO
+        assert_raises(ValueError, dpnp_func, a_dp, "N")
 
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
