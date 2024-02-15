@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev4+28.g1c82788e2 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.13.1dev4+8.g147a18ffd2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=eb5a1c29"></script>
+        <script src="../../../_static/documentation_options.js?v=a64a44d9"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev4+28.g1c82788e2
+                0.13.1dev4+8.g147a18ffd2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -141,7 +141,6 @@
     <span class="n">dpnp_det</span><span class="p">,</span>
     <span class="n">dpnp_eigh</span><span class="p">,</span>
     <span class="n">dpnp_inv</span><span class="p">,</span>
-    <span class="n">dpnp_pinv</span><span class="p">,</span>
     <span class="n">dpnp_qr</span><span class="p">,</span>
     <span class="n">dpnp_slogdet</span><span class="p">,</span>
     <span class="n">dpnp_solve</span><span class="p">,</span>
@@ -160,7 +159,6 @@
     <span class="s2">&quot;matrix_rank&quot;</span><span class="p">,</span>
     <span class="s2">&quot;multi_dot&quot;</span><span class="p">,</span>
     <span class="s2">&quot;norm&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;pinv&quot;</span><span class="p">,</span>
     <span class="s2">&quot;qr&quot;</span><span class="p">,</span>
     <span class="s2">&quot;solve&quot;</span><span class="p">,</span>
     <span class="s2">&quot;svd&quot;</span><span class="p">,</span>
@@ -593,59 +591,6 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">arrays</span><span class="p">[</span><span class="nb">id</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">result</span></div>
-
-
-
-<div class="viewcode-block" id="pinv">
-<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.pinv.html#dpnp.linalg.pinv">[docs]</a>
-<span class="k">def</span> <span class="nf">pinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the (Moore-Penrose) pseudo-inverse of a matrix.</span>
-
-<span class="sd">    Calculate the generalized inverse of a matrix using its</span>
-<span class="sd">    singular-value decomposition (SVD) and including all large singular values.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.linalg.inv`.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    a : (..., M, N) {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Matrix or stack of matrices to be pseudo-inverted.</span>
-<span class="sd">    rcond : {float, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        Cutoff for small singular values.</span>
-<span class="sd">        Singular values less than or equal to ``rcond * largest_singular_value``</span>
-<span class="sd">        are set to zero. Broadcasts against the stack of matrices.</span>
-<span class="sd">        Default: ``1e-15``.</span>
-<span class="sd">    hermitian : bool, optional</span>
-<span class="sd">        If ``True``, a is assumed to be Hermitian (symmetric if real-valued),</span>
-<span class="sd">        enabling a more efficient method for finding singular values.</span>
-<span class="sd">        Default: ``False``.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : (..., N, M) dpnp.ndarray</span>
-<span class="sd">        The pseudo-inverse of a.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    The following example checks that ``a * a+ * a == a`` and</span>
-<span class="sd">    ``a+ * a * a+ == a+``:</span>
-
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.random.randn(9, 6)</span>
-<span class="sd">    &gt;&gt;&gt; B = np.linalg.pinv(a)</span>
-<span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(a, np.dot(B, a)))</span>
-<span class="sd">    array([ True])</span>
-<span class="sd">    &gt;&gt;&gt; np.allclose(B, np.dot(B, np.dot(a, B)))</span>
-<span class="sd">    array([ True])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">rcond</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_pinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="n">rcond</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="n">hermitian</span><span class="p">)</span></div>
 
 
 
