@@ -25,20 +25,37 @@
 
 #pragma once
 
-#include <oneapi/mkl/rng/device.hpp>
-
 #include "base_engine.hpp"
-#include "base_builder.hpp"
 
-namespace dpnp::backend::ext::rng::device::engine::builder
+
+namespace dpnp::backend::ext::rng::device::engine
 {
-namespace mkl_rng_dev = oneapi::mkl::rng::device;
+class MCG59 : public EngineBase {
+private:
+    sycl::queue q_;
+    std::vector<std::uint64_t> seed_vec;
+    std::vector<std::uint64_t> offset_vec;
 
-template <std::int32_t VecSize>
-class Builder<mkl_rng_dev::mcg31m1<VecSize>> : public BaseBuilder<mkl_rng_dev::mcg31m1<VecSize>, std::uint32_t, std::uint64_t> {
 public:
-    using EngineType = mkl_rng_dev::mcg31m1<VecSize>;
+    MCG59(sycl::queue &q, std::uint32_t seed, std::uint64_t offset = 0) : q_(q) {
+        seed_vec.push_back(seed);
+        offset_vec.push_back(offset);
+    }
 
-    Builder(EngineBase *engine) : BaseBuilder<EngineType, std::uint32_t, std::uint64_t>(engine) {}
+    sycl::queue &get_queue() override {
+        return q_;
+    }
+
+    virtual EngineType get_type() const noexcept override {
+        return EngineType::MCG59;
+    }
+
+    virtual std::vector<std::uint64_t> get_seeds() const noexcept override {
+        return seed_vec;
+    }
+
+    virtual std::vector<std::uint64_t> get_offsets() const noexcept override {
+        return offset_vec;
+    }
 };
-} // dpnp::backend::ext::rng::device::engine::builder
+} // dpnp::backend::ext::rng::device::engine

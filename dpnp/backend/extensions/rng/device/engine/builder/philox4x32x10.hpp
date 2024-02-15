@@ -27,8 +27,8 @@
 
 #include <oneapi/mkl/rng/device.hpp>
 
-#include "engine_base.hpp"
-#include "base.hpp"
+#include "base_engine.hpp"
+#include "base_builder.hpp"
 
 namespace dpnp::backend::ext::rng::device::engine::builder
 {

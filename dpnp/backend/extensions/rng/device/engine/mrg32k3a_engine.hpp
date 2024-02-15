@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "engine_base.hpp"
+#include "base_engine.hpp"
 
 
 namespace dpnp::backend::ext::rng::device::engine

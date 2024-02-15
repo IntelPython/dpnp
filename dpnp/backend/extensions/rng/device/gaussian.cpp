@@ -36,7 +36,7 @@
 #include "common_impl.hpp"
 #include "gaussian.hpp"
 
-#include "engine/engine_base.hpp"
+#include "engine/base_engine.hpp"
 #include "engine/builder/builder.hpp"
 
 #include "dispatch/matrix.hpp"
