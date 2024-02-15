@@ -28,7 +28,7 @@
 #include "engine_base.hpp"
 
 
-namespace dpnp::backend::ext::rng::device::engine
+namespace dpnp::backend::ext::rng::device::engine::builder
 {
 template <typename EngineT, typename SeedT, typename OffsetT>
 class BaseBuilder {
@@ -102,4 +102,4 @@ public:
         std::cout << std::endl;
     }
 };
-} // dpnp::backend::ext::rng::device::engine
+} // dpnp::backend::ext::rng::device::engine::builder

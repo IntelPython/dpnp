@@ -37,7 +37,7 @@
 #include "gaussian.hpp"
 
 #include "engine/engine_base.hpp"
-#include "engine/engine_builder.hpp"
+#include "engine/builder/builder.hpp"
 
 #include "dispatch/matrix.hpp"
 #include "dispatch/table_builder.hpp"
@@ -127,7 +127,7 @@ static sycl::event gaussian_impl(engine::EngineBase *engine,
         distr_event = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
 
-            using EngineBuilderT = engine::Builder<EngineT>;
+            using EngineBuilderT = engine::builder::Builder<EngineT>;
             EngineBuilderT eng_builder(engine);
             eng_builder.print(); // TODO: remove
 
