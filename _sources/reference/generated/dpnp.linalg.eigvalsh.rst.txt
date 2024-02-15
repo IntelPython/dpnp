@@ -1,0 +1,6 @@
+﻿dpnp.linalg.eigvalsh
+====================
+
+.. currentmodule:: dpnp.linalg
+
+.. autofunction:: eigvalsh
