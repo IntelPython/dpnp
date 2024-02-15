@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autodata:: right_shift
+.. autofunction:: right_shift

@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autodata:: isinf
+.. autofunction:: isinf

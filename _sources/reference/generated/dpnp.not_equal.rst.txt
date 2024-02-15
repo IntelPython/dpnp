@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autodata:: not_equal
+.. autofunction:: not_equal

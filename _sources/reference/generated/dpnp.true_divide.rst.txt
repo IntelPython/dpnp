@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autodata:: true_divide
+.. autofunction:: true_divide
