@@ -27,9 +27,6 @@ tests/test_strides.py::test_strides_1arg[(10,)-None-radians]
 
 tests/test_umath.py::test_umaths[('floor_divide', 'ff')]
 
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalue_param_0_{UPLO='U'}::test_eigh_batched
-tests/third_party/cupy/linalg_tests/test_eigenvalue.py::TestEigenvalue_param_1_{UPLO='L'}::test_eigh_batched
-
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_6_{a_shape=(3, 2), b_shape=(3, 2), shape=(4, 3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_7_{a_shape=(3, 2), b_shape=(3, 2), shape=(3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsChisquare_param_0_{df_shape=(), shape=(4, 3, 2)}::test_chisquare

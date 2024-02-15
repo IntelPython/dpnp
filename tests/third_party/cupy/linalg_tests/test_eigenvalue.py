@@ -28,7 +28,6 @@ class TestEigenvalue(unittest.TestCase):
         rtol=1e-3,
         atol=1e-4,
         type_check=has_support_aspect64(),
-        contiguous_check=False,
     )
     def test_eigh(self, xp, dtype):
         if xp == numpy and dtype == numpy.float16:
@@ -65,7 +64,9 @@ class TestEigenvalue(unittest.TestCase):
         return w
 
     @testing.for_all_dtypes(no_bool=True, no_float16=True, no_complex=True)
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4, contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-4, type_check=has_support_aspect64()
+    )
     def test_eigh_batched(self, xp, dtype):
         a = xp.array(
             [
@@ -89,7 +90,9 @@ class TestEigenvalue(unittest.TestCase):
         return w
 
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4, contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-4, type_check=has_support_aspect64()
+    )
     def test_eigh_complex_batched(self, xp, dtype):
         a = xp.array(
             [
@@ -195,7 +198,7 @@ class TestEigenvalueEmpty(unittest.TestCase):
     *testing.product(
         {
             "UPLO": ["U", "L"],
-            "shape": [()],
+            "shape": [(), (3,), (2, 3), (4, 0), (2, 2, 3), (0, 2, 3)],
         }
     )
 )
@@ -203,7 +206,7 @@ class TestEigenvalueInvalid(unittest.TestCase):
     def test_eigh_shape_error(self):
         for xp in (numpy, cupy):
             a = xp.zeros(self.shape)
-            with pytest.raises((numpy.linalg.LinAlgError, ValueError)):
+            with pytest.raises(xp.linalg.LinAlgError):
                 xp.linalg.eigh(a, self.UPLO)
 
     def test_eigvalsh_shape_error(self):
