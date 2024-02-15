@@ -34,6 +34,7 @@ class EngineType {
 public:
     enum Type : std::uint8_t {
         MRG32k3a = 0,
+        MCG59,
         Base, // must be the last always
     };
 

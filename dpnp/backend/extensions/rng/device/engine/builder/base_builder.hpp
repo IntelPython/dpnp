@@ -25,7 +25,11 @@
 
 #pragma once
 
-#include "engine_base.hpp"
+#include "base_engine.hpp"
+
+// TODO: remove the include once issue in MKL is resolved
+#include <oneapi/mkl/rng/device.hpp>
+namespace mkl_rng_dev = oneapi::mkl::rng::device;
 
 
 namespace dpnp::backend::ext::rng::device::engine::builder
@@ -71,7 +75,13 @@ public:
     {
         switch (no_of_seeds) {
             case 1: {
-                return EngineT({seeds[0]}, {offsets[0]});
+                if constexpr (std::is_same_v<EngineT, mkl_rng_dev::mcg59<8>>) {
+                    // issue with mcg59<>() constructor which breaks compilation
+                    return EngineT(seeds[0], offsets[0]);
+                }
+                else {
+                    return EngineT({seeds[0]}, offsets[0]);
+                }
             }
             // TODO: implement full switch
             default:
@@ -84,7 +94,13 @@ public:
     {
         switch (no_of_seeds) {
             case 1: {
-                return EngineT({seeds[0]}, offset);
+                if constexpr (std::is_same_v<EngineT, mkl_rng_dev::mcg59<8>>) {
+                    // issue with mcg59<>() constructor which breaks compilation
+                    return EngineT(seeds[0], offsets[0]);
+                }
+                else {
+                    return EngineT({seeds[0]}, {offset});
+                }
             }
             // TODO: implement full switch
             default:

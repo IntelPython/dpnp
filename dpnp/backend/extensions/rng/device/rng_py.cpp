@@ -35,7 +35,9 @@
 #include <oneapi/mkl/rng.hpp>
 
 #include "gaussian.hpp"
+
 #include "engine/mrg32k3a_engine.hpp"
+#include "engine/mcg59_engine.hpp"
 
 namespace mkl_rng = oneapi::mkl::rng;
 namespace rng_dev_ext = dpnp::backend::ext::rng::device;
@@ -82,6 +84,8 @@ PYBIND11_MODULE(_rng_dev_impl, m)
     py::class_<rng_dev_engine::MRG32k3a, rng_dev_engine::EngineBase>(m, "MRG32k3a")
         .def(py::init<sycl::queue &, std::uint32_t, std::uint64_t>());
 
+    py::class_<rng_dev_engine::MCG59, rng_dev_engine::EngineBase>(m, "MCG59")
+        .def(py::init<sycl::queue &, std::uint32_t, std::uint64_t>());
 
     m.def("_gaussian", &rng_dev_ext::gaussian,
           "",

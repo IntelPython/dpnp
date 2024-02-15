@@ -31,7 +31,7 @@
 
 #include <dpctl4pybind11.hpp>
 
-#include "engine/engine_base.hpp"
+#include "engine/base_engine.hpp"
 
 
 namespace dpnp::backend::ext::rng::device
