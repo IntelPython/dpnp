@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autofunction:: less_equal
+.. autodata:: less_equal

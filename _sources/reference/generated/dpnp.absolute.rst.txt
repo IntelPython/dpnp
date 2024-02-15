@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autofunction:: absolute
+.. autodata:: absolute

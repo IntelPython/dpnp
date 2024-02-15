@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autofunction:: add
+.. autodata:: add
