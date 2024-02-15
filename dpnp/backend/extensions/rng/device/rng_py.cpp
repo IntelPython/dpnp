@@ -37,7 +37,10 @@
 #include "gaussian.hpp"
 
 #include "engine/mrg32k3a_engine.hpp"
+#include "engine/philox4x32x10_engine.hpp"
+#include "engine/mcg31m1_engine.hpp"
 #include "engine/mcg59_engine.hpp"
+
 
 namespace mkl_rng = oneapi::mkl::rng;
 namespace rng_dev_ext = dpnp::backend::ext::rng::device;
@@ -82,6 +85,12 @@ PYBIND11_MODULE(_rng_dev_impl, m)
         .def("get_queue", &rng_dev_engine::EngineBase::get_queue);
 
     py::class_<rng_dev_engine::MRG32k3a, rng_dev_engine::EngineBase>(m, "MRG32k3a")
+        .def(py::init<sycl::queue &, std::uint32_t, std::uint64_t>());
+
+    py::class_<rng_dev_engine::PHILOX4x32x10, rng_dev_engine::EngineBase>(m, "PHILOX4x32x10")
+        .def(py::init<sycl::queue &, std::uint64_t, std::uint64_t>());
+
+    py::class_<rng_dev_engine::MCG31M1, rng_dev_engine::EngineBase>(m, "MCG31M1")
         .def(py::init<sycl::queue &, std::uint32_t, std::uint64_t>());
 
     py::class_<rng_dev_engine::MCG59, rng_dev_engine::EngineBase>(m, "MCG59")

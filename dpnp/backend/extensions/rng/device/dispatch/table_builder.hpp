@@ -80,6 +80,8 @@ public:
     void populate(funcPtrT table[][_no_of_types][_no_of_methods]) const
     {
         const auto map_by_engine = {table_per_type_and_method<mkl_rng_dev::mrg32k3a<8>>(),
+                                    table_per_type_and_method<mkl_rng_dev::philox4x32x10<8>>(),
+                                    table_per_type_and_method<mkl_rng_dev::mcg31m1<8>>(),
                                     table_per_type_and_method<mkl_rng_dev::mcg59<8>>()};
         assert(map_by_engine.size() == _no_of_engines);
 

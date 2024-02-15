@@ -39,6 +39,6 @@ class Builder<mkl_rng_dev::philox4x32x10<VecSize>> : public BaseBuilder<mkl_rng_
 public:
     using EngineType = mkl_rng_dev::philox4x32x10<VecSize>;
 
-    Builder(EngineBase *engine) : BaseBuilder<EngineType, std::uint32_t, std::uint64_t>(engine) {}
+    Builder(EngineBase *engine) : BaseBuilder<EngineType, std::uint64_t, std::uint64_t>(engine) {}
 };
 } // dpnp::backend::ext::rng::device::engine::builder
