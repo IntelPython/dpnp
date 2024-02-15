@@ -41,29 +41,14 @@ it contains:
 
 
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_elementwise_impl as ti
 import numpy
 
 import dpnp
 from dpnp.dpnp_algo import *
+from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import *
-
-from .dpnp_algo.dpnp_elementwise_common import (
-    check_nd_call_func,
-    dpnp_equal,
-    dpnp_greater,
-    dpnp_greater_equal,
-    dpnp_isfinite,
-    dpnp_isinf,
-    dpnp_isnan,
-    dpnp_less,
-    dpnp_less_equal,
-    dpnp_logical_and,
-    dpnp_logical_not,
-    dpnp_logical_or,
-    dpnp_logical_xor,
-    dpnp_not_equal,
-)
 
 __all__ = [
     "all",
@@ -308,220 +293,205 @@ def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
     )
 
 
-def equal(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Return the truth value of (x1 == x2) element-wise.
+_equal_docstring = """
+Calculates equality results for each element `x1_i` of
+the input array `x1` the respective element `x2_i` of the input array `x2`.
 
-    For full documentation refer to :obj:`numpy.equal`.
+For full documentation refer to :obj:`numpy.equal`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Returns
+-------
+out : dpnp.ndarray
+    an array containing the result of element-wise equality comparison.
+    The data type of the returned array is determined by the Type Promotion Rules.
 
-    See Also
-    --------
-    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
-    :obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
-    :obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
-    :obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
-    :obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([0, 1, 3])
-    >>> x2 = np.arange(3)
-    >>> np.equal(x1, x2)
-    array([ True,  True, False])
+See Also
+--------
+:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
+:obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
+:obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
+:obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
+:obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
 
-    What is compared are values, not types. So an int (1) and an array of
-    length one can evaluate as True:
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([0, 1, 3])
+>>> x2 = np.arange(3)
+>>> np.equal(x1, x2)
+array([ True,  True, False])
 
-    >>> np.equal(1, np.ones(1))
-    array([ True])
+What is compared are values, not types. So an int (1) and an array of
+length one can evaluate as True:
 
-    The ``==`` operator can be used as a shorthand for ``equal`` on
-    :class:`dpnp.ndarray`.
+>>> np.equal(1, np.ones(1))
+array([ True])
 
-    >>> a = np.array([2, 4, 6])
-    >>> b = np.array([2, 4, 2])
-    >>> a == b
-    array([ True,  True, False])
+The ``==`` operator can be used as a shorthand for ``equal`` on
+:class:`dpnp.ndarray`.
 
-    """
+>>> a = np.array([2, 4, 6])
+>>> b = np.array([2, 4, 2])
+>>> a == b
+array([ True,  True, False])
+"""
 
-    return check_nd_call_func(
-        numpy.equal,
-        dpnp_equal,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+equal = DPNPBinaryFunc(
+    "equal",
+    ti._equal_result_type,
+    ti._equal,
+    _equal_docstring,
+    origin_fn=numpy.equal,
+)
 
 
-def greater(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Return the truth value of (x1 > x2) element-wise.
+_greater_docstring = """
+Calculates the greater-than results for each element `x1_i` of
+the input array `x1` the respective element `x2_i` of the input array `x2`.
 
-    For full documentation refer to :obj:`numpy.greater`.
+For full documentation refer to :obj:`numpy.greater`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Returns
+-------
+out : dpnp.ndarray
+    an array containing the result of element-wise greater-than comparison.
+    The data type of the returned array is determined by the Type Promotion Rules.
 
-    See Also
-    --------
-    :obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
-    :obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
-    :obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
-    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.
-    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([4, 2])
-    >>> x2 = np.array([2, 2])
-    >>> np.greater(x1, x2)
-    array([ True, False])
+See Also
+--------
+:obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
+:obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
+:obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
+:obj:`dpnp.equal` : Return (x1 == x2) element-wise.
+:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
 
-    The ``>`` operator can be used as a shorthand for ``greater`` on
-    :class:`dpnp.ndarray`.
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([4, 2])
+>>> x2 = np.array([2, 2])
+>>> np.greater(x1, x2)
+array([ True, False])
 
-    >>> a = np.array([4, 2])
-    >>> b = np.array([2, 2])
-    >>> a > b
-    array([ True, False])
+The ``>`` operator can be used as a shorthand for ``greater`` on
+:class:`dpnp.ndarray`.
 
-    """
+>>> a = np.array([4, 2])
+>>> b = np.array([2, 2])
+>>> a > b
+array([ True, False])
+"""
 
-    return check_nd_call_func(
-        numpy.greater,
-        dpnp_greater,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+greater = DPNPBinaryFunc(
+    "greater",
+    ti._greater_result_type,
+    ti._greater,
+    _greater_docstring,
+    origin_fn=numpy.greater,
+)
 
 
-def greater_equal(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Return the truth value of (x1 >= x2) element-wise.
+_greater_equal_docstring = """
+Calculates the greater-than or equal-to results for each element `x1_i` of
+the input array `x1` the respective element `x2_i` of the input array `x2`.
 
-    For full documentation refer to :obj:`numpy.greater_equal`.
+For full documentation refer to :obj:`numpy.greater_equal`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Returns
+-------
+out : dpnp.ndarray
+    an array containing the result of element-wise greater-than or equal-to comparison.
+    The data type of the returned array is determined by the Type Promotion Rules.
 
-    See Also
-    --------
-    :obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
-    :obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
-    :obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
-    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.
-    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([4, 2, 1])
-    >>> x2 = np.array([2, 2, 2])
-    >>> np.greater_equal(x1, x2)
-    array([ True,  True, False])
+See Also
+--------
+:obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
+:obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
+:obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
+:obj:`dpnp.equal` : Return (x1 == x2) element-wise.
+:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
 
-    The ``>=`` operator can be used as a shorthand for ``greater_equal`` on
-    :class:`dpnp.ndarray`.
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([4, 2, 1])
+>>> x2 = np.array([2, 2, 2])
+>>> np.greater_equal(x1, x2)
+array([ True,  True, False])
 
-    >>> a = np.array([4, 2, 1])
-    >>> b = np.array([2, 2, 2])
-    >>> a >= b
-    array([ True,  True, False])
+The ``>=`` operator can be used as a shorthand for ``greater_equal`` on
+:class:`dpnp.ndarray`.
 
-    """
+>>> a = np.array([4, 2, 1])
+>>> b = np.array([2, 2, 2])
+>>> a >= b
+array([ True,  True, False])
+"""
 
-    return check_nd_call_func(
-        numpy.greater_equal,
-        dpnp_greater_equal,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+greater_equal = DPNPBinaryFunc(
+    "greater",
+    ti._greater_equal_result_type,
+    ti._greater_equal,
+    _greater_equal_docstring,
+    origin_fn=numpy.greater_equal,
+)
 
 
 def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
@@ -563,639 +533,619 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
     )
 
 
-def isfinite(
-    x, /, out=None, *, where=True, order="K", dtype=None, subok=True, **kwargs
-):
-    """
-    Test element-wise for finiteness (not infinity or not Not a Number).
-
-    For full documentation refer to :obj:`numpy.isfinite`.
-
-    Limitations
-    -----------
-    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.
-    :obj:`dpnp.isneginf` : Test element-wise for negative infinity,
-                           return result as bool array.
-    :obj:`dpnp.isposinf` : Test element-wise for positive infinity,
-                           return result as bool array.
-    :obj:`dpnp.isnan` : Test element-wise for NaN and
-                        return result as a boolean array.
-
-    Notes
-    -----
-    Not a Number, positive infinity and negative infinity are considered
-    to be non-finite.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x = np.array([-np.inf, 0., np.inf])
-    >>> np.isfinite(x)
-    array([False,  True, False])
-
-    """
-
-    return check_nd_call_func(
-        numpy.isfinite,
-        dpnp_isfinite,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def isinf(
-    x, /, out=None, *, where=True, order="K", dtype=None, subok=True, **kwargs
-):
-    """
-    Test element-wise for positive or negative infinity.
-
-    For full documentation refer to :obj:`numpy.isinf`.
-
-    Limitations
-    -----------
-    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.isneginf` : Test element-wise for negative infinity,
-                           return result as bool array.
-    :obj:`dpnp.isposinf` : Test element-wise for positive infinity,
-                           return result as bool array.
-    :obj:`dpnp.isnan` : Test element-wise for NaN and
-                        return result as a boolean array.
-    :obj:`dpnp.isfinite` : Test element-wise for finiteness.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x = np.array([-np.inf, 0., np.inf])
-    >>> np.isinf(x)
-    array([ True, False,  True])
-
-    """
-
-    return check_nd_call_func(
-        numpy.isinf,
-        dpnp_isinf,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def isnan(
-    x, /, out=None, *, where=True, order="K", dtype=None, subok=True, **kwargs
-):
-    """
-    Test element-wise for NaN and return result as a boolean array.
-
-    For full documentation refer to :obj:`numpy.isnan`.
-
-    Limitations
-    -----------
-    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.
-    :obj:`dpnp.isneginf` : Test element-wise for negative infinity,
-                           return result as bool array.
-    :obj:`dpnp.isposinf` : Test element-wise for positive infinity,
-                           return result as bool array.
-    :obj:`dpnp.isfinite` : Test element-wise for finiteness.
-    :obj:`dpnp.isnat` : Test element-wise for NaT (not a time)
-                        and return result as a boolean array.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x = np.array([np.inf, 0., np.nan])
-    >>> np.isnan(x)
-    array([False, False,  True])
-
-    """
-
-    return check_nd_call_func(
-        numpy.isnan,
-        dpnp_isnan,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def less(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Return the truth value of (x1 < x2) element-wise.
-
-    For full documentation refer to :obj:`numpy.less`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
-
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
-    :obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
-    :obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
-    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.
-    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([1, 2])
-    >>> x2 = np.array([2, 2])
-    >>> np.less(x1, x2)
-    array([ True, False])
-
-    The ``<`` operator can be used as a shorthand for ``less`` on
-    :class:`dpnp.ndarray`.
-
-    >>> a = np.array([1, 2])
-    >>> b = np.array([2, 2])
-    >>> a < b
-    array([ True, False])
-
-    """
-
-    return check_nd_call_func(
-        numpy.less,
-        dpnp_less,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def less_equal(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Return the truth value of (x1 <= x2) element-wise.
-
-    For full documentation refer to :obj:`numpy.less_equal`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
-
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
-    :obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
-    :obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
-    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.
-    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([4, 2, 1])
-    >>> x2 = np.array([2, 2, 2]
-    >>> np.less_equal(x1, x2)
-    array([False,  True,  True])
-
-    The ``<=`` operator can be used as a shorthand for ``less_equal`` on
-    :class:`dpnp.ndarray`.
-
-    >>> a = np.array([4, 2, 1])
-    >>> b = np.array([2, 2, 2])
-    >>> a <= b
-    array([False,  True,  True])
-
-    """
-
-    return check_nd_call_func(
-        numpy.less_equal,
-        dpnp_less_equal,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def logical_and(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Compute the truth value of x1 AND x2 element-wise.
-
-    For full documentation refer to :obj:`numpy.logical_and`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Boolean result of the logical AND operation applied to the elements
-        of `x1` and `x2`; the shape is determined by broadcasting.
-
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.
-    :obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.
-    :obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.
-    :obj:`dpnp.bitwise_and` : Compute the bit-wise AND of two arrays element-wise.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([True, False])
-    >>> x2 = np.array([False, False])
-    >>> np.logical_and(x1, x2)
-    array([False, False])
-
-    >>> x = np.arange(5)
-    >>> np.logical_and(x > 1, x < 4)
-    array([False, False,  True,  True, False])
-
-    The ``&`` operator can be used as a shorthand for ``logical_and`` on
-    boolean :class:`dpnp.ndarray`.
-
-    >>> a = np.array([True, False])
-    >>> b = np.array([False, False])
-    >>> a & b
-    array([False, False])
-
-    """
-
-    return check_nd_call_func(
-        numpy.logical_and,
-        dpnp_logical_and,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def logical_not(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Compute the truth value of NOT x element-wise.
-
-    For full documentation refer to :obj:`numpy.logical_not`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Boolean result with the same shape as `x` of the NOT operation
-        on elements of `x`.
-
-    Limitations
-    -----------
-    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.
-    :obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.
-    :obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x = np.array([True, False, 0, 1])
-    >>> np.logical_not(x)
-    array([False,  True,  True, False])
-
-    >>> x = np.arange(5)
-    >>> np.logical_not(x < 3)
-    array([False, False, False,  True,  True])
-
-    """
-
-    return check_nd_call_func(
-        numpy.logical_not,
-        dpnp_logical_not,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def logical_or(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Compute the truth value of x1 OR x2 element-wise.
-
-    For full documentation refer to :obj:`numpy.logical_or`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Boolean result of the logical OR operation applied to the elements
-        of `x1` and `x2`; the shape is determined by broadcasting.
-
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.
-    :obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.
-    :obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.
-    :obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([True, False])
-    >>> x2 = np.array([False, False])
-    >>> np.logical_or(x1, x2)
-    array([ True, False])
-
-    >>> x = np.arange(5)
-    >>> np.logical_or(x < 1, x > 3)
-    array([ True, False, False, False,  True])
-
-    The ``|`` operator can be used as a shorthand for ``logical_or`` on
-    boolean :class:`dpnp.ndarray`.
-
-    >>> a = np.array([True, False])
-    >>> b = np.array([False, False])
-    >>> a | b
-    array([ True, False])
-
-    """
-
-    return check_nd_call_func(
-        numpy.logical_or,
-        dpnp_logical_or,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def logical_xor(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Compute the truth value of x1 XOR x2 element-wise.
-
-    For full documentation refer to :obj:`numpy.logical_xor`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Boolean result of the logical XOR operation applied to the elements
-        of `x1` and `x2`; the shape is determined by broadcasting.
-
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.
-    :obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.
-    :obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.
-    :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([True, True, False, False])
-    >>> x2 = np.array([True, False, True, False])
-    >>> np.logical_xor(x1, x2)
-    array([False,  True,  True, False])
-
-    >>> x = np.arange(5)
-    >>> np.logical_xor(x < 1, x > 3)
-    array([ True, False, False, False,  True])
-
-    Simple example showing support of broadcasting
-
-    >>> np.logical_xor(0, np.eye(2))
-    array([[ True, False],
-           [False,  True]])
-
-    """
-
-    return check_nd_call_func(
-        numpy.logical_xor,
-        dpnp_logical_xor,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def not_equal(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Return the truth value of (x1 != x2) element-wise.
-
-    For full documentation refer to :obj:`numpy.not_equal`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        Output array of bool type, element-wise comparison of `x1` and `x2`.
-
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.
-    :obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
-    :obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
-    :obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
-    :obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([1., 2.])
-    >>> x2 = np.arange(1., 3.)
-    >>> np.not_equal(x1, x2)
-    array([False, False])
-
-    The ``!=`` operator can be used as a shorthand for ``not_equal`` on
-    :class:`dpnp.ndarray`.
-
-    >>> a = np.array([1., 2.])
-    >>> b = np.array([1., 3.])
-    >>> a != b
-    array([False,  True])
-
-    """
-
-    return check_nd_call_func(
-        numpy.not_equal,
-        dpnp_not_equal,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+_isfinite_docstring = """
+Checks if each element of input array is a finite number.
+
+For full documentation refer to :obj:`numpy.isfinite`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    An array which is True where `x` is not positive infinity,
+    negative infinity, or NaN, False otherwise.
+    The data type of the returned array is `bool`.
+
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP :ref:`Data types`.
+
+See Also
+--------
+:obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.
+:obj:`dpnp.isneginf` : Test element-wise for negative infinity,
+                        return result as bool array.
+:obj:`dpnp.isposinf` : Test element-wise for positive infinity,
+                        return result as bool array.
+:obj:`dpnp.isnan` : Test element-wise for NaN and
+                    return result as a boolean array.
+
+Notes
+-----
+Not a Number, positive infinity and negative infinity are considered
+to be non-finite.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.array([-np.inf, 0., np.inf])
+>>> np.isfinite(x)
+array([False,  True, False])
+"""
+
+isfinite = DPNPUnaryFunc(
+    "isfinite",
+    ti._isfinite_result_type,
+    ti._isfinite,
+    _isfinite_docstring,
+    origin_fn=numpy.isfinite,
+)
+
+
+_isinf_docstring = """
+Checks if each element of input array is an infinity.
+
+For full documentation refer to :obj:`numpy.isinf`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    An array which is True where `x` is positive or negative infinity,
+    False otherwise. The data type of the returned array is `bool`.
+
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP :ref:`Data types`.
+
+See Also
+--------
+:obj:`dpnp.isneginf` : Test element-wise for negative infinity,
+                        return result as bool array.
+:obj:`dpnp.isposinf` : Test element-wise for positive infinity,
+                        return result as bool array.
+:obj:`dpnp.isnan` : Test element-wise for NaN and
+                    return result as a boolean array.
+:obj:`dpnp.isfinite` : Test element-wise for finiteness.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.array([-np.inf, 0., np.inf])
+>>> np.isinf(x)
+array([ True, False,  True])
+"""
+
+isinf = DPNPUnaryFunc(
+    "isinf",
+    ti._isinf_result_type,
+    ti._isinf,
+    _isinf_docstring,
+    origin_fn=numpy.isinf,
+)
+
+
+_isnan_docstring = """
+Checks if each element of an input array is a NaN.
+
+For full documentation refer to :obj:`numpy.isnan`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    An array which is True where x is NaN, False otherwise.
+    The data type of the returned array is `bool`.
+
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP :ref:`Data types`.
+
+See Also
+--------
+:obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.
+:obj:`dpnp.isneginf` : Test element-wise for negative infinity,
+                        return result as bool array.
+:obj:`dpnp.isposinf` : Test element-wise for positive infinity,
+                        return result as bool array.
+:obj:`dpnp.isfinite` : Test element-wise for finiteness.
+:obj:`dpnp.isnat` : Test element-wise for NaT (not a time)
+                    and return result as a boolean array.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.array([np.inf, 0., np.nan])
+>>> np.isnan(x)
+array([False, False,  True])
+"""
+
+isnan = DPNPUnaryFunc(
+    "isnan",
+    ti._isnan_result_type,
+    ti._isnan,
+    _isnan_docstring,
+    origin_fn=numpy.isnan,
+)
+
+
+_less_docstring = """
+Calculates the less-than results for each element `x1_i` of
+the input array `x1` the respective element `x2_i` of the input array `x2`.
+
+For full documentation refer to :obj:`numpy.less`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the result of element-wise less-than comparison.
+    The data type of the returned array is determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP :ref:`Data types`.
+
+See Also
+--------
+:obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
+:obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
+:obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
+:obj:`dpnp.equal` : Return (x1 == x2) element-wise.
+:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([1, 2])
+>>> x2 = np.array([2, 2])
+>>> np.less(x1, x2)
+array([ True, False])
+
+The ``<`` operator can be used as a shorthand for ``less`` on
+:class:`dpnp.ndarray`.
+
+>>> a = np.array([1, 2])
+>>> b = np.array([2, 2])
+>>> a < b
+array([ True, False])
+"""
+
+less = DPNPBinaryFunc(
+    "less",
+    ti._less_result_type,
+    ti._less,
+    _less_docstring,
+    origin_fn=numpy.less,
+)
+
+
+_less_equal_docstring = """
+Calculates the less-than or equal-to results for each element `x1_i` of
+the input array `x1` the respective element `x2_i` of the input array `x2`.
+
+For full documentation refer to :obj:`numpy.less_equal`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the result of element-wise less-than or equal-to comparison.
+    The data type of the returned array is determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP :ref:`Data types`.
+
+See Also
+--------
+:obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
+:obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
+:obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
+:obj:`dpnp.equal` : Return (x1 == x2) element-wise.
+:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([4, 2, 1])
+>>> x2 = np.array([2, 2, 2]
+>>> np.less_equal(x1, x2)
+array([False,  True,  True])
+
+The ``<=`` operator can be used as a shorthand for ``less_equal`` on
+:class:`dpnp.ndarray`.
+
+>>> a = np.array([4, 2, 1])
+>>> b = np.array([2, 2, 2])
+>>> a <= b
+array([False,  True,  True])
+"""
+
+less_equal = DPNPBinaryFunc(
+    "less_equal",
+    ti._less_equal_result_type,
+    ti._less_equal,
+    _less_equal_docstring,
+    origin_fn=numpy.less_equal,
+)
+
+
+_logical_and_docstring = """
+Computes the logical AND for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+For full documentation refer to :obj:`numpy.logical_and`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise logical AND results.
+
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP :ref:`Data types`.
+
+See Also
+--------
+:obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.
+:obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.
+:obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.
+:obj:`dpnp.bitwise_and` : Compute the bit-wise AND of two arrays element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([True, False])
+>>> x2 = np.array([False, False])
+>>> np.logical_and(x1, x2)
+array([False, False])
+
+>>> x = np.arange(5)
+>>> np.logical_and(x > 1, x < 4)
+array([False, False,  True,  True, False])
+
+The ``&`` operator can be used as a shorthand for ``logical_and`` on
+boolean :class:`dpnp.ndarray`.
+
+>>> a = np.array([True, False])
+>>> b = np.array([False, False])
+>>> a & b
+array([False, False])
+"""
+
+logical_and = DPNPBinaryFunc(
+    "logical_and",
+    ti._logical_and_result_type,
+    ti._logical_and,
+    _logical_and_docstring,
+    origin_fn=numpy.logical_and,
+)
+
+
+_logical_not_docstring = """
+Computes the logical NOT for each element `x_i` of input array `x`.
+
+For full documentation refer to :obj:`numpy.logical_not`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise logical NOT results.
+
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP :ref:`Data types`.
+
+See Also
+--------
+:obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.
+:obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.
+:obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.array([True, False, 0, 1])
+>>> np.logical_not(x)
+array([False,  True,  True, False])
+
+>>> x = np.arange(5)
+>>> np.logical_not(x < 3)
+array([False, False, False,  True,  True])
+"""
+
+logical_not = DPNPUnaryFunc(
+    "logical_not",
+    ti._logical_not_result_type,
+    ti._logical_not,
+    _logical_not_docstring,
+    origin_fn=numpy.logical_not,
+)
+
+
+_logical_or_docstring = """
+Computes the logical OR for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+For full documentation refer to :obj:`numpy.logical_or`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise logical OR results.
+
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP :ref:`Data types`.
+
+See Also
+--------
+:obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.
+:obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.
+:obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.
+:obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([True, False])
+>>> x2 = np.array([False, False])
+>>> np.logical_or(x1, x2)
+array([ True, False])
+
+>>> x = np.arange(5)
+>>> np.logical_or(x < 1, x > 3)
+array([ True, False, False, False,  True])
+
+The ``|`` operator can be used as a shorthand for ``logical_or`` on
+boolean :class:`dpnp.ndarray`.
+
+>>> a = np.array([True, False])
+>>> b = np.array([False, False])
+>>> a | b
+array([ True, False])
+"""
+
+logical_or = DPNPBinaryFunc(
+    "logical_or",
+    ti._logical_or_result_type,
+    ti._logical_or,
+    _logical_or_docstring,
+    origin_fn=numpy.logical_or,
+)
+
+
+_logical_xor_docstring = """
+Computes the logical XOR for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+For full documentation refer to :obj:`numpy.logical_xor`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+Returns:
+dpnp.ndarray:
+    An array containing the element-wise logical XOR results.
+
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP :ref:`Data types`.
+
+See Also
+--------
+:obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.
+:obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.
+:obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.
+:obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([True, True, False, False])
+>>> x2 = np.array([True, False, True, False])
+>>> np.logical_xor(x1, x2)
+array([False,  True,  True, False])
+
+>>> x = np.arange(5)
+>>> np.logical_xor(x < 1, x > 3)
+array([ True, False, False, False,  True])
+
+Simple example showing support of broadcasting
+
+>>> np.logical_xor(0, np.eye(2))
+array([[ True, False],
+       [False,  True]])
+"""
+
+logical_xor = DPNPBinaryFunc(
+    "logical_xor",
+    ti._logical_xor_result_type,
+    ti._logical_xor,
+    _logical_xor_docstring,
+    origin_fn=numpy.logical_xor,
+)
+
+
+_not_equal_docstring = """
+Calculates inequality results for each element `x1_i` of
+the input array `x1` the respective element `x2_i` of the input array `x2`.
+
+For full documentation refer to :obj:`numpy.not_equal`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    an array containing the result of element-wise inequality comparison.
+    The data type of the returned array is determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP :ref:`Data types`.
+
+See Also
+--------
+:obj:`dpnp.equal` : Return (x1 == x2) element-wise.
+:obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
+:obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
+:obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
+:obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([1., 2.])
+>>> x2 = np.arange(1., 3.)
+>>> np.not_equal(x1, x2)
+array([False, False])
+
+The ``!=`` operator can be used as a shorthand for ``not_equal`` on
+:class:`dpnp.ndarray`.
+
+>>> a = np.array([1., 2.])
+>>> b = np.array([1., 3.])
+>>> a != b
+array([False,  True])
+"""
+
+not_equal = DPNPBinaryFunc(
+    "not_equal",
+    ti._not_equal_result_type,
+    ti._not_equal,
+    _not_equal_docstring,
+    origin_fn=numpy.not_equal,
+)

@@ -38,17 +38,10 @@ it contains:
 """
 
 
+import dpctl.tensor._tensor_elementwise_impl as ti
 import numpy
 
-from .dpnp_algo.dpnp_elementwise_common import (
-    check_nd_call_func,
-    dpnp_bitwise_and,
-    dpnp_bitwise_or,
-    dpnp_bitwise_xor,
-    dpnp_invert,
-    dpnp_left_shift,
-    dpnp_right_shift,
-)
+from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
 __all__ = [
     "bitwise_and",
@@ -61,395 +54,386 @@ __all__ = [
 ]
 
 
-def bitwise_and(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Compute the bit-wise AND of two arrays element-wise.
+_bitwise_and_docstring = """
+Computes the bitwise AND of the underlying binary representation of each
+element `x1_i` of the input array `x1` with the respective element `x2_i`
+of the input array `x2`.
 
-    For full documentation refer to :obj:`numpy.bitwise_and`.
+For full documentation refer to :obj:`numpy.bitwise_and`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        An array containing the element-wise results.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have integer or boolean data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have integer or boolean data
+    type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Data type of input arrays `x1` and `x2` has to be an integer or boolean data type.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise results. The data type
+    of the returned array is determined by the Type Promotion Rules.
 
-    See Also
-    --------
-    :obj:`dpnp.logical_and` : Compute the truth value of ``x1`` AND ``x2`` element-wise.
-    :obj:`dpnp.bitwise_or`: Compute the bit-wise OR of two arrays element-wise.
-    :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise the function will be executed sequentially on CPU.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([2, 5, 255])
-    >>> x2 = np.array([3,14,16])
-    >>> np.bitwise_and(x1, x2)
-    [2, 4, 16]
+See Also
+--------
+:obj:`dpnp.logical_and` : Compute the truth value of ``x1`` AND ``x2`` element-wise.
+:obj:`dpnp.bitwise_or`: Compute the bit-wise OR of two arrays element-wise.
+:obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
 
-    >>> a = np.array([True, True])
-    >>> b = np.array([False, True])
-    >>> np.bitwise_and(a, b)
-    array([False,  True])
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([2, 5, 255])
+>>> x2 = np.array([3,14,16])
+>>> np.bitwise_and(x1, x2)
+[2, 4, 16]
 
-    The ``&`` operator can be used as a shorthand for ``bitwise_and`` on
-    :class:`dpnp.ndarray`.
+>>> a = np.array([True, True])
+>>> b = np.array([False, True])
+>>> np.bitwise_and(a, b)
+array([False,  True])
 
-    >>> x1 & x2
-    array([ 2,  4, 16])
-    """
-    return check_nd_call_func(
-        numpy.bitwise_and,
-        dpnp_bitwise_and,
-        x1,
-        x2,
-        out=out,
-        order=order,
-        where=where,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+The ``&`` operator can be used as a shorthand for ``bitwise_and`` on
+:class:`dpnp.ndarray`.
+
+>>> x1 & x2
+array([ 2,  4, 16])
+"""
+
+bitwise_and = DPNPBinaryFunc(
+    "bitwise_and",
+    ti._bitwise_and_result_type,
+    ti._bitwise_and,
+    _bitwise_and_docstring,
+    origin_fn=numpy.bitwise_and,
+)
 
 
-def bitwise_or(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Compute the bit-wise OR of two arrays element-wise.
+_bitwise_or_docstring = """
+Computes the bitwise OR of the underlying binary representation of each
+element `x1_i` of the input array `x1` with the respective element `x2_i`
+of the input array `x2`.
 
-    For full documentation refer to :obj:`numpy.bitwise_or`.
+For full documentation refer to :obj:`numpy.bitwise_or`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        An array containing the element-wise results.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have integer or boolean data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have integer or boolean data
+    type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Data type of input arrays `x1` and `x2` has to be an integer or boolean data type.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise results. The data type
+    of the returned array is determined by the Type Promotion Rules.
 
-    See Also
-    --------
-    :obj:`dpnp.logical_or` : Compute the truth value of ``x1`` OR ``x2`` element-wise.
-    :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.
-    :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise the function will be executed sequentially on CPU.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([2, 5, 255])
-    >>> x2 = np.array([4])
-    >>> np.bitwise_or(x1, x2)
-    array([  6,   5, 255])
+See Also
+--------
+:obj:`dpnp.logical_or` : Compute the truth value of ``x1`` OR ``x2`` element-wise.
+:obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.
+:obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
 
-    The ``|`` operator can be used as a shorthand for ``bitwise_or`` on
-    :class:`dpnp.ndarray`.
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([2, 5, 255])
+>>> x2 = np.array([4])
+>>> np.bitwise_or(x1, x2)
+array([  6,   5, 255])
 
-    >>> x1 | x2
-    array([  6,   5, 255])
-    """
-    return check_nd_call_func(
-        numpy.bitwise_or,
-        dpnp_bitwise_or,
-        x1,
-        x2,
-        out=out,
-        order=order,
-        where=where,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+The ``|`` operator can be used as a shorthand for ``bitwise_or`` on
+:class:`dpnp.ndarray`.
+
+>>> x1 | x2
+array([  6,   5, 255])
+"""
+
+bitwise_or = DPNPBinaryFunc(
+    "bitwise_or",
+    ti._bitwise_or_result_type,
+    ti._bitwise_or,
+    _bitwise_or_docstring,
+    origin_fn=numpy.bitwise_or,
+)
 
 
-def bitwise_xor(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Compute the bit-wise XOR of two arrays element-wise.
+_bitwise_xor_docstring = """
+Computes the bitwise XOR of the underlying binary representation of each
+element `x1_i` of the input array `x1` with the respective element `x2_i`
+of the input array `x2`.
 
-    For full documentation refer to :obj:`numpy.bitwise_xor`.
+For full documentation refer to :obj:`numpy.bitwise_xor`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        An array containing the element-wise results.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have integer or boolean data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have integer or boolean data
+    type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Data type of input arrays `x1` and `x2` has to be an integer or boolean data type.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise results. The data type
+    of the returned array is determined by the Type Promotion Rules.
 
-    See Also
-    --------
-    :obj:`dpnp.logical_xor` : Compute the truth value of ``x1`` XOR `x2`, element-wise.
-    :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.
-    :obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise the function will be executed sequentially on CPU.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([31, 3])
-    >>> x2 = np.array([5, 6])
-    >>> np.bitwise_xor(x1, x2)
-    array([26,  5])
+See Also
+--------
+:obj:`dpnp.logical_xor` : Compute the truth value of ``x1`` XOR `x2`, element-wise.
+:obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.
+:obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.
 
-    >>> a = np.array([True, True])
-    >>> b = np.array([False, True])
-    >>> np.bitwise_xor(a, b)
-    array([ True, False])
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([31, 3])
+>>> x2 = np.array([5, 6])
+>>> np.bitwise_xor(x1, x2)
+array([26,  5])
 
-    The ``^`` operator can be used as a shorthand for ``bitwise_xor`` on
-    :class:`dpnp.ndarray`.
+>>> a = np.array([True, True])
+>>> b = np.array([False, True])
+>>> np.bitwise_xor(a, b)
+array([ True, False])
 
-    >>> a ^ b
-    array([ True, False])
-    """
-    return check_nd_call_func(
-        numpy.bitwise_xor,
-        dpnp_bitwise_xor,
-        x1,
-        x2,
-        out=out,
-        order=order,
-        where=where,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+The ``^`` operator can be used as a shorthand for ``bitwise_xor`` on
+:class:`dpnp.ndarray`.
+
+>>> a ^ b
+array([ True, False])
+"""
+
+bitwise_xor = DPNPBinaryFunc(
+    "bitwise_xor",
+    ti._bitwise_xor_result_type,
+    ti._bitwise_xor,
+    _bitwise_xor_docstring,
+    origin_fn=numpy.bitwise_xor,
+)
 
 
-def invert(
-    x, /, out=None, *, order="K", dtype=None, where=True, subok=True, **kwargs
-):
-    """
-    Compute bit-wise inversion, or bit-wise NOT, element-wise.
+_invert_docstring = """
+Inverts (flips) each bit for each element `x_i` of the input array `x`.
 
-    For full documentation refer to :obj:`numpy.invert`.
+For full documentation refer to :obj:`numpy.invert`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        An array containing the element-wise results.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have integer or boolean data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameter `x` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Data type of input array `x` has to be an integer data type.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise results.
+    The data type of the returned array is same as the data type of the
+    input array.
 
-    See Also
-    --------
-    :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.
-    :obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.
-    :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
-    :obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise the function will be executed sequentially on CPU.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x = np.array([13])
-    >>> np.invert(x)
-    -14
+See Also
+--------
+:obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.
+:obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.
+:obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
+:obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.
 
-    >>> a = np.array([True, False])
-    >>> np.invert(a)
-    array([False,  True])
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.array([13])
+>>> np.invert(x)
+-14
 
-    The ``~`` operator can be used as a shorthand for ``invert`` on
-    :class:`dpnp.ndarray`.
+>>> a = np.array([True, False])
+>>> np.invert(a)
+array([False,  True])
 
-    >>> ~a
-    array([False,  True])
-    """
+The ``~`` operator can be used as a shorthand for ``invert`` on
+:class:`dpnp.ndarray`.
 
-    return check_nd_call_func(
-        numpy.invert,
-        dpnp_invert,
-        x,
-        out=out,
-        order=order,
-        where=where,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+>>> ~a
+array([False,  True])
+"""
+
+invert = DPNPUnaryFunc(
+    "invert",
+    ti._bitwise_invert_result_type,
+    ti._bitwise_invert,
+    _invert_docstring,
+    origin_fn=numpy.invert,
+)
 
 
 bitwise_not = invert  # bitwise_not is an alias for invert
 
 
-def left_shift(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Shift the bits of an integer to the left.
+_left_shift_docstring = """
+Shifts the bits of each element `x1_i` of the input array x1 to the left by
+appending `x2_i` (i.e., the respective element in the input array `x2`) zeros to
+the right of `x1_i`.
 
-    For full documentation refer to :obj:`numpy.left_shift`.
+For full documentation refer to :obj:`numpy.left_shift`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        An array containing the element-wise results.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have integer data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have integer data type.
+    Each element must be greater than or equal to 0.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise results. The data type
+    of the returned array is determined by the Type Promotion Rules.
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input data is supported as integer only.
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise the function will be executed sequentially on CPU.
 
-    See Also
-    --------
-    :obj:`dpnp.right_shift` : Shift the bits of an integer to the right.
+See Also
+--------
+:obj:`dpnp.right_shift` : Shift the bits of an integer to the right.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([5])
-    >>> x2 = np.array([1, 2, 3])
-    >>> np.left_shift(x1, x2)
-    array([10, 20, 40])
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([5])
+>>> x2 = np.array([1, 2, 3])
+>>> np.left_shift(x1, x2)
+array([10, 20, 40])
 
-    The ``<<`` operator can be used as a shorthand for ``left_shift`` on
-    :class:`dpnp.ndarray`.
+The ``<<`` operator can be used as a shorthand for ``left_shift`` on
+:class:`dpnp.ndarray`.
 
-    >>> x1 << x2
-    array([10, 20, 40])
-    """
-    return check_nd_call_func(
-        numpy.left_shift,
-        dpnp_left_shift,
-        x1,
-        x2,
-        out=out,
-        order=order,
-        where=where,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+>>> x1 << x2
+array([10, 20, 40])
+"""
+
+left_shift = DPNPBinaryFunc(
+    "left_shift",
+    ti._bitwise_left_shift_result_type,
+    ti._bitwise_left_shift,
+    _left_shift_docstring,
+    origin_fn=numpy.left_shift,
+)
 
 
-def right_shift(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Shift the bits of an integer to the right.
+_right_shift_docstring = """
+Shifts the bits of each element `x1_i` of the input array `x1` to the right
+according to the respective element `x2_i` of the input array `x2`.
 
-    For full documentation refer to :obj:`numpy.right_shift`.
+For full documentation refer to :obj:`numpy.right_shift`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        An array containing the element-wise results.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have integer data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have integer data type.
+    Each element must be greater than or equal to 0.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input data is supported as integer only.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise results. The data type
+    of the returned array is determined by the Type Promotion Rules.
 
-    See Also
-    --------
-    :obj:`dpnp.left_shift` : Shift the bits of an integer to the left.
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise the function will be executed sequentially on CPU.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([10])
-    >>> x2 = np.array([1, 2, 3])
-    >>> np.right_shift(x1, x2)
-    array([5, 2, 1])
+See Also
+--------
+:obj:`dpnp.left_shift` : Shift the bits of an integer to the left.
 
-    The ``>>`` operator can be used as a shorthand for ``right_shift`` on
-    :class:`dpnp.ndarray`.
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([10])
+>>> x2 = np.array([1, 2, 3])
+>>> np.right_shift(x1, x2)
+array([5, 2, 1])
 
-    >>> x1 >> x2
-    array([5, 2, 1])
-    """
-    return check_nd_call_func(
-        numpy.right_shift,
-        dpnp_right_shift,
-        x1,
-        x2,
-        out=out,
-        order=order,
-        where=where,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+The ``>>`` operator can be used as a shorthand for ``right_shift`` on
+:class:`dpnp.ndarray`.
+
+>>> x1 >> x2
+array([5, 2, 1])
+"""
+
+right_shift = DPNPBinaryFunc(
+    "right_shift",
+    ti._bitwise_right_shift_result_type,
+    ti._bitwise_right_shift,
+    _right_shift_docstring,
+    origin_fn=numpy.right_shift,
+)

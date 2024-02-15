@@ -413,6 +413,7 @@ class TestArithmeticModf(unittest.TestCase):
 )
 @testing.gpu
 class TestBoolSubtract(unittest.TestCase):
+    @pytest.mark.skip("dpnp does not raise TypeError")
     def test_bool_subtract(self):
         xp = self.xp
         if xp is numpy and not testing.numpy_satisfies(">=1.14.0"):

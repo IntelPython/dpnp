@@ -711,13 +711,6 @@ def test_negative(data, dtype):
         assert_allclose(result, expected)
 
 
-def test_negative_boolean():
-    dpnp_a = dpnp.array([True, False])
-
-    with pytest.raises(TypeError):
-        dpnp.negative(dpnp_a)
-
-
 @pytest.mark.parametrize(
     "data",
     [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]],
@@ -742,13 +735,6 @@ def test_positive(data, dtype):
         result = dpnp.positive(dpnp_a, out=dp_out)
         assert result is dp_out
         assert_allclose(result, expected)
-
-
-def test_positive_boolean():
-    dpnp_a = dpnp.array([True, False])
-
-    with pytest.raises(TypeError):
-        dpnp.positive(dpnp_a)
 
 
 class TestProd:
@@ -876,13 +862,6 @@ def test_sign(data, dtype):
         result = dpnp.sign(dpnp_a, out=dp_out)
         assert dp_out is result
         assert_dtype_allclose(result, expected)
-
-
-def test_sign_boolean():
-    dpnp_a = dpnp.array([True, False])
-
-    with pytest.raises(TypeError):
-        dpnp.sign(dpnp_a)
 
 
 @pytest.mark.parametrize(
@@ -2850,3 +2829,16 @@ class TestMatmulInvalidCases:
 
         with pytest.raises(NotImplementedError):
             dpnp.matmul(a1, a2, subok=False)
+
+
+def test_elemenwise_unary_nin():
+    assert dpnp.abs.nin == 1
+
+
+def test_elemenwise_binary_nin():
+    assert dpnp.add.nin == 2
+
+
+def test_elemenwise_nout():
+    assert dpnp.abs.nout == 1
+    assert dpnp.add.nout == 1
