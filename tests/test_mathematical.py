@@ -2486,6 +2486,10 @@ def test_inplace_floor_divide(dtype):
 
 
 class TestMatmul:
+    @pytest.fixture
+    def gen_seed(self):
+        numpy.random.seed(42)
+
     @pytest.mark.parametrize(
         "order_pair", [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")]
     )
@@ -2643,7 +2647,7 @@ class TestMatmul:
             [(3, 1), (2, 0), (0, 1)],
         ],
     )
-    def test_matmul_axes_ND_ND(self, dtype, axes):
+    def test_matmul_axes_ND_ND(self, dtype, axes, gen_seed):
         a = numpy.array(
             numpy.random.uniform(-10, 10, 120), dtype=dtype
         ).reshape(2, 5, 3, 4)
@@ -2655,8 +2659,7 @@ class TestMatmul:
 
         result = dpnp.matmul(ia, ib, axes=axes)
         expected = numpy.matmul(a, b, axes=axes)
-        # TODO: investigate the effect of factor, see SAT-6700
-        assert_dtype_allclose(result, expected, factor=24)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "axes",
@@ -2712,7 +2715,7 @@ class TestMatmul:
             ([(3, 1), (2, 0), (1, 2)], (2, 4, 4, 3)),
         ],
     )
-    def test_matmul_axes_out(self, dtype, axes, out_shape):
+    def test_matmul_axes_out(self, dtype, axes, out_shape, gen_seed):
         a = numpy.array(
             numpy.random.uniform(-10, 10, 120), dtype=dtype
         ).reshape(2, 5, 3, 4)
@@ -2726,8 +2729,7 @@ class TestMatmul:
         result = dpnp.matmul(ia, ib, axes=axes, out=out_dp)
         assert result is out_dp
         expected = numpy.matmul(a, b, axes=axes)
-        # TODO: investigate the effect of factor, see SAT-6700
-        assert_dtype_allclose(result, expected, factor=24)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "axes, b_shape, out_shape",

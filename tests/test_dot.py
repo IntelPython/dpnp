@@ -9,6 +9,10 @@ from .helper import assert_dtype_allclose, get_all_dtypes, get_complex_dtypes
 
 
 class TestDot:
+    @pytest.fixture
+    def gen_seed(self):
+        numpy.random.seed(42)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_dot_ones(self, dtype):
         n = 10**5
@@ -35,7 +39,7 @@ class TestDot:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
-    def test_dot_scalar(self, dtype):
+    def test_dot_scalar(self, dtype, gen_seed):
         a = 2
         b = numpy.array(numpy.random.uniform(-5, 5, 10), dtype=dtype)
         ib = dpnp.array(b)
@@ -70,7 +74,7 @@ class TestDot:
             "3d_3d",
         ],
     )
-    def test_dot(self, dtype, array_info):
+    def test_dot(self, dtype, array_info, gen_seed):
         size1, size2, shape1, shape2 = array_info
         a = numpy.array(
             numpy.random.uniform(-5, 5, size1), dtype=dtype
@@ -111,7 +115,7 @@ class TestDot:
             "3d_3d",
         ],
     )
-    def test_dot_complex(self, dtype, array_info):
+    def test_dot_complex(self, dtype, array_info, gen_seed):
         size1, size2, shape1, shape2 = array_info
         x11 = numpy.random.uniform(-5, 5, size1)
         x12 = numpy.random.uniform(-5, 5, size1)
@@ -152,7 +156,7 @@ class TestDot:
             "3d_3d",
         ],
     )
-    def test_dot_ndarray(self, dtype, array_info):
+    def test_dot_ndarray(self, dtype, array_info, gen_seed):
         size1, size2, shape1, shape2 = array_info
         a = numpy.array(
             numpy.random.uniform(-5, 5, size1), dtype=dtype
@@ -191,7 +195,7 @@ class TestDot:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_dot_out_scalar(self, dtype):
+    def test_dot_out_scalar(self, dtype, gen_seed):
         size = 10
         a = 2
         b = numpy.array(numpy.random.uniform(-5, 5, size), dtype=dtype)
@@ -231,7 +235,7 @@ class TestDot:
             "3d_3d",
         ],
     )
-    def test_dot_out(self, dtype, array_info):
+    def test_dot_out(self, dtype, array_info, gen_seed):
         size1, size2, shape1, shape2, out_shape = array_info
         a = numpy.array(
             numpy.random.uniform(-5, 5, size1), dtype=dtype
@@ -251,7 +255,7 @@ class TestDot:
 
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
-    def test_dot_input_dtype_matrix(self, dtype1, dtype2):
+    def test_dot_input_dtype_matrix(self, dtype1, dtype2, gen_seed):
         a = numpy.array(numpy.random.uniform(-5, 5, 10), dtype=dtype1)
         b = numpy.array(numpy.random.uniform(-5, 5, 10), dtype=dtype2)
         ia = dpnp.array(a)
@@ -355,8 +359,12 @@ def test_multi_dot(type):
 
 
 class TestTensordot:
+    @pytest.fixture
+    def gen_seed(self):
+        numpy.random.seed(87)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes())
-    def test_tensordot_scalar(self, dtype):
+    def test_tensordot_scalar(self, dtype, gen_seed):
         a = 2
         b = numpy.array(numpy.random.uniform(-5, 5, 10), dtype=dtype)
         ib = dpnp.array(b)
@@ -371,7 +379,7 @@ class TestTensordot:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize("axes", [-3, -2, -1, 0, 1, 2])
-    def test_tensordot(self, dtype, axes):
+    def test_tensordot(self, dtype, axes, gen_seed):
         a = numpy.array(numpy.random.uniform(-10, 10, 64), dtype=dtype).reshape(
             4, 4, 4
         )
@@ -383,12 +391,11 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
-        # TODO: investigate the effect of factor, see SAT-6700
-        assert_dtype_allclose(result, expected, factor=24)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("axes", [-3, -2, -1, 0, 1, 2])
-    def test_tensordot_complex(self, dtype, axes):
+    def test_tensordot_complex(self, dtype, axes, gen_seed):
         x11 = numpy.random.uniform(-10, 10, 64)
         x12 = numpy.random.uniform(-10, 10, 64)
         x21 = numpy.random.uniform(-10, 10, 64)
@@ -400,8 +407,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
-        # TODO: investigate the effect of factor, see SAT-6700
-        assert_dtype_allclose(result, expected, factor=24)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
@@ -414,7 +420,7 @@ class TestTensordot:
             ((3, 1), (0, 2)),
         ],
     )
-    def test_tensordot_axes(self, dtype, axes):
+    def test_tensordot_axes(self, dtype, axes, gen_seed):
         a = numpy.array(
             numpy.random.uniform(-10, 10, 120), dtype=dtype
         ).reshape(2, 5, 3, 4)
@@ -426,12 +432,11 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
-        # TODO: investigate the effect of factor, see SAT-6700
-        assert_dtype_allclose(result, expected, factor=24)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
-    def test_tensordot_input_dtype_matrix(self, dtype1, dtype2):
+    def test_tensordot_input_dtype_matrix(self, dtype1, dtype2, gen_seed):
         a = numpy.array(
             numpy.random.uniform(-10, 10, 60), dtype=dtype1
         ).reshape(3, 4, 5)
@@ -443,10 +448,9 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib)
         expected = numpy.tensordot(a, b)
-        # TODO: investigate the effect of factor, see SAT-6700
-        assert_dtype_allclose(result, expected, factor=24)
+        assert_dtype_allclose(result, expected)
 
-    def test_tensordot_strided(self):
+    def test_tensordot_strided(self, gen_seed):
         for dim in [1, 2, 3, 4]:
             axes = 1 if dim == 1 else 2
             A = numpy.random.rand(*([10] * dim))
@@ -500,6 +504,10 @@ class TestTensordot:
 
 
 class TestVdot:
+    @pytest.fixture
+    def gen_seed(self):
+        numpy.random.seed(42)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_vdot_scalar(self, dtype):
         a = numpy.array([3.5], dtype=dtype)
@@ -536,7 +544,7 @@ class TestVdot:
             "3d_3d",
         ],
     )
-    def test_vdot(self, dtype, array_info):
+    def test_vdot(self, dtype, array_info, gen_seed):
         size1, size2, shape1, shape2 = array_info
         a = numpy.array(
             numpy.random.uniform(-5, 5, size1), dtype=dtype
@@ -573,7 +581,7 @@ class TestVdot:
             "3d_3d",
         ],
     )
-    def test_vdot_complex(self, dtype, array_info):
+    def test_vdot_complex(self, dtype, array_info, gen_seed):
         size1, size2, shape1, shape2 = array_info
         x11 = numpy.random.uniform(-5, 5, size1)
         x12 = numpy.random.uniform(-5, 5, size1)
@@ -613,7 +621,7 @@ class TestVdot:
 
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
-    def test_vdot_input_dtype_matrix(self, dtype1, dtype2):
+    def test_vdot_input_dtype_matrix(self, dtype1, dtype2, gen_seed):
         a = numpy.array(numpy.random.uniform(-5, 5, 10), dtype=dtype1)
         b = numpy.array(numpy.random.uniform(-5, 5, 10), dtype=dtype2)
         ia = dpnp.array(a)
