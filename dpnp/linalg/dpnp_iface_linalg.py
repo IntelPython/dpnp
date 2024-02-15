@@ -241,6 +241,19 @@ def eigh(a, UPLO="L"):
 
     For full documentation refer to :obj:`numpy.linalg.eigh`.
 
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        A complex- or real-valued array whose eigenvalues and eigenvectors are to be computed.
+    UPLO : {"L", "U"}, optional
+        Specifies the calculation uses either the lower ("L") or upper ("U")
+        triangular part of the matrix.
+        Regardless of this choice, only the real parts of the diagonal are
+        considered to preserve the Hermite matrix property.
+        It therefore follows that the imaginary part of the diagonal
+        will always be treated as zero.
+        Default: "L".
+
     Returns
     -------
     w : (..., M) dpnp.ndarray
@@ -250,15 +263,11 @@ def eigh(a, UPLO="L"):
         The column ``v[:, i]`` is the normalized eigenvector corresponding
         to the eigenvalue ``w[i]``.
 
-    Limitations
-    -----------
-    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
     See Also
     --------
-    :obj:`dpnp.eig` : eigenvalues and right eigenvectors for non-symmetric arrays.
-    :obj:`dpnp.eigvals` : eigenvalues of non-symmetric arrays.
+    :obj:`dpnp.linalg.eig` : Return the eigenvalues and right eigenvectors of
+                             a general matrix.
+    :obj:`dpnp.linalg.eigvals` : Return the eigenvalues of a general matrix.
 
     Examples
     --------
@@ -276,19 +285,11 @@ def eigh(a, UPLO="L"):
     """
 
     dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
     if UPLO not in ("L", "U"):
         raise ValueError("UPLO argument must be 'L' or 'U'")
-
-    if a.ndim < 2:
-        raise ValueError(
-            "%d-dimensional array given. Array must be "
-            "at least two-dimensional" % a.ndim
-        )
-
-    m, n = a.shape[-2:]
-    if m != n:
-        raise ValueError("Last 2 dimensions of the array must be square")
 
     return dpnp_eigh(a, UPLO=UPLO)
 
@@ -333,7 +334,7 @@ def eigvalsh(a, UPLO="L"):
 
     Parameters
     ----------
-    a : (..., M) {dpnp.ndarray, usm_ndarray}
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         A complex- or real-valued array whose eigenvalues are to be computed.
     UPLO : {"L", "U"}, optional
         Specifies the calculation uses either the lower ("L") or upper ("U")
@@ -352,11 +353,11 @@ def eigvalsh(a, UPLO="L"):
 
     See Also
     --------
-    :obj:`dpnp.linalg.eigh` : Returns the eigenvalues and eigenvectors of real symmetric
-                              or complex Hermitian (conjugate symmetric) arrays.
-    :obj:`dpnp.linalg.eigvals` : Returns the eigenvalues of general real or complex arrays.
-    :obj:`dpnp.linalg.eig` : Returns the eigenvalues and right eigenvectors of
-                             general real or complex arrays.
+    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian
+                              (conjugate symmetric) or a real symmetric matrix.
+    :obj:`dpnp.linalg.eigvals` : Return the eigenvalues of a general matrix.
+    :obj:`dpnp.linalg.eig` : Return the eigenvalues and right eigenvectors of
+                             a general matrix.
 
     Examples
     --------

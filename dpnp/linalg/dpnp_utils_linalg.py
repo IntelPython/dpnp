@@ -745,7 +745,6 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
 
     """
 
-    a_usm_type = a.usm_type
     a_sycl_queue = a.sycl_queue
     a_order = "C" if a.flags.c_contiguous else "F"
     a_usm_arr = dpnp.get_usm_ndarray(a)
@@ -758,49 +757,43 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
     uplo = _upper_lower[UPLO]
 
     # get resulting type of arrays with eigenvalues and eigenvectors
-    a_dtype = a.dtype
-    lapack_func = "_syevd"
-    if dpnp.issubdtype(a_dtype, dpnp.complexfloating):
-        lapack_func = "_heevd"
-        v_type = a_dtype
-        w_type = dpnp.float64 if a_dtype == dpnp.complex128 else dpnp.float32
-    elif dpnp.issubdtype(a_dtype, dpnp.floating):
-        v_type = w_type = a_dtype
-    elif a_sycl_queue.sycl_device.has_aspect_fp64:
-        v_type = w_type = dpnp.float64
-    else:
-        v_type = w_type = dpnp.float32
+    v_type = _common_type(a)
+    w_type = _real_type(v_type)
+
+    # Get LAPACK function (_syevd for real or _heevd for complex data types)
+    # to compute all eigenvalues and, optionally, all eigenvectors
+    lapack_func = (
+        "_heevd" if dpnp.issubdtype(v_type, dpnp.complexfloating) else "_syevd"
+    )
 
     if a.ndim > 2:
-        w = dpnp.empty(
-            a.shape[:-1],
+        w = dpnp.empty_like(
+            a,
+            shape=a.shape[:-1],
             dtype=w_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
         )
 
         # need to loop over the 1st dimension to get eigenvalues and eigenvectors of 3d matrix A
-        op_count = a.shape[0]
-        if op_count == 0:
+        batch_size = a.shape[0]
+        if batch_size == 0:
             return w, dpnp.empty_like(a, dtype=v_type)
 
-        eig_vecs = [None] * op_count
-        ht_copy_ev = [None] * op_count
-        ht_lapack_ev = [None] * op_count
-        for i in range(op_count):
+        eig_vecs = [None] * batch_size
+        ht_list_ev = [None] * batch_size * 2
+        for i in range(batch_size):
             # oneMKL LAPACK assumes fortran-like array as input, so
             # allocate a memory with 'F' order for dpnp array of eigenvectors
             eig_vecs[i] = dpnp.empty_like(a[i], order="F", dtype=v_type)
 
             # use DPCTL tensor function to fill the array of eigenvectors with content of input array
-            ht_copy_ev[i], copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_list_ev[2 * i], copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=a_usm_arr[i],
                 dst=eig_vecs[i].get_array(),
                 sycl_queue=a_sycl_queue,
             )
 
             # call LAPACK extension function to get eigenvalues and eigenvectors of a portion of matrix A
-            ht_lapack_ev[i], _ = getattr(li, lapack_func)(
+            ht_list_ev[2 * i + 1], _ = getattr(li, lapack_func)(
                 a_sycl_queue,
                 jobz,
                 uplo,
@@ -809,9 +802,7 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
                 depends=[copy_ev],
             )
 
-        for i in range(op_count):
-            ht_lapack_ev[i].wait()
-            ht_copy_ev[i].wait()
+        dpctl.SyclEvent.wait_for(ht_list_ev)
 
         # combine the list of eigenvectors into a single array
         v = dpnp.array(eig_vecs, order=a_order)
@@ -827,11 +818,10 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
         )
 
         # allocate a memory for dpnp array of eigenvalues
-        w = dpnp.empty(
-            a.shape[:-1],
+        w = dpnp.empty_like(
+            a,
+            shape=a.shape[:-1],
             dtype=w_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
         )
 
         # call LAPACK extension function to get eigenvalues and eigenvectors of matrix A
