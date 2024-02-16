@@ -850,6 +850,7 @@ def test_svd(usm_type, shape, full_matrices_param, compute_uv_param):
     ],
 )
 def test_pinv(shape, hermitian, usm_type):
+    numpy.random.seed(81)
     if hermitian:
         a = dp.random.randn(*shape) + 1j * dp.random.randn(*shape)
         a = dp.conj(a.T) @ a

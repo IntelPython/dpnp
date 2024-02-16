@@ -1698,6 +1698,7 @@ def test_slogdet(shape, is_empty, device):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_pinv(shape, hermitian, rcond_as_array, device):
+    numpy.random.seed(81)
     if hermitian:
         a_np = numpy.random.randn(*shape) + 1j * numpy.random.randn(*shape)
         a_np = numpy.conj(a_np.T) @ a_np
