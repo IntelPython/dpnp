@@ -39,6 +39,7 @@ __all__ = [
     "dpnp_det",
     "dpnp_eigh",
     "dpnp_inv",
+    "dpnp_matrix_rank",
     "dpnp_qr",
     "dpnp_slogdet",
     "dpnp_solve",
@@ -996,6 +997,37 @@ def dpnp_inv(a):
     a_ht_copy_ev.wait()
 
     return b_f
+
+
+def dpnp_matrix_rank(A, tol=None, hermitian=False):
+    """
+    dpnp_matrix_rank(A, tol=None, hermitian=False)
+
+    Return matrix rank of array using SVD method.
+
+    """
+
+    if A.ndim < 2:
+        return (A != 0).any().astype(int)
+
+    S = dpnp_svd(A, compute_uv=False, hermitian=hermitian)
+
+    if tol is None:
+        tol = (
+            S.max(axis=-1, keepdims=True)
+            * max(A.shape[-2:])
+            * dpnp.finfo(S.dtype).eps
+        )
+    else:
+        if dpnp.is_supported_array_type(tol):
+            # Check that `a` and `tol` are allocated on the same device
+            # and have the same queue. Otherwise, `ValueError`` will be raised.
+            get_usm_allocations([A, tol])
+        else:
+            # Allocate dpnp.ndarray if tol is a scalar
+            tol = dpnp.array(tol, usm_type=A.usm_type, sycl_queue=A.sycl_queue)
+        tol = tol[..., None]
+    return dpnp.count_nonzero(S > tol, axis=-1)
 
 
 def dpnp_qr_batch(a, mode="reduced"):
