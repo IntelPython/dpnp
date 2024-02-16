@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.14.0rc1+3.g7a7980e62b documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.14.0rc1+12.g72f26206b5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=25c9d13a"></script>
+        <script src="../../_static/documentation_options.js?v=f91df281"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.14.0rc1+3.g7a7980e62b
+                0.14.0rc1+12.g72f26206b5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -373,18 +373,53 @@
     <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">signature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">extobj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matrix product of two arrays.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.matmul`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1 : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        First input array.</span>
+<span class="sd">    x2 : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        Second input array.</span>
+<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have</span>
+<span class="sd">        a shape that matches the signature `(n,k),(k,m)-&gt;(n,m)` but the type</span>
+<span class="sd">        (of the calculated values) will be cast if necessary. Default: ``None``.</span>
+<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">        Type to use in computing the matrix product. By default, the returned</span>
+<span class="sd">        array will have data type that is determined by considering</span>
+<span class="sd">        Promotion Type Rule and device capabilities.</span>
+<span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
+<span class="sd">        Controls what kind of data casting may occur. Default: ``&quot;same_kind&quot;``.</span>
+<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
+<span class="sd">        Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="sd">        Default: &quot;K&quot;.</span>
+<span class="sd">    axes : list of tuples, optional</span>
+<span class="sd">        A list of tuples with indices of axes the matrix product should operate on.</span>
+<span class="sd">        For instance, for the signature of ``(i,j),(j,k)-&gt;(i,k)``, the base elements</span>
+<span class="sd">        are 2d matrices and these are taken to be stored in the two last axes of each</span>
+<span class="sd">        argument. The corresponding axes keyword would be [(-2, -1), (-2, -1), (-2, -1)].</span>
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Returns the matrix product of the inputs.</span>
+<span class="sd">        This is a 0-d array only when both `x1`, `x2` are 1-d vectors.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input arrays and parameter `out` are supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Keyword argument `subok` is currently unsupported.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Keyword arguments `subok`, `signature`, `extobj`, and `axis` are</span>
+<span class="sd">    only supported with their default value.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -445,6 +480,18 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;subok keyword argument is only supported by its default value.&quot;</span>
         <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">signature</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;signature keyword argument is only supported by its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">extobj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;extobj keyword argument is only supported by its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;axis keyword argument is only supported by its default value.&quot;</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp_matmul</span><span class="p">(</span>
             <span class="n">x1</span><span class="p">,</span>
@@ -453,6 +500,7 @@
             <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span>
             <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
