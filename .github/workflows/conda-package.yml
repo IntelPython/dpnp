@@ -16,7 +16,6 @@ env:
   TEST_SCOPE: >-
       test_arraycreation.py
       test_amin_amax.py
-      test_product.py
       test_dparray.py
       test_copy.py
       test_fft.py
@@ -24,6 +23,7 @@ env:
       test_logic.py
       test_manipulation.py
       test_mathematical.py
+      test_product.py
       test_random_state.py
       test_sort.py
       test_special.py

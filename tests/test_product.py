@@ -9,6 +9,9 @@ from .helper import assert_dtype_allclose, get_all_dtypes, get_complex_dtypes
 
 
 class TestCross:
+    def setup_method(self):
+        numpy.random.seed(42)
+
     @pytest.mark.parametrize("axis", [None, 0], ids=["None", "0"])
     @pytest.mark.parametrize("axisc", [-1, 0], ids=["-1", "0"])
     @pytest.mark.parametrize("axisb", [-1, 0], ids=["-1", "0"])
@@ -38,7 +41,7 @@ class TestCross:
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
     @pytest.mark.parametrize(
-        "input_para",
+        "shape1, shape2, axis_a, axis_b, axis_c",
         [
             ((4, 2, 3, 5), (2, 4, 3, 5), 1, 0, -2),
             ((2, 2, 4, 5), (2, 4, 3, 5), 1, 2, -1),
@@ -47,9 +50,7 @@ class TestCross:
             ((2, 3, 4, 5), (2, 4, 3, 5), -3, -2, 0),
         ],
     )
-    def test_cross(self, dtype, input_para):
-        shape1, shape2, axis_a, axis_b, axis_c = input_para
-        numpy.random.seed(42)
+    def test_cross(self, dtype, shape1, shape2, axis_a, axis_b, axis_c):
         a = numpy.array(
             numpy.random.uniform(-5, 5, numpy.prod(shape1)), dtype=dtype
         ).reshape(shape1)
@@ -65,7 +66,7 @@ class TestCross:
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
-        "input_para",
+        "shape1, shape2, axis_a, axis_b, axis_c",
         [
             ((4, 2, 3, 5), (2, 4, 3, 5), 1, 0, -2),
             ((2, 2, 4, 5), (2, 4, 3, 5), 1, 2, -1),
@@ -74,9 +75,7 @@ class TestCross:
             ((2, 3, 4, 5), (2, 4, 3, 5), -3, -2, 0),
         ],
     )
-    def test_cross_complex(self, dtype, input_para):
-        shape1, shape2, axis_a, axis_b, axis_c = input_para
-        numpy.random.seed(42)
+    def test_cross_complex(self, dtype, shape1, shape2, axis_a, axis_b, axis_c):
         x11 = numpy.random.uniform(-5, 5, numpy.prod(shape1))
         x12 = numpy.random.uniform(-5, 5, numpy.prod(shape1))
         x21 = numpy.random.uniform(-5, 5, numpy.prod(shape2))
@@ -92,15 +91,13 @@ class TestCross:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
-        "input_para",
+        "shape1, shape2, axis",
         [
             ((2, 3, 4, 5), (2, 3, 4, 5), 0),
             ((2, 3, 4, 5), (2, 3, 4, 5), 1),
         ],
     )
-    def test_cross_axis(self, dtype, input_para):
-        shape1, shape2, axis = input_para
-        numpy.random.seed(42)
+    def test_cross_axis(self, dtype, shape1, shape2, axis):
         a = numpy.array(
             numpy.random.uniform(-5, 5, numpy.prod(shape1)), dtype=dtype
         ).reshape(shape1)
@@ -117,7 +114,6 @@ class TestCross:
     @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("dtype2", get_all_dtypes(no_bool=True))
     def test_cross_input_dtype_matrix(self, dtype1, dtype2):
-        numpy.random.seed(42)
         a = numpy.array(numpy.random.uniform(-5, 5, 3), dtype=dtype1)
         b = numpy.array(numpy.random.uniform(-5, 5, 3), dtype=dtype2)
         ia = dpnp.array(a)
@@ -206,17 +202,17 @@ class TestDot:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
-        "array_info",
+        "shape_pair",
         [
-            (1, 10, (), (10,)),
-            (10, 1, (10,), ()),
-            (1, 1, (), ()),
-            (10, 10, (10,), (10,)),
-            (12, 6, (4, 3), (3, 2)),
-            (12, 3, (4, 3), (3,)),
-            (60, 3, (5, 4, 3), (3,)),
-            (4, 8, (4,), (4, 2)),
-            (60, 48, (5, 3, 4), (6, 4, 2)),
+            ((), (10,)),
+            ((10,), ()),
+            ((), ()),
+            ((10,), (10,)),
+            ((4, 3), (3, 2)),
+            ((4, 3), (3,)),
+            ((5, 4, 3), (3,)),
+            ((4,), (4, 2)),
+            ((5, 3, 4), (6, 4, 2)),
         ],
         ids=[
             "0d_1d",
@@ -230,8 +226,10 @@ class TestDot:
             "3d_3d",
         ],
     )
-    def test_dot(self, dtype, array_info):
-        size1, size2, shape1, shape2 = array_info
+    def test_dot(self, dtype, shape_pair):
+        shape1, shape2 = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
         a = numpy.array(
             numpy.random.uniform(-5, 5, size1), dtype=dtype
         ).reshape(shape1)
@@ -247,17 +245,17 @@ class TestDot:
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
-        "array_info",
+        "shape_pair",
         [
-            (1, 10, (), (10,)),
-            (10, 1, (10,), ()),
-            (1, 1, (), ()),
-            (10, 10, (10,), (10,)),
-            (12, 6, (4, 3), (3, 2)),
-            (12, 3, (4, 3), (3,)),
-            (60, 3, (5, 4, 3), (3,)),
-            (4, 8, (4,), (4, 2)),
-            (60, 48, (5, 3, 4), (6, 4, 2)),
+            ((), (10,)),
+            ((10,), ()),
+            ((), ()),
+            ((10,), (10,)),
+            ((4, 3), (3, 2)),
+            ((4, 3), (3,)),
+            ((5, 4, 3), (3,)),
+            ((4,), (4, 2)),
+            ((5, 3, 4), (6, 4, 2)),
         ],
         ids=[
             "0d_1d",
@@ -271,8 +269,10 @@ class TestDot:
             "3d_3d",
         ],
     )
-    def test_dot_complex(self, dtype, array_info):
-        size1, size2, shape1, shape2 = array_info
+    def test_dot_complex(self, dtype, shape_pair):
+        shape1, shape2 = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
         x11 = numpy.random.uniform(-5, 5, size1)
         x12 = numpy.random.uniform(-5, 5, size1)
         x21 = numpy.random.uniform(-5, 5, size2)
@@ -288,17 +288,17 @@ class TestDot:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
-        "array_info",
+        "shape_pair",
         [
-            (1, 10, (), (10,)),
-            (10, 1, (10,), ()),
-            (1, 1, (), ()),
-            (10, 10, (10,), (10,)),
-            (12, 6, (4, 3), (3, 2)),
-            (12, 3, (4, 3), (3,)),
-            (60, 3, (5, 4, 3), (3,)),
-            (4, 8, (4,), (4, 2)),
-            (60, 48, (5, 3, 4), (6, 4, 2)),
+            ((), (10,)),
+            ((10,), ()),
+            ((), ()),
+            ((10,), (10,)),
+            ((4, 3), (3, 2)),
+            ((4, 3), (3,)),
+            ((5, 4, 3), (3,)),
+            ((4,), (4, 2)),
+            ((5, 3, 4), (6, 4, 2)),
         ],
         ids=[
             "0d_1d",
@@ -312,8 +312,10 @@ class TestDot:
             "3d_3d",
         ],
     )
-    def test_dot_ndarray(self, dtype, array_info):
-        size1, size2, shape1, shape2 = array_info
+    def test_dot_ndarray(self, dtype, shape_pair):
+        shape1, shape2 = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
         a = numpy.array(
             numpy.random.uniform(-5, 5, size1), dtype=dtype
         ).reshape(shape1)
@@ -367,17 +369,17 @@ class TestDot:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
-        "array_info",
+        "shape_pair",
         [
-            (1, 10, (), (10,), (10,)),
-            (10, 1, (10,), (), (10,)),
-            (1, 1, (), (), ()),
-            (10, 10, (10,), (10,), ()),
-            (12, 6, (4, 3), (3, 2), (4, 2)),
-            (12, 3, (4, 3), (3,), (4,)),
-            (60, 3, (5, 4, 3), (3,), (5, 4)),
-            (4, 8, (4,), (4, 2), (2,)),
-            (60, 48, (5, 3, 4), (6, 4, 2), (5, 3, 6, 2)),
+            ((), (10,), (10,)),
+            ((10,), (), (10,)),
+            ((), (), ()),
+            ((10,), (10,), ()),
+            ((4, 3), (3, 2), (4, 2)),
+            ((4, 3), (3,), (4,)),
+            ((5, 4, 3), (3,), (5, 4)),
+            ((4,), (4, 2), (2,)),
+            ((5, 3, 4), (6, 4, 2), (5, 3, 6, 2)),
         ],
         ids=[
             "0d_1d",
@@ -391,8 +393,10 @@ class TestDot:
             "3d_3d",
         ],
     )
-    def test_dot_out(self, dtype, array_info):
-        size1, size2, shape1, shape2, out_shape = array_info
+    def test_dot_out(self, dtype, shape_pair):
+        shape1, shape2, out_shape = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
         a = numpy.array(
             numpy.random.uniform(-5, 5, size1), dtype=dtype
         ).reshape(shape1)
@@ -584,6 +588,7 @@ class TestTensordot:
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
+        print(a.dtype, ia.dtype)
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
         # TODO: investigate the effect of factor, see SAT-6700
@@ -676,15 +681,15 @@ class TestVdot:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
-        "array_info",
+        "shape_pair",
         [
-            (1, 1, (), ()),
-            (10, 10, (10,), (10,)),
-            (12, 12, (4, 3), (3, 4)),
-            (12, 12, (4, 3), (12,)),
-            (60, 60, (5, 4, 3), (60,)),
-            (8, 8, (8,), (4, 2)),
-            (60, 60, (5, 3, 4), (3, 4, 5)),
+            ((), ()),
+            ((10,), (10,)),
+            ((4, 3), (3, 4)),
+            ((4, 3), (12,)),
+            ((5, 4, 3), (60,)),
+            ((8,), (4, 2)),
+            ((5, 3, 4), (3, 4, 5)),
         ],
         ids=[
             "0d_0d",
@@ -696,8 +701,10 @@ class TestVdot:
             "3d_3d",
         ],
     )
-    def test_vdot(self, dtype, array_info):
-        size1, size2, shape1, shape2 = array_info
+    def test_vdot(self, dtype, shape_pair):
+        shape1, shape2 = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
         a = numpy.array(
             numpy.random.uniform(-5, 5, size1), dtype=dtype
         ).reshape(shape1)
@@ -713,15 +720,15 @@ class TestVdot:
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
-        "array_info",
+        "shape_pair",
         [
-            (1, 1, (), ()),
-            (10, 10, (10,), (10,)),
-            (12, 12, (4, 3), (3, 4)),
-            (12, 12, (4, 3), (12,)),
-            (60, 60, (5, 4, 3), (60,)),
-            (8, 8, (8,), (4, 2)),
-            (60, 60, (5, 3, 4), (3, 4, 5)),
+            ((), ()),
+            ((10,), (10,)),
+            ((4, 3), (3, 4)),
+            ((4, 3), (12,)),
+            ((5, 4, 3), (60,)),
+            ((8,), (4, 2)),
+            ((5, 3, 4), (3, 4, 5)),
         ],
         ids=[
             "0d_0d",
@@ -733,8 +740,10 @@ class TestVdot:
             "3d_3d",
         ],
     )
-    def test_vdot_complex(self, dtype, array_info):
-        size1, size2, shape1, shape2 = array_info
+    def test_vdot_complex(self, dtype, shape_pair):
+        shape1, shape2 = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
         x11 = numpy.random.uniform(-5, 5, size1)
         x12 = numpy.random.uniform(-5, 5, size1)
         x21 = numpy.random.uniform(-5, 5, size2)

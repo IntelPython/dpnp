@@ -783,6 +783,7 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
         )
 
     # Create the output array
+    # TODO: replace with dpnp.broadcast_shapes once implemented
     shape = numpy.broadcast_shapes(a[..., 0].shape, b[..., 0].shape)
     if a.shape[-1] == 3 or b.shape[-1] == 3:
         shape += (3,)
