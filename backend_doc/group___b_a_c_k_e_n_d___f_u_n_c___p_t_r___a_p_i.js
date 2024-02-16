@@ -110,6 +110,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNPFuncName::DPNP_FN_LOG1P", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a963ae376b39f0e3ba32c52a923af829f", null ],
       [ "DPNPFuncName::DPNP_FN_MATMUL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a690c5b5c2647c5988ba7951dd28277d2", null ],
       [ "DPNPFuncName::DPNP_FN_MATRIX_RANK", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ad338d9762f0b28cacdf0c4e90d2bce4f", null ],
+      [ "DPNPFuncName::DPNP_FN_MATRIX_RANK_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a304d7469b11606bcbe0159394840a298", null ],
       [ "DPNPFuncName::DPNP_FN_MAX", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a7fdc6b2053d31144e2c19dd861ede010", null ],
       [ "DPNPFuncName::DPNP_FN_MAXIMUM", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a0ef9d2289cbda119cd9d451425f089ab", null ],
       [ "DPNPFuncName::DPNP_FN_MAXIMUM_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558af7cff74963b10695f2a06a805bf7c30e", null ],
