@@ -79,6 +79,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_trunc,
 )
 from .dpnp_utils import *
+from .dpnp_utils.dpnp_utils_linearalgebra import dpnp_cross
 
 __all__ = [
     "abs",
@@ -799,63 +800,11 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     a = a.astype(dtype, copy=False)
     b = b.astype(dtype, copy=False)
 
-    # create local aliases for readability
-    a0 = a[..., 0]
-    a1 = a[..., 1]
-    if a.shape[-1] == 3:
-        a2 = a[..., 2]
-    b0 = b[..., 0]
-    b1 = b[..., 1]
-    if b.shape[-1] == 3:
-        b2 = b[..., 2]
-    if cp.ndim != 0 and cp.shape[-1] == 3:
-        cp0 = cp[..., 0]
-        cp1 = cp[..., 1]
-        cp2 = cp[..., 2]
-
-    if a.shape[-1] == 2:
-        if b.shape[-1] == 2:
-            # a0 * b1 - a1 * b0
-            multiply(a0, b1, out=cp)
-            cp -= a1 * b0
-            return cp
-        else:
-            assert b.shape[-1] == 3
-            # cp0 = a1 * b2 - 0  (a2 = 0)
-            # cp1 = 0 - a0 * b2  (a2 = 0)
-            # cp2 = a0 * b1 - a1 * b0
-            multiply(a1, b2, out=cp0)
-            multiply(a0, b2, out=cp1)
-            negative(cp1, out=cp1)
-            multiply(a0, b1, out=cp2)
-            cp2 -= a1 * b0
+    cp = dpnp_cross(a, b, cp, exec_q)
+    if a.shape[-1] == 2 and b.shape[-1] == 2:
+        return cp
     else:
-        assert a.shape[-1] == 3
-        if b.shape[-1] == 3:
-            # cp0 = a1 * b2 - a2 * b1
-            # cp1 = a2 * b0 - a0 * b2
-            # cp2 = a0 * b1 - a1 * b0
-            multiply(a1, b2, out=cp0)
-            tmp = a2 * b1
-            cp0 -= tmp
-            multiply(a2, b0, out=cp1)
-            multiply(a0, b2, out=tmp)
-            cp1 -= tmp
-            multiply(a0, b1, out=cp2)
-            multiply(a1, b0, out=tmp)
-            cp2 -= tmp
-        else:
-            assert b.shape[-1] == 2
-            # cp0 = 0 - a2 * b1  (b2 = 0)
-            # cp1 = a2 * b0 - 0  (b2 = 0)
-            # cp2 = a0 * b1 - a1 * b0
-            multiply(a2, b1, out=cp0)
-            negative(cp0, out=cp0)
-            multiply(a2, b0, out=cp1)
-            multiply(a0, b1, out=cp2)
-            cp2 -= a1 * b0
-
-    return dpnp.moveaxis(cp, -1, axisc)
+        return dpnp.moveaxis(cp, -1, axisc)
 
 
 def cumprod(x1, **kwargs):
