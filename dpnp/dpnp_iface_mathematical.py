@@ -688,7 +688,7 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
         Axis of `c` containing the cross product vector(s).  Ignored if
         both input vectors have dimension 2, as the return is scalar.
         By default, the last axis.
-    axis : int, optional
+    axis : {int, None}, optional
         If defined, the axis of `a`, `b` and `c` that defines the vector(s)
         and cross product(s).  Overrides `axisa`, `axisb` and `axisc`.
 
