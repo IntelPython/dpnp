@@ -266,18 +266,53 @@ def matmul(
     order="K",
     dtype=None,
     subok=True,
+    signature=None,
+    extobj=None,
+    axes=None,
+    axis=None,
 ):
     """
     Matrix product of two arrays.
 
     For full documentation refer to :obj:`numpy.matmul`.
 
+    Parameters
+    ----------
+    x1 : {dpnp_array, usm_ndarray}
+        First input array.
+    x2 : {dpnp_array, usm_ndarray}
+        Second input array.
+    out : {dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have
+        a shape that matches the signature `(n,k),(k,m)->(n,m)` but the type
+        (of the calculated values) will be cast if necessary. Default: ``None``.
+    dtype : dtype, optional
+        Type to use in computing the matrix product. By default, the returned
+        array will have data type that is determined by considering
+        Promotion Type Rule and device capabilities.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur. Default: ``"same_kind"``.
+    order : {"C", "F", "A", "K", None}, optional
+        Memory layout of the newly output array, if parameter `out` is ``None``.
+        Default: "K".
+    axes : list of tuples, optional
+        A list of tuples with indices of axes the matrix product should operate on.
+        For instance, for the signature of ``(i,j),(j,k)->(i,k)``, the base elements
+        are 2d matrices and these are taken to be stored in the two last axes of each
+        argument. The corresponding axes keyword would be [(-2, -1), (-2, -1), (-2, -1)].
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Returns the matrix product of the inputs.
+        This is a 0-d array only when both `x1`, `x2` are 1-d vectors.
+
     Limitations
     -----------
-    Input arrays and parameter `out` are supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Keyword argument `subok` is currently unsupported.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Keyword arguments `subok`, `signature`, `extobj`, and `axis` are
+    only supported with their default value.
+    Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
@@ -338,6 +373,18 @@ def matmul(
         raise NotImplementedError(
             "subok keyword argument is only supported by its default value."
         )
+    elif signature is not None:
+        raise NotImplementedError(
+            "signature keyword argument is only supported by its default value."
+        )
+    elif extobj is not None:
+        raise NotImplementedError(
+            "extobj keyword argument is only supported by its default value."
+        )
+    elif axis is not None:
+        raise NotImplementedError(
+            "axis keyword argument is only supported by its default value."
+        )
     else:
         return dpnp_matmul(
             x1,
@@ -346,6 +393,7 @@ def matmul(
             casting=casting,
             order=order,
             dtype=dtype,
+            axes=axes,
         )
 
 

@@ -4,7 +4,8 @@ import unittest
 import numpy
 import pytest
 
-import dpnp
+import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -59,17 +60,23 @@ from tests.third_party.cupy import testing
 )
 class TestMatmul(unittest.TestCase):
     @testing.for_all_dtypes(name="dtype1")
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
-    def test_operator_matmul(self, xp, dtype1):
+    @testing.for_all_dtypes(name="dtype2")
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
+    )  # required for uint8
+    def test_operator_matmul(self, xp, dtype1, dtype2):
         x1 = testing.shaped_arange(self.shape_pair[0], xp, dtype1)
-        x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype1)
+        x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype2)
         return operator.matmul(x1, x2)
 
     @testing.for_all_dtypes(name="dtype1")
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
-    def test_cupy_matmul(self, xp, dtype1):
+    @testing.for_all_dtypes(name="dtype2")
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
+    )  # required for uint8
+    def test_cupy_matmul(self, xp, dtype1, dtype2):
         x1 = testing.shaped_arange(self.shape_pair[0], xp, dtype1)
-        x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype1)
+        x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype2)
         return xp.matmul(x1, x2)
 
 
@@ -79,7 +86,7 @@ class TestMatmul(unittest.TestCase):
             "shape_pair": [
                 # dot test
                 ((2, 3), (3, 4), (2, 4)),
-                # ((0,), (0,), (0,)),
+                ((0,), (0,), (0,)),
                 # matmul test
                 ((5, 3, 2), (5, 2, 4), (5, 3, 4)),
                 ((0, 3, 2), (0, 2, 4), (0, 3, 4)),
@@ -128,6 +135,15 @@ class TestMatmulOutOverlap:
         return xp.matmul(a, a, out=a)
 
 
+class TestMatmulStrides:
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
+    def test_relaxed_c_contiguous_input(self, xp, dtype):
+        x1 = testing.shaped_arange((2, 2, 3), xp, dtype)[:, None, :, :]
+        x2 = testing.shaped_arange((2, 1, 3, 1), xp, dtype)
+        return x1 @ x2
+
+
 @testing.parameterize(
     *testing.product(
         {
@@ -161,29 +177,71 @@ class TestMatmulLarge(unittest.TestCase):
     }
 
     @testing.for_all_dtypes(name="dtype1")
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
-    def test_operator_matmul(self, xp, dtype1):
-        if (dtype1, dtype1) in self.skip_dtypes or (
-            dtype1,
+    @testing.for_all_dtypes(name="dtype2")
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
+    )  # required for uint8
+    def test_operator_matmul(self, xp, dtype1, dtype2):
+        if (dtype1, dtype2) in self.skip_dtypes or (
+            dtype2,
             dtype1,
         ) in self.skip_dtypes:
-            return xp.array([])
+            pytest.skip()
         x1 = testing.shaped_random(self.shape_pair[0], xp, dtype1)
-        x2 = testing.shaped_random(self.shape_pair[1], xp, dtype1)
+        x2 = testing.shaped_random(self.shape_pair[1], xp, dtype2)
         return operator.matmul(x1, x2)
 
     @testing.for_all_dtypes(name="dtype1")
-    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
-    def test_cupy_matmul(self, xp, dtype1):
-        if (dtype1, dtype1) in self.skip_dtypes or (
-            dtype1,
+    @testing.for_all_dtypes(name="dtype2")
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
+    )  # required for uint8
+    def test_cupy_matmul(self, xp, dtype1, dtype2):
+        if (dtype1, dtype2) in self.skip_dtypes or (
+            dtype2,
             dtype1,
         ) in self.skip_dtypes:
-            return xp.array([])
+            pytest.skip()
         shape1, shape2 = self.shape_pair
         x1 = testing.shaped_random(shape1, xp, dtype1)
-        x2 = testing.shaped_random(shape2, xp, dtype1)
+        x2 = testing.shaped_random(shape2, xp, dtype2)
         return xp.matmul(x1, x2)
+
+
+@pytest.mark.parametrize(
+    "shape1, shape2",
+    [
+        # the first one causes overflow which is undefined behavior
+        # ((256, 256, 3, 2), (256, 256, 2, 4)),
+        ((256, 256, 3, 2), (2, 4)),
+        ((3, 2), (256, 256, 2, 4)),
+    ],
+)
+class TestMatmulIntegralLargeBatch:
+    @testing.for_int_dtypes(name="dtype")
+    @testing.numpy_cupy_array_equal()
+    def test_operator_matmul(self, xp, dtype, shape1, shape2):
+        x1 = testing.shaped_random(shape1, xp, dtype)
+        x2 = testing.shaped_random(shape2, xp, dtype)
+        return operator.matmul(x1, x2)
+
+    @testing.for_int_dtypes(name="dtype")
+    @testing.numpy_cupy_array_equal()
+    def test_cupy_matmul(self, xp, dtype, shape1, shape2):
+        x1 = testing.shaped_random(shape1, xp, dtype)
+        x2 = testing.shaped_random(shape2, xp, dtype)
+        return xp.matmul(x1, x2)
+
+
+@pytest.mark.skip("overflow is undefined behavior.")
+class TestMatmulOverflow(unittest.TestCase):
+    @testing.for_int_dtypes(name="dtype", no_bool=True)
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
+    def test_overflow(self, xp, dtype):
+        value = numpy.iinfo(dtype).max
+        a = xp.array([value - 10]).astype(dtype)
+        b = xp.array([value - 10]).astype(dtype)
+        return xp.matmul(a, b)
 
 
 @testing.parameterize(
@@ -204,9 +262,60 @@ class TestMatmulLarge(unittest.TestCase):
 )
 class TestMatmulInvalidShape(unittest.TestCase):
     def test_invalid_shape(self):
-        for xp in (numpy, dpnp):
+        for xp in (numpy, cupy):
             shape1, shape2 = self.shape_pair
             x1 = testing.shaped_arange(shape1, xp, numpy.float32)
             x2 = testing.shaped_arange(shape2, xp, numpy.float32)
             with pytest.raises(ValueError):
                 xp.matmul(x1, x2)
+
+
+@testing.parameterize(
+    *testing.product(
+        {
+            "shapes_axes": [
+                (
+                    (
+                        (2, 5, 3, 2, 3, 4),
+                        (3, 5, 1, 1, 1, 4),
+                        (5, 5, 2, 2, 3, 4),
+                    ),
+                    [(1, 2), (0, 1), (0, 1)],
+                ),
+                (
+                    (
+                        (2, 5, 3, 2, 3, 4),
+                        (2, 5, 3, 1, 4, 1),
+                        (3, 1, 2, 5, 3, 2),
+                    ),
+                    [(-2, -1), (-2, -1), (0, 1)],
+                ),
+                (
+                    ((3, 2, 4, 4), (4, 4, 3, 2), (4, 4, 3, 3)),
+                    [(0, 1), (-1, -2), (-2, -1)],
+                ),
+                (
+                    ((3, 2, 4, 4), (2, 3, 4, 4), (4, 3, 3, 4)),
+                    [(0, 1), (0, 1), (1, 2)],
+                ),
+            ],
+        }
+    )
+)
+class TestMatmulAxes(unittest.TestCase):
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
+    def test_cupy_matmul_axes(self, xp):
+        x1 = testing.shaped_arange(self.shapes_axes[0][0], xp)
+        x2 = testing.shaped_arange(self.shapes_axes[0][1], xp)
+        return xp.matmul(x1, x2, axes=self.shapes_axes[1])
+
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
+    )  # required for uint8
+    def test_cupy_matmul_axes_out(self, xp):
+        x1 = testing.shaped_arange(self.shapes_axes[0][0], xp)
+        x2 = testing.shaped_arange(self.shapes_axes[0][1], xp)
+        out = xp.zeros(self.shapes_axes[0][2])
+        result = xp.matmul(x1, x2, axes=self.shapes_axes[1], out=out)
+        assert out is result
+        return out
