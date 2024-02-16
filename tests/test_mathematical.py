@@ -2647,7 +2647,6 @@ class TestMatmul:
         ],
     )
     def test_matmul_axes_ND_ND(self, dtype, axes):
-        numpy.random.seed(42)
         a = numpy.array(
             numpy.random.uniform(-10, 10, 120), dtype=dtype
         ).reshape(2, 5, 3, 4)
@@ -2716,7 +2715,6 @@ class TestMatmul:
         ],
     )
     def test_matmul_axes_out(self, dtype, axes, out_shape):
-        numpy.random.seed(42)
         a = numpy.array(
             numpy.random.uniform(-10, 10, 120), dtype=dtype
         ).reshape(2, 5, 3, 4)
@@ -2844,7 +2842,6 @@ class TestMatmul:
         assert_dtype_allclose(result, expected)
 
     def test_matmul_strided(self):
-        numpy.random.seed(42)
         for dim in [1, 2, 3, 4]:
             A = numpy.random.rand(*([20] * dim))
             B = dpnp.asarray(A)
