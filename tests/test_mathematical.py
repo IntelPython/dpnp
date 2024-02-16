@@ -2486,8 +2486,7 @@ def test_inplace_floor_divide(dtype):
 
 
 class TestMatmul:
-    @pytest.fixture
-    def gen_seed(self):
+    def setup_method(self):
         numpy.random.seed(42)
 
     @pytest.mark.parametrize(
@@ -2647,7 +2646,8 @@ class TestMatmul:
             [(3, 1), (2, 0), (0, 1)],
         ],
     )
-    def test_matmul_axes_ND_ND(self, dtype, axes, gen_seed):
+    def test_matmul_axes_ND_ND(self, dtype, axes):
+        numpy.random.seed(42)
         a = numpy.array(
             numpy.random.uniform(-10, 10, 120), dtype=dtype
         ).reshape(2, 5, 3, 4)
@@ -2715,7 +2715,8 @@ class TestMatmul:
             ([(3, 1), (2, 0), (1, 2)], (2, 4, 4, 3)),
         ],
     )
-    def test_matmul_axes_out(self, dtype, axes, out_shape, gen_seed):
+    def test_matmul_axes_out(self, dtype, axes, out_shape):
+        numpy.random.seed(42)
         a = numpy.array(
             numpy.random.uniform(-10, 10, 120), dtype=dtype
         ).reshape(2, 5, 3, 4)
@@ -2843,6 +2844,7 @@ class TestMatmul:
         assert_dtype_allclose(result, expected)
 
     def test_matmul_strided(self):
+        numpy.random.seed(42)
         for dim in [1, 2, 3, 4]:
             A = numpy.random.rand(*([20] * dim))
             B = dpnp.asarray(A)
