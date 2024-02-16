@@ -51,6 +51,7 @@ from .dpnp_utils_linalg import (
     dpnp_det,
     dpnp_eigh,
     dpnp_inv,
+    dpnp_pinv,
     dpnp_qr,
     dpnp_slogdet,
     dpnp_solve,
@@ -69,6 +70,7 @@ __all__ = [
     "matrix_rank",
     "multi_dot",
     "norm",
+    "pinv",
     "qr",
     "solve",
     "svd",
@@ -472,6 +474,56 @@ def multi_dot(arrays, out=None):
         result = dpnp.dot(result, arrays[id])
 
     return result
+
+
+def pinv(a, rcond=1e-15, hermitian=False):
+    """
+    Compute the (Moore-Penrose) pseudo-inverse of a matrix.
+
+    Calculate the generalized inverse of a matrix using its
+    singular-value decomposition (SVD) and including all large singular values.
+
+    For full documentation refer to :obj:`numpy.linalg.inv`.
+
+    Parameters
+    ----------
+    a : (..., M, N) {dpnp.ndarray, usm_ndarray}
+        Matrix or stack of matrices to be pseudo-inverted.
+    rcond : {float, dpnp.ndarray, usm_ndarray}, optional
+        Cutoff for small singular values.
+        Singular values less than or equal to ``rcond * largest_singular_value``
+        are set to zero. Broadcasts against the stack of matrices.
+        Default: ``1e-15``.
+    hermitian : bool, optional
+        If ``True``, a is assumed to be Hermitian (symmetric if real-valued),
+        enabling a more efficient method for finding singular values.
+        Default: ``False``.
+
+    Returns
+    -------
+    out : (..., N, M) dpnp.ndarray
+        The pseudo-inverse of a.
+
+    Examples
+    --------
+    The following example checks that ``a * a+ * a == a`` and
+    ``a+ * a * a+ == a+``:
+
+    >>> import dpnp as np
+    >>> a = np.random.randn(9, 6)
+    >>> B = np.linalg.pinv(a)
+    >>> np.allclose(a, np.dot(a, np.dot(B, a)))
+    array([ True])
+    >>> np.allclose(B, np.dot(B, np.dot(a, B)))
+    array([ True])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    dpnp.check_supported_arrays_type(rcond, scalar_type=True)
+    check_stacked_2d(a)
+
+    return dpnp_pinv(a, rcond=rcond, hermitian=hermitian)
 
 
 def norm(x1, ord=None, axis=None, keepdims=False):
