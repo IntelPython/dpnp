@@ -2486,6 +2486,9 @@ def test_inplace_floor_divide(dtype):
 
 
 class TestMatmul:
+    def setup_method(self):
+        numpy.random.seed(42)
+
     @pytest.mark.parametrize(
         "order_pair", [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")]
     )
@@ -2655,8 +2658,7 @@ class TestMatmul:
 
         result = dpnp.matmul(ia, ib, axes=axes)
         expected = numpy.matmul(a, b, axes=axes)
-        # TODO: investigate the effect of factor, see SAT-6700
-        assert_dtype_allclose(result, expected, factor=24)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "axes",
@@ -2726,8 +2728,7 @@ class TestMatmul:
         result = dpnp.matmul(ia, ib, axes=axes, out=out_dp)
         assert result is out_dp
         expected = numpy.matmul(a, b, axes=axes)
-        # TODO: investigate the effect of factor, see SAT-6700
-        assert_dtype_allclose(result, expected, factor=24)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "axes, b_shape, out_shape",
