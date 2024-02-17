@@ -43,11 +43,12 @@ import os
 import dpctl
 import dpctl.tensor as dpt
 import numpy
+from dpctl.tensor._device import normalize_queue_device
 
 import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import *
+from dpnp.dpnp_utils.dpnp_algo_utils import dpnp_descriptor
 from dpnp.fft import *
 from dpnp.linalg import *
 from dpnp.random import *
@@ -59,7 +60,6 @@ __all__ = [
     "check_supported_arrays_type",
     "convert_single_elem_array_to_scalar",
     "default_float_type",
-    "dpnp_queue_initialize",
     "from_dlpack",
     "get_dpnp_descriptor",
     "get_include",
@@ -132,27 +132,44 @@ def array_equal(a1, a2, equal_nan=False):
 
     """
 
-    return numpy.array_equal(a1, a2)
+    return numpy.array_equal(a1, a2, equal_nan=equal_nan)
 
 
-def asnumpy(input, order="C"):
+def asnumpy(a, order="C"):
     """
     Returns the NumPy array with input data.
+
+    Parameters
+    ----------
+    a : {array_like}
+        Arbitrary object that can be converted to :obj:`numpy.ndarray`.
+    order : {'C', 'F', 'A', 'K'}
+        The desired memory layout of the converted array.
+        When `order` is ``A``, it uses ``F`` if `a` is column-major and uses
+        ``C`` otherwise. And when `order` is ``K``, it keeps strides as closely
+        as possible.
+
+    Returns
+    -------
+    out : numpy.ndarray
+        NumPy interpretation of input array `a`.
 
     Notes
     -----
     This function works exactly the same as :obj:`numpy.asarray`.
 
     """
-    if isinstance(input, dpnp_array):
-        return input.asnumpy()
 
-    if isinstance(input, dpt.usm_ndarray):
-        return dpt.asnumpy(input)
+    if isinstance(a, dpnp_array):
+        return a.asnumpy()
 
-    return numpy.asarray(input, order=order)
+    if isinstance(a, dpt.usm_ndarray):
+        return dpt.asnumpy(a)
+
+    return numpy.asarray(a, order=order)
 
 
+# pylint: disable=redefined-outer-name
 def astype(x1, dtype, order="K", casting="unsafe", copy=True):
     """
     Copy the array with data type casting.
@@ -165,28 +182,32 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True):
         Target data type.
     order : {'C', 'F', 'A', 'K'}
         Row-major (C-style) or column-major (Fortran-style) order.
-        When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
-        And when ``order`` is 'K', it keeps strides as closely as possible.
+        When `order` is ``A``, it uses ``F`` if `a` is column-major and uses
+        ``C`` otherwise. And when `order` is ``K``, it keeps strides as closely
+        as possible.
     copy : bool
-        If it is False and no cast happens, then this method returns the array itself.
-        Otherwise, a copy is returned.
+        If it is ``False`` and no cast happens, then this method returns
+        the array itself. Otherwise, a copy is returned.
     casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
-        Controls what kind of data casting may occur. Defaults to 'unsafe' for backwards compatibility.
-        'no' means the data types should not be cast at all.
-        'equiv' means only byte-order changes are allowed.
-        'safe' means only casts which can preserve values are allowed.
-        'same_kind' means only safe casts or casts within a kind, like float64 to float32, are allowed.
-        'unsafe' means any data conversions may be done.
+        Controls what kind of data casting may occur. Defaults to ``unsafe``
+        for backwards compatibility.
+            - 'no' means the data types should not be cast at all.
+            - 'equiv' means only byte-order changes are allowed.
+            - 'safe' means only casts which can preserve values are allowed.
+            - 'same_kind' means only safe casts or casts within a kind, like
+            float64 to float32, are allowed.
+            - 'unsafe' means any data conversions may be done.
     copy : bool, optional
-        By default, astype always returns a newly allocated array. If this is set to false, and the dtype,
-        order, and subok requirements are satisfied, the input array is returned instead of a copy.
+        By default, astype always returns a newly allocated array. If this
+        is set to ``False``, and the dtype, order, and subok requirements
+        are satisfied, the input array is returned instead of a copy.
 
     Returns
     -------
     arr_t : dpnp.ndarray
-        Unless `copy` is ``False`` and the other conditions for returning the input array
-        are satisfied, `arr_t` is a new array of the same shape as the input array,
-        with dtype, order given by dtype, order.
+        Unless `copy` is ``False`` and the other conditions for returning
+        the input array are satisfied, `arr_t` is a new array of the same shape
+        as the input array, with dtype, order given by dtype, order.
 
     """
 
@@ -238,16 +259,18 @@ def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
         if is_supported_array_type(a):
             any_is_array = True
             continue
-        elif scalar_type and dpnp.isscalar(a):
+
+        if scalar_type and dpnp.isscalar(a):
             continue
 
         raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(a))
+            f"An array must be any of supported type, but got {type(a)}"
         )
 
     if len(arrays) > 1 and not (all_scalars or any_is_array):
         raise TypeError(
-            "At least one input must be of supported array type, but got all scalars."
+            "At least one input must be of supported array type, "
+            "but got all scalars."
         )
     return True
 
@@ -263,21 +286,24 @@ def convert_single_elem_array_to_scalar(obj, keepdims=False):
 
 def default_float_type(device=None, sycl_queue=None):
     """
-    Return a floating type used by default in DPNP depending on device capabilities.
+    Return a floating type used by default in DPNP depending on device
+    capabilities.
 
     Parameters
     ----------
     device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API concept of device where an array of default floating type might be created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector string,
-        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
-        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        An array API concept of device where an array of default floating type
+        might be created. The `device` can be ``None`` (the default), an OneAPI
+        filter selector string, an instance of :class:`dpctl.SyclDevice`
+        corresponding to a non-partitioned SYCL device, an instance of
+        :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
         The value ``None`` is interpreted as to use a default device.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue which might be used to create an array of default floating type.
-        The `sycl_queue` can be ``None`` (the default), which is interpreted as
-        to get the SYCL queue from `device` keyword if present or to use a default queue.
+        A SYCL queue which might be used to create an array of default floating
+        type. The `sycl_queue` can be ``None`` (the default), which is
+        interpreted as to get the SYCL queue from `device` keyword if present
+        or to use a default queue.
 
     Returns
     -------
@@ -336,19 +362,16 @@ def get_dpnp_descriptor(
       2. We can not handle with input data object
     """
 
-    # TODO need to allow "import dpnp" with no build procedure
-    # if no_modules_load_doc_build();
-    #    return False
-
     if use_origin_backend():
         return False
 
-    # It's required to keep track of input object if a non-strided copy is going to be created.
-    # Thus there will be an extra descriptor allocated to refer on original input.
+    # It's required to keep track of input object if a non-strided copy is
+    # going to be created. Thus there will be an extra descriptor allocated
+    # to refer on original input.
     orig_desc = None
 
     # If input object is a scalar, it means it was allocated on host memory.
-    # We need to copy it to USM memory according to compute follows data paradigm.
+    # We need to copy it to USM memory according to compute follows data.
     if isscalar(ext_obj):
         ext_obj = array(
             ext_obj,
@@ -362,7 +385,8 @@ def get_dpnp_descriptor(
     # if function get implementation for strides case
     # then this behavior can be disabled with setting "copy_when_strides"
     if copy_when_strides and getattr(ext_obj, "strides", None) is not None:
-        # TODO: replace this workaround when usm_ndarray will provide such functionality
+        # TODO: replace this workaround when usm_ndarray will provide
+        # such functionality
         shape_offsets = tuple(
             numpy.prod(ext_obj.shape[i + 1 :], dtype=numpy.int64)
             for i in range(ext_obj.ndim)
@@ -382,7 +406,8 @@ def get_dpnp_descriptor(
     # while dpnp functions are based on DPNP_QUEUE
     # we need to create a copy on device associated with DPNP_QUEUE
     # if function get implementation for different queue
-    # then this behavior can be disabled with setting "copy_when_nondefault_queue"
+    # then this behavior can be disabled with setting
+    # "copy_when_nondefault_queue"
     queue = getattr(ext_obj, "sycl_queue", None)
     if queue is not None and copy_when_nondefault_queue:
         default_queue = dpctl.SyclQueue()
@@ -393,7 +418,7 @@ def get_dpnp_descriptor(
             ext_obj = array(ext_obj, sycl_queue=default_queue)
 
     dpnp_desc = dpnp_descriptor(ext_obj, orig_desc)
-    if dpnp_desc.is_valid:
+    if dpnp_desc.is_valid:  # pylint: disable=using-constant-test
         return dpnp_desc
 
     return False
@@ -418,8 +443,8 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
 
     If both arguments 'device' and 'sycl_queue' have default value ``None``
     and 'obj' has `sycl_queue` attribute, it assumes that Compute Follows Data
-    approach has to be applied and so the resulting SYCL queue will be normalized
-    based on the queue value from 'obj'.
+    approach has to be applied and so the resulting SYCL queue will be
+    normalized based on the queue value from 'obj'.
 
     Parameters
     ----------
@@ -443,15 +468,11 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
     Returns
     -------
     sycl_queue: dpctl.SyclQueue
-        A :class:`dpctl.SyclQueue` object normalized by `normalize_queue_device` call
-        of `dpctl.tensor` module invoked with 'device' and 'sycl_queue' values.
-        If both incoming 'device' and 'sycl_queue' are None and 'obj' has `sycl_queue` attribute,
-        the normalization will be performed for 'obj.sycl_queue' value.
-
-    Raises
-    ------
-    TypeError
-        If argument is not of the expected type, or keywords imply incompatible queues.
+        A :class:`dpctl.SyclQueue` object normalized by
+        `normalize_queue_device` call of `dpctl.tensor` module invoked with
+        `device` and `sycl_queue` values. If both incoming `device` and
+        `sycl_queue` are ``None`` and `obj` has `sycl_queue` attribute,
+        the normalization will be performed for `obj.sycl_queue` value.
 
     """
 
@@ -463,9 +484,7 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
     ):
         sycl_queue = obj.sycl_queue
 
-    return dpt._device.normalize_queue_device(
-        sycl_queue=sycl_queue, device=device
-    )
+    return normalize_queue_device(sycl_queue=sycl_queue, device=device)
 
 
 def get_result_array(a, out=None, casting="safe"):
@@ -494,21 +513,21 @@ def get_result_array(a, out=None, casting="safe"):
 
     if out is None:
         return a
-    else:
-        if a is out:
-            return out
-        else:
-            dpnp.check_supported_arrays_type(out)
-            if out.shape != a.shape:
-                raise ValueError(
-                    f"Output array of shape {a.shape} is needed, got {out.shape}."
-                )
-            elif isinstance(out, dpt.usm_ndarray):
-                out = dpnp_array._create_from_usm_ndarray(out)
 
-            dpnp.copyto(out, a, casting=casting)
+    if a is out:
+        return out
 
-            return out
+    dpnp.check_supported_arrays_type(out)
+    if out.shape != a.shape:
+        raise ValueError(
+            f"Output array of shape {a.shape} is needed, got {out.shape}."
+        )
+
+    if isinstance(out, dpt.usm_ndarray):
+        out = dpnp_array._create_from_usm_ndarray(out)
+
+    dpnp.copyto(out, a, casting=casting)
+    return out
 
 
 def get_usm_ndarray(a):
@@ -538,7 +557,7 @@ def get_usm_ndarray(a):
     if isinstance(a, dpt.usm_ndarray):
         return a
     raise TypeError(
-        "An array must be any of supported type, but got {}".format(type(a))
+        f"An array must be any of supported type, but got {type(a)}"
     )
 
 

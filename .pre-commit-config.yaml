@@ -79,3 +79,18 @@ repos:
     rev: 3.0.0
     hooks:
     -   id: shellcheck
+-   repo: https://github.com/pylint-dev/pylint
+    rev: v3.0.3
+    hooks:
+    -   id: pylint
+        files: ^dpnp/dpnp_iface*.py
+        entry: pylint
+        language: system
+        types: [python]
+        args:
+            [
+            "-rn", # Only display messages
+            "-sn", # Don't display the score
+            "--disable=redefined-builtin",
+            "--disable=unused-wildcard-import"
+            ]

@@ -2,6 +2,22 @@
 line-length = 80
 target-version = ['py38', 'py39', 'py310']
 
+[tool.pylint.main]
+extension-pkg-whitelist = "dpnp.dpnp_utils.dpnp_algo_utils"
+
+[tool.pylint.classes]
+exclude-protected = ["_create_from_usm_ndarray"]
+
+[tool.pylint.design]
+max-args = 6
+
+[tool.pylint.format]
+allow-wildcard-with-all = true
+max-line-length = 80
+
+[tool.pylint.miscellaneous]
+notes = ["FIXME", "XXX"]
+
 [tool.isort]
 multi_line_output = 3
 include_trailing_comma = true
