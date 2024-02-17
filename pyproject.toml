@@ -2,17 +2,18 @@
 line-length = 80
 target-version = ['py38', 'py39', 'py310']
 
-[tool.pylint.main]
-extension-pkg-whitelist = "dpnp.dpnp_utils.dpnp_algo_utils"
+[tool.pylint.basic]
+include-naming-hint = true
 
 [tool.pylint.classes]
 exclude-protected = ["_create_from_usm_ndarray"]
 
 [tool.pylint.design]
-max-args = 6
+max-args = 10
 
 [tool.pylint.format]
 max-line-length = 80
+max-module-lines = 5000
 
 [tool.pylint.imports]
 allow-wildcard-with-all = true

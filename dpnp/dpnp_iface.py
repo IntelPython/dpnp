@@ -48,7 +48,11 @@ from dpctl.tensor._device import normalize_queue_device
 import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils.dpnp_algo_utils import dpnp_descriptor
+
+# pylint: disable=no-name-in-module
+from dpnp.dpnp_utils.dpnp_algo_utils import (
+    dpnp_descriptor,
+)
 from dpnp.fft import *
 from dpnp.linalg import *
 from dpnp.random import *

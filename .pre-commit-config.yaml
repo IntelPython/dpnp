@@ -90,7 +90,8 @@ repos:
             [
             "-rn", # Only display messages
             "-sn", # Don't display the score
+            "--disable=import-error",
             "--disable=redefined-builtin",
             "--disable=unused-wildcard-import"
             ]
-        files: ^dpnp/dpnp_iface*.py
+        files: '^dpnp/dpnp_iface(|_arraycreation).py$'
