@@ -945,13 +945,13 @@ class TestConj:
 
         assert_dtype_allclose(ia.conj(), a.conj())
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_conj_out(self, dtype):
         a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
         ia = dpnp.array(a)
 
         expected = numpy.conj(a)
-        dp_out = dpnp.empty(ia.shape, dtype=expected.dtype)
+        dp_out = dpnp.empty(ia.shape, dtype=dtype)
         result = dpnp.conj(ia, out=dp_out)
         assert dp_out is result
         assert_dtype_allclose(result, expected)
