@@ -12,8 +12,10 @@ exclude-protected = ["_create_from_usm_ndarray"]
 max-args = 6
 
 [tool.pylint.format]
-allow-wildcard-with-all = true
 max-line-length = 80
+
+[tool.pylint.imports]
+allow-wildcard-with-all = true
 
 [tool.pylint.miscellaneous]
 notes = ["FIXME", "XXX"]

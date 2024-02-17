@@ -79,11 +79,10 @@ repos:
     rev: 3.0.0
     hooks:
     -   id: shellcheck
--   repo: https://github.com/pylint-dev/pylint
-    rev: v3.0.3
+-   repo: local
     hooks:
     -   id: pylint
-        files: ^dpnp/dpnp_iface*.py
+        name: pylint
         entry: pylint
         language: system
         types: [python]
@@ -94,3 +93,4 @@ repos:
             "--disable=redefined-builtin",
             "--disable=unused-wildcard-import"
             ]
+        files: ^dpnp/dpnp_iface*.py
