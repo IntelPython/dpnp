@@ -1044,9 +1044,12 @@ class dpnp_array:
         array([1.        , 0.70710677])
 
         """
-        return dpnp_array._create_from_usm_ndarray(
-            dpnp.get_usm_ndarray(self).real
-        )
+        if dpnp.issubsctype(self.dtype, dpnp.complexfloating):
+            return dpnp_array._create_from_usm_ndarray(
+                dpnp.get_usm_ndarray(self).real
+            )
+        else:
+            return self
 
     @real.setter
     def real(self, value):
