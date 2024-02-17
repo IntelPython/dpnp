@@ -831,7 +831,9 @@ class dpnp_array:
         array([0.        , 0.70710677])
 
         """
-        return dpnp.imag(self)
+        return dpnp_array._create_from_usm_ndarray(
+            dpnp.get_usm_ndarray(self).imag
+        )
 
     @imag.setter
     def imag(self, value):
@@ -1042,7 +1044,9 @@ class dpnp_array:
         array([1.        , 0.70710677])
 
         """
-        return dpnp.real(self)
+        return dpnp_array._create_from_usm_ndarray(
+            dpnp.get_usm_ndarray(self).real
+        )
 
     @real.setter
     def real(self, value):
