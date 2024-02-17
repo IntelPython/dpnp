@@ -2681,6 +2681,25 @@ class TestMatmul:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_matmul_overlap(self, dtype):
+        a = numpy.array(numpy.random.uniform(-10, 10, 96), dtype=dtype).reshape(
+            2, 3, 4, 4
+        )
+        b = numpy.array(numpy.random.uniform(-10, 10, 96), dtype=dtype).reshape(
+            2, 3, 4, 4
+        )
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        dpnp.matmul(ia, ib, out=ia)
+        numpy.matmul(a, b, out=a)
+        assert_dtype_allclose(ia, a)
+
+        dpnp.matmul(ia, ib, out=ib)
+        numpy.matmul(a, b, out=b)
+        assert_dtype_allclose(ib, b)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
         "axes",
         [

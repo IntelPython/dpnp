@@ -26,7 +26,6 @@
 #include <pybind11/pybind11.h>
 
 // dpctl tensor headers
-#include "utils/memory_overlap.hpp"
 #include "utils/type_utils.hpp"
 
 #include "dot.hpp"
@@ -133,18 +132,6 @@ std::pair<sycl::event, sycl::event> dot(sycl::queue &exec_q,
         throw py::value_error(
             "The output array has ndim=" + std::to_string(result_nd) +
             ", but a 0-dimensional array is expected.");
-    }
-
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(vectorA, result)) {
-        throw py::value_error(
-            "The first input array and output array are overlapping "
-            "segments of memory");
-    }
-    if (overlap(vectorB, result)) {
-        throw py::value_error(
-            "The second input array and output array are overlapping "
-            "segments of memory");
     }
 
     // check compatibility of execution queue and allocation queue

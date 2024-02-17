@@ -26,7 +26,6 @@
 #include <pybind11/pybind11.h>
 
 // dpctl tensor headers
-#include "utils/memory_overlap.hpp"
 #include "utils/type_utils.hpp"
 
 #include "gemm.hpp"
@@ -161,16 +160,6 @@ std::pair<sycl::event, sycl::event>
     {
         throw py::value_error(
             "USM allocations are not compatible with the execution queue.");
-    }
-
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(matrixA, resultC)) {
-        throw py::value_error("Input array 1 and output array are overlapping "
-                              "segments of memory");
-    }
-    if (overlap(matrixB, resultC)) {
-        throw py::value_error("Input array 2 and output array are overlapping "
-                              "segments of memory");
     }
 
     const int matrixA_nd = matrixA.get_ndim();

@@ -50,18 +50,12 @@ def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
     """
 
     if out is not None:
-        x1_usm = dpnp.get_usm_ndarray(x1)
-        x2_usm = dpnp.get_usm_ndarray(x2)
-        out_usm = dpnp.get_usm_ndarray(out)
-
         if (
             out.dtype == dtype
             and out.shape == shape
             and out.usm_type == usm_type
             and out.sycl_queue == sycl_queue
             and out.flags.c_contiguous
-            and not ti._array_overlap(x1_usm, out_usm)
-            and not ti._array_overlap(x2_usm, out_usm)
         ):
             return out
 

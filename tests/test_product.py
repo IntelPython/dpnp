@@ -395,6 +395,22 @@ class TestDot:
         expected = numpy.dot(a[::-5], b[::-5])
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_dot_overlap(self, dtype):
+        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
+        b = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        dpnp.dot(ia, ib, out=ia[0])
+        expected = numpy.dot(a, b)
+        assert_dtype_allclose(ia[0], expected)
+
+        dpnp.dot(ia, ib, out=ib[-1])
+        a[0] = expected
+        expected = numpy.dot(a, b)
+        assert_dtype_allclose(ib[-1], expected)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_dot_out_scalar(self, dtype):
         size = 10

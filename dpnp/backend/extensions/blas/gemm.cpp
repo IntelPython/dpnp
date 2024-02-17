@@ -26,7 +26,6 @@
 #include <pybind11/pybind11.h>
 
 // dpctl tensor headers
-#include "utils/memory_overlap.hpp"
 #include "utils/type_utils.hpp"
 
 #include "gemm.hpp"
@@ -142,16 +141,6 @@ std::pair<sycl::event, sycl::event>
 
     if ((matrixA_nd != 2) || (matrixB_nd != 2) || (resultC_nd != 2)) {
         throw py::value_error("The input matrices must be of 2 dimensions.");
-    }
-
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(matrixA, resultC)) {
-        throw py::value_error("Input array 1 and output array are overlapping "
-                              "segments of memory");
-    }
-    if (overlap(matrixB, resultC)) {
-        throw py::value_error("Input array 2 and output array are overlapping "
-                              "segments of memory");
     }
 
     // check compatibility of execution queue and allocation queue
