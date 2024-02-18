@@ -8,7 +8,12 @@ from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 import dpnp
 from dpnp.dpnp_array import dpnp_array
 
-from .helper import assert_dtype_allclose, get_all_dtypes, is_win_platform
+from .helper import (
+    assert_dtype_allclose,
+    get_all_dtypes,
+    get_symm_herm_numpy_array,
+    is_win_platform,
+)
 
 list_of_backend_str = [
     "host",
@@ -1116,17 +1121,9 @@ def test_eig(device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_eigenvalue_symm(func, shape, device):
+def test_eigenvalue(func, shape, device):
     dtype = dpnp.default_float_type(device)
-    numpy.random.seed(81)
-    a = numpy.random.randn(*shape).astype(dtype)
-    if a.size > 0:
-        if a.ndim > 2:
-            for i in range(a.shape[0]):
-                a[i] = numpy.conj(a[i].T) @ a[i]
-        else:
-            a = numpy.conj(a.T) @ a
-
+    a = get_symm_herm_numpy_array(shape, dtype)
     dp_a = dpnp.array(a, device=device)
 
     expected_queue = dp_a.get_array().sycl_queue
@@ -1137,6 +1134,7 @@ def test_eigenvalue_symm(func, shape, device):
 
         assert_allclose(dp_vec, np_vec, rtol=1e-05, atol=1e-05)
         assert dp_vec.shape == np_vec.shape
+        assert dp_vec.dtype == np_vec.dtype
 
         dpnp_vec_queue = dp_vec.get_array().sycl_queue
         # compare queue and device
@@ -1148,6 +1146,7 @@ def test_eigenvalue_symm(func, shape, device):
 
     assert_allclose(dp_val, np_val, rtol=1e-05, atol=1e-05)
     assert dp_val.shape == np_val.shape
+    assert dp_val.dtype == np_val.dtype
 
     dpnp_val_queue = dp_val.get_array().sycl_queue
     # compare queue and device

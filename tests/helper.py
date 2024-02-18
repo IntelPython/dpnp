@@ -166,6 +166,31 @@ def get_all_dtypes(
     return dtypes
 
 
+def get_symm_herm_numpy_array(shape, dtype=None):
+    """
+    Generates a real symmetric or a complex Hermitian numpy array of
+    the specified shape and data type.
+
+    Note:
+    For arrays with more than 2 dimensions, it ensures symmetry(or Hermitian property
+    for complex data type) for each sub-array.
+
+    """
+
+    numpy.random.seed(81)
+    a = numpy.random.randn(*shape).astype(dtype)
+    if numpy.issubdtype(dtype, numpy.complexfloating):
+        a += 1j * numpy.random.randn(*shape)
+
+    if a.size > 0:
+        if a.ndim > 2:
+            for i in range(a.shape[0]):
+                a[i] = numpy.conj(a[i].T) @ a[i]
+        else:
+            a = numpy.conj(a.T) @ a
+    return a
+
+
 def is_cpu_device(device=None):
     """
     Return True if a test is running on CPU device, False otherwise.

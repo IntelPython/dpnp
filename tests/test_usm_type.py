@@ -8,7 +8,7 @@ from numpy.testing import assert_allclose
 
 import dpnp as dp
 
-from .helper import assert_dtype_allclose
+from .helper import assert_dtype_allclose, get_symm_herm_numpy_array
 
 list_of_usm_types = ["device", "shared", "host"]
 
@@ -675,17 +675,9 @@ def test_clip(usm_type):
     ],
 )
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_eigenvalue_symm(func, shape, usm_type):
-    dp.random.seed(81)
-    a = dp.random.randn(*shape)
-    if a.size > 0:
-        if a.ndim > 2:
-            for i in range(a.shape[0]):
-                a[i] = dp.conj(a[i].T) @ a[i]
-        else:
-            a = dp.conj(a.T) @ a
-
-    a = dp.array(a, usm_type=usm_type)
+def test_eigenvalue(func, shape, usm_type):
+    a_np = get_symm_herm_numpy_array(shape)
+    a = dp.array(a_np, usm_type=usm_type)
 
     if func == "eigh":
         dp_val, dp_vec = dp.linalg.eigh(a)
