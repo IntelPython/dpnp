@@ -1,5 +1,3 @@
-import unittest
-
 import numpy
 import pytest
 
@@ -22,7 +20,7 @@ def _get_hermitian(xp, a, UPLO):
         }
     )
 )
-class TestEigenvalue(unittest.TestCase):
+class TestEigenvalue:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-3,
@@ -90,9 +88,7 @@ class TestEigenvalue(unittest.TestCase):
         return w
 
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_allclose(
-        rtol=1e-3, atol=1e-4, type_check=has_support_aspect64()
-    )
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_eigh_complex_batched(self, xp, dtype):
         a = xp.array(
             [
@@ -145,9 +141,7 @@ class TestEigenvalue(unittest.TestCase):
         return w
 
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_allclose(
-        rtol=1e-3, atol=1e-4, type_check=has_support_aspect64()
-    )
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_eigvalsh_complex(self, xp, dtype):
         a = xp.array([[1, 2j, 3], [4j, 5, 6j], [7, 8j, 9]], dtype)
         w = xp.linalg.eigvalsh(a, UPLO=self.UPLO)
@@ -156,9 +150,7 @@ class TestEigenvalue(unittest.TestCase):
         return w
 
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_allclose(
-        rtol=1e-3, atol=1e-4, type_check=has_support_aspect64()
-    )
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_eigvalsh_complex_batched(self, xp, dtype):
         a = xp.array(
             [
@@ -178,7 +170,7 @@ class TestEigenvalue(unittest.TestCase):
         {"UPLO": ["U", "L"], "shape": [(0, 0), (2, 0, 0), (0, 3, 3)]}
     )
 )
-class TestEigenvalueEmpty(unittest.TestCase):
+class TestEigenvalueEmpty:
     @testing.for_dtypes("ifdFD")
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_eigh(self, xp, dtype):
@@ -202,7 +194,7 @@ class TestEigenvalueEmpty(unittest.TestCase):
         }
     )
 )
-class TestEigenvalueInvalid(unittest.TestCase):
+class TestEigenvalueInvalid:
     def test_eigh_shape_error(self):
         for xp in (numpy, cupy):
             a = xp.zeros(self.shape)
