@@ -1726,11 +1726,11 @@ def test_slogdet(shape, is_empty, device):
 )
 def test_pinv(shape, hermitian, rcond_as_array, device):
     numpy.random.seed(81)
+    dtype = dpnp.default_float_type(device)
     if hermitian:
-        a_np = numpy.random.randn(*shape) + 1j * numpy.random.randn(*shape)
-        a_np = numpy.conj(a_np.T) @ a_np
+        a_np = get_symm_herm_numpy_array(shape, dtype)
     else:
-        a_np = numpy.random.randn(*shape)
+        a_np = numpy.random.randn(*shape).astype(dtype)
 
     a_dp = dpnp.array(a_np, device=device)
 

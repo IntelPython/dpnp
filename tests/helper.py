@@ -179,7 +179,7 @@ def get_symm_herm_numpy_array(shape, dtype=None):
 
     numpy.random.seed(81)
     a = numpy.random.randn(*shape).astype(dtype)
-    if numpy.issubdtype(dtype, numpy.complexfloating):
+    if numpy.issubdtype(a.dtype, numpy.complexfloating):
         a += 1j * numpy.random.randn(*shape)
 
     if a.size > 0:

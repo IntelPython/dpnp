@@ -15,6 +15,7 @@ from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
     get_float_complex_dtypes,
+    get_symm_herm_numpy_array,
     has_support_aspect64,
     is_cpu_device,
 )
@@ -1126,11 +1127,7 @@ class TestSvd:
         ids=["(2, 2)", "(16, 16)"],
     )
     def test_svd_hermitian(self, dtype, compute_vt, shape):
-        a = numpy.random.randn(*shape).astype(dtype)
-        if numpy.issubdtype(dtype, numpy.complexfloating):
-            a += 1j * numpy.random.randn(*shape)
-        a = (a + a.conj().T) / 2
-
+        a = get_symm_herm_numpy_array(shape, dtype)
         dp_a = inp.array(a)
 
         if compute_vt:
@@ -1235,11 +1232,7 @@ class TestPinv:
         ids=["(2, 2)", "(16, 16)"],
     )
     def test_pinv_hermitian(self, dtype, shape):
-        a = numpy.random.randn(*shape).astype(dtype)
-        if numpy.issubdtype(dtype, numpy.complexfloating):
-            a += 1j * numpy.random.randn(*shape)
-        a = (a + a.conj().T) / 2
-
+        a = get_symm_herm_numpy_array(shape, dtype)
         a_dp = inp.array(a)
 
         B = numpy.linalg.pinv(a, hermitian=True)
