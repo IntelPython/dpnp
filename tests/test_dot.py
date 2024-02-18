@@ -9,6 +9,9 @@ from .helper import assert_dtype_allclose, get_all_dtypes, get_complex_dtypes
 
 
 class TestDot:
+    def setup_method(self):
+        numpy.random.seed(42)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_dot_ones(self, dtype):
         n = 10**5
@@ -355,6 +358,9 @@ def test_multi_dot(type):
 
 
 class TestTensordot:
+    def setup_method(self):
+        numpy.random.seed(87)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_tensordot_scalar(self, dtype):
         a = 2
@@ -383,8 +389,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
-        # TODO: investigate the effect of factor, see SAT-6700
-        assert_dtype_allclose(result, expected, factor=24)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("axes", [-3, -2, -1, 0, 1, 2])
@@ -400,8 +405,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
-        # TODO: investigate the effect of factor, see SAT-6700
-        assert_dtype_allclose(result, expected, factor=24)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
@@ -426,8 +430,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
-        # TODO: investigate the effect of factor, see SAT-6700
-        assert_dtype_allclose(result, expected, factor=24)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
@@ -443,8 +446,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib)
         expected = numpy.tensordot(a, b)
-        # TODO: investigate the effect of factor, see SAT-6700
-        assert_dtype_allclose(result, expected, factor=24)
+        assert_dtype_allclose(result, expected)
 
     def test_tensordot_strided(self):
         for dim in [1, 2, 3, 4]:
@@ -500,6 +502,9 @@ class TestTensordot:
 
 
 class TestVdot:
+    def setup_method(self):
+        numpy.random.seed(42)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_vdot_scalar(self, dtype):
         a = numpy.array([3.5], dtype=dtype)
