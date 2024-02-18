@@ -46,18 +46,17 @@ import dpnp
 from dpnp import dpnp_container
 
 # pylint: disable=no-name-in-module
-from dpnp.dpnp_algo.dpnp_arraycreation import (
+from .dpnp_algo import (
     dpnp_trace,
 )
-from dpnp.dpnp_utils.dpnp_algo_utils import (
-    call_origin,
-)
-
 from .dpnp_algo.dpnp_arraycreation import (
     dpnp_geomspace,
     dpnp_linspace,
     dpnp_logspace,
     dpnp_nd_grid,
+)
+from .dpnp_utils import (
+    call_origin,
 )
 
 __all__ = [
@@ -2646,9 +2645,9 @@ def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
             pass
         elif x1_desc.ndim < 2:
             pass
-        elif axis1 != 0:
-            pass
         elif axis2 != 1:
+            pass
+        elif axis1 != 0:
             pass
         elif out is not None:
             pass

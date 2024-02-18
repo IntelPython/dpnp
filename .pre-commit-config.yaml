@@ -94,4 +94,4 @@ repos:
             "--disable=redefined-builtin",
             "--disable=unused-wildcard-import"
             ]
-        files: '^dpnp/dpnp_iface(|_arraycreation).py$'
+        files: '^dpnp/dpnp_iface(|_arraycreation|_counting|_indexing).py$'

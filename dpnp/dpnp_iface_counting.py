@@ -87,6 +87,7 @@ def count_nonzero(a, axis=None, *, keepdims=False):
 
     """
 
-    # TODO: might be improved by implementing an extension with `count_nonzero` kernel
+    # TODO: might be improved by implementing an extension
+    # with `count_nonzero` kernel
     a = dpnp.astype(a, dpnp.bool, copy=False)
     return a.sum(axis=axis, dtype=dpnp.intp, keepdims=keepdims)
