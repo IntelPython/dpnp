@@ -870,6 +870,40 @@ def test_svd(usm_type, shape, full_matrices_param, compute_uv_param):
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
+    "shape, hermitian",
+    [
+        ((4, 4), False),
+        ((2, 0), False),
+        ((4, 4), True),
+        ((2, 2, 3), False),
+        ((0, 2, 3), False),
+        ((1, 0, 3), False),
+    ],
+    ids=[
+        "(4, 4)",
+        "(2, 0)",
+        "(2, 2), hermitian)",
+        "(2, 2, 3)",
+        "(0, 2, 3)",
+        "(1, 0, 3)",
+    ],
+)
+def test_pinv(shape, hermitian, usm_type):
+    numpy.random.seed(81)
+    if hermitian:
+        a = dp.random.randn(*shape) + 1j * dp.random.randn(*shape)
+        a = dp.conj(a.T) @ a
+    else:
+        a = dp.random.randn(*shape)
+
+    a = dp.array(a, usm_type=usm_type)
+    B = dp.linalg.pinv(a, hermitian=hermitian)
+
+    assert a.usm_type == B.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
     "shape",
     [
         (4, 4),

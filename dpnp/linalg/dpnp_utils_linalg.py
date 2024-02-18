@@ -39,6 +39,7 @@ __all__ = [
     "dpnp_det",
     "dpnp_eigh",
     "dpnp_inv",
+    "dpnp_pinv",
     "dpnp_qr",
     "dpnp_slogdet",
     "dpnp_solve",
@@ -1037,6 +1038,46 @@ def dpnp_inv(a):
     a_ht_copy_ev.wait()
 
     return b_f
+
+
+def dpnp_pinv(a, rcond=1e-15, hermitian=False):
+    """
+    dpnp_pinv(a, rcond=1e-15, hermitian=False):
+
+    Compute the Moore-Penrose pseudoinverse of `a` matrix.
+
+    It computes a pseudoinverse of a matrix `a`, which is a generalization
+    of the inverse matrix with Singular Value Decomposition (SVD).
+
+    """
+
+    if a.size == 0:
+        m, n = a.shape[-2:]
+        if m == 0 or n == 0:
+            res_type = a.dtype
+        else:
+            res_type = _common_type(a)
+        return dpnp.empty_like(a, shape=(a.shape[:-2] + (n, m)), dtype=res_type)
+
+    if dpnp.is_supported_array_type(rcond):
+        # Check that `a` and `rcond` are allocated on the same device
+        # and have the same queue. Otherwise, `ValueError`` will be raised.
+        get_usm_allocations([a, rcond])
+    else:
+        # Allocate dpnp.ndarray if rcond is a scalar
+        rcond = dpnp.array(rcond, usm_type=a.usm_type, sycl_queue=a.sycl_queue)
+
+    u, s, vt = dpnp_svd(a.conj(), full_matrices=False, hermitian=hermitian)
+
+    # discard small singular values
+    cutoff = rcond * dpnp.max(s, axis=-1)
+    leq = s <= cutoff[..., None]
+    dpnp.reciprocal(s, out=s)
+    s[leq] = 0
+
+    u = u.swapaxes(-2, -1)
+    dpnp.multiply(s[..., None], u, out=u)
+    return dpnp.matmul(vt.swapaxes(-2, -1), u)
 
 
 def dpnp_qr_batch(a, mode="reduced"):

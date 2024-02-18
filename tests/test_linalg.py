@@ -14,7 +14,7 @@ from tests.third_party.cupy import testing
 from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
-    get_complex_dtypes,
+    get_float_complex_dtypes,
     has_support_aspect64,
     is_cpu_device,
 )
@@ -663,6 +663,11 @@ def test_norm3(array, ord, axis):
 
 
 class TestQr:
+    # Set numpy.random.seed for test methods to prevent
+    # random generation of the input singular matrix
+    def setup_method(self):
+        numpy.random.seed(81)
+
     # TODO: New packages that fix issue CMPLRLLVM-53771 are only available in internal CI.
     # Skip the tests on cpu until these packages are available for the external CI.
     # Specifically dpcpp_linux-64>=2024.1.0
@@ -687,7 +692,9 @@ class TestQr:
         ids=["r", "raw", "complete", "reduced"],
     )
     def test_qr(self, dtype, shape, mode):
-        a = numpy.random.rand(*shape).astype(dtype)
+        a = numpy.random.randn(*shape).astype(dtype)
+        if numpy.issubdtype(dtype, numpy.complexfloating):
+            a += 1j * numpy.random.randn(*shape)
         ia = inp.array(a)
 
         if mode == "r":
@@ -757,7 +764,7 @@ class TestQr:
         ids=["r", "raw", "complete", "reduced"],
     )
     def test_qr_strides(self, mode):
-        a = numpy.random.rand(5, 5)
+        a = numpy.random.randn(5, 5)
         ia = inp.array(a)
 
         # positive strides
@@ -1017,6 +1024,11 @@ class TestSlogdet:
 
 
 class TestSvd:
+    # Set numpy.random.seed for test methods to prevent
+    # random generation of the input singular matrix
+    def setup_method(self):
+        numpy.random.seed(81)
+
     def get_tol(self, dtype):
         tol = 1e-06
         if dtype in (inp.float32, inp.complex64):
@@ -1106,18 +1118,19 @@ class TestSvd:
             dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, True
         )
 
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("compute_vt", [True, False], ids=["True", "False"])
     @pytest.mark.parametrize(
         "shape",
         [(2, 2), (16, 16)],
-        ids=["(2,2)", "(16, 16)"],
+        ids=["(2, 2)", "(16, 16)"],
     )
     def test_svd_hermitian(self, dtype, compute_vt, shape):
-        a = numpy.random.randn(*shape) + 1j * numpy.random.randn(*shape)
-        a = numpy.conj(a.T) @ a
+        a = numpy.random.randn(*shape).astype(dtype)
+        if numpy.issubdtype(dtype, numpy.complexfloating):
+            a += 1j * numpy.random.randn(*shape)
+        a = (a + a.conj().T) / 2
 
-        a = a.astype(dtype)
         dp_a = inp.array(a)
 
         if compute_vt:
@@ -1152,3 +1165,155 @@ class TestSvd:
         # a.ndim < 2
         a_dp_ndim_1 = a_dp.flatten()
         assert_raises(inp.linalg.LinAlgError, inp.linalg.svd, a_dp_ndim_1)
+
+
+class TestPinv:
+    # Set numpy.random.seed for test methods to prevent
+    # random generation of the input singular matrix
+    def setup_method(self):
+        numpy.random.seed(81)
+
+    def get_tol(self, dtype):
+        tol = 1e-06
+        if dtype in (inp.float32, inp.complex64):
+            tol = 1e-04
+        elif not has_support_aspect64() and dtype in (
+            inp.int32,
+            inp.int64,
+            None,
+        ):
+            tol = 1e-04
+        self._tol = tol
+
+    def check_types_shapes(self, dp_B, np_B):
+        if has_support_aspect64():
+            assert dp_B.dtype == np_B.dtype
+        else:
+            assert dp_B.dtype.kind == np_B.dtype.kind
+
+        assert dp_B.shape == np_B.shape
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (3, 4), (5, 3), (16, 16), (2, 2, 2), (2, 4, 2), (2, 2, 4)],
+        ids=[
+            "(2, 2)",
+            "(3, 4)",
+            "(5, 3)",
+            "(16, 16)",
+            "(2, 2, 2)",
+            "(2, 4, 2)",
+            "(2, 2, 4)",
+        ],
+    )
+    def test_pinv(self, dtype, shape):
+        a = numpy.random.randn(*shape).astype(dtype)
+        if numpy.issubdtype(dtype, numpy.complexfloating):
+            a += 1j * numpy.random.randn(*shape)
+        a_dp = inp.array(a)
+
+        B = numpy.linalg.pinv(a)
+        B_dp = inp.linalg.pinv(a_dp)
+
+        self.check_types_shapes(B_dp, B)
+        self.get_tol(dtype)
+        tol = self._tol
+        assert_allclose(B_dp, B, rtol=tol, atol=tol)
+
+        if a.ndim == 2:
+            reconstructed = inp.dot(a_dp, inp.dot(B_dp, a_dp))
+        else:  # a.ndim > 2
+            reconstructed = inp.matmul(a_dp, inp.matmul(B_dp, a_dp))
+
+        assert_allclose(reconstructed, a_dp, rtol=tol, atol=tol)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (16, 16)],
+        ids=["(2, 2)", "(16, 16)"],
+    )
+    def test_pinv_hermitian(self, dtype, shape):
+        a = numpy.random.randn(*shape).astype(dtype)
+        if numpy.issubdtype(dtype, numpy.complexfloating):
+            a += 1j * numpy.random.randn(*shape)
+        a = (a + a.conj().T) / 2
+
+        a_dp = inp.array(a)
+
+        B = numpy.linalg.pinv(a, hermitian=True)
+        B_dp = inp.linalg.pinv(a_dp, hermitian=True)
+
+        self.check_types_shapes(B_dp, B)
+        self.get_tol(dtype)
+        tol = self._tol
+
+        reconstructed = inp.dot(inp.dot(a_dp, B_dp), a_dp)
+        assert_allclose(reconstructed, a_dp, rtol=tol, atol=tol)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(0, 0), (0, 2), (2, 0), (2, 0, 3), (2, 3, 0), (0, 2, 3)],
+        ids=[
+            "(0, 0)",
+            "(0, 2)",
+            "(2 ,0)",
+            "(2, 0, 3)",
+            "(2, 3, 0)",
+            "(0, 2, 3)",
+        ],
+    )
+    def test_pinv_empty(self, dtype, shape):
+        a = numpy.empty(shape, dtype=dtype)
+        a_dp = inp.array(a)
+
+        B = numpy.linalg.pinv(a)
+        B_dp = inp.linalg.pinv(a_dp)
+
+        assert_dtype_allclose(B_dp, B)
+
+    def test_pinv_strides(self):
+        a = numpy.random.randn(5, 5)
+        a_dp = inp.array(a)
+
+        self.get_tol(a_dp.dtype)
+        tol = self._tol
+
+        # positive strides
+        B = numpy.linalg.pinv(a[::2, ::2])
+        B_dp = inp.linalg.pinv(a_dp[::2, ::2])
+        assert_allclose(B_dp, B, rtol=tol, atol=tol)
+
+        # negative strides
+        B = numpy.linalg.pinv(a[::-2, ::-2])
+        B_dp = inp.linalg.pinv(a_dp[::-2, ::-2])
+        assert_allclose(B_dp, B, rtol=tol, atol=tol)
+
+    def test_pinv_errors(self):
+        a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
+
+        # unsupported type `a`
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.pinv, a_np)
+
+        # unsupported type `rcond`
+        rcond = numpy.array(0.5, dtype="float32")
+        assert_raises(TypeError, inp.linalg.pinv, a_dp, rcond)
+        assert_raises(TypeError, inp.linalg.pinv, a_dp, [0.5])
+
+        # non-broadcastable `rcond`
+        rcond_dp = inp.array([0.5], dtype="float32")
+        assert_raises(ValueError, inp.linalg.pinv, a_dp, rcond_dp)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.pinv, a_dp_ndim_1)
+
+        # diffetent queue
+        a_queue = dpctl.SyclQueue()
+        rcond_queue = dpctl.SyclQueue()
+        a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
+        rcond_dp_q = inp.array([0.5], dtype="float32", sycl_queue=rcond_queue)
+        assert_raises(ValueError, inp.linalg.pinv, a_dp_q, rcond_dp_q)

@@ -27,6 +27,7 @@ import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import numpy
+from numpy.core.numeric import normalize_axis_tuple
 
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi
@@ -43,7 +44,7 @@ def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
     If `out` is not ``None`` and its features match the specified `shape`, `dtype,
     `usm_type`, and `sycl_queue` and it is C-contiguous or F-contiguous and
     does not have any memory overlap with `x1` and `x2`, `out` itself is returned.
-    If these conditions are not statisfied, an empty array is returned with the
+    If these conditions are not satisfied, an empty array is returned with the
     specified `shape`, `dtype, `usm_type`, and `sycl_queue`.
     """
 
@@ -57,7 +58,7 @@ def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
             and out.shape == shape
             and out.usm_type == usm_type
             and out.sycl_queue == sycl_queue
-            and (out.flags.c_contiguous or out.flags.f_contiguous)
+            and out.flags.c_contiguous
             and not ti._array_overlap(x1_usm, out_usm)
             and not ti._array_overlap(x2_usm, out_usm)
         ):
@@ -116,21 +117,9 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, x1_is_2D, x2_is_2D, dev_tasks_list):
     x2_strides = x2.strides
     res_strides = res.strides
 
-    # when shape along any particular dimension is 1,
-    # the stride along that dimension is not a
-    # meaningful number and is undefined. Here, we
-    # standardizing strides before continuing,
-    # setting stride to 0 if the shape along that axis is <=1
-    if x1_is_2D:
-        x1_strides = tuple(
-            str_i if sh_i > 1 else 0
-            for sh_i, str_i in zip(x1.shape, x1_strides)
-        )
-    if x2_is_2D:
-        x2_strides = tuple(
-            str_i if sh_i > 1 else 0
-            for sh_i, str_i in zip(x2.shape, x2_strides)
-        )
+    # need to standardize to use in ti._contract_iter2
+    x1_strides = _standardize_strides(x1_strides, x1_is_2D, x1.shape, x1.ndim)
+    x2_strides = _standardize_strides(x2_strides, x2_is_2D, x2.shape, x2.ndim)
 
     batch_size = res.shape[:-2][0]
     stridea = x1_strides[0]
@@ -220,6 +209,117 @@ def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
     return op_dtype, res_dtype
 
 
+def _shape_error(a, b, core_dim, err_msg):
+    if err_msg == 0:
+        raise ValueError(
+            "Input arrays have a mismatch in their core dimensions. "
+            "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
+            f"(size {a} is different from {b})"
+        )
+    elif err_msg == 1:
+        raise ValueError(
+            f"Output array has a mismatch in its core dimension {core_dim}. "
+            "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
+            f"(size {a} is different from {b})"
+        )
+    elif err_msg == 2:
+        raise ValueError(
+            "Input arrays could not be broadcast together with remapped shapes, "
+            f"{a} is different from {b}."
+        )
+    elif err_msg == 3:
+        raise ValueError(
+            "Output array could not be broadcast to input arrays with remapped shapes, "
+            f"{a} is different from {b}."
+        )
+
+
+def _standardize_strides(strides, inherently_2D, shape, ndim):
+    """
+    Standardizing the strides.
+
+    When shape of an array along any particular dimension is 1, the stride
+    along that dimension is undefined. This functions standardize the strides
+    in the following way:
+    For N-D arrays that are inherently 2D (all dimesnsion are one except for two of them),
+    we use zero as the stride for dimensions equal one.
+    For other N-D arrays, the non-zero value of strides is calculated and used.
+
+    """
+
+    if inherently_2D:
+        stndrd_strides = tuple(
+            str_i if sh_i > 1 else 0 for sh_i, str_i in zip(shape, strides)
+        )
+    else:
+        stndrd_strides = [
+            numpy.prod(shape[i + 1 :]) if strides[i] == 0 else strides[i]
+            for i in range(ndim - 1)
+        ]
+        # last dimension
+        stndrd_strides.append(
+            1 if strides[ndim - 1] == 0 else strides[ndim - 1]
+        )
+        stndrd_strides = tuple(stndrd_strides)
+
+    return stndrd_strides
+
+
+def _validate_axes(x1, x2, axes):
+    """Check axes is valid for matmul function."""
+
+    def _validate_internal(axes, i, ndim):
+        if ndim == 1:
+            iter = 1
+            if isinstance(axes, int):
+                axes = (axes,)
+            elif not isinstance(axes, tuple):
+                raise TypeError(
+                    f"Axes item {i}: {type(axes)} object cannot be interpreted as an integer."
+                )
+
+            if len(axes) != 1:
+                raise ValueError(
+                    f"Axes item {i} should be a tuple with a single element, or an integer."
+                )
+        else:
+            iter = 2
+            if not isinstance(axes, tuple):
+                raise TypeError(f"Axes item {i} should be a tuple.")
+            if len(axes) != 2:
+                raise ValueError(
+                    f"Axes item {i} should be a tuple with 2 elements."
+                )
+
+        for j in range(iter):
+            if not isinstance(axes[j], int):
+                raise TypeError(
+                    f"Axes item {i}: {type(axes[j])} object cannot be interpreted as an integer."
+                )
+        return axes
+
+    if not isinstance(axes, list):
+        raise TypeError("Axes should be a list.")
+    else:
+        if len(axes) != 3:
+            raise ValueError(
+                "Axes should be a list of three tuples for inputs and output."
+            )
+
+    axes[0] = _validate_internal(axes[0], 0, x1.ndim)
+    axes[1] = _validate_internal(axes[1], 1, x2.ndim)
+
+    if x1.ndim == 1 and x2.ndim == 1:
+        if axes[2] != ():
+            raise TypeError("Axes item 2 should be an empty tuple.")
+    elif x1.ndim == 1 or x2.ndim == 1:
+        axes[2] = _validate_internal(axes[2], 2, 1)
+    else:
+        axes[2] = _validate_internal(axes[2], 2, 2)
+
+    return axes
+
+
 def dpnp_dot(a, b, /, out=None, *, conjugate=False):
     """
     Return the dot product of two arrays.
@@ -302,6 +402,7 @@ def dpnp_matmul(
     casting="same_kind",
     order="K",
     dtype=None,
+    axes=None,
 ):
     """
     Return the matrix product of two arrays.
@@ -327,6 +428,25 @@ def dpnp_matmul(
 
     res_usm_type, exec_q = get_usm_allocations([x1, x2])
 
+    if axes is not None:
+        axes = _validate_axes(x1, x2, axes)
+
+        axes_x1, axes_x2, axes_res = axes
+        axes_x1 = normalize_axis_tuple(axes_x1, x1.ndim, "axis")
+        axes_x2 = normalize_axis_tuple(axes_x2, x2.ndim, "axis")
+        # Move the axes that are going to be used in matrix product,
+        # to the end of "x1" and "x2"
+        x1 = dpnp.moveaxis(x1, axes_x1, (-2, -1)) if x1.ndim != 1 else x1
+        x2 = dpnp.moveaxis(x2, axes_x2, (-2, -1)) if x2.ndim != 1 else x2
+        out_orig = out
+        if out is not None:
+            dpnp.check_supported_arrays_type(out)
+            # out that is passed to the backend should have the correct shape
+            if len(axes_res) == 2:
+                out = dpnp.moveaxis(out, axes_res, (-2, -1))
+            elif len(axes_res) == 1:
+                out = dpnp.moveaxis(out, axes_res, (-1,))
+
     appended_axes = []
     if x1_ndim == 1:
         x1 = x1[dpnp.newaxis, :]
@@ -341,11 +461,22 @@ def dpnp_matmul(
     x1_shape = x1.shape
     x2_shape = x2.shape
     if x1_shape[-1] != x2_shape[-2]:
-        raise ValueError(
-            "Input arrays have a mismatch in their core dimensions. "
-            "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
-            f"(size {x1_shape[-1]} is different from {x2_shape[-2]})"
-        )
+        _shape_error(x1_shape[-1], x2_shape[-2], None, 0)
+
+    if out is not None:
+        out_shape = out.shape
+        if not appended_axes:
+            if out_shape[-2] != x1_shape[-2]:
+                _shape_error(out_shape[-2], x1_shape[-2], 0, 1)
+            if out_shape[-1] != x2_shape[-1]:
+                _shape_error(out_shape[-1], x2_shape[-1], 1, 1)
+        elif len(appended_axes) == 1:
+            if appended_axes[0] == -1:
+                if out_shape[-1] != x1_shape[-2]:
+                    _shape_error(out_shape[-1], x1_shape[-2], 0, 1)
+            elif appended_axes[0] == -2:
+                if out_shape[-1] != x2_shape[-1]:
+                    _shape_error(out_shape[-1], x2_shape[-1], 0, 1)
 
     # Determine the appropriate data types
     gemm_dtype, res_dtype = _op_res_dtype(
@@ -390,16 +521,29 @@ def dpnp_matmul(
                     if not x2_is_2D:
                         x2 = dpnp.repeat(x2, x1_shape[i], axis=i)
                 else:
-                    raise ValueError(
-                        "arrays could not be broadcast together with remapped shapes."
-                    )
+                    _shape_error(x1_shape[:-2], x2_shape[:-2], None, 2)
+
         x1_shape = x1.shape
         x2_shape = x2.shape
+        if out is not None:
+            for i in range(x1_ndim - 2):
+                if tmp_shape[i] != out_shape[i]:
+                    if not appended_axes:
+                        _shape_error(tuple(tmp_shape), out_shape[:-2], None, 3)
+                    elif len(appended_axes) == 1:
+                        _shape_error(tuple(tmp_shape), out_shape[:-1], None, 3)
+
         res_shape = tuple(tmp_shape) + (x1_shape[-2], x2_shape[-1])
+
+    # handling a special case to provide a similar result to NumPy
+    if out is not None and x1.shape == (1, 0) and x2.shape == (0, 1):
+        res_shape = (0,)
+        appended_axes = []
 
     result = _create_result_array(
         x1, x2, out, res_shape, gemm_dtype, res_usm_type, exec_q
     )
+
     # calculate result
     if result.size == 0:
         pass
@@ -461,6 +605,8 @@ def dpnp_matmul(
 
     if appended_axes:
         result = dpnp.squeeze(result, tuple(appended_axes))
+        if len(appended_axes) == 2 and out is not None:
+            result = dpnp.tile(result, out.shape)
 
     if x1_is_2D and x2_is_2D:
         # add new axes only if one of the input arrays
@@ -471,12 +617,24 @@ def dpnp_matmul(
 
     if gemm_dtype != res_dtype:
         result = dpnp.astype(result, res_dtype, copy=False)
+
     if out is None:
+        if axes is not None:
+            # Move the data to the appropriate axes of the result array
+            if len(axes_res) == 2:
+                result = dpnp.moveaxis(result, (-2, -1), axes_res)
+            elif len(axes_res) == 1:
+                result = dpnp.moveaxis(result, (-1,), axes_res)
+            return result
         # If `order` was not passed as default
         # we need to update it to match the passed `order`.
-        if order not in ["k", "K"]:
+        elif order not in ["k", "K"]:
             return dpnp.array(result, copy=False, order=order)
         else:
             return result
     else:
-        return dpnp.get_result_array(result, out, casting=casting)
+        result = dpnp.get_result_array(result, out, casting=casting)
+        if axes is not None and out is result:
+            # out and out_orig contain the same data but they have different shape
+            return out_orig
+        return result
