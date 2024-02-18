@@ -736,8 +736,10 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
     """
     dpnp_eigh(a, UPLO, eigen_mode="V")
 
-    Return the eigenvalues and eigenvectors of a complex Hermitian
+    Compute the eigenvalues and eigenvectors of a complex Hermitian
     (conjugate symmetric) or a real symmetric matrix.
+    Can compute both eigenvalues and eigenvectors (`eigen_mode="V"`) or
+    only eigenvalues (`eigen_mode="N"`).
 
     The main calculation is done by calling an extension function
     for LAPACK library of OneMKL. Depending on input type of `a` array,
@@ -776,9 +778,34 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
         # need to loop over the 1st dimension to get eigenvalues and eigenvectors of 3d matrix A
         batch_size = a.shape[0]
         if batch_size == 0:
-            return w, dpnp.empty_like(a, dtype=v_type)
+            return (
+                (w, dpnp.empty_like(a, dtype=v_type))
+                if eigen_mode == "V"
+                else w
+            )
 
         eig_vecs = [None] * batch_size
+
+        # When `eigen_mode == "N"` (jobz == 0), OneMKL LAPACK does not overwrite the input array.
+        # If the input array 'a' is already F-contiguous and matches the target data type,
+        # we avoid unnecessary memory allocation and data copying.
+        if eigen_mode == "N" and a_order == "F" and a.dtype == v_type:
+            ht_list_ev = [None] * batch_size
+            for i in range(batch_size):
+                # call LAPACK extension function to get eigenvalues of a portion of matrix A
+                ht_list_ev[i], _ = getattr(li, lapack_func)(
+                    a_sycl_queue,
+                    jobz,
+                    uplo,
+                    a[i].get_array(),
+                    w[i].get_array(),
+                    depends=[],
+                )
+
+            ht_list_ev.wait()
+
+            return w
+
         ht_list_ev = [None] * batch_size * 2
         for i in range(batch_size):
             # oneMKL LAPACK assumes fortran-like array as input, so
@@ -804,18 +831,32 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
 
         dpctl.SyclEvent.wait_for(ht_list_ev)
 
-        # combine the list of eigenvectors into a single array
-        v = dpnp.array(eig_vecs, order=a_order)
-        return w, v
-    else:
-        # oneMKL LAPACK assumes fortran-like array as input, so
-        # allocate a memory with 'F' order for dpnp array of eigenvectors
-        v = dpnp.empty_like(a, order="F", dtype=v_type)
+        if eigen_mode == "V":
+            # combine the list of eigenvectors into a single array
+            v = dpnp.array(eig_vecs, order=a_order)
+            return w, v
+        return w
 
-        # use DPCTL tensor function to fill the array of eigenvectors with content of input array
-        ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr, dst=v.get_array(), sycl_queue=a_sycl_queue
-        )
+    else:
+        ht_list_ev = []
+        copy_ev = None
+
+        # When `eigen_mode == "N"` (jobz == 0), OneMKL LAPACK does not overwrite the input array.
+        # If the input array 'a' is already F-contiguous and matches the target data type,
+        # we avoid unnecessary memory allocation and data copying.
+        if eigen_mode == "N" and a_order == "F" and a.dtype == v_type:
+            v = a
+
+        else:
+            # oneMKL LAPACK assumes fortran-like array as input, so
+            # allocate a memory with 'F' order for dpnp array of eigenvectors
+            v = dpnp.empty_like(a, order="F", dtype=v_type)
+
+            # use DPCTL tensor function to fill the array of eigenvectors with content of input array
+            ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_usm_arr, dst=v.get_array(), sycl_queue=a_sycl_queue
+            )
+            ht_list_ev.append(ht_copy_ev)
 
         # allocate a memory for dpnp array of eigenvalues
         w = dpnp.empty_like(
@@ -833,8 +874,9 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
             w.get_array(),
             depends=[copy_ev],
         )
+        ht_list_ev.append(ht_lapack_ev)
 
-        if a_order != "F":
+        if eigen_mode == "V" and a_order != "F":
             # need to align order of eigenvectors with one of input matrix A
             out_v = dpnp.empty_like(v, order=a_order)
             ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -843,14 +885,13 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
                 sycl_queue=a_sycl_queue,
                 depends=[lapack_ev],
             )
-            ht_copy_out_ev.wait()
+            ht_list_ev.append(ht_copy_out_ev)
         else:
             out_v = v
 
-        ht_lapack_ev.wait()
-        ht_copy_ev.wait()
+        dpctl.SyclEvent.wait_for(ht_list_ev)
 
-        return w, out_v
+        return (w, out_v) if eigen_mode == "V" else w
 
 
 def dpnp_eigvalsh(a, UPLO):
@@ -865,7 +906,7 @@ def dpnp_eigvalsh(a, UPLO):
         res_type = _real_type(_common_type(a))
         return dpnp.empty_like(a, shape=a.shape[:-1], dtype=res_type)
 
-    return dpnp_eigh(a, UPLO=UPLO, eigen_mode="N")[0]
+    return dpnp_eigh(a, UPLO=UPLO, eigen_mode="N")
 
 
 def dpnp_inv_batched(a, res_type):
