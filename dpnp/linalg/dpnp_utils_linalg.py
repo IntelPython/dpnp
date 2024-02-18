@@ -38,7 +38,6 @@ __all__ = [
     "dpnp_cholesky",
     "dpnp_det",
     "dpnp_eigh",
-    "dpnp_eigvalsh",
     "dpnp_inv",
     "dpnp_qr",
     "dpnp_slogdet",
@@ -899,17 +898,6 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
         dpctl.SyclEvent.wait_for(ht_list_ev)
 
         return (w, out_v) if eigen_mode == "V" else w
-
-
-def dpnp_eigvalsh(a, UPLO):
-    """
-    dpnp_eigvalsh(a, UPLO)
-
-    Return the eigenvalues of a complex Hermitian or real symmetric matrix.
-
-    """
-
-    return dpnp_eigh(a, UPLO=UPLO, eigen_mode="N")
 
 
 def dpnp_inv_batched(a, res_type):

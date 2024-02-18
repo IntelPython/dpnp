@@ -50,7 +50,6 @@ from .dpnp_utils_linalg import (
     dpnp_cholesky,
     dpnp_det,
     dpnp_eigh,
-    dpnp_eigvalsh,
     dpnp_inv,
     dpnp_qr,
     dpnp_slogdet,
@@ -380,7 +379,7 @@ def eigvalsh(a, UPLO="L"):
     if UPLO not in ("L", "U"):
         raise ValueError("UPLO argument must be 'L' or 'U'")
 
-    return dpnp_eigvalsh(a, UPLO=UPLO)
+    return dpnp_eigh(a, UPLO=UPLO, eigen_mode="N")
 
 
 def inv(a):
