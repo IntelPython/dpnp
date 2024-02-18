@@ -265,9 +265,11 @@ def eigh(a, UPLO="L"):
 
     See Also
     --------
-    :obj:`dpnp.linalg.eig` : Return the eigenvalues and right eigenvectors of
-                             a general matrix.
-    :obj:`dpnp.linalg.eigvals` : Return the eigenvalues of a general matrix.
+    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or
+                                  real symmetric matrix.
+    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of
+                             a square array.
+    :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.
 
     Examples
     --------
@@ -326,7 +328,7 @@ def eigvalsh(a, UPLO="L"):
     """
     eigvalsh(a, UPLO="L")
 
-    Return the eigenvalues of a complex Hermitian or real symmetric matrix.
+    Compute the eigenvalues of a complex Hermitian or real symmetric matrix.
 
     Main difference from :obj:`dpnp.linalg.eigh`: the eigenvectors are not computed.
 
@@ -355,8 +357,8 @@ def eigvalsh(a, UPLO="L"):
     --------
     :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian
                               (conjugate symmetric) or a real symmetric matrix.
-    :obj:`dpnp.linalg.eigvals` : Return the eigenvalues of a general matrix.
-    :obj:`dpnp.linalg.eig` : Return the eigenvalues and right eigenvectors of
+    :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.
+    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of
                              a general matrix.
 
     Examples
