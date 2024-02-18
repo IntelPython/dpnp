@@ -290,6 +290,7 @@ def eigh(a, UPLO="L"):
     check_stacked_2d(a)
     check_stacked_square(a)
 
+    UPLO = UPLO.upper()
     if UPLO not in ("L", "U"):
         raise ValueError("UPLO argument must be 'L' or 'U'")
 
@@ -375,6 +376,7 @@ def eigvalsh(a, UPLO="L"):
     check_stacked_2d(a)
     check_stacked_square(a)
 
+    UPLO = UPLO.upper()
     if UPLO not in ("L", "U"):
         raise ValueError("UPLO argument must be 'L' or 'U'")
 
