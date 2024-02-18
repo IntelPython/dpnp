@@ -736,9 +736,9 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
     """
     dpnp_eigh(a, UPLO, eigen_mode="V")
 
-    Compute the eigenvalues and eigenvectors of a complex Hermitian
+    Return the eigenvalues and eigenvectors of a complex Hermitian
     (conjugate symmetric) or a real symmetric matrix.
-    Can compute both eigenvalues and eigenvectors (`eigen_mode="V"`) or
+    Can return both eigenvalues and eigenvectors (`eigen_mode="V"`) or
     only eigenvalues (`eigen_mode="N"`).
 
     The main calculation is done by calling an extension function
@@ -746,6 +746,17 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
     it will be either ``heevd`` (for complex types) or ``syevd`` (for others).
 
     """
+
+    # get resulting type of arrays with eigenvalues and eigenvectors
+    v_type = _common_type(a)
+    w_type = _real_type(v_type)
+
+    if a.size == 0:
+        w = dpnp.empty_like(a, shape=a.shape[:-1], dtype=w_type)
+        if eigen_mode == "V":
+            v = dpnp.empty_like(a, dtype=v_type)
+            return w, v
+        return w
 
     a_sycl_queue = a.sycl_queue
     a_order = "C" if a.flags.c_contiguous else "F"
@@ -757,10 +768,6 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
     # "N" means only eigenvalues will be calculated
     jobz = _jobz[eigen_mode]
     uplo = _upper_lower[UPLO]
-
-    # get resulting type of arrays with eigenvalues and eigenvectors
-    v_type = _common_type(a)
-    w_type = _real_type(v_type)
 
     # Get LAPACK function (_syevd for real or _heevd for complex data types)
     # to compute all eigenvalues and, optionally, all eigenvectors
@@ -901,10 +908,6 @@ def dpnp_eigvalsh(a, UPLO):
     Return the eigenvalues of a complex Hermitian or real symmetric matrix.
 
     """
-
-    if a.size == 0:
-        res_type = _real_type(_common_type(a))
-        return dpnp.empty_like(a, shape=a.shape[:-1], dtype=res_type)
 
     return dpnp_eigh(a, UPLO=UPLO, eigen_mode="N")
 
