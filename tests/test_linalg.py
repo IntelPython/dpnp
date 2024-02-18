@@ -566,7 +566,7 @@ class TestInv:
 
 
 class TestMatrixRank:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "data",
         [
@@ -586,7 +586,7 @@ class TestMatrixRank:
         dp_rank = inp.linalg.matrix_rank(a_dp)
         assert np_rank == dp_rank
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "data",
         [
@@ -666,7 +666,12 @@ class TestMatrixRank:
         tol_queue = dpctl.SyclQueue()
         a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
         tol_dp_q = inp.array([0.5], dtype="float32", sycl_queue=tol_queue)
-        assert_raises(ValueError, inp.linalg.matrix_rank, a_dp_q, tol_dp_q)
+        assert_raises(
+            dpctl.utils._compute_follows_data.ExecutionPlacementError,
+            inp.linalg.matrix_rank,
+            a_dp_q,
+            tol_dp_q,
+        )
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")

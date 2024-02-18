@@ -1014,20 +1014,12 @@ def dpnp_matrix_rank(A, tol=None, hermitian=False):
     S = dpnp_svd(A, compute_uv=False, hermitian=hermitian)
 
     if tol is None:
-        tol = (
-            S.max(axis=-1, keepdims=True)
-            * max(A.shape[-2:])
-            * dpnp.finfo(S.dtype).eps
-        )
+        rtol = max(A.shape[-2:]) * dpnp.finfo(S.dtype).eps
+        tol = S.max(axis=-1, keepdims=True) * rtol
     else:
         if dpnp.is_supported_array_type(tol):
-            # Check that `a` and `tol` are allocated on the same device
-            # and have the same queue. Otherwise, `ValueError`` will be raised.
-            get_usm_allocations([A, tol])
-        else:
-            # Allocate dpnp.ndarray if tol is a scalar
-            tol = dpnp.array(tol, usm_type=A.usm_type, sycl_queue=A.sycl_queue)
-        tol = tol[..., None]
+            # Add a new axis to match Numpy's output
+            tol = tol[..., None]
     return dpnp.count_nonzero(S > tol, axis=-1)
 
 

@@ -579,15 +579,6 @@ template <typename _DataType>
 void (*dpnp_matrix_rank_default_c)(void *, void *, shape_elem_type *, size_t) =
     dpnp_matrix_rank_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_matrix_rank_ext_c)(DPCTLSyclQueueRef,
-                                            void *,
-                                            void *,
-                                            shape_elem_type *,
-                                            size_t,
-                                            const DPCTLEventVectorRef) =
-    dpnp_matrix_rank_c<_DataType>;
-
 template <typename _InputDT, typename _ComputeDT>
 DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
                             void *array1_in,

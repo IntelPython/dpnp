@@ -424,6 +424,10 @@ def matrix_rank(A, tol=None, hermitian=False):
     rank : (...) dpnp.ndarray
         Rank of A.
 
+    See Also
+    --------
+    :obj:`dpnp.linalg.svd` : Singular Value Decomposition.
+
     Examples
     --------
     >>> import dpnp as np
