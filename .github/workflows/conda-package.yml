@@ -13,6 +13,7 @@ env:
   MODULE_NAME: dpnp
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   CONDA_BUILD_VERSION: '24.1.2'
+  CONDA_INDEX_VERSION: '0.4.0'
   # TODO: to add test_arraymanipulation.py back to the scope once crash on Windows is gone
   TEST_SCOPE: >-
       test_arraycreation.py
@@ -172,12 +173,12 @@ jobs:
           miniconda-version: 'latest'
           activate-environment: 'test'
 
-      # Needed to be able to run conda index
-      - name: Install conda-build
-        run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
+      - name: Install conda-index
+        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION}}
 
       - name: Create conda channel
-        run: conda index ${{ env.channel-path }}
+        run: |
+          python -m conda_index ${{ env.channel-path }}
 
       - name: Test conda channel
         run: |
@@ -288,12 +289,13 @@ jobs:
           (echo CONDA_LIB_PATH=%CONDA_PREFIX%\Library\lib\) >> %GITHUB_ENV%
           (echo CONDA_LIB_BIN_PATH=%CONDA_PREFIX%\Library\bin\) >> %GITHUB_ENV%
 
-      # Needed to be able to run conda index
-      - name: Install conda-build
-        run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
+      - name: Install conda-index
+        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION}}
 
       - name: Create conda channel
-        run: conda index ${{ env.channel-path }}
+        run: |
+          @echo on
+          python -m conda_index ${{ env.channel-path }}
 
       - name: Test conda channel
         run: |
