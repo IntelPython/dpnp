@@ -2984,7 +2984,7 @@ def dpnp_subtract(x1, x2, out=None, order="K"):
             boolean_subtract = True
     elif x1.dtype == x2.dtype == dpnp.bool:
         boolean_subtract = True
-    
+
     if boolean_subtract:
         raise TypeError(
             "DPNP boolean subtract, the `-` operator, is not supported, "
