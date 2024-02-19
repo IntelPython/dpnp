@@ -1016,10 +1016,10 @@ def dpnp_matrix_rank(A, tol=None, hermitian=False):
     if tol is None:
         rtol = max(A.shape[-2:]) * dpnp.finfo(S.dtype).eps
         tol = S.max(axis=-1, keepdims=True) * rtol
-    else:
-        if dpnp.is_supported_array_type(tol):
-            # Add a new axis to match Numpy's output
-            tol = tol[..., None]
+    elif not dpnp.isscalar(tol):
+        # Add a new axis to match Numpy's output
+        tol = tol[..., None]
+
     return dpnp.count_nonzero(S > tol, axis=-1)
 
 

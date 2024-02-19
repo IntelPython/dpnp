@@ -1,6 +1,7 @@
 import dpctl
 import numpy
 import pytest
+from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
@@ -667,7 +668,7 @@ class TestMatrixRank:
         a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
         tol_dp_q = inp.array([0.5], dtype="float32", sycl_queue=tol_queue)
         assert_raises(
-            dpctl.utils._compute_follows_data.ExecutionPlacementError,
+            ExecutionPlacementError,
             inp.linalg.matrix_rank,
             a_dp_q,
             tol_dp_q,
