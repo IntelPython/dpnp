@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.min &mdash; Data Parallel Extension for NumPy 0.15.0dev0+9.g8f987d6a9e documentation</title>
+  <title>dpnp.min &mdash; Data Parallel Extension for NumPy 0.15.0dev0+15.g018933edb1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=71692ccd"></script>
+        <script src="../../_static/documentation_options.js?v=74f20f4f"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+9.g8f987d6a9e
+                0.15.0dev0+15.g018933edb1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -142,8 +142,8 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Input array.</p></li>
 <li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em><em>, </em><em>optional</em>) – Axis or axes along which minimum values must be computed. By default,
-the minimum value must be computed over the entire array. If a tuple of integers,
-minimum values must be computed over multiple axes.
+the minimum value must be computed over the entire array. If a tuple
+of integers, minimum values must be computed over multiple axes.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>out</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) – If provided, the result will be inserted into this array. It should
 be of the appropriate shape and dtype.</p></li>
@@ -155,10 +155,10 @@ Default: <code class="docutils literal notranslate"><span class="pre">False</spa
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – If the minimum value was computed over the entire array, a zero-dimensional array
-containing the minimum value; otherwise, a non-zero-dimensional array
-containing the minimum values. The returned array must have
-the same data type as <cite>a</cite>.</p>
+<dd class="field-even"><p><strong>out</strong> – If the minimum value was computed over the entire array,
+a zero-dimensional array containing the minimum value; otherwise,
+a non-zero-dimensional array containing the minimum values.
+The returned array must have the same data type as <cite>a</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
@@ -167,7 +167,8 @@ the same data type as <cite>a</cite>.</p>
 <p class="rubric">Limitations</p>
 <p>Input array is only supported as either <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
 or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
-Parameters <cite>where</cite>, and <cite>initial</cite> are only supported with their default values.
+Parameters <cite>where</cite>, and <cite>initial</cite> are only supported with their default
+values.
 Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.
 Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
 <div class="admonition seealso">
