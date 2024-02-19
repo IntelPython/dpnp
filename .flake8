@@ -43,6 +43,9 @@ per-file-ignores =
     dpnp/linalg/__init__.py: F401
     dpnp/random/__init__.py: F401
     dpnp/dpnp_iface.py: D205
+    dpnp/dpnp_iface_manipulation.py: D205
+    dpnp/dpnp_iface_nanfunctions.py: D205
+    dpnp//dpnp_iface_statistics.py: D205
 
 filename = *.py, *.pyx, *.pxi, *.pxd
 max_line_length = 80

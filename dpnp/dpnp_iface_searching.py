@@ -42,9 +42,14 @@ import dpctl.tensor as dpt
 import numpy
 
 import dpnp
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import *
+
+from .dpnp_array import dpnp_array
+
+# pylint: disable=no-name-in-module
+from .dpnp_utils import (
+    call_origin,
+    get_usm_allocations,
+)
 
 __all__ = ["argmax", "argmin", "searchsorted", "where"]
 
@@ -77,15 +82,17 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     -------
     out : dpnp.ndarray
         If `axis` is ``None``, a zero-dimensional array containing the index of
-        the first occurrence of the maximum value; otherwise, a non-zero-dimensional
-        array containing the indices of the minimum values. The returned array
-        must have the default array index data type.
+        the first occurrence of the maximum value; otherwise,
+        a non-zero-dimensional array containing the indices of the minimum
+        values. The returned array must have the default array index data type.
 
     See Also
     --------
     :obj:`dpnp.ndarray.argmax` : Equivalent function.
-    :obj:`dpnp.nanargmax` : Returns the indices of the maximum values along an axis, igonring NaNs.
-    :obj:`dpnp.argmin` : Returns the indices of the minimum values along an axis.
+    :obj:`dpnp.nanargmax` : Returns the indices of the maximum values along
+                            an axis, igonring NaNs.
+    :obj:`dpnp.argmin` : Returns the indices of the minimum values
+                         along an axis.
     :obj:`dpnp.max` : The maximum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
     :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``
@@ -161,15 +168,17 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     -------
     out : dpnp.ndarray
         If `axis` is ``None``, a zero-dimensional array containing the index of
-        the first occurrence of the minimum value; otherwise, a non-zero-dimensional
-        array containing the indices of the minimum values. The returned array
-        must have the default array index data type.
+        the first occurrence of the minimum value; otherwise,
+        a non-zero-dimensional array containing the indices of the minimum
+        values. The returned array must have the default array index data type.
 
     See Also
     --------
     :obj:`dpnp.ndarray.argmin` : Equivalent function.
-    :obj:`dpnp.nanargmin` : Returns the indices of the minimum values along an axis, igonring NaNs.
-    :obj:`dpnp.argmax` : Returns the indices of the maximum values along an axis.
+    :obj:`dpnp.nanargmin` : Returns the indices of the minimum values
+                            along an axis, igonring NaNs.
+    :obj:`dpnp.argmax` : Returns the indices of the maximum values
+                         along an axis.
     :obj:`dpnp.min` : The minimum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
     :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``
@@ -250,7 +259,8 @@ def where(condition, x=None, y=None, /):
     Parameters `x` and `y` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types of `x` and `y` are limited by supported DPNP :ref:`Data types`.
+    Input array data types of `x` and `y` are limited by supported DPNP
+    :ref:`Data types`.
 
     See Also
     --------
@@ -270,12 +280,15 @@ def where(condition, x=None, y=None, /):
     missing = (x is None, y is None).count(True)
     if missing == 1:
         raise ValueError("Must provide both 'x' and 'y' or neither.")
-    elif missing == 2:
+
+    if missing == 2:
         return dpnp.nonzero(condition)
-    elif missing == 0:
+
+    if missing == 0:
         if dpnp.is_supported_array_type(condition):
             if numpy.isscalar(x) or numpy.isscalar(y):
-                # get USM type and queue to copy scalar from the host memory into a USM allocation
+                # get USM type and queue to copy scalar from the host memory
+                # into a USM allocation
                 usm_type, queue = get_usm_allocations([condition, x, y])
                 x = (
                     dpt.asarray(x, usm_type=usm_type, sycl_queue=queue)
