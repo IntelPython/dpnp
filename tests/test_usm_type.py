@@ -829,6 +829,27 @@ def test_svd(usm_type, shape, full_matrices_param, compute_uv_param):
     assert x.usm_type == s.usm_type
 
 
+@pytest.mark.parametrize(
+    "data, tol",
+    [
+        (numpy.array([1, 2]), None),
+        (numpy.array([[1, 2], [3, 4]]), None),
+        (numpy.array([[1, 2], [3, 4]]), 1e-06),
+    ],
+    ids=[
+        "1-D array",
+        "2-D array no tol",
+        "2_d array with tol",
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_matrix_rank(data, tol, usm_type):
+    a = dp.array(data, usm_type=usm_type)
+
+    dp_res = dp.linalg.matrix_rank(a, tol=tol)
+    assert a.usm_type == dp_res.usm_type
+
+
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
     "shape, hermitian",
