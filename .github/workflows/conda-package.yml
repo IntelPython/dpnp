@@ -12,6 +12,7 @@ env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+  CONDA_BUILD_VERSION: '24.1.2'
   # TODO: to add test_arraymanipulation.py back to the scope once crash on Windows is gone
   TEST_SCOPE: >-
       test_arraycreation.py
@@ -102,7 +103,7 @@ jobs:
           (echo CONDA_BLD=%CONDA_PREFIX%\conda-bld\win-64\) >> %GITHUB_ENV%
 
       - name: Install conda-build
-        run: conda install conda-build=3.28.4
+        run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
 
       - name: Cache conda packages
         uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
@@ -173,7 +174,7 @@ jobs:
 
       # Needed to be able to run conda index
       - name: Install conda-build
-        run: conda install conda-build=3.28.4
+        run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
 
       - name: Create conda channel
         run: conda index ${{ env.channel-path }}
@@ -289,7 +290,7 @@ jobs:
 
       # Needed to be able to run conda index
       - name: Install conda-build
-        run: conda install conda-build=3.28.4
+        run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
 
       - name: Create conda channel
         run: conda index ${{ env.channel-path }}
