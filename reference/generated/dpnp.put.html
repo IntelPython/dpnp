@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.put &mdash; Data Parallel Extension for NumPy 0.15.0dev0+9.g8f987d6a9e documentation</title>
+  <title>dpnp.put &mdash; Data Parallel Extension for NumPy 0.14.0rc1+2.gf2d66b8124 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=71692ccd"></script>
+        <script src="../../_static/documentation_options.js?v=92a4aa37"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+9.g8f987d6a9e
+                0.14.0rc1+2.gf2d66b8124
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -136,8 +136,7 @@ Parameter <cite>indices</cite> is supported as 1-D array of integer data type.
 Parameter <cite>vals</cite> must be broadcastable to the shape of <cite>indices</cite>
 and has the same data type as <cite>a</cite> if it is as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
 or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
-Parameter <cite>mode</cite> is supported with <code class="docutils literal notranslate"><span class="pre">wrap</span></code>, the default, and <code class="docutils literal notranslate"><span class="pre">clip</span></code>
-values.
+Parameter <cite>mode</cite> is supported with <code class="docutils literal notranslate"><span class="pre">wrap</span></code>, the default, and <code class="docutils literal notranslate"><span class="pre">clip</span></code> values.
 Parameter <cite>axis</cite> is supported as integer only.
 Otherwise the function will be executed sequentially on CPU.</p>
 <div class="admonition seealso">
@@ -152,9 +151,8 @@ Otherwise the function will be executed sequentially on CPU.</p>
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>In contrast to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.put.html#numpy.put" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.put</span></code></a> <cite>wrap</cite> mode which wraps indices around
-the array for cyclic operations, <a class="reference internal" href="#dpnp.put" title="dpnp.put"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.put</span></code></a> <cite>wrap</cite> mode clamps indices
-to a fixed range within the array boundaries (-n &lt;= i &lt; n).</p>
+<p>In contrast to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.put.html#numpy.put" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.put</span></code></a> <cite>wrap</cite> mode which wraps indices around the array for cyclic operations,
+<a class="reference internal" href="#dpnp.put" title="dpnp.put"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.put</span></code></a> <cite>wrap</cite> mode clamps indices to a fixed range within the array boundaries (-n &lt;= i &lt; n).</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
