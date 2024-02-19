@@ -42,8 +42,14 @@ it contains:
 import math
 
 import dpnp
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
+
+# pylint: disable=no-name-in-module
+from .dpnp_algo import (
+    dpnp_erf,
+)
+from .dpnp_utils import (
+    create_output_descriptor_py,
+)
 
 __all__ = ["erf"]
 

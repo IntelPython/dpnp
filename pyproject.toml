@@ -9,7 +9,8 @@ include-naming-hint = true
 exclude-protected = ["_create_from_usm_ndarray"]
 
 [tool.pylint.design]
-max-args = 10
+max-args = 11
+max-locals = 24
 
 [tool.pylint.format]
 max-line-length = 80

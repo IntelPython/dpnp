@@ -48,11 +48,6 @@ from dpctl.tensor._device import normalize_queue_device
 import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_array import dpnp_array
-
-# pylint: disable=no-name-in-module
-from dpnp.dpnp_utils.dpnp_algo_utils import (
-    dpnp_descriptor,
-)
 from dpnp.fft import *
 from dpnp.linalg import *
 from dpnp.random import *
@@ -104,6 +99,13 @@ from dpnp.dpnp_iface_statistics import *
 from dpnp.dpnp_iface_statistics import __all__ as __all__statistics
 from dpnp.dpnp_iface_trigonometric import *
 from dpnp.dpnp_iface_trigonometric import __all__ as __all__trigonometric
+
+# pylint: disable=no-name-in-module
+from .dpnp_utils import (
+    dpnp_descriptor,
+    map_dtype_to_device,
+    use_origin_backend,
+)
 
 __all__ += __all__arraycreation
 __all__ += __all__bitwise
