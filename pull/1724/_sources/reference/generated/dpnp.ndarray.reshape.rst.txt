@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.reshape
-====================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.reshape
