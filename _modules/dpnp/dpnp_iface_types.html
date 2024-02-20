@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_types &mdash; Data Parallel Extension for NumPy 0.15.0dev0+26.gc2287173a2 documentation</title>
+  <title>dpnp.dpnp_iface_types &mdash; Data Parallel Extension for NumPy 0.15.0dev0+16.gbef8f4a906 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=aa0c6e9d"></script>
+        <script src="../../_static/documentation_options.js?v=74dcd3a7"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+26.gc2287173a2
+                0.15.0dev0+16.gbef8f4a906
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -88,9 +88,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dpnp.dpnp_iface_types</h1><div class="highlight"><pre>
-<span></span><span class="c1"># cython: language_level=3</span>
-<span class="c1"># distutils: language = c++</span>
-<span class="c1"># -*- coding: utf-8 -*-</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
 <span class="c1"># Copyright (c) 2016-2024, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
@@ -127,7 +125,7 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
+<span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
@@ -183,6 +181,7 @@
 <span class="p">]</span>
 
 
+<span class="c1"># pylint: disable=invalid-name</span>
 <span class="c1"># =============================================================================</span>
 <span class="c1"># Data types (borrowed from NumPy)</span>
 <span class="c1"># =============================================================================</span>
@@ -237,6 +236,7 @@
 <span class="n">PZERO</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">PZERO</span>
 
 
+<span class="c1"># pylint: disable=redefined-outer-name</span>
 <div class="viewcode-block" id="finfo">
 <a class="viewcode-back" href="../../reference/generated/dpnp.finfo.html#dpnp.finfo">[docs]</a>
 <span class="k">def</span> <span class="nf">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
@@ -264,9 +264,9 @@
 <span class="sd">            real-valued floating-point number larger than 1.0 according</span>
 <span class="sd">            to the IEEE-754 standard.</span>
 <span class="sd">        * epsneg: float</span>
-<span class="sd">            difference between 1.0 and the next smallest representable real-valued</span>
-<span class="sd">            floating-point number smaller than 1.0 according to the IEEE-754</span>
-<span class="sd">            standard.</span>
+<span class="sd">            difference between 1.0 and the next smallest representable</span>
+<span class="sd">            real-valued floating-point number smaller than 1.0 according to</span>
+<span class="sd">            the IEEE-754 standard.</span>
 <span class="sd">        * max: float</span>
 <span class="sd">            largest representable real-valued number.</span>
 <span class="sd">        * min: float</span>
@@ -289,6 +289,7 @@
 
 
 
+<span class="c1"># pylint: disable=redefined-outer-name</span>
 <div class="viewcode-block" id="iinfo">
 <a class="viewcode-back" href="../../reference/generated/dpnp.iinfo.html#dpnp.iinfo">[docs]</a>
 <span class="k">def</span> <span class="nf">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
@@ -366,14 +367,8 @@
 <span class="k">def</span> <span class="nf">is_type_supported</span><span class="p">(</span><span class="n">obj_type</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if type is supported by DPNP python level.&quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="n">obj_type</span> <span class="o">==</span> <span class="n">float64</span>
-        <span class="ow">or</span> <span class="n">obj_type</span> <span class="o">==</span> <span class="n">float32</span>
-        <span class="ow">or</span> <span class="n">obj_type</span> <span class="o">==</span> <span class="n">int64</span>
-        <span class="ow">or</span> <span class="n">obj_type</span> <span class="o">==</span> <span class="n">int32</span>
-    <span class="p">):</span>
+    <span class="k">if</span> <span class="n">obj_type</span> <span class="ow">in</span> <span class="p">(</span><span class="n">float64</span><span class="p">,</span> <span class="n">float32</span><span class="p">,</span> <span class="n">int64</span><span class="p">,</span> <span class="n">int32</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">True</span>
-
     <span class="k">return</span> <span class="kc">False</span>
 </pre></div>
 
