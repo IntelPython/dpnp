@@ -413,7 +413,6 @@ class TestArithmeticModf(unittest.TestCase):
 )
 @testing.gpu
 class TestBoolSubtract(unittest.TestCase):
-    @pytest.mark.skip("dpnp does not raise TypeError")
     def test_bool_subtract(self):
         xp = self.xp
         if xp is numpy and not testing.numpy_satisfies(">=1.14.0"):
@@ -421,5 +420,5 @@ class TestBoolSubtract(unittest.TestCase):
         shape = self.shape
         x = testing.shaped_random(shape, xp, dtype=numpy.bool_)
         y = testing.shaped_random(shape, xp, dtype=numpy.bool_)
-        with pytest.raises(TypeError):
+        with pytest.raises((TypeError, ValueError)):
             xp.subtract(x, y)

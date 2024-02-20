@@ -141,12 +141,12 @@ class TestArrayIntUnaryOp(unittest.TestCase):
     *testing.product({"xp": [numpy, cupy], "shape": [(3, 2), (), (3, 0, 2)]})
 )
 class TestBoolNeg(unittest.TestCase):
-    @pytest.mark.skip("dpnp does not raise TypeError")
     def test_bool_neg(self):
         xp = self.xp
         if xp is numpy and not testing.numpy_satisfies(">=1.13.0"):
             raise unittest.SkipTest("NumPy<1.13.0")
         shape = self.shape
         x = testing.shaped_random(shape, xp, dtype=numpy.bool_)
-        with pytest.raises(TypeError):
+        print(xp, x.dtype)
+        with pytest.raises((TypeError, ValueError)):
             -x

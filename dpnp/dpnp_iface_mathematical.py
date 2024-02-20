@@ -42,7 +42,11 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.utils as du
 import numpy
-from dpctl.tensor._type_utils import _acceptance_fn_divide
+from dpctl.tensor._type_utils import (
+    _acceptance_fn_divide,
+    _acceptance_fn_negative,
+    _acceptance_fn_subtract,
+)
 from numpy.core.numeric import (
     normalize_axis_index,
     normalize_axis_tuple,
@@ -169,7 +173,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -235,7 +238,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 Notes
 -----
@@ -356,7 +358,6 @@ def around(x, /, decimals=0, out=None):
     -----------
     Parameters `decimals` is supported with its default value.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -403,7 +404,6 @@ Limitations
 Parameters `where`, `dtype`, and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by real-value data types.
 
 See Also
 --------
@@ -529,7 +529,6 @@ Limitations
 -----------
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 Examples
 --------
@@ -604,7 +603,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported real-valued data types.
 
 See Also
 --------
@@ -878,7 +876,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 Notes
 -----
@@ -1030,7 +1027,6 @@ Limitations
 Parameters `where`, `dtype`, and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by real-value data types.
 
 See Also
 --------
@@ -1093,7 +1089,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -1583,7 +1578,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -1657,7 +1651,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -1817,7 +1810,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 Notes
 -----
@@ -1884,7 +1876,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -1911,6 +1902,7 @@ negative = DPNPUnaryFunc(
     ti._negative,
     _negative_docstring,
     origin_fn=numpy.negative,
+    acceptance_fn=_acceptance_fn_negative,
 )
 
 
@@ -1940,7 +1932,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -2005,7 +1996,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -2178,7 +2168,6 @@ Limitations
 -----------
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -2262,7 +2251,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -2325,7 +2313,6 @@ Limitations
 -----------
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -2376,7 +2363,6 @@ Limitations
 -----------
 Parameters `decimals` is supported with its default value.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -2441,9 +2427,8 @@ Limitations
 -----------
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
+Input array data types are limited by supported real-valued data types.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
-However, if the input array data type is complex, the function will be executed sequentially on CPU.
 
 See Also
 --------
@@ -2497,7 +2482,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported real-valued data types.
 
 See Also
 --------
@@ -2552,7 +2536,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 Notes
 -----
@@ -2589,6 +2572,7 @@ subtract = DPNPBinaryFunc(
     mkl_fn_to_call=vmi._mkl_sub_to_call,
     mkl_impl_fn=vmi._sub,
     binary_inplace_fn=ti._subtract_inplace,
+    acceptance_fn=_acceptance_fn_subtract,
 )
 
 
@@ -2859,7 +2843,6 @@ Limitations
 Parameters `where`, `dtype`, and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by real-value data types.
 
 See Also
 --------

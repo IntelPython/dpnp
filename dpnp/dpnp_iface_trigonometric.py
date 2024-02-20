@@ -115,7 +115,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -171,7 +170,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -227,7 +225,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -283,7 +280,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -339,7 +335,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported real-valued floating-point data type.
 
 See Also
 --------
@@ -403,7 +398,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword arguments `kwargs` are currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by real-valued data types.
 
 See Also
 --------
@@ -472,7 +466,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -528,7 +521,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by real-valued data types.
 
 See Also
 --------
@@ -580,7 +572,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -635,7 +626,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -744,7 +734,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -798,7 +787,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -855,7 +843,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -918,7 +905,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported real-valued data types.
 
 See Also
 --------
@@ -980,7 +966,6 @@ Limitations
 -----------
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -1037,7 +1022,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -1094,7 +1078,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -1156,7 +1139,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -1223,7 +1205,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword arguments `kwargs` are currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by real-valued data types.
 
 See Also
 --------
@@ -1350,13 +1331,6 @@ out : dpnp.ndarray
     The returned array has a floating-point data type determined
     by the Type Promotion Rules.
 
-Notes
------
-If `x` has a integral data type, the output will have the default
-real-valued floating-point data type for the device where
-input array `x` is allocated. If `x` has a floating-point
-data type, the output will have the same data type.
-
 Limitations
 -----------
 Parameters `where`, `dtype` and `subok` are supported with their default values.
@@ -1481,7 +1455,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by real-valued data types.
 
 See Also
 --------
@@ -1583,7 +1556,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -1637,7 +1609,6 @@ Limitations
 -----------
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -1690,7 +1661,6 @@ Limitations
 -----------
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -1745,7 +1715,6 @@ Limitations
 -----------
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -1802,7 +1771,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
@@ -1857,7 +1825,6 @@ Limitations
 Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
 
 See Also
 --------
