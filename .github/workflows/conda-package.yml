@@ -12,6 +12,8 @@ env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+  CONDA_BUILD_VERSION: '24.1.2'
+  CONDA_INDEX_VERSION: '0.4.0'
   # TODO: to add test_arraymanipulation.py back to the scope once crash on Windows is gone
   TEST_SCOPE: >-
       test_arraycreation.py
@@ -102,7 +104,7 @@ jobs:
           (echo CONDA_BLD=%CONDA_PREFIX%\conda-bld\win-64\) >> %GITHUB_ENV%
 
       - name: Install conda-build
-        run: conda install conda-build=3.28.4
+        run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
 
       - name: Cache conda packages
         uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
@@ -117,10 +119,10 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Build conda package
-        run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
+        run: conda build --no-test --python ${{ matrix.python }} --numpy 1.23 ${{ env.CHANNELS }} conda-recipe
 
       - name: Upload artifact
-        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
@@ -153,7 +155,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -171,12 +173,12 @@ jobs:
           miniconda-version: 'latest'
           activate-environment: 'test'
 
-      # Needed to be able to run conda index
-      - name: Install conda-build
-        run: conda install conda-build=3.28.4
+      - name: Install conda-index
+        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION}}
 
       - name: Create conda channel
-        run: conda index ${{ env.channel-path }}
+        run: |
+          python -m conda_index ${{ env.channel-path }}
 
       - name: Test conda channel
         run: |
@@ -254,7 +256,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -287,12 +289,13 @@ jobs:
           (echo CONDA_LIB_PATH=%CONDA_PREFIX%\Library\lib\) >> %GITHUB_ENV%
           (echo CONDA_LIB_BIN_PATH=%CONDA_PREFIX%\Library\bin\) >> %GITHUB_ENV%
 
-      # Needed to be able to run conda index
-      - name: Install conda-build
-        run: conda install conda-build=3.28.4
+      - name: Install conda-index
+        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION}}
 
       - name: Create conda channel
-        run: conda index ${{ env.channel-path }}
+        run: |
+          @echo on
+          python -m conda_index ${{ env.channel-path }}
 
       - name: Test conda channel
         run: |
@@ -388,7 +391,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 

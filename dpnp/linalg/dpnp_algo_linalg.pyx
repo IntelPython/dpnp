@@ -48,25 +48,14 @@ __all__ = [
     "dpnp_cond",
     "dpnp_eig",
     "dpnp_eigvals",
-    "dpnp_matrix_rank",
     "dpnp_norm",
-    "dpnp_qr",
 ]
 
 
 # C function pointer to the C library template functions
-ctypedef c_dpctl.DPCTLSyclEventRef(*custom_linalg_1in_1out_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                       void *, void * ,shape_elem_type * ,
-                                                                       size_t, const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*custom_linalg_1in_1out_func_ptr_t_)(c_dpctl.DPCTLSyclQueueRef,
-                                                                        void * , void * , size_t * ,
-                                                                        const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*custom_linalg_1in_1out_with_size_func_ptr_t_)(c_dpctl.DPCTLSyclQueueRef,
                                                                                   void *, void * , size_t,
                                                                                   const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*custom_linalg_1in_3out_shape_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                    void *, void * , void * , void * ,
-                                                                    size_t , size_t, const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*custom_linalg_2in_1out_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                        void *, void * , void * , size_t,
                                                                        const c_dpctl.DPCTLEventVectorRef)
@@ -184,42 +173,6 @@ cpdef utils.dpnp_descriptor dpnp_eigvals(utils.dpnp_descriptor input):
     return res_val
 
 
-cpdef utils.dpnp_descriptor dpnp_matrix_rank(utils.dpnp_descriptor input):
-    cdef shape_type_c input_shape = input.shape
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATRIX_RANK_EXT, param1_type, param1_type)
-
-    input_obj = input.get_array()
-
-    # create result array with type given by FPTR data
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor((1,),
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=input_obj.sycl_device,
-                                                                       usm_type=input_obj.usm_type,
-                                                                       sycl_queue=input_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    input.get_data(),
-                                                    result.get_data(),
-                                                    input_shape.data(),
-                                                    input.ndim,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
 cpdef object dpnp_norm(object input, ord=None, axis=None):
     cdef long size_input = input.size
     cdef shape_type_c shape_input = input.shape
@@ -323,58 +276,3 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
         return ret
     else:
         raise ValueError("Improper number of dimensions to norm.")
-
-
-cpdef tuple dpnp_qr(utils.dpnp_descriptor x1, str mode):
-    cdef size_t size_m = x1.shape[0]
-    cdef size_t size_n = x1.shape[1]
-    cdef size_t min_m_n = min(size_m, size_n)
-    cdef size_t size_tau = min_m_n
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_QR_EXT, param1_type, param1_type)
-
-    x1_obj = x1.get_array()
-
-    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(kernel_data,
-                                                                                x1_obj.sycl_device.has_aspect_fp64)
-    cdef DPNPFuncType return_type = ret_type_and_func[0]
-    cdef custom_linalg_1in_3out_shape_t func = < custom_linalg_1in_3out_shape_t > ret_type_and_func[1]
-
-    cdef utils.dpnp_descriptor res_q = utils.create_output_descriptor((size_m, min_m_n),
-                                                                       return_type,
-                                                                       None,
-                                                                       device=x1_obj.sycl_device,
-                                                                       usm_type=x1_obj.usm_type,
-                                                                       sycl_queue=x1_obj.sycl_queue)
-    cdef utils.dpnp_descriptor res_r = utils.create_output_descriptor((min_m_n, size_n),
-                                                                       return_type,
-                                                                       None,
-                                                                       device=x1_obj.sycl_device,
-                                                                       usm_type=x1_obj.usm_type,
-                                                                       sycl_queue=x1_obj.sycl_queue)
-    cdef utils.dpnp_descriptor tau = utils.create_output_descriptor((size_tau, ),
-                                                                     return_type,
-                                                                     None,
-                                                                     device=x1_obj.sycl_device,
-                                                                     usm_type=x1_obj.usm_type,
-                                                                     sycl_queue=x1_obj.sycl_queue)
-
-    result_sycl_queue = res_q.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    x1.get_data(),
-                                                    res_q.get_data(),
-                                                    res_r.get_data(),
-                                                    tau.get_data(),
-                                                    size_m,
-                                                    size_n,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return (res_q.get_pyobj(), res_r.get_pyobj())

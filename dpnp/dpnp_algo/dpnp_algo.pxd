@@ -78,8 +78,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FULL_LIKE
         DPNP_FN_KRON
         DPNP_FN_KRON_EXT
-        DPNP_FN_MATRIX_RANK
-        DPNP_FN_MATRIX_RANK_EXT
         DPNP_FN_MAXIMUM
         DPNP_FN_MAXIMUM_EXT
         DPNP_FN_MEDIAN
@@ -94,8 +92,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_PARTITION
         DPNP_FN_PARTITION_EXT
         DPNP_FN_PLACE
-        DPNP_FN_QR
-        DPNP_FN_QR_EXT
         DPNP_FN_RADIANS
         DPNP_FN_RADIANS_EXT
         DPNP_FN_RNG_BETA

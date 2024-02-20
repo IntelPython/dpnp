@@ -532,11 +532,11 @@ def test_reduce_hypot(device):
         pytest.param(
             "divide", [0.0, 1.0, 2.0, 3.0, 4.0], [4.0, 4.0, 4.0, 4.0, 4.0]
         ),
-        pytest.param(
-            "dot",
-            [3.0, 4.0, 5.0],
-            [1.0, 2.0, 3.0],
-        ),
+        # dpnp.dot has 3 different implementations based on input arrays dtype
+        # checking all of them
+        pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
+        pytest.param("dot", [3, 4, 5], [1, 2, 3]),
+        pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
         pytest.param(
             "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
         ),
@@ -579,6 +579,16 @@ def test_reduce_hypot(device):
             [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
             [0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0],
         ),
+        pytest.param(
+            "tensordot",
+            [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
+            [[4.0, 4.0, 4.0], [4.0, 4.0, 4.0]],
+        ),
+        # dpnp.vdot has 3 different implementations based on input arrays dtype
+        # checking all of them
+        pytest.param("vdot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
+        pytest.param("vdot", [3, 4, 5], [1, 2, 3]),
+        pytest.param("vdot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
     ],
 )
 @pytest.mark.parametrize(
@@ -840,11 +850,11 @@ def test_out_1in_1out(func, data, device):
         pytest.param(
             "divide", [0.0, 1.0, 2.0, 3.0, 4.0], [4.0, 4.0, 4.0, 4.0, 4.0]
         ),
-        pytest.param(
-            "dot",
-            [3.0, 4.0, 5.0],
-            [1.0, 2.0, 3.0],
-        ),
+        # dpnp.dot has 3 different implementations based on input arrays dtype
+        # checking all of them
+        pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
+        pytest.param("dot", [3, 4, 5], [1, 2, 3]),
+        pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
         pytest.param(
             "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
         ),
@@ -1183,48 +1193,82 @@ def test_inv(shape, is_empty, device):
 
 
 @pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
+    "data, tol",
+    [
+        (numpy.array([1, 2]), None),
+        (numpy.array([[1, 2], [3, 4]]), None),
+        (numpy.array([[1, 2], [3, 4]]), 1e-06),
+    ],
+    ids=[
+        "1-D array",
+        "2-D array no tol",
+        "2_d array with tol",
+    ],
 )
-def test_matrix_rank(device):
-    data = [[0, 0], [0, 0]]
-    numpy_data = numpy.array(data)
-    dpnp_data = dpnp.array(data, device=device)
-
-    result = dpnp.linalg.matrix_rank(dpnp_data)
-    expected = numpy.linalg.matrix_rank(numpy_data)
-    assert_array_equal(expected, result)
-
-
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_qr(device):
-    data = [[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]
-    dpnp_data = dpnp.array(data, device=device)
-    numpy_data = numpy.array(data, dtype=dpnp_data.dtype)
+def test_matrix_rank(data, tol, device):
+    dp_data = dpnp.array(data, device=device)
 
-    np_q, np_r = numpy.linalg.qr(numpy_data, "reduced")
-    dpnp_q, dpnp_r = dpnp.linalg.qr(dpnp_data, "reduced")
+    result = dpnp.linalg.matrix_rank(dp_data, tol=tol)
+    expected = numpy.linalg.matrix_rank(data, tol=tol)
+    assert_array_equal(expected, result)
 
-    assert dpnp_q.dtype == np_q.dtype
-    assert dpnp_r.dtype == np_r.dtype
-    assert dpnp_q.shape == np_q.shape
-    assert dpnp_r.shape == np_r.shape
+    expected_queue = dp_data.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
 
-    assert_dtype_allclose(dpnp_q, np_q)
-    assert_dtype_allclose(dpnp_r, np_r)
+    assert_sycl_queue_equal(result_queue, expected_queue)
 
-    expected_queue = dpnp_data.get_array().sycl_queue
-    dpnp_q_queue = dpnp_q.get_array().sycl_queue
-    dpnp_r_queue = dpnp_r.get_array().sycl_queue
 
-    # compare queue and device
-    assert_sycl_queue_equal(dpnp_q_queue, expected_queue)
-    assert_sycl_queue_equal(dpnp_r_queue, expected_queue)
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (4, 4),
+        (2, 0),
+        (2, 2, 3),
+        (0, 2, 3),
+        (1, 0, 3),
+    ],
+    ids=[
+        "(4, 4)",
+        "(2, 0)",
+        "(2, 2, 3)",
+        "(0, 2, 3)",
+        "(1, 0, 3)",
+    ],
+)
+@pytest.mark.parametrize(
+    "mode",
+    ["r", "raw", "complete", "reduced"],
+    ids=["r", "raw", "complete", "reduced"],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_qr(shape, mode, device):
+    dtype = dpnp.default_float_type(device)
+    count_elems = numpy.prod(shape)
+    a = dpnp.arange(count_elems, dtype=dtype, device=device).reshape(shape)
+
+    expected_queue = a.get_array().sycl_queue
+
+    if mode == "r":
+        dp_r = dpnp.linalg.qr(a, mode=mode)
+        dp_r_queue = dp_r.get_array().sycl_queue
+        assert_sycl_queue_equal(dp_r_queue, expected_queue)
+    else:
+        dp_q, dp_r = dpnp.linalg.qr(a, mode=mode)
+
+        dp_q_queue = dp_q.get_array().sycl_queue
+        dp_r_queue = dp_r.get_array().sycl_queue
+
+        assert_sycl_queue_equal(dp_q_queue, expected_queue)
+        assert_sycl_queue_equal(dp_r_queue, expected_queue)
 
 
 @pytest.mark.parametrize(
@@ -1497,24 +1541,52 @@ def test_clip(device):
     assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
 
 
-@pytest.mark.parametrize("func", ["take", "take_along_axis"])
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_take(func, device):
+def test_take(device):
     numpy_data = numpy.arange(5)
     dpnp_data = dpnp.array(numpy_data, device=device)
 
     dpnp_ind = dpnp.array([0, 2, 4], device=device)
     np_ind = dpnp_ind.asnumpy()
 
-    result = getattr(dpnp, func)(dpnp_data, dpnp_ind, axis=None)
-    expected = getattr(numpy, func)(numpy_data, np_ind, axis=None)
+    result = dpnp.take(dpnp_data, dpnp_ind, axis=None)
+    expected = numpy.take(numpy_data, np_ind, axis=None)
     assert_allclose(expected, result)
 
     expected_queue = dpnp_data.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "data, ind, axis",
+    [
+        (numpy.arange(6), numpy.array([0, 2, 4]), None),
+        (
+            numpy.arange(6).reshape((2, 3)),
+            numpy.array([0, 1]).reshape((2, 1)),
+            1,
+        ),
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_take_along_axis(data, ind, axis, device):
+    dp_data = dpnp.array(data, device=device)
+    dp_ind = dpnp.array(ind, device=device)
+
+    result = dpnp.take_along_axis(dp_data, dp_ind, axis=axis)
+    expected = numpy.take_along_axis(data, ind, axis=axis)
+    assert_allclose(expected, result)
+
+    expected_queue = dp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
@@ -1609,3 +1681,64 @@ def test_slogdet(shape, is_empty, device):
 
     assert_sycl_queue_equal(sign_queue, dpnp_x.sycl_queue)
     assert_sycl_queue_equal(logdet_queue, dpnp_x.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "shape, hermitian, rcond_as_array",
+    [
+        ((4, 4), False, False),
+        ((4, 4), False, True),
+        ((2, 0), False, False),
+        ((4, 4), True, False),
+        ((4, 4), True, True),
+        ((2, 2, 3), False, False),
+        ((2, 2, 3), False, True),
+        ((0, 2, 3), False, False),
+        ((1, 0, 3), False, False),
+    ],
+    ids=[
+        "(4, 4)",
+        "(4, 4), rcond_as_array",
+        "(2, 0)",
+        "(2, 2), hermitian)",
+        "(2, 2), hermitian, rcond_as_array)",
+        "(2, 2, 3)",
+        "(2, 2, 3), rcond_as_array",
+        "(0, 2, 3)",
+        "(1, 0, 3)",
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_pinv(shape, hermitian, rcond_as_array, device):
+    numpy.random.seed(81)
+    if hermitian:
+        a_np = numpy.random.randn(*shape) + 1j * numpy.random.randn(*shape)
+        a_np = numpy.conj(a_np.T) @ a_np
+    else:
+        a_np = numpy.random.randn(*shape)
+
+    a_dp = dpnp.array(a_np, device=device)
+
+    if rcond_as_array:
+        rcond_np = numpy.array(1e-15)
+        rcond_dp = dpnp.array(1e-15, device=device)
+
+        B_result = dpnp.linalg.pinv(a_dp, rcond=rcond_dp, hermitian=hermitian)
+        B_expected = numpy.linalg.pinv(
+            a_np, rcond=rcond_np, hermitian=hermitian
+        )
+
+    else:
+        # rcond == 1e-15 by default
+        B_result = dpnp.linalg.pinv(a_dp, hermitian=hermitian)
+        B_expected = numpy.linalg.pinv(a_np, hermitian=hermitian)
+
+    assert_allclose(B_expected, B_result, rtol=1e-3, atol=1e-4)
+
+    B_queue = B_result.sycl_queue
+
+    assert_sycl_queue_equal(B_queue, a_dp.sycl_queue)

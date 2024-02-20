@@ -26,6 +26,8 @@ extend-ignore =
     D107,
     # no blank lines allowed after function docstring:
     D202,
+    # 1 blank line required between summary line and description:
+    D205,
     # first line should end with a period:
     D400,
     # first line should be in imperative mood:
@@ -42,7 +44,6 @@ per-file-ignores =
     dpnp/fft/__init__.py: F401
     dpnp/linalg/__init__.py: F401
     dpnp/random/__init__.py: F401
-    dpnp/dpnp_iface.py: D205
 
 filename = *.py, *.pyx, *.pxi, *.pxd
 max_line_length = 80

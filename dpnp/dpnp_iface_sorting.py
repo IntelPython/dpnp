@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2024, Intel Corporation
@@ -45,9 +43,16 @@ import numpy
 from numpy.core.numeric import normalize_axis_index
 
 import dpnp
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import *
+
+# pylint: disable=no-name-in-module
+from .dpnp_algo import (
+    dpnp_partition,
+    dpnp_searchsorted,
+)
+from .dpnp_array import dpnp_array
+from .dpnp_utils import (
+    call_origin,
+)
 
 __all__ = ["argsort", "partition", "searchsorted", "sort"]
 
@@ -133,20 +138,20 @@ def argsort(a, axis=-1, kind=None, order=None):
         raise NotImplementedError(
             "order keyword argument is only supported with its default value."
         )
-    elif kind is not None and kind != "stable":
+    if kind is not None and kind != "stable":
         raise NotImplementedError(
             "kind keyword argument can only be None or 'stable'."
         )
-    else:
-        dpnp.check_supported_arrays_type(a)
-        if axis is None:
-            a = a.flatten()
-            axis = -1
 
-        axis = normalize_axis_index(axis, ndim=a.ndim)
-        return dpnp_array._create_from_usm_ndarray(
-            dpt.argsort(dpnp.get_usm_ndarray(a), axis=axis)
-        )
+    dpnp.check_supported_arrays_type(a)
+    if axis is None:
+        a = a.flatten()
+        axis = -1
+
+    axis = normalize_axis_index(axis, ndim=a.ndim)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.argsort(dpnp.get_usm_ndarray(a), axis=axis)
+    )
 
 
 def partition(x1, kth, axis=-1, kind="introselect", order=None):
@@ -159,7 +164,8 @@ def partition(x1, kth, axis=-1, kind="introselect", order=None):
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
     Input kth is supported as :obj:`int`.
-    Parameters `axis`, `kind` and `order` are supported only with default values.
+    Parameters `axis`, `kind` and `order` are supported only with default
+    values.
 
     """
 
@@ -200,6 +206,7 @@ def searchsorted(x1, x2, side="left", sorter=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
+    # pylint: disable=condition-evals-to-constant
     if 0 and x1_desc and x2_desc:
         if x1_desc.ndim != 1:
             pass
@@ -278,17 +285,17 @@ def sort(a, axis=-1, kind=None, order=None):
         raise NotImplementedError(
             "order keyword argument is only supported with its default value."
         )
-    elif kind is not None and kind != "stable":
+    if kind is not None and kind != "stable":
         raise NotImplementedError(
             "kind keyword argument can only be None or 'stable'."
         )
-    else:
-        dpnp.check_supported_arrays_type(a)
-        if axis is None:
-            a = a.flatten()
-            axis = -1
 
-        axis = normalize_axis_index(axis, ndim=a.ndim)
-        return dpnp_array._create_from_usm_ndarray(
-            dpt.sort(dpnp.get_usm_ndarray(a), axis=axis)
-        )
+    dpnp.check_supported_arrays_type(a)
+    if axis is None:
+        a = a.flatten()
+        axis = -1
+
+    axis = normalize_axis_index(axis, ndim=a.ndim)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.sort(dpnp.get_usm_ndarray(a), axis=axis)
+    )

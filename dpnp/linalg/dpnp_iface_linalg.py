@@ -51,6 +51,9 @@ from .dpnp_utils_linalg import (
     dpnp_det,
     dpnp_eigh,
     dpnp_inv,
+    dpnp_matrix_rank,
+    dpnp_pinv,
+    dpnp_qr,
     dpnp_slogdet,
     dpnp_solve,
     dpnp_svd,
@@ -68,6 +71,7 @@ __all__ = [
     "matrix_rank",
     "multi_dot",
     "norm",
+    "pinv",
     "qr",
     "solve",
     "svd",
@@ -394,47 +398,57 @@ def matrix_power(input, count):
     return call_origin(numpy.linalg.matrix_power, input, count)
 
 
-def matrix_rank(input, tol=None, hermitian=False):
+def matrix_rank(A, tol=None, hermitian=False):
     """
-    Return matrix rank of array.
+    Return matrix rank of array using SVD method.
 
     Rank of the array is the number of singular values of the array that are
     greater than `tol`.
 
     Parameters
     ----------
-    M : {(M,), (..., M, N)} array_like
+    A : {(M,), (..., M, N)} {dpnp.ndarray, usm_ndarray}
         Input vector or stack of matrices.
-    tol : (...) array_like, float, optional
+    tol : (...) {float, dpnp.ndarray, usm_ndarray}, optional
         Threshold below which SVD values are considered zero. If `tol` is
         None, and ``S`` is an array with singular values for `M`, and
         ``eps`` is the epsilon value for datatype of ``S``, then `tol` is
         set to ``S.max() * max(M.shape) * eps``.
     hermitian : bool, optional
-        If True, `M` is assumed to be Hermitian (symmetric if real-valued),
+        If True, `A` is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
         Defaults to False.
 
     Returns
     -------
-    rank : (...) array_like
-        Rank of M.
+    rank : (...) dpnp.ndarray
+        Rank of A.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.svd` : Singular Value Decomposition.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> from dpnp.linalg import matrix_rank
+    >>> matrix_rank(np.eye(4)) # Full rank matrix
+    array(4)
+    >>> I=np.eye(4); I[-1,-1] = 0. # rank deficient matrix
+    >>> matrix_rank(I)
+    array(3)
+    >>> matrix_rank(np.ones((4,))) # 1 dimension - rank 1 unless all 0
+    array(1)
+    >>> matrix_rank(np.zeros((4,)))
+    array(0)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if tol is not None:
-            pass
-        elif hermitian:
-            pass
-        else:
-            result_obj = dpnp_matrix_rank(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    dpnp.check_supported_arrays_type(A)
+    if tol is not None:
+        dpnp.check_supported_arrays_type(tol, scalar_type=True)
 
-            return result
-
-    return call_origin(numpy.linalg.matrix_rank, input, tol, hermitian)
+    return dpnp_matrix_rank(A, tol=tol, hermitian=hermitian)
 
 
 def multi_dot(arrays, out=None):
@@ -471,6 +485,56 @@ def multi_dot(arrays, out=None):
         result = dpnp.dot(result, arrays[id])
 
     return result
+
+
+def pinv(a, rcond=1e-15, hermitian=False):
+    """
+    Compute the (Moore-Penrose) pseudo-inverse of a matrix.
+
+    Calculate the generalized inverse of a matrix using its
+    singular-value decomposition (SVD) and including all large singular values.
+
+    For full documentation refer to :obj:`numpy.linalg.inv`.
+
+    Parameters
+    ----------
+    a : (..., M, N) {dpnp.ndarray, usm_ndarray}
+        Matrix or stack of matrices to be pseudo-inverted.
+    rcond : {float, dpnp.ndarray, usm_ndarray}, optional
+        Cutoff for small singular values.
+        Singular values less than or equal to ``rcond * largest_singular_value``
+        are set to zero. Broadcasts against the stack of matrices.
+        Default: ``1e-15``.
+    hermitian : bool, optional
+        If ``True``, a is assumed to be Hermitian (symmetric if real-valued),
+        enabling a more efficient method for finding singular values.
+        Default: ``False``.
+
+    Returns
+    -------
+    out : (..., N, M) dpnp.ndarray
+        The pseudo-inverse of a.
+
+    Examples
+    --------
+    The following example checks that ``a * a+ * a == a`` and
+    ``a+ * a * a+ == a+``:
+
+    >>> import dpnp as np
+    >>> a = np.random.randn(9, 6)
+    >>> B = np.linalg.pinv(a)
+    >>> np.allclose(a, np.dot(a, np.dot(B, a)))
+    array([ True])
+    >>> np.allclose(B, np.dot(B, np.dot(a, B)))
+    array([ True])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    dpnp.check_supported_arrays_type(rcond, scalar_type=True)
+    check_stacked_2d(a)
+
+    return dpnp_pinv(a, rcond=rcond, hermitian=hermitian)
 
 
 def norm(x1, ord=None, axis=None, keepdims=False):
@@ -529,7 +593,7 @@ def norm(x1, ord=None, axis=None, keepdims=False):
     return call_origin(numpy.linalg.norm, x1, ord, axis, keepdims)
 
 
-def qr(x1, mode="reduced"):
+def qr(a, mode="reduced"):
     """
     Compute the qr factorization of a matrix.
 
@@ -538,25 +602,64 @@ def qr(x1, mode="reduced"):
 
     For full documentation refer to :obj:`numpy.linalg.qr`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter mode='reduced' is supported.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        The input array with the dimensionality of at least 2.
+    mode : {"reduced", "complete", "r", "raw"}, optional
+        If K = min(M, N), then
+        - "reduced" : returns Q, R with dimensions (…, M, K), (…, K, N)
+        - "complete" : returns Q, R with dimensions (…, M, M), (…, M, N)
+        - "r" : returns R only with dimensions (…, K, N)
+        - "raw" : returns h, tau with dimensions (…, N, M), (…, K,)
+        Default: "reduced".
+
+    Returns
+    -------
+    When mode is "reduced" or "complete", the result will be a namedtuple with
+    the attributes Q and R.
+    Q : dpnp.ndarray
+        A matrix with orthonormal columns.
+        When mode = "complete" the result is an orthogonal/unitary matrix
+        depending on whether or not a is real/complex.
+        The determinant may be either +/- 1 in that case.
+        In case the number of dimensions in the input array is greater
+        than 2 then a stack of the matrices with above properties is returned.
+    R : dpnp.ndarray
+        The upper-triangular matrix or a stack of upper-triangular matrices
+        if the number of dimensions in the input array is greater than 2.
+    (h, tau) : tuple of dpnp.ndarray
+        The h array contains the Householder reflectors that generate Q along with R.
+        The tau array contains scaling factors for the reflectors.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.random.randn(9, 6)
+    >>> Q, R = np.linalg.qr(a)
+    >>> np.allclose(a, np.dot(Q, R))  # a does equal QR
+    array([ True])
+    >>> R2 = np.linalg.qr(a, mode='r')
+    >>> np.allclose(R, R2)  # mode='r' returns the same R as mode='full'
+    array([ True])
+    >>> a = np.random.normal(size=(3, 2, 2)) # Stack of 2 x 2 matrices as input
+    >>> Q, R = np.linalg.qr(a)
+    >>> Q.shape
+    (3, 2, 2)
+    >>> R.shape
+    (3, 2, 2)
+    >>> np.allclose(a, np.matmul(Q, R))
+    array([ True])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.ndim != 2:
-            pass
-        elif mode != "reduced":
-            pass
-        else:
-            result_tup = dpnp_qr(x1_desc, mode)
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
 
-            return result_tup
+    if mode not in ("reduced", "complete", "r", "raw"):
+        raise ValueError(f"Unrecognized mode {mode}")
 
-    return call_origin(numpy.linalg.qr, x1, mode)
+    return dpnp_qr(a, mode)
 
 
 def solve(a, b):

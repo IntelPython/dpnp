@@ -39,14 +39,14 @@ namespace ext
 namespace blas
 {
 extern std::pair<sycl::event, sycl::event>
-    gemm(sycl::queue exec_q,
+    gemm(sycl::queue &exec_q,
          dpctl::tensor::usm_ndarray matrixA,
          dpctl::tensor::usm_ndarray matrixB,
          dpctl::tensor::usm_ndarray resultC,
          const std::vector<sycl::event> &depends);
 
 extern std::pair<sycl::event, sycl::event>
-    gemm_batch(sycl::queue exec_q,
+    gemm_batch(sycl::queue &exec_q,
                dpctl::tensor::usm_ndarray matrixA,
                dpctl::tensor::usm_ndarray matrixB,
                dpctl::tensor::usm_ndarray resultC,

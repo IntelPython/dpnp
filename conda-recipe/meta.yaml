@@ -1,7 +1,7 @@
 {% set required_compiler_and_mkl_version = "2024.0" %}
 {% set excluded_compiler_version1 = "2024.0.1" %}
 {% set excluded_compiler_version2 = "2024.0.2" %}
-{% set required_dpctl_version = "0.15.1dev3" %}
+{% set required_dpctl_version = "0.16.0" %}
 
 package:
     name: dpnp
@@ -13,7 +13,7 @@ requirements:
     host:
       - python
       - setuptools
-      - numpy >=1.19,<1.27a0
+      - numpy <1.27a0
       - cython
       - cmake >=3.21
       - ninja

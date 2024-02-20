@@ -43,8 +43,14 @@ import numpy
 
 import dpnp
 
-from .dpnp_algo import *
-from .dpnp_utils import *
+# pylint: disable=no-name-in-module
+from .dpnp_algo import (
+    dpnp_nancumprod,
+    dpnp_nancumsum,
+)
+from .dpnp_utils import (
+    call_origin,
+)
 
 __all__ = [
     "nanargmax",
@@ -130,11 +136,13 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
     -------
     out : dpnp.ndarray
         If `axis` is ``None``, a zero-dimensional array containing the index of
-        the first occurrence of the maximum value ignoring NaNs; otherwise, a non-zero-dimensional
-        array containing the indices of the minimum values ignoring NaNs. The returned array
-        must have the default array index data type.
+        the first occurrence of the maximum value ignoring NaNs; otherwise,
+        a non-zero-dimensional array containing the indices of the minimum
+        values ignoring NaNs. The returned array must have the default array
+        index data type.
         For all-NaN slices ``ValueError`` is raised.
-        Warning: the results cannot be trusted if a slice contains only NaNs and -Infs.
+        Warning: the results cannot be trusted if a slice contains only NaNs
+        and -Infs.
 
     Limitations
     -----------
@@ -144,8 +152,10 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
 
     See Also
     --------
-    :obj:`dpnp.nanargmin` : Returns the indices of the minimum values along an axis, igonring NaNs.
-    :obj:`dpnp.argmax` : Returns the indices of the maximum values along an axis.
+    :obj:`dpnp.nanargmin` : Returns the indices of the minimum values along an
+                            axis, igonring NaNs.
+    :obj:`dpnp.argmax` : Returns the indices of the maximum values along
+                         an axis.
 
     Examples
     --------
@@ -198,11 +208,13 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
     -------
     out : dpnp.ndarray
         If `axis` is ``None``, a zero-dimensional array containing the index of
-        the first occurrence of the minimum value ignoring NaNs; otherwise, a non-zero-dimensional
-        array containing the indices of the minimum values ignoring NaNs. The returned array
-        must have the default array index data type.
+        the first occurrence of the minimum value ignoring NaNs; otherwise,
+        a non-zero-dimensional array containing the indices of the minimum
+        values ignoring NaNs. The returned array must have the default array
+        index data type.
         For all-NaN slices ``ValueError`` is raised.
-        Warning: the results cannot be trusted if a slice contains only NaNs and Infs.
+        Warning: the results cannot be trusted if a slice contains only NaNs
+        and Infs.
 
     Limitations
     -----------
@@ -212,8 +224,10 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
 
     See Also
     --------
-    :obj:`dpnp.nanargmax` : Returns the indices of the maximum values along an axis, igonring NaNs.
-    :obj:`dpnp.argmin` : Returns the indices of the minimum values along an axis.
+    :obj:`dpnp.nanargmax` : Returns the indices of the maximum values along
+                            an axis, igonring NaNs.
+    :obj:`dpnp.argmin` : Returns the indices of the minimum values along
+                         an axis.
 
     Examples
     --------
@@ -240,7 +254,8 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
 
 def nancumprod(x1, **kwargs):
     """
-    Return the cumulative product of array elements over a given axis treating Not a Numbers (NaNs) as one.
+    Return the cumulative product of array elements over a given axis treating
+    Not a Numbers (NaNs) as one.
 
     For full documentation refer to :obj:`numpy.nancumprod`.
 
@@ -251,7 +266,10 @@ def nancumprod(x1, **kwargs):
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    .. seealso:: :obj:`dpnp.cumprod` : Return the cumulative product of elements along a given axis.
+    See Also
+    --------
+    :obj:`dpnp.cumprod` : Return the cumulative product of elements
+                          along a given axis.
 
     Examples
     --------
@@ -289,7 +307,8 @@ def nancumsum(x1, **kwargs):
 
     See Also
     --------
-    :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along a given axis.
+    :obj:`dpnp.cumsum` : Return the cumulative sum of the elements
+                         along a given axis.
 
     Examples
     --------
@@ -324,8 +343,8 @@ def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which maximum values must be computed. By default,
-        the maximum value must be computed over the entire array. If a tuple of integers,
-        maximum values must be computed over multiple axes.
+        the maximum value must be computed over the entire array. If a tuple
+        of integers, maximum values must be computed over multiple axes.
         Default: ``None``.
     out :  {dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
@@ -340,27 +359,31 @@ def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     Returns
     -------
     out : dpnp.ndarray
-        If the maximum value was computed over the entire array, a zero-dimensional array
-        containing the maximum value ignoring NaNs; otherwise, a non-zero-dimensional array
-        containing the maximum values ignoring NaNs. The returned array must have
-        the same data type as `a`.
-        When all-NaN slices are encountered a ``RuntimeWarning`` is raised and NaN is
-        returned for that slice.
+        If the maximum value was computed over the entire array,
+        a zero-dimensional array containing the maximum value ignoring NaNs;
+        otherwise, a non-zero-dimensional array containing the maximum values
+        ignoring NaNs. The returned array must have the same data type as `a`.
+        When all-NaN slices are encountered a ``RuntimeWarning`` is raised and
+        NaN is returned for that slice.
 
     Limitations
     -----------
     Input array is only supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, and `initial` are only supported with their default values.
+    Parameters `where`, and `initial` are only supported with their default
+    values.
     Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignoring any NaNs.
-    :obj:`dpnp.max` : The maximum value of an array along a given axis, propagating any NaNs.
+    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis,
+                         ignoring any NaNs.
+    :obj:`dpnp.max` : The maximum value of an array along a given axis,
+                      propagating any NaNs.
     :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignoring any NaNs.
-    :obj:`dpnp.maximum` : Element-wise maximum of two arrays, propagating any NaNs.
+    :obj:`dpnp.maximum` : Element-wise maximum of two arrays, propagating
+                          any NaNs.
     :obj:`dpnp.isnan` : Shows which elements are Not a Number (NaN).
     :obj:`dpnp.isfinite` : Shows which elements are neither NaN nor infinity.
 
@@ -388,23 +411,21 @@ def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         raise NotImplementedError(
             "initial keyword argument is only supported with its default value."
         )
-    elif where is not True:
+    if where is not True:
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
-    else:
-        a, mask = _replace_nan(a, -dpnp.inf)
-        res = dpnp.max(a, axis=axis, out=out, keepdims=keepdims)
-        if mask is None:
-            return res
-        else:
-            mask = dpnp.all(mask, axis=axis)
-            if dpnp.any(mask):
-                dpnp.copyto(res, dpnp.nan, where=mask)
-                warnings.warn(
-                    "All-NaN slice encountered", RuntimeWarning, stacklevel=2
-                )
+
+    a, mask = _replace_nan(a, -dpnp.inf)
+    res = dpnp.max(a, axis=axis, out=out, keepdims=keepdims)
+    if mask is None:
         return res
+
+    mask = dpnp.all(mask, axis=axis)
+    if dpnp.any(mask):
+        dpnp.copyto(res, dpnp.nan, where=mask)
+        warnings.warn("All-NaN slice encountered", RuntimeWarning, stacklevel=2)
+    return res
 
 
 def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
@@ -444,8 +465,9 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
     -------
     out : dpnp.ndarray
         An array containing the arithmetic means along the specified axis(axes).
-        If the input is a zero-size array, an array containing NaN values is returned.
-        In addition, NaN is returned for slices that contain only NaNs.
+        If the input is a zero-size array, an array containing NaN values is
+        returned. In addition, NaN is returned for slices that contain only
+        NaNs.
 
     Limitations
     -----------
@@ -458,10 +480,10 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
     :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.
     :obj:`dpnp.var` : Compute the variance along the specified axis.
     :obj:`dpnp.nanvar` : Compute the variance along the specified axis,
-                while ignoring NaNs.
+                         while ignoring NaNs.
     :obj:`dpnp.std` : Compute the standard deviation along the specified axis.
-    :obj:`dpnp.nanstd` : Compute the standard deviation along the specified axis,
-                while ignoring NaNs.
+    :obj:`dpnp.nanstd` : Compute the standard deviation along the specified
+                         axis, while ignoring NaNs.
 
     Examples
     --------
@@ -480,47 +502,44 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
-    else:
-        arr, mask = _replace_nan(a, 0)
-        if mask is None:
-            return dpnp.mean(
-                arr,
-                axis=axis,
-                dtype=dtype,
-                out=out,
-                keepdims=keepdims,
-                where=where,
-            )
 
-        if dtype is not None:
-            dtype = dpnp.dtype(dtype)
-            if not dpnp.issubdtype(dtype, dpnp.inexact):
-                raise TypeError(
-                    "If input is inexact, then dtype must be inexact."
-                )
-        if out is not None:
-            dpnp.check_supported_arrays_type(out)
-            if not dpnp.issubdtype(out.dtype, dpnp.inexact):
-                raise TypeError(
-                    "If input is inexact, then out must be inexact."
-                )
-
-        cnt_dtype = a.real.dtype if dtype is None else dtype
-        cnt = dpnp.sum(
-            ~mask, axis=axis, dtype=cnt_dtype, keepdims=keepdims, where=where
-        )
-        var_dtype = a.dtype if dtype is None else dtype
-        avg = dpnp.sum(
+    arr, mask = _replace_nan(a, 0)
+    if mask is None:
+        return dpnp.mean(
             arr,
             axis=axis,
-            dtype=var_dtype,
+            dtype=dtype,
             out=out,
             keepdims=keepdims,
             where=where,
         )
-        dpnp.divide(avg, cnt, out=avg)
 
-        return avg
+    if dtype is not None:
+        dtype = dpnp.dtype(dtype)
+        if not dpnp.issubdtype(dtype, dpnp.inexact):
+            raise TypeError("If input is inexact, then dtype must be inexact.")
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        if not dpnp.issubdtype(out.dtype, dpnp.inexact):
+            raise TypeError("If input is inexact, then out must be inexact.")
+
+    cnt_dtype = a.real.dtype if dtype is None else dtype
+    # pylint: disable=invalid-unary-operand-type
+    cnt = dpnp.sum(
+        ~mask, axis=axis, dtype=cnt_dtype, keepdims=keepdims, where=where
+    )
+    var_dtype = a.dtype if dtype is None else dtype
+    avg = dpnp.sum(
+        arr,
+        axis=axis,
+        dtype=var_dtype,
+        out=out,
+        keepdims=keepdims,
+        where=where,
+    )
+    dpnp.divide(avg, cnt, out=avg)
+
+    return avg
 
 
 def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
@@ -535,8 +554,8 @@ def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which minimum values must be computed. By default,
-        the minimum value must be computed over the entire array. If a tuple of integers,
-        minimum values must be computed over multiple axes.
+        the minimum value must be computed over the entire array. If a tuple
+        of integers, minimum values must be computed over multiple axes.
         Default: ``None``.
     out :  {dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
@@ -551,27 +570,31 @@ def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     Returns
     -------
     out : dpnp.ndarray
-        If the minimum value was computed over the entire array, a zero-dimensional array
-        containing the minimum value ignoring NaNs; otherwise, a non-zero-dimensional array
-        containing the minimum values ignoring NaNs. The returned array must have
-        the same data type as `a`.
-        When all-NaN slices are encountered a ``RuntimeWarning`` is raised and NaN is
-        returned for that slice.
+        If the minimum value was computed over the entire array,
+        a zero-dimensional array containing the minimum value ignoring NaNs;
+        otherwise, a non-zero-dimensional array containing the minimum values
+        ignoring NaNs. The returned array must have the same data type as `a`.
+        When all-NaN slices are encountered a ``RuntimeWarning`` is raised and
+        NaN is returned for that slice.
 
     Limitations
     -----------
     Input array is only supported as either :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, and `initial` are only supported with their default values.
+    Parameters `where`, and `initial` are only supported with their default
+    values.
     Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignoring any NaNs.
-    :obj:`dpnp.min` : The minimum value of an array along a given axis, propagating any NaNs.
+    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,
+                         ignoring any NaNs.
+    :obj:`dpnp.min` : The minimum value of an array along a given axis,
+                      propagating any NaNs.
     :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignoring any NaNs.
-    :obj:`dpnp.minimum` : Element-wise minimum of two arrays, propagating any NaNs.
+    :obj:`dpnp.minimum` : Element-wise minimum of two arrays, propagating
+                          any NaNs.
     :obj:`dpnp.isnan` : Shows which elements are Not a Number (NaN).
     :obj:`dpnp.isfinite` : Shows which elements are neither NaN nor infinity.
 
@@ -599,23 +622,21 @@ def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         raise NotImplementedError(
             "initial keyword argument is only supported with its default value."
         )
-    elif where is not True:
+    if where is not True:
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
-    else:
-        a, mask = _replace_nan(a, +dpnp.inf)
-        res = dpnp.min(a, axis=axis, out=out, keepdims=keepdims)
-        if mask is None:
-            return res
-        else:
-            mask = dpnp.all(mask, axis=axis)
-            if dpnp.any(mask):
-                dpnp.copyto(res, dpnp.nan, where=mask)
-                warnings.warn(
-                    "All-NaN slice encountered", RuntimeWarning, stacklevel=2
-                )
+
+    a, mask = _replace_nan(a, +dpnp.inf)
+    res = dpnp.min(a, axis=axis, out=out, keepdims=keepdims)
+    if mask is None:
         return res
+
+    mask = dpnp.all(mask, axis=axis)
+    if dpnp.any(mask):
+        dpnp.copyto(res, dpnp.nan, where=mask)
+        warnings.warn("All-NaN slice encountered", RuntimeWarning, stacklevel=2)
+    return res
 
 
 def nanprod(
@@ -628,24 +649,29 @@ def nanprod(
     where=True,
 ):
     """
-    Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
+    Return the product of array elements over a given axis treating
+    Not a Numbers (NaNs) as ones.
 
     For full documentation refer to :obj:`numpy.nanprod`.
 
     Returns
     -------
     out : dpnp.ndarray
-        A new array holding the result is returned unless `out` is specified, in which case it is returned.
+        A new array holding the result is returned unless `out` is specified,
+        in which case it is returned.
 
     See Also
     --------
     :obj:`dpnp.prod` : Returns product across array propagating NaNs.
-    :obj:`dpnp.isnan` : Test element-wise for NaN and return result as a boolean array.
+    :obj:`dpnp.isnan` : Test element-wise for NaN and return result
+                        as a boolean array.
 
     Limitations
     -----------
-    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `initial`, and `where` are only supported with their default values.
+    Input array is only supported as either :class:`dpnp.ndarray` or
+    :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `initial`, and `where` are only supported with their default
+    values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -690,7 +716,8 @@ def nansum(
     where=True,
 ):
     """
-    Return the sum of array elements over a given axis treating Not a Numbers (NaNs) as zero.
+    Return the sum of array elements over a given axis treating
+    Not a Numbers (NaNs) as zero.
 
     For full documentation refer to :obj:`numpy.nansum`.
 
@@ -779,7 +806,8 @@ def nansum(
     array(inf)
     >>> np.nansum(np.array([1, np.nan, np.NINF]))
     array(-inf)
-    >>> np.nansum(np.array([1, np.nan, np.inf, -np.inf])) # both +/- infinity present
+    >>> # both +/- infinity present
+    >>> np.nansum(np.array([1, np.nan, np.inf, -np.inf]))
     array(nan)
 
     """
@@ -800,7 +828,8 @@ def nanstd(
     a, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True
 ):
     """
-    Compute the standard deviation along the specified axis, while ignoring NaNs.
+    Compute the standard deviation along the specified axis,
+    while ignoring NaNs.
 
     For full documentation refer to :obj:`numpy.nanstd`.
 
@@ -852,16 +881,18 @@ def nanstd(
 
     Notes
     -----
-    Note that, for complex numbers, the absolute value is taken before squaring,
-    so that the result is always real and nonnegative.
+    Note that, for complex numbers, the absolute value is taken before
+    squaring, so that the result is always real and nonnegative.
 
     See Also
     --------
     :obj:`dpnp.var` : Compute the variance along the specified axis.
     :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.
     :obj:`dpnp.std` : Compute the standard deviation along the specified axis.
-    :obj:`dpnp.nanmean` : Compute the arithmetic mean along the specified axis, ignoring NaNs.
-    :obj:`dpnp.nanvar` : Compute the variance along the specified axis, while ignoring NaNs.
+    :obj:`dpnp.nanmean` : Compute the arithmetic mean along the specified axis,
+                          ignoring NaNs.
+    :obj:`dpnp.nanvar` : Compute the variance along the specified axis,
+                         while ignoring NaNs.
 
     Examples
     --------
@@ -880,22 +911,22 @@ def nanstd(
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
-    elif not isinstance(ddof, (int, float)):
+    if not isinstance(ddof, (int, float)):
         raise TypeError(
-            "An integer or float is required, but got {}".format(type(ddof))
+            f"An integer or float is required, but got {type(ddof)}"
         )
-    else:
-        res = nanvar(
-            a,
-            axis=axis,
-            dtype=dtype,
-            out=out,
-            ddof=ddof,
-            keepdims=keepdims,
-            where=where,
-        )
-        dpnp.sqrt(res, out=res)
-        return res
+
+    res = nanvar(
+        a,
+        axis=axis,
+        dtype=dtype,
+        out=out,
+        ddof=ddof,
+        keepdims=keepdims,
+        where=where,
+    )
+    dpnp.sqrt(res, out=res)
+    return res
 
 
 def nanvar(
@@ -912,8 +943,8 @@ def nanvar(
         Input array.
     axis : int or tuple of ints, optional
         axis or axes along which the variances must be computed. If a tuple
-        of unique integers is given, the variances are computed over multiple axes.
-        If ``None``, the variance is computed over the entire array.
+        of unique integers is given, the variances are computed over multiple
+        axes. If ``None``, the variance is computed over the entire array.
         Default: ``None``.
     dtype : dtype, optional
         Type to use in computing the variance. By default, if `a` has a
@@ -981,74 +1012,71 @@ def nanvar(
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
-    elif not isinstance(ddof, (int, float)):
+    if not isinstance(ddof, (int, float)):
         raise TypeError(
-            "An integer or float is required, but got {}".format(type(ddof))
+            f"An integer or float is required, but got {type(ddof)}"
         )
-    else:
-        arr, mask = _replace_nan(a, 0)
-        if mask is None:
-            return dpnp.var(
-                arr,
-                axis=axis,
-                dtype=dtype,
-                out=out,
-                ddof=ddof,
-                keepdims=keepdims,
-                where=where,
-            )
 
-        if dtype is not None:
-            dtype = dpnp.dtype(dtype)
-            if not dpnp.issubdtype(dtype, dpnp.inexact):
-                raise TypeError(
-                    "If input is inexact, then dtype must be inexact."
-                )
-        if out is not None:
-            dpnp.check_supported_arrays_type(out)
-            if not dpnp.issubdtype(out.dtype, dpnp.inexact):
-                raise TypeError(
-                    "If input is inexact, then out must be inexact."
-                )
-
-        # Compute mean
-        var_dtype = a.real.dtype if dtype is None else dtype
-        cnt = dpnp.sum(
-            ~mask, axis=axis, dtype=var_dtype, keepdims=True, where=where
-        )
-        avg = dpnp.sum(arr, axis=axis, dtype=dtype, keepdims=True, where=where)
-        avg = dpnp.divide(avg, cnt, out=avg)
-
-        # Compute squared deviation from mean.
-        if arr.dtype == avg.dtype:
-            arr = dpnp.subtract(arr, avg, out=arr)
-        else:
-            arr = dpnp.subtract(arr, avg)
-        dpnp.copyto(arr, 0.0, where=mask)
-        if dpnp.issubdtype(arr.dtype, dpnp.complexfloating):
-            sqr = dpnp.multiply(arr, arr.conj(), out=arr).real
-        else:
-            sqr = dpnp.multiply(arr, arr, out=arr)
-
-        # Compute variance
-        var = dpnp.sum(
-            sqr,
+    arr, mask = _replace_nan(a, 0)
+    if mask is None:
+        return dpnp.var(
+            arr,
             axis=axis,
-            dtype=var_dtype,
+            dtype=dtype,
             out=out,
+            ddof=ddof,
             keepdims=keepdims,
             where=where,
         )
 
-        if var.ndim < cnt.ndim:
-            cnt = cnt.squeeze(axis)
-        cnt -= ddof
-        dpnp.divide(var, cnt, out=var)
+    if dtype is not None:
+        dtype = dpnp.dtype(dtype)
+        if not dpnp.issubdtype(dtype, dpnp.inexact):
+            raise TypeError("If input is inexact, then dtype must be inexact.")
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        if not dpnp.issubdtype(out.dtype, dpnp.inexact):
+            raise TypeError("If input is inexact, then out must be inexact.")
 
-        isbad = cnt <= 0
-        if dpnp.any(isbad):
-            # NaN, inf, or negative numbers are all possible bad
-            # values, so explicitly replace them with NaN.
-            dpnp.copyto(var, dpnp.nan, where=isbad)
+    # Compute mean
+    var_dtype = a.real.dtype if dtype is None else dtype
+    # pylint: disable=invalid-unary-operand-type
+    cnt = dpnp.sum(
+        ~mask, axis=axis, dtype=var_dtype, keepdims=True, where=where
+    )
+    avg = dpnp.sum(arr, axis=axis, dtype=dtype, keepdims=True, where=where)
+    avg = dpnp.divide(avg, cnt, out=avg)
 
-        return var
+    # Compute squared deviation from mean.
+    if arr.dtype == avg.dtype:
+        arr = dpnp.subtract(arr, avg, out=arr)
+    else:
+        arr = dpnp.subtract(arr, avg)
+    dpnp.copyto(arr, 0.0, where=mask)
+    if dpnp.issubdtype(arr.dtype, dpnp.complexfloating):
+        sqr = dpnp.multiply(arr, arr.conj(), out=arr).real
+    else:
+        sqr = dpnp.multiply(arr, arr, out=arr)
+
+    # Compute variance
+    var = dpnp.sum(
+        sqr,
+        axis=axis,
+        dtype=var_dtype,
+        out=out,
+        keepdims=keepdims,
+        where=where,
+    )
+
+    if var.ndim < cnt.ndim:
+        cnt = cnt.squeeze(axis)
+    cnt -= ddof
+    dpnp.divide(var, cnt, out=var)
+
+    isbad = cnt <= 0
+    if dpnp.any(isbad):
+        # NaN, inf, or negative numbers are all possible bad
+        # values, so explicitly replace them with NaN.
+        dpnp.copyto(var, dpnp.nan, where=isbad)
+
+    return var
