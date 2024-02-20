@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.empty_like &mdash; Data Parallel Extension for NumPy 0.15.0dev0+15.g018933edb1 documentation</title>
+  <title>dpnp.empty_like &mdash; Data Parallel Extension for NumPy 0.15.0dev0+26.gc2287173a2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=74f20f4f"></script>
+        <script src="../../_static/documentation_options.js?v=aa0c6e9d"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+15.g018933edb1
+                0.15.0dev0+26.gc2287173a2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -133,21 +133,17 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp_array</em><em>, </em><em>usm_ndarray}</em>) – The shape and dtype of <cite>a</cite> define these same attributes
-of the returned array.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a><em>, </em><em>optional</em>) – The desired dtype for the array, e.g., dpnp.int32.
-Default is the default floating point data type for the device where
-input array is allocated.</p></li>
+<li><p><strong>a</strong> (<em>{dpnp_array</em><em>, </em><em>usm_ndarray}</em>) – The shape and dtype of <cite>a</cite> define these same attributes of the returned array.</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a><em>, </em><em>optional</em>) – The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point
+data type for the device where input array is allocated.</p></li>
 <li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>None}</em><em>, </em><em>optional</em>) – Memory layout of the newly output array. Default: “C”.</p></li>
 <li><p><strong>shape</strong> (<em>{int</em><em>, </em><em>sequence</em><em> of </em><em>ints}</em>) – Overrides the shape of the result.</p></li>
 <li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – An array API concept of device where the output array is created.
-The <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), an OneAPI filter selector
-string, an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code> corresponding to
-a non-partitioned SYCL device, an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code>,
-or a <cite>Device</cite> object returned by
+The <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), an OneAPI filter selector string,
+an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code> corresponding to a non-partitioned SYCL device,
+an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code>, or a <cite>Device</cite> object returned by
 <a class="reference internal" href="dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.device" title="dpnp.dpnp_array.dpnp_array.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dpnp_array.dpnp_array.device</span></code></a> property.</p></li>
-<li><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.
-Default is “device”.</p></li>
+<li><p><strong>usm_type</strong> (<em>{None</em><em>, </em><em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>sycl_queue</strong> (<em>{None</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – A SYCL queue to use for output array allocation and copying.</p></li>
 </ul>
 </dd>
@@ -159,8 +155,7 @@ Default is “device”.</p></li>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
-<p>Parameter <cite>order</cite> is supported only with values <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> and
-<code class="docutils literal notranslate"><span class="pre">None</span></code>.
+<p>Parameter <cite>order</cite> is supported only with values <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">None</span></code>.
 Parameter <cite>subok</cite> is supported only with default value <code class="docutils literal notranslate"><span class="pre">False</span></code>.
 Otherwise, the function raises <cite>NotImplementedError</cite> exception.</p>
 <div class="admonition seealso">
