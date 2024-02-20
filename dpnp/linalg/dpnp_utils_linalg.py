@@ -792,11 +792,9 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
                 else w
             )
 
-        eig_vecs = [None] * batch_size
-
         # When `eigen_mode == "N"` (jobz == 0), OneMKL LAPACK does not overwrite the input array.
         # If the input array 'a' is already F-contiguous and matches the target data type,
-        # we avoid unnecessary memory allocation and data copying.
+        # we can avoid unnecessary memory allocation and data copying.
         if eigen_mode == "N" and a_order == "F" and a.dtype == v_type:
             ht_list_ev = [None] * batch_size
             for i in range(batch_size):
@@ -810,10 +808,11 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
                     depends=[],
                 )
 
-            ht_list_ev.wait()
+            dpctl.SyclEvent.wait_for(ht_list_ev)
 
             return w
 
+        eig_vecs = [None] * batch_size
         ht_list_ev = [None] * batch_size * 2
         for i in range(batch_size):
             # oneMKL LAPACK assumes fortran-like array as input, so
@@ -851,7 +850,7 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
 
         # When `eigen_mode == "N"` (jobz == 0), OneMKL LAPACK does not overwrite the input array.
         # If the input array 'a' is already F-contiguous and matches the target data type,
-        # we avoid unnecessary memory allocation and data copying.
+        # we can avoid unnecessary memory allocation and data copying.
         if eigen_mode == "N" and a_order == "F" and a.dtype == v_type:
             v = a
 
