@@ -1123,7 +1123,9 @@ def test_eig(device):
 )
 def test_eigenvalue(func, shape, device):
     dtype = dpnp.default_float_type(device)
-    a = generate_random_numpy_array(shape, dtype, hermitian=True, use_seed=True)
+    # Set seed_value=81 to prevent
+    # random generation of the input singular matrix
+    a = generate_random_numpy_array(shape, dtype, hermitian=True, seed_value=81)
     dp_a = dpnp.array(a, device=device)
 
     expected_queue = dp_a.get_array().sycl_queue
@@ -1742,10 +1744,11 @@ def test_slogdet(shape, is_empty, device):
 )
 def test_pinv(shape, hermitian, rcond_as_array, device):
     dtype = dpnp.default_float_type(device)
+    # Set seed_value=81 to prevent
+    # random generation of the input singular matrix
     a_np = generate_random_numpy_array(
-        shape, dtype, hermitian=hermitian, use_seed=True
+        shape, dtype, hermitian=hermitian, seed_value=81
     )
-
     a_dp = dpnp.array(a_np, device=device)
 
     if rcond_as_array:

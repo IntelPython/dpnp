@@ -765,9 +765,9 @@ class TestQr:
         ids=["r", "raw", "complete", "reduced"],
     )
     def test_qr(self, dtype, shape, mode):
-        # Set use_seed=True to prevent
+        # Set seed_value=81 to prevent
         # random generation of the input singular matrix
-        a = generate_random_numpy_array(shape, dtype, use_seed=True)
+        a = generate_random_numpy_array(shape, dtype, seed_value=81)
         ia = inp.array(a)
 
         if mode == "r":
@@ -1194,10 +1194,10 @@ class TestSvd:
         ids=["(2, 2)", "(16, 16)"],
     )
     def test_svd_hermitian(self, dtype, compute_vt, shape):
-        # Set use_seed=True to prevent
+        # Set seed_value=81 to prevent
         # random generation of the input singular matrix
         a = generate_random_numpy_array(
-            shape, dtype, hermitian=True, use_seed=True
+            shape, dtype, hermitian=True, seed_value=81
         )
         dp_a = inp.array(a)
 
@@ -1271,9 +1271,9 @@ class TestPinv:
         ],
     )
     def test_pinv(self, dtype, shape):
-        # Set use_seed=True to prevent
+        # Set seed_value=81 to prevent
         # random generation of the input singular matrix
-        a = generate_random_numpy_array(shape, dtype, use_seed=True)
+        a = generate_random_numpy_array(shape, dtype, seed_value=81)
         a_dp = inp.array(a)
 
         B = numpy.linalg.pinv(a)
@@ -1298,10 +1298,10 @@ class TestPinv:
         ids=["(2, 2)", "(16, 16)"],
     )
     def test_pinv_hermitian(self, dtype, shape):
-        # Set use_seed=True to prevent
+        # Set seed_value=81 to prevent
         # random generation of the input singular matrix
         a = generate_random_numpy_array(
-            shape, dtype, hermitian=True, use_seed=True
+            shape, dtype, hermitian=True, seed_value=81
         )
         a_dp = inp.array(a)
 

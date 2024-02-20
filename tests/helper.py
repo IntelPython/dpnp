@@ -167,7 +167,7 @@ def get_all_dtypes(
 
 
 def generate_random_numpy_array(
-    shape, dtype=None, hermitian=False, use_seed=False, seed_value=81
+    shape, dtype=None, hermitian=False, seed_value=None
 ):
     """
     Generate a random numpy array with the specified shape and dtype.
@@ -186,13 +186,9 @@ def generate_random_numpy_array(
     hermitian : bool, optional
         If True, generates a Hermitian (symmetric if `dtype` is real) matrix.
         Default : False
-    set_seed : bool, optional
-        If True, the random number generator seed will be set to `seed_value`.
-        Default : False.
     seed_value : int, optional
         The seed value to initialize the random number generator.
-        Only used if `set_seed` is True.
-        Default : `81` to avoid generating a singular matrix.
+        Default : None
 
     Returns
     -------
@@ -206,13 +202,11 @@ def generate_random_numpy_array(
 
     """
 
-    if use_seed:
-        numpy.random.seed(seed_value)
+    numpy.random.seed(seed_value)
 
     a = numpy.random.randn(*shape).astype(dtype)
     if numpy.issubdtype(a.dtype, numpy.complexfloating):
-        if use_seed:
-            numpy.random.seed(seed_value)
+        numpy.random.seed(seed_value)
         a += 1j * numpy.random.randn(*shape)
 
     if hermitian and a.size > 0:
