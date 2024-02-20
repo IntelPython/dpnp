@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev0+5.g6cc1d758a1 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev0+14.g8070b11838 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7d736d19"></script>
+        <script src="../../_static/documentation_options.js?v=1458acd8"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+5.g6cc1d758a1
+                0.15.0dev0+14.g8070b11838
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -169,6 +169,7 @@
     <span class="n">dpnp_trunc</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span> <span class="kn">import</span> <span class="n">dpnp_cross</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;abs&quot;</span><span class="p">,</span>
@@ -918,63 +919,11 @@
     <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="c1"># create local aliases for readability</span>
-    <span class="n">a0</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="n">a1</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="n">a2</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-    <span class="n">b0</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="n">b1</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="n">b2</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">cp</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">cp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="n">cp0</span> <span class="o">=</span> <span class="n">cp</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="n">cp1</span> <span class="o">=</span> <span class="n">cp</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="n">cp2</span> <span class="o">=</span> <span class="n">cp</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-
-    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="c1"># a0 * b1 - a1 * b0</span>
-            <span class="n">multiply</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cp</span><span class="p">)</span>
-            <span class="n">cp</span> <span class="o">-=</span> <span class="n">a1</span> <span class="o">*</span> <span class="n">b0</span>
-            <span class="k">return</span> <span class="n">cp</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
-            <span class="c1"># cp0 = a1 * b2 - 0  (a2 = 0)</span>
-            <span class="c1"># cp1 = 0 - a0 * b2  (a2 = 0)</span>
-            <span class="c1"># cp2 = a0 * b1 - a1 * b0</span>
-            <span class="n">multiply</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cp0</span><span class="p">)</span>
-            <span class="n">multiply</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cp1</span><span class="p">)</span>
-            <span class="n">negative</span><span class="p">(</span><span class="n">cp1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cp1</span><span class="p">)</span>
-            <span class="n">multiply</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cp2</span><span class="p">)</span>
-            <span class="n">cp2</span> <span class="o">-=</span> <span class="n">a1</span> <span class="o">*</span> <span class="n">b0</span>
+    <span class="n">cp</span> <span class="o">=</span> <span class="n">dpnp_cross</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">cp</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cp</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
-        <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="c1"># cp0 = a1 * b2 - a2 * b1</span>
-            <span class="c1"># cp1 = a2 * b0 - a0 * b2</span>
-            <span class="c1"># cp2 = a0 * b1 - a1 * b0</span>
-            <span class="n">multiply</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cp0</span><span class="p">)</span>
-            <span class="n">tmp</span> <span class="o">=</span> <span class="n">a2</span> <span class="o">*</span> <span class="n">b1</span>
-            <span class="n">cp0</span> <span class="o">-=</span> <span class="n">tmp</span>
-            <span class="n">multiply</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">b0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cp1</span><span class="p">)</span>
-            <span class="n">multiply</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">tmp</span><span class="p">)</span>
-            <span class="n">cp1</span> <span class="o">-=</span> <span class="n">tmp</span>
-            <span class="n">multiply</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cp2</span><span class="p">)</span>
-            <span class="n">multiply</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">b0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">tmp</span><span class="p">)</span>
-            <span class="n">cp2</span> <span class="o">-=</span> <span class="n">tmp</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
-            <span class="c1"># cp0 = 0 - a2 * b1  (b2 = 0)</span>
-            <span class="c1"># cp1 = a2 * b0 - 0  (b2 = 0)</span>
-            <span class="c1"># cp2 = a0 * b1 - a1 * b0</span>
-            <span class="n">multiply</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cp0</span><span class="p">)</span>
-            <span class="n">negative</span><span class="p">(</span><span class="n">cp0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cp0</span><span class="p">)</span>
-            <span class="n">multiply</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">b0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cp1</span><span class="p">)</span>
-            <span class="n">multiply</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cp2</span><span class="p">)</span>
-            <span class="n">cp2</span> <span class="o">-=</span> <span class="n">a1</span> <span class="o">*</span> <span class="n">b0</span>
-
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisc</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisc</span><span class="p">)</span></div>
 
 
 

@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev0+5.g6cc1d758a1 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev0+14.g8070b11838 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7d736d19"></script>
+        <script src="../../_static/documentation_options.js?v=1458acd8"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+5.g6cc1d758a1
+                0.15.0dev0+14.g8070b11838
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -133,15 +133,20 @@
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
-<span class="kn">import</span> <span class="nn">dpnp.dpnp_container</span> <span class="k">as</span> <span class="nn">dpnp_container</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp</span> <span class="kn">import</span> <span class="n">dpnp_container</span>
 
+<span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">dpnp_trace</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_arraycreation</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_geomspace</span><span class="p">,</span>
     <span class="n">dpnp_linspace</span><span class="p">,</span>
     <span class="n">dpnp_logspace</span><span class="p">,</span>
     <span class="n">dpnp_nd_grid</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">call_origin</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -188,7 +193,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checking limitation kwargs for their supported values.</span>
 
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and ``None``.</span>
+<span class="sd">    Parameter `order` is supported only with values ``C``, ``F`` and ``None``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
 
@@ -196,6 +201,7 @@
 <span class="sd">    ------</span>
 <span class="sd">    NotImplementedError</span>
 <span class="sd">        If any input kwargs is of unsupported value.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">order</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">):</span>
@@ -203,17 +209,17 @@
             <span class="s2">&quot;Keyword argument `order` is supported only with &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;values ``&#39;C&#39;`` and ``&#39;F&#39;``, but got </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;Unrecognized `order` keyword value, expecting &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;``&#39;C&#39;`` or ``&#39;F&#39;``, but got </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Keyword argument `like` is supported only with &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">like</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Keyword argument `subok` is supported only with &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;default value ``False``, but got </span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -242,24 +248,29 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    start : {int, real}, optional</span>
-<span class="sd">        Start of interval. The interval includes this value. The default start value is 0.</span>
+<span class="sd">        Start of interval. The interval includes this value.</span>
+<span class="sd">        The default start value is 0.</span>
 <span class="sd">    stop : {int, real}</span>
-<span class="sd">        End of interval. The interval does not include this value, except in some cases</span>
-<span class="sd">        where `step` is not an integer and floating point round-off affects the length of out.</span>
+<span class="sd">        End of interval. The interval does not include this value, except</span>
+<span class="sd">        in some cases where `step` is not an integer and floating point</span>
+<span class="sd">        round-off affects the length of out.</span>
 <span class="sd">    step : {int, real}, optional</span>
-<span class="sd">        Spacing between values. The default `step` size is 1. If `step` is specified as</span>
-<span class="sd">        a position argument, `start` must also be given.</span>
+<span class="sd">        Spacing between values. The default `step` size is 1. If `step`</span>
+<span class="sd">        is specified as a position argument, `start` must also be given.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
-<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
+<span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
+<span class="sd">        and device capabilities when necessary).</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -275,7 +286,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.linspace` : Evenly spaced numbers with careful handling of endpoints.</span>
+<span class="sd">    :obj:`dpnp.linspace` : Evenly spaced numbers with careful handling of</span>
+<span class="sd">                           endpoints.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -317,6 +329,7 @@
 
 
 
+<span class="c1"># pylint: disable=redefined-outer-name</span>
 <div class="viewcode-block" id="array">
 <a class="viewcode-back" href="../../reference/generated/dpnp.array.html#dpnp.array">[docs]</a>
 <span class="k">def</span> <span class="nf">array</span><span class="p">(</span>
@@ -340,23 +353,27 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
-<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
-<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
+<span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
+<span class="sd">        and device capabilities when necessary).</span>
 <span class="sd">    copy : bool, optional</span>
 <span class="sd">        If ``True`` (default), then the object is copied.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;K&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -374,10 +391,14 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.</span>
-<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.</span>
-<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.</span>
-<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.</span>
+<span class="sd">    :obj:`dpnp.empty_like` : Return an empty array with shape and type of</span>
+<span class="sd">                             input.</span>
+<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of</span>
+<span class="sd">                            input.</span>
+<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of</span>
+<span class="sd">                             input.</span>
+<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled with</span>
+<span class="sd">                            value.</span>
 <span class="sd">    :obj:`dpnp.empty` : Return a new uninitialized array.</span>
 <span class="sd">    :obj:`dpnp.ones` : Return a new array setting values to one.</span>
 <span class="sd">    :obj:`dpnp.zeros` : Return a new array setting values to zero.</span>
@@ -461,21 +482,25 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
-<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
-<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
+<span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
+<span class="sd">        and device capabilities when necessary).</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;K&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -556,21 +581,25 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
-<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
-<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
+<span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
+<span class="sd">        and device capabilities when necessary).</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;K&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -646,19 +675,23 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
-<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
-<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
+<span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
+<span class="sd">        and device capabilities when necessary).</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -678,7 +711,8 @@
 <span class="sd">    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-major</span>
 <span class="sd">                     memory order.</span>
 <span class="sd">    :obj:`dpnp.require` : Return an ndarray that satisfies requirements.</span>
-<span class="sd">    :obj:`dpnp.ndarray.flags` : Information about the memory layout of the array.</span>
+<span class="sd">    :obj:`dpnp.ndarray.flags` : Information about the memory layout</span>
+<span class="sd">                                of the array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -754,19 +788,23 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
-<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
-<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
+<span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
+<span class="sd">        and device capabilities when necessary).</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -782,10 +820,13 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous (C order) array.</span>
-<span class="sd">    :obj:`dpnp.asanyarray` : Convert input to an ndarray with either row or column-major memory order.</span>
+<span class="sd">    :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous (C order)</span>
+<span class="sd">                                    array.</span>
+<span class="sd">    :obj:`dpnp.asanyarray` : Convert input to an ndarray with either row or</span>
+<span class="sd">                             column-major memory order.</span>
 <span class="sd">    :obj:`dpnp.require` : Return an ndarray that satisfies requirements.</span>
-<span class="sd">    :obj:`dpnp.ndarray.flags` : Information about the memory layout of the array.</span>
+<span class="sd">    :obj:`dpnp.ndarray.flags` : Information about the memory layout</span>
+<span class="sd">                                of the array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -864,18 +905,21 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
-<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;K&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -967,21 +1011,24 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    v : array_like</span>
-<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
-<span class="sd">        If `v` is a 2-D array, return a copy of its k-th diagonal. If `v` is a 1-D array,</span>
-<span class="sd">        return a 2-D array with `v` on the k-th diagonal.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays. If `v` is a 2-D array, return a copy of</span>
+<span class="sd">        its k-th diagonal. If `v` is a 1-D array, return a 2-D array with `v`</span>
+<span class="sd">        on the k-th diagonal.</span>
 <span class="sd">    k : int, optional</span>
-<span class="sd">        Diagonal in question. The default is 0. Use k &gt; 0 for diagonals above the main diagonal,</span>
-<span class="sd">        and k &lt; 0 for diagonals below the main diagonal.</span>
+<span class="sd">        Diagonal in question. The default is 0. Use k &gt; 0 for diagonals above</span>
+<span class="sd">        the main diagonal, and k &lt; 0 for diagonals below the main diagonal.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1036,40 +1083,39 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;An integer is required, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-            <span class="n">v</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
-        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An integer is required, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">init0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">k</span><span class="p">)</span>
-        <span class="n">init1</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">size</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-            <span class="n">m</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span>
-                <span class="n">dtype</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                <span class="n">usm_type</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                <span class="n">m</span><span class="p">[(</span><span class="n">init0</span> <span class="o">+</span> <span class="n">i</span><span class="p">),</span> <span class="n">init1</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="k">return</span> <span class="n">m</span>
-        <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">m</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">size</span><span class="p">,),</span>
-                <span class="n">dtype</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                <span class="n">usm_type</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
-                <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[(</span><span class="n">init0</span> <span class="o">+</span> <span class="n">i</span><span class="p">),</span> <span class="n">init1</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span>
-            <span class="k">return</span> <span class="n">m</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input must be a 1-D or 2-D array.&quot;</span><span class="p">)</span></div>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+
+    <span class="n">init0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">init1</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">m</span><span class="p">[(</span><span class="n">init0</span> <span class="o">+</span> <span class="n">i</span><span class="p">),</span> <span class="n">init1</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">m</span>
+
+    <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">size</span><span class="p">,),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[(</span><span class="n">init0</span> <span class="o">+</span> <span class="n">i</span><span class="p">),</span> <span class="n">init1</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">m</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input must be a 1-D or 2-D array.&quot;</span><span class="p">)</span></div>
 
 
 
@@ -1084,20 +1130,24 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    v : array_like</span>
-<span class="sd">        Input data, which is flattened and set as the k-th diagonal of the output,</span>
-<span class="sd">        in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        Input data, which is flattened and set as the k-th diagonal of the</span>
+<span class="sd">        output, in any form that can be converted to an array. This includes</span>
+<span class="sd">        scalars, lists, lists of tuples, tuples, tuples of tuples, tuples of</span>
+<span class="sd">        lists, and ndarrays.</span>
 <span class="sd">    k : int, optional</span>
 <span class="sd">        Diagonal to set; 0, the default, corresponds to the &quot;main&quot; diagonal,</span>
-<span class="sd">        a positive (negative) k giving the number of the diagonal above (below) the main.</span>
+<span class="sd">        a positive (negative) k giving the number of the diagonal above (below)</span>
+<span class="sd">        the main.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1155,13 +1205,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;An integer is required, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-            <span class="n">v</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
-        <span class="p">)</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An integer is required, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span></div>
 
 
 
@@ -1187,18 +1235,21 @@
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
-<span class="sd">        data type for the device where input array is allocated.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1209,13 +1260,15 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and ``None``.</span>
+<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and</span>
+<span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.empty_like` : Return an empty array with shape and type of</span>
+<span class="sd">                             input.</span>
 <span class="sd">    :obj:`dpnp.ones` : Return a new array setting values to one.</span>
 <span class="sd">    :obj:`dpnp.zeros` : Return a new array setting values to zero.</span>
 <span class="sd">    :obj:`dpnp.full` : Return a new array of given shape filled with value.</span>
@@ -1276,22 +1329,26 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp_array, usm_ndarray}</span>
-<span class="sd">        The shape and dtype of `a` define these same attributes of the returned array.</span>
+<span class="sd">        The shape and dtype of `a` define these same attributes</span>
+<span class="sd">        of the returned array.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
-<span class="sd">        data type for the device where input array is allocated.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1302,15 +1359,19 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and ``None``.</span>
+<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and</span>
+<span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.</span>
-<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.</span>
-<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.</span>
+<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of</span>
+<span class="sd">                            input.</span>
+<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of</span>
+<span class="sd">                             input.</span>
+<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled with</span>
+<span class="sd">                            value.</span>
 <span class="sd">    :obj:`dpnp.empty` : Return a new uninitialized array.</span>
 
 <span class="sd">    Examples</span>
@@ -1355,6 +1416,7 @@
 
 
 
+<span class="c1"># pylint: disable=invalid-name</span>
 <div class="viewcode-block" id="eye">
 <a class="viewcode-back" href="../../reference/generated/dpnp.eye.html#dpnp.eye">[docs]</a>
 <span class="k">def</span> <span class="nf">eye</span><span class="p">(</span>
@@ -1383,32 +1445,37 @@
 <span class="sd">        Number of columns in the output. If None, defaults to `N`.</span>
 <span class="sd">    k : int, optional</span>
 <span class="sd">        Index of the diagonal: 0 (the default) refers to the main diagonal,</span>
-<span class="sd">        a positive value refers to an upper diagonal, and a negative value to a lower diagonal.</span>
+<span class="sd">        a positive value refers to an upper diagonal, and a negative value to</span>
+<span class="sd">        a lower diagonal.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
-<span class="sd">        data type for the device where input array is allocated.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array where all elements are equal to zero, except for the k-th diagonal,</span>
-<span class="sd">        whose values are equal to one.</span>
+<span class="sd">        An array where all elements are equal to zero, except for the k-th</span>
+<span class="sd">        diagonal, whose values are equal to one.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and ``None``.</span>
+<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and</span>
+<span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
 
@@ -1578,21 +1645,25 @@
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
 <span class="sd">    fill_value : {scalar, array_like}</span>
-<span class="sd">        Fill value, in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        Fill value, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
-<span class="sd">        data type for the device where input array is allocated.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1603,13 +1674,15 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and ``None``.</span>
+<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and</span>
+<span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.</span>
+<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled with</span>
+<span class="sd">                            value.</span>
 <span class="sd">    :obj:`dpnp.empty` : Return a new uninitialized array.</span>
 <span class="sd">    :obj:`dpnp.ones` : Return a new array setting values to one.</span>
 <span class="sd">    :obj:`dpnp.zeros` : Return a new array setting values to zero.</span>
@@ -1673,25 +1746,30 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp_array, usm_ndarray}</span>
-<span class="sd">        The shape and dtype of `a` define these same attributes of the returned array.</span>
+<span class="sd">        The shape and dtype of `a` define these same attributes</span>
+<span class="sd">        of the returned array.</span>
 <span class="sd">    fill_value : {scalar, array_like}</span>
-<span class="sd">        Fill value, in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        Fill value, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
-<span class="sd">        data type for the device where input array is allocated.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1702,15 +1780,19 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and ``None``.</span>
+<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and</span>
+<span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.</span>
-<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.</span>
-<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.empty_like` : Return an empty array with shape and type of</span>
+<span class="sd">                             input.</span>
+<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of</span>
+<span class="sd">                            input.</span>
+<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of</span>
+<span class="sd">                             input.</span>
 <span class="sd">    :obj:`dpnp.full` : Return a new array of given shape filled with value.</span>
 
 <span class="sd">    Examples</span>
@@ -1780,36 +1862,40 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    start : array_like</span>
-<span class="sd">        The starting value of the sequence, in any form that can be converted to an array.</span>
-<span class="sd">        This includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
-<span class="sd">        tuples of lists, and ndarrays.</span>
+<span class="sd">        The starting value of the sequence, in any form that can be converted</span>
+<span class="sd">        to an array. This includes scalars, lists, lists of tuples, tuples,</span>
+<span class="sd">        tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">    stop : array_like</span>
-<span class="sd">        The final value of the sequence, in any form that can be converted to an array.</span>
-<span class="sd">        This includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
-<span class="sd">        tuples of lists, and ndarrays. If `endpoint` is ``False`` num + 1 values</span>
-<span class="sd">        are spaced over the interval in log-space, of which all but the last</span>
-<span class="sd">        (a sequence of length num) are returned.</span>
+<span class="sd">        The final value of the sequence, in any form that can be converted to</span>
+<span class="sd">        an array. This includes scalars, lists, lists of tuples, tuples, tuples</span>
+<span class="sd">        of tuples, tuples of lists, and ndarrays. If `endpoint` is ``False``</span>
+<span class="sd">        num + 1 values are spaced over the interval in log-space, of which all</span>
+<span class="sd">        but the last (a sequence of length num) are returned.</span>
 <span class="sd">    num : int, optional</span>
 <span class="sd">        Number of samples to generate. Default is 50.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
-<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
+<span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
+<span class="sd">        and device capabilities when necessary).</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 <span class="sd">    endpoint : bool, optional</span>
-<span class="sd">        If ``True``, `stop` is the last sample. Otherwise, it is not included. Default is ``True``.</span>
+<span class="sd">        If ``True``, `stop` is the last sample. Otherwise, it is not included.</span>
+<span class="sd">        Default is ``True``.</span>
 <span class="sd">    axis : int, optional</span>
-<span class="sd">        The axis in the result to store the samples. Relevant only if start or stop are array-like.</span>
-<span class="sd">        By default (0), the samples will be along a new axis inserted at the beginning.</span>
-<span class="sd">        Use -1 to get an axis at the end.</span>
+<span class="sd">        The axis in the result to store the samples. Relevant only if start or</span>
+<span class="sd">        stop are array-like. By default (0), the samples will be along a new</span>
+<span class="sd">        axis inserted at the beginning. Use -1 to get an axis at the end.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1901,16 +1987,19 @@
 <span class="sd">    n : int</span>
 <span class="sd">        Number of rows (and columns) in `n` x `n` output.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
-<span class="sd">        data type for the device where input array is allocated.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        input array is allocated.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -1927,7 +2016,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.eye` : Return a 2-D array with ones on the diagonal and zeros elsewhere.</span>
+<span class="sd">    :obj:`dpnp.eye` : Return a 2-D array with ones on the diagonal and zeros</span>
+<span class="sd">                      elsewhere.</span>
 <span class="sd">    :obj:`dpnp.ones` : Return a new array setting values to one.</span>
 <span class="sd">    :obj:`dpnp.diag` : Return diagonal 2-D array from an input 1-D array.</span>
 
@@ -2001,35 +2091,41 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    start : array_like</span>
-<span class="sd">        The starting value of the sequence, in any form that can be converted to an array.</span>
-<span class="sd">        This includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
-<span class="sd">        tuples of lists, and ndarrays.</span>
+<span class="sd">        The starting value of the sequence, in any form that can be converted</span>
+<span class="sd">        to an array. This includes scalars, lists, lists of tuples, tuples,</span>
+<span class="sd">        tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">    stop : array_like</span>
-<span class="sd">        The end value of the sequence, in any form that can be converted to an array.</span>
-<span class="sd">        This includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
-<span class="sd">        tuples of lists, and ndarrays. If `endpoint` is set to ``False`` the sequence consists</span>
-<span class="sd">        of all but the last of num + 1 evenly spaced samples, so that `stop` is excluded.</span>
+<span class="sd">        The end value of the sequence, in any form that can be converted to</span>
+<span class="sd">        an array. This includes scalars, lists, lists of tuples, tuples, tuples</span>
+<span class="sd">        of tuples, tuples of lists, and ndarrays. If `endpoint` is set to</span>
+<span class="sd">        ``False`` the sequence consists of all but the last of num + 1 evenly</span>
+<span class="sd">        spaced samples, so that `stop` is excluded.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
-<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
+<span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
+<span class="sd">        and device capabilities when necessary).</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 <span class="sd">    endpoint : bool, optional</span>
-<span class="sd">        If ``True``, `stop` is the last sample. Otherwise, it is not included. Default is ``True``.</span>
+<span class="sd">        If ``True``, `stop` is the last sample. Otherwise, it is not included.</span>
+<span class="sd">        Default is ``True``.</span>
 <span class="sd">    retstep : bool, optional</span>
-<span class="sd">        If ``True``, return (samples, step), where step is the spacing between samples.</span>
+<span class="sd">        If ``True``, return (samples, step), where step is the spacing between</span>
+<span class="sd">        samples.</span>
 <span class="sd">    axis : int, optional</span>
-<span class="sd">        The axis in the result to store the samples. Relevant only if start or stop are array-like.</span>
-<span class="sd">        By default (0), the samples will be along a new axis inserted at the beginning.</span>
-<span class="sd">        Use -1 to get an axis at the end.</span>
+<span class="sd">        The axis in the result to store the samples. Relevant only if start or</span>
+<span class="sd">        stop are array-like. By default (0), the samples will be along a new</span>
+<span class="sd">        axis inserted at the beginning. Use -1 to get an axis at the end.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2146,43 +2242,50 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    start : array_like</span>
-<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
-<span class="sd">        `base` ** `start` is the starting value of the sequence.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays. `base` ** `start` is the starting value</span>
+<span class="sd">        of the sequence.</span>
 <span class="sd">    stop : array_like</span>
-<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
-<span class="sd">        `base` ** `stop` is the final value of the sequence, unless `endpoint` is ``False``.</span>
-<span class="sd">        In that case, num + 1 values are spaced over the interval in log-space,</span>
-<span class="sd">        of which all but the last (a sequence of length num) are returned.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays. `base` ** `stop` is the final value of</span>
+<span class="sd">        the sequence, unless `endpoint` is ``False``. In that case, num + 1</span>
+<span class="sd">        values are spaced over the interval in log-space, of which all but</span>
+<span class="sd">        the last (a sequence of length num) are returned.</span>
 <span class="sd">    num : int, optional</span>
 <span class="sd">        Number of samples to generate. Default is 50.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 <span class="sd">    endpoint : bool, optional</span>
-<span class="sd">        If ``True``, stop is the last sample. Otherwise, it is not included. Default is ``True``.</span>
+<span class="sd">        If ``True``, stop is the last sample. Otherwise, it is not included.</span>
+<span class="sd">        Default is ``True``.</span>
 <span class="sd">    base : array_like, optional</span>
-<span class="sd">        Input data, in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
-<span class="sd">        The base of the log space, in any form that can be converted to an array.This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
-<span class="sd">        The `step` size between the elements in ln(samples) / ln(base) (or log_base(samples))</span>
-<span class="sd">        is uniform. Default is 10.0.</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays. The base of the log space, in any form</span>
+<span class="sd">        that can be converted to an array.This includes scalars, lists, lists</span>
+<span class="sd">        of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        The `step` size between the elements in ln(samples) / ln(base)</span>
+<span class="sd">        (or log_base(samples)) is uniform. Default is 10.0.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array. If not given, a default dtype will be used that can represent</span>
-<span class="sd">        the values (by considering Promotion Type Rule and device capabilities when necessary.)</span>
+<span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
+<span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
+<span class="sd">        and device capabilities when necessary).</span>
 <span class="sd">    axis : int, optional</span>
-<span class="sd">        The axis in the result to store the samples. Relevant only if start, stop,</span>
-<span class="sd">        or base are array-like. By default (0), the samples will be along a new axis inserted</span>
-<span class="sd">        at the beginning. Use -1 to get an axis at the end.</span>
+<span class="sd">        The axis in the result to store the samples. Relevant only if start,</span>
+<span class="sd">        stop, or base are array-like. By default (0), the samples will be along</span>
+<span class="sd">        a new axis inserted at the beginning. Use -1 to get an axis at the end.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2247,6 +2350,7 @@
 
 
 
+<span class="c1"># pylint: disable=redefined-outer-name</span>
 <div class="viewcode-block" id="meshgrid">
 <a class="viewcode-back" href="../../reference/generated/dpnp.meshgrid.html#dpnp.meshgrid">[docs]</a>
 <span class="k">def</span> <span class="nf">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">xi</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;xy&quot;</span><span class="p">):</span>
@@ -2352,19 +2456,22 @@
 <span class="sd">    ----------</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : one dpnp.ndarray or tuple of dpnp.ndarray</span>
-<span class="sd">        Returns one array of grid indices, grid.shape = (len(dimensions),) + tuple(dimensions).</span>
+<span class="sd">        Returns one array of grid indices,</span>
+<span class="sd">        grid.shape = (len(dimensions),) + tuple(dimensions).</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2422,19 +2529,22 @@
 <span class="sd">    ----------</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : one dpnp.ndarray or tuple of dpnp.ndarray</span>
-<span class="sd">        Returns a tuple of arrays, with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)</span>
+<span class="sd">        Returns a tuple of arrays,</span>
+<span class="sd">        with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)</span>
 <span class="sd">        with dimensions[i] in the ith place.</span>
 
 <span class="sd">    Examples</span>
@@ -2497,18 +2607,21 @@
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
-<span class="sd">        data type for the device where input array is allocated.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -2519,13 +2632,15 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and ``None``.</span>
+<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and</span>
+<span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of</span>
+<span class="sd">                            input.</span>
 <span class="sd">    :obj:`dpnp.empty` : Return a new uninitialized array.</span>
 <span class="sd">    :obj:`dpnp.zeros` : Return a new array setting values to zero.</span>
 <span class="sd">    :obj:`dpnp.full` : Return a new array of given shape filled with value.</span>
@@ -2593,22 +2708,26 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp_array, usm_ndarray}</span>
-<span class="sd">        The shape and dtype of `a` define these same attributes of the returned array.</span>
+<span class="sd">        The shape and dtype of `a` define these same attributes</span>
+<span class="sd">        of the returned array.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
-<span class="sd">        data type for the device where input array is allocated.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -2619,15 +2738,19 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and ``None``.</span>
+<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and</span>
+<span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.</span>
-<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.</span>
-<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.</span>
+<span class="sd">    :obj:`dpnp.empty_like` : Return an empty array with shape and type of</span>
+<span class="sd">                             input.</span>
+<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of</span>
+<span class="sd">                             input.</span>
+<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled with</span>
+<span class="sd">                            value.</span>
 <span class="sd">    :obj:`dpnp.ones` : Return a new array setting values to one.</span>
 
 <span class="sd">    Examples</span>
@@ -2684,7 +2807,9 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Parameters `axis1`, `axis2`, `out` and `dtype` are supported only with default values.</span>
+<span class="sd">    Parameters `axis1`, `axis2`, `out` and `dtype` are supported only with</span>
+<span class="sd">    default values.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -2693,9 +2818,9 @@
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">axis1</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">axis2</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">axis1</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
@@ -2708,6 +2833,7 @@
 
 
 
+<span class="c1"># pylint: disable=invalid-name</span>
 <div class="viewcode-block" id="tri">
 <a class="viewcode-back" href="../../reference/generated/dpnp.tri.html#dpnp.tri">[docs]</a>
 <span class="k">def</span> <span class="nf">tri</span><span class="p">(</span>
@@ -2733,19 +2859,23 @@
 <span class="sd">    M : int, optional</span>
 <span class="sd">        Number of columns in the array. By default, `M` is taken equal to `N`.</span>
 <span class="sd">    k : int, optional</span>
-<span class="sd">        The sub-diagonal at and below which the array is filled. k = 0 is the main diagonal,</span>
-<span class="sd">        while k &lt; 0 is below it, and k &gt; 0 is above. The default is 0.</span>
+<span class="sd">        The sub-diagonal at and below which the array is filled. k = 0 is</span>
+<span class="sd">        the main diagonal, while k &lt; 0 is below it, and k &gt; 0 is above.</span>
+<span class="sd">        The default is 0.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
-<span class="sd">        data type for the device where input array is allocated.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        input array is allocated.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -2796,7 +2926,7 @@
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`N` must be a integer data type, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">N</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">N</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;negative dimensions are not allowed&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">M</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -2804,7 +2934,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;`M` must be a integer data type, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">M</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">M</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;negative dimensions are not allowed&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">M</span> <span class="o">=</span> <span class="n">N</span>
@@ -2845,8 +2975,8 @@
 <span class="sd">    m : {dpnp_array, usm_ndarray}, shape (…, M, N)</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    k : int, optional</span>
-<span class="sd">        Diagonal above which to zero elements. k = 0 (the default) is the main diagonal,</span>
-<span class="sd">        k &lt; 0 is below it and k &gt; 0 is above.</span>
+<span class="sd">        Diagonal above which to zero elements. k = 0 (the default) is</span>
+<span class="sd">        the main diagonal, k &lt; 0 is below it and k &gt; 0 is above.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2901,8 +3031,8 @@
 <span class="sd">    m : {dpnp_array, usm_ndarray}, shape (…, M, N)</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    k : int, optional</span>
-<span class="sd">        Diagonal below which to zero elements. k = 0 (the default) is the main diagonal,</span>
-<span class="sd">        k &lt; 0 is below it and k &gt; 0 is above.</span>
+<span class="sd">        Diagonal below which to zero elements. k = 0 (the default) is</span>
+<span class="sd">        the main diagonal, k &lt; 0 is below it and k &gt; 0 is above.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2941,6 +3071,7 @@
 
 
 
+<span class="c1"># pylint: disable=invalid-name</span>
 <div class="viewcode-block" id="vander">
 <a class="viewcode-back" href="../../reference/generated/dpnp.vander.html#dpnp.vander">[docs]</a>
 <span class="k">def</span> <span class="nf">vander</span><span class="p">(</span>
@@ -2961,21 +3092,25 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : array_like</span>
-<span class="sd">        1-D input array, in any form that can be converted to an array. This includes scalars,</span>
-<span class="sd">        lists, lists of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        1-D input array, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    N : int, optional</span>
-<span class="sd">        Number of columns in the output. If `N` is not specified, a square array is returned (N = len(x)).</span>
+<span class="sd">        Number of columns in the output. If `N` is not specified, a square</span>
+<span class="sd">        array is returned (N = len(x)).</span>
 <span class="sd">    increasing : bool, optional</span>
-<span class="sd">        Order of the powers of the columns. If ``True,`` the powers increase from left to right,</span>
-<span class="sd">        if ``False`` (the default) they are reversed.</span>
+<span class="sd">        Order of the powers of the columns. If ``True,`` the powers increase</span>
+<span class="sd">        from left to right, if ``False`` (the default) they are reversed.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -3034,28 +3169,28 @@
     <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;An integer is required, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">N</span><span class="p">)))</span>
-    <span class="k">elif</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An integer is required, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`x` must be a one-dimensional array or sequence.&quot;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">N</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
 
-        <span class="n">_dtype</span> <span class="o">=</span> <span class="nb">int</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span> <span class="k">else</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="n">m</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">increasing</span> <span class="k">else</span> <span class="n">m</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span>
-            <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">),</span>
-            <span class="n">out</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
-        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
 
-        <span class="k">return</span> <span class="n">m</span></div>
+    <span class="n">_dtype</span> <span class="o">=</span> <span class="nb">int</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span> <span class="k">else</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">empty</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">m</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">increasing</span> <span class="k">else</span> <span class="n">m</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">),</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">m</span></div>
 
 
 
@@ -3081,18 +3216,21 @@
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
-<span class="sd">        data type for the device where input array is allocated.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is &quot;device&quot;.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -3103,13 +3241,15 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and ``None``.</span>
+<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and</span>
+<span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of</span>
+<span class="sd">                             input.</span>
 <span class="sd">    :obj:`dpnp.empty` : Return a new uninitialized array.</span>
 <span class="sd">    :obj:`dpnp.ones` : Return a new array setting values to one.</span>
 <span class="sd">    :obj:`dpnp.full` : Return a new array of given shape filled with value.</span>
@@ -3177,22 +3317,26 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp_array, usm_ndarray}</span>
-<span class="sd">        The shape and dtype of `a` define these same attributes of the returned array.</span>
+<span class="sd">        The shape and dtype of `a` define these same attributes</span>
+<span class="sd">        of the returned array.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32. Default is the default floating point</span>
-<span class="sd">        data type for the device where input array is allocated.</span>
+<span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array. Default is ``None``.</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
@@ -3203,15 +3347,19 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and ``None``.</span>
+<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and</span>
+<span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.</span>
-<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.</span>
-<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.</span>
+<span class="sd">    :obj:`dpnp.empty_like` : Return an empty array with shape and type of</span>
+<span class="sd">                             input.</span>
+<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of</span>
+<span class="sd">                            input.</span>
+<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled</span>
+<span class="sd">                            with value.</span>
 <span class="sd">    :obj:`dpnp.zeros` : Return a new array setting values to zero.</span>
 
 <span class="sd">    Examples</span>

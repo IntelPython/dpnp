@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.arange &mdash; Data Parallel Extension for NumPy 0.15.0dev0+5.g6cc1d758a1 documentation</title>
+  <title>dpnp.arange &mdash; Data Parallel Extension for NumPy 0.15.0dev0+14.g8070b11838 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7d736d19"></script>
+        <script src="../../_static/documentation_options.js?v=1458acd8"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+5.g6cc1d758a1
+                0.15.0dev0+14.g8070b11838
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -133,19 +133,24 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<em>{int</em><em>, </em><em>real}</em><em>, </em><em>optional</em>) – Start of interval. The interval includes this value. The default start value is 0.</p></li>
-<li><p><strong>stop</strong> (<em>{int</em><em>, </em><em>real}</em>) – End of interval. The interval does not include this value, except in some cases
-where <cite>step</cite> is not an integer and floating point round-off affects the length of out.</p></li>
-<li><p><strong>step</strong> (<em>{int</em><em>, </em><em>real}</em><em>, </em><em>optional</em>) – Spacing between values. The default <cite>step</cite> size is 1. If <cite>step</cite> is specified as
-a position argument, <cite>start</cite> must also be given.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a><em>, </em><em>optional</em>) – The desired dtype for the array. If not given, a default dtype will be used that can represent
-the values (by considering Promotion Type Rule and device capabilities when necessary.)</p></li>
+<li><p><strong>start</strong> (<em>{int</em><em>, </em><em>real}</em><em>, </em><em>optional</em>) – Start of interval. The interval includes this value.
+The default start value is 0.</p></li>
+<li><p><strong>stop</strong> (<em>{int</em><em>, </em><em>real}</em>) – End of interval. The interval does not include this value, except
+in some cases where <cite>step</cite> is not an integer and floating point
+round-off affects the length of out.</p></li>
+<li><p><strong>step</strong> (<em>{int</em><em>, </em><em>real}</em><em>, </em><em>optional</em>) – Spacing between values. The default <cite>step</cite> size is 1. If <cite>step</cite>
+is specified as a position argument, <cite>start</cite> must also be given.</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a><em>, </em><em>optional</em>) – The desired dtype for the array. If not given, a default dtype will be
+used that can represent the values (by considering Promotion Type Rule
+and device capabilities when necessary).</p></li>
 <li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – An array API concept of device where the output array is created.
-The <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), an OneAPI filter selector string,
-an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code> corresponding to a non-partitioned SYCL device,
-an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code>, or a <cite>Device</cite> object returned by
+The <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), an OneAPI filter selector
+string, an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code> corresponding to
+a non-partitioned SYCL device, an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code>,
+or a <cite>Device</cite> object returned by
 <a class="reference internal" href="dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.device" title="dpnp.dpnp_array.dpnp_array.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dpnp_array.dpnp_array.device</span></code></a> property.</p></li>
-<li><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array. Default is “device”.</p></li>
+<li><p><strong>usm_type</strong> (<em>{&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) – The type of SYCL USM allocation for the output array.
+Default is “device”.</p></li>
 <li><p><strong>sycl_queue</strong> (<em>{None</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) – A SYCL queue to use for output array allocation and copying.</p></li>
 </ul>
 </dd>
