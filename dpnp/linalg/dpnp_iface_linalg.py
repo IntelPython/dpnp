@@ -51,6 +51,8 @@ from .dpnp_utils_linalg import (
     dpnp_det,
     dpnp_eigh,
     dpnp_inv,
+    dpnp_matrix_rank,
+    dpnp_pinv,
     dpnp_qr,
     dpnp_slogdet,
     dpnp_solve,
@@ -69,6 +71,7 @@ __all__ = [
     "matrix_rank",
     "multi_dot",
     "norm",
+    "pinv",
     "qr",
     "solve",
     "svd",
@@ -395,47 +398,57 @@ def matrix_power(input, count):
     return call_origin(numpy.linalg.matrix_power, input, count)
 
 
-def matrix_rank(input, tol=None, hermitian=False):
+def matrix_rank(A, tol=None, hermitian=False):
     """
-    Return matrix rank of array.
+    Return matrix rank of array using SVD method.
 
     Rank of the array is the number of singular values of the array that are
     greater than `tol`.
 
     Parameters
     ----------
-    M : {(M,), (..., M, N)} array_like
+    A : {(M,), (..., M, N)} {dpnp.ndarray, usm_ndarray}
         Input vector or stack of matrices.
-    tol : (...) array_like, float, optional
+    tol : (...) {float, dpnp.ndarray, usm_ndarray}, optional
         Threshold below which SVD values are considered zero. If `tol` is
         None, and ``S`` is an array with singular values for `M`, and
         ``eps`` is the epsilon value for datatype of ``S``, then `tol` is
         set to ``S.max() * max(M.shape) * eps``.
     hermitian : bool, optional
-        If True, `M` is assumed to be Hermitian (symmetric if real-valued),
+        If True, `A` is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
         Defaults to False.
 
     Returns
     -------
-    rank : (...) array_like
-        Rank of M.
+    rank : (...) dpnp.ndarray
+        Rank of A.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.svd` : Singular Value Decomposition.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> from dpnp.linalg import matrix_rank
+    >>> matrix_rank(np.eye(4)) # Full rank matrix
+    array(4)
+    >>> I=np.eye(4); I[-1,-1] = 0. # rank deficient matrix
+    >>> matrix_rank(I)
+    array(3)
+    >>> matrix_rank(np.ones((4,))) # 1 dimension - rank 1 unless all 0
+    array(1)
+    >>> matrix_rank(np.zeros((4,)))
+    array(0)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if tol is not None:
-            pass
-        elif hermitian:
-            pass
-        else:
-            result_obj = dpnp_matrix_rank(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    dpnp.check_supported_arrays_type(A)
+    if tol is not None:
+        dpnp.check_supported_arrays_type(tol, scalar_type=True)
 
-            return result
-
-    return call_origin(numpy.linalg.matrix_rank, input, tol, hermitian)
+    return dpnp_matrix_rank(A, tol=tol, hermitian=hermitian)
 
 
 def multi_dot(arrays, out=None):
@@ -472,6 +485,56 @@ def multi_dot(arrays, out=None):
         result = dpnp.dot(result, arrays[id])
 
     return result
+
+
+def pinv(a, rcond=1e-15, hermitian=False):
+    """
+    Compute the (Moore-Penrose) pseudo-inverse of a matrix.
+
+    Calculate the generalized inverse of a matrix using its
+    singular-value decomposition (SVD) and including all large singular values.
+
+    For full documentation refer to :obj:`numpy.linalg.inv`.
+
+    Parameters
+    ----------
+    a : (..., M, N) {dpnp.ndarray, usm_ndarray}
+        Matrix or stack of matrices to be pseudo-inverted.
+    rcond : {float, dpnp.ndarray, usm_ndarray}, optional
+        Cutoff for small singular values.
+        Singular values less than or equal to ``rcond * largest_singular_value``
+        are set to zero. Broadcasts against the stack of matrices.
+        Default: ``1e-15``.
+    hermitian : bool, optional
+        If ``True``, a is assumed to be Hermitian (symmetric if real-valued),
+        enabling a more efficient method for finding singular values.
+        Default: ``False``.
+
+    Returns
+    -------
+    out : (..., N, M) dpnp.ndarray
+        The pseudo-inverse of a.
+
+    Examples
+    --------
+    The following example checks that ``a * a+ * a == a`` and
+    ``a+ * a * a+ == a+``:
+
+    >>> import dpnp as np
+    >>> a = np.random.randn(9, 6)
+    >>> B = np.linalg.pinv(a)
+    >>> np.allclose(a, np.dot(a, np.dot(B, a)))
+    array([ True])
+    >>> np.allclose(B, np.dot(B, np.dot(a, B)))
+    array([ True])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    dpnp.check_supported_arrays_type(rcond, scalar_type=True)
+    check_stacked_2d(a)
+
+    return dpnp_pinv(a, rcond=rcond, hermitian=hermitian)
 
 
 def norm(x1, ord=None, axis=None, keepdims=False):

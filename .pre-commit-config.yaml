@@ -79,3 +79,19 @@ repos:
     rev: 3.0.0
     hooks:
     -   id: shellcheck
+-   repo: local
+    hooks:
+    -   id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
+        args:
+            [
+            "-rn", # Only display messages
+            "-sn", # Don't display the score
+            "--disable=import-error",
+            "--disable=redefined-builtin",
+            "--disable=unused-wildcard-import"
+            ]
+        files: '^dpnp/dpnp_iface(|_arraycreation|_counting|_indexing|_libmath|_linearalgebra|_manipulation|_nanfunctions|_searching|_sorting|_statistics|_types).py$'
