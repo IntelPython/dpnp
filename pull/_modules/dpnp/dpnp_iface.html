@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.15.0dev0+7.gd34b8ce47f documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.15.0dev0+8.ge6e7b3ec0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=1a226003"></script>
+        <script src="../../_static/documentation_options.js?v=f37a3bfb"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+7.gd34b8ce47f
+                0.15.0dev0+8.ge6e7b3ec0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -133,11 +133,11 @@
 <span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._device</span> <span class="kn">import</span> <span class="n">normalize_queue_device</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.fft</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.linalg</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.random</span> <span class="kn">import</span> <span class="o">*</span>
@@ -149,7 +149,6 @@
     <span class="s2">&quot;check_supported_arrays_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;convert_single_elem_array_to_scalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;default_float_type&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dpnp_queue_initialize&quot;</span><span class="p">,</span>
     <span class="s2">&quot;from_dlpack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_dpnp_descriptor&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_include&quot;</span><span class="p">,</span>
@@ -191,6 +190,13 @@
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_trigonometric</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_trigonometric</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__trigonometric</span>
 
+<span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">dpnp_descriptor</span><span class="p">,</span>
+    <span class="n">map_dtype_to_device</span><span class="p">,</span>
+    <span class="n">use_origin_backend</span><span class="p">,</span>
+<span class="p">)</span>
+
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__arraycreation</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__bitwise</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__counting</span>
@@ -224,31 +230,48 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="n">equal_nan</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="asnumpy">
 <a class="viewcode-back" href="../../reference/generated/dpnp.asnumpy.html#dpnp.asnumpy">[docs]</a>
-<span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the NumPy array with input data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {array_like}</span>
+<span class="sd">        Arbitrary object that can be converted to :obj:`numpy.ndarray`.</span>
+<span class="sd">    order : {&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}</span>
+<span class="sd">        The desired memory layout of the converted array.</span>
+<span class="sd">        When `order` is ``A``, it uses ``F`` if `a` is column-major and uses</span>
+<span class="sd">        ``C`` otherwise. And when `order` is ``K``, it keeps strides as closely</span>
+<span class="sd">        as possible.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : numpy.ndarray</span>
+<span class="sd">        NumPy interpretation of input array `a`.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This function works exactly the same as :obj:`numpy.asarray`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">input</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
 
 
 
+<span class="c1"># pylint: disable=redefined-outer-name</span>
 <span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copy the array with data type casting.</span>
@@ -261,28 +284,32 @@
 <span class="sd">        Target data type.</span>
 <span class="sd">    order : {&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}</span>
 <span class="sd">        Row-major (C-style) or column-major (Fortran-style) order.</span>
-<span class="sd">        When ``order`` is &#39;A&#39;, it uses &#39;F&#39; if ``a`` is column-major and uses &#39;C&#39; otherwise.</span>
-<span class="sd">        And when ``order`` is &#39;K&#39;, it keeps strides as closely as possible.</span>
+<span class="sd">        When `order` is ``A``, it uses ``F`` if `a` is column-major and uses</span>
+<span class="sd">        ``C`` otherwise. And when `order` is ``K``, it keeps strides as closely</span>
+<span class="sd">        as possible.</span>
 <span class="sd">    copy : bool</span>
-<span class="sd">        If it is False and no cast happens, then this method returns the array itself.</span>
-<span class="sd">        Otherwise, a copy is returned.</span>
+<span class="sd">        If it is ``False`` and no cast happens, then this method returns</span>
+<span class="sd">        the array itself. Otherwise, a copy is returned.</span>
 <span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
-<span class="sd">        Controls what kind of data casting may occur. Defaults to &#39;unsafe&#39; for backwards compatibility.</span>
-<span class="sd">        &#39;no&#39; means the data types should not be cast at all.</span>
-<span class="sd">        &#39;equiv&#39; means only byte-order changes are allowed.</span>
-<span class="sd">        &#39;safe&#39; means only casts which can preserve values are allowed.</span>
-<span class="sd">        &#39;same_kind&#39; means only safe casts or casts within a kind, like float64 to float32, are allowed.</span>
-<span class="sd">        &#39;unsafe&#39; means any data conversions may be done.</span>
+<span class="sd">        Controls what kind of data casting may occur. Defaults to ``unsafe``</span>
+<span class="sd">        for backwards compatibility.</span>
+<span class="sd">            - &#39;no&#39; means the data types should not be cast at all.</span>
+<span class="sd">            - &#39;equiv&#39; means only byte-order changes are allowed.</span>
+<span class="sd">            - &#39;safe&#39; means only casts which can preserve values are allowed.</span>
+<span class="sd">            - &#39;same_kind&#39; means only safe casts or casts within a kind, like</span>
+<span class="sd">            float64 to float32, are allowed.</span>
+<span class="sd">            - &#39;unsafe&#39; means any data conversions may be done.</span>
 <span class="sd">    copy : bool, optional</span>
-<span class="sd">        By default, astype always returns a newly allocated array. If this is set to false, and the dtype,</span>
-<span class="sd">        order, and subok requirements are satisfied, the input array is returned instead of a copy.</span>
+<span class="sd">        By default, astype always returns a newly allocated array. If this</span>
+<span class="sd">        is set to ``False``, and the dtype, order, and subok requirements</span>
+<span class="sd">        are satisfied, the input array is returned instead of a copy.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    arr_t : dpnp.ndarray</span>
-<span class="sd">        Unless `copy` is ``False`` and the other conditions for returning the input array</span>
-<span class="sd">        are satisfied, `arr_t` is a new array of the same shape as the input array,</span>
-<span class="sd">        with dtype, order given by dtype, order.</span>
+<span class="sd">        Unless `copy` is ``False`` and the other conditions for returning</span>
+<span class="sd">        the input array are satisfied, `arr_t` is a new array of the same shape</span>
+<span class="sd">        as the input array, with dtype, order given by dtype, order.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -334,16 +361,18 @@
         <span class="k">if</span> <span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
             <span class="n">any_is_array</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">continue</span>
-        <span class="k">elif</span> <span class="n">scalar_type</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">scalar_type</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
             <span class="k">continue</span>
 
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+            <span class="sa">f</span><span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">all_scalars</span> <span class="ow">or</span> <span class="n">any_is_array</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;At least one input must be of supported array type, but got all scalars.&quot;</span>
+            <span class="s2">&quot;At least one input must be of supported array type, &quot;</span>
+            <span class="s2">&quot;but got all scalars.&quot;</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="kc">True</span>
 
@@ -359,21 +388,24 @@
 
 <span class="k">def</span> <span class="nf">default_float_type</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return a floating type used by default in DPNP depending on device capabilities.</span>
+<span class="sd">    Return a floating type used by default in DPNP depending on device</span>
+<span class="sd">    capabilities.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
-<span class="sd">        An array API concept of device where an array of default floating type might be created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
+<span class="sd">        An array API concept of device where an array of default floating type</span>
+<span class="sd">        might be created. The `device` can be ``None`` (the default), an OneAPI</span>
+<span class="sd">        filter selector string, an instance of :class:`dpctl.SyclDevice`</span>
+<span class="sd">        corresponding to a non-partitioned SYCL device, an instance of</span>
+<span class="sd">        :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
 <span class="sd">        The value ``None`` is interpreted as to use a default device.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
-<span class="sd">        A SYCL queue which might be used to create an array of default floating type.</span>
-<span class="sd">        The `sycl_queue` can be ``None`` (the default), which is interpreted as</span>
-<span class="sd">        to get the SYCL queue from `device` keyword if present or to use a default queue.</span>
+<span class="sd">        A SYCL queue which might be used to create an array of default floating</span>
+<span class="sd">        type. The `sycl_queue` can be ``None`` (the default), which is</span>
+<span class="sd">        interpreted as to get the SYCL queue from `device` keyword if present</span>
+<span class="sd">        or to use a default queue.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -435,19 +467,16 @@
 <span class="sd">      2. We can not handle with input data object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># TODO need to allow &quot;import dpnp&quot; with no build procedure</span>
-    <span class="c1"># if no_modules_load_doc_build();</span>
-    <span class="c1">#    return False</span>
-
     <span class="k">if</span> <span class="n">use_origin_backend</span><span class="p">():</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="c1"># It&#39;s required to keep track of input object if a non-strided copy is going to be created.</span>
-    <span class="c1"># Thus there will be an extra descriptor allocated to refer on original input.</span>
+    <span class="c1"># It&#39;s required to keep track of input object if a non-strided copy is</span>
+    <span class="c1"># going to be created. Thus there will be an extra descriptor allocated</span>
+    <span class="c1"># to refer on original input.</span>
     <span class="n">orig_desc</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># If input object is a scalar, it means it was allocated on host memory.</span>
-    <span class="c1"># We need to copy it to USM memory according to compute follows data paradigm.</span>
+    <span class="c1"># We need to copy it to USM memory according to compute follows data.</span>
     <span class="k">if</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">):</span>
         <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span>
             <span class="n">ext_obj</span><span class="p">,</span>
@@ -461,7 +490,8 @@
     <span class="c1"># if function get implementation for strides case</span>
     <span class="c1"># then this behavior can be disabled with setting &quot;copy_when_strides&quot;</span>
     <span class="k">if</span> <span class="n">copy_when_strides</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="s2">&quot;strides&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># TODO: replace this workaround when usm_ndarray will provide such functionality</span>
+        <span class="c1"># TODO: replace this workaround when usm_ndarray will provide</span>
+        <span class="c1"># such functionality</span>
         <span class="n">shape_offsets</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
             <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">ext_obj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ext_obj</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
@@ -481,7 +511,8 @@
     <span class="c1"># while dpnp functions are based on DPNP_QUEUE</span>
     <span class="c1"># we need to create a copy on device associated with DPNP_QUEUE</span>
     <span class="c1"># if function get implementation for different queue</span>
-    <span class="c1"># then this behavior can be disabled with setting &quot;copy_when_nondefault_queue&quot;</span>
+    <span class="c1"># then this behavior can be disabled with setting</span>
+    <span class="c1"># &quot;copy_when_nondefault_queue&quot;</span>
     <span class="n">queue</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="s2">&quot;sycl_queue&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">queue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">copy_when_nondefault_queue</span><span class="p">:</span>
         <span class="n">default_queue</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">()</span>
@@ -492,7 +523,7 @@
             <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">default_queue</span><span class="p">)</span>
 
     <span class="n">dpnp_desc</span> <span class="o">=</span> <span class="n">dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">orig_desc</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dpnp_desc</span><span class="o">.</span><span class="n">is_valid</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">dpnp_desc</span><span class="o">.</span><span class="n">is_valid</span><span class="p">:</span>  <span class="c1"># pylint: disable=using-constant-test</span>
         <span class="k">return</span> <span class="n">dpnp_desc</span>
 
     <span class="k">return</span> <span class="kc">False</span>
@@ -520,8 +551,8 @@
 
 <span class="sd">    If both arguments &#39;device&#39; and &#39;sycl_queue&#39; have default value ``None``</span>
 <span class="sd">    and &#39;obj&#39; has `sycl_queue` attribute, it assumes that Compute Follows Data</span>
-<span class="sd">    approach has to be applied and so the resulting SYCL queue will be normalized</span>
-<span class="sd">    based on the queue value from &#39;obj&#39;.</span>
+<span class="sd">    approach has to be applied and so the resulting SYCL queue will be</span>
+<span class="sd">    normalized based on the queue value from &#39;obj&#39;.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -545,15 +576,11 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    sycl_queue: dpctl.SyclQueue</span>
-<span class="sd">        A :class:`dpctl.SyclQueue` object normalized by `normalize_queue_device` call</span>
-<span class="sd">        of `dpctl.tensor` module invoked with &#39;device&#39; and &#39;sycl_queue&#39; values.</span>
-<span class="sd">        If both incoming &#39;device&#39; and &#39;sycl_queue&#39; are None and &#39;obj&#39; has `sycl_queue` attribute,</span>
-<span class="sd">        the normalization will be performed for &#39;obj.sycl_queue&#39; value.</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        If argument is not of the expected type, or keywords imply incompatible queues.</span>
+<span class="sd">        A :class:`dpctl.SyclQueue` object normalized by</span>
+<span class="sd">        `normalize_queue_device` call of `dpctl.tensor` module invoked with</span>
+<span class="sd">        `device` and `sycl_queue` values. If both incoming `device` and</span>
+<span class="sd">        `sycl_queue` are ``None`` and `obj` has `sycl_queue` attribute,</span>
+<span class="sd">        the normalization will be performed for `obj.sycl_queue` value.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -565,9 +592,7 @@
     <span class="p">):</span>
         <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">sycl_queue</span>
 
-    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">_device</span><span class="o">.</span><span class="n">normalize_queue_device</span><span class="p">(</span>
-        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
-    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">get_result_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
@@ -596,21 +621,21 @@
 
     <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">a</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="n">out</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">out</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Output array of shape </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
-                <span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-                <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="n">out</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">out</span>
 
-            <span class="k">return</span> <span class="n">out</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Output array of shape </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span>
 
 
 <span class="k">def</span> <span class="nf">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
@@ -640,7 +665,7 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">a</span>
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-        <span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+        <span class="sa">f</span><span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="p">)</span>
 
 

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.average &mdash; Data Parallel Extension for NumPy 0.15.0dev0+7.gd34b8ce47f documentation</title>
+  <title>dpnp.average &mdash; Data Parallel Extension for NumPy 0.15.0dev0+8.ge6e7b3ec0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=1a226003"></script>
+        <script src="../../_static/documentation_options.js?v=f37a3bfb"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+7.gd34b8ce47f
+                0.15.0dev0+8.ge6e7b3ec0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -148,8 +148,8 @@ weight equal to one.  The 1-D calculation is:</p>
 </div>
 <p>The only constraint on <cite>weights</cite> is that <cite>sum(weights)</cite> must not be 0.</p>
 </p></li>
-<li><p><strong>returned</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the tuple (<cite>average</cite>, <cite>sum_of_weights</cite>)
-is returned, otherwise only the average is returned.
+<li><p><strong>returned</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the tuple (<cite>average</cite>,
+<cite>sum_of_weights</cite>) is returned, otherwise only the average is returned.
 If <cite>weights=None</cite>, <cite>sum_of_weights</cite> is equivalent to the number of
 elements over which the average is taken.</p></li>
 <li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) are included in the result
@@ -160,17 +160,18 @@ the returned array. Default: <code class="docutils literal notranslate"><span cl
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out, [sum_of_weights]</strong> – Return the average along the specified axis. When <cite>returned</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
-return a tuple with the average as the first element and the sum of the
-weights as the second element. <cite>sum_of_weights</cite> is of the same type as
-<cite>out</cite>. The result dtype follows a general pattern. If <cite>weights</cite> is
-<code class="docutils literal notranslate"><span class="pre">None</span></code>, the result dtype will be that of <cite>a</cite> , or default floating point
-data type for the device where input array <cite>a</cite> is allocated. Otherwise,
-if <cite>weights</cite> is not <code class="docutils literal notranslate"><span class="pre">None</span></code> and <cite>a</cite> is non-integral, the result type
-will be the type of lowest precision capable of representing values of
-both <cite>a</cite> and <cite>weights</cite>. If <cite>a</cite> happens to be integral, the previous rules
-still applies but the result dtype will at least be default floating point
-data type for the device where input array <cite>a</cite> is allocated.</p>
+<dd class="field-even"><p><strong>out, [sum_of_weights]</strong> – Return the average along the specified axis. When <cite>returned</cite> is
+<code class="docutils literal notranslate"><span class="pre">True</span></code>, return a tuple with the average as the first element and
+the sum of the weights as the second element. <cite>sum_of_weights</cite> is of
+the same type as <cite>out</cite>. The result dtype follows a general pattern.
+If <cite>weights</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the result dtype will be that of <cite>a</cite> , or
+default floating point data type for the device where input array <cite>a</cite>
+is allocated. Otherwise, if <cite>weights</cite> is not <code class="docutils literal notranslate"><span class="pre">None</span></code> and <cite>a</cite> is
+non-integral, the result type will be the type of lowest precision
+capable of representing values of both <cite>a</cite> and <cite>weights</cite>. If <cite>a</cite>
+happens to be integral, the previous rules still applies but the result
+dtype will at least be default floating point data type for the device
+where input array <cite>a</cite> is allocated.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray, dpnp.ndarray</p>
