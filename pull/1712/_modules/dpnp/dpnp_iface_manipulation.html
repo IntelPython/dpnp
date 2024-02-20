@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.13.1dev4+7.g4664c406fc documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.15.0dev0+12.g5b82b6151b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=0957fcae"></script>
+        <script src="../../_static/documentation_options.js?v=4760a8cc"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev4+7.g4664c406fc
+                0.15.0dev0+12.g5b82b6151b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -133,9 +133,13 @@
 <span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
+
+<span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">call_origin</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;asfarray&quot;</span><span class="p">,</span>
@@ -270,7 +274,8 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.atleast_2d` : View inputs as arrays with at least two dimensions.</span>
-<span class="sd">    :obj:`dpnp.atleast_3d` : View inputs as arrays with at least three dimensions.</span>
+<span class="sd">    :obj:`dpnp.atleast_3d` : View inputs as arrays with at least three</span>
+<span class="sd">                             dimensions.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -309,8 +314,7 @@
         <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">res</span></div>
+    <span class="k">return</span> <span class="n">res</span></div>
 
 
 
@@ -337,8 +341,10 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.atleast_1d` : Convert inputs to arrays with at least one dimension.</span>
-<span class="sd">    :obj:`dpnp.atleast_3d` : View inputs as arrays with at least three dimensions.</span>
+<span class="sd">    :obj:`dpnp.atleast_1d` : Convert inputs to arrays with at least one</span>
+<span class="sd">                             dimension.</span>
+<span class="sd">    :obj:`dpnp.atleast_3d` : View inputs as arrays with at least three</span>
+<span class="sd">                             dimensions.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -371,8 +377,7 @@
         <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">res</span></div>
+    <span class="k">return</span> <span class="n">res</span></div>
 
 
 
@@ -399,8 +404,10 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.atleast_1d` : Convert inputs to arrays with at least one dimension.</span>
-<span class="sd">    :obj:`dpnp.atleast_2d` : View inputs as arrays with at least three dimensions.</span>
+<span class="sd">    :obj:`dpnp.atleast_1d` : Convert inputs to arrays with at least one</span>
+<span class="sd">                             dimension.</span>
+<span class="sd">    :obj:`dpnp.atleast_2d` : View inputs as arrays with at least three</span>
+<span class="sd">                             dimensions.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -439,8 +446,7 @@
         <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">res</span></div>
+    <span class="k">return</span> <span class="n">res</span></div>
 
 
 
@@ -494,6 +500,7 @@
 
 
 
+<span class="c1"># pylint: disable=redefined-outer-name</span>
 <div class="viewcode-block" id="broadcast_to">
 <a class="viewcode-back" href="../../reference/generated/dpnp.broadcast_to.html#dpnp.broadcast_to">[docs]</a>
 <span class="k">def</span> <span class="nf">broadcast_to</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -513,7 +520,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array having a specified shape. Must have the same data type as `array`.</span>
+<span class="sd">        An array having a specified shape.</span>
+<span class="sd">        Must have the same data type as `array`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -522,7 +530,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against each other.</span>
+<span class="sd">    :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against</span>
+<span class="sd">                                   each other.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -548,7 +557,8 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.can_cast.html#dpnp.can_cast">[docs]</a>
 <span class="k">def</span> <span class="nf">can_cast</span><span class="p">(</span><span class="n">from_</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns ``True`` if cast between data types can occur according to the casting rule.</span>
+<span class="sd">    Returns ``True`` if cast between data types can occur according</span>
+<span class="sd">    to the casting rule.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.can_cast`.</span>
 
@@ -709,18 +719,18 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    arrays : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        The arrays must have the same shape, except in the dimension corresponding</span>
-<span class="sd">        to axis (the first, by default).</span>
+<span class="sd">        The arrays must have the same shape, except in the dimension</span>
+<span class="sd">        corresponding to axis (the first, by default).</span>
 <span class="sd">    axis : int, optional</span>
-<span class="sd">        The axis along which the arrays will be joined. If axis is None, arrays are</span>
-<span class="sd">        flattened before use. Default is 0.</span>
+<span class="sd">        The axis along which the arrays will be joined. If axis is ``None``,</span>
+<span class="sd">        arrays are flattened before use. Default is 0.</span>
 <span class="sd">    out : dpnp.ndarray, optional</span>
-<span class="sd">        If provided, the destination to place the result. The shape must be correct,</span>
-<span class="sd">        matching that of what concatenate would have returned if no out argument were</span>
-<span class="sd">        specified.</span>
+<span class="sd">        If provided, the destination to place the result. The shape must be</span>
+<span class="sd">        correct, matching that of what concatenate would have returned</span>
+<span class="sd">        if no out argument were specified.</span>
 <span class="sd">    dtype : str or dtype</span>
-<span class="sd">        If provided, the destination array will have this dtype. Cannot be provided</span>
-<span class="sd">        together with out.</span>
+<span class="sd">        If provided, the destination array will have this dtype. Cannot be</span>
+<span class="sd">        provided together with `out`.</span>
 <span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur. Defaults to &#39;same_kind&#39;.</span>
 
@@ -731,16 +741,22 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.array_split` : Split an array into multiple sub-arrays of equal or near-equal size.</span>
-<span class="sd">    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.</span>
-<span class="sd">    :obj:`dpnp.hsplit` : Split array into multiple sub-arrays horizontally (column wise).</span>
-<span class="sd">    :obj:`dpnp.vsplit` : Split array into multiple sub-arrays vertically (row wise).</span>
-<span class="sd">    :obj:`dpnp.dsplit` : Split array into multiple sub-arrays along the 3rd axis (depth).</span>
+<span class="sd">    :obj:`dpnp.array_split` : Split an array into multiple sub-arrays of equal</span>
+<span class="sd">                              or near-equal size.</span>
+<span class="sd">    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal</span>
+<span class="sd">                        size.</span>
+<span class="sd">    :obj:`dpnp.hsplit` : Split array into multiple sub-arrays horizontally</span>
+<span class="sd">                         (column wise).</span>
+<span class="sd">    :obj:`dpnp.vsplit` : Split array into multiple sub-arrays vertically</span>
+<span class="sd">                         (row wise).</span>
+<span class="sd">    :obj:`dpnp.dsplit` : Split array into multiple sub-arrays along</span>
+<span class="sd">                         the 3rd axis (depth).</span>
 <span class="sd">    :obj:`dpnp.stack` : Stack a sequence of arrays along a new axis.</span>
 <span class="sd">    :obj:`dpnp.block` : Assemble arrays from blocks.</span>
 <span class="sd">    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).</span>
 <span class="sd">    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).</span>
-<span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third dimension).</span>
+<span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise</span>
+<span class="sd">                         (along third dimension).</span>
 <span class="sd">    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.</span>
 
 <span class="sd">    Examples</span>
@@ -762,7 +778,8 @@
 
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;concatenate() only takes `out` or `dtype` as an argument, but both were provided.&quot;</span>
+            <span class="s2">&quot;concatenate() only takes `out` or `dtype` as an argument, &quot;</span>
+            <span class="s2">&quot;but both were provided.&quot;</span>
         <span class="p">)</span>
 
     <span class="n">usm_arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span>
@@ -824,7 +841,7 @@
             <span class="s2">&quot;Destination array must be any of supported type, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">src</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">src</span><span class="p">):</span>
         <span class="n">src</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">dst</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dst</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">):</span>
@@ -880,7 +897,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    tup : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        One or more array-like sequences. The arrays must have the same shape</span>
-<span class="sd">        along all but the third axis. 1-D or 2-D arrays must have the same shape.</span>
+<span class="sd">        along all but the third axis. 1-D or 2-D arrays must have the same</span>
+<span class="sd">        shape.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -963,8 +981,13 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.squeeze` : The inverse operation, removing singleton dimensions</span>
-<span class="sd">    :obj:`dpnp.reshape` : Insert, remove, and combine dimensions, and resize existing ones</span>
-<span class="sd">    :obj:`dpnp.atleast_1d`, :obj:`dpnp.atleast_2d`, :obj:`dpnp.atleast_3d`</span>
+<span class="sd">    :obj:`dpnp.reshape` : Insert, remove, and combine dimensions, and resize</span>
+<span class="sd">                          existing ones</span>
+<span class="sd">    :obj:`dpnp.atleast_1d` : Convert inputs to arrays with at least one</span>
+<span class="sd">                             dimension.</span>
+<span class="sd">    :obj:`dpnp.atleast_2d` : View inputs as arrays with at least two dimensions.</span>
+<span class="sd">    :obj:`dpnp.atleast_3d` : View inputs as arrays with at least three</span>
+<span class="sd">                             dimensions.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1225,10 +1248,12 @@
 <span class="sd">    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.</span>
 <span class="sd">    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.</span>
 <span class="sd">    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).</span>
-<span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third dimension).</span>
+<span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise</span>
+<span class="sd">                         (along third dimension).</span>
 <span class="sd">    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.</span>
 <span class="sd">    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.</span>
-<span class="sd">    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.</span>
+<span class="sd">    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal</span>
+<span class="sd">                        size.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1256,8 +1281,7 @@
     <span class="c1"># As a special case, dimension 0 of 1-dimensional arrays is &quot;horizontal&quot;</span>
     <span class="k">if</span> <span class="n">arrs</span> <span class="ow">and</span> <span class="n">arrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">)</span></div>
 
 
 
@@ -1265,7 +1289,8 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.moveaxis.html#dpnp.moveaxis">[docs]</a>
 <span class="k">def</span> <span class="nf">moveaxis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Move axes of an array to new positions. Other axes remain in their original order.</span>
+<span class="sd">    Move axes of an array to new positions. Other axes remain in their original</span>
+<span class="sd">    order.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.moveaxis`.</span>
 
@@ -1318,14 +1343,15 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input array. The elements in `a` are read in the order specified by order,</span>
-<span class="sd">        and packed as a 1-D array.</span>
+<span class="sd">        Input array. The elements in `a` are read in the order specified by</span>
+<span class="sd">        order, and packed as a 1-D array.</span>
 <span class="sd">    order : {&#39;C&#39;, &#39;F&#39;}, optional</span>
-<span class="sd">        The elements of `a` are read using this index order. ``C`` means to index</span>
-<span class="sd">        the elements in row-major, C-style order, with the last axis index</span>
-<span class="sd">        changing fastest, back to the first axis index changing slowest. ``F``</span>
-<span class="sd">        means to index the elements in column-major, Fortran-style order, with</span>
-<span class="sd">        the first index changing fastest, and the last index changing slowest.</span>
+<span class="sd">        The elements of `a` are read using this index order. ``C`` means to</span>
+<span class="sd">        index the elements in row-major, C-style order, with the last axis</span>
+<span class="sd">        index changing fastest, back to the first axis index changing slowest.</span>
+<span class="sd">        ``F`` means to index the elements in column-major, Fortran-style order,</span>
+<span class="sd">        with the first index changing fastest, and the last index changing</span>
+<span class="sd">        slowest.</span>
 <span class="sd">        By default, ``C`` index order is used.</span>
 
 <span class="sd">    Returns</span>
@@ -1335,7 +1361,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.reshape` : Change the shape of an array without changing its data.</span>
+<span class="sd">    :obj:`dpnp.reshape` : Change the shape of an array without changing its</span>
+<span class="sd">                          data.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1369,20 +1396,22 @@
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    repeat : int or array of int</span>
-<span class="sd">        The number of repetitions for each element. `repeats` is broadcasted to fit</span>
-<span class="sd">        the shape of the given axis.</span>
+<span class="sd">        The number of repetitions for each element. `repeats` is broadcasted to</span>
+<span class="sd">        fit the shape of the given axis.</span>
 <span class="sd">    axis : int, optional</span>
-<span class="sd">        The axis along which to repeat values. By default, use the flattened input array,</span>
-<span class="sd">        and return a flat output array.</span>
+<span class="sd">        The axis along which to repeat values. By default, use the flattened</span>
+<span class="sd">        input array, and return a flat output array.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Output array which has the same shape as `a`, except along the given axis.</span>
+<span class="sd">        Output array which has the same shape as `a`, except along the given</span>
+<span class="sd">        axis.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.tile` : Construct an array by repeating A the number of times given by reps.</span>
+<span class="sd">    :obj:`dpnp.tile` : Construct an array by repeating A the number of times</span>
+<span class="sd">                       given by reps.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1520,7 +1549,9 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
-<span class="sd">    &gt;&gt;&gt; dp.result_type(dp.arange(3, dtype=dp.int64), dp.arange(7, dtype=dp.int32))</span>
+<span class="sd">    &gt;&gt;&gt; a = dp.arange(3, dtype=dp.int64)</span>
+<span class="sd">    &gt;&gt;&gt; b = dp.arange(7, dtype=dp.int32)</span>
+<span class="sd">    &gt;&gt;&gt; dp.result_type(a, b)</span>
 <span class="sd">    dtype(&#39;int64&#39;)</span>
 
 <span class="sd">    &gt;&gt;&gt; dp.result_type(dp.int64, dp.complex128)</span>
@@ -1660,7 +1691,7 @@
     <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">start</span> <span class="o">+=</span> <span class="n">n</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; arg requires </span><span class="si">%d</span><span class="s2"> &lt;= </span><span class="si">%s</span><span class="s2"> &lt; </span><span class="si">%d</span><span class="s2">, but </span><span class="si">%d</span><span class="s2"> was passed in&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">start</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="n">start</span><span class="p">:</span>
         <span class="n">start</span> <span class="o">-=</span> <span class="mi">1</span>
@@ -1712,8 +1743,7 @@
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
 
 
 
@@ -1755,7 +1785,8 @@
 <span class="sd">    &gt;&gt;&gt; np.squeeze(x, axis=1).shape</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">    ...</span>
-<span class="sd">    ValueError: Cannot select an axis to squeeze out which has size not equal to one.</span>
+<span class="sd">    ValueError: Cannot select an axis to squeeze out which has size not equal</span>
+<span class="sd">    to one.</span>
 <span class="sd">    &gt;&gt;&gt; np.squeeze(x, axis=2).shape</span>
 <span class="sd">    (1, 3)</span>
 
@@ -1783,11 +1814,12 @@
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis in the result array along which the input arrays are stacked.</span>
 <span class="sd">    out : dpnp.ndarray, optional</span>
-<span class="sd">        If provided, the destination to place the result. The shape must be correct,</span>
-<span class="sd">        matching that of what stack would have returned if no out argument were specified.</span>
+<span class="sd">        If provided, the destination to place the result. The shape must be</span>
+<span class="sd">        correct, matching that of what stack would have returned if no out</span>
+<span class="sd">        argument were specified.</span>
 <span class="sd">    dtype : str or dtype</span>
-<span class="sd">        If provided, the destination array will have this dtype. Cannot be provided</span>
-<span class="sd">        together with out.</span>
+<span class="sd">        If provided, the destination array will have this dtype. Cannot be</span>
+<span class="sd">        provided together with `out`.</span>
 <span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur. Defaults to &#39;same_kind&#39;.</span>
 
@@ -1801,10 +1833,12 @@
 <span class="sd">    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.</span>
 <span class="sd">    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).</span>
 <span class="sd">    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).</span>
-<span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third dimension).</span>
+<span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise</span>
+<span class="sd">                         (along third dimension).</span>
 <span class="sd">    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.</span>
 <span class="sd">    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.</span>
-<span class="sd">    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.</span>
+<span class="sd">    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal</span>
+<span class="sd">                        size.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1836,7 +1870,8 @@
 
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;stack() only takes `out` or `dtype` as an argument, but both were provided.&quot;</span>
+            <span class="s2">&quot;stack() only takes `out` or `dtype` as an argument, &quot;</span>
+            <span class="s2">&quot;but both were provided.&quot;</span>
         <span class="p">)</span>
 
     <span class="n">usm_arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span>
@@ -1909,6 +1944,7 @@
 
 
 
+<span class="c1"># pylint: disable=invalid-name</span>
 <div class="viewcode-block" id="tile">
 <a class="viewcode-back" href="../../reference/generated/dpnp.tile.html#dpnp.tile">[docs]</a>
 <span class="k">def</span> <span class="nf">tile</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">reps</span><span class="p">):</span>
@@ -2053,7 +2089,7 @@
         <span class="n">array</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">get_array</span><span class="p">())</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+            <span class="sa">f</span><span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2118,7 +2154,8 @@
 <span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third axis).</span>
 <span class="sd">    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.</span>
 <span class="sd">    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.</span>
-<span class="sd">    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.</span>
+<span class="sd">    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal</span>
+<span class="sd">                        size.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>

@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.13.1dev4+7.g4664c406fc documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev0+12.g5b82b6151b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=0957fcae"></script>
+        <script src="../../_static/documentation_options.js?v=4760a8cc"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev4+7.g4664c406fc
+                0.15.0dev0+12.g5b82b6151b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -132,7 +132,11 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_elementwise_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">du</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="kn">import</span> <span class="n">_acceptance_fn_divide</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_acceptance_fn_divide</span><span class="p">,</span>
+    <span class="n">_acceptance_fn_negative</span><span class="p">,</span>
+    <span class="n">_acceptance_fn_subtract</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">normalize_axis_index</span><span class="p">,</span>
     <span class="n">normalize_axis_tuple</span><span class="p">,</span>
@@ -259,7 +263,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -325,7 +328,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
@@ -448,7 +450,6 @@
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters `decimals` is supported with its default value.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -496,7 +497,6 @@
 <span class="s2">Parameters `where`, `dtype`, and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by real-value data types.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -625,7 +625,6 @@
 <span class="s2">-----------</span>
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -703,7 +702,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported real-valued data types.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -989,7 +987,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
@@ -1147,7 +1144,6 @@
 <span class="s2">Parameters `where`, `dtype`, and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by real-value data types.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -1210,7 +1206,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -1712,7 +1707,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -1786,7 +1780,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -1952,7 +1945,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
@@ -2019,7 +2011,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2046,6 +2037,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_negative</span><span class="p">,</span>
     <span class="n">_negative_docstring</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">negative</span><span class="p">,</span>
+    <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">_acceptance_fn_negative</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2075,7 +2067,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2140,7 +2131,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2316,7 +2306,6 @@
 <span class="s2">-----------</span>
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2400,7 +2389,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2463,7 +2451,6 @@
 <span class="s2">-----------</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2514,7 +2501,6 @@
 <span class="s2">-----------</span>
 <span class="s2">Parameters `decimals` is supported with its default value.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2579,9 +2565,8 @@
 <span class="s2">-----------</span>
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Input array data types are limited by supported real-valued data types.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-<span class="s2">However, if the input array data type is complex, the function will be executed sequentially on CPU.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2635,7 +2620,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported real-valued data types.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2690,7 +2674,6 @@
 <span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
@@ -2727,6 +2710,7 @@
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_sub_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_sub</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_subtract_inplace</span><span class="p">,</span>
+    <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">_acceptance_fn_subtract</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -3003,7 +2987,6 @@
 <span class="s2">Parameters `where`, `dtype`, and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
-<span class="s2">Input array data types are limited by real-value data types.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
