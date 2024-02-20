@@ -13,9 +13,9 @@ from tests.third_party.cupy import testing
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
     get_all_dtypes,
     get_float_complex_dtypes,
-    get_symm_herm_numpy_array,
     has_support_aspect64,
     is_cpu_device,
 )
@@ -664,11 +664,6 @@ def test_norm3(array, ord, axis):
 
 
 class TestQr:
-    # Set numpy.random.seed for test methods to prevent
-    # random generation of the input singular matrix
-    def setup_method(self):
-        numpy.random.seed(81)
-
     # TODO: New packages that fix issue CMPLRLLVM-53771 are only available in internal CI.
     # Skip the tests on cpu until these packages are available for the external CI.
     # Specifically dpcpp_linux-64>=2024.1.0
@@ -693,9 +688,9 @@ class TestQr:
         ids=["r", "raw", "complete", "reduced"],
     )
     def test_qr(self, dtype, shape, mode):
-        a = numpy.random.randn(*shape).astype(dtype)
-        if numpy.issubdtype(dtype, numpy.complexfloating):
-            a += 1j * numpy.random.randn(*shape)
+        # Set use_seed=True to prevent
+        # random generation of the input singular matrix
+        a = generate_random_numpy_array(shape, dtype, use_seed=True)
         ia = inp.array(a)
 
         if mode == "r":
@@ -765,7 +760,7 @@ class TestQr:
         ids=["r", "raw", "complete", "reduced"],
     )
     def test_qr_strides(self, mode):
-        a = numpy.random.randn(5, 5)
+        a = generate_random_numpy_array((5, 5))
         ia = inp.array(a)
 
         # positive strides
@@ -1025,11 +1020,6 @@ class TestSlogdet:
 
 
 class TestSvd:
-    # Set numpy.random.seed for test methods to prevent
-    # random generation of the input singular matrix
-    def setup_method(self):
-        numpy.random.seed(81)
-
     def get_tol(self, dtype):
         tol = 1e-06
         if dtype in (inp.float32, inp.complex64):
@@ -1127,7 +1117,11 @@ class TestSvd:
         ids=["(2, 2)", "(16, 16)"],
     )
     def test_svd_hermitian(self, dtype, compute_vt, shape):
-        a = get_symm_herm_numpy_array(shape, dtype)
+        # Set use_seed=True to prevent
+        # random generation of the input singular matrix
+        a = generate_random_numpy_array(
+            shape, dtype, hermitian=True, use_seed=True
+        )
         dp_a = inp.array(a)
 
         if compute_vt:
@@ -1165,11 +1159,6 @@ class TestSvd:
 
 
 class TestPinv:
-    # Set numpy.random.seed for test methods to prevent
-    # random generation of the input singular matrix
-    def setup_method(self):
-        numpy.random.seed(81)
-
     def get_tol(self, dtype):
         tol = 1e-06
         if dtype in (inp.float32, inp.complex64):
@@ -1205,9 +1194,9 @@ class TestPinv:
         ],
     )
     def test_pinv(self, dtype, shape):
-        a = numpy.random.randn(*shape).astype(dtype)
-        if numpy.issubdtype(dtype, numpy.complexfloating):
-            a += 1j * numpy.random.randn(*shape)
+        # Set use_seed=True to prevent
+        # random generation of the input singular matrix
+        a = generate_random_numpy_array(shape, dtype, use_seed=True)
         a_dp = inp.array(a)
 
         B = numpy.linalg.pinv(a)
@@ -1232,7 +1221,11 @@ class TestPinv:
         ids=["(2, 2)", "(16, 16)"],
     )
     def test_pinv_hermitian(self, dtype, shape):
-        a = get_symm_herm_numpy_array(shape, dtype)
+        # Set use_seed=True to prevent
+        # random generation of the input singular matrix
+        a = generate_random_numpy_array(
+            shape, dtype, hermitian=True, use_seed=True
+        )
         a_dp = inp.array(a)
 
         B = numpy.linalg.pinv(a, hermitian=True)
@@ -1268,7 +1261,7 @@ class TestPinv:
         assert_dtype_allclose(B_dp, B)
 
     def test_pinv_strides(self):
-        a = numpy.random.randn(5, 5)
+        a = generate_random_numpy_array((5, 5))
         a_dp = inp.array(a)
 
         self.get_tol(a_dp.dtype)

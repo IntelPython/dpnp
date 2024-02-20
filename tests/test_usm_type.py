@@ -8,7 +8,7 @@ from numpy.testing import assert_allclose
 
 import dpnp as dp
 
-from .helper import assert_dtype_allclose, get_symm_herm_numpy_array
+from .helper import assert_dtype_allclose, generate_random_numpy_array
 
 list_of_usm_types = ["device", "shared", "host"]
 
@@ -676,7 +676,7 @@ def test_clip(usm_type):
 )
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_eigenvalue(func, shape, usm_type):
-    a_np = get_symm_herm_numpy_array(shape)
+    a_np = generate_random_numpy_array(shape, hermitian=True)
     a = dp.array(a_np, usm_type=usm_type)
 
     if func == "eigh":
@@ -889,14 +889,9 @@ def test_svd(usm_type, shape, full_matrices_param, compute_uv_param):
     ],
 )
 def test_pinv(shape, hermitian, usm_type):
-    numpy.random.seed(81)
-    if hermitian:
-        a = dp.random.randn(*shape) + 1j * dp.random.randn(*shape)
-        a = dp.conj(a.T) @ a
-    else:
-        a = dp.random.randn(*shape)
+    a_np = generate_random_numpy_array(shape, hermitian=hermitian)
+    a = dp.array(a_np, usm_type=usm_type)
 
-    a = dp.array(a, usm_type=usm_type)
     B = dp.linalg.pinv(a, hermitian=hermitian)
 
     assert a.usm_type == B.usm_type

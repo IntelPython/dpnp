@@ -166,23 +166,56 @@ def get_all_dtypes(
     return dtypes
 
 
-def get_symm_herm_numpy_array(shape, dtype=None):
+def generate_random_numpy_array(
+    shape, dtype=None, hermitian=False, use_seed=False, seed_value=81
+):
     """
-    Generates a real symmetric or a complex Hermitian numpy array of
-    the specified shape and data type.
+    Generate a random numpy array with the specified shape and dtype.
+
+    If required, the array can be made Hermitian (for complex data types) or
+    symmetric (for real data types).
+
+    Parameters
+    ----------
+    shape : tuple
+        Shape of the generated array.
+    dtype : str or dtype, optional
+        Desired data-type for the output array.
+        If not specified, data type will be determined by numpy.
+        Default : None
+    hermitian : bool, optional
+        If True, generates a Hermitian (symmetric if `dtype` is real) matrix.
+        Default : False
+    set_seed : bool, optional
+        If True, the random number generator seed will be set to `seed_value`.
+        Default : False.
+    seed_value : int, optional
+        The seed value to initialize the random number generator.
+        Only used if `set_seed` is True.
+        Default : `81` to avoid generating a singular matrix.
+
+    Returns
+    -------
+    out : numpy.ndarray
+        A random numpy array of the specified shape and dtype.
+        The array is Hermitian or symmetric if `hermitian` is True.
 
     Note:
-    For arrays with more than 2 dimensions, it ensures symmetry(or Hermitian property
-    for complex data type) for each sub-array.
+    For arrays with more than 2 dimensions, the Hermitian or
+    symmetric property is ensured for each 2D sub-array.
 
     """
 
-    numpy.random.seed(81)
+    if use_seed:
+        numpy.random.seed(seed_value)
+
     a = numpy.random.randn(*shape).astype(dtype)
     if numpy.issubdtype(a.dtype, numpy.complexfloating):
+        if use_seed:
+            numpy.random.seed(seed_value)
         a += 1j * numpy.random.randn(*shape)
 
-    if a.size > 0:
+    if hermitian and a.size > 0:
         if a.ndim > 2:
             for i in range(a.shape[0]):
                 a[i] = numpy.conj(a[i].T) @ a[i]

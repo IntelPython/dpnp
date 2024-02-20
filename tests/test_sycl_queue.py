@@ -10,8 +10,8 @@ from dpnp.dpnp_array import dpnp_array
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
     get_all_dtypes,
-    get_symm_herm_numpy_array,
     is_win_platform,
 )
 
@@ -1123,7 +1123,7 @@ def test_eig(device):
 )
 def test_eigenvalue(func, shape, device):
     dtype = dpnp.default_float_type(device)
-    a = get_symm_herm_numpy_array(shape, dtype)
+    a = generate_random_numpy_array(shape, dtype, hermitian=True, use_seed=True)
     dp_a = dpnp.array(a, device=device)
 
     expected_queue = dp_a.get_array().sycl_queue
@@ -1725,12 +1725,10 @@ def test_slogdet(shape, is_empty, device):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_pinv(shape, hermitian, rcond_as_array, device):
-    numpy.random.seed(81)
     dtype = dpnp.default_float_type(device)
-    if hermitian:
-        a_np = get_symm_herm_numpy_array(shape, dtype)
-    else:
-        a_np = numpy.random.randn(*shape).astype(dtype)
+    a_np = generate_random_numpy_array(
+        shape, dtype, hermitian=hermitian, use_seed=True
+    )
 
     a_dp = dpnp.array(a_np, device=device)
 
