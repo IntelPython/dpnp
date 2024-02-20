@@ -39,6 +39,7 @@ __all__ = [
     "dpnp_det",
     "dpnp_eigh",
     "dpnp_inv",
+    "dpnp_matrix_rank",
     "dpnp_pinv",
     "dpnp_qr",
     "dpnp_slogdet",
@@ -1038,6 +1039,29 @@ def dpnp_inv(a):
     a_ht_copy_ev.wait()
 
     return b_f
+
+
+def dpnp_matrix_rank(A, tol=None, hermitian=False):
+    """
+    dpnp_matrix_rank(A, tol=None, hermitian=False)
+
+    Return matrix rank of array using SVD method.
+
+    """
+
+    if A.ndim < 2:
+        return (A != 0).any().astype(int)
+
+    S = dpnp_svd(A, compute_uv=False, hermitian=hermitian)
+
+    if tol is None:
+        rtol = max(A.shape[-2:]) * dpnp.finfo(S.dtype).eps
+        tol = S.max(axis=-1, keepdims=True) * rtol
+    elif not dpnp.isscalar(tol):
+        # Add a new axis to match Numpy's output
+        tol = tol[..., None]
+
+    return dpnp.count_nonzero(S > tol, axis=-1)
 
 
 def dpnp_pinv(a, rcond=1e-15, hermitian=False):

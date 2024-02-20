@@ -107,7 +107,7 @@ jobs:
 
       - name: Install dpnp dependencies
         run: |
-          conda install numpy"<1.24" dpctl">=0.16.0*" mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64"<2024.0.1" \
+          conda install numpy"<1.24" dpctl">=0.17.0dev0" mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64"<2024.0.1" \
               cmake cython pytest ninja scikit-build sysroot_linux-64">=2.28" ${{ env.CHANNELS }}
 
       - name: Install cuPy dependencies

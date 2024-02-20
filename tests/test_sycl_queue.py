@@ -1220,18 +1220,34 @@ def test_inv(shape, is_empty, device):
 
 
 @pytest.mark.parametrize(
+    "data, tol",
+    [
+        (numpy.array([1, 2]), None),
+        (numpy.array([[1, 2], [3, 4]]), None),
+        (numpy.array([[1, 2], [3, 4]]), 1e-06),
+    ],
+    ids=[
+        "1-D array",
+        "2-D array no tol",
+        "2_d array with tol",
+    ],
+)
+@pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_matrix_rank(device):
-    data = [[0, 0], [0, 0]]
-    numpy_data = numpy.array(data)
-    dpnp_data = dpnp.array(data, device=device)
+def test_matrix_rank(data, tol, device):
+    dp_data = dpnp.array(data, device=device)
 
-    result = dpnp.linalg.matrix_rank(dpnp_data)
-    expected = numpy.linalg.matrix_rank(numpy_data)
+    result = dpnp.linalg.matrix_rank(dp_data, tol=tol)
+    expected = numpy.linalg.matrix_rank(data, tol=tol)
     assert_array_equal(expected, result)
+
+    expected_queue = dp_data.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+
+    assert_sycl_queue_equal(result_queue, expected_queue)
 
 
 @pytest.mark.parametrize(
