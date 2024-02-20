@@ -783,17 +783,27 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
             "(the dimension of vector used in cross product must be 2 or 3)"
         )
 
-    # Create the output array
+    # Modify the shape of input arrays if necessary
+    a_shape = a.shape
+    b_shape = b.shape
     # TODO: replace with dpnp.broadcast_shapes once implemented
-    shape = numpy.broadcast_shapes(a[..., 0].shape, b[..., 0].shape)
-    if a.shape[-1] == 3 or b.shape[-1] == 3:
-        shape += (3,)
+    res_shape = numpy.broadcast_shapes(a_shape[:-1], b_shape[:-1])
+    if a_shape[:-1] != res_shape:
+        a = dpnp.broadcast_to(a, res_shape + (a_shape[-1],))
+        a_shape = a.shape
+    if b_shape[:-1] != res_shape:
+        b = dpnp.broadcast_to(b, res_shape + (b_shape[-1],))
+        b_shape = b.shape
+
+    if a_shape[-1] == 3 or b_shape[-1] == 3:
+        res_shape += (3,)
         # Check axisc is within bounds
-        axisc = normalize_axis_index(axisc, len(shape), msg_prefix="axisc")
+        axisc = normalize_axis_index(axisc, len(res_shape), msg_prefix="axisc")
+    # Create the output array
     dtype = dpnp.result_type(a, b)
     res_usm_type, exec_q = get_usm_allocations([a, b])
     cp = dpnp.empty(
-        shape, dtype=dtype, sycl_queue=exec_q, usm_type=res_usm_type
+        res_shape, dtype=dtype, sycl_queue=exec_q, usm_type=res_usm_type
     )
 
     # recast arrays as dtype
@@ -801,7 +811,7 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     b = b.astype(dtype, copy=False)
 
     cp = dpnp_cross(a, b, cp, exec_q)
-    if a.shape[-1] == 2 and b.shape[-1] == 2:
+    if a_shape[-1] == 2 and b_shape[-1] == 2:
         return cp
     else:
         return dpnp.moveaxis(cp, -1, axisc)

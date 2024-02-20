@@ -123,6 +123,35 @@ class TestCross:
         expected = numpy.cross(a, b)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "shape1, shape2, axis_a, axis_b, axis_c",
+        [
+            ((4, 2, 1, 5), (2, 4, 3, 5), 1, 0, -2),
+            ((2, 2, 4, 5), (2, 4, 3, 1), 1, 2, -1),
+            ((2, 3, 4, 1), (2, 4, 2, 5), 1, 2, -1),
+            ((1, 3, 4, 5), (2, 4, 3, 5), 1, 2, -1),
+            ((2, 3, 4, 5), (1, 1, 3, 1), -3, -2, 0),
+        ],
+    )
+    def test_cross_broadcast(
+        self, dtype, shape1, shape2, axis_a, axis_b, axis_c
+    ):
+        a = numpy.array(
+            numpy.random.uniform(-5, 5, numpy.prod(shape1)), dtype=dtype
+        ).reshape(shape1)
+        b = numpy.array(
+            numpy.random.uniform(-5, 5, numpy.prod(shape2)), dtype=dtype
+        ).reshape(shape2)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.cross(ia, ib, axis_a, axis_b, axis_c)
+        expected = numpy.cross(a, b, axis_a, axis_b, axis_c)
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_cross_strided(self, dtype):
         a = numpy.arange(1, 10, dtype=dtype)
