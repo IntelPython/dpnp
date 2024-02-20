@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2024, Intel Corporation
@@ -37,7 +35,7 @@ This module provides public type interface file for the library
 import dpctl.tensor as dpt
 import numpy
 
-from dpnp.dpnp_array import dpnp_array
+from .dpnp_array import dpnp_array
 
 __all__ = [
     "bool",
@@ -93,6 +91,7 @@ __all__ = [
 ]
 
 
+# pylint: disable=invalid-name
 # =============================================================================
 # Data types (borrowed from NumPy)
 # =============================================================================
@@ -147,6 +146,7 @@ PINF = numpy.PINF
 PZERO = numpy.PZERO
 
 
+# pylint: disable=redefined-outer-name
 def finfo(dtype):
     """
     Returns machine limits for floating-point data types.
@@ -172,9 +172,9 @@ def finfo(dtype):
             real-valued floating-point number larger than 1.0 according
             to the IEEE-754 standard.
         * epsneg: float
-            difference between 1.0 and the next smallest representable real-valued
-            floating-point number smaller than 1.0 according to the IEEE-754
-            standard.
+            difference between 1.0 and the next smallest representable
+            real-valued floating-point number smaller than 1.0 according to
+            the IEEE-754 standard.
         * max: float
             largest representable real-valued number.
         * min: float
@@ -196,6 +196,7 @@ def finfo(dtype):
     return dpt.finfo(dtype)
 
 
+# pylint: disable=redefined-outer-name
 def iinfo(dtype):
     """
     Returns machine limits for integer data types.
@@ -261,12 +262,6 @@ def issubsctype(arg1, arg2):
 def is_type_supported(obj_type):
     """Return True if type is supported by DPNP python level."""
 
-    if (
-        obj_type == float64
-        or obj_type == float32
-        or obj_type == int64
-        or obj_type == int32
-    ):
+    if obj_type in (float64, float32, int64, int32):
         return True
-
     return False
