@@ -770,6 +770,10 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
             raise TypeError(f"axis should be an integer but got, {type(axis)}.")
         axisa, axisb, axisc = (axis,) * 3
     dpnp.check_supported_arrays_type(a, b)
+    if a.dtype == dpnp.bool and b.dtype == dpnp.bool:
+        raise TypeError(
+            "Input arrays with boolean data type are not supported."
+        )
     # Check axisa and axisb are within bounds
     axisa = normalize_axis_index(axisa, a.ndim, msg_prefix="axisa")
     axisb = normalize_axis_index(axisb, b.ndim, msg_prefix="axisb")

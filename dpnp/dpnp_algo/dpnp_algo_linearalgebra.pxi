@@ -36,7 +36,6 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_inner",
     "dpnp_kron",
 ]
 
@@ -46,80 +45,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_shapes_t)(c_dpctl.DPCTLSyclQue
                                                             void *, void * , void * , shape_elem_type * ,
                                                             shape_elem_type *, shape_elem_type * , size_t,
                                                             const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef utils.dpnp_descriptor dpnp_inner(dpnp_descriptor array1, dpnp_descriptor array2):
-    result_type = numpy.promote_types(array1.dtype, array1.dtype)
-
-    assert(len(array1.shape) == len(array2.shape))
-
-    cdef shape_type_c array1_no_last_axes = array1.shape[:-1]
-    cdef shape_type_c array2_no_last_axes = array2.shape[:-1]
-
-    cdef shape_type_c result_shape = array1_no_last_axes
-    result_shape.insert(result_shape.end(), array2_no_last_axes.begin(), array2_no_last_axes.end())
-
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(array1, array2)
-
-    # create result array with type given by FPTR data
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape,
-                                                                             result_type,
-                                                                             None,
-                                                                             device=result_sycl_device,
-                                                                             usm_type=result_usm_type,
-                                                                             sycl_queue=result_sycl_queue)
-
-    # calculate input arrays offsets
-    cdef shape_type_c array1_offsets = [1] * len(array1.shape)
-    cdef shape_type_c array2_offsets = [1] * len(array2.shape)
-    cdef size_t acc1 = 1
-    cdef size_t acc2 = 1
-    for axis in range(len(array1.shape) - 1, -1, -1):
-        array1_offsets[axis] = acc1
-        array2_offsets[axis] = acc2
-        acc1 *= array1.shape[axis]
-        acc2 *= array2.shape[axis]
-
-    cdef shape_type_c result_shape_offsets = [1] * len(result.shape)
-    acc = 1
-    for i in range(len(result.shape) - 1, -1, -1):
-        result_shape_offsets[i] = acc
-        acc *= result.shape[i]
-
-    cdef shape_type_c xyz
-    cdef size_t array1_lin_index_base
-    cdef size_t array2_lin_index_base
-    cdef size_t axis2
-    cdef long remainder
-    cdef long quotient
-
-    result_flatiter = result.get_pyobj().flat
-    array1_flatiter = array1.get_pyobj().flat
-    array2_flatiter = array2.get_pyobj().flat
-
-    for idx1 in range(result.size):
-        # reconstruct x,y,z from linear index
-        xyz.clear()
-        remainder = idx1
-        for i in result_shape_offsets:
-            quotient, remainder = divmod(remainder, i)
-            xyz.push_back(quotient)
-
-        # calculate linear base input index
-        array1_lin_index_base = 0
-        array2_lin_index_base = 0
-        for axis in range(len(array1_offsets) - 1):
-            axis2 = axis + (len(xyz) / 2)
-            array1_lin_index_base += array1_offsets[axis] * xyz[axis]
-            array2_lin_index_base += array2_offsets[axis] * xyz[axis2]
-
-        # do inner product
-        result_flatiter[idx1] = 0
-        for idx2 in range(array1.shape[-1]):
-            result_flatiter[idx1] += array1_flatiter[array1_lin_index_base + idx2] * \
-                array2_flatiter[array2_lin_index_base + idx2]
-
-    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
