@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autodata:: logical_and
+.. autofunction:: logical_and

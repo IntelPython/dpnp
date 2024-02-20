@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autodata:: logical_xor
+.. autofunction:: logical_xor
