@@ -906,70 +906,141 @@ def test_signbit(data, dtype):
     assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.parametrize(
-    "func",
-    ["real", "imag", "conj"],
-    ids=["real", "imag", "conj"],
-)
-@pytest.mark.parametrize(
-    "data",
-    [complex(-1, -4), complex(-1, 2), complex(3, -7), complex(4, 12)],
-    ids=[
-        "complex(-1, -4)",
-        "complex(-1, 2)",
-        "complex(3, -7)",
-        "complex(4, 12)",
-    ],
-)
-@pytest.mark.parametrize("dtype", get_complex_dtypes())
-def test_complex_funcs(func, data, dtype):
-    np_a = numpy.array(data, dtype=dtype)
-    dpnp_a = dpnp.array(data, dtype=dtype)
+class TestConj:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    def test_conj(self, dtype):
+        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
+        ia = dpnp.array(a)
 
-    result = getattr(dpnp, func)(dpnp_a)
-    expected = getattr(numpy, func)(np_a)
-    assert_dtype_allclose(result, expected)
+        result = dpnp.conj(ia)
+        expected = numpy.conj(a)
+        assert_dtype_allclose(result, expected)
 
-    # out keyword
-    if func == "conj":
-        dp_out = dpnp.empty(expected.shape, dtype=expected.dtype)
-        result = getattr(dpnp, func)(dpnp_a, out=dp_out)
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_conj_complex(self, dtype):
+        x1 = numpy.random.uniform(-5, 5, 20)
+        x2 = numpy.random.uniform(-5, 5, 20)
+        a = numpy.array(x1 + 1j * x2, dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.conj(ia)
+        expected = numpy.conj(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    def test_conj_ndarray(self, dtype):
+        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = ia.conj()
+        assert result is ia
+        assert_dtype_allclose(result, a.conj())
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_conj_complex_ndarray(self, dtype):
+        x1 = numpy.random.uniform(-5, 5, 20)
+        x2 = numpy.random.uniform(-5, 5, 20)
+        a = numpy.array(x1 + 1j * x2, dtype=dtype)
+        ia = dpnp.array(a)
+
+        assert_dtype_allclose(ia.conj(), a.conj())
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_conj_out(self, dtype):
+        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
+        ia = dpnp.array(a)
+
+        expected = numpy.conj(a)
+        dp_out = dpnp.empty(ia.shape, dtype=dtype)
+        result = dpnp.conj(ia, out=dp_out)
         assert dp_out is result
         assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.parametrize("dtype", get_complex_dtypes())
-def test_projection_infinity(dtype):
-    X = [
-        complex(1, 2),
-        complex(dpnp.inf, -1),
-        complex(0, -dpnp.inf),
-        complex(-dpnp.inf, dpnp.nan),
-    ]
-    Y = [
-        complex(1, 2),
-        complex(dpnp.inf, -0.0),
-        complex(dpnp.inf, -0.0),
-        complex(dpnp.inf, 0.0),
-    ]
+class TestRealImag:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    def test_real_imag(self, dtype):
+        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
+        ia = dpnp.array(a)
 
-    a = dpnp.array(X, dtype=dtype)
-    result = dpnp.proj(a)
-    expected = dpnp.array(Y, dtype=dtype)
-    assert_dtype_allclose(result, expected)
+        result = dpnp.real(ia)
+        assert result is ia
+        expected = numpy.real(a)
+        assert expected is a
+        assert_dtype_allclose(result, expected)
 
-    # out keyword
-    dp_out = dpnp.empty(expected.shape, dtype=expected.dtype)
-    result = dpnp.proj(a, out=dp_out)
-    assert dp_out is result
-    assert_dtype_allclose(result, expected)
+        result = dpnp.imag(ia)
+        expected = numpy.imag(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_real_imag_complex(self, dtype):
+        x1 = numpy.random.uniform(-5, 5, 20)
+        x2 = numpy.random.uniform(-5, 5, 20)
+        a = numpy.array(x1 + 1j * x2, dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.real(ia)
+        expected = numpy.real(a)
+        assert_dtype_allclose(result, expected)
+
+        result = dpnp.imag(ia)
+        expected = numpy.imag(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    def test_real_imag_ndarray(self, dtype):
+        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = ia.real
+        assert result is ia
+        assert_dtype_allclose(result, a.real)
+        assert_dtype_allclose(ia.imag, a.imag)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_real_imag_complex_ndarray(self, dtype):
+        x1 = numpy.random.uniform(-5, 5, 20)
+        x2 = numpy.random.uniform(-5, 5, 20)
+        a = numpy.array(x1 + 1j * x2, dtype=dtype)
+        ia = dpnp.array(a)
+
+        assert_dtype_allclose(ia.real, a.real)
+        assert_dtype_allclose(ia.imag, a.imag)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes())
-def test_projection(dtype):
-    result = dpnp.proj(dpnp.array(1, dtype=dtype))
-    expected = dpnp.array(complex(1, 0))
-    assert_allclose(result, expected)
+class TestProjection:
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_projection_infinity(self, dtype):
+        X = [
+            complex(1, 2),
+            complex(dpnp.inf, -1),
+            complex(0, -dpnp.inf),
+            complex(-dpnp.inf, dpnp.nan),
+        ]
+        Y = [
+            complex(1, 2),
+            complex(dpnp.inf, -0.0),
+            complex(dpnp.inf, -0.0),
+            complex(dpnp.inf, 0.0),
+        ]
+
+        a = dpnp.array(X, dtype=dtype)
+        result = dpnp.proj(a)
+        expected = dpnp.array(Y, dtype=dtype)
+        assert_dtype_allclose(result, expected)
+
+        # out keyword
+        dp_out = dpnp.empty(expected.shape, dtype=expected.dtype)
+        result = dpnp.proj(a, out=dp_out)
+        assert dp_out is result
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_projection(self, dtype):
+        result = dpnp.proj(dpnp.array(1, dtype=dtype))
+        expected = dpnp.array(complex(1, 0))
+        assert_allclose(result, expected)
 
 
 @pytest.mark.parametrize("val_type", get_all_dtypes(no_none=True))
@@ -1117,34 +1188,6 @@ class TestTrapz:
 
         result = dpnp.trapz(dpnp_y, dx=dx)
         expected = numpy.trapz(np_y, dx=dx)
-        assert_array_equal(expected, result)
-
-
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestCross:
-    @pytest.mark.parametrize("axis", [None, 0], ids=["None", "0"])
-    @pytest.mark.parametrize("axisc", [-1, 0], ids=["-1", "0"])
-    @pytest.mark.parametrize("axisb", [-1, 0], ids=["-1", "0"])
-    @pytest.mark.parametrize("axisa", [-1, 0], ids=["-1", "0"])
-    @pytest.mark.parametrize(
-        "x1",
-        [[1, 2, 3], [1.0, 2.5, 6.0], [2, 4, 6]],
-        ids=["[1, 2, 3]", "[1., 2.5, 6.]", "[2, 4, 6]"],
-    )
-    @pytest.mark.parametrize(
-        "x2",
-        [[4, 5, 6], [1.0, 5.0, 2.0], [6, 4, 3]],
-        ids=["[4, 5, 6]", "[1., 5., 2.]", "[6, 4, 3]"],
-    )
-    def test_cross_3x3(self, x1, x2, axisa, axisb, axisc, axis):
-        np_x1 = numpy.array(x1)
-        dpnp_x1 = dpnp.array(x1)
-
-        np_x2 = numpy.array(x2)
-        dpnp_x2 = dpnp.array(x2)
-
-        result = dpnp.cross(dpnp_x1, dpnp_x2, axisa, axisb, axisc, axis)
-        expected = numpy.cross(np_x1, np_x2, axisa, axisb, axisc, axis)
         assert_array_equal(expected, result)
 
 

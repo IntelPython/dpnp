@@ -105,8 +105,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_COUNT_NONZERO, /**< Used in numpy.count_nonzero() impl  */
     DPNP_FN_COV,           /**< Used in numpy.cov() impl  */
     DPNP_FN_CROSS,         /**< Used in numpy.cross() impl  */
-    DPNP_FN_CROSS_EXT,     /**< Used in numpy.cross() impl, requires extra
-                              parameters */
     DPNP_FN_CUMPROD,       /**< Used in numpy.cumprod() impl  */
     DPNP_FN_CUMPROD_EXT,   /**< Used in numpy.cumprod() impl, requires extra
                               parameters */
@@ -178,28 +176,26 @@ enum class DPNPFuncName : size_t
     DPNP_FN_KRON,        /**< Used in numpy.kron() impl  */
     DPNP_FN_KRON_EXT, /**< Used in numpy.kron() impl, requires extra parameters
                        */
-    DPNP_FN_LEFT_SHIFT,      /**< Used in numpy.left_shift() impl  */
-    DPNP_FN_LOG,             /**< Used in numpy.log() impl  */
-    DPNP_FN_LOG10,           /**< Used in numpy.log10() impl  */
-    DPNP_FN_LOG2,            /**< Used in numpy.log2() impl  */
-    DPNP_FN_LOG1P,           /**< Used in numpy.log1p() impl  */
-    DPNP_FN_MATMUL,          /**< Used in numpy.matmul() impl  */
-    DPNP_FN_MATRIX_RANK,     /**< Used in numpy.linalg.matrix_rank() impl  */
-    DPNP_FN_MATRIX_RANK_EXT, /**< Used in numpy.linalg.matrix_rank() impl,
-                                requires extra parameters */
-    DPNP_FN_MAX,             /**< Used in numpy.max() impl  */
-    DPNP_FN_MAXIMUM,         /**< Used in numpy.fmax() impl  */
-    DPNP_FN_MAXIMUM_EXT,     /**< Used in numpy.fmax() impl , requires extra
-                                parameters */
-    DPNP_FN_MEAN,            /**< Used in numpy.mean() impl  */
-    DPNP_FN_MEDIAN,          /**< Used in numpy.median() impl  */
-    DPNP_FN_MEDIAN_EXT,      /**< Used in numpy.median() impl, requires extra
-                                parameters */
-    DPNP_FN_MIN,             /**< Used in numpy.min() impl  */
-    DPNP_FN_MINIMUM,         /**< Used in numpy.fmin() impl  */
-    DPNP_FN_MINIMUM_EXT,     /**< Used in numpy.fmax() impl, requires extra
-                                parameters */
-    DPNP_FN_MODF,            /**< Used in numpy.modf() impl  */
+    DPNP_FN_LEFT_SHIFT,  /**< Used in numpy.left_shift() impl  */
+    DPNP_FN_LOG,         /**< Used in numpy.log() impl  */
+    DPNP_FN_LOG10,       /**< Used in numpy.log10() impl  */
+    DPNP_FN_LOG2,        /**< Used in numpy.log2() impl  */
+    DPNP_FN_LOG1P,       /**< Used in numpy.log1p() impl  */
+    DPNP_FN_MATMUL,      /**< Used in numpy.matmul() impl  */
+    DPNP_FN_MATRIX_RANK, /**< Used in numpy.linalg.matrix_rank() impl  */
+    DPNP_FN_MAX,         /**< Used in numpy.max() impl  */
+    DPNP_FN_MAXIMUM,     /**< Used in numpy.fmax() impl  */
+    DPNP_FN_MAXIMUM_EXT, /**< Used in numpy.fmax() impl , requires extra
+                            parameters */
+    DPNP_FN_MEAN,        /**< Used in numpy.mean() impl  */
+    DPNP_FN_MEDIAN,      /**< Used in numpy.median() impl  */
+    DPNP_FN_MEDIAN_EXT,  /**< Used in numpy.median() impl, requires extra
+                            parameters */
+    DPNP_FN_MIN,         /**< Used in numpy.min() impl  */
+    DPNP_FN_MINIMUM,     /**< Used in numpy.fmin() impl  */
+    DPNP_FN_MINIMUM_EXT, /**< Used in numpy.fmax() impl, requires extra
+                            parameters */
+    DPNP_FN_MODF,        /**< Used in numpy.modf() impl  */
     DPNP_FN_MODF_EXT, /**< Used in numpy.modf() impl, requires extra parameters
                        */
     DPNP_FN_MULTIPLY, /**< Used in numpy.multiply() impl  */

@@ -1,6 +1,7 @@
 import dpctl
 import numpy
 import pytest
+from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
@@ -565,37 +566,113 @@ class TestInv:
         assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp)
 
 
-@pytest.mark.parametrize(
-    "type", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
-)
-@pytest.mark.parametrize(
-    "array",
-    [
-        [0, 0],
-        [0, 1],
-        [1, 2],
-        [[0, 0], [0, 0]],
-        [[1, 2], [1, 2]],
-        [[1, 2], [3, 4]],
-    ],
-    ids=[
-        "[0, 0]",
-        "[0, 1]",
-        "[1, 2]",
-        "[[0, 0], [0, 0]]",
-        "[[1, 2], [1, 2]]",
-        "[[1, 2], [3, 4]]",
-    ],
-)
-@pytest.mark.parametrize("tol", [None], ids=["None"])
-def test_matrix_rank(type, tol, array):
-    a = numpy.array(array, dtype=type)
-    ia = inp.array(a)
+class TestMatrixRank:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "data",
+        [
+            numpy.eye(4),
+            numpy.diag([1, 1, 1, 0]),
+            numpy.zeros((4, 4)),
+            numpy.array([1, 0, 0, 0]),
+            numpy.zeros((4,)),
+            numpy.array(1),
+        ],
+    )
+    def test_matrix_rank(self, data, dtype):
+        a = data.astype(dtype)
+        a_dp = inp.array(a)
 
-    result = inp.linalg.matrix_rank(ia, tol=tol)
-    expected = numpy.linalg.matrix_rank(a, tol=tol)
+        np_rank = numpy.linalg.matrix_rank(a)
+        dp_rank = inp.linalg.matrix_rank(a_dp)
+        assert np_rank == dp_rank
 
-    assert_allclose(expected, result)
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "data",
+        [
+            numpy.eye(4),
+            numpy.ones((4, 4)),
+            numpy.zeros((4, 4)),
+            numpy.diag([1, 1, 1, 0]),
+        ],
+    )
+    def test_matrix_rank_hermitian(self, data, dtype):
+        a = data.astype(dtype)
+        a_dp = inp.array(a)
+
+        np_rank = numpy.linalg.matrix_rank(a, hermitian=True)
+        dp_rank = inp.linalg.matrix_rank(a_dp, hermitian=True)
+        assert np_rank == dp_rank
+
+    @pytest.mark.parametrize(
+        "high_tol, low_tol",
+        [
+            (0.99e-6, 1.01e-6),
+            (numpy.array(0.99e-6), numpy.array(1.01e-6)),
+            (numpy.array([0.99e-6]), numpy.array([1.01e-6])),
+        ],
+        ids=[
+            "float",
+            "0-D array",
+            "1-D array",
+        ],
+    )
+    def test_matrix_rank_tolerance(self, high_tol, low_tol):
+        a = numpy.eye(4)
+        a[-1, -1] = 1e-6
+        a_dp = inp.array(a)
+
+        if isinstance(high_tol, numpy.ndarray):
+            dp_high_tol = inp.array(
+                high_tol, usm_type=a_dp.usm_type, sycl_queue=a_dp.sycl_queue
+            )
+            dp_low_tol = inp.array(
+                low_tol, usm_type=a_dp.usm_type, sycl_queue=a_dp.sycl_queue
+            )
+        else:
+            dp_high_tol = high_tol
+            dp_low_tol = low_tol
+
+        np_rank_high_tol = numpy.linalg.matrix_rank(
+            a, hermitian=True, tol=high_tol
+        )
+        dp_rank_high_tol = inp.linalg.matrix_rank(
+            a_dp, hermitian=True, tol=dp_high_tol
+        )
+        assert np_rank_high_tol == dp_rank_high_tol
+
+        np_rank_low_tol = numpy.linalg.matrix_rank(
+            a, hermitian=True, tol=low_tol
+        )
+        dp_rank_low_tol = inp.linalg.matrix_rank(
+            a_dp, hermitian=True, tol=dp_low_tol
+        )
+        assert np_rank_low_tol == dp_rank_low_tol
+
+    def test_matrix_rank_errors(self):
+        a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
+
+        # unsupported type `a`
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.matrix_rank, a_np)
+
+        # unsupported type `tol`
+        tol = numpy.array(0.5, dtype="float32")
+        assert_raises(TypeError, inp.linalg.matrix_rank, a_dp, tol)
+        assert_raises(TypeError, inp.linalg.matrix_rank, a_dp, [0.5])
+
+        # diffetent queue
+        a_queue = dpctl.SyclQueue()
+        tol_queue = dpctl.SyclQueue()
+        a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
+        tol_dp_q = inp.array([0.5], dtype="float32", sycl_queue=tol_queue)
+        assert_raises(
+            ExecutionPlacementError,
+            inp.linalg.matrix_rank,
+            a_dp_q,
+            tol_dp_q,
+        )
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")

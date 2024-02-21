@@ -579,15 +579,6 @@ template <typename _DataType>
 void (*dpnp_matrix_rank_default_c)(void *, void *, shape_elem_type *, size_t) =
     dpnp_matrix_rank_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_matrix_rank_ext_c)(DPCTLSyclQueueRef,
-                                            void *,
-                                            void *,
-                                            shape_elem_type *,
-                                            size_t,
-                                            const DPCTLEventVectorRef) =
-    dpnp_matrix_rank_c<_DataType>;
-
 template <typename _InputDT, typename _ComputeDT>
 DPCTLSyclEventRef dpnp_qr_c(DPCTLSyclQueueRef q_ref,
                             void *array1_in,
@@ -968,15 +959,6 @@ void func_map_init_linalg_func(func_map_t &fmap)
         eft_FLT, (void *)dpnp_matrix_rank_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_matrix_rank_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_matrix_rank_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_matrix_rank_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_matrix_rank_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_matrix_rank_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_QR][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_qr_default_c<int32_t, double>};

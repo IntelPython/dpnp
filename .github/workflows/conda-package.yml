@@ -12,11 +12,12 @@ env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+  CONDA_BUILD_VERSION: '24.1.2'
+  CONDA_INDEX_VERSION: '0.4.0'
   # TODO: to add test_arraymanipulation.py back to the scope once crash on Windows is gone
   TEST_SCOPE: >-
       test_arraycreation.py
       test_amin_amax.py
-      test_dot.py
       test_dparray.py
       test_copy.py
       test_fft.py
@@ -24,6 +25,7 @@ env:
       test_logic.py
       test_manipulation.py
       test_mathematical.py
+      test_product.py
       test_random_state.py
       test_sort.py
       test_special.py
@@ -102,7 +104,7 @@ jobs:
           (echo CONDA_BLD=%CONDA_PREFIX%\conda-bld\win-64\) >> %GITHUB_ENV%
 
       - name: Install conda-build
-        run: conda install conda-build=3.28.4
+        run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
 
       - name: Cache conda packages
         uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
@@ -171,12 +173,12 @@ jobs:
           miniconda-version: 'latest'
           activate-environment: 'test'
 
-      # Needed to be able to run conda index
-      - name: Install conda-build
-        run: conda install conda-build=3.28.4
+      - name: Install conda-index
+        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION}}
 
       - name: Create conda channel
-        run: conda index ${{ env.channel-path }}
+        run: |
+          python -m conda_index ${{ env.channel-path }}
 
       - name: Test conda channel
         run: |
@@ -287,12 +289,13 @@ jobs:
           (echo CONDA_LIB_PATH=%CONDA_PREFIX%\Library\lib\) >> %GITHUB_ENV%
           (echo CONDA_LIB_BIN_PATH=%CONDA_PREFIX%\Library\bin\) >> %GITHUB_ENV%
 
-      # Needed to be able to run conda index
-      - name: Install conda-build
-        run: conda install conda-build=3.28.4
+      - name: Install conda-index
+        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION}}
 
       - name: Create conda channel
-        run: conda index ${{ env.channel-path }}
+        run: |
+          @echo on
+          python -m conda_index ${{ env.channel-path }}
 
       - name: Test conda channel
         run: |

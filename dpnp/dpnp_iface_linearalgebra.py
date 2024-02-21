@@ -42,9 +42,19 @@ import numpy
 from numpy.core.numeric import normalize_axis_tuple
 
 import dpnp
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
-from dpnp.dpnp_utils.dpnp_utils_linearalgebra import dpnp_dot, dpnp_matmul
+
+# pylint: disable=no-name-in-module
+from .dpnp_algo import (
+    dpnp_inner,
+    dpnp_kron,
+)
+from .dpnp_utils import (
+    call_origin,
+)
+from .dpnp_utils.dpnp_utils_linearalgebra import (
+    dpnp_dot,
+    dpnp_matmul,
+)
 
 __all__ = [
     "dot",
@@ -68,9 +78,11 @@ def dot(a, b, out=None):
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray, scalar}
-        First input array. Both inputs `a` and `b` can not be scalars at the same time.
+        First input array. Both inputs `a` and `b` can not be scalars
+        at the same time.
     b : {dpnp.ndarray, usm_ndarray, scalar}
-        Second input array. Both inputs `a` and `b` can not be scalars at the same time.
+        Second input array. Both inputs `a` and `b` can not be scalars
+        at the same time.
     out : {dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape and data type as the expected output and should be
@@ -133,24 +145,28 @@ def dot(a, b, out=None):
         # TODO: investigate usage of axpy (axpy_batch) or scal
         # functions from BLAS here instead of dpnp.multiply
         return dpnp.multiply(a, b, out=out)
-    elif a.ndim == 0 or b.ndim == 0:
+
+    if a.ndim == 0 or b.ndim == 0:
         # TODO: investigate usage of axpy (axpy_batch) or scal
         # functions from BLAS here instead of dpnp.multiply
         return dpnp.multiply(a, b, out=out)
-    elif a.ndim == 1 and b.ndim == 1:
+
+    if a.ndim == 1 and b.ndim == 1:
         return dpnp_dot(a, b, out=out)
-    elif a.ndim == 2 and b.ndim == 2:
+
+    if a.ndim == 2 and b.ndim == 2:
         # NumPy does not allow casting even if it is safe
         return dpnp.matmul(a, b, out=out, casting="no")
-    elif a.ndim == 1 or b.ndim == 1:
+
+    if a.ndim == 1 or b.ndim == 1:
         # NumPy does not allow casting even if it is safe
         return dpnp.matmul(a, b, out=out, casting="no")
-    else:
-        # TODO: investigate usage of matmul for some possible
-        # use cases instead of dpnp.tensordot
-        result = dpnp.tensordot(a, b, axes=(-1, -2))
-        # NumPy does not allow casting even if it is safe
-        return dpnp.get_result_array(result, out, casting="no")
+
+    # TODO: investigate usage of matmul for some possible
+    # use cases instead of dpnp.tensordot
+    result = dpnp.tensordot(a, b, axes=(-1, -2))
+    # NumPy does not allow casting even if it is safe
+    return dpnp.get_result_array(result, out, casting="no")
 
 
 def einsum(*args, **kwargs):
@@ -165,7 +181,8 @@ def einsum(*args, **kwargs):
 
     See Also
     -------
-    :obj:`dpnp.einsum_path` : Evaluates the lowest cost contraction order for an einsum expression.
+    :obj:`dpnp.einsum_path` : Evaluates the lowest cost contraction order
+                              for an einsum expression.
     :obj:`dpnp.dot` : Returns the dot product of two arrays.
     :obj:`dpnp.inner` : Returns the inner product of two arrays.
     :obj:`dpnp.outer` : Returns the outer product of two arrays.
@@ -190,7 +207,8 @@ def einsum_path(*args, **kwargs):
 
     See Also
     --------
-    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
+    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention
+                         on the operands.
     :obj:`dpnp.dot` : Returns the dot product of two arrays.
     :obj:`dpnp.inner` : Returns the inner product of two arrays.
     :obj:`dpnp.outer` : Returns the outer product of two arrays.
@@ -214,7 +232,8 @@ def inner(x1, x2, **kwargs):
 
     See Also
     --------
-    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
+    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention
+                         on the operands.
     :obj:`dpnp.dot` : Returns the dot product of two arrays.
     :obj:`dpnp.tensordot` : Compute tensor dot product along specified axes.
     Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -296,10 +315,11 @@ def matmul(
         Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
     axes : list of tuples, optional
-        A list of tuples with indices of axes the matrix product should operate on.
-        For instance, for the signature of ``(i,j),(j,k)->(i,k)``, the base elements
-        are 2d matrices and these are taken to be stored in the two last axes of each
-        argument. The corresponding axes keyword would be [(-2, -1), (-2, -1), (-2, -1)].
+        A list of tuples with indices of axes the matrix product should operate
+        on. For instance, for the signature of ``(i,j),(j,k)->(i,k)``, the base
+        elements are 2d matrices and these are taken to be stored in the two
+        last axes of each argument. The corresponding axes keyword would be
+        [(-2, -1), (-2, -1), (-2, -1)].
         Default: ``None``.
 
     Returns
@@ -353,7 +373,8 @@ def matmul(
     >>> np.sum(a[0, 1, :] * b[0 , :, 1])
     array(98)
 
-    Vector, vector returns the scalar inner product, but neither argument is complex-conjugated:
+    Vector, vector returns the scalar inner product, but neither argument
+    is complex-conjugated:
 
     >>> x1 = np.array([2j, 3j])
     >>> x2 = np.array([2j, 3j])
@@ -373,28 +394,28 @@ def matmul(
         raise NotImplementedError(
             "subok keyword argument is only supported by its default value."
         )
-    elif signature is not None:
+    if signature is not None:
         raise NotImplementedError(
             "signature keyword argument is only supported by its default value."
         )
-    elif extobj is not None:
+    if extobj is not None:
         raise NotImplementedError(
             "extobj keyword argument is only supported by its default value."
         )
-    elif axis is not None:
+    if axis is not None:
         raise NotImplementedError(
             "axis keyword argument is only supported by its default value."
         )
-    else:
-        return dpnp_matmul(
-            x1,
-            x2,
-            out=out,
-            casting=casting,
-            order=order,
-            dtype=dtype,
-            axes=axes,
-        )
+
+    return dpnp_matmul(
+        x1,
+        x2,
+        out=out,
+        casting=casting,
+        order=order,
+        dtype=dtype,
+        axes=axes,
+    )
 
 
 def outer(x1, x2, out=None):
@@ -405,14 +426,16 @@ def outer(x1, x2, out=None):
 
     Limitations
     -----------
-        Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-        or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-        Otherwise the functions will be executed sequentially on CPU.
+        Parameters `x1` and `x2` are supported as either scalar,
+        :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both
+        `x1` and `x2` can not be scalars at the same time. Otherwise
+        the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
+    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention
+                         on the operands.
     :obj:`dpnp.inner` : Returns the inner product of two arrays.
 
     Examples
@@ -462,13 +485,15 @@ def tensordot(a, b, axes=2):
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray, scalar}
-        First input array. Both inputs `a` and `b` can not be scalars at the same time.
+        First input array. Both inputs `a` and `b` can not be scalars
+        at the same time.
     b : {dpnp.ndarray, usm_ndarray, scalar}
-        Second input array. Both inputs `a` and `b` can not be scalars at the same time.
+        Second input array. Both inputs `a` and `b` can not be scalars
+        at the same time.
     axes : int or (2,) array_like
         * integer_like
-          If an int `N`, sum over the last `N` axes of `a` and the first `N` axes
-          of `b` in order. The sizes of the corresponding axes must match.
+          If an int `N`, sum over the last `N` axes of `a` and the first `N`
+          axes of `b` in order. The sizes of the corresponding axes must match.
         * (2,) array_like
           Or, a list of axes to be summed over, first sequence applying to `a`,
           second to `b`. Both elements array_like must be of the same length.
@@ -481,7 +506,8 @@ def tensordot(a, b, axes=2):
     See Also
     --------
     :obj:`dpnp.dot` : Returns the dot product.
-    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
+    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention
+                         on the operands.
 
     Notes
     -----
@@ -548,9 +574,9 @@ def tensordot(a, b, axes=2):
 
     try:
         iter(axes)
-    except Exception:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         if not isinstance(axes, int):
-            raise TypeError("Axes must be an integer.")
+            raise TypeError("Axes must be an integer.") from e
         axes_a = tuple(range(-axes, 0))
         axes_b = tuple(range(0, axes))
     else:
@@ -581,17 +607,17 @@ def tensordot(a, b, axes=2):
     # Move the axes to sum over, to the end of "a"
     notin = tuple(k for k in range(a_ndim) if k not in axes_a)
     newaxes_a = notin + axes_a
-    N1 = int(numpy.prod([a_shape[ax] for ax in notin]))
-    N2 = int(numpy.prod([a_shape[ax] for ax in axes_a]))
-    newshape_a = (N1, N2)
+    n1 = int(numpy.prod([a_shape[ax] for ax in notin]))
+    n2 = int(numpy.prod([a_shape[ax] for ax in axes_a]))
+    newshape_a = (n1, n2)
     olda = [a_shape[axis] for axis in notin]
 
     # Move the axes to sum over, to the front of "b"
     notin = tuple(k for k in range(b_ndim) if k not in axes_b)
     newaxes_b = tuple(axes_b + notin)
-    N1 = int(numpy.prod([b_shape[ax] for ax in axes_b]))
-    N2 = int(numpy.prod([b_shape[ax] for ax in notin]))
-    newshape_b = (N1, N2)
+    n1 = int(numpy.prod([b_shape[ax] for ax in axes_b]))
+    n2 = int(numpy.prod([b_shape[ax] for ax in notin]))
+    newshape_b = (n1, n2)
     oldb = [b_shape[axis] for axis in notin]
 
     at = a.transpose(newaxes_a).reshape(newshape_a)
@@ -661,8 +687,9 @@ def vdot(a, b):
         # TODO: investigate usage of axpy (axpy_batch) or scal
         # functions from BLAS here instead of dpnp.multiply
         return dpnp.multiply(a_conj, b)
-    elif a.ndim == 1 and b.ndim == 1:
+
+    if a.ndim == 1 and b.ndim == 1:
         return dpnp_dot(a, b, out=None, conjugate=True)
-    else:
-        # dot product of flatten arrays
-        return dpnp_dot(dpnp.ravel(a), dpnp.ravel(b), out=None, conjugate=True)
+
+    # dot product of flatten arrays
+    return dpnp_dot(dpnp.ravel(a), dpnp.ravel(b), out=None, conjugate=True)
