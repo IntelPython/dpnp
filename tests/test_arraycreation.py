@@ -52,6 +52,7 @@ def test_exception_order(func, args):
         pytest.param("asfortranarray", [2]),
         pytest.param("empty", [(2,)]),
         pytest.param("eye", [2]),
+        pytest.param("frombuffer", [b"\x01\x02\x03\x04"]),
         pytest.param("full", [(2,), 4]),
         pytest.param("identity", [2]),
         pytest.param("ones", [(2,)]),
@@ -208,21 +209,14 @@ def test_eye(N, M, k, dtype, order):
     assert_array_equal(func(numpy), func(dpnp))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize(
-    "dtype",
-    get_all_dtypes(
-        no_float16=False, no_none=False if has_support_aspect64() else True
-    ),
-)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_frombuffer(dtype):
     buffer = b"12345678ABCDEF00"
     func = lambda xp: xp.frombuffer(buffer, dtype=dtype)
-    assert_allclose(func(dpnp), func(numpy))
+    assert_dtype_allclose(func(dpnp), func(numpy))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes())
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_fromfile(dtype):
     with tempfile.TemporaryFile() as fh:
         fh.write(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08")
@@ -236,7 +230,7 @@ def test_fromfile(dtype):
         fh.seek(0)
         dpnp_res = func(dpnp)
 
-        assert_almost_equal(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -260,7 +254,6 @@ def test_fromiter(dtype):
     assert_array_equal(func(dpnp), func(numpy))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_fromstring(dtype):
     string = "1 2 3 4"
