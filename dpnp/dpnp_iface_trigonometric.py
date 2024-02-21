@@ -37,6 +37,11 @@ it contains:
 
 """
 
+# pylint: disable=protected-access
+# pylint: disable=c-extension-no-member
+# pylint: disable=duplicate-code
+# pylint: disable=no-name-in-module
+
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
@@ -44,10 +49,14 @@ import numpy
 
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
-from dpnp.dpnp_algo import *
+from dpnp.dpnp_algo import (
+    dpnp_degrees,
+    dpnp_radians,
+    dpnp_unwrap,
+)
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import *
+from dpnp.dpnp_utils import call_origin
 
 __all__ = [
     "arccos",
@@ -87,7 +96,7 @@ __all__ = [
 ]
 
 
-_acos_docstring = """
+_ACOS_DOCSTRING = """
 Computes inverse cosine for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.arccos`.
@@ -135,14 +144,14 @@ arccos = DPNPUnaryFunc(
     "arccos",
     ti._acos_result_type,
     ti._acos,
-    _acos_docstring,
+    _ACOS_DOCSTRING,
     origin_fn=numpy.arccos,
     mkl_fn_to_call=vmi._mkl_acos_to_call,
     mkl_impl_fn=vmi._acos,
 )
 
 
-_acosh_docstring = """
+_ACOSH_DOCSTRING = """
 Computes hyperbolic inverse cosine for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.arccosh`.
@@ -190,14 +199,14 @@ arccosh = DPNPUnaryFunc(
     "arccosh",
     ti._acosh_result_type,
     ti._acosh,
-    _acosh_docstring,
+    _ACOSH_DOCSTRING,
     origin_fn=numpy.arccosh,
     mkl_fn_to_call=vmi._mkl_acosh_to_call,
     mkl_impl_fn=vmi._acosh,
 )
 
 
-_asin_docstring = """
+_ASIN_DOCSTRING = """
 Computes inverse sine for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.arcsin`.
@@ -245,14 +254,14 @@ arcsin = DPNPUnaryFunc(
     "arcsin",
     ti._asin_result_type,
     ti._asin,
-    _asin_docstring,
+    _ASIN_DOCSTRING,
     origin_fn=numpy.arcsin,
     mkl_fn_to_call=vmi._mkl_asin_to_call,
     mkl_impl_fn=vmi._asin,
 )
 
 
-_asinh_docstring = """
+_ASINH_DOCSTRING = """
 Computes inverse hyperbolic sine for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.arcsinh`.
@@ -300,14 +309,14 @@ arcsinh = DPNPUnaryFunc(
     "arcsinh",
     ti._asinh_result_type,
     ti._asinh,
-    _asinh_docstring,
+    _ASINH_DOCSTRING,
     origin_fn=numpy.arcsinh,
     mkl_fn_to_call=vmi._mkl_asinh_to_call,
     mkl_impl_fn=vmi._asinh,
 )
 
 
-_atan_docstring = """
+_ATAN_DOCSTRING = """
 Computes inverse tangent for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.arctan`.
@@ -357,14 +366,14 @@ arctan = DPNPUnaryFunc(
     "arctan",
     ti._atan_result_type,
     ti._atan,
-    _atan_docstring,
+    _ATAN_DOCSTRING,
     origin_fn=numpy.arctan,
     mkl_fn_to_call=vmi._mkl_atan_to_call,
     mkl_impl_fn=vmi._atan,
 )
 
 
-_atan2_docstring = """
+_ATAN2_DOCSTRING = """
 Calculates the inverse tangent of the quotient `x1_i/x2_i` for each element
 `x1_i` of the input array `x1` with the respective element `x2_i` of the
 input array `x2`. Each element-wise result is expressed in radians.
@@ -431,14 +440,14 @@ arctan2 = DPNPBinaryFunc(
     "arctan2",
     ti._atan2_result_type,
     ti._atan2,
-    _atan2_docstring,
+    _ATAN2_DOCSTRING,
     origin_fn=numpy.arctan2,
     mkl_fn_to_call=vmi._mkl_atan2_to_call,
     mkl_impl_fn=vmi._atan2,
 )
 
 
-_atanh_docstring = """
+_ATANH_DOCSTRING = """
 Computes hyperbolic inverse tangent for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.arctanh`.
@@ -486,14 +495,14 @@ arctanh = DPNPUnaryFunc(
     "arctanh",
     ti._atanh_result_type,
     ti._atanh,
-    _atanh_docstring,
+    _ATANH_DOCSTRING,
     origin_fn=numpy.arctanh,
     mkl_fn_to_call=vmi._mkl_atanh_to_call,
     mkl_impl_fn=vmi._atanh,
 )
 
 
-_cbrt_docstring = """
+_CBRT_DOCSTRING = """
 Returns the cbrting for each element `x_i` for input array `x`.
 The cbrt of the scalar `x` is the smallest integer `i`, such that `i >= x`.
 
@@ -538,14 +547,14 @@ cbrt = DPNPUnaryFunc(
     "cbrt",
     ti._cbrt_result_type,
     ti._cbrt,
-    _cbrt_docstring,
+    _CBRT_DOCSTRING,
     origin_fn=numpy.cbrt,
     mkl_fn_to_call=vmi._mkl_cbrt_to_call,
     mkl_impl_fn=vmi._cbrt,
 )
 
 
-_cos_docstring = """
+_COS_DOCSTRING = """
 Computes cosine for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.cos`.
@@ -592,14 +601,14 @@ cos = DPNPUnaryFunc(
     "cos",
     ti._cos_result_type,
     ti._cos,
-    _cos_docstring,
+    _COS_DOCSTRING,
     origin_fn=numpy.cos,
     mkl_fn_to_call=vmi._mkl_cos_to_call,
     mkl_impl_fn=vmi._cos,
 )
 
 
-_cosh_docstring = """
+_COSH_DOCSTRING = """
 Computes hyperbolic cosine for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.cosh`.
@@ -647,7 +656,7 @@ cosh = DPNPUnaryFunc(
     "cosh",
     ti._cosh_result_type,
     ti._cosh,
-    _cosh_docstring,
+    _COSH_DOCSTRING,
     origin_fn=numpy.cosh,
     mkl_fn_to_call=vmi._mkl_cosh_to_call,
     mkl_impl_fn=vmi._cosh,
@@ -674,7 +683,7 @@ def deg2rad(x1):
     return radians(x1)
 
 
-def degrees(x1):
+def degrees(x1, **kwargs):
     """
     Convert angles from radians to degrees.
 
@@ -700,13 +709,15 @@ def degrees(x1):
     x1_desc = dpnp.get_dpnp_descriptor(
         x1, copy_when_strides=False, copy_when_nondefault_queue=False
     )
-    if x1_desc:
+    if kwargs:
+        pass
+    elif x1_desc:
         return dpnp_degrees(x1_desc).get_pyobj()
 
     return call_origin(numpy.degrees, x1, **kwargs)
 
 
-_exp_docstring = """
+_EXP_DOCSTRING = """
 Computes the exponential for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.exp`.
@@ -752,14 +763,14 @@ exp = DPNPUnaryFunc(
     "exp",
     ti._exp_result_type,
     ti._exp,
-    _exp_docstring,
+    _EXP_DOCSTRING,
     origin_fn=numpy.exp,
     mkl_fn_to_call=vmi._mkl_exp_to_call,
     mkl_impl_fn=vmi._exp,
 )
 
 
-_exp2_docstring = """
+_EXP2_DOCSTRING = """
 Computes the base-2 exponential for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.exp2`.
@@ -806,14 +817,14 @@ exp2 = DPNPUnaryFunc(
     "exp2",
     ti._exp2_result_type,
     ti._exp2,
-    _exp2_docstring,
+    _EXP2_DOCSTRING,
     origin_fn=numpy.exp2,
     mkl_fn_to_call=vmi._mkl_exp2_to_call,
     mkl_impl_fn=vmi._exp2,
 )
 
 
-_expm1_docstring = """
+_EXPM1_DOCSTRING = """
 Computes the exponential minus 1 for each element `x_i` of input array `x`.
 
 This function calculates `exp(x) - 1.0` more accurately for small values of `x`.
@@ -868,14 +879,14 @@ expm1 = DPNPUnaryFunc(
     "expm1",
     ti._expm1_result_type,
     ti._expm1,
-    _expm1_docstring,
+    _EXPM1_DOCSTRING,
     origin_fn=numpy.expm1,
     mkl_fn_to_call=vmi._mkl_expm1_to_call,
     mkl_impl_fn=vmi._expm1,
 )
 
 
-_hypot_docstring = """
+_HYPOT_DOCSTRING = """
 Calculates the hypotenuse for a right triangle with "legs" `x1_i` and `x2_i` of
 input arrays `x1` and `x2`.
 
@@ -932,14 +943,14 @@ hypot = DPNPBinaryFunc(
     "hypot",
     ti._hypot_result_type,
     ti._hypot,
-    _hypot_docstring,
+    _HYPOT_DOCSTRING,
     origin_fn=numpy.hypot,
     mkl_fn_to_call=vmi._mkl_hypot_to_call,
     mkl_impl_fn=vmi._hypot,
 )
 
 
-_log_docstring = """
+_LOG_DOCSTRING = """
 Computes the natural logarithm element-wise.
 
 For full documentation refer to :obj:`numpy.log`.
@@ -987,14 +998,14 @@ log = DPNPUnaryFunc(
     "log",
     ti._log_result_type,
     ti._log,
-    _log_docstring,
+    _LOG_DOCSTRING,
     origin_fn=numpy.log,
     mkl_fn_to_call=vmi._mkl_ln_to_call,
     mkl_impl_fn=vmi._ln,
 )
 
 
-_log10_docstring = """
+_LOG10_DOCSTRING = """
 Computes the base-10 logarithm for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.log10`.
@@ -1044,14 +1055,14 @@ log10 = DPNPUnaryFunc(
     "log10",
     ti._log10_result_type,
     ti._log10,
-    _log10_docstring,
+    _LOG10_DOCSTRING,
     origin_fn=numpy.log10,
     mkl_fn_to_call=vmi._mkl_log10_to_call,
     mkl_impl_fn=vmi._log10,
 )
 
 
-_log1p_docstring = """
+_LOG1P_DOCSTRING = """
 Computes an approximation of `log(1+x)` element-wise.
 
 For full documentation refer to :obj:`numpy.log1p`.
@@ -1104,14 +1115,14 @@ log1p = DPNPUnaryFunc(
     "log1p",
     ti._log1p_result_type,
     ti._log1p,
-    _log1p_docstring,
+    _LOG1P_DOCSTRING,
     origin_fn=numpy.log1p,
     mkl_fn_to_call=vmi._mkl_log1p_to_call,
     mkl_impl_fn=vmi._log1p,
 )
 
 
-_log2_docstring = """
+_LOG2_DOCSTRING = """
 Computes the base-2 logarithm for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.log2`.
@@ -1162,14 +1173,14 @@ log2 = DPNPUnaryFunc(
     "log2",
     ti._log2_result_type,
     ti._log2,
-    _log2_docstring,
+    _LOG2_DOCSTRING,
     origin_fn=numpy.log2,
     mkl_fn_to_call=vmi._mkl_log2_to_call,
     mkl_impl_fn=vmi._log2,
 )
 
 
-_logaddexp_docstring = """
+_LOGADDEXP_DOCSTRING = """
 Calculates the natural logarithm of the sum of exponentiations for each element
 `x1_i` of the input array `x1` with the respective element `x2_i` of the input
 array `x2`.
@@ -1228,14 +1239,15 @@ logaddexp = DPNPBinaryFunc(
     "logaddexp",
     ti._logaddexp_result_type,
     ti._logaddexp,
-    _logaddexp_docstring,
+    _LOGADDEXP_DOCSTRING,
     origin_fn=numpy.logaddexp,
 )
 
 
 def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
     """
-    Calculates the logarithm of the sum of exponentials of elements in the input array.
+    Calculates the logarithm of the sum of exponentials of elements in
+    the input array.
 
     Parameters
     ----------
@@ -1287,7 +1299,8 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
     --------
     :obj:`dpnp.log` : Natural logarithm, element-wise.
     :obj:`dpnp.exp` : Exponential, element-wise.
-    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponentiations of the inputs, element-wise.
+    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponentiations of
+                            the inputs, element-wise.
 
     Examples
     --------
@@ -1308,7 +1321,7 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
     return dpnp.get_result_array(result, out, casting="same_kind")
 
 
-_reciprocal_docstring = """
+_RECIPROCAL_DOCSTRING = """
 Computes the reciprocal of each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.reciprocal`.
@@ -1353,14 +1366,15 @@ reciprocal = DPNPUnaryFunc(
     "reciprocal",
     ti._reciprocal_result_type,
     ti._reciprocal,
-    _reciprocal_docstring,
+    _RECIPROCAL_DOCSTRING,
     origin_fn=numpy.reciprocal,
 )
 
 
 def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
     """
-    Calculates the square root of the sum of squares of elements in the input array.
+    Calculates the square root of the sum of squares of elements in
+    the input array.
 
     Parameters
     ----------
@@ -1410,7 +1424,8 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
 
     See Also
     --------
-    :obj:`dpnp.hypot` : Given the "legs" of a right triangle, return its hypotenuse.
+    :obj:`dpnp.hypot` : Given the "legs" of a right triangle, return its
+                        hypotenuse.
 
     Examples
     --------
@@ -1431,7 +1446,7 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
     return dpnp.get_result_array(result, out, casting="same_kind")
 
 
-_rsqrt_docstring = """
+_RSQRT_DOCSTRING = """
 Computes the reciprocal square-root for each element `x_i` for input array `x`.
 
 Parameters
@@ -1473,7 +1488,7 @@ rsqrt = DPNPUnaryFunc(
     "rsqrt",
     ti._rsqrt_result_type,
     ti._rsqrt,
-    _rsqrt_docstring,
+    _RSQRT_DOCSTRING,
 )
 
 
@@ -1497,7 +1512,7 @@ def rad2deg(x1):
     return degrees(x1)
 
 
-def radians(x1):
+def radians(x1, **kwargs):
     """
     Convert angles from degrees to radians.
 
@@ -1523,13 +1538,15 @@ def radians(x1):
     x1_desc = dpnp.get_dpnp_descriptor(
         x1, copy_when_strides=False, copy_when_nondefault_queue=False
     )
-    if x1_desc:
+    if kwargs:
+        pass
+    elif x1_desc:
         return dpnp_radians(x1_desc).get_pyobj()
 
     return call_origin(numpy.radians, x1, **kwargs)
 
 
-_sin_docstring = """
+_SIN_DOCSTRING = """
 Computes sine for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.sin`.
@@ -1576,14 +1593,14 @@ sin = DPNPUnaryFunc(
     "sin",
     ti._sin_result_type,
     ti._sin,
-    _sin_docstring,
+    _SIN_DOCSTRING,
     origin_fn=numpy.sin,
     mkl_fn_to_call=vmi._mkl_sin_to_call,
     mkl_impl_fn=vmi._sin,
 )
 
 
-_sinh_docstring = """
+_SINH_DOCSTRING = """
 Computes hyperbolic sine for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.sinh`.
@@ -1629,14 +1646,14 @@ sinh = DPNPUnaryFunc(
     "sinh",
     ti._sinh_result_type,
     ti._sinh,
-    _sinh_docstring,
+    _SINH_DOCSTRING,
     origin_fn=numpy.sinh,
     mkl_fn_to_call=vmi._mkl_sinh_to_call,
     mkl_impl_fn=vmi._sinh,
 )
 
 
-_sqrt_docstring = """
+_SQRT_DOCSTRING = """
 Computes the non-negative square-root for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.sqrt`.
@@ -1683,14 +1700,14 @@ sqrt = DPNPUnaryFunc(
     "sqrt",
     ti._sqrt_result_type,
     ti._sqrt,
-    _sqrt_docstring,
+    _SQRT_DOCSTRING,
     origin_fn=numpy.sqrt,
     mkl_fn_to_call=vmi._mkl_sqrt_to_call,
     mkl_impl_fn=vmi._sqrt,
 )
 
 
-_square_docstring = """
+_SQUARE_DOCSTRING = """
 Computes `x_i**2` (or `x_i*x_i`) for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.square`.
@@ -1737,14 +1754,14 @@ square = DPNPUnaryFunc(
     "square",
     ti._square_result_type,
     ti._square,
-    _square_docstring,
+    _SQUARE_DOCSTRING,
     origin_fn=numpy.square,
     mkl_fn_to_call=vmi._mkl_sqr_to_call,
     mkl_impl_fn=vmi._sqr,
 )
 
 
-_tan_docstring = """
+_TAN_DOCSTRING = """
 Computes tangent for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.tan`.
@@ -1791,14 +1808,14 @@ tan = DPNPUnaryFunc(
     "tan",
     ti._tan_result_type,
     ti._tan,
-    _tan_docstring,
+    _TAN_DOCSTRING,
     origin_fn=numpy.tan,
     mkl_fn_to_call=vmi._mkl_tan_to_call,
     mkl_impl_fn=vmi._tan,
 )
 
 
-_tanh_docstring = """
+_TANH_DOCSTRING = """
 Computes hyperbolic tangent for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.tanh`.
@@ -1845,14 +1862,14 @@ tanh = DPNPUnaryFunc(
     "tanh",
     ti._tanh_result_type,
     ti._tanh,
-    _tanh_docstring,
+    _TANH_DOCSTRING,
     origin_fn=numpy.tanh,
     mkl_fn_to_call=vmi._mkl_tanh_to_call,
     mkl_impl_fn=vmi._tanh,
 )
 
 
-def unwrap(x1):
+def unwrap(x1, **kwargs):
     """
     Unwrap by changing deltas between values to 2*pi complement.
 
@@ -1881,7 +1898,9 @@ def unwrap(x1):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
+    if kwargs:
+        pass
+    elif x1_desc:
         return dpnp_unwrap(x1_desc).get_pyobj()
 
     return call_origin(numpy.unwrap, x1, **kwargs)

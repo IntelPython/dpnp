@@ -37,6 +37,9 @@ it contains:
 
 """
 
+# pylint: disable=protected-access
+# pylint: disable=c-extension-no-member
+
 
 import dpctl.tensor._tensor_elementwise_impl as ti
 import numpy
@@ -54,7 +57,7 @@ __all__ = [
 ]
 
 
-_bitwise_and_docstring = """
+_BITWISE_AND_DOCSTRING = """
 Computes the bitwise AND of the underlying binary representation of each
 element `x1_i` of the input array `x1` with the respective element `x2_i`
 of the input array `x2`.
@@ -117,12 +120,12 @@ bitwise_and = DPNPBinaryFunc(
     "bitwise_and",
     ti._bitwise_and_result_type,
     ti._bitwise_and,
-    _bitwise_and_docstring,
+    _BITWISE_AND_DOCSTRING,
     origin_fn=numpy.bitwise_and,
 )
 
 
-_bitwise_or_docstring = """
+_BITWISE_OR_DOCSTRING = """
 Computes the bitwise OR of the underlying binary representation of each
 element `x1_i` of the input array `x1` with the respective element `x2_i`
 of the input array `x2`.
@@ -180,12 +183,12 @@ bitwise_or = DPNPBinaryFunc(
     "bitwise_or",
     ti._bitwise_or_result_type,
     ti._bitwise_or,
-    _bitwise_or_docstring,
+    _BITWISE_OR_DOCSTRING,
     origin_fn=numpy.bitwise_or,
 )
 
 
-_bitwise_xor_docstring = """
+_BITWISE_XOR_DOCSTRING = """
 Computes the bitwise XOR of the underlying binary representation of each
 element `x1_i` of the input array `x1` with the respective element `x2_i`
 of the input array `x2`.
@@ -248,12 +251,12 @@ bitwise_xor = DPNPBinaryFunc(
     "bitwise_xor",
     ti._bitwise_xor_result_type,
     ti._bitwise_xor,
-    _bitwise_xor_docstring,
+    _BITWISE_XOR_DOCSTRING,
     origin_fn=numpy.bitwise_xor,
 )
 
 
-_invert_docstring = """
+_INVERT_DOCSTRING = """
 Inverts (flips) each bit for each element `x_i` of the input array `x`.
 
 For full documentation refer to :obj:`numpy.invert`.
@@ -311,7 +314,7 @@ invert = DPNPUnaryFunc(
     "invert",
     ti._bitwise_invert_result_type,
     ti._bitwise_invert,
-    _invert_docstring,
+    _INVERT_DOCSTRING,
     origin_fn=numpy.invert,
 )
 
@@ -319,7 +322,7 @@ invert = DPNPUnaryFunc(
 bitwise_not = invert  # bitwise_not is an alias for invert
 
 
-_left_shift_docstring = """
+_LEFT_SHIFT_DOCSTRING = """
 Shifts the bits of each element `x1_i` of the input array x1 to the left by
 appending `x2_i` (i.e., the respective element in the input array `x2`) zeros to
 the right of `x1_i`.
@@ -374,12 +377,12 @@ left_shift = DPNPBinaryFunc(
     "left_shift",
     ti._bitwise_left_shift_result_type,
     ti._bitwise_left_shift,
-    _left_shift_docstring,
+    _LEFT_SHIFT_DOCSTRING,
     origin_fn=numpy.left_shift,
 )
 
 
-_right_shift_docstring = """
+_RIGHT_SHIFT_DOCSTRING = """
 Shifts the bits of each element `x1_i` of the input array `x1` to the right
 according to the respective element `x2_i` of the input array `x2`.
 
@@ -434,6 +437,6 @@ right_shift = DPNPBinaryFunc(
     "right_shift",
     ti._bitwise_right_shift_result_type,
     ti._bitwise_right_shift,
-    _right_shift_docstring,
+    _RIGHT_SHIFT_DOCSTRING,
     origin_fn=numpy.right_shift,
 )

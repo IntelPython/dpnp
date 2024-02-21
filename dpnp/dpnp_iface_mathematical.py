@@ -37,11 +37,17 @@ it contains:
 
 """
 
+# pylint: disable=protected-access
+# pylint: disable=c-extension-no-member
+# pylint: disable=duplicate-code
+# pylint: disable=no-name-in-module
+
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.utils as du
 import numpy
+from dpctl.tensor._reduction import _default_reduction_dtype
 from dpctl.tensor._type_utils import (
     _acceptance_fn_divide,
     _acceptance_fn_negative,
@@ -54,9 +60,23 @@ from numpy.core.numeric import (
 
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
+from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
 from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import call_origin, get_usm_allocations
 
-from .dpnp_algo import *
+from .dpnp_algo import (
+    dpnp_cross,
+    dpnp_cumprod,
+    dpnp_cumsum,
+    dpnp_ediff1d,
+    dpnp_fabs,
+    dpnp_fmax,
+    dpnp_fmin,
+    dpnp_fmod,
+    dpnp_gradient,
+    dpnp_modf,
+    dpnp_trapz,
+)
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPAngle,
     DPNPBinaryFunc,
@@ -65,7 +85,6 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPSign,
     DPNPUnaryFunc,
 )
-from .dpnp_utils import *
 
 __all__ = [
     "abs",
@@ -142,7 +161,7 @@ def _append_to_diff_array(a, axis, combined, values):
     combined.append(values)
 
 
-_abs_docstring = """
+_ABS_DOCSTRING = """
 Calculate the absolute value element-wise.
 
 For full documentation refer to :obj:`numpy.absolute`.
@@ -198,7 +217,7 @@ absolute = DPNPUnaryFunc(
     "abs",
     ti._abs_result_type,
     ti._abs,
-    _abs_docstring,
+    _ABS_DOCSTRING,
     origin_fn=numpy.abs,
     mkl_fn_to_call=vmi._mkl_abs_to_call,
     mkl_impl_fn=vmi._abs,
@@ -208,7 +227,7 @@ absolute = DPNPUnaryFunc(
 abs = absolute
 
 
-_add_docstring = """
+_ADD_DOCSTRING = """
 Calculates the sum for each element `x1_i` of the input array `x1` with
 the respective element `x2_i` of the input array `x2`.
 
@@ -272,7 +291,7 @@ add = DPNPBinaryFunc(
     "add",
     ti._add_result_type,
     ti._add,
-    _add_docstring,
+    _ADD_DOCSTRING,
     origin_fn=numpy.add,
     mkl_fn_to_call=vmi._mkl_add_to_call,
     mkl_impl_fn=vmi._add,
@@ -280,7 +299,7 @@ add = DPNPBinaryFunc(
 )
 
 
-_angle_docstring = """
+_ANGLE_DOCSTRING = """
 Computes the phase angle (also called the argument) of each element `x_i` for
 input array `x`.
 
@@ -329,7 +348,7 @@ angle = DPNPAngle(
     "angle",
     ti._angle_result_type,
     ti._angle,
-    _angle_docstring,
+    _ANGLE_DOCSTRING,
     origin_fn=numpy.angle,
 )
 
@@ -376,7 +395,7 @@ def around(x, /, decimals=0, out=None):
     return round(x, decimals, out)
 
 
-_ceil_docstring = """
+_CEIL_DOCSTRING = """
 Returns the ceiling for each element `x_i` for input array `x`.
 The ceil of the scalar `x` is the smallest integer `i`, such that `i >= x`.
 
@@ -422,7 +441,7 @@ ceil = DPNPUnaryFunc(
     "ceil",
     ti._ceil_result_type,
     ti._ceil,
-    _ceil_docstring,
+    _CEIL_DOCSTRING,
     origin_fn=numpy.ceil,
     mkl_fn_to_call=vmi._mkl_ceil_to_call,
     mkl_impl_fn=vmi._ceil,
@@ -440,11 +459,13 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     a : {dpnp.ndarray, usm_ndarray}
         Array containing elements to clip.
     a_min, a_max : {dpnp.ndarray, usm_ndarray, None}
-        Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.
-        Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.
+        Minimum and maximum value. If ``None``, clipping is not performed on
+        the corresponding edge. Only one of `a_min` and `a_max` may be
+        ``None``. Both are broadcast against `a`.
     out : {dpnp.ndarray, usm_ndarray}, optional
-        The results will be placed in this array. It may be the input array for in-place clipping.
-        `out` must be of the right shape to hold the output. Its type is preserved.
+        The results will be placed in this array. It may be the input array
+        for in-place clipping. `out` must be of the right shape to hold the
+        output. Its type is preserved.
     order : {"C", "F", "A", "K", None}, optional
         Memory layout of the newly output array, if parameter `out` is `None`.
         If `order` is ``None``, the default value "K" will be used.
@@ -452,8 +473,8 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     Returns
     -------
     out : dpnp.ndarray
-        An array with the elements of `a`, but where values < `a_min` are replaced with `a_min`,
-        and those > `a_max` with `a_max`.
+        An array with the elements of `a`, but where values < `a_min` are
+        replaced with `a_min`, and those > `a_max` with `a_max`.
 
     Limitations
     -----------
@@ -486,7 +507,7 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
     if kwargs:
         raise NotImplementedError(f"kwargs={kwargs} is currently not supported")
-    elif a_min is None and a_max is None:
+    if a_min is None and a_max is None:
         raise ValueError("One of max or min must be given")
 
     if order is None:
@@ -503,7 +524,7 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
-_conj_docstring = """
+_CONJ_DOCSTRING = """
 Computes conjugate for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.conj`.
@@ -546,7 +567,7 @@ conjugate = DPNPUnaryFunc(
     "conj",
     ti._conj_result_type,
     ti._conj,
-    _conj_docstring,
+    _CONJ_DOCSTRING,
     origin_fn=numpy.conj,
     mkl_fn_to_call=vmi._mkl_conj_to_call,
     mkl_impl_fn=vmi._conj,
@@ -572,7 +593,7 @@ def convolve(a, v, mode="full"):
     return call_origin(numpy.convolve, a=a, v=v, mode=mode)
 
 
-_copysign_docstring = """
+_COPYSING_DOCSTRING = """
 Composes a floating-point value with the magnitude of `x1_i` and the sign of
 `x2_i` for each element of input arrays `x1` and `x2`.
 
@@ -630,7 +651,7 @@ copysign = DPNPBinaryFunc(
     "copysign",
     ti._copysign_result_type,
     ti._copysign,
-    _copysign_docstring,
+    _COPYSING_DOCSTRING,
     origin_fn=numpy.copysign,
 )
 
@@ -646,7 +667,8 @@ def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
     Parameters `x1` and `x2` are supported as :class:`dpnp.ndarray`.
     Keyword argument `kwargs` is currently unsupported.
     Sizes of input arrays are limited by `x1.size == 3 and x2.size == 3`.
-    Shapes of input arrays are limited by `x1.shape == (3,) and x2.shape == (3,)`.
+    Shapes of input arrays are limited by `x1.shape == (3,) and
+    x2.shape == (3,)`.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -732,7 +754,8 @@ def cumsum(x1, **kwargs):
 
     See Also
     --------
-    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.
+    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given
+                       axis.
 
     Examples
     --------
@@ -790,8 +813,10 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
     See Also
     --------
     :obj:`dpnp.gradient` : Return the gradient of an N-dimensional array.
-    :obj:`dpnp.ediff1d` : Compute the differences between consecutive elements of an array.
-    :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along a given axis.
+    :obj:`dpnp.ediff1d` : Compute the differences between consecutive elements
+                          of an array.
+    :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along
+                         a given axis.
 
     Examples
     --------
@@ -846,7 +871,7 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
     return a
 
 
-_divide_docstring = """
+_DIVIDE_DOCSTRING = """
 Calculates the ratio for each element `x1_i` of the input array `x1` with
 the respective element `x2_i` of the input array `x2`.
 
@@ -912,7 +937,7 @@ divide = DPNPBinaryFunc(
     "divide",
     ti._divide_result_type,
     ti._divide,
-    _divide_docstring,
+    _DIVIDE_DOCSTRING,
     origin_fn=numpy.divide,
     mkl_fn_to_call=vmi._mkl_div_to_call,
     mkl_impl_fn=vmi._div,
@@ -930,13 +955,15 @@ def ediff1d(x1, to_end=None, to_begin=None):
     Limitations
     -----------
     Parameter `x1`is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `to_end` and `to_begin` are currently supported only with default values `None`.
+    Keyword arguments `to_end` and `to_begin` are currently supported only
+    with default values `None`.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.
+    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given
+                       axis.
 
     Examples
     --------
@@ -999,7 +1026,7 @@ def fabs(x1, **kwargs):
     return call_origin(numpy.fabs, x1, **kwargs)
 
 
-_floor_docstring = """
+_FLOOR_DOCSTRING = """
 Returns the floor for each element `x_i` for input array `x`.
 The floor of the scalar `x` is the largest integer `i`, such that `i <= x`.
 
@@ -1050,14 +1077,14 @@ floor = DPNPUnaryFunc(
     "floor",
     ti._floor_result_type,
     ti._floor,
-    _floor_docstring,
+    _FLOOR_DOCSTRING,
     origin_fn=numpy.floor,
     mkl_fn_to_call=vmi._mkl_floor_to_call,
     mkl_impl_fn=vmi._floor,
 )
 
 
-_floor_divide_docstring = """
+_FLOOR_DIVIDE_DOCSTRING = """
 Calculates the ratio for each element `x1_i` of the input array `x1` with
 the respective element `x2_i` of the input array `x2` to the greatest
 integer-value number that is not greater than the division result.
@@ -1118,7 +1145,7 @@ floor_divide = DPNPBinaryFunc(
     "floor_divide",
     ti._floor_divide_result_type,
     ti._floor_divide,
-    _floor_divide_docstring,
+    _FLOOR_DIVIDE_DOCSTRING,
     origin_fn=numpy.floor_divide,
     binary_inplace_fn=ti._floor_divide_inplace,
 )
@@ -1137,20 +1164,26 @@ def fmax(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `x1` and `x2` are supported as either scalar,
+    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`
+    and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default
+    values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by real-valued data types.
 
     See Also
     --------
-    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.
+    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates
+                          NaNs.
     :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignores NaNs.
-    :obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs..
-    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
-    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.
+    :obj:`dpnp.max` : The maximum value of an array along a given axis,
+                      propagates NaNs..
+    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,
+                         ignores NaNs.
+    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates
+                          NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
     Examples
@@ -1186,7 +1219,8 @@ def fmax(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
         # at least either x1 or x2 has to be an array
         pass
     else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        # get USM type and queue to copy scalar from the host memory
+        # into a USM allocation
         usm_type, queue = (
             get_usm_allocations([x1, x2])
             if dpnp.isscalar(x1) or dpnp.isscalar(x2)
@@ -1244,20 +1278,26 @@ def fmin(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `x1` and `x2` are supported as either scalar,
+    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`
+    and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default
+    values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by real-valued data types.
 
     See Also
     --------
-    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.
+    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates
+                          NaNs.
     :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignores NaNs.
-    :obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
-    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
-    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.
+    :obj:`dpnp.min` : The minimum value of an array along a given axis,
+                      propagates NaNs.
+    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis,
+                         ignores NaNs.
+    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates
+                          NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
     Examples
@@ -1293,7 +1333,8 @@ def fmin(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
         # at least either x1 or x2 has to be an array
         pass
     else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        # get USM type and queue to copy scalar from the host memory into
+        # a USM allocation
         usm_type, queue = (
             get_usm_allocations([x1, x2])
             if dpnp.isscalar(x1) or dpnp.isscalar(x2)
@@ -1351,9 +1392,11 @@ def fmod(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `x1` and `x2` are supported as either scalar,
+    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`
+    and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default
+    values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -1402,7 +1445,8 @@ def fmod(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
         # at least either x1 or x2 has to be an array
         pass
     else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        # get USM type and queue to copy scalar from the host memory into
+        # a USM allocation
         usm_type, queue = (
             get_usm_allocations([x1, x2])
             if dpnp.isscalar(x1) or dpnp.isscalar(x2)
@@ -1463,7 +1507,8 @@ def gradient(x1, *varargs, **kwargs):
 
     See Also
     --------
-    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.
+    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given
+                       axis.
 
     Examples
     --------
@@ -1493,7 +1538,7 @@ def gradient(x1, *varargs, **kwargs):
     return call_origin(numpy.gradient, x1, *varargs, **kwargs)
 
 
-_imag_docstring = """
+_IMAG_DOCSTRING = """
 Computes imaginary part of each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.imag`.
@@ -1543,12 +1588,12 @@ imag = DPNPUnaryFunc(
     "imag",
     ti._imag_result_type,
     ti._imag,
-    _imag_docstring,
+    _IMAG_DOCSTRING,
     origin_fn=numpy.imag,
 )
 
 
-_maximum_docstring = """
+_MAXIMUM_DOCSTRING = """
 Compares two input arrays `x1` and `x2` and returns
 a new array containing the element-wise maxima.
 
@@ -1616,12 +1661,12 @@ maximum = DPNPBinaryFunc(
     "maximum",
     ti._maximum_result_type,
     ti._maximum,
-    _maximum_docstring,
+    _MAXIMUM_DOCSTRING,
     origin_fn=numpy.maximum,
 )
 
 
-_minimum_docstring = """
+_MINIMUM_DOCSTRING = """
 Compares two input arrays `x1` and `x2` and returns
 a new array containing the element-wise minima.
 
@@ -1689,7 +1734,7 @@ minimum = DPNPBinaryFunc(
     "minimum",
     ti._minimum_result_type,
     ti._minimum,
-    _minimum_docstring,
+    _MINIMUM_DOCSTRING,
     origin_fn=numpy.minimum,
 )
 
@@ -1718,9 +1763,11 @@ def mod(
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `x1` and `x2` are supported as either scalar,
+    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`
+    and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default
+    values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -1780,7 +1827,7 @@ def modf(x1, **kwargs):
     return call_origin(numpy.modf, x1, **kwargs)
 
 
-_multiply_docstring = """
+_MULTIPLY_DOCSTRING = """
 Calculates the product for each element `x1_i` of the input array `x1`
 with the respective element `x2_i` of the input array `x2`.
 
@@ -1842,7 +1889,7 @@ multiply = DPNPBinaryFunc(
     "multiply",
     ti._multiply_result_type,
     ti._multiply,
-    _multiply_docstring,
+    _MULTIPLY_DOCSTRING,
     origin_fn=numpy.multiply,
     mkl_fn_to_call=vmi._mkl_mul_to_call,
     mkl_impl_fn=vmi._mul,
@@ -1850,7 +1897,7 @@ multiply = DPNPBinaryFunc(
 )
 
 
-_negative_docstring = """
+_NEGATIVE_DOCSTRING = """
 Computes the numerical negative for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.negative`.
@@ -1900,13 +1947,13 @@ negative = DPNPUnaryFunc(
     "negative",
     ti._negative_result_type,
     ti._negative,
-    _negative_docstring,
+    _NEGATIVE_DOCSTRING,
     origin_fn=numpy.negative,
     acceptance_fn=_acceptance_fn_negative,
 )
 
 
-_positive_docstring = """
+_POSITIVE_DOCSTRING = """
 Computes the numerical positive for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.positive`.
@@ -1960,12 +2007,12 @@ positive = DPNPUnaryFunc(
     "positive",
     ti._positive_result_type,
     ti._positive,
-    _positive_docstring,
+    _POSITIVE_DOCSTRING,
     origin_fn=numpy.positive,
 )
 
 
-_power_docstring = """
+_POWER_DOCSTRING = """
 Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
 `x1` with the respective element `x2_i` of the input array `x2`.
 
@@ -2043,7 +2090,7 @@ power = DPNPBinaryFunc(
     "power",
     ti._pow_result_type,
     ti._pow,
-    _power_docstring,
+    _POWER_DOCSTRING,
     origin_fn=numpy.power,
     mkl_fn_to_call=vmi._mkl_pow_to_call,
     mkl_impl_fn=vmi._pow,
@@ -2068,18 +2115,22 @@ def prod(
     Returns
     -------
     out : dpnp.ndarray
-        A new array holding the result is returned unless `out` is specified, in which case it is returned.
+        A new array holding the result is returned unless `out` is specified,
+        in which case it is returned.
 
     Limitations
     -----------
-    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `initial`, and `where` are only supported with their default values.
+    Input array is only supported as either :class:`dpnp.ndarray` or
+    :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `initial`, and `where` are only supported with their default
+    values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.nanprod` : Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
+    :obj:`dpnp.nanprod` : Return the product of array elements over a given
+                          axis treating Not a Numbers (NaNs) as ones.
 
     Examples
     --------
@@ -2102,8 +2153,10 @@ def prod(
 
     """
 
-    # Product reduction for complex output are known to fail for Gen9 with 2024.0 compiler
-    # TODO: get rid of this temporary work around when OneAPI 2024.1 is released
+    # Product reduction for complex output are known to fail for Gen9 with
+    # 2024.0 compiler
+    # TODO: get rid of this temporary work around when OneAPI 2024.1 is
+    # released
     dpnp.check_supported_arrays_type(a)
     _dtypes = (a.dtype, dtype)
     _any_complex = any(
@@ -2127,24 +2180,23 @@ def prod(
             # numpy may return a scalar, convert it back to dpnp array
             return dpnp.array(res, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
         return res
-    elif initial is not None:
+    if initial is not None:
         raise NotImplementedError(
             "initial keyword argument is only supported with its default value."
         )
-    elif where is not True:
+    if where is not True:
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
-    else:
-        dpt_array = dpnp.get_usm_ndarray(a)
-        result = dpnp_array._create_from_usm_ndarray(
-            dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
-        )
+    dpt_array = dpnp.get_usm_ndarray(a)
+    result = dpnp_array._create_from_usm_ndarray(
+        dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
+    )
 
-        return dpnp.get_result_array(result, out)
+    return dpnp.get_result_array(result, out)
 
 
-_proj_docstring = """
+_PROJ_DOCSTRING = """
 Computes projection of each element `x_i` for input array `x`.
 
 Parameters
@@ -2188,11 +2240,11 @@ proj = DPNPUnaryFunc(
     "proj",
     ti._proj_result_type,
     ti._proj,
-    _proj_docstring,
+    _PROJ_DOCSTRING,
 )
 
 
-_real_docstring = """
+_REAL_DOCSTRING = """
 Computes real part of each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.real`.
@@ -2216,12 +2268,12 @@ real = DPNPReal(
     "real",
     ti._real_result_type,
     ti._real,
-    _real_docstring,
+    _REAL_DOCSTRING,
     origin_fn=numpy.real,
 )
 
 
-_remainder_docstring = """
+_REMAINDER_DOCSTRING = """
 Calculates the remainder of division for each element `x1_i` of the input array
 `x1` with the respective element `x2_i` of the input array `x2`.
 This function is equivalent to the Python modulus operator.
@@ -2281,13 +2333,13 @@ remainder = DPNPBinaryFunc(
     "remainder",
     ti._remainder_result_type,
     ti._remainder,
-    _remainder_docstring,
+    _REMAINDER_DOCSTRING,
     origin_fn=numpy.remainder,
     binary_inplace_fn=ti._remainder_inplace,
 )
 
 
-_rint_docstring = """
+_RINT_DOCSTRING = """
 Round elements of the array to the nearest integer.
 
 For full documentation refer to :obj:`numpy.rint`.
@@ -2334,12 +2386,12 @@ rint = DPNPUnaryFunc(
     "rint",
     ti._round_result_type,
     ti._round,
-    _rint_docstring,
+    _RINT_DOCSTRING,
     origin_fn=numpy.rint,
 )
 
 
-_round_docstring = """
+_ROUND_DOCSTRING = """
 Rounds each element `x_i` of the input array `x` to
 the nearest integer-valued number.
 
@@ -2392,12 +2444,12 @@ round = DPNPRound(
     "round",
     ti._round_result_type,
     ti._round,
-    _round_docstring,
+    _ROUND_DOCSTRING,
     origin_fn=numpy.round,
 )
 
 
-_sign_docstring = """
+_SIGN_DOCSTRING = """
 Computes an indication of the sign of each element `x_i` of input array `x`
 using the signum function.
 
@@ -2449,12 +2501,12 @@ sign = DPNPSign(
     "sign",
     ti._sign_result_type,
     ti._sign,
-    _sign_docstring,
+    _SIGN_DOCSTRING,
     origin_fn=numpy.sign,
 )
 
 
-_signbit_docstring = """
+_SIGNBIT_DOCSTRING = """
 Computes an indication of whether the sign bit of each element `x_i` of
 input array `x` is set.
 
@@ -2501,12 +2553,12 @@ signbit = DPNPUnaryFunc(
     "signbit",
     ti._signbit_result_type,
     ti._signbit,
-    _signbit_docstring,
+    _SIGNBIT_DOCSTRING,
     origin_fn=numpy.signbit,
 )
 
 
-_subtract_docstring = """
+_SUBTRACT_DOCSTRING = """
 Calculates the difference between each element `x1_i` of the input
 array `x1` and the respective element `x2_i` of the input array `x2`.
 
@@ -2567,7 +2619,7 @@ subtract = DPNPBinaryFunc(
     "subtract",
     ti._subtract_result_type,
     ti._subtract,
-    _subtract_docstring,
+    _SUBTRACT_DOCSTRING,
     origin_fn=numpy.subtract,
     mkl_fn_to_call=vmi._mkl_sub_to_call,
     mkl_impl_fn=vmi._sub,
@@ -2647,14 +2699,16 @@ def sum(
 
     Limitations
     -----------
-    Parameters `initial` and `where` are only supported with their default values.
+    Parameters `initial` and `where` are only supported with their default
+    values.
     Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
     :obj:`dpnp.ndarray.sum` : Equivalent method.
     :obj:`dpnp.cumsum` : Cumulative sum of array elements.
-    :obj:`dpnp.trapz` : Integration of array values using the composite trapezoidal rule.
+    :obj:`dpnp.trapz` : Integration of array values using the composite
+                        trapezoidal rule.
     :obj:`dpnp.mean` : Compute the arithmetic mean.
     :obj:`dpnp.average` : Compute the weighted average.
 
@@ -2685,69 +2739,63 @@ def sum(
         raise NotImplementedError(
             "initial keyword argument is only supported with its default value."
         )
-    elif where is not True:
+    if where is not True:
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
-    else:
-        if (
-            len(a.shape) == 2
-            and a.itemsize == 4
-            and (
-                (
-                    axis == (0,)
-                    and a.flags.c_contiguous
-                    and 32 <= a.shape[1] <= 1024
-                    and a.shape[0] > a.shape[1]
-                )
-                or (
-                    axis == (1,)
-                    and a.flags.f_contiguous
-                    and 32 <= a.shape[0] <= 1024
-                    and a.shape[1] > a.shape[0]
-                )
-            )
-        ):
-            from dpctl.tensor._reduction import _default_reduction_dtype
 
-            from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
+    c_contiguous_rules = (
+        axis == (0,)
+        and a.flags.c_contiguous
+        and 32 <= a.shape[1] <= 1024
+        and a.shape[0] > a.shape[1]
+    )
+    f_contiguous_rules = (
+        axis == (1,)
+        and a.flags.f_contiguous
+        and 32 <= a.shape[0] <= 1024
+        and a.shape[1] > a.shape[0]
+    )
 
-            input = a
-            if axis == (1,):
-                input = input.T
-            input = dpnp.get_usm_ndarray(input)
+    if (
+        len(a.shape) == 2
+        and a.itemsize == 4
+        and (c_contiguous_rules or f_contiguous_rules)
+    ):
+        input = a
+        if axis == (1,):
+            input = input.T
+        input = dpnp.get_usm_ndarray(input)
 
-            queue = input.sycl_queue
-            out_dtype = (
-                _default_reduction_dtype(input.dtype, queue)
-                if dtype is None
-                else dtype
-            )
-            output = dpt.empty(
-                input.shape[1], dtype=out_dtype, sycl_queue=queue
-            )
-
-            get_sum = _sycl_ext_impl._get_sum_over_axis_0
-            sum = get_sum(input, output)
-
-            if sum:
-                sum(input, output, []).wait()
-                result = dpnp_array._create_from_usm_ndarray(output)
-
-                if keepdims:
-                    if axis == (0,):
-                        res_sh = (1,) + output.shape
-                    else:
-                        res_sh = output.shape + (1,)
-                    result = result.reshape(res_sh)
-
-                return result
-
-        y = dpt.sum(
-            dpnp.get_usm_ndarray(a), axis=axis, dtype=dtype, keepdims=keepdims
+        queue = input.sycl_queue
+        out_dtype = (
+            _default_reduction_dtype(input.dtype, queue)
+            if dtype is None
+            else dtype
         )
-        result = dpnp_array._create_from_usm_ndarray(y)
-        return dpnp.get_result_array(result, out, casting="same_kind")
+        output = dpt.empty(input.shape[1], dtype=out_dtype, sycl_queue=queue)
+
+        get_sum = _sycl_ext_impl._get_sum_over_axis_0
+        sycl_sum = get_sum(input, output)
+
+        if sycl_sum:
+            sycl_sum(input, output, []).wait()
+            result = dpnp_array._create_from_usm_ndarray(output)
+
+            if keepdims:
+                if axis == (0,):
+                    res_sh = (1,) + output.shape
+                else:
+                    res_sh = output.shape + (1,)
+                result = result.reshape(res_sh)
+
+            return result
+
+    y = dpt.sum(
+        dpnp.get_usm_ndarray(a), axis=axis, dtype=dtype, keepdims=keepdims
+    )
+    result = dpnp_array._create_from_usm_ndarray(y)
+    return dpnp.get_result_array(result, out, casting="same_kind")
 
 
 def trapz(y1, x1=None, dx=1.0, axis=-1):
@@ -2813,7 +2861,7 @@ def trapz(y1, x1=None, dx=1.0, axis=-1):
 true_divide = divide
 
 
-_trunc_docstring = """
+_TRUNC_DOCSTRING = """
 trunc(x, out=None, order='K')
 
 Returns the truncated value for each element `x_i` for input array `x`.
@@ -2861,7 +2909,7 @@ trunc = DPNPUnaryFunc(
     "trunc",
     ti._trunc_result_type,
     ti._trunc,
-    _trunc_docstring,
+    _TRUNC_DOCSTRING,
     origin_fn=numpy.trunc,
     mkl_fn_to_call=vmi._mkl_trunc_to_call,
     mkl_impl_fn=vmi._trunc,

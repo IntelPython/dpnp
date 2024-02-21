@@ -104,7 +104,10 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
         acceptance_fn=None,
     ):
         def _call_func(src, dst, sycl_queue, depends=None):
-            """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+            """
+            A callback to register in UnaryElementwiseFunc class of
+            dpctl.tensor
+            """
 
             if depends is None:
                 depends = []
@@ -142,28 +145,24 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
                     f"Requested function={self.name_} with kwargs={kwargs} "
                     "isn't currently supported."
                 )
-            pass
         elif where is not True:
             if self.origin_fn is None:
                 raise NotImplementedError(
                     f"Requested function={self.name_} with where={where} "
                     "isn't currently supported."
                 )
-            pass
         elif dtype is not None:
             if self.origin_fn is None:
                 raise NotImplementedError(
                     f"Requested function={self.name_} with dtype={dtype} "
                     "isn't currently supported."
                 )
-            pass
         elif subok is not True:
             if self.origin_fn is None:
                 raise NotImplementedError(
                     f"Requested function={self.name_} with subok={subok} "
                     "isn't currently supported."
                 )
-            pass
         elif dpnp.isscalar(x):
             # input has to be an array
             if self.origin_fn is None:
@@ -171,7 +170,6 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
                     f"Requested function={self.name_} with args={x} "
                     "isn't currently supported."
                 )
-            pass
         else:
             if order in "afkcAFKC":
                 order = order.upper()
@@ -179,9 +177,8 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
                 order = "K"
             else:
                 raise ValueError(
-                    "order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(
-                        order
-                    )
+                    "order must be one of 'C', 'F', 'A', or 'K' "
+                    f"(got '{order}')"
                 )
             x_usm = dpnp.get_usm_ndarray(x)
             out_usm = None if out is None else dpnp.get_usm_ndarray(out)
@@ -276,7 +273,10 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         acceptance_fn=None,
     ):
         def _call_func(src1, src2, dst, sycl_queue, depends=None):
-            """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
+            """
+            A callback to register in UnaryElementwiseFunc class of
+            dpctl.tensor
+            """
 
             if depends is None:
                 depends = []
@@ -316,28 +316,24 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                     f"Requested function={self.name_} with kwargs={kwargs} "
                     "isn't currently supported."
                 )
-            pass
         elif where is not True:
             if self.origin_fn is None:
                 raise NotImplementedError(
                     f"Requested function={self.name_} with where={where} "
                     "isn't currently supported."
                 )
-            pass
         elif dtype is not None:
             if self.origin_fn is None:
                 raise NotImplementedError(
                     f"Requested function={self.name_} with dtype={dtype} "
                     "isn't currently supported."
                 )
-            pass
         elif subok is not True:
             if self.origin_fn is None:
                 raise NotImplementedError(
                     f"Requested function={self.name_} with subok={subok} "
                     "isn't currently supported."
                 )
-            pass
         elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
             # input has to be an array
             if self.origin_fn is None:
@@ -345,7 +341,6 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                     f"Requested function={self.name_} with args={x1, x2} "
                     "isn't currently supported."
                 )
-            pass
         else:
             if order in "afkcAFKC":
                 order = order.upper()
@@ -353,9 +348,8 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                 order = "K"
             else:
                 raise ValueError(
-                    "order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(
-                        order
-                    )
+                    "order must be one of 'C', 'F', 'A', or 'K' "
+                    f"(got '{order}')"
                 )
             x1_usm = dpnp.get_usm_ndarray_or_scalar(x1)
             x2_usm = dpnp.get_usm_ndarray_or_scalar(x2)
@@ -455,14 +449,12 @@ class DPNPRound(DPNPUnaryFunc):
                     f"Requested function={self.name_} with decimals={decimals} "
                     "isn't currently supported."
                 )
-            pass
         elif dpnp.isscalar(x):
             if self.origin_fn is None:
                 raise NotImplementedError(
                     f"Requested function={self.name_} with args={x} "
                     "isn't currently supported."
                 )
-            pass
         else:
             return super().__call__(x, out=out)
         return call_origin(self.origin_fn, x, decimals=decimals, out=out)
@@ -533,8 +525,9 @@ def check_nd_call_func(
     """
     Checks arguments and calls a function.
 
-    Chooses a common internal elementwise function to call in DPNP based on input arguments
-    or to fallback on NumPy call if any passed argument is not currently supported.
+    Chooses a common internal elementwise function to call in DPNP based on
+    input arguments or to fallback on NumPy call if any passed argument is not
+    currently supported.
 
     """
 
@@ -549,9 +542,8 @@ def check_nd_call_func(
         pass
     elif args_len < 1 or args_len > 2:
         raise ValueError(
-            "Unsupported number of input arrays to pass in elementwise function {}".format(
-                dpnp_func.__name__
-            )
+            "Unsupported number of input arrays to pass in elementwise "
+            f"function {dpnp_func.__name__}"
         )
     elif args_len == 1 and dpnp.isscalar(x_args[0]):
         # input has to be an array
@@ -568,9 +560,7 @@ def check_nd_call_func(
             order = "K"
         else:
             raise ValueError(
-                "order must be one of 'C', 'F', 'A', or 'K' (got '{}')".format(
-                    order
-                )
+                f"order must be one of 'C', 'F', 'A', or 'K' (got '{order}')"
             )
         return dpnp_func(*x_args, out=out, order=order)
     if origin_func is not None:
@@ -584,8 +574,8 @@ def check_nd_call_func(
             subok=subok,
             **kwargs,
         )
-    else:
-        raise NotImplementedError(
-            f"Requested function={dpnp_func.__name__} with args={x_args} and kwargs={kwargs} "
-            "isn't currently supported."
-        )
+
+    raise NotImplementedError(
+        f"Requested function={dpnp_func.__name__} with args={x_args} and "
+        f"kwargs={kwargs} isn't currently supported."
+    )

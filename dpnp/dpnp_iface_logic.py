@@ -39,16 +39,21 @@ it contains:
 
 """
 
+# pylint: disable=protected-access
+# pylint: disable=c-extension-no-member
+# pylint: disable=duplicate-code
+# pylint: disable=no-name-in-module
+
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
 import numpy
 
 import dpnp
-from dpnp.dpnp_algo import *
+from dpnp.dpnp_algo import dpnp_allclose
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import *
+from dpnp.dpnp_utils import call_origin
 
 __all__ = [
     "all",
@@ -94,7 +99,8 @@ def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
     See Also
     --------
     :obj:`dpnp.ndarray.all` : equivalent method
-    :obj:`dpnp.any` : Test whether any element along a given axis evaluates to True.
+    :obj:`dpnp.any` : Test whether any element along a given axis evaluates
+                      to True.
 
     Notes
     -----
@@ -201,15 +207,11 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     else:
         if not dpnp.isscalar(rtol):
             raise TypeError(
-                "An argument `rtol` must be a scalar, but got {}".format(
-                    type(rtol)
-                )
+                f"An argument `rtol` must be a scalar, but got {rtol}"
             )
-        elif not dpnp.isscalar(atol):
+        if not dpnp.isscalar(atol):
             raise TypeError(
-                "An argument `atol` must be a scalar, but got {}".format(
-                    type(atol)
-                )
+                f"An argument `atol` must be a scalar, but got {atol}"
             )
 
         if dpnp.isscalar(a):
@@ -250,7 +252,8 @@ def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
     See Also
     --------
     :obj:`dpnp.ndarray.any` : equivalent method
-    :obj:`dpnp.all` : Test whether all elements along a given axis evaluate to True.
+    :obj:`dpnp.all` : Test whether all elements along a given axis evaluate
+                      to True.
 
     Notes
     -----
@@ -293,7 +296,7 @@ def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
     )
 
 
-_equal_docstring = """
+_EQUAL_DOCSTRING = """
 Calculates equality results for each element `x1_i` of
 the input array `x1` the respective element `x2_i` of the input array `x2`.
 
@@ -359,12 +362,12 @@ equal = DPNPBinaryFunc(
     "equal",
     ti._equal_result_type,
     ti._equal,
-    _equal_docstring,
+    _EQUAL_DOCSTRING,
     origin_fn=numpy.equal,
 )
 
 
-_greater_docstring = """
+_GREATER_DOCSTRING = """
 Calculates the greater-than results for each element `x1_i` of
 the input array `x1` the respective element `x2_i` of the input array `x2`.
 
@@ -424,12 +427,12 @@ greater = DPNPBinaryFunc(
     "greater",
     ti._greater_result_type,
     ti._greater,
-    _greater_docstring,
+    _GREATER_DOCSTRING,
     origin_fn=numpy.greater,
 )
 
 
-_greater_equal_docstring = """
+_GREATER_EQUAL_DOCSTRING = """
 Calculates the greater-than or equal-to results for each element `x1_i` of
 the input array `x1` the respective element `x2_i` of the input array `x2`.
 
@@ -489,14 +492,15 @@ greater_equal = DPNPBinaryFunc(
     "greater",
     ti._greater_equal_result_type,
     ti._greater_equal,
-    _greater_equal_docstring,
+    _GREATER_EQUAL_DOCSTRING,
     origin_fn=numpy.greater_equal,
 )
 
 
 def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
     """
-    Returns a boolean array where two arrays are element-wise equal within a tolerance.
+    Returns a boolean array where two arrays are element-wise equal within
+    a tolerance.
 
     For full documentation refer to :obj:`numpy.isclose`.
 
@@ -509,7 +513,8 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
 
     See Also
     --------
-    :obj:`dpnp.allclose` : Returns True if two arrays are element-wise equal within a tolerance.
+    :obj:`dpnp.allclose` : Returns True if two arrays are element-wise equal
+                           within a tolerance.
 
     Examples
     --------
@@ -525,7 +530,9 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
     # x1_desc = dpnp.get_dpnp_descriptor(x1)
     # x2_desc = dpnp.get_dpnp_descriptor(x2)
     # if x1_desc and x2_desc:
-    #     result_obj = dpnp_isclose(x1_desc, x2_desc, rtol, atol, equal_nan).get_pyobj()
+    #     result_obj = dpnp_isclose(
+    #         x1_desc, x2_desc, rtol, atol, equal_nan
+    #     ).get_pyobj()
     #     return result_obj
 
     return call_origin(
@@ -533,7 +540,7 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
     )
 
 
-_isfinite_docstring = """
+_ISFINITE_DOCSTRING = """
 Checks if each element of input array is a finite number.
 
 For full documentation refer to :obj:`numpy.isfinite`.
@@ -589,12 +596,12 @@ isfinite = DPNPUnaryFunc(
     "isfinite",
     ti._isfinite_result_type,
     ti._isfinite,
-    _isfinite_docstring,
+    _ISFINITE_DOCSTRING,
     origin_fn=numpy.isfinite,
 )
 
 
-_isinf_docstring = """
+_ISINF_DOCSTRING = """
 Checks if each element of input array is an infinity.
 
 For full documentation refer to :obj:`numpy.isinf`.
@@ -644,12 +651,12 @@ isinf = DPNPUnaryFunc(
     "isinf",
     ti._isinf_result_type,
     ti._isinf,
-    _isinf_docstring,
+    _ISINF_DOCSTRING,
     origin_fn=numpy.isinf,
 )
 
 
-_isnan_docstring = """
+_ISNAN_DOCSTRING = """
 Checks if each element of an input array is a NaN.
 
 For full documentation refer to :obj:`numpy.isnan`.
@@ -700,12 +707,12 @@ isnan = DPNPUnaryFunc(
     "isnan",
     ti._isnan_result_type,
     ti._isnan,
-    _isnan_docstring,
+    _ISNAN_DOCSTRING,
     origin_fn=numpy.isnan,
 )
 
 
-_less_docstring = """
+_LESS_DOCSTRING = """
 Calculates the less-than results for each element `x1_i` of
 the input array `x1` the respective element `x2_i` of the input array `x2`.
 
@@ -765,12 +772,12 @@ less = DPNPBinaryFunc(
     "less",
     ti._less_result_type,
     ti._less,
-    _less_docstring,
+    _LESS_DOCSTRING,
     origin_fn=numpy.less,
 )
 
 
-_less_equal_docstring = """
+_LESS_EQUAL_DOCSTRING = """
 Calculates the less-than or equal-to results for each element `x1_i` of
 the input array `x1` the respective element `x2_i` of the input array `x2`.
 
@@ -830,12 +837,12 @@ less_equal = DPNPBinaryFunc(
     "less_equal",
     ti._less_equal_result_type,
     ti._less_equal,
-    _less_equal_docstring,
+    _LESS_EQUAL_DOCSTRING,
     origin_fn=numpy.less_equal,
 )
 
 
-_logical_and_docstring = """
+_LOGICAL_AND_DOCSTRING = """
 Computes the logical AND for each element `x1_i` of the input array `x1`
 with the respective element `x2_i` of the input array `x2`.
 
@@ -897,12 +904,12 @@ logical_and = DPNPBinaryFunc(
     "logical_and",
     ti._logical_and_result_type,
     ti._logical_and,
-    _logical_and_docstring,
+    _LOGICAL_AND_DOCSTRING,
     origin_fn=numpy.logical_and,
 )
 
 
-_logical_not_docstring = """
+_LOGICAL_NOT_DOCSTRING = """
 Computes the logical NOT for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.logical_not`.
@@ -951,12 +958,12 @@ logical_not = DPNPUnaryFunc(
     "logical_not",
     ti._logical_not_result_type,
     ti._logical_not,
-    _logical_not_docstring,
+    _LOGICAL_NOT_DOCSTRING,
     origin_fn=numpy.logical_not,
 )
 
 
-_logical_or_docstring = """
+_LOGICAL_OR_DOCSTRING = """
 Computes the logical OR for each element `x1_i` of the input array `x1`
 with the respective element `x2_i` of the input array `x2`.
 
@@ -1018,12 +1025,12 @@ logical_or = DPNPBinaryFunc(
     "logical_or",
     ti._logical_or_result_type,
     ti._logical_or,
-    _logical_or_docstring,
+    _LOGICAL_OR_DOCSTRING,
     origin_fn=numpy.logical_or,
 )
 
 
-_logical_xor_docstring = """
+_LOGICAL_XOR_DOCSTRING = """
 Computes the logical XOR for each element `x1_i` of the input array `x1`
 with the respective element `x2_i` of the input array `x2`.
 
@@ -1081,12 +1088,12 @@ logical_xor = DPNPBinaryFunc(
     "logical_xor",
     ti._logical_xor_result_type,
     ti._logical_xor,
-    _logical_xor_docstring,
+    _LOGICAL_XOR_DOCSTRING,
     origin_fn=numpy.logical_xor,
 )
 
 
-_not_equal_docstring = """
+_NOT_EQUAL_DOCSTRING = """
 Calculates inequality results for each element `x1_i` of
 the input array `x1` the respective element `x2_i` of the input array `x2`.
 
@@ -1146,6 +1153,6 @@ not_equal = DPNPBinaryFunc(
     "not_equal",
     ti._not_equal_result_type,
     ti._not_equal,
-    _not_equal_docstring,
+    _NOT_EQUAL_DOCSTRING,
     origin_fn=numpy.not_equal,
 )
