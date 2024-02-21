@@ -492,6 +492,7 @@ def test_1in_1out(func, data, usm_type):
         ),
         pytest.param("arctan2", [[-1, +1, +1, -1]], [[-1, -1, +1, +1]]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
+        pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         # dpnp.dot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
