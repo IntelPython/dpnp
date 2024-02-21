@@ -2744,24 +2744,23 @@ def sum(
             "where keyword argument is only supported with its default value."
         )
 
-    c_contiguous_rules = (
-        axis == (0,)
-        and a.flags.c_contiguous
-        and 32 <= a.shape[1] <= 1024
-        and a.shape[0] > a.shape[1]
-    )
-    f_contiguous_rules = (
-        axis == (1,)
-        and a.flags.f_contiguous
-        and 32 <= a.shape[0] <= 1024
-        and a.shape[1] > a.shape[0]
-    )
+    sycl_sum_call = False
+    if len(a.shape) == 2 and a.itemsize == 4:
+        c_contiguous_rules = (
+            axis == (0,)
+            and a.flags.c_contiguous
+            and 32 <= a.shape[1] <= 1024
+            and a.shape[0] > a.shape[1]
+        )
+        f_contiguous_rules = (
+            axis == (1,)
+            and a.flags.f_contiguous
+            and 32 <= a.shape[0] <= 1024
+            and a.shape[1] > a.shape[0]
+        )
+        sycl_sum_call = c_contiguous_rules or f_contiguous_rules
 
-    if (
-        len(a.shape) == 2
-        and a.itemsize == 4
-        and (c_contiguous_rules or f_contiguous_rules)
-    ):
+    if sycl_sum_call:
         input = a
         if axis == (1,):
             input = input.T

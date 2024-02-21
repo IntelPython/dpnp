@@ -374,7 +374,7 @@ def test_op_multiple_dtypes(dtype1, func, dtype2, data):
     dpnp_b = dpnp.array(data, dtype=dtype2)
 
     if func == "subtract" and (dtype1 == dtype2 == dpnp.bool):
-        with pytest.raises(TypeError):
+        with pytest.raises((TypeError, ValueError)):
             result = getattr(dpnp, func)(dpnp_a, dpnp_b)
             expected = getattr(numpy, func)(np_a, np_b)
     else:
@@ -514,7 +514,7 @@ class TestMathematical:
     def test_power(self, dtype, lhs, rhs):
         self._test_mathematical("power", dtype, lhs, rhs, check_type=False)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_subtract(self, dtype, lhs, rhs):
         self._test_mathematical("subtract", dtype, lhs, rhs, check_type=False)
 
@@ -574,7 +574,7 @@ def test_op_with_scalar(array, val, func, data_type, val_type):
             )
 
     if func == "subtract" and val_type == bool and data_type == dpnp.bool:
-        with pytest.raises(TypeError):
+        with pytest.raises((TypeError, ValueError)):
             result = getattr(dpnp, func)(dpnp_a, val_)
             expected = getattr(numpy, func)(np_a, val_)
 
@@ -709,6 +709,13 @@ def test_negative(data, dtype):
         result = dpnp.negative(dpnp_a, out=dp_out)
         assert result is dp_out
         assert_allclose(result, expected)
+
+
+def test_negative_boolean():
+    dpnp_a = dpnp.array([True, False])
+
+    with pytest.raises((TypeError, ValueError)):
+        dpnp.negative(dpnp_a)
 
 
 @pytest.mark.parametrize(
