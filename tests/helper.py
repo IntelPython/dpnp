@@ -211,8 +211,12 @@ def generate_random_numpy_array(
 
     if hermitian and a.size > 0:
         if a.ndim > 2:
+            orig_shape = a.shape
+            # get 3D array
+            a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
             for i in range(a.shape[0]):
                 a[i] = numpy.conj(a[i].T) @ a[i]
+            a = a.reshape(orig_shape)
         else:
             a = numpy.conj(a.T) @ a
     return a
