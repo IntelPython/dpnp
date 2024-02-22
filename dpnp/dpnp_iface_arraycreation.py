@@ -1708,6 +1708,20 @@ def fromfunction(
            [1, 2, 3],
            [2, 3, 4]])
 
+    Creating an array on a different device or with a specified usm_type
+
+    >>> x = np.fromfunction(lambda i, j: i - j, (3, 3)) # default case
+    >>> x.device, x.usm_type
+    (Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.fromfunction(lambda i, j: i - j, (3, 3), device='cpu')
+    >>> y.device, y.usm_type
+    (Device(opencl:cpu:0), 'device')
+
+    >>> z = np.fromfunction(lambda i, j: i - j, (3, 3), usm_type="host")
+    >>> z.device, z.usm_type
+    (Device(level_zero:gpu:0), 'host')
+
     """
 
     _check_limitations(like=like)
@@ -1719,19 +1733,93 @@ def fromfunction(
     )
 
 
-def fromiter(iterable, dtype, count=-1):
+def fromiter(
+    iter,
+    dtype,
+    count=-1,
+    *,
+    like=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Create a new 1-dimensional array from an iterable object.
 
     For full documentation refer to :obj:`numpy.fromiter`.
 
+    Parameters
+    ----------
+    iter : iterable object
+        An iterable object providing data for the array.
+    dtype : data-type
+        The data-type of the returned array.
+    count : int, optional
+        The number of items to read from *iterable*.  The default is -1,
+        which means all data is read.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+        Default is "device".
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The output array.
+
     Limitations
     -----------
-    Only float64, float32, int64, int32 types are supported.
+    Parameter `like` is supported only with default value ``None``.
+    Otherwise, the function raises `NotImplementedError` exception.
+
+    Notes
+    -----
+    This uses :obj:`numpy.fromiter` and coerces the result to a DPNP array.
+
+    See also
+    --------
+    :obj:`dpnp.frombuffer` : Construct array from the buffer data.
+    :obj:`dpnp.fromfile` : Construct array from data in a text or binary file.
+    :obj:`dpnp.fromstring` : Construct array from the text data in a string.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> iterable = (a * a for a in range(5))
+    >>> np.fromiter(iterable, float)
+    array([  0.,   1.,   4.,   9.,  16.])
+
+    Creating an array on a different device or with a specified usm_type
+
+    >>> x = np.fromiter(iterable, np.int32) # default case
+    >>> x.device, x.usm_type
+    (Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.fromiter(iterable, np.int32, device='cpu')
+    >>> y.device, y.usm_type
+    (Device(opencl:cpu:0), 'device')
+
+    >>> z = np.fromiter(iterable, np.int32, usm_type="host")
+    >>> z.device, z.usm_type
+    (Device(level_zero:gpu:0), 'host')
 
     """
 
-    return call_origin(numpy.fromiter, iterable, dtype, count)
+    _check_limitations(like=like)
+    return asarray(
+        numpy.fromiter(iter, dtype, count=count),
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
 def fromstring(

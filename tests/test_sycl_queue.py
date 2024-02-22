@@ -93,6 +93,7 @@ def vvsort(val, vec, size, xp):
             [(lambda i, j: i + j), (3, 3)],
             {"dtype": dpnp.int32},
         ),
+        pytest.param("fromiter", [[1, 2, 3, 4]], {"dtype": dpnp.int64}),
         pytest.param("fromstring", ["1, 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),

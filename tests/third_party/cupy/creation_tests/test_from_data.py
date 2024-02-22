@@ -546,7 +546,6 @@ class TestFromData(unittest.TestCase):
 
         return xp.fromfunction(function, shape=(3, 3), dtype=int)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_fromiter(self, xp):
         iterable = (x * x for x in range(5))
@@ -692,7 +691,7 @@ class TestCudaArrayInterfaceMaskedArray(unittest.TestCase):
         mask = testing.shaped_arange((2, 3, 4), cupy, dtype)
         a = DummyObjectWithCudaArrayInterface(a, self.ver, self.strides, mask)
         with pytest.raises(ValueError) as ex:
-            b = cupy.asarray(a)  # noqa
+            b = cupy.asarray(a)
         assert "does not support" in str(ex.value)
 
 

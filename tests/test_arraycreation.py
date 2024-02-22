@@ -245,7 +245,6 @@ def test_fromfunction(dtype):
     assert_array_equal(call_func(dpnp), call_func(numpy))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_fromiter(dtype):
     _iter = [1, 2, 3, 4]
