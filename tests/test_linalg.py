@@ -445,8 +445,8 @@ class TestEigenvalue:
         assert_raises(inp.linalg.LinAlgError, dpnp_func, a_dp_ndim_1)
 
         # a is not square
-        a_dp = inp.ones((2, 3))
-        assert_raises(inp.linalg.LinAlgError, dpnp_func, a_dp)
+        a_dp_not_scquare = inp.ones((2, 3))
+        assert_raises(inp.linalg.LinAlgError, dpnp_func, a_dp_not_scquare)
 
         # invalid UPLO
         assert_raises(ValueError, dpnp_func, a_dp, UPLO="N")
