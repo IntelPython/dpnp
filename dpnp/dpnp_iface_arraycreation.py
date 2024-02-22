@@ -1618,7 +1618,17 @@ def fromfile(
     )
 
 
-def fromfunction(function, shape, **kwargs):
+def fromfunction(
+    function,
+    shape,
+    *,
+    dtype=float,
+    like=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+    **kwargs,
+):
     """
     Construct an array by executing a function over each coordinate.
 
@@ -1627,13 +1637,86 @@ def fromfunction(function, shape, **kwargs):
 
     For full documentation refer to :obj:`numpy.fromfunction`.
 
+    Parameters
+    ----------
+    function : callable
+        The function is called with N parameters, where N is the rank of
+        `shape`. Each parameter represents the coordinates of the array varying
+        along a specific axis. For example, if `shape` were ``(2, 2)``, then
+        the parameters would be ``array([[0, 0], [1, 1]])`` and
+        ``array([[0, 1], [0, 1]])``.
+    shape : (N,) tuple of ints
+        Shape of the output array, which also determines the shape of
+        the coordinate arrays passed to `function`.
+    dtype : data-type, optional
+        Data-type of the coordinate arrays passed to `function`.
+        Default is the default floating point data type for the device where
+        the returned array is allocated.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+        Default is "device".
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The result of the call to `function` is passed back directly.
+        Therefore the shape of `fromfunction` is completely determined by
+        `function`.
+
     Limitations
     -----------
-    Only float64, float32, int64, int32 types are supported.
+    Parameter `like` is supported only with default value ``None``.
+    Otherwise, the function raises `NotImplementedError` exception.
+
+    Notes
+    -----
+    This uses :obj:`numpy.fromfunction` and coerces the result to a DPNP array.
+    Keywords other than `dtype` and `like` are passed to `function`.
+
+    See also
+    --------
+    :obj:`dpnp.indices` : Return an array representing the indices of a grid.
+    :obj:`dpnp.meshgrid` : Return coordinate matrices from coordinate vectors.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.fromfunction(lambda i, j: i, (2, 2), dtype=float)
+    array([[0., 0.],
+           [1., 1.]])
+
+    >>> np.fromfunction(lambda i, j: j, (2, 2), dtype=float)
+    array([[0., 1.],
+           [0., 1.]])
+
+    >>> np.fromfunction(lambda i, j: i == j, (3, 3), dtype=int)
+    array([[ True, False, False],
+           [False,  True, False],
+           [False, False,  True]])
+
+    >>> np.fromfunction(lambda i, j: i + j, (3, 3), dtype=int)
+    array([[0, 1, 2],
+           [1, 2, 3],
+           [2, 3, 4]])
 
     """
 
-    return call_origin(numpy.fromfunction, function, shape, **kwargs)
+    _check_limitations(like=like)
+    return asarray(
+        numpy.fromfunction(function, shape, dtype=dtype, **kwargs),
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
 def fromiter(iterable, dtype, count=-1):

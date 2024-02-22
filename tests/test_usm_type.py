@@ -194,6 +194,9 @@ def test_array_creation_from_2d_array(func, args, usm_type_x, usm_type_y):
     [
         pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
         pytest.param("frombuffer", [b"\x01\x02\x03\x04"], {"dtype": dp.int32}),
+        pytest.param(
+            "fromfunction", [(lambda i, j: i + j), (3, 3)], {"dtype": dp.int32}
+        ),
         pytest.param("fromstring", ["1, 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),

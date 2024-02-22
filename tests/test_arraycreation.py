@@ -233,7 +233,6 @@ def test_fromfile(dtype):
     assert_dtype_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_float16=False)
 )
