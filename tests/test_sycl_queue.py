@@ -1,3 +1,5 @@
+import tempfile
+
 import dpctl
 import dpctl.tensor as dpt
 import numpy
@@ -88,6 +90,10 @@ def vvsort(val, vec, size, xp):
     "func, arg, kwargs",
     [
         pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
+        pytest.param(
+            "frombuffer", [b"\x01\x02\x03\x04"], {"dtype": dpnp.int32}
+        ),
+        pytest.param("fromstring", ["1, 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
         pytest.param("geomspace", [1, 4, 8], {}),
@@ -109,7 +115,9 @@ def test_array_creation(func, arg, kwargs, device):
     dpnp_kwargs["device"] = device
     dpnp_array = getattr(dpnp, func)(*arg, **dpnp_kwargs)
 
-    numpy_array = getattr(numpy, func)(*arg, dtype=dpnp_array.dtype, **kwargs)
+    numpy_kwargs = dict(kwargs)
+    numpy_kwargs["dtype"] = dpnp_array.dtype
+    numpy_array = getattr(numpy, func)(*arg, **numpy_kwargs)
 
     assert_dtype_allclose(dpnp_array, numpy_array)
     assert dpnp_array.sycl_device == device
@@ -314,6 +322,26 @@ def test_array_creation_cross_device_2d_array(
     assert_allclose(y_orig, y)
 
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_array_creation_from_file(device):
+    with tempfile.TemporaryFile() as fh:
+        fh.write(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08")
+        fh.flush()
+
+        fh.seek(0)
+        numpy_array = numpy.fromfile(fh)
+
+        fh.seek(0)
+        dpnp_array = dpnp.fromfile(fh, device=device)
+
+    assert_dtype_allclose(dpnp_array, numpy_array)
+    assert dpnp_array.sycl_device == device
 
 
 @pytest.mark.parametrize(
@@ -555,6 +583,7 @@ def test_reduce_hypot(device):
         pytest.param(
             "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),
+        pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param(
             "matmul", [[1.0, 0.0], [0.0, 1.0]], [[4.0, 1.0], [1.0, 2.0]]

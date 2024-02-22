@@ -1,10 +1,10 @@
+import tempfile
 from math import prod
 
 import dpctl.tensor as dpt
 import dpctl.utils as du
 import numpy
 import pytest
-from numpy.testing import assert_allclose
 
 import dpnp as dp
 
@@ -193,6 +193,8 @@ def test_array_creation_from_2d_array(func, args, usm_type_x, usm_type_y):
     "func, arg, kwargs",
     [
         pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
+        pytest.param("frombuffer", [b"\x01\x02\x03\x04"], {"dtype": dp.int32}),
+        pytest.param("fromstring", ["1, 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
         pytest.param("geomspace", [1, 4, 8], {}),
@@ -209,12 +211,30 @@ def test_array_creation_from_scratch(func, arg, kwargs, usm_type):
     dpnp_kwargs = dict(kwargs)
     dpnp_kwargs["usm_type"] = usm_type
     dpnp_array = getattr(dp, func)(*arg, **dpnp_kwargs)
-    numpy_array = getattr(numpy, func)(*arg, dtype=dpnp_array.dtype, **kwargs)
 
-    tol = 1e-06
-    assert_allclose(dpnp_array, numpy_array, rtol=tol, atol=tol)
-    assert dpnp_array.shape == numpy_array.shape
+    numpy_kwargs = dict(kwargs)
+    numpy_kwargs["dtype"] = dpnp_array.dtype
+    numpy_array = getattr(numpy, func)(*arg, **numpy_kwargs)
+
     assert_dtype_allclose(dpnp_array, numpy_array)
+    assert dpnp_array.shape == numpy_array.shape
+    assert dpnp_array.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_array_creation_from_file(usm_type):
+    with tempfile.TemporaryFile() as fh:
+        fh.write(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08")
+        fh.flush()
+
+        fh.seek(0)
+        numpy_array = numpy.fromfile(fh)
+
+        fh.seek(0)
+        dpnp_array = dp.fromfile(fh, usm_type=usm_type)
+
+    assert_dtype_allclose(dpnp_array, numpy_array)
+    assert dpnp_array.shape == numpy_array.shape
     assert dpnp_array.usm_type == usm_type
 
 
@@ -503,6 +523,7 @@ def test_1in_1out(func, data, usm_type):
         pytest.param(
             "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),
+        pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param("maximum", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
         pytest.param("minimum", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
