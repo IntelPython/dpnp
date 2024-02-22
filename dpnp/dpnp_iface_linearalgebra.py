@@ -235,8 +235,8 @@ def inner(a, b):
     Returns
     -------
     out : dpnp.ndarray
-        If either a or b is a scalar, the shape of the returned arrays matches
-        that of the array between a and b, whichever is an array.
+        If either `a` or `b` is a scalar, the shape of the returned arrays
+        matches that of the array between `a` and `b`, whichever is an array.
         If `a` and `b` are both 1-D arrays then a 0-d array is returned;
         otherwise an array with a shape as
         ``out.shape = (*a.shape[:-1], *b.shape[:-1])`` is returned.
