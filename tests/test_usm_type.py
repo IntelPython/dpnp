@@ -242,6 +242,23 @@ def test_array_creation_from_file(usm_type):
     assert dpnp_array.usm_type == usm_type
 
 
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_array_creation_load_txt(usm_type):
+    with tempfile.TemporaryFile() as fh:
+        fh.write(b"1 2 3 4")
+        fh.flush()
+
+        fh.seek(0)
+        numpy_array = numpy.loadtxt(fh)
+
+        fh.seek(0)
+        dpnp_array = dp.loadtxt(fh, usm_type=usm_type)
+
+    assert_dtype_allclose(dpnp_array, numpy_array)
+    assert dpnp_array.shape == numpy_array.shape
+    assert dpnp_array.usm_type == usm_type
+
+
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_logspace_base(usm_type_x, usm_type_y):

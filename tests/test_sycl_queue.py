@@ -346,6 +346,26 @@ def test_array_creation_from_file(device):
 
 
 @pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_array_creation_load_txt(device):
+    with tempfile.TemporaryFile() as fh:
+        fh.write(b"1 2 3 4")
+        fh.flush()
+
+        fh.seek(0)
+        numpy_array = numpy.loadtxt(fh)
+
+        fh.seek(0)
+        dpnp_array = dpnp.loadtxt(fh, device=device)
+
+    assert_dtype_allclose(dpnp_array, numpy_array)
+    assert dpnp_array.sycl_device == device
+
+
+@pytest.mark.parametrize(
     "device_x",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],

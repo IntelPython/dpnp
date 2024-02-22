@@ -2457,17 +2457,67 @@ def linspace(
     )
 
 
-def loadtxt(fname, **kwargs):
+def loadtxt(
+    fname,
+    dtype=float,
+    like=None,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+    **kwargs,
+):
     r"""
     Load data from a text file.
 
-    Each row in the text file must have the same number of values.
-
     For full documentation refer to :obj:`numpy.loadtxt`.
+
+    Parameters
+    ----------
+    fname : file, str, pathlib.Path, list of str, generator
+        File, filename, list, or generator to read. If the filename extension
+        is ``.gz`` or ``.bz2``, the file is first decompressed. Note that
+        generators must return bytes or strings. The strings in a list or
+        produced by a generator are treated as lines.
+    dtype : data-type, optional
+        Data-type of the resulting array.
+        Default is the default floating point data type for the device where
+        the returned array is allocated.
+        A structured data-type is not supported.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+        Default is "device".
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Data read from the text file.
 
     Limitations
     -----------
-    Only float64, float32, int64, int32 types are supported.
+    Parameter `like` is supported only with default value ``None``.
+    Otherwise, the function raises `NotImplementedError` exception.
+
+    Notes
+    -----
+    This uses :obj:`numpy.loadtxt` and coerces the result to a DPNP array.
+
+    See also
+    --------
+    :obj:`dpnp.frombuffer` : Construct array from the buffer data.
+    :obj:`dpnp.fromstring` : Construct array from the text data in a string.
+    :obj:`dpnp.fromregex` : Construct an array from a text file,
+                            using regular expression parsing.
+    :obj:`dpnp.load` : Load arrays or pickled objects from files.
+    :obj:`dpnp.genfromtxt` : Load data with missing values handled as specified.
 
     Examples
     --------
@@ -2478,9 +2528,32 @@ def loadtxt(fname, **kwargs):
     array([[0., 1.],
            [2., 3.]])
 
+    Creating an array on a different device or with a specified usm_type
+
+    >>> c = StringIO("0 1\n2 3")
+    >>> x = np.loadtxt(c, dtype=np.int32) # default case
+    >>> x.device, x.usm_type
+    (Device(level_zero:gpu:0), 'device')
+
+    >>> c = StringIO("0 1\n2 3")
+    >>> y = np.loadtxt(c, dtype=np.int32, device='cpu')
+    >>> y.device, y.usm_type
+    (Device(opencl:cpu:0), 'device')
+
+    >>> c = StringIO("0 1\n2 3")
+    >>> z = np.loadtxt(c, dtype=np.int32, usm_type="host")
+    >>> z.device, z.usm_type
+    (Device(level_zero:gpu:0), 'host')
+
     """
 
-    return call_origin(numpy.loadtxt, fname, **kwargs)
+    _check_limitations(like=like)
+    return asarray(
+        numpy.loadtxt(fname, dtype=dtype, **kwargs),
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
 def logspace(

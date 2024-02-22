@@ -266,7 +266,6 @@ def test_identity(n, dtype):
     assert_array_equal(func(numpy), func(dpnp))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_loadtxt(dtype):
     func = lambda xp: xp.loadtxt(fh, dtype=dtype)
@@ -280,7 +279,7 @@ def test_loadtxt(dtype):
         fh.seek(0)
         dpnp_res = func(dpnp)
 
-        assert_array_equal(dpnp_res, np_res)
+    assert_array_equal(dpnp_res, np_res)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
