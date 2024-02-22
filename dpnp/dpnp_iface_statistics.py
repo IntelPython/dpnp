@@ -76,6 +76,32 @@ __all__ = [
 ]
 
 
+def _check_limitations(initial=None, where=True):
+    """
+    Checking limitation kwargs for their supported values.
+
+    Parameter `initial` is only supported with default value ``None``.
+    Parameter `where` is only supported with default value ``True``.
+
+    Raises
+    ------
+    NotImplementedError
+        If any input kwargs is of unsupported value.
+
+    """
+
+    if initial is not None:
+        raise NotImplementedError(
+            "Keyword argument `initial` is only supported with "
+            f"default value ``None``, but got {initial}"
+        )
+    if where is not True:
+        raise NotImplementedError(
+            "Keyword argument `where` is supported only with "
+            f"default value ``True``, but got {where}"
+        )
+
+
 def _count_reduce_items(arr, axis, where=True):
     """
     Calculates the number of items used in a reduction operation
@@ -497,14 +523,14 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Parameters
     ----------
-    a :  {dpnp.ndarray, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which maximum values must be computed. By default,
         the maximum value must be computed over the entire array. If a tuple of
         integers, maximum values must be computed over multiple axes.
         Default: ``None``.
-    out :  {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
@@ -523,13 +549,9 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         The returned array must have the same data type as `a`.
 
     Limitations
-    -----------
-    Input array is only supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, and `initial` are only supported with their default
-    values.
+    -----------.
+    Parameters `where`, and `initial` are only supported with their default values.
     Otherwise ``NotImplementedError`` exception will be raised.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -563,14 +585,7 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    if initial is not None:
-        raise NotImplementedError(
-            "initial keyword argument is only supported with its default value."
-        )
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
+    _check_limitations(initial, where)
 
     dpt_array = dpnp.get_usm_ndarray(a)
     result = dpnp_array._create_from_usm_ndarray(
@@ -602,7 +617,7 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         If `a` has a boolean or integral data type, the returned array
         will have the default floating point data type for the device
         where input array `a` is allocated.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary. Default: ``None``.
@@ -650,10 +665,7 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
 
     """
 
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
+    _check_limitations(where)
 
     dpt_array = dpnp.get_usm_ndarray(a)
     result = dpnp_array._create_from_usm_ndarray(
@@ -722,14 +734,14 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Parameters
     ----------
-    a :  {dpnp.ndarray, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which minimum values must be computed. By default,
         the minimum value must be computed over the entire array. If a tuple
         of integers, minimum values must be computed over multiple axes.
         Default: ``None``.
-    out :  {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool, optional
@@ -749,12 +761,8 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Limitations
     -----------
-    Input array is only supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, and `initial` are only supported with their default
-    values.
+    Parameters `where`, and `initial` are only supported with their default values.
     Otherwise ``NotImplementedError`` exception will be raised.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -788,14 +796,7 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    if initial is not None:
-        raise NotImplementedError(
-            "initial keyword argument is only supported with its default value."
-        )
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
+    _check_limitations(initial, where)
 
     dpt_array = dpnp.get_usm_ndarray(a)
     result = dpnp_array._create_from_usm_ndarray(
@@ -859,7 +860,7 @@ def std(
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which the standard deviations must be computed.
@@ -874,7 +875,7 @@ def std(
         If `a` has a boolean or integral data type, the returned array
         will have the default floating point data type for the device
         where input array `a` is allocated.
-    out : {dpnp_array, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
@@ -934,10 +935,7 @@ def std(
 
     dpnp.check_supported_arrays_type(a)
 
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
+    _check_limitations(where)
     if not isinstance(ddof, (int, float)):
         raise TypeError(
             f"An integer or float is required, but got {type(ddof)}"
@@ -976,7 +974,7 @@ def var(
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         axis or axes along which the variances must be computed. If a tuple
@@ -990,7 +988,7 @@ def var(
         If `a` has a boolean or integral data type, the returned array
         will have the default floating point data type for the device
         where input array `a` is allocated.
-    out : {dpnp_array, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
@@ -1048,10 +1046,7 @@ def var(
     """
 
     dpnp.check_supported_arrays_type(a)
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
+    _check_limitations(where)
     if not isinstance(ddof, (int, float)):
         raise TypeError(
             f"An integer or float is required, but got {type(ddof)}"

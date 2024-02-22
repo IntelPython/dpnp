@@ -660,22 +660,202 @@ class TestInner:
             dpnp.inner(a, b)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-def test_multi_dot(type):
-    n = 16
-    a = dpnp.reshape(dpnp.arange(n, dtype=type), (4, 4))
-    b = dpnp.reshape(dpnp.arange(n, dtype=type), (4, 4))
-    c = dpnp.reshape(dpnp.arange(n, dtype=type), (4, 4))
-    d = dpnp.reshape(dpnp.arange(n, dtype=type), (4, 4))
+class TestMultiDot:
+    def setup_method(self):
+        numpy.random.seed(75)
 
-    a1 = numpy.arange(n, dtype=type).reshape((4, 4))
-    b1 = numpy.arange(n, dtype=type).reshape((4, 4))
-    c1 = numpy.arange(n, dtype=type).reshape((4, 4))
-    d1 = numpy.arange(n, dtype=type).reshape((4, 4))
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_multi_dot_all_2d(self, dtype):
+        n = 16
+        a = dpnp.reshape(dpnp.arange(n, dtype=dtype), (4, 4))
+        b = dpnp.reshape(dpnp.arange(n, dtype=dtype), (4, 4))
+        c = dpnp.reshape(dpnp.arange(n, dtype=dtype), (4, 4))
+        d = dpnp.reshape(dpnp.arange(n, dtype=dtype), (4, 4))
 
-    result = dpnp.linalg.multi_dot([a, b, c, d])
-    expected = numpy.linalg.multi_dot([a1, b1, c1, d1])
-    assert_array_equal(expected, result)
+        a1 = numpy.arange(n, dtype=dtype).reshape((4, 4))
+        b1 = numpy.arange(n, dtype=dtype).reshape((4, 4))
+        c1 = numpy.arange(n, dtype=dtype).reshape((4, 4))
+        d1 = numpy.arange(n, dtype=dtype).reshape((4, 4))
+
+        result = dpnp.linalg.multi_dot([a, b, c, d])
+        expected = numpy.linalg.multi_dot([a1, b1, c1, d1])
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "shapes",
+        [
+            ((4, 5), (5, 4)),
+            ((4,), (4, 6), (6, 8)),
+            ((4, 8), (8, 6), (6,)),
+            ((6,), (6, 8), (8,)),
+            ((2, 10), (10, 5), (5, 8)),
+            ((8, 5), (5, 10), (10, 2)),
+            ((4, 6), (6, 9), (9, 7), (7, 8)),
+            ((4, 6), (6, 9), (9, 7), (7, 8), (8, 3)),
+        ],
+        ids=[
+            "two_arrays",
+            "three_arrays_1st_1D",
+            "three_arrays_last_1D",
+            "three_arrays_1st_last_1D",
+            "three_arrays_cost1",
+            "three_arrays_cost2",
+            "four_arrays",
+            "five_arrays",
+        ],
+    )
+    def test_multi_dot(self, shapes, dtype):
+        numpy_array_list = []
+        dpnp_array_list = []
+        for shape in shapes:
+            a = numpy.array(
+                numpy.random.uniform(-5, 5, numpy.prod(shape)), dtype=dtype
+            ).reshape(shape)
+            ia = dpnp.array(a)
+
+            numpy_array_list.append(a)
+            dpnp_array_list.append(ia)
+
+        result = dpnp.linalg.multi_dot(dpnp_array_list)
+        expected = numpy.linalg.multi_dot(numpy_array_list)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize(
+        "shapes",
+        [
+            ((4, 5), (5, 4)),
+            ((4,), (4, 6), (6, 8)),
+            ((4, 8), (8, 6), (6,)),
+            ((6,), (6, 8), (8,)),
+            ((2, 10), (10, 5), (5, 8)),
+            ((8, 5), (5, 10), (10, 2)),
+            ((4, 6), (6, 9), (9, 7), (7, 8)),
+            ((4, 6), (6, 9), (9, 7), (7, 8), (8, 3)),
+        ],
+        ids=[
+            "two_arrays",
+            "three_arrays_1st_1D",
+            "three_arrays_last_1D",
+            "three_arrays_1st_last_1D",
+            "three_arrays_cost1",
+            "three_arrays_cost2",
+            "four_arrays",
+            "five_arrays",
+        ],
+    )
+    def test_multi_dot_complex(self, shapes, dtype):
+        numpy_array_list = []
+        dpnp_array_list = []
+        for shape in shapes:
+            x1 = numpy.random.uniform(-5, 5, numpy.prod(shape))
+            x2 = numpy.random.uniform(-5, 5, numpy.prod(shape))
+            a = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(shape)
+            ia = dpnp.array(a)
+
+            numpy_array_list.append(a)
+            dpnp_array_list.append(ia)
+
+        result = dpnp.linalg.multi_dot(dpnp_array_list)
+        expected = numpy.linalg.multi_dot(numpy_array_list)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "shapes",
+        [
+            ((4, 5), (5, 4), (4, 4)),
+            ((4,), (4, 6), (6, 8), (8,)),
+            ((4, 8), (8, 6), (6,), (4,)),
+            ((6,), (6, 8), (8,), ()),
+            ((2, 10), (10, 5), (5, 8), (2, 8)),
+            ((8, 5), (5, 10), (10, 2), (8, 2)),
+            ((4, 6), (6, 9), (9, 7), (7, 8), (4, 8)),
+            ((4, 6), (6, 9), (9, 7), (7, 8), (8, 3), (4, 3)),
+        ],
+        ids=[
+            "two_arrays",
+            "three_arrays_1st_1D",
+            "three_arrays_last_1D",
+            "three_arrays_1st_last_1D",
+            "three_arrays_cost1",
+            "three_arrays_cost2",
+            "four_arrays",
+            "five_arrays",
+        ],
+    )
+    def test_multi_dot_out(self, shapes, dtype):
+        numpy_array_list = []
+        dpnp_array_list = []
+        for shape in shapes[:-1]:
+            a = numpy.array(
+                numpy.random.uniform(-5, 5, numpy.prod(shape)), dtype=dtype
+            ).reshape(shape)
+            ia = dpnp.array(a)
+
+            numpy_array_list.append(a)
+            dpnp_array_list.append(ia)
+
+        dp_out = dpnp.empty(shapes[-1], dtype=dtype)
+        result = dpnp.linalg.multi_dot(dpnp_array_list, out=dp_out)
+        assert result is dp_out
+        expected = numpy.linalg.multi_dot(numpy_array_list)
+        assert_dtype_allclose(result, expected)
+
+    def test_multi_dot_strides(self):
+        numpy_array_list = []
+        dpnp_array_list = []
+        for num_array in [2, 3, 4, 5]:  # number of arrays in multi_dot
+            for _ in range(num_array):  # creat arrays one by one
+                A = numpy.random.rand(20, 20)
+                B = dpnp.array(A)
+
+                slices = (slice(None, None, 2), slice(None, None, 2))
+                a = A[slices]
+                b = B[slices]
+
+                numpy_array_list.append(a)
+                dpnp_array_list.append(b)
+
+            result = dpnp.linalg.multi_dot(dpnp_array_list)
+            expected = numpy.linalg.multi_dot(numpy_array_list)
+            assert_dtype_allclose(result, expected)
+
+    def test_multi_dot_error(self):
+        a = dpnp.ones(25)
+        # Expecting at least two arrays
+        with pytest.raises(ValueError):
+            dpnp.linalg.multi_dot([a])
+
+        a = dpnp.ones((5, 8, 10))
+        b = dpnp.ones((10, 5))
+        c = dpnp.ones((8, 15))
+        # First array must be 1-D or 2-D
+        with pytest.raises(numpy.linalg.LinAlgError):
+            dpnp.linalg.multi_dot([a, b, c])
+
+        a = dpnp.ones((5, 8))
+        b = dpnp.ones((10, 5))
+        c = dpnp.ones((8, 15, 6))
+        # Last array must be 1-D or 2-D
+        with pytest.raises(numpy.linalg.LinAlgError):
+            dpnp.linalg.multi_dot([a, b, c])
+
+        a = dpnp.ones((5, 10))
+        b = dpnp.ones((10, 5, 8))
+        c = dpnp.ones((8, 15))
+        # Inner array must be 2-D
+        with pytest.raises(numpy.linalg.LinAlgError):
+            dpnp.linalg.multi_dot([a, b, c])
+
+        a = dpnp.ones((5, 10))
+        b = dpnp.ones((10, 8))
+        c = dpnp.ones((8, 15))
+        # output should be C-contiguous
+        dp_out = dpnp.empty((5, 15), order="F")
+        with pytest.raises(ValueError):
+            dpnp.linalg.multi_dot([a, b, c], out=dp_out)
 
 
 class TestTensordot:

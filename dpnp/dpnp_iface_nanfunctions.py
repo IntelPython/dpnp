@@ -48,6 +48,7 @@ from .dpnp_algo import (
     dpnp_nancumprod,
     dpnp_nancumsum,
 )
+from .dpnp_iface_statistics import _check_limitations
 from .dpnp_utils import (
     call_origin,
 )
@@ -116,13 +117,13 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
 
     Parameters
     ----------
-    a :  {dpnp.ndarray, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int, optional
         Axis along which to search. If ``None``, the function must return
         the index of the maximum value of the flattened array.
         Default: ``None``.
-    out :  {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
@@ -194,7 +195,7 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
         Axis along which to search. If ``None``, the function must return
         the index of the minimum value of the flattened array.
         Default: ``None``.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
@@ -339,14 +340,14 @@ def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Parameters
     ----------
-    a :  {dpnp.ndarray, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which maximum values must be computed. By default,
         the maximum value must be computed over the entire array. If a tuple
         of integers, maximum values must be computed over multiple axes.
         Default: ``None``.
-    out :  {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
@@ -407,14 +408,7 @@ def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    if initial is not None:
-        raise NotImplementedError(
-            "initial keyword argument is only supported with its default value."
-        )
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
+    _check_limitations(initial, where)
 
     a, mask = _replace_nan(a, -dpnp.inf)
     res = dpnp.max(a, axis=axis, out=out, keepdims=keepdims)
@@ -450,7 +444,7 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         If `a` has a boolean or integral data type, the returned array
         will have the default floating point data type for the device
         where input array `a` is allocated.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary. Default: ``None``.
@@ -498,10 +492,7 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
 
     """
 
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
+    _check_limitations(where)
 
     arr, mask = _replace_nan(a, 0)
     if mask is None:
@@ -550,14 +541,14 @@ def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Parameters
     ----------
-    a :  {dpnp.ndarray, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         Axis or axes along which minimum values must be computed. By default,
         the minimum value must be computed over the entire array. If a tuple
         of integers, minimum values must be computed over multiple axes.
         Default: ``None``.
-    out :  {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool, optional
@@ -618,14 +609,7 @@ def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    if initial is not None:
-        raise NotImplementedError(
-            "initial keyword argument is only supported with its default value."
-        )
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
+    _check_limitations(initial, where)
 
     a, mask = _replace_nan(a, +dpnp.inf)
     res = dpnp.min(a, axis=axis, out=out, keepdims=keepdims)
@@ -754,7 +738,7 @@ def nansum(
         data type of `a`, the input array elements are cast to the
         specified data type before computing the sum.
         Default: ``None``.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary. Default: ``None``.
@@ -850,7 +834,7 @@ def nanstd(
         If `a` has a boolean or integral data type, the returned array
         will have the default floating point data type for the device
         where input array `a` is allocated.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
@@ -907,10 +891,7 @@ def nanstd(
 
     """
 
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
+    _check_limitations(where)
     if not isinstance(ddof, (int, float)):
         raise TypeError(
             f"An integer or float is required, but got {type(ddof)}"
@@ -939,7 +920,7 @@ def nanvar(
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int or tuple of ints, optional
         axis or axes along which the variances must be computed. If a tuple
@@ -953,7 +934,7 @@ def nanvar(
         If `a` has a boolean or integral data type, the returned array
         will have the default floating point data type for the device
         where input array `a` is allocated.
-    out : {dpnp_array, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
@@ -1008,10 +989,7 @@ def nanvar(
 
     """
 
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
+    _check_limitations(where)
     if not isinstance(ddof, (int, float)):
         raise TypeError(
             f"An integer or float is required, but got {type(ddof)}"
