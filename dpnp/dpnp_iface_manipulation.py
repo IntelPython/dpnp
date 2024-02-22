@@ -43,9 +43,13 @@ import numpy
 from numpy.core.numeric import normalize_axis_index
 
 import dpnp
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import *
+
+from .dpnp_array import dpnp_array
+
+# pylint: disable=no-name-in-module
+from .dpnp_utils import (
+    call_origin,
+)
 
 __all__ = [
     "asfarray",
@@ -175,7 +179,8 @@ def atleast_1d(*arys):
     See Also
     --------
     :obj:`dpnp.atleast_2d` : View inputs as arrays with at least two dimensions.
-    :obj:`dpnp.atleast_3d` : View inputs as arrays with at least three dimensions.
+    :obj:`dpnp.atleast_3d` : View inputs as arrays with at least three
+                             dimensions.
 
     Examples
     --------
@@ -214,8 +219,7 @@ def atleast_1d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    else:
-        return res
+    return res
 
 
 def atleast_2d(*arys):
@@ -239,8 +243,10 @@ def atleast_2d(*arys):
 
     See Also
     --------
-    :obj:`dpnp.atleast_1d` : Convert inputs to arrays with at least one dimension.
-    :obj:`dpnp.atleast_3d` : View inputs as arrays with at least three dimensions.
+    :obj:`dpnp.atleast_1d` : Convert inputs to arrays with at least one
+                             dimension.
+    :obj:`dpnp.atleast_3d` : View inputs as arrays with at least three
+                             dimensions.
 
     Examples
     --------
@@ -273,8 +279,7 @@ def atleast_2d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    else:
-        return res
+    return res
 
 
 def atleast_3d(*arys):
@@ -298,8 +303,10 @@ def atleast_3d(*arys):
 
     See Also
     --------
-    :obj:`dpnp.atleast_1d` : Convert inputs to arrays with at least one dimension.
-    :obj:`dpnp.atleast_2d` : View inputs as arrays with at least three dimensions.
+    :obj:`dpnp.atleast_1d` : Convert inputs to arrays with at least one
+                             dimension.
+    :obj:`dpnp.atleast_2d` : View inputs as arrays with at least three
+                             dimensions.
 
     Examples
     --------
@@ -338,8 +345,7 @@ def atleast_3d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    else:
-        return res
+    return res
 
 
 def broadcast_arrays(*args, subok=False):
@@ -389,6 +395,7 @@ def broadcast_arrays(*args, subok=False):
     return [dpnp_array._create_from_usm_ndarray(a) for a in usm_arrays]
 
 
+# pylint: disable=redefined-outer-name
 def broadcast_to(array, /, shape, subok=False):
     """
     Broadcast an array to a new shape.
@@ -406,7 +413,8 @@ def broadcast_to(array, /, shape, subok=False):
     Returns
     -------
     out : dpnp.ndarray
-        An array having a specified shape. Must have the same data type as `array`.
+        An array having a specified shape.
+        Must have the same data type as `array`.
 
     Limitations
     -----------
@@ -415,7 +423,8 @@ def broadcast_to(array, /, shape, subok=False):
 
     See Also
     --------
-    :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against each other.
+    :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against
+                                   each other.
 
     Examples
     --------
@@ -438,7 +447,8 @@ def broadcast_to(array, /, shape, subok=False):
 
 def can_cast(from_, to, casting="safe"):
     """
-    Returns ``True`` if cast between data types can occur according to the casting rule.
+    Returns ``True`` if cast between data types can occur according
+    to the casting rule.
 
     For full documentation refer to :obj:`numpy.can_cast`.
 
@@ -593,18 +603,18 @@ def concatenate(
     Parameters
     ----------
     arrays : {dpnp.ndarray, usm_ndarray}
-        The arrays must have the same shape, except in the dimension corresponding
-        to axis (the first, by default).
+        The arrays must have the same shape, except in the dimension
+        corresponding to axis (the first, by default).
     axis : int, optional
-        The axis along which the arrays will be joined. If axis is None, arrays are
-        flattened before use. Default is 0.
+        The axis along which the arrays will be joined. If axis is ``None``,
+        arrays are flattened before use. Default is 0.
     out : dpnp.ndarray, optional
-        If provided, the destination to place the result. The shape must be correct,
-        matching that of what concatenate would have returned if no out argument were
-        specified.
+        If provided, the destination to place the result. The shape must be
+        correct, matching that of what concatenate would have returned
+        if no out argument were specified.
     dtype : str or dtype
-        If provided, the destination array will have this dtype. Cannot be provided
-        together with out.
+        If provided, the destination array will have this dtype. Cannot be
+        provided together with `out`.
     casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
         Controls what kind of data casting may occur. Defaults to 'same_kind'.
 
@@ -615,16 +625,22 @@ def concatenate(
 
     See Also
     --------
-    :obj:`dpnp.array_split` : Split an array into multiple sub-arrays of equal or near-equal size.
-    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
-    :obj:`dpnp.hsplit` : Split array into multiple sub-arrays horizontally (column wise).
-    :obj:`dpnp.vsplit` : Split array into multiple sub-arrays vertically (row wise).
-    :obj:`dpnp.dsplit` : Split array into multiple sub-arrays along the 3rd axis (depth).
+    :obj:`dpnp.array_split` : Split an array into multiple sub-arrays of equal
+                              or near-equal size.
+    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal
+                        size.
+    :obj:`dpnp.hsplit` : Split array into multiple sub-arrays horizontally
+                         (column wise).
+    :obj:`dpnp.vsplit` : Split array into multiple sub-arrays vertically
+                         (row wise).
+    :obj:`dpnp.dsplit` : Split array into multiple sub-arrays along
+                         the 3rd axis (depth).
     :obj:`dpnp.stack` : Stack a sequence of arrays along a new axis.
     :obj:`dpnp.block` : Assemble arrays from blocks.
     :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
     :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
-    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third dimension).
+    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise
+                         (along third dimension).
     :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
 
     Examples
@@ -646,7 +662,8 @@ def concatenate(
 
     if dtype is not None and out is not None:
         raise TypeError(
-            "concatenate() only takes `out` or `dtype` as an argument, but both were provided."
+            "concatenate() only takes `out` or `dtype` as an argument, "
+            "but both were provided."
         )
 
     usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
@@ -705,7 +722,7 @@ def copyto(dst, src, casting="same_kind", where=True):
             "Destination array must be any of supported type, "
             f"but got {type(dst)}"
         )
-    elif not dpnp.is_supported_array_type(src):
+    if not dpnp.is_supported_array_type(src):
         src = dpnp.array(src, sycl_queue=dst.sycl_queue)
 
     if not dpnp.can_cast(src.dtype, dst.dtype, casting=casting):
@@ -758,7 +775,8 @@ def dstack(tup):
     ----------
     tup : {dpnp.ndarray, usm_ndarray}
         One or more array-like sequences. The arrays must have the same shape
-        along all but the third axis. 1-D or 2-D arrays must have the same shape.
+        along all but the third axis. 1-D or 2-D arrays must have the same
+        shape.
 
     Returns
     -------
@@ -838,8 +856,13 @@ def expand_dims(a, axis):
     See Also
     --------
     :obj:`dpnp.squeeze` : The inverse operation, removing singleton dimensions
-    :obj:`dpnp.reshape` : Insert, remove, and combine dimensions, and resize existing ones
-    :obj:`dpnp.atleast_1d`, :obj:`dpnp.atleast_2d`, :obj:`dpnp.atleast_3d`
+    :obj:`dpnp.reshape` : Insert, remove, and combine dimensions, and resize
+                          existing ones
+    :obj:`dpnp.atleast_1d` : Convert inputs to arrays with at least one
+                             dimension.
+    :obj:`dpnp.atleast_2d` : View inputs as arrays with at least two dimensions.
+    :obj:`dpnp.atleast_3d` : View inputs as arrays with at least three
+                             dimensions.
 
     Examples
     --------
@@ -1088,10 +1111,12 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
     :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
     :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
-    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third dimension).
+    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise
+                         (along third dimension).
     :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
     :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
-    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
+    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal
+                        size.
 
     Examples
     --------
@@ -1119,13 +1144,13 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     # As a special case, dimension 0 of 1-dimensional arrays is "horizontal"
     if arrs and arrs[0].ndim == 1:
         return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
-    else:
-        return dpnp.concatenate(arrs, axis=1, dtype=dtype, casting=casting)
+    return dpnp.concatenate(arrs, axis=1, dtype=dtype, casting=casting)
 
 
 def moveaxis(a, source, destination):
     """
-    Move axes of an array to new positions. Other axes remain in their original order.
+    Move axes of an array to new positions. Other axes remain in their original
+    order.
 
     For full documentation refer to :obj:`numpy.moveaxis`.
 
@@ -1175,14 +1200,15 @@ def ravel(a, order="C"):
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array. The elements in `a` are read in the order specified by order,
-        and packed as a 1-D array.
+        Input array. The elements in `a` are read in the order specified by
+        order, and packed as a 1-D array.
     order : {'C', 'F'}, optional
-        The elements of `a` are read using this index order. ``C`` means to index
-        the elements in row-major, C-style order, with the last axis index
-        changing fastest, back to the first axis index changing slowest. ``F``
-        means to index the elements in column-major, Fortran-style order, with
-        the first index changing fastest, and the last index changing slowest.
+        The elements of `a` are read using this index order. ``C`` means to
+        index the elements in row-major, C-style order, with the last axis
+        index changing fastest, back to the first axis index changing slowest.
+        ``F`` means to index the elements in column-major, Fortran-style order,
+        with the first index changing fastest, and the last index changing
+        slowest.
         By default, ``C`` index order is used.
 
     Returns
@@ -1192,7 +1218,8 @@ def ravel(a, order="C"):
 
     See Also
     --------
-    :obj:`dpnp.reshape` : Change the shape of an array without changing its data.
+    :obj:`dpnp.reshape` : Change the shape of an array without changing its
+                          data.
 
     Examples
     --------
@@ -1223,20 +1250,22 @@ def repeat(a, repeats, axis=None):
     x : {dpnp.ndarray, usm_ndarray}
         Input array.
     repeat : int or array of int
-        The number of repetitions for each element. `repeats` is broadcasted to fit
-        the shape of the given axis.
+        The number of repetitions for each element. `repeats` is broadcasted to
+        fit the shape of the given axis.
     axis : int, optional
-        The axis along which to repeat values. By default, use the flattened input array,
-        and return a flat output array.
+        The axis along which to repeat values. By default, use the flattened
+        input array, and return a flat output array.
 
     Returns
     -------
     out : dpnp.ndarray
-        Output array which has the same shape as `a`, except along the given axis.
+        Output array which has the same shape as `a`, except along the given
+        axis.
 
     See Also
     --------
-    :obj:`dpnp.tile` : Construct an array by repeating A the number of times given by reps.
+    :obj:`dpnp.tile` : Construct an array by repeating A the number of times
+                       given by reps.
 
     Examples
     --------
@@ -1368,7 +1397,9 @@ def result_type(*arrays_and_dtypes):
     Examples
     --------
     >>> import dpnp as dp
-    >>> dp.result_type(dp.arange(3, dtype=dp.int64), dp.arange(7, dtype=dp.int32))
+    >>> a = dp.arange(3, dtype=dp.int64)
+    >>> b = dp.arange(7, dtype=dp.int32)
+    >>> dp.result_type(a, b)
     dtype('int64')
 
     >>> dp.result_type(dp.int64, dp.complex128)
@@ -1502,7 +1533,7 @@ def rollaxis(x, axis, start=0):
     if start < 0:
         start += n
     msg = "'%s' arg requires %d <= %s < %d, but %d was passed in"
-    if not (0 <= start < n + 1):
+    if not 0 <= start < n + 1:
         raise ValueError(msg % ("start", -n, "start", n + 1, start))
     if axis < start:
         start -= 1
@@ -1551,8 +1582,7 @@ def shape(a):
 
     if dpnp.is_supported_array_type(a):
         return a.shape
-    else:
-        return numpy.shape(a)
+    return numpy.shape(a)
 
 
 def squeeze(a, /, axis=None):
@@ -1591,7 +1621,8 @@ def squeeze(a, /, axis=None):
     >>> np.squeeze(x, axis=1).shape
     Traceback (most recent call last):
     ...
-    ValueError: Cannot select an axis to squeeze out which has size not equal to one.
+    ValueError: Cannot select an axis to squeeze out which has size not equal
+    to one.
     >>> np.squeeze(x, axis=2).shape
     (1, 3)
 
@@ -1616,11 +1647,12 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
     axis : int, optional
         The axis in the result array along which the input arrays are stacked.
     out : dpnp.ndarray, optional
-        If provided, the destination to place the result. The shape must be correct,
-        matching that of what stack would have returned if no out argument were specified.
+        If provided, the destination to place the result. The shape must be
+        correct, matching that of what stack would have returned if no out
+        argument were specified.
     dtype : str or dtype
-        If provided, the destination array will have this dtype. Cannot be provided
-        together with out.
+        If provided, the destination array will have this dtype. Cannot be
+        provided together with `out`.
     casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
         Controls what kind of data casting may occur. Defaults to 'same_kind'.
 
@@ -1634,10 +1666,12 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
     :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
     :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
     :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
-    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third dimension).
+    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise
+                         (along third dimension).
     :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
     :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
-    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
+    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal
+                        size.
 
     Examples
     --------
@@ -1669,7 +1703,8 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
 
     if dtype is not None and out is not None:
         raise TypeError(
-            "stack() only takes `out` or `dtype` as an argument, but both were provided."
+            "stack() only takes `out` or `dtype` as an argument, "
+            "but both were provided."
         )
 
     usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
@@ -1738,6 +1773,7 @@ def swapaxes(a, axis1, axis2):
     )
 
 
+# pylint: disable=invalid-name
 def tile(A, reps):
     """
     Construct an array by repeating `A` the number of times given by reps.
@@ -1877,7 +1913,7 @@ def transpose(a, axes=None):
         array = dpnp_array._create_from_usm_ndarray(a.get_array())
     else:
         raise TypeError(
-            "An array must be any of supported type, but got {}".format(type(a))
+            f"An array must be any of supported type, but got {type(a)}"
         )
 
     if axes is None:
@@ -1936,7 +1972,8 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third axis).
     :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
     :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
-    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal size.
+    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal
+                        size.
 
     Examples
     --------

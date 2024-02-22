@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2024, Intel Corporation
@@ -87,6 +85,7 @@ def count_nonzero(a, axis=None, *, keepdims=False):
 
     """
 
-    # TODO: might be improved by implementing an extension with `count_nonzero` kernel
+    # TODO: might be improved by implementing an extension
+    # with `count_nonzero` kernel
     a = dpnp.astype(a, dpnp.bool, copy=False)
     return a.sum(axis=axis, dtype=dpnp.intp, keepdims=keepdims)
