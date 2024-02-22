@@ -759,10 +759,6 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
             return w, v
         return w
 
-    a_sycl_queue = a.sycl_queue
-    a_order = "C" if a.flags.c_contiguous else "F"
-    a_usm_arr = dpnp.get_usm_ndarray(a)
-
     # `eigen_mode` can be either "N" or "V", specifying the computation mode
     # for OneMKL LAPACK `syevd` and `heevd` routines.
     # "V" (default) means both eigenvectors and eigenvalues will be calculated
@@ -776,42 +772,27 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
         "_heevd" if dpnp.issubdtype(v_type, dpnp.complexfloating) else "_syevd"
     )
 
+    a_sycl_queue = a.sycl_queue
+    a_order = "C" if a.flags.c_contiguous else "F"
+
     if a.ndim > 2:
+        orig_shape = a.shape
+        # get 3d input array by reshape
+        a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+
+        # allocate a memory for dpnp array of eigenvalues
         w = dpnp.empty_like(
             a,
-            shape=a.shape[:-1],
+            shape=orig_shape[:-1],
             dtype=w_type,
         )
+        w_orig_shape = w.shape
+        # get 2d dpnp array with eigenvalues by reshape
+        w = w.reshape(-1, w_orig_shape[-1])
 
         # need to loop over the 1st dimension to get eigenvalues and eigenvectors of 3d matrix A
         batch_size = a.shape[0]
-        if batch_size == 0:
-            return (
-                (w, dpnp.empty_like(a, dtype=v_type))
-                if eigen_mode == "V"
-                else w
-            )
-
-        # When `eigen_mode == "N"` (jobz == 0), OneMKL LAPACK does not overwrite the input array.
-        # If the input array 'a' is already F-contiguous and matches the target data type,
-        # we can avoid unnecessary memory allocation and data copying.
-        if eigen_mode == "N" and a_order == "F" and a.dtype == v_type:
-            ht_list_ev = [None] * batch_size
-            for i in range(batch_size):
-                # call LAPACK extension function to get eigenvalues of a portion of matrix A
-                ht_list_ev[i], _ = getattr(li, lapack_func)(
-                    a_sycl_queue,
-                    jobz,
-                    uplo,
-                    a[i].get_array(),
-                    w[i].get_array(),
-                    depends=[],
-                )
-
-            dpctl.SyclEvent.wait_for(ht_list_ev)
-
-            return w
-
         eig_vecs = [None] * batch_size
         ht_list_ev = [None] * batch_size * 2
         for i in range(batch_size):
@@ -838,15 +819,18 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
 
         dpctl.SyclEvent.wait_for(ht_list_ev)
 
+        w = w.reshape(w_orig_shape)
+
         if eigen_mode == "V":
             # combine the list of eigenvectors into a single array
-            v = dpnp.array(eig_vecs, order=a_order)
+            v = dpnp.array(eig_vecs, order=a_order).reshape(orig_shape)
             return w, v
         return w
 
     else:
+        a_usm_arr = dpnp.get_usm_ndarray(a)
         ht_list_ev = []
-        copy_ev = None
+        copy_ev = dpctl.SyclEvent()
 
         # When `eigen_mode == "N"` (jobz == 0), OneMKL LAPACK does not overwrite the input array.
         # If the input array 'a' is already F-contiguous and matches the target data type,
