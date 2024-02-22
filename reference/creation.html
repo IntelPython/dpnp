@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Array Creation Routines &mdash; Data Parallel Extension for NumPy 0.15.0dev0+39.g5cce810e7c documentation</title>
+  <title>Array creation routines &mdash; Data Parallel Extension for NumPy 0.15.0dev0+18.g1e3f6fec21 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=a9d98463"></script>
+        <script src="../_static/documentation_options.js?v=884ca7fe"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+39.g5cce810e7c
+                0.15.0dev0+18.g1e3f6fec21
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -63,11 +63,11 @@
 <li class="toctree-l2"><a class="reference internal" href="ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Array Creation Routines</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#basic-creation-routines">Basic creation routines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#creation-from-other-data">Creation from other data</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Array creation routines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#from-shape-or-value">From shape or value</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#from-existing-data">From existing data</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#numerical-ranges">Numerical ranges</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#matrix-creation">Matrix creation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#building-matrices">Building matrices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#the-matrix-class">The Matrix class</a></li>
 </ul>
 </li>
@@ -112,7 +112,7 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="routines.html">Routines</a></li>
-      <li class="breadcrumb-item active">Array Creation Routines</li>
+      <li class="breadcrumb-item active">Array creation routines</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/reference/creation.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -123,9 +123,9 @@
            <div itemprop="articleBody">
              
   <section id="array-creation-routines">
-<span id="routines-creation"></span><h1>Array Creation Routines<a class="headerlink" href="#array-creation-routines" title="Link to this heading"></a></h1>
-<section id="basic-creation-routines">
-<h2>Basic creation routines<a class="headerlink" href="#basic-creation-routines" title="Link to this heading"></a></h2>
+<span id="routines-creation"></span><h1>Array creation routines<a class="headerlink" href="#array-creation-routines" title="Link to this heading"></a></h1>
+<section id="from-shape-or-value">
+<h2>From shape or value<a class="headerlink" href="#from-shape-or-value" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.empty.html#dpnp.empty" title="dpnp.empty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.empty</span></code></a></p></td>
@@ -161,8 +161,8 @@
 </tbody>
 </table>
 </section>
-<section id="creation-from-other-data">
-<h2>Creation from other data<a class="headerlink" href="#creation-from-other-data" title="Link to this heading"></a></h2>
+<section id="from-existing-data">
+<h2>From existing data<a class="headerlink" href="#from-existing-data" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.array.html#dpnp.array" title="dpnp.array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.array</span></code></a></p></td>
@@ -177,28 +177,31 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ascontiguousarray.html#dpnp.ascontiguousarray" title="dpnp.ascontiguousarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ascontiguousarray</span></code></a></p></td>
 <td><p>Return a contiguous array (ndim &gt;= 1) in memory (C order).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.copy.html#dpnp.copy" title="dpnp.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.copy</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.astype.html#dpnp.astype" title="dpnp.astype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.astype</span></code></a></p></td>
+<td><p>Copy the array with data type casting.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.copy.html#dpnp.copy" title="dpnp.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.copy</span></code></a></p></td>
 <td><p>Return an array copy of the given object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.frombuffer.html#dpnp.frombuffer" title="dpnp.frombuffer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.frombuffer</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.frombuffer.html#dpnp.frombuffer" title="dpnp.frombuffer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.frombuffer</span></code></a></p></td>
 <td><p>Interpret a buffer as a 1-dimensional array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.from_dlpack.html#dpnp.from_dlpack" title="dpnp.from_dlpack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.from_dlpack</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.from_dlpack.html#dpnp.from_dlpack" title="dpnp.from_dlpack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.from_dlpack</span></code></a></p></td>
 <td><p>Create a dpnp array from a Python object implementing the <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code> protocol.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fromfile.html#dpnp.fromfile" title="dpnp.fromfile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromfile</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fromfile.html#dpnp.fromfile" title="dpnp.fromfile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromfile</span></code></a></p></td>
 <td><p>Construct an array from data in a text or binary file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fromfunction.html#dpnp.fromfunction" title="dpnp.fromfunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromfunction</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fromfunction.html#dpnp.fromfunction" title="dpnp.fromfunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromfunction</span></code></a></p></td>
 <td><p>Construct an array by executing a function over each coordinate.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fromiter.html#dpnp.fromiter" title="dpnp.fromiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromiter</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fromiter.html#dpnp.fromiter" title="dpnp.fromiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromiter</span></code></a></p></td>
 <td><p>Create a new 1-dimensional array from an iterable object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fromstring.html#dpnp.fromstring" title="dpnp.fromstring"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromstring</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fromstring.html#dpnp.fromstring" title="dpnp.fromstring"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromstring</span></code></a></p></td>
 <td><p>A new 1-D array initialized from text data in a string.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.loadtxt.html#dpnp.loadtxt" title="dpnp.loadtxt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.loadtxt</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.loadtxt.html#dpnp.loadtxt" title="dpnp.loadtxt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.loadtxt</span></code></a></p></td>
 <td><p>Load data from a text file.</p></td>
 </tr>
 </tbody>
@@ -232,8 +235,8 @@
 </tbody>
 </table>
 </section>
-<section id="matrix-creation">
-<h2>Matrix creation<a class="headerlink" href="#matrix-creation" title="Link to this heading"></a></h2>
+<section id="building-matrices">
+<h2>Building matrices<a class="headerlink" href="#building-matrices" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.diag.html#dpnp.diag" title="dpnp.diag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diag</span></code></a></p></td>
