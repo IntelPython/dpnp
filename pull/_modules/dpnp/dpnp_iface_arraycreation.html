@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev0+10.g44ea6382a6 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev0+11.g8fa21663e3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=b7722411"></script>
+        <script src="../../_static/documentation_options.js?v=f763081b"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+10.g44ea6382a6
+                0.15.0dev0+11.g8fa21663e3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1527,26 +1527,117 @@
 
 <div class="viewcode-block" id="frombuffer">
 <a class="viewcode-back" href="../../reference/generated/dpnp.frombuffer.html#dpnp.frombuffer">[docs]</a>
-<span class="k">def</span> <span class="nf">frombuffer</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">frombuffer</span><span class="p">(</span>
+    <span class="n">buffer</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+    <span class="n">count</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span>
+    <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interpret a buffer as a 1-dimensional array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.frombuffer`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    buffer : buffer_like</span>
+<span class="sd">        An object that exposes the buffer interface.</span>
+<span class="sd">    dtype : data-type, optional</span>
+<span class="sd">        Data-type of the returned array.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        the returned array is allocated.</span>
+<span class="sd">    count : int, optional</span>
+<span class="sd">        Number of items to read. ``-1`` means all data in the buffer.</span>
+<span class="sd">    offset : int, optional</span>
+<span class="sd">        Start reading the buffer from this offset (in bytes); default: 0.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
+<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        A 1-dimensional array created from input buffer object.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Only float64, float32, int64, int32 types are supported.</span>
+<span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
+<span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This uses :obj:`numpy.frombuffer` and coerces the result to a DPNP array.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.fromfile` : Construct array from data in a text or binary file.</span>
+<span class="sd">    :obj:`dpnp.fromiter` : Construct array from an iterable object.</span>
+<span class="sd">    :obj:`dpnp.fromstring` : Construct array from the text data in a string.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; s = b&#39;\x01\x02\x03\x04&#39;</span>
+<span class="sd">    &gt;&gt;&gt; np.frombuffer(s, dtype=np.int32)</span>
+<span class="sd">    array([67305985], dtype=int32)</span>
+<span class="sd">    &gt;&gt;&gt; np.frombuffer(b&#39;\x01\x02\x03\x04\x05&#39;, dtype=&#39;u1&#39;, count=3)</span>
+<span class="sd">    array([1, 2, 3], dtype=uint8)</span>
+
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.frombuffer(s, dtype=np.int32) # default case</span>
+<span class="sd">    &gt;&gt;&gt; x.device, x.usm_type</span>
+<span class="sd">    (Device(level_zero:gpu:0), &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.frombuffer(s, dtype=np.int32, device=&#39;cpu&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; y.device, y.usm_type</span>
+<span class="sd">    (Device(opencl:cpu:0), &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; z = np.frombuffer(s, dtype=np.int32, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z.device, z.usm_type</span>
+<span class="sd">    (Device(level_zero:gpu:0), &#39;host&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">),</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="fromfile">
 <a class="viewcode-back" href="../../reference/generated/dpnp.fromfile.html#dpnp.fromfile">[docs]</a>
-<span class="k">def</span> <span class="nf">fromfile</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">fromfile</span><span class="p">(</span>
+    <span class="n">file</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+    <span class="n">count</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span>
+    <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct an array from data in a text or binary file.</span>
 
 <span class="sd">    A highly efficient way of reading binary data with a known data-type,</span>
@@ -1555,13 +1646,107 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fromfile`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file : file or str or Path</span>
+<span class="sd">        Open file object or filename.</span>
+<span class="sd">    dtype : data-type, optional</span>
+<span class="sd">        Data type of the returned array.</span>
+<span class="sd">        For binary files, it is used to determine the size and byte-order</span>
+<span class="sd">        of the items in the file.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        the returned array is allocated.</span>
+<span class="sd">    count : int, optional</span>
+<span class="sd">        Number of items to read. ``-1`` means all items (i.e., the complete</span>
+<span class="sd">        file).</span>
+<span class="sd">    sep : str, optional</span>
+<span class="sd">        Separator between items if `file` is a text file.</span>
+<span class="sd">        Empty (&quot;&quot;) separator means the file should be treated as binary.</span>
+<span class="sd">        Spaces (&quot; &quot;) in the separator match zero or more whitespace characters.</span>
+<span class="sd">        A separator consisting only of spaces must match at least one</span>
+<span class="sd">        whitespace.</span>
+<span class="sd">    offset : int, optional</span>
+<span class="sd">        The offset (in bytes) from the file&#39;s current position. Defaults to 0.</span>
+<span class="sd">        Only permitted for binary files.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
+<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        A 1-dimensional array created from data in a text or binary file.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Only float64, float32, int64, int32 types are supported.</span>
+<span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
+<span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This uses :obj:`numpy.fromfile` and coerces the result to a DPNP array.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.frombuffer` : Construct array from the buffer data.</span>
+<span class="sd">    :obj:`dpnp.fromiter` : Construct array from an iterable object.</span>
+<span class="sd">    :obj:`dpnp.fromstring` : Construct array from the text data in a string.</span>
+<span class="sd">    :obj:`dpnp.load` : Load arrays or pickled objects from files.</span>
+<span class="sd">    :obj:`dpnp.save` : Save an array to a binary file.</span>
+<span class="sd">    :obj:`dpnp.ndarray.tofile` : Write array to a file as text or binary.</span>
+<span class="sd">    :obj:`dpnp.loadtxt` : More flexible way of loading data from a text file.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Save the data to a temporary file:</span>
+
+<span class="sd">    &gt;&gt;&gt; import tempfile</span>
+<span class="sd">    &gt;&gt;&gt; fh = tempfile.TemporaryFile()</span>
+<span class="sd">    &gt;&gt;&gt; fh.write(b&quot;\x00\x01\x02\x03\x04&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; fh.flush()</span>
+<span class="sd">    &gt;&gt;&gt; fh.seek(0)</span>
+
+<span class="sd">    Construct an array:</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.fromfile(fh, dtype=&quot;u1&quot;)</span>
+<span class="sd">    array([0, 1, 2, 3, 4], dtype=uint8)</span>
+
+<span class="sd">    Creating an array on a different device or with a specified usm_type</span>
+
+<span class="sd">    &gt;&gt;&gt; fh.seek(0)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.fromfile(fh, dtype=&quot;u1&quot;) # default case</span>
+<span class="sd">    &gt;&gt;&gt; x.device, x.usm_type</span>
+<span class="sd">    (Device(level_zero:gpu:0), &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; fh.seek(0)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.fromfile(fh, dtype=&quot;u1&quot;, device=&#39;cpu&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; y.device, y.usm_type</span>
+<span class="sd">    (Device(opencl:cpu:0), &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; fh.seek(0)</span>
+<span class="sd">    &gt;&gt;&gt; z = np.fromfile(fh, dtype=&quot;u1&quot;, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z.device, z.usm_type</span>
+<span class="sd">    (Device(level_zero:gpu:0), &#39;host&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fromfile</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">),</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
@@ -1606,19 +1791,87 @@
 
 <div class="viewcode-block" id="fromstring">
 <a class="viewcode-back" href="../../reference/generated/dpnp.fromstring.html#dpnp.fromstring">[docs]</a>
-<span class="k">def</span> <span class="nf">fromstring</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">fromstring</span><span class="p">(</span>
+    <span class="n">string</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+    <span class="n">count</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">sep</span><span class="p">,</span>
+    <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span>
+    <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A new 1-D array initialized from text data in a string.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fromstring`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    string : str</span>
+<span class="sd">        A string containing the data.</span>
+<span class="sd">    dtype : data-type, optional</span>
+<span class="sd">        The data type of the array.</span>
+<span class="sd">        For binary input data, the data must be in exactly this format.</span>
+<span class="sd">        Default is the default floating point data type for the device where</span>
+<span class="sd">        the returned array is allocated.</span>
+<span class="sd">    count : int, optional</span>
+<span class="sd">        Read this number of `dtype` elements from the data. If this is negative</span>
+<span class="sd">        (the default), the count will be determined from the length of the data.</span>
+<span class="sd">    sep : str, optional</span>
+<span class="sd">        The string separating numbers in the data; extra whitespace between</span>
+<span class="sd">        elements is also ignored.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
+<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
+<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
+<span class="sd">        or a `Device` object returned by</span>
+<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+<span class="sd">        Default is &quot;device&quot;.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The constructed array.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Only float64, float32, int64, int32 types are supported.</span>
+<span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
+<span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This uses :obj:`numpy.fromstring` and coerces the result to a DPNP array.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.frombuffer` : Construct array from the buffer data.</span>
+<span class="sd">    :obj:`dpnp.fromfile` : Construct array from data in a text or binary file.</span>
+<span class="sd">    :obj:`dpnp.fromiter` : Construct array from an iterable object.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.fromstring(&#39;1 2&#39;, dtype=int, sep=&#39; &#39;)</span>
+<span class="sd">    array([1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; np.fromstring(&#39;1, 2&#39;, dtype=int, sep=&#39;,&#39;)</span>
+<span class="sd">    array([1, 2])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">),</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
