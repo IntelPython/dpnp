@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev0+12.gca8d018cfe documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev0+13.g44ef7dee8b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=0575575d"></script>
+        <script src="../../_static/documentation_options.js?v=7ef16e00"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+12.gca8d018cfe
+                0.15.0dev0+13.g44ef7dee8b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1594,7 +1594,7 @@
 <span class="sd">    &gt;&gt;&gt; s = b&#39;\x01\x02\x03\x04&#39;</span>
 <span class="sd">    &gt;&gt;&gt; np.frombuffer(s, dtype=np.int32)</span>
 <span class="sd">    array([67305985], dtype=int32)</span>
-<span class="sd">    &gt;&gt;&gt; np.frombuffer(b&#39;\x01\x02\x03\x04\x05&#39;, dtype=numpy.uint8, count=3)</span>
+<span class="sd">    &gt;&gt;&gt; np.frombuffer(b&#39;\x01\x02\x03\x04\x05&#39;, dtype=&#39;u1&#39;, count=3)</span>
 <span class="sd">    array([1, 2, 3], dtype=uint8)</span>
 
 <span class="sd">    Creating an array on a different device or with a specified usm_type</span>
@@ -1710,31 +1710,31 @@
 <span class="sd">    Save the data to a temporary file:</span>
 
 <span class="sd">    &gt;&gt;&gt; import tempfile</span>
-<span class="sd">    &gt;&gt;&gt; x = tempfile.TemporaryFile()</span>
-<span class="sd">    &gt;&gt;&gt; x.write(b&quot;\x00\x01\x02\x03\x04&quot;)</span>
-<span class="sd">    &gt;&gt;&gt; x.flush()</span>
-<span class="sd">    &gt;&gt;&gt; x.seek(0)</span>
+<span class="sd">    &gt;&gt;&gt; fh = tempfile.TemporaryFile()</span>
+<span class="sd">    &gt;&gt;&gt; fh.write(b&quot;\x00\x01\x02\x03\x04&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; fh.flush()</span>
+<span class="sd">    &gt;&gt;&gt; fh.seek(0)</span>
 
 <span class="sd">    Construct an array:</span>
 
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.fromfile(x, dtype=&quot;u1&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; np.fromfile(fh, dtype=&quot;u1&quot;)</span>
 <span class="sd">    array([0, 1, 2, 3, 4], dtype=uint8)</span>
 
 <span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x.seek(0)</span>
-<span class="sd">    &gt;&gt;&gt; x = np.fromfile(x, dtype=&quot;u1&quot;) # default case</span>
+<span class="sd">    &gt;&gt;&gt; fh.seek(0)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.fromfile(fh, dtype=&quot;u1&quot;) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x.device, x.usm_type</span>
 <span class="sd">    (Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
-<span class="sd">    &gt;&gt;&gt; x.seek(0)</span>
-<span class="sd">    &gt;&gt;&gt; y = np.fromfile(x, dtype=&quot;u1&quot;, device=&#39;cpu&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; fh.seek(0)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.fromfile(fh, dtype=&quot;u1&quot;, device=&#39;cpu&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; y.device, y.usm_type</span>
 <span class="sd">    (Device(opencl:cpu:0), &#39;device&#39;)</span>
 
-<span class="sd">    &gt;&gt;&gt; x.seek(0)</span>
-<span class="sd">    &gt;&gt;&gt; z = np.fromfile(x, dtype=&quot;u1&quot;, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; fh.seek(0)</span>
+<span class="sd">    &gt;&gt;&gt; z = np.fromfile(fh, dtype=&quot;u1&quot;, usm_type=&quot;host&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; z.device, z.usm_type</span>
 <span class="sd">    (Device(level_zero:gpu:0), &#39;host&#39;)</span>
 
