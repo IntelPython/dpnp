@@ -697,7 +697,7 @@ class TestTensordot:
         assert_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
-    @pytest.mark.parametrize("axes", [-3, -2, -1, 0, 1, 2])
+    @pytest.mark.parametrize("axes", [0, 1, 2])
     def test_tensordot(self, dtype, axes):
         a = numpy.array(numpy.random.uniform(-10, 10, 64), dtype=dtype).reshape(
             4, 4, 4
@@ -713,7 +713,7 @@ class TestTensordot:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    @pytest.mark.parametrize("axes", [-3, -2, -1, 0, 1, 2])
+    @pytest.mark.parametrize("axes", [0, 1, 2])
     def test_tensordot_complex(self, dtype, axes):
         x11 = numpy.random.uniform(-10, 10, 64)
         x12 = numpy.random.uniform(-10, 10, 64)
@@ -826,9 +826,9 @@ class TestTensordot:
         with pytest.raises(ValueError):
             dpnp.tensordot(dpnp.arange(4), 5, axes=1)
 
-        # incorrect axes for 0d arrays
+        # negative axes
         with pytest.raises(ValueError):
-            dpnp.tensordot(dpnp.arange(4), dpnp.array(5), axes=1)
+            dpnp.tensordot(dpnp.arange(4), dpnp.array(5), axes=-1)
 
 
 class TestVdot:

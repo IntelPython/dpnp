@@ -235,9 +235,12 @@ def inner(a, b):
     Returns
     -------
     out : dpnp.ndarray
-        If `a` and `b` are both scalars or both 1-D arrays then a scalar is
-        returned; otherwise an array is returned.
-        ``out.shape = (*a.shape[:-1], *b.shape[:-1])``
+        If either a or b is a scalar, the shape of the returned arrays matches
+        that of the array between a and b, whichever is an array.
+        If `a` and `b` are both 1-D arrays then a 0-d array is returned;
+        otherwise an array with a shape as
+        ``out.shape = (*a.shape[:-1], *b.shape[:-1])`` is returned.
+
 
     See Also
     --------
@@ -613,16 +616,9 @@ def tensordot(a, b, axes=2):
     dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
     if dpnp.isscalar(a) or dpnp.isscalar(b):
-        if axes > 0:
-            raise ValueError("One of the inputs is scalar axes should be zero.")
-        return dpnp.multiply(a, b)
-
-    if a.ndim == 0 or b.ndim == 0:
-        if (isinstance(axes, int) and axes > 0) or (
-            isinstance(axes, tuple) and axes != ((), ())
-        ):
+        if not isinstance(axes, int) or axes != 0:
             raise ValueError(
-                "One of the inputs is zero-dimensional axes should be zero."
+                "One of the inputs is scalar, axes should be zero."
             )
         return dpnp.multiply(a, b)
 
@@ -631,6 +627,8 @@ def tensordot(a, b, axes=2):
     except Exception as e:  # pylint: disable=broad-exception-caught
         if not isinstance(axes, int):
             raise TypeError("Axes must be an integer.") from e
+        if axes < 0:
+            raise ValueError("Axes must be a nonnegative integer.") from e
         axes_a = tuple(range(-axes, 0))
         axes_b = tuple(range(0, axes))
     else:
@@ -649,6 +647,9 @@ def tensordot(a, b, axes=2):
     b_ndim = b.ndim
     axes_a = normalize_axis_tuple(axes_a, a_ndim, "axis_a")
     axes_b = normalize_axis_tuple(axes_b, b_ndim, "axis_b")
+
+    if a.ndim == 0 or b.ndim == 0:
+        return dpnp.multiply(a, b)
 
     a_shape = a.shape
     b_shape = b.shape
