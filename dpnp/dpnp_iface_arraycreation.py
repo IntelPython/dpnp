@@ -1466,7 +1466,7 @@ def frombuffer(
     >>> s = b'\x01\x02\x03\x04'
     >>> np.frombuffer(s, dtype=np.int32)
     array([67305985], dtype=int32)
-    >>> np.frombuffer(b'\x01\x02\x03\x04\x05', dtype=numpy.uint8, count=3)
+    >>> np.frombuffer(b'\x01\x02\x03\x04\x05', dtype='u1', count=3)
     array([1, 2, 3], dtype=uint8)
 
     Creating an array on a different device or with a specified usm_type
@@ -1579,31 +1579,31 @@ def fromfile(
     Save the data to a temporary file:
 
     >>> import tempfile
-    >>> x = tempfile.TemporaryFile()
-    >>> x.write(b"\x00\x01\x02\x03\x04")
-    >>> x.flush()
-    >>> x.seek(0)
+    >>> fh = tempfile.TemporaryFile()
+    >>> fh.write(b"\x00\x01\x02\x03\x04")
+    >>> fh.flush()
+    >>> fh.seek(0)
 
     Construct an array:
 
     >>> import dpnp as np
-    >>> np.fromfile(x, dtype="u1")
+    >>> np.fromfile(fh, dtype="u1")
     array([0, 1, 2, 3, 4], dtype=uint8)
 
     Creating an array on a different device or with a specified usm_type
 
-    >>> x.seek(0)
-    >>> x = np.fromfile(x, dtype="u1") # default case
+    >>> fh.seek(0)
+    >>> x = np.fromfile(fh, dtype="u1") # default case
     >>> x.device, x.usm_type
     (Device(level_zero:gpu:0), 'device')
 
-    >>> x.seek(0)
-    >>> y = np.fromfile(x, dtype="u1", device='cpu')
+    >>> fh.seek(0)
+    >>> y = np.fromfile(fh, dtype="u1", device='cpu')
     >>> y.device, y.usm_type
     (Device(opencl:cpu:0), 'device')
 
-    >>> x.seek(0)
-    >>> z = np.fromfile(x, dtype="u1", usm_type="host")
+    >>> fh.seek(0)
+    >>> z = np.fromfile(fh, dtype="u1", usm_type="host")
     >>> z.device, z.usm_type
     (Device(level_zero:gpu:0), 'host')
 
