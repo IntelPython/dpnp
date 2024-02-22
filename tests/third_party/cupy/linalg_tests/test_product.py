@@ -235,7 +235,6 @@ class TestProduct:
         b = testing.shaped_arange((2, 2, 2, 3), xp, dtype).transpose(1, 3, 0, 2)
         return xp.vdot(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_inner(self, xp, dtype):
@@ -243,7 +242,6 @@ class TestProduct:
         b = testing.shaped_reverse_arange((5,), xp, dtype)
         return xp.inner(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_reversed_inner(self, xp, dtype):
@@ -251,7 +249,6 @@ class TestProduct:
         b = testing.shaped_reverse_arange((5,), xp, dtype)[::-1]
         return xp.inner(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_multidim_inner(self, xp, dtype):
