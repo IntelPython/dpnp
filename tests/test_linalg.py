@@ -385,7 +385,46 @@ def test_eig_arange(type, size):
     assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
 
 
-class TestEigenvalueSymm:
+class TestEigenvalue:
+    @pytest.mark.parametrize(
+        "func",
+        [
+            "eigh",
+            "eigvalsh",
+        ],
+    )
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (2, 3, 3), (2, 2, 3, 3)],
+        ids=["(2,2)", "(2,3,3)", "(2,2,3,3)"],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "order",
+        [
+            "C",
+            "F",
+        ],
+    )
+    def test_eigenvalues(self, func, shape, dtype, order):
+        a = generate_random_numpy_array(
+            shape, dtype, hermitian=True, seed_value=81
+        )
+        a_order = numpy.array(a, order=order)
+        a_dp = inp.array(a, order=order)
+
+        if func == "eigh":
+            w, v = numpy.linalg.eigh(a_order)
+            w_dp, v_dp = inp.linalg.eigh(a_dp)
+
+            assert_dtype_allclose(v_dp, v)
+
+        else:  # eighvalsh
+            w = numpy.linalg.eigvalsh(a_order)
+            w_dp = inp.linalg.eigvalsh(a_dp)
+
+        assert_dtype_allclose(w_dp, w)
+
     @pytest.mark.parametrize(
         "func",
         [
@@ -410,7 +449,7 @@ class TestEigenvalueSymm:
         assert_raises(inp.linalg.LinAlgError, dpnp_func, a_dp)
 
         # invalid UPLO
-        assert_raises(ValueError, dpnp_func, a_dp, "N")
+        assert_raises(ValueError, dpnp_func, a_dp, UPLO="N")
 
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
