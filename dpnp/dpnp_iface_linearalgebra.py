@@ -82,7 +82,7 @@ def dot(a, b, out=None):
     b : {dpnp.ndarray, usm_ndarray, scalar}
         Second input array. Both inputs `a` and `b` can not be scalars
         at the same time.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape and data type as the expected output and should be
         C-contiguous. If these conditions are not met, an exception is
@@ -345,11 +345,11 @@ def matmul(
 
     Parameters
     ----------
-    x1 : {dpnp_array, usm_ndarray}
+    x1 : {dpnp.ndarray, usm_ndarray}
         First input array.
-    x2 : {dpnp_array, usm_ndarray}
+    x2 : {dpnp.ndarray, usm_ndarray}
         Second input array.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         a shape that matches the signature `(n,k),(k,m)->(n,m)` but the type
         (of the calculated values) will be cast if necessary. Default: ``None``.
