@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.15.0dev0+16.g2542be0374 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.15.0dev0+19.g2b9c8de938 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=e0f03d87"></script>
+        <script src="../../_static/documentation_options.js?v=32bec4f9"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+16.g2542be0374
+                0.15.0dev0+19.g2b9c8de938
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -164,32 +164,6 @@
     <span class="s2">&quot;std&quot;</span><span class="p">,</span>
     <span class="s2">&quot;var&quot;</span><span class="p">,</span>
 <span class="p">]</span>
-
-
-<span class="k">def</span> <span class="nf">_check_limitations</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Checking limitation kwargs for their supported values.</span>
-
-<span class="sd">    Parameter `initial` is only supported with default value ``None``.</span>
-<span class="sd">    Parameter `where` is only supported with default value ``True``.</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    NotImplementedError</span>
-<span class="sd">        If any input kwargs is of unsupported value.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;Keyword argument `initial` is only supported with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">initial</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;Keyword argument `where` is supported only with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;default value ``True``, but got </span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_count_reduce_items</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -698,7 +672,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
 
     <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
@@ -781,7 +755,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
 
     <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
@@ -918,7 +892,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
 
     <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
@@ -1062,8 +1036,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ddof</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;An integer or float is required, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ddof</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -1177,7 +1151,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ddof</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;An integer or float is required, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ddof</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
