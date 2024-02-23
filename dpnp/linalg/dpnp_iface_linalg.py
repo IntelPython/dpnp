@@ -42,7 +42,6 @@ import numpy
 import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
-from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.linalg.dpnp_algo_linalg import *
 
 from .dpnp_utils_linalg import (
@@ -509,8 +508,6 @@ def multi_dot(arrays, *, out=None):
     """
 
     dpnp.check_supported_arrays_type(*arrays)
-    get_usm_allocations(arrays)
-
     n = len(arrays)
     if n < 2:
         raise ValueError("Expecting at least two arrays.")

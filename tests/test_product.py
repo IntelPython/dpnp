@@ -662,7 +662,7 @@ class TestInner:
 
 class TestMultiDot:
     def setup_method(self):
-        numpy.random.seed(72)
+        numpy.random.seed(70)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_multi_dot_all_2d(self, dtype):
