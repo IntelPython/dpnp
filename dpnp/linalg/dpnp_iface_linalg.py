@@ -42,6 +42,7 @@ import numpy
 import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
+from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.linalg.dpnp_algo_linalg import *
 
 from .dpnp_utils_linalg import (
@@ -452,7 +453,7 @@ def matrix_rank(A, tol=None, hermitian=False):
     return dpnp_matrix_rank(A, tol=tol, hermitian=hermitian)
 
 
-def multi_dot(arrays, out=None):
+def multi_dot(arrays, *, out=None):
     """
     Compute the dot product of two or more arrays in a single function call.
 
@@ -508,11 +509,7 @@ def multi_dot(arrays, out=None):
     """
 
     dpnp.check_supported_arrays_type(*arrays)
-
-    if out is not None:
-        dpnp.check_supported_arrays_type(out)
-        if not out.flags.c_contiguous:
-            raise ValueError("Only C-contiguous array is acceptable.")
+    get_usm_allocations(arrays)
 
     n = len(arrays)
     if n < 2:

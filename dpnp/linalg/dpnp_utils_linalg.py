@@ -419,14 +419,19 @@ def _multi_dot_matrix_chain_order(n, arrays, return_costs=False):
 
     # p stores the dimensions of the matrices
     # Example for p: A_{10x100}, B_{100x5}, C_{5x50} --> p = [10, 100, 5, 50]
-    p = [1 if arrays[0].ndim == 0 else a.shape[0] for a in arrays]
-    p.append(1 if arrays[-1].ndim == 0 else arrays[-1].shape[1])
+    p = [1 if arrays[0].ndim == 1 else arrays[0].shape[0]]
+    p += [a.shape[0] for a in arrays[1:-1]]
+    p += (
+        [arrays[-1].shape[0], 1]
+        if arrays[-1].ndim == 1
+        else [arrays[-1].shape[0], arrays[-1].shape[1]]
+    )
     # m is a matrix of costs of the subproblems
     # m[i,j]: min number of scalar multiplications needed to compute A_{i..j}
     m = dpnp.zeros((n, n))
     # s is the actual ordering
     # s[i, j] is the value of k at which we split the product A_i..A_j
-    s = dpnp.empty((n, n), dtype=dpnp.intp)
+    s = dpnp.zeros((n, n), dtype=dpnp.intp)
 
     for ll in range(1, n):
         for i in range(n - ll):

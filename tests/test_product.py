@@ -662,7 +662,7 @@ class TestInner:
 
 class TestMultiDot:
     def setup_method(self):
-        numpy.random.seed(75)
+        numpy.random.seed(72)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_multi_dot_all_2d(self, dtype):
@@ -692,6 +692,9 @@ class TestMultiDot:
             ((2, 10), (10, 5), (5, 8)),
             ((8, 5), (5, 10), (10, 2)),
             ((4, 6), (6, 9), (9, 7), (7, 8)),
+            ((6,), (6, 10), (10, 7), (7, 8)),
+            ((4, 6), (6, 10), (10, 7), (7,)),
+            ((6,), (6, 10), (10, 7), (7,)),
             ((4, 6), (6, 9), (9, 7), (7, 8), (8, 3)),
         ],
         ids=[
@@ -702,6 +705,9 @@ class TestMultiDot:
             "three_arrays_cost1",
             "three_arrays_cost2",
             "four_arrays",
+            "four_arrays_1st_1D",
+            "four_arrays_last_1D",
+            "four_arrays_1st_last_1D",
             "five_arrays",
         ],
     )
@@ -732,6 +738,9 @@ class TestMultiDot:
             ((2, 10), (10, 5), (5, 8)),
             ((8, 5), (5, 10), (10, 2)),
             ((4, 6), (6, 9), (9, 7), (7, 8)),
+            ((6,), (6, 10), (10, 7), (7, 8)),
+            ((4, 6), (6, 10), (10, 7), (7,)),
+            ((6,), (6, 10), (10, 7), (7,)),
             ((4, 6), (6, 9), (9, 7), (7, 8), (8, 3)),
         ],
         ids=[
@@ -742,6 +751,9 @@ class TestMultiDot:
             "three_arrays_cost1",
             "three_arrays_cost2",
             "four_arrays",
+            "four_arrays_1st_1D",
+            "four_arrays_last_1D",
+            "four_arrays_1st_last_1D",
             "five_arrays",
         ],
     )
@@ -772,6 +784,9 @@ class TestMultiDot:
             ((2, 10), (10, 5), (5, 8), (2, 8)),
             ((8, 5), (5, 10), (10, 2), (8, 2)),
             ((4, 6), (6, 9), (9, 7), (7, 8), (4, 8)),
+            ((6,), (6, 10), (10, 7), (7, 8), (8,)),
+            ((4, 6), (6, 10), (10, 7), (7,), (4,)),
+            ((6,), (6, 10), (10, 7), (7,), ()),
             ((4, 6), (6, 9), (9, 7), (7, 8), (8, 3), (4, 3)),
         ],
         ids=[
@@ -782,6 +797,9 @@ class TestMultiDot:
             "three_arrays_cost1",
             "three_arrays_cost2",
             "four_arrays",
+            "four_arrays_1st_1D",
+            "four_arrays_last_1D",
+            "four_arrays_1st_last_1D",
             "five_arrays",
         ],
     )

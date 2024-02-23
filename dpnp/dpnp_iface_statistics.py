@@ -76,32 +76,6 @@ __all__ = [
 ]
 
 
-def _check_limitations(initial=None, where=True):
-    """
-    Checking limitation kwargs for their supported values.
-
-    Parameter `initial` is only supported with default value ``None``.
-    Parameter `where` is only supported with default value ``True``.
-
-    Raises
-    ------
-    NotImplementedError
-        If any input kwargs is of unsupported value.
-
-    """
-
-    if initial is not None:
-        raise NotImplementedError(
-            "Keyword argument `initial` is only supported with "
-            f"default value ``None``, but got {initial}"
-        )
-    if where is not True:
-        raise NotImplementedError(
-            "Keyword argument `where` is supported only with "
-            f"default value ``True``, but got {where}"
-        )
-
-
 def _count_reduce_items(arr, axis, where=True):
     """
     Calculates the number of items used in a reduction operation
@@ -585,7 +559,7 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    _check_limitations(initial=initial, where=where)
+    dpnp.check_limitations(initial=initial, where=where)
 
     dpt_array = dpnp.get_usm_ndarray(a)
     result = dpnp_array._create_from_usm_ndarray(
@@ -665,7 +639,7 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
 
     """
 
-    _check_limitations(where=where)
+    dpnp.check_limitations(where=where)
 
     dpt_array = dpnp.get_usm_ndarray(a)
     result = dpnp_array._create_from_usm_ndarray(
@@ -796,7 +770,7 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    _check_limitations(initial=initial, where=where)
+    dpnp.check_limitations(initial=initial, where=where)
 
     dpt_array = dpnp.get_usm_ndarray(a)
     result = dpnp_array._create_from_usm_ndarray(
@@ -934,8 +908,8 @@ def std(
     """
 
     dpnp.check_supported_arrays_type(a)
+    dpnp.check_limitations(where=where)
 
-    _check_limitations(where=where)
     if not isinstance(ddof, (int, float)):
         raise TypeError(
             f"An integer or float is required, but got {type(ddof)}"
@@ -1046,7 +1020,8 @@ def var(
     """
 
     dpnp.check_supported_arrays_type(a)
-    _check_limitations(where=where)
+    dpnp.check_limitations(where=where)
+
     if not isinstance(ddof, (int, float)):
         raise TypeError(
             f"An integer or float is required, but got {type(ddof)}"
