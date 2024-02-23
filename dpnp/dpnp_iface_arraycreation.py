@@ -176,7 +176,7 @@ def arange(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -247,7 +247,7 @@ def array(
     ndmin=0,
     like=None,
     device=None,
-    usm_type=None,
+    usm_type="device",
     sycl_queue=None,
 ):
     """
@@ -276,7 +276,7 @@ def array(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -373,7 +373,7 @@ def asanyarray(
     *,
     like=None,
     device=None,
-    usm_type=None,
+    usm_type="device",
     sycl_queue=None,
 ):
     """
@@ -400,7 +400,7 @@ def asanyarray(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -469,7 +469,7 @@ def asarray(
     order=None,
     like=None,
     device=None,
-    usm_type=None,
+    usm_type="device",
     sycl_queue=None,
 ):
     """
@@ -496,7 +496,7 @@ def asarray(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -561,7 +561,7 @@ def asarray(
 
 
 def ascontiguousarray(
-    a, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
+    a, dtype=None, *, like=None, device=None, usm_type="device", sycl_queue=None
 ):
     """
     Return a contiguous array (ndim >= 1) in memory (C order).
@@ -585,7 +585,7 @@ def ascontiguousarray(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -671,7 +671,7 @@ def ascontiguousarray(
 
 
 def asfortranarray(
-    a, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
+    a, dtype=None, *, like=None, device=None, usm_type="device", sycl_queue=None
 ):
     """
     Return an array (ndim >= 1) laid out in Fortran order in memory.
@@ -695,7 +695,7 @@ def asfortranarray(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -785,7 +785,7 @@ def asfortranarray(
 
 
 def copy(
-    a, order="K", subok=False, device=None, usm_type=None, sycl_queue=None
+    a, order="K", subok=False, device=None, usm_type="device", sycl_queue=None
 ):
     """
     Return an array copy of the given object.
@@ -807,7 +807,7 @@ def copy(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -889,7 +889,7 @@ def copy(
     )
 
 
-def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
+def diag(v, /, k=0, *, device=None, usm_type="device", sycl_queue=None):
     """
     Extract a diagonal or construct a diagonal array.
 
@@ -913,7 +913,7 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -1005,7 +1005,7 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     raise ValueError("Input must be a 1-D or 2-D array.")
 
 
-def diagflat(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
+def diagflat(v, /, k=0, *, device=None, usm_type="device", sycl_queue=None):
     """
     Create a two-dimensional array with the flattened input as a diagonal.
 
@@ -1029,7 +1029,7 @@ def diagflat(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -1128,7 +1128,7 @@ def empty(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -1224,9 +1224,9 @@ def empty_like(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1335,7 +1335,7 @@ def eye(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -1434,7 +1434,7 @@ def frombuffer(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -1544,7 +1544,7 @@ def fromfile(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -1659,7 +1659,7 @@ def fromfunction(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -1764,7 +1764,7 @@ def fromiter(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -1860,7 +1860,7 @@ def fromstring(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -1942,9 +1942,9 @@ def full(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2045,9 +2045,9 @@ def full_like(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2124,7 +2124,7 @@ def geomspace(
     *,
     dtype=None,
     device=None,
-    usm_type=None,
+    usm_type="device",
     sycl_queue=None,
     endpoint=True,
     axis=0,
@@ -2159,7 +2159,7 @@ def geomspace(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -2269,7 +2269,7 @@ def identity(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -2346,7 +2346,7 @@ def linspace(
     *,
     dtype=None,
     device=None,
-    usm_type=None,
+    usm_type="device",
     sycl_queue=None,
     endpoint=True,
     retstep=False,
@@ -2380,7 +2380,7 @@ def linspace(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -2462,7 +2462,7 @@ def loadtxt(
     dtype=float,
     like=None,
     device=None,
-    usm_type=None,
+    usm_type="device",
     sycl_queue=None,
     **kwargs,
 ):
@@ -2490,7 +2490,7 @@ def loadtxt(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -2563,7 +2563,7 @@ def logspace(
     num=50,
     *,
     device=None,
-    usm_type=None,
+    usm_type="device",
     sycl_queue=None,
     endpoint=True,
     base=10.0,
@@ -2598,7 +2598,7 @@ def logspace(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -2793,7 +2793,7 @@ class MGridClass:
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -2866,7 +2866,7 @@ class OGridClass:
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -2949,7 +2949,7 @@ def ones(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -3052,9 +3052,9 @@ def ones_like(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -3194,7 +3194,7 @@ def tri(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -3393,7 +3393,7 @@ def vander(
     increasing=False,
     *,
     device=None,
-    usm_type=None,
+    usm_type="device",
     sycl_queue=None,
 ):
     """
@@ -3420,7 +3420,7 @@ def vander(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
@@ -3537,7 +3537,7 @@ def zeros(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-    usm_type : {"device", "shared", "host"}, optional
+    usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default is "device".
     sycl_queue : {None, SyclQueue}, optional
