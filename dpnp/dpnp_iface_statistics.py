@@ -550,8 +550,8 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Limitations
     -----------.
-    Parameters `where`, and `initial` are only supported with their default values.
-    Otherwise ``NotImplementedError`` exception will be raised.
+    Parameters `where`, and `initial` are only supported with their default
+    values. Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
@@ -761,8 +761,8 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     Limitations
     -----------
-    Parameters `where`, and `initial` are only supported with their default values.
-    Otherwise ``NotImplementedError`` exception will be raised.
+    Parameters `where`, and `initial` are only supported with their default
+    values. Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
