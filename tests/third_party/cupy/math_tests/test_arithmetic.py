@@ -420,5 +420,5 @@ class TestBoolSubtract(unittest.TestCase):
         shape = self.shape
         x = testing.shaped_random(shape, xp, dtype=numpy.bool_)
         y = testing.shaped_random(shape, xp, dtype=numpy.bool_)
-        with pytest.raises((TypeError, ValueError)):
+        with pytest.raises(TypeError):
             xp.subtract(x, y)

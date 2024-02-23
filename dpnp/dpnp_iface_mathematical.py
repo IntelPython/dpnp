@@ -48,11 +48,7 @@ import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.utils as du
 import numpy
 from dpctl.tensor._reduction import _default_reduction_dtype
-from dpctl.tensor._type_utils import (
-    _acceptance_fn_divide,
-    _acceptance_fn_negative,
-    _acceptance_fn_subtract,
-)
+from dpctl.tensor._type_utils import _acceptance_fn_divide
 from numpy.core.numeric import (
     normalize_axis_index,
     normalize_axis_tuple,
@@ -84,6 +80,10 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPRound,
     DPNPSign,
     DPNPUnaryFunc,
+    acceptance_fn_negative,
+    acceptance_fn_positive,
+    acceptance_fn_sign,
+    acceptance_fn_subtract,
 )
 
 __all__ = [
@@ -228,6 +228,9 @@ abs = absolute
 
 
 _ADD_DOCSTRING = """
+add(x1, x2, /, out=None, *, where=True, order="K", dtype=None, subok=True,
+**kwargs)
+
 Calculates the sum for each element `x1_i` of the input array `x1` with
 the respective element `x2_i` of the input array `x2`.
 
@@ -1949,7 +1952,7 @@ negative = DPNPUnaryFunc(
     ti._negative,
     _NEGATIVE_DOCSTRING,
     origin_fn=numpy.negative,
-    acceptance_fn=_acceptance_fn_negative,
+    acceptance_fn=acceptance_fn_negative,
 )
 
 
@@ -2009,6 +2012,7 @@ positive = DPNPUnaryFunc(
     ti._positive,
     _POSITIVE_DOCSTRING,
     origin_fn=numpy.positive,
+    acceptance_fn=acceptance_fn_positive,
 )
 
 
@@ -2503,6 +2507,7 @@ sign = DPNPSign(
     ti._sign,
     _SIGN_DOCSTRING,
     origin_fn=numpy.sign,
+    acceptance_fn=acceptance_fn_sign,
 )
 
 
@@ -2624,7 +2629,7 @@ subtract = DPNPBinaryFunc(
     mkl_fn_to_call=vmi._mkl_sub_to_call,
     mkl_impl_fn=vmi._sub,
     binary_inplace_fn=ti._subtract_inplace,
-    acceptance_fn=_acceptance_fn_subtract,
+    acceptance_fn=acceptance_fn_subtract,
 )
 
 

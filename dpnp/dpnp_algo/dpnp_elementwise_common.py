@@ -35,6 +35,10 @@ from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import call_origin
 
 __all__ = [
+    "acceptance_fn_negative",
+    "acceptance_fn_positive",
+    "acceptance_fn_sign",
+    "acceptance_fn_subtract",
     "check_nd_call_func",
     "DPNPAngle",
     "DPNPBinaryFunc",
@@ -470,6 +474,7 @@ class DPNPSign(DPNPUnaryFunc):
         unary_dp_impl_fn,
         docs,
         origin_fn=None,
+        acceptance_fn=None,
     ):
         super().__init__(
             name,
@@ -477,6 +482,7 @@ class DPNPSign(DPNPUnaryFunc):
             unary_dp_impl_fn,
             docs,
             origin_fn=origin_fn,
+            acceptance_fn=acceptance_fn,
         )
 
     def __call__(
@@ -509,6 +515,53 @@ class DPNPSign(DPNPUnaryFunc):
             subok=subok,
             **kwargs,
         )
+
+
+def acceptance_fn_negative(arg_dtype, buf_dt, res_dt, sycl_dev):
+    # negative is not defined for boolean data type
+    if arg_dtype.char == "?":
+        raise TypeError(
+            "The `negative` function, the `-` operator, is not supported "
+            "for inputs of data type bool, use the `~` operator or the "
+            "`logical_not` function instead"
+        )
+    else:
+        return True
+
+
+def acceptance_fn_positive(arg_dtype, buf_dt, res_dt, sycl_dev):
+    # positive is not defined for boolean data type
+    if arg_dtype.char == "?":
+        raise TypeError(
+            "The `positive` function is not supported for inputs of data type "
+            "bool"
+        )
+    else:
+        return True
+
+
+def acceptance_fn_sign(arg_dtype, buf_dt, res_dt, sycl_dev):
+    # sign is not defined for boolean data type
+    if arg_dtype.char == "?":
+        raise TypeError(
+            "The `sign` function is not supported for inputs of data type bool"
+        )
+    else:
+        return True
+
+
+def acceptance_fn_subtract(
+    arg1_dtype, arg2_dtype, buf1_dt, buf2_dt, res_dt, sycl_dev
+):
+    # subtract is not defined for boolean data type
+    if arg1_dtype.char == "?" and arg2_dtype.char == "?":
+        raise TypeError(
+            "The `subtract` function, the `-` operator, is not supported "
+            "for inputs of data type bool, use the `^` operator,  the "
+            "`bitwise_xor`, or the `logical_xor` function instead"
+        )
+    else:
+        return True
 
 
 def check_nd_call_func(
