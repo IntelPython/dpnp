@@ -26,6 +26,7 @@
 
 import dpctl
 import dpctl.tensor._tensor_impl as ti
+import numpy
 from numpy import prod
 
 import dpnp
@@ -40,6 +41,7 @@ __all__ = [
     "dpnp_eigh",
     "dpnp_inv",
     "dpnp_matrix_rank",
+    "dpnp_multi_dot",
     "dpnp_pinv",
     "dpnp_qr",
     "dpnp_slogdet",
@@ -381,6 +383,86 @@ def _lu_factor(a, res_type):
         # pivot indices 'ipiv_h'
         # and the status 'dev_info_h' from the LAPACK getrf call
         return (a_h, ipiv_h, dev_info_array)
+
+
+def _multi_dot(arrays, order, i, j, out=None):
+    """Actually do the multiplication with the given order."""
+    if i == j:
+        # the initial call with non-None out should never get here
+        assert out is None
+        return arrays[i]
+
+    return dpnp.dot(
+        _multi_dot(arrays, order, i, order[i, j]),
+        _multi_dot(arrays, order, order[i, j] + 1, j),
+        out=out,
+    )
+
+
+def _multi_dot_matrix_chain_order(n, arrays, return_costs=False):
+    """
+    Return a dpnp.ndarray that encodes the optimal order of mutiplications.
+
+    The optimal order array is then used by `_multi_dot()` to do the
+    multiplication.
+
+    Also return the cost matrix if `return_costs` is ``True``.
+
+    The implementation CLOSELY follows Cormen, "Introduction to Algorithms",
+    Chapter 15.2, p. 370-378.  Note that Cormen uses 1-based indices.
+
+        cost[i, j] = min([
+            cost[prefix] + cost[suffix] + cost_mult(prefix, suffix)
+            for k in range(i, j)])
+
+    """
+
+    usm_type, exec_q = get_usm_allocations(arrays)
+    # p stores the dimensions of the matrices
+    # Example for p: A_{10x100}, B_{100x5}, C_{5x50} --> p = [10, 100, 5, 50]
+    p = [1 if arrays[0].ndim == 1 else arrays[0].shape[0]]
+    p += [a.shape[0] for a in arrays[1:-1]]
+    p += (
+        [arrays[-1].shape[0], 1]
+        if arrays[-1].ndim == 1
+        else [arrays[-1].shape[0], arrays[-1].shape[1]]
+    )
+    # m is a matrix of costs of the subproblems
+    # m[i,j]: min number of scalar multiplications needed to compute A_{i..j}
+    m = dpnp.zeros((n, n), usm_type=usm_type, sycl_queue=exec_q)
+    # s is the actual ordering
+    # s[i, j] is the value of k at which we split the product A_i..A_j
+    s = dpnp.zeros(
+        (n, n), dtype=dpnp.intp, usm_type=usm_type, sycl_queue=exec_q
+    )
+
+    for ll in range(1, n):
+        for i in range(n - ll):
+            j = i + ll
+            m[i, j] = dpnp.Inf
+            for k in range(i, j):
+                q = m[i, k] + m[k + 1, j] + p[i] * p[k + 1] * p[j + 1]
+                if q < m[i, j]:
+                    m[i, j] = q
+                    s[i, j] = k  # Note that Cormen uses 1-based index
+
+    return (s, m) if return_costs else s
+
+
+def _multi_dot_three(A, B, C, out=None):
+    """Find the best order for three arrays and do the multiplication."""
+
+    a0, a1b0 = (1, A.shape[0]) if A.ndim == 1 else A.shape
+    b1c0, c1 = (C.shape[0], 1) if C.ndim == 1 else C.shape
+    # cost1 = cost((AB)C) = a0*a1b0*b1c0 + a0*b1c0*c1
+    cost1 = a0 * b1c0 * (a1b0 + c1)
+    # cost2 = cost(A(BC)) = a1b0*b1c0*c1 + a0*a1b0*c1
+    cost2 = a1b0 * c1 * (a0 + b1c0)
+
+    if cost1 < cost2:
+        return dpnp.dot(dpnp.dot(A, B), C, out=out)
+
+    return dpnp.dot(A, dpnp.dot(B, C), out=out)
 
 
 def _real_type(dtype, device=None):
@@ -1021,6 +1103,35 @@ def dpnp_matrix_rank(A, tol=None, hermitian=False):
         tol = tol[..., None]
 
     return dpnp.count_nonzero(S > tol, axis=-1)
+
+
+def dpnp_multi_dot(n, arrays, out=None):
+    """Compute the dot product of two or more arrays in a single function call."""
+
+    if not arrays[0].ndim in [1, 2]:
+        raise numpy.linalg.LinAlgError(
+            f"{arrays[0].ndim}-dimensional array given. First array must be 1-D or 2-D."
+        )
+
+    if not arrays[-1].ndim in [1, 2]:
+        raise numpy.linalg.LinAlgError(
+            f"{arrays[-1].ndim}-dimensional array given. Last array must be 1-D or 2-D."
+        )
+
+    for arr in arrays[1:-1]:
+        if arr.ndim != 2:
+            raise numpy.linalg.LinAlgError(
+                f"{arr.ndim}-dimensional array given. Inner arrays must be 2-D."
+            )
+
+    # _multi_dot_three is much faster than _multi_dot_matrix_chain_order
+    if n == 3:
+        result = _multi_dot_three(arrays[0], arrays[1], arrays[2], out=out)
+    else:
+        order = _multi_dot_matrix_chain_order(n, arrays)
+        result = _multi_dot(arrays, order, 0, n - 1, out=out)
+
+    return result
 
 
 def dpnp_pinv(a, rcond=1e-15, hermitian=False):

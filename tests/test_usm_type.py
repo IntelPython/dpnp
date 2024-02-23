@@ -7,6 +7,7 @@ import numpy
 import pytest
 
 import dpnp as dp
+from dpnp.dpnp_utils import get_usm_allocations
 
 from .helper import assert_dtype_allclose
 
@@ -601,6 +602,27 @@ def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_multi_dot(usm_type):
+    numpy_array_list = []
+    dpnp_array_list = []
+    for num_array in [3, 5]:  # number of arrays in multi_dot
+        for _ in range(num_array):  # creat arrays one by one
+            a = numpy.random.rand(10, 10)
+            b = dp.array(a, usm_type=usm_type)
+
+            numpy_array_list.append(a)
+            dpnp_array_list.append(b)
+
+        result = dp.linalg.multi_dot(dpnp_array_list)
+        expected = numpy.linalg.multi_dot(numpy_array_list)
+        assert_dtype_allclose(result, expected)
+
+        input_usm_type, _ = get_usm_allocations(dpnp_array_list)
+        assert input_usm_type == usm_type
+        assert result.usm_type == usm_type
 
 
 @pytest.mark.parametrize("func", ["take", "take_along_axis"])

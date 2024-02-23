@@ -99,43 +99,6 @@ __all__ = [
 ]
 
 
-def _check_limitations(order=None, subok=False, like=None):
-    """
-    Checking limitation kwargs for their supported values.
-
-    Parameter `order` is supported only with values ``C``, ``F`` and ``None``.
-    Parameter `subok` is supported only with default value ``False``.
-    Parameter `like` is supported only with default value ``None``.
-
-    Raises
-    ------
-    NotImplementedError
-        If any input kwargs is of unsupported value.
-
-    """
-
-    if order in ("A", "a", "K", "k"):
-        raise NotImplementedError(
-            "Keyword argument `order` is supported only with "
-            f"values ``'C'`` and ``'F'``, but got {order}"
-        )
-    if order not in ("C", "c", "F", "f", None):
-        raise ValueError(
-            "Unrecognized `order` keyword value, expecting "
-            f"``'C'`` or ``'F'``, but got {order}"
-        )
-    if like is not None:
-        raise NotImplementedError(
-            "Keyword argument `like` is supported only with "
-            f"default value ``None``, but got {like}"
-        )
-    if subok is not False:
-        raise NotImplementedError(
-            "Keyword argument `subok` is supported only with "
-            f"default value ``False``, but got {subok}"
-        )
-
-
 def arange(
     start,
     /,
@@ -223,7 +186,7 @@ def arange(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
 
     return dpnp_container.arange(
         start,
@@ -343,7 +306,7 @@ def array(
 
     """
 
-    _check_limitations(subok=subok, like=like)
+    dpnp.check_limitations(subok=subok, like=like)
     if ndmin != 0:
         raise NotImplementedError(
             "Keyword argument `ndmin` is supported only with "
@@ -451,7 +414,7 @@ def asanyarray(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
 
     return asarray(
         a,
@@ -548,7 +511,7 @@ def asarray(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
 
     return dpnp_container.asarray(
         a,
@@ -654,7 +617,7 @@ def ascontiguousarray(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
 
     # at least 1-d array has to be returned
     if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
@@ -768,7 +731,7 @@ def asfortranarray(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
 
     # at least 1-d array has to be returned
     if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
@@ -867,7 +830,7 @@ def copy(
 
     """
 
-    _check_limitations(subok=subok)
+    dpnp.check_limitations(subok=subok)
 
     if dpnp.is_supported_array_type(a):
         sycl_queue_normalized = dpnp.get_normalized_queue_device(
@@ -1176,7 +1139,7 @@ def empty(
 
     """
 
-    _check_limitations(order=order, like=like)
+    dpnp.check_limitations(order=order, like=like)
     return dpnp_container.empty(
         shape,
         dtype=dtype,
@@ -1276,7 +1239,7 @@ def empty_like(
     """
 
     dpnp.check_supported_arrays_type(a)
-    _check_limitations(order=order, subok=subok)
+    dpnp.check_limitations(order=order, subok=subok)
 
     _shape = a.shape if shape is None else shape
     _dtype = a.dtype if dtype is None else dtype
@@ -1385,7 +1348,7 @@ def eye(
 
     """
 
-    _check_limitations(order=order, like=like)
+    dpnp.check_limitations(order=order, like=like)
 
     return dpnp_container.eye(
         N,
@@ -1485,7 +1448,7 @@ def frombuffer(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
     return asarray(
         numpy.frombuffer(buffer, dtype=dtype, count=count, offset=offset),
         device=device,
@@ -1609,7 +1572,7 @@ def fromfile(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
     return asarray(
         numpy.fromfile(file, dtype=dtype, count=count, sep=sep, offset=offset),
         device=device,
@@ -1896,7 +1859,7 @@ def fromstring(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
     return asarray(
         numpy.fromstring(string, dtype=dtype, count=count, sep=sep),
         device=device,
@@ -1990,7 +1953,7 @@ def full(
 
     """
 
-    _check_limitations(order=order, like=like)
+    dpnp.check_limitations(order=order, like=like)
 
     return dpnp_container.full(
         shape,
@@ -2097,7 +2060,7 @@ def full_like(
     """
 
     dpnp.check_supported_arrays_type(a)
-    _check_limitations(order=order, subok=subok)
+    dpnp.check_limitations(order=order, subok=subok)
 
     _shape = a.shape if shape is None else shape
     _dtype = a.dtype if dtype is None else dtype
@@ -2326,7 +2289,7 @@ def identity(
     if n < 0:
         raise ValueError("negative dimensions are not allowed")
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
 
     _dtype = dpnp.default_float_type() if dtype is None else dtype
     return dpnp.eye(
@@ -3003,7 +2966,7 @@ def ones(
 
     """
 
-    _check_limitations(order=order, like=like)
+    dpnp.check_limitations(order=order, like=like)
 
     return dpnp_container.ones(
         shape,
@@ -3105,7 +3068,7 @@ def ones_like(
 
     """
     dpnp.check_supported_arrays_type(a)
-    _check_limitations(order=order, subok=subok)
+    dpnp.check_limitations(order=order, subok=subok)
 
     _shape = a.shape if shape is None else shape
     _dtype = a.dtype if dtype is None else dtype
@@ -3591,7 +3554,7 @@ def zeros(
 
     """
 
-    _check_limitations(order=order, like=like)
+    dpnp.check_limitations(order=order, like=like)
 
     return dpnp_container.zeros(
         shape,
@@ -3694,7 +3657,7 @@ def zeros_like(
     """
 
     dpnp.check_supported_arrays_type(a)
-    _check_limitations(order=order, subok=subok)
+    dpnp.check_limitations(order=order, subok=subok)
 
     _shape = a.shape if shape is None else shape
     _dtype = a.dtype if dtype is None else dtype

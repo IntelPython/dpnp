@@ -62,13 +62,13 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
 
     Parameters
     ----------
-    a :  {dpnp.ndarray, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int, optional
         Axis along which to search. If ``None``, the function must return
         the index of the maximum value of the flattened array.
         Default: ``None``.
-    out :  {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
@@ -154,7 +154,7 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
         Axis along which to search. If ``None``, the function must return
         the index of the minimum value of the flattened array.
         Default: ``None``.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool, optional

@@ -9,6 +9,7 @@ from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import get_usm_allocations
 
 from .helper import assert_dtype_allclose, get_all_dtypes, is_win_platform
 
@@ -989,6 +990,56 @@ def test_modf(device):
 
     assert_sycl_queue_equal(result1_queue, expected_queue)
     assert_sycl_queue_equal(result2_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_multi_dot(device):
+    numpy_array_list = []
+    dpnp_array_list = []
+    for num_array in [3, 5]:  # number of arrays in multi_dot
+        for _ in range(num_array):  # creat arrays one by one
+            a = numpy.random.rand(10, 10)
+            b = dpnp.array(a, device=device)
+
+            numpy_array_list.append(a)
+            dpnp_array_list.append(b)
+
+        result = dpnp.linalg.multi_dot(dpnp_array_list)
+        expected = numpy.linalg.multi_dot(numpy_array_list)
+        assert_dtype_allclose(result, expected)
+
+        _, exec_q = get_usm_allocations(dpnp_array_list)
+        assert_sycl_queue_equal(result.sycl_queue, exec_q)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_out_multi_dot(device):
+    numpy_array_list = []
+    dpnp_array_list = []
+    for num_array in [3, 5]:  # number of arrays in multi_dot
+        for _ in range(num_array):  # creat arrays one by one
+            a = numpy.random.rand(10, 10)
+            b = dpnp.array(a, device=device)
+
+            numpy_array_list.append(a)
+            dpnp_array_list.append(b)
+
+        dp_out = dpnp.empty((10, 10), device=device)
+        result = dpnp.linalg.multi_dot(dpnp_array_list, out=dp_out)
+        assert result is dp_out
+        expected = numpy.linalg.multi_dot(numpy_array_list)
+        assert_dtype_allclose(result, expected)
+
+        _, exec_q = get_usm_allocations(dpnp_array_list)
+        assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
 
 @pytest.mark.parametrize("type", ["complex128"])
