@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.15.0dev0+16.g2542be0374 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.15.0dev0+14.g9858631b57 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=e0f03d87"></script>
+        <script src="../../_static/documentation_options.js?v=c2cb190f"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+16.g2542be0374
+                0.15.0dev0+14.g9858631b57
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1345,13 +1345,14 @@
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array. The elements in `a` are read in the order specified by</span>
 <span class="sd">        order, and packed as a 1-D array.</span>
-<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;}, optional</span>
-<span class="sd">        The elements of `a` are read using this index order. ``&quot;C&quot;`` means to</span>
+<span class="sd">    order : {&#39;C&#39;, &#39;F&#39;}, optional</span>
+<span class="sd">        The elements of `a` are read using this index order. ``C`` means to</span>
 <span class="sd">        index the elements in row-major, C-style order, with the last axis</span>
 <span class="sd">        index changing fastest, back to the first axis index changing slowest.</span>
-<span class="sd">        ``&quot;F&quot;`` means to index the elements in column-major, Fortran-style</span>
-<span class="sd">        order, with the first index changing fastest, and the last index</span>
-<span class="sd">        changing slowest. By default, ``&quot;C&quot;`` index order is used.</span>
+<span class="sd">        ``F`` means to index the elements in column-major, Fortran-style order,</span>
+<span class="sd">        with the first index changing fastest, and the last index changing</span>
+<span class="sd">        slowest.</span>
+<span class="sd">        By default, ``C`` index order is used.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1461,15 +1462,15 @@
 <span class="sd">        an integer, then the result will be a 1-D array of that length.</span>
 <span class="sd">        One shape dimension can be -1. In this case, the value is</span>
 <span class="sd">        inferred from the length of the array and remaining dimensions.</span>
-<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;}, optional</span>
+<span class="sd">    order : {&#39;C&#39;, &#39;F&#39;}, optional</span>
 <span class="sd">        Read the elements of `a` using this index order, and place the</span>
-<span class="sd">        elements into the reshaped array using this index order. ``&quot;C&quot;``</span>
+<span class="sd">        elements into the reshaped array using this index order. &#39;C&#39;</span>
 <span class="sd">        means to read / write the elements using C-like index order,</span>
 <span class="sd">        with the last axis index changing fastest, back to the first</span>
-<span class="sd">        axis index changing slowest. ``&quot;F&quot;`` means to read / write the</span>
+<span class="sd">        axis index changing slowest. &#39;F&#39; means to read / write the</span>
 <span class="sd">        elements using Fortran-like index order, with the first index</span>
 <span class="sd">        changing fastest, and the last index changing slowest. Note that</span>
-<span class="sd">        the ``&quot;C&quot;`` and ``&quot;F&quot;`` options take no account of the memory layout of</span>
+<span class="sd">        the &#39;C&#39; and &#39;F&#39; options take no account of the memory layout of</span>
 <span class="sd">        the underlying array, and only refer to the order of indexing.</span>
 <span class="sd">    copy : bool, optional</span>
 <span class="sd">        Boolean indicating whether or not to copy the input array.</span>
