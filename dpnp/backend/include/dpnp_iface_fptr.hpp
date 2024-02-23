@@ -105,8 +105,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_COUNT_NONZERO, /**< Used in numpy.count_nonzero() impl  */
     DPNP_FN_COV,           /**< Used in numpy.cov() impl  */
     DPNP_FN_CROSS,         /**< Used in numpy.cross() impl  */
-    DPNP_FN_CROSS_EXT,     /**< Used in numpy.cross() impl, requires extra
-                              parameters */
     DPNP_FN_CUMPROD,       /**< Used in numpy.cumprod() impl  */
     DPNP_FN_CUMPROD_EXT,   /**< Used in numpy.cumprod() impl, requires extra
                               parameters */

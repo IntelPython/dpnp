@@ -63,8 +63,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(pybind11)
 
-find_package(Python REQUIRED COMPONENTS Development.Module)
-find_package(NumPy REQUIRED)
+find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
 
 set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
 find_package(Cython REQUIRED)

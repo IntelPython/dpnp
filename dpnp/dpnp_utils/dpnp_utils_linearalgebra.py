@@ -25,6 +25,7 @@
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_elementwise_impl as tei
 import dpctl.tensor._tensor_impl as ti
 import numpy
 from numpy.core.numeric import normalize_axis_tuple
@@ -34,7 +35,7 @@ import dpnp.backend.extensions.blas._blas_impl as bi
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 
-__all__ = ["dpnp_dot", "dpnp_matmul"]
+__all__ = ["dpnp_cross", "dpnp_dot", "dpnp_matmul"]
 
 
 def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
@@ -318,6 +319,161 @@ def _validate_axes(x1, x2, axes):
         axes[2] = _validate_internal(axes[2], 2, 2)
 
     return axes
+
+
+def dpnp_cross(a, b, cp, exec_q):
+    """Return the cross product of two (arrays of) vectors."""
+
+    # create local aliases for readability
+    a0 = a[..., 0]
+    a1 = a[..., 1]
+    if a.shape[-1] == 3:
+        a2 = a[..., 2]
+    b0 = b[..., 0]
+    b1 = b[..., 1]
+    if b.shape[-1] == 3:
+        b2 = b[..., 2]
+    if cp.ndim != 0 and cp.shape[-1] == 3:
+        cp0 = cp[..., 0]
+        cp1 = cp[..., 1]
+        cp2 = cp[..., 2]
+
+    host_events = []
+    if a.shape[-1] == 2:
+        if b.shape[-1] == 2:
+            # a0 * b1 - a1 * b0
+            cp_usm = dpnp.get_usm_ndarray(cp)
+            ht_ev1, dev_ev1 = tei._multiply(
+                dpnp.get_usm_ndarray(a0),
+                dpnp.get_usm_ndarray(b1),
+                cp_usm,
+                exec_q,
+            )
+            host_events.append(ht_ev1)
+            tmp = dpt.empty_like(cp_usm)
+            ht_ev2, dev_ev2 = tei._multiply(
+                dpnp.get_usm_ndarray(a1), dpnp.get_usm_ndarray(b0), tmp, exec_q
+            )
+            host_events.append(ht_ev2)
+            ht_ev3, _ = tei._subtract_inplace(
+                cp_usm, tmp, exec_q, [dev_ev1, dev_ev2]
+            )
+            host_events.append(ht_ev3)
+        else:
+            assert b.shape[-1] == 3
+            # cp0 = a1 * b2 - 0  (a2 = 0)
+            # cp1 = 0 - a0 * b2  (a2 = 0)
+            # cp2 = a0 * b1 - a1 * b0
+            cp1_usm = dpnp.get_usm_ndarray(cp1)
+            cp2_usm = dpnp.get_usm_ndarray(cp2)
+            a1_usm = dpnp.get_usm_ndarray(a1)
+            b2_usm = dpnp.get_usm_ndarray(b2)
+            ht_ev1, _ = tei._multiply(
+                a1_usm, b2_usm, dpnp.get_usm_ndarray(cp0), exec_q
+            )
+            host_events.append(ht_ev1)
+            ht_ev2, dev_ev2 = tei._multiply(
+                dpnp.get_usm_ndarray(a0), b2_usm, cp1_usm, exec_q
+            )
+            host_events.append(ht_ev2)
+            ht_ev3, _ = tei._negative(cp1_usm, cp1_usm, exec_q, [dev_ev2])
+            host_events.append(ht_ev3)
+            ht_ev4, dev_ev4 = tei._multiply(
+                dpnp.get_usm_ndarray(a0),
+                dpnp.get_usm_ndarray(b1),
+                cp2_usm,
+                exec_q,
+            )
+            host_events.append(ht_ev4)
+            tmp = dpt.empty_like(cp2_usm)
+            ht_ev5, dev_ev5 = tei._multiply(
+                a1_usm, dpnp.get_usm_ndarray(b0), tmp, exec_q
+            )
+            host_events.append(ht_ev5)
+            ht_ev6, _ = tei._subtract_inplace(
+                cp2_usm, tmp, exec_q, [dev_ev4, dev_ev5]
+            )
+            host_events.append(ht_ev6)
+    else:
+        assert a.shape[-1] == 3
+        if b.shape[-1] == 3:
+            # cp0 = a1 * b2 - a2 * b1
+            # cp1 = a2 * b0 - a0 * b2
+            # cp2 = a0 * b1 - a1 * b0
+            cp0_usm = dpnp.get_usm_ndarray(cp0)
+            cp1_usm = dpnp.get_usm_ndarray(cp1)
+            cp2_usm = dpnp.get_usm_ndarray(cp2)
+            a0_usm = dpnp.get_usm_ndarray(a0)
+            a1_usm = dpnp.get_usm_ndarray(a1)
+            a2_usm = dpnp.get_usm_ndarray(a2)
+            b0_usm = dpnp.get_usm_ndarray(b0)
+            b1_usm = dpnp.get_usm_ndarray(b1)
+            b2_usm = dpnp.get_usm_ndarray(b2)
+            ht_ev1, dev_ev1 = tei._multiply(a1_usm, b2_usm, cp0_usm, exec_q)
+            host_events.append(ht_ev1)
+            tmp = dpt.empty_like(cp0_usm)
+            ht_ev2, dev_ev2 = tei._multiply(a2_usm, b1_usm, tmp, exec_q)
+            host_events.append(ht_ev2)
+            ht_ev3, dev_ev3 = tei._subtract_inplace(
+                cp0_usm, tmp, exec_q, [dev_ev1, dev_ev2]
+            )
+            host_events.append(ht_ev3)
+            ht_ev4, dev_ev4 = tei._multiply(a2_usm, b0_usm, cp1_usm, exec_q)
+            host_events.append(ht_ev4)
+            ht_ev5, dev_ev5 = tei._multiply(
+                a0_usm, b2_usm, tmp, exec_q, [dev_ev3]
+            )
+            host_events.append(ht_ev5)
+            ht_ev6, dev_ev6 = tei._subtract_inplace(
+                cp1_usm, tmp, exec_q, [dev_ev4, dev_ev5]
+            )
+            host_events.append(ht_ev6)
+            ht_ev7, dev_ev7 = tei._multiply(a0_usm, b1_usm, cp2_usm, exec_q)
+            host_events.append(ht_ev7)
+            ht_ev8, dev_ev8 = tei._multiply(
+                a1_usm, b0_usm, tmp, exec_q, [dev_ev6]
+            )
+            host_events.append(ht_ev8)
+            ht_ev9, _ = tei._subtract_inplace(
+                cp2_usm, tmp, exec_q, [dev_ev7, dev_ev8]
+            )
+            host_events.append(ht_ev9)
+        else:
+            assert b.shape[-1] == 2
+            # cp0 = 0 - a2 * b1  (b2 = 0)
+            # cp1 = a2 * b0 - 0  (b2 = 0)
+            # cp2 = a0 * b1 - a1 * b0
+            cp0_usm = dpnp.get_usm_ndarray(cp0)
+            cp2_usm = dpnp.get_usm_ndarray(cp2)
+            a2_usm = dpnp.get_usm_ndarray(a2)
+            b1_usm = dpnp.get_usm_ndarray(b1)
+            ht_ev1, dev_ev1 = tei._multiply(a2_usm, b1_usm, cp0_usm, exec_q)
+            host_events.append(ht_ev1)
+            ht_ev2, _ = tei._negative(cp0_usm, cp0_usm, exec_q, [dev_ev1])
+            host_events.append(ht_ev2)
+            ht_ev3, _ = tei._multiply(
+                a2_usm,
+                dpnp.get_usm_ndarray(b0),
+                dpnp.get_usm_ndarray(cp1),
+                exec_q,
+            )
+            host_events.append(ht_ev3)
+            ht_ev4, dev_ev4 = tei._multiply(
+                dpnp.get_usm_ndarray(a0), b1_usm, cp2_usm, exec_q
+            )
+            host_events.append(ht_ev4)
+            tmp = dpt.empty_like(cp2_usm)
+            ht_ev5, dev_ev5 = tei._multiply(
+                dpnp.get_usm_ndarray(a1), dpnp.get_usm_ndarray(b0), tmp, exec_q
+            )
+            host_events.append(ht_ev5)
+            ht_ev6, _ = tei._subtract_inplace(
+                cp2_usm, tmp, exec_q, [dev_ev4, dev_ev5]
+            )
+            host_events.append(ht_ev6)
+
+    dpctl.SyclEvent.wait_for(host_events)
+    return cp
 
 
 def dpnp_dot(a, b, /, out=None, *, conjugate=False):

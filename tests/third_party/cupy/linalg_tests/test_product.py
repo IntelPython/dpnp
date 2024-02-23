@@ -101,14 +101,9 @@ class TestDot(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestCrossProduct(unittest.TestCase):
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
-    # TODO: remove 'contiguous_check=False' once fixed in dpnp.cross()
-    @testing.numpy_cupy_allclose(
-        type_check=has_support_aspect64(), contiguous_check=False
-    )
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_cross(self, xp, dtype_a, dtype_b):
         if dtype_a == dtype_b == numpy.bool_:
             # cross does not support bool-bool inputs.
@@ -240,7 +235,6 @@ class TestProduct:
         b = testing.shaped_arange((2, 2, 2, 3), xp, dtype).transpose(1, 3, 0, 2)
         return xp.vdot(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_inner(self, xp, dtype):
@@ -248,7 +242,6 @@ class TestProduct:
         b = testing.shaped_reverse_arange((5,), xp, dtype)
         return xp.inner(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_reversed_inner(self, xp, dtype):
@@ -256,7 +249,6 @@ class TestProduct:
         b = testing.shaped_reverse_arange((5,), xp, dtype)[::-1]
         return xp.inner(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_multidim_inner(self, xp, dtype):

@@ -52,6 +52,7 @@ from .dpnp_utils_linalg import (
     dpnp_eigh,
     dpnp_inv,
     dpnp_matrix_rank,
+    dpnp_multi_dot,
     dpnp_pinv,
     dpnp_qr,
     dpnp_slogdet,
@@ -451,40 +452,69 @@ def matrix_rank(A, tol=None, hermitian=False):
     return dpnp_matrix_rank(A, tol=tol, hermitian=hermitian)
 
 
-def multi_dot(arrays, out=None):
+def multi_dot(arrays, *, out=None):
     """
-    Compute the dot product of two or more arrays in a single function call
+    Compute the dot product of two or more arrays in a single function call.
+
+    For full documentation refer to :obj:`numpy.multi_dot`.
 
     Parameters
     ----------
-    arrays : sequence of array_like
+    arrays : sequence of dpnp.ndarray or usm_ndarray
         If the first argument is 1-D it is treated as row vector.
         If the last argument is 1-D it is treated as column vector.
         The other arguments must be 2-D.
-    out : ndarray, optional
-        unsupported
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Output argument. This must have the exact kind that would be returned
+        if it was not used. In particular, it must have the right type, must be
+        C-contiguous, and its dtype must be the dtype that would be returned
+        for `dot(a, b)`. If these conditions are not met, an exception is
+        raised, instead of attempting to be flexible.
 
     Returns
     -------
-    output : ndarray
+    out : dpnp.ndarray
         Returns the dot product of the supplied arrays.
 
     See Also
     --------
-    :obj:`numpy.multi_dot`
+    :obj:`dpnp.dot` : Returns the dot product of two arrays.
+    :obj:`dpnp.inner` : Returns the inner product of two arrays.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> from dpnp.linalg import multi_dot
+    >>> A = np.random.random((10000, 100))
+    >>> B = np.random.random((100, 1000))
+    >>> C = np.random.random((1000, 5))
+    >>> D = np.random.random((5, 333))
+
+    the actual dot multiplication
+
+    >>> multi_dot([A, B, C, D]).shape
+    (10000, 333)
+
+    instead of
+
+    >>> np.dot(np.dot(np.dot(A, B), C), D).shape
+    (10000, 333)
+
+    or
+
+    >>> A.dot(B).dot(C).dot(D).shape
+    (10000, 333)
 
     """
 
+    dpnp.check_supported_arrays_type(*arrays)
     n = len(arrays)
-
     if n < 2:
-        checker_throw_value_error("multi_dot", "arrays", n, ">1")
+        raise ValueError("Expecting at least two arrays.")
+    if n == 2:
+        return dpnp.dot(arrays[0], arrays[1], out=out)
 
-    result = arrays[0]
-    for id in range(1, n):
-        result = dpnp.dot(result, arrays[id])
-
-    return result
+    return dpnp_multi_dot(n, arrays, out)
 
 
 def pinv(a, rcond=1e-15, hermitian=False):

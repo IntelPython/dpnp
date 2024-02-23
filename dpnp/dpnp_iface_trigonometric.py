@@ -1258,7 +1258,7 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
         of unique integers, values are computed over multiple axes.
         If ``None``, the result is computed over the entire array.
         Default: ``None``.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     dtype : data type, optional
@@ -1385,7 +1385,7 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
         of unique integers, values are computed over multiple axes.
         If ``None``, the result is computed over the entire array.
         Default: ``None``.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     dtype : data type, optional
@@ -1444,6 +1444,7 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
     )
 
     return dpnp.get_result_array(result, out, casting="same_kind")
+
 
 
 _RSQRT_DOCSTRING = """

@@ -58,6 +58,7 @@ import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
 from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
 from dpnp.dpnp_array import dpnp_array
+
 from dpnp.dpnp_utils import call_origin, get_usm_allocations
 
 from .dpnp_algo import (
@@ -73,6 +74,7 @@ from .dpnp_algo import (
     dpnp_modf,
     dpnp_trapz,
 )
+
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPAngle,
     DPNPBinaryFunc,
@@ -462,10 +464,11 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     a : {dpnp.ndarray, usm_ndarray}
         Array containing elements to clip.
     a_min, a_max : {dpnp.ndarray, usm_ndarray, None}
+
         Minimum and maximum value. If ``None``, clipping is not performed on
         the corresponding edge. Only one of `a_min` and `a_max` may be
         ``None``. Both are broadcast against `a`.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         The results will be placed in this array. It may be the input array
         for in-place clipping. `out` must be of the right shape to hold the
         output. Its type is preserved.
@@ -609,7 +612,7 @@ x1 : {dpnp.ndarray, usm_ndarray}
 x2 : {dpnp.ndarray, usm_ndarray}
     Second input array, also expected to have a real floating-point data
     type.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
@@ -659,53 +662,156 @@ copysign = DPNPBinaryFunc(
 )
 
 
-def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
+def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     """
     Return the cross product of two (arrays of) vectors.
 
     For full documentation refer to :obj:`numpy.cross`.
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Sizes of input arrays are limited by `x1.size == 3 and x2.size == 3`.
-    Shapes of input arrays are limited by `x1.shape == (3,) and
-    x2.shape == (3,)`.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        First input array.
+    b : {dpnp.ndarray, usm_ndarray}
+        Second input array.
+    axisa : int, optional
+        Axis of `a` that defines the vector(s).  By default, the last axis.
+    axisb : int, optional
+        Axis of `b` that defines the vector(s).  By default, the last axis.
+    axisc : int, optional
+        Axis of `c` containing the cross product vector(s).  Ignored if
+        both input vectors have dimension 2, as the return is scalar.
+        By default, the last axis.
+    axis : {int, None}, optional
+        If defined, the axis of `a`, `b` and `c` that defines the vector(s)
+        and cross product(s).  Overrides `axisa`, `axisb` and `axisc`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Vector cross product(s).
+
+    See Also
+    --------
+    :obj:`dpnp.inner` : Inner product.
+    :obj:`dpnp.outer` : Outer product.
 
     Examples
     --------
+    Vector cross-product.
+
     >>> import dpnp as np
-    >>> x = [1, 2, 3]
-    >>> y = [4, 5, 6]
-    >>> result = np.cross(x, y)
-    >>> [x for x in result]
-    [-3,  6, -3]
+    >>> x = np.array([1, 2, 3])
+    >>> y = np.array([4, 5, 6])
+    >>> np.cross(x, y)
+    array([-3,  6, -3])
+
+    One vector with dimension 2.
+
+    >>> x = np.array([1, 2])
+    >>> y = np.array([4, 5, 6])
+    >>> np.cross(x, y)
+    array([12, -6, -3])
+
+    Equivalently:
+
+    >>> x = np.array([1, 2, 0])
+    >>> y = np.array([4, 5, 6])
+    >>> np.cross(x, y)
+    array([12, -6, -3])
+
+    Both vectors with dimension 2.
+
+    >>> x = np.array([1, 2])
+    >>> y = np.array([4, 5])
+    >>> np.cross(x, y)
+    array(-3)
+
+    Multiple vector cross-products. Note that the direction of the cross
+    product vector is defined by the *right-hand rule*.
+
+    >>> x = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> y = np.array([[4, 5, 6], [1, 2, 3]])
+    >>> np.cross(x, y)
+    array([[-3,  6, -3],
+           [ 3, -6,  3]])
+
+    The orientation of `c` can be changed using the `axisc` keyword.
+
+    >>> np.cross(x, y, axisc=0)
+    array([[-3,  3],
+           [ 6, -6],
+           [-3,  3]])
+
+    Change the vector definition of `x` and `y` using `axisa` and `axisb`.
+
+    >>> x = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    >>> y = np.array([[7, 8, 9], [4, 5, 6], [1, 2, 3]])
+    >>> np.cross(x, y)
+    array([[ -6,  12,  -6],
+           [  0,   0,   0],
+           [  6, -12,   6]])
+    >>> np.cross(x, y, axisa=0, axisb=0)
+    array([[-24,  48, -24],
+           [-30,  60, -30],
+           [-36,  72, -36]])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
+    if axis is not None:
+        if not isinstance(axis, int):
+            raise TypeError(f"axis should be an integer but got, {type(axis)}.")
+        axisa, axisb, axisc = (axis,) * 3
+    dpnp.check_supported_arrays_type(a, b)
+    if a.dtype == dpnp.bool and b.dtype == dpnp.bool:
+        raise TypeError(
+            "Input arrays with boolean data type are not supported."
+        )
+    # Check axisa and axisb are within bounds
+    axisa = normalize_axis_index(axisa, a.ndim, msg_prefix="axisa")
+    axisb = normalize_axis_index(axisb, b.ndim, msg_prefix="axisb")
 
-    if x1_desc and x2_desc:
-        if x1_desc.size != 3 or x2_desc.size != 3:
-            pass
-        elif x1_desc.shape != (3,) or x2_desc.shape != (3,):
-            pass
-        elif axisa != -1:
-            pass
-        elif axisb != -1:
-            pass
-        elif axisc != -1:
-            pass
-        elif axis is not None:
-            pass
-        else:
-            return dpnp_cross(x1_desc, x2_desc).get_pyobj()
+    # Move working axis to the end of the shape
+    a = dpnp.moveaxis(a, axisa, -1)
+    b = dpnp.moveaxis(b, axisb, -1)
+    if a.shape[-1] not in (2, 3) or b.shape[-1] not in (2, 3):
+        raise ValueError(
+            "Incompatible vector dimensions for cross product\n"
+            "(the dimension of vector used in cross product must be 2 or 3)"
+        )
 
-    return call_origin(numpy.cross, x1, x2, axisa, axisb, axisc, axis)
+    # Modify the shape of input arrays if necessary
+    a_shape = a.shape
+    b_shape = b.shape
+    # TODO: replace with dpnp.broadcast_shapes once implemented
+    res_shape = numpy.broadcast_shapes(a_shape[:-1], b_shape[:-1])
+    if a_shape[:-1] != res_shape:
+        a = dpnp.broadcast_to(a, res_shape + (a_shape[-1],))
+        a_shape = a.shape
+    if b_shape[:-1] != res_shape:
+        b = dpnp.broadcast_to(b, res_shape + (b_shape[-1],))
+        b_shape = b.shape
+
+    if a_shape[-1] == 3 or b_shape[-1] == 3:
+        res_shape += (3,)
+        # Check axisc is within bounds
+        axisc = normalize_axis_index(axisc, len(res_shape), msg_prefix="axisc")
+    # Create the output array
+    dtype = dpnp.result_type(a, b)
+    res_usm_type, exec_q = get_usm_allocations([a, b])
+    cp = dpnp.empty(
+        res_shape, dtype=dtype, sycl_queue=exec_q, usm_type=res_usm_type
+    )
+
+    # recast arrays as dtype
+    a = a.astype(dtype, copy=False)
+    b = b.astype(dtype, copy=False)
+
+    cp = dpnp_cross(a, b, cp, exec_q)
+    if a_shape[-1] == 2 and b_shape[-1] == 2:
+        return cp
+    else:
+        return dpnp.moveaxis(cp, -1, axisc)
 
 
 def cumprod(x1, **kwargs):
@@ -2682,7 +2788,7 @@ def sum(
         data type of `a`, the input array elements are cast to the
         specified data type before computing the sum.
         Default: ``None``.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must
         have the same shape as the expected output, but the type of
         the output values will be cast if necessary.

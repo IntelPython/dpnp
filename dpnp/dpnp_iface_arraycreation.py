@@ -99,43 +99,6 @@ __all__ = [
 ]
 
 
-def _check_limitations(order=None, subok=False, like=None):
-    """
-    Checking limitation kwargs for their supported values.
-
-    Parameter `order` is supported only with values ``C``, ``F`` and ``None``.
-    Parameter `subok` is supported only with default value ``False``.
-    Parameter `like` is supported only with default value ``None``.
-
-    Raises
-    ------
-    NotImplementedError
-        If any input kwargs is of unsupported value.
-
-    """
-
-    if order in ("A", "a", "K", "k"):
-        raise NotImplementedError(
-            "Keyword argument `order` is supported only with "
-            f"values ``'C'`` and ``'F'``, but got {order}"
-        )
-    if order not in ("C", "c", "F", "f", None):
-        raise ValueError(
-            "Unrecognized `order` keyword value, expecting "
-            f"``'C'`` or ``'F'``, but got {order}"
-        )
-    if like is not None:
-        raise NotImplementedError(
-            "Keyword argument `like` is supported only with "
-            f"default value ``None``, but got {like}"
-        )
-    if subok is not False:
-        raise NotImplementedError(
-            "Keyword argument `subok` is supported only with "
-            f"default value ``False``, but got {subok}"
-        )
-
-
 def arange(
     start,
     /,
@@ -223,7 +186,7 @@ def arange(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
 
     return dpnp_container.arange(
         start,
@@ -343,7 +306,7 @@ def array(
 
     """
 
-    _check_limitations(subok=subok, like=like)
+    dpnp.check_limitations(subok=subok, like=like)
     if ndmin != 0:
         raise NotImplementedError(
             "Keyword argument `ndmin` is supported only with "
@@ -451,7 +414,7 @@ def asanyarray(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
 
     return asarray(
         a,
@@ -548,7 +511,7 @@ def asarray(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
 
     return dpnp_container.asarray(
         a,
@@ -654,7 +617,7 @@ def ascontiguousarray(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
 
     # at least 1-d array has to be returned
     if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
@@ -768,7 +731,7 @@ def asfortranarray(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
 
     # at least 1-d array has to be returned
     if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
@@ -867,7 +830,7 @@ def copy(
 
     """
 
-    _check_limitations(subok=subok)
+    dpnp.check_limitations(subok=subok)
 
     if dpnp.is_supported_array_type(a):
         sycl_queue_normalized = dpnp.get_normalized_queue_device(
@@ -1176,7 +1139,7 @@ def empty(
 
     """
 
-    _check_limitations(order=order, like=like)
+    dpnp.check_limitations(order=order, like=like)
     return dpnp_container.empty(
         shape,
         dtype=dtype,
@@ -1276,7 +1239,7 @@ def empty_like(
     """
 
     dpnp.check_supported_arrays_type(a)
-    _check_limitations(order=order, subok=subok)
+    dpnp.check_limitations(order=order, subok=subok)
 
     _shape = a.shape if shape is None else shape
     _dtype = a.dtype if dtype is None else dtype
@@ -1385,7 +1348,7 @@ def eye(
 
     """
 
-    _check_limitations(order=order, like=like)
+    dpnp.check_limitations(order=order, like=like)
 
     return dpnp_container.eye(
         N,
@@ -1399,23 +1362,114 @@ def eye(
     )
 
 
-def frombuffer(buffer, **kwargs):
-    """
+def frombuffer(
+    buffer,
+    dtype=float,
+    count=-1,
+    offset=0,
+    *,
+    like=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
+    r"""
     Interpret a buffer as a 1-dimensional array.
 
     For full documentation refer to :obj:`numpy.frombuffer`.
 
+    Parameters
+    ----------
+    buffer : buffer_like
+        An object that exposes the buffer interface.
+    dtype : data-type, optional
+        Data-type of the returned array.
+        Default is the default floating point data type for the device where
+        the returned array is allocated.
+    count : int, optional
+        Number of items to read. ``-1`` means all data in the buffer.
+    offset : int, optional
+        Start reading the buffer from this offset (in bytes); default: 0.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+        Default is "device".
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A 1-dimensional array created from input buffer object.
+
     Limitations
     -----------
-    Only float64, float32, int64, int32 types are supported.
+    Parameter `like` is supported only with default value ``None``.
+    Otherwise, the function raises `NotImplementedError` exception.
+
+    Notes
+    -----
+    This uses :obj:`numpy.frombuffer` and coerces the result to a DPNP array.
+
+    See also
+    --------
+    :obj:`dpnp.fromfile` : Construct array from data in a text or binary file.
+    :obj:`dpnp.fromiter` : Construct array from an iterable object.
+    :obj:`dpnp.fromstring` : Construct array from the text data in a string.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> s = b'\x01\x02\x03\x04'
+    >>> np.frombuffer(s, dtype=np.int32)
+    array([67305985], dtype=int32)
+    >>> np.frombuffer(b'\x01\x02\x03\x04\x05', dtype='u1', count=3)
+    array([1, 2, 3], dtype=uint8)
+
+    Creating an array on a different device or with a specified usm_type
+
+    >>> x = np.frombuffer(s, dtype=np.int32) # default case
+    >>> x.device, x.usm_type
+    (Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.frombuffer(s, dtype=np.int32, device='cpu')
+    >>> y.device, y.usm_type
+    (Device(opencl:cpu:0), 'device')
+
+    >>> z = np.frombuffer(s, dtype=np.int32, usm_type="host")
+    >>> z.device, z.usm_type
+    (Device(level_zero:gpu:0), 'host')
 
     """
 
-    return call_origin(numpy.frombuffer, buffer, **kwargs)
+    dpnp.check_limitations(like=like)
+    return asarray(
+        numpy.frombuffer(buffer, dtype=dtype, count=count, offset=offset),
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
-def fromfile(file, **kwargs):
-    """
+def fromfile(
+    file,
+    dtype=float,
+    count=-1,
+    sep="",
+    offset=0,
+    *,
+    like=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
+    r"""
     Construct an array from data in a text or binary file.
 
     A highly efficient way of reading binary data with a known data-type,
@@ -1424,13 +1478,107 @@ def fromfile(file, **kwargs):
 
     For full documentation refer to :obj:`numpy.fromfile`.
 
+    Parameters
+    ----------
+    file : file or str or Path
+        Open file object or filename.
+    dtype : data-type, optional
+        Data type of the returned array.
+        For binary files, it is used to determine the size and byte-order
+        of the items in the file.
+        Default is the default floating point data type for the device where
+        the returned array is allocated.
+    count : int, optional
+        Number of items to read. ``-1`` means all items (i.e., the complete
+        file).
+    sep : str, optional
+        Separator between items if `file` is a text file.
+        Empty ("") separator means the file should be treated as binary.
+        Spaces (" ") in the separator match zero or more whitespace characters.
+        A separator consisting only of spaces must match at least one
+        whitespace.
+    offset : int, optional
+        The offset (in bytes) from the file's current position. Defaults to 0.
+        Only permitted for binary files.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+        Default is "device".
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A 1-dimensional array created from data in a text or binary file.
+
     Limitations
     -----------
-    Only float64, float32, int64, int32 types are supported.
+    Parameter `like` is supported only with default value ``None``.
+    Otherwise, the function raises `NotImplementedError` exception.
+
+    Notes
+    -----
+    This uses :obj:`numpy.fromfile` and coerces the result to a DPNP array.
+
+    See also
+    --------
+    :obj:`dpnp.frombuffer` : Construct array from the buffer data.
+    :obj:`dpnp.fromiter` : Construct array from an iterable object.
+    :obj:`dpnp.fromstring` : Construct array from the text data in a string.
+    :obj:`dpnp.load` : Load arrays or pickled objects from files.
+    :obj:`dpnp.save` : Save an array to a binary file.
+    :obj:`dpnp.ndarray.tofile` : Write array to a file as text or binary.
+    :obj:`dpnp.loadtxt` : More flexible way of loading data from a text file.
+
+    Examples
+    --------
+    Save the data to a temporary file:
+
+    >>> import tempfile
+    >>> fh = tempfile.TemporaryFile()
+    >>> fh.write(b"\x00\x01\x02\x03\x04")
+    >>> fh.flush()
+    >>> fh.seek(0)
+
+    Construct an array:
+
+    >>> import dpnp as np
+    >>> np.fromfile(fh, dtype="u1")
+    array([0, 1, 2, 3, 4], dtype=uint8)
+
+    Creating an array on a different device or with a specified usm_type
+
+    >>> fh.seek(0)
+    >>> x = np.fromfile(fh, dtype="u1") # default case
+    >>> x.device, x.usm_type
+    (Device(level_zero:gpu:0), 'device')
+
+    >>> fh.seek(0)
+    >>> y = np.fromfile(fh, dtype="u1", device='cpu')
+    >>> y.device, y.usm_type
+    (Device(opencl:cpu:0), 'device')
+
+    >>> fh.seek(0)
+    >>> z = np.fromfile(fh, dtype="u1", usm_type="host")
+    >>> z.device, z.usm_type
+    (Device(level_zero:gpu:0), 'host')
 
     """
 
-    return call_origin(numpy.fromfile, file, **kwargs)
+    dpnp.check_limitations(like=like)
+    return asarray(
+        numpy.fromfile(file, dtype=dtype, count=count, sep=sep, offset=offset),
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
 def fromfunction(function, shape, **kwargs):
@@ -1466,19 +1614,87 @@ def fromiter(iterable, dtype, count=-1):
     return call_origin(numpy.fromiter, iterable, dtype, count)
 
 
-def fromstring(string, **kwargs):
+def fromstring(
+    string,
+    dtype=float,
+    count=-1,
+    *,
+    sep,
+    like=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     A new 1-D array initialized from text data in a string.
 
     For full documentation refer to :obj:`numpy.fromstring`.
 
+    Parameters
+    ----------
+    string : str
+        A string containing the data.
+    dtype : data-type, optional
+        The data type of the array.
+        For binary input data, the data must be in exactly this format.
+        Default is the default floating point data type for the device where
+        the returned array is allocated.
+    count : int, optional
+        Read this number of `dtype` elements from the data. If this is negative
+        (the default), the count will be determined from the length of the data.
+    sep : str, optional
+        The string separating numbers in the data; extra whitespace between
+        elements is also ignored.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+        Default is "device".
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The constructed array.
+
     Limitations
     -----------
-    Only float64, float32, int64, int32 types are supported.
+    Parameter `like` is supported only with default value ``None``.
+    Otherwise, the function raises `NotImplementedError` exception.
+
+    Notes
+    -----
+    This uses :obj:`numpy.fromstring` and coerces the result to a DPNP array.
+
+    See also
+    --------
+    :obj:`dpnp.frombuffer` : Construct array from the buffer data.
+    :obj:`dpnp.fromfile` : Construct array from data in a text or binary file.
+    :obj:`dpnp.fromiter` : Construct array from an iterable object.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.fromstring('1 2', dtype=int, sep=' ')
+    array([1, 2])
+    >>> np.fromstring('1, 2', dtype=int, sep=',')
+    array([1, 2])
 
     """
 
-    return call_origin(numpy.fromstring, string, **kwargs)
+    dpnp.check_limitations(like=like)
+    return asarray(
+        numpy.fromstring(string, dtype=dtype, count=count, sep=sep),
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
 
 def full(
@@ -1566,7 +1782,7 @@ def full(
 
     """
 
-    _check_limitations(order=order, like=like)
+    dpnp.check_limitations(order=order, like=like)
 
     return dpnp_container.full(
         shape,
@@ -1673,7 +1889,7 @@ def full_like(
     """
 
     dpnp.check_supported_arrays_type(a)
-    _check_limitations(order=order, subok=subok)
+    dpnp.check_limitations(order=order, subok=subok)
 
     _shape = a.shape if shape is None else shape
     _dtype = a.dtype if dtype is None else dtype
@@ -1902,7 +2118,7 @@ def identity(
     if n < 0:
         raise ValueError("negative dimensions are not allowed")
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
 
     _dtype = dpnp.default_float_type() if dtype is None else dtype
     return dpnp.eye(
@@ -2506,7 +2722,7 @@ def ones(
 
     """
 
-    _check_limitations(order=order, like=like)
+    dpnp.check_limitations(order=order, like=like)
 
     return dpnp_container.ones(
         shape,
@@ -2608,7 +2824,7 @@ def ones_like(
 
     """
     dpnp.check_supported_arrays_type(a)
-    _check_limitations(order=order, subok=subok)
+    dpnp.check_limitations(order=order, subok=subok)
 
     _shape = a.shape if shape is None else shape
     _dtype = a.dtype if dtype is None else dtype
@@ -3094,7 +3310,7 @@ def zeros(
 
     """
 
-    _check_limitations(order=order, like=like)
+    dpnp.check_limitations(order=order, like=like)
 
     return dpnp_container.zeros(
         shape,
@@ -3197,7 +3413,7 @@ def zeros_like(
     """
 
     dpnp.check_supported_arrays_type(a)
-    _check_limitations(order=order, subok=subok)
+    dpnp.check_limitations(order=order, subok=subok)
 
     _shape = a.shape if shape is None else shape
     _dtype = a.dtype if dtype is None else dtype

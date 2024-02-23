@@ -540,7 +540,7 @@ class dpnp_array:
             Array data type casting.
         dtype : dtype
             Target data type.
-        order : {'C', 'F', 'A', 'K'}
+        order : {"C", "F", "A", "K"}, optional
             Row-major (C-style) or column-major (Fortran-style) order.
             When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
             And when ``order`` is 'K', it keeps strides as closely as possible.
