@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.15.0dev0+15.g84a0761e7e documentation</title>
+  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.15.0dev0+16.g2542be0374 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=a67f1584"></script>
+        <script src="../../_static/documentation_options.js?v=e0f03d87"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+15.g84a0761e7e
+                0.15.0dev0+16.g2542be0374
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -512,7 +512,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
+    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
 
     <span class="n">a</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
@@ -599,7 +599,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">where</span><span class="p">)</span>
+    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
 
     <span class="n">arr</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -719,7 +719,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
+    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
 
     <span class="n">a</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">+</span><span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
@@ -1010,7 +1010,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">where</span><span class="p">)</span>
+    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ddof</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;An integer or float is required, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ddof</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -1111,7 +1111,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">where</span><span class="p">)</span>
+    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ddof</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;An integer or float is required, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ddof</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
