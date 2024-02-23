@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.15.0dev0+20.gd17c22f1f documentation</title>
+  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.15.0dev0+25.gbfe18c7317 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3c5dc0a4"></script>
+        <script src="../../_static/documentation_options.js?v=f06f18e5"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+20.gd17c22f1f
+                0.15.0dev0+25.gbfe18c7317
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -208,13 +208,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a :  {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis along which to search. If ``None``, the function must return</span>
 <span class="sd">        the index of the maximum value of the flattened array.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out :  {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    keepdims : bool</span>
@@ -289,7 +289,7 @@
 <span class="sd">        Axis along which to search. If ``None``, the function must return</span>
 <span class="sd">        the index of the minimum value of the flattened array.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    keepdims : bool</span>
@@ -443,14 +443,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a :  {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    axis : int or tuple of ints, optional</span>
 <span class="sd">        Axis or axes along which maximum values must be computed. By default,</span>
 <span class="sd">        the maximum value must be computed over the entire array. If a tuple</span>
 <span class="sd">        of integers, maximum values must be computed over multiple axes.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out :  {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    keepdims : bool</span>
@@ -511,14 +511,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;initial keyword argument is only supported with its default value.&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
-        <span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
 
     <span class="n">a</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
@@ -557,7 +550,7 @@
 <span class="sd">        If `a` has a boolean or integral data type, the returned array</span>
 <span class="sd">        will have the default floating point data type for the device</span>
 <span class="sd">        where input array `a` is allocated.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        the same shape as the expected output but the type (of the calculated</span>
 <span class="sd">        values) will be cast if necessary. Default: ``None``.</span>
@@ -605,10 +598,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
-        <span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
 
     <span class="n">arr</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -660,14 +650,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a :  {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    axis : int or tuple of ints, optional</span>
 <span class="sd">        Axis or axes along which minimum values must be computed. By default,</span>
 <span class="sd">        the minimum value must be computed over the entire array. If a tuple</span>
 <span class="sd">        of integers, minimum values must be computed over multiple axes.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out :  {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    keepdims : bool, optional</span>
@@ -728,14 +718,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;initial keyword argument is only supported with its default value.&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
-        <span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
 
     <span class="n">a</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">+</span><span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
@@ -870,7 +853,7 @@
 <span class="sd">        data type of `a`, the input array elements are cast to the</span>
 <span class="sd">        specified data type before computing the sum.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        the same shape as the expected output but the type (of the calculated</span>
 <span class="sd">        values) will be cast if necessary. Default: ``None``.</span>
@@ -969,7 +952,7 @@
 <span class="sd">        If `a` has a boolean or integral data type, the returned array</span>
 <span class="sd">        will have the default floating point data type for the device</span>
 <span class="sd">        where input array `a` is allocated.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        the same shape as the expected output but the type (of the calculated</span>
 <span class="sd">        values) will be cast if necessary.</span>
@@ -1026,10 +1009,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
-        <span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ddof</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;An integer or float is required, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ddof</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -1061,7 +1041,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    axis : int or tuple of ints, optional</span>
 <span class="sd">        axis or axes along which the variances must be computed. If a tuple</span>
@@ -1075,7 +1055,7 @@
 <span class="sd">        If `a` has a boolean or integral data type, the returned array</span>
 <span class="sd">        will have the default floating point data type for the device</span>
 <span class="sd">        where input array `a` is allocated.</span>
-<span class="sd">    out : {dpnp_array, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        the same shape as the expected output but the type (of the calculated</span>
 <span class="sd">        values) will be cast if necessary.</span>
@@ -1130,10 +1110,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
-        <span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ddof</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;An integer or float is required, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ddof</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ravel &mdash; Data Parallel Extension for NumPy 0.15.0dev0+20.gd17c22f1f documentation</title>
+  <title>dpnp.ravel &mdash; Data Parallel Extension for NumPy 0.15.0dev0+25.gbfe18c7317 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3c5dc0a4"></script>
+        <script src="../../_static/documentation_options.js?v=f06f18e5"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+20.gd17c22f1f
+                0.15.0dev0+25.gbfe18c7317
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -140,13 +140,12 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Input array. The elements in <cite>a</cite> are read in the order specified by
 order, and packed as a 1-D array.</p></li>
-<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'}</em><em>, </em><em>optional</em>) – The elements of <cite>a</cite> are read using this index order. <code class="docutils literal notranslate"><span class="pre">C</span></code> means to
+<li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;}</em><em>, </em><em>optional</em>) – The elements of <cite>a</cite> are read using this index order. <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> means to
 index the elements in row-major, C-style order, with the last axis
 index changing fastest, back to the first axis index changing slowest.
-<code class="docutils literal notranslate"><span class="pre">F</span></code> means to index the elements in column-major, Fortran-style order,
-with the first index changing fastest, and the last index changing
-slowest.
-By default, <code class="docutils literal notranslate"><span class="pre">C</span></code> index order is used.</p></li>
+<code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> means to index the elements in column-major, Fortran-style
+order, with the first index changing fastest, and the last index
+changing slowest. By default, <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> index order is used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

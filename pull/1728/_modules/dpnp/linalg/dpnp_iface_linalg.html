@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev0+20.gd17c22f1f documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev0+25.gbfe18c7317 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=3c5dc0a4"></script>
+        <script src="../../../_static/documentation_options.js?v=f06f18e5"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+20.gd17c22f1f
+                0.15.0dev0+25.gbfe18c7317
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -142,6 +142,7 @@
     <span class="n">dpnp_eigh</span><span class="p">,</span>
     <span class="n">dpnp_inv</span><span class="p">,</span>
     <span class="n">dpnp_matrix_rank</span><span class="p">,</span>
+    <span class="n">dpnp_multi_dot</span><span class="p">,</span>
     <span class="n">dpnp_pinv</span><span class="p">,</span>
     <span class="n">dpnp_qr</span><span class="p">,</span>
     <span class="n">dpnp_slogdet</span><span class="p">,</span>
@@ -570,40 +571,69 @@
 
 <div class="viewcode-block" id="multi_dot">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.multi_dot.html#dpnp.linalg.multi_dot">[docs]</a>
-<span class="k">def</span> <span class="nf">multi_dot</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">multi_dot</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the dot product of two or more arrays in a single function call</span>
+<span class="sd">    Compute the dot product of two or more arrays in a single function call.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.multi_dot`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    arrays : sequence of array_like</span>
+<span class="sd">    arrays : sequence of dpnp.ndarray or usm_ndarray</span>
 <span class="sd">        If the first argument is 1-D it is treated as row vector.</span>
 <span class="sd">        If the last argument is 1-D it is treated as column vector.</span>
 <span class="sd">        The other arguments must be 2-D.</span>
-<span class="sd">    out : ndarray, optional</span>
-<span class="sd">        unsupported</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Output argument. This must have the exact kind that would be returned</span>
+<span class="sd">        if it was not used. In particular, it must have the right type, must be</span>
+<span class="sd">        C-contiguous, and its dtype must be the dtype that would be returned</span>
+<span class="sd">        for `dot(a, b)`. If these conditions are not met, an exception is</span>
+<span class="sd">        raised, instead of attempting to be flexible.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    output : ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        Returns the dot product of the supplied arrays.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`numpy.multi_dot`</span>
+<span class="sd">    :obj:`dpnp.dot` : Returns the dot product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.inner` : Returns the inner product of two arrays.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; from dpnp.linalg import multi_dot</span>
+<span class="sd">    &gt;&gt;&gt; A = np.random.random((10000, 100))</span>
+<span class="sd">    &gt;&gt;&gt; B = np.random.random((100, 1000))</span>
+<span class="sd">    &gt;&gt;&gt; C = np.random.random((1000, 5))</span>
+<span class="sd">    &gt;&gt;&gt; D = np.random.random((5, 333))</span>
+
+<span class="sd">    the actual dot multiplication</span>
+
+<span class="sd">    &gt;&gt;&gt; multi_dot([A, B, C, D]).shape</span>
+<span class="sd">    (10000, 333)</span>
+
+<span class="sd">    instead of</span>
+
+<span class="sd">    &gt;&gt;&gt; np.dot(np.dot(np.dot(A, B), C), D).shape</span>
+<span class="sd">    (10000, 333)</span>
+
+<span class="sd">    or</span>
+
+<span class="sd">    &gt;&gt;&gt; A.dot(B).dot(C).dot(D).shape</span>
+<span class="sd">    (10000, 333)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">)</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;multi_dot&quot;</span><span class="p">,</span> <span class="s2">&quot;arrays&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot;&gt;1&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Expecting at least two arrays.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">arrays</span><span class="p">[</span><span class="nb">id</span><span class="p">])</span>
-
-    <span class="k">return</span> <span class="n">result</span></div>
+    <span class="k">return</span> <span class="n">dpnp_multi_dot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">arrays</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
 
 
 
