@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev0+18.g1e3f6fec21 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev0+15.g84a0761e7e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=884ca7fe"></script>
+        <script src="../../_static/documentation_options.js?v=a67f1584"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+18.g1e3f6fec21
+                0.15.0dev0+15.g84a0761e7e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -174,7 +174,7 @@
 <span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        Second input array. Both inputs `a` and `b` can not be scalars</span>
 <span class="sd">        at the same time.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        the same shape and data type as the expected output and should be</span>
 <span class="sd">        C-contiguous. If these conditions are not met, an exception is</span>
@@ -452,11 +452,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x1 : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    x1 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        First input array.</span>
-<span class="sd">    x2 : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    x2 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Second input array.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        a shape that matches the signature `(n,k),(k,m)-&gt;(n,m)` but the type</span>
 <span class="sd">        (of the calculated values) will be cast if necessary. Default: ``None``.</span>
