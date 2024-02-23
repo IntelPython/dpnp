@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev0+13.g4b6650f4cc documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev0+14.g6c2036fbf7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=c7222e9b"></script>
+        <script src="../../_static/documentation_options.js?v=5a97ce9e"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+13.g4b6650f4cc
+                0.15.0dev0+14.g6c2036fbf7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -189,43 +189,6 @@
 <span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Checking limitation kwargs for their supported values.</span>
-
-<span class="sd">    Parameter `order` is supported only with values ``C``, ``F`` and ``None``.</span>
-<span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
-<span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    NotImplementedError</span>
-<span class="sd">        If any input kwargs is of unsupported value.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;Keyword argument `order` is supported only with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;values ``&#39;C&#39;`` and ``&#39;F&#39;``, but got </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Unrecognized `order` keyword value, expecting &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;``&#39;C&#39;`` or ``&#39;F&#39;``, but got </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;Keyword argument `like` is supported only with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">like</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;Keyword argument `subok` is supported only with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;default value ``False``, but got </span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
-
-
 <div class="viewcode-block" id="arange">
 <a class="viewcode-back" href="../../reference/generated/dpnp.arange.html#dpnp.arange">[docs]</a>
 <span class="k">def</span> <span class="nf">arange</span><span class="p">(</span>
@@ -315,7 +278,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
         <span class="n">start</span><span class="p">,</span>
@@ -438,7 +401,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ndmin</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Keyword argument `ndmin` is supported only with &quot;</span>
@@ -549,7 +512,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span>
@@ -649,7 +612,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span>
@@ -758,7 +721,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
 
     <span class="c1"># at least 1-d array has to be returned</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;ndim&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -875,7 +838,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
 
     <span class="c1"># at least 1-d array has to be returned</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;ndim&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -977,7 +940,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
         <span class="n">sycl_queue_normalized</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
@@ -1295,7 +1258,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
         <span class="n">shape</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
@@ -1398,7 +1361,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
 
     <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
     <span class="n">_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
@@ -1510,7 +1473,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span>
         <span class="n">N</span><span class="p">,</span>
@@ -1613,7 +1576,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
         <span class="n">numpy</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">),</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
@@ -1740,7 +1703,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
         <span class="n">numpy</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">),</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
@@ -1865,7 +1828,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
         <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">),</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
@@ -1962,7 +1925,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
         <span class="n">shape</span><span class="p">,</span>
@@ -2072,7 +2035,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
 
     <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
     <span class="n">_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
@@ -2307,7 +2270,7 @@
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;negative dimensions are not allowed&quot;</span><span class="p">)</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
 
     <span class="n">_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">()</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span>
@@ -2926,7 +2889,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
         <span class="n">shape</span><span class="p">,</span>
@@ -3031,7 +2994,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
 
     <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
     <span class="n">_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
@@ -3535,7 +3498,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
         <span class="n">shape</span><span class="p">,</span>
@@ -3641,7 +3604,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">_check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
 
     <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
     <span class="n">_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
