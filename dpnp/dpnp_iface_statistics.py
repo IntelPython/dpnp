@@ -585,7 +585,7 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    _check_limitations(initial, where)
+    _check_limitations(initial=initial, where=where)
 
     dpt_array = dpnp.get_usm_ndarray(a)
     result = dpnp_array._create_from_usm_ndarray(
@@ -665,7 +665,7 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
 
     """
 
-    _check_limitations(where)
+    _check_limitations(where=where)
 
     dpt_array = dpnp.get_usm_ndarray(a)
     result = dpnp_array._create_from_usm_ndarray(
@@ -796,7 +796,7 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    _check_limitations(initial, where)
+    _check_limitations(initial=initial, where=where)
 
     dpt_array = dpnp.get_usm_ndarray(a)
     result = dpnp_array._create_from_usm_ndarray(
@@ -935,7 +935,7 @@ def std(
 
     dpnp.check_supported_arrays_type(a)
 
-    _check_limitations(where)
+    _check_limitations(where=where)
     if not isinstance(ddof, (int, float)):
         raise TypeError(
             f"An integer or float is required, but got {type(ddof)}"
@@ -1046,7 +1046,7 @@ def var(
     """
 
     dpnp.check_supported_arrays_type(a)
-    _check_limitations(where)
+    _check_limitations(where=where)
     if not isinstance(ddof, (int, float)):
         raise TypeError(
             f"An integer or float is required, but got {type(ddof)}"

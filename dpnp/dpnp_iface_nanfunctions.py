@@ -408,7 +408,7 @@ def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    _check_limitations(initial, where)
+    _check_limitations(initial=initial, where=where)
 
     a, mask = _replace_nan(a, -dpnp.inf)
     res = dpnp.max(a, axis=axis, out=out, keepdims=keepdims)
@@ -492,7 +492,7 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
 
     """
 
-    _check_limitations(where)
+    _check_limitations(where=where)
 
     arr, mask = _replace_nan(a, 0)
     if mask is None:
@@ -609,7 +609,7 @@ def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     """
 
-    _check_limitations(initial, where)
+    _check_limitations(initial=initial, where=where)
 
     a, mask = _replace_nan(a, +dpnp.inf)
     res = dpnp.min(a, axis=axis, out=out, keepdims=keepdims)
@@ -891,7 +891,7 @@ def nanstd(
 
     """
 
-    _check_limitations(where)
+    _check_limitations(where=where)
     if not isinstance(ddof, (int, float)):
         raise TypeError(
             f"An integer or float is required, but got {type(ddof)}"
@@ -989,7 +989,7 @@ def nanvar(
 
     """
 
-    _check_limitations(where)
+    _check_limitations(where=where)
     if not isinstance(ddof, (int, float)):
         raise TypeError(
             f"An integer or float is required, but got {type(ddof)}"
