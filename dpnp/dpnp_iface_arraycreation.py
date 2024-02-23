@@ -1687,7 +1687,7 @@ def fromfunction(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
     return asarray(
         numpy.fromfunction(function, shape, dtype=dtype, **kwargs),
         device=device,
@@ -1776,7 +1776,7 @@ def fromiter(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
     return asarray(
         numpy.fromiter(iter, dtype, count=count),
         device=device,
@@ -2510,7 +2510,7 @@ def loadtxt(
 
     """
 
-    _check_limitations(like=like)
+    dpnp.check_limitations(like=like)
     return asarray(
         numpy.loadtxt(fname, dtype=dtype, **kwargs),
         device=device,
