@@ -95,7 +95,7 @@ def test_umaths(test_cases):
     assert_allclose(result, expected, rtol=1e-6)
 
 
-def _get_numpy_arrays(func_name, dtype, range):
+def _get_numpy_arrays_1in_1out(func_name, dtype, range):
     """
     Return a sample array and an output array.
 
@@ -119,6 +119,38 @@ def _get_numpy_arrays(func_name, dtype, range):
         result = getattr(numpy, func_name)(np_array)
 
     return np_array, result
+
+
+def _get_numpy_arrays_2in_1out(func_name, dtype, range):
+    """
+    Return two sample arrays and an output array.
+
+    Create two appropriate arrays specified by `dtype` and `range` which are
+    used as inputs for a function specified by `func_name` to obtain the output.
+    """
+    low = range[0]
+    high = range[1]
+    size = range[2]
+    if dtype == numpy.bool_:
+        np_array1 = numpy.arange(2, dtype=dtype)
+        np_array2 = numpy.arange(2, dtype=dtype)
+        result = getattr(numpy, func_name)(np_array1, np_array2)
+    elif dpnp.issubdtype(dtype, dpnp.complexfloating):
+        a = numpy.random.uniform(low=low, high=high, size=size)
+        b = numpy.random.uniform(low=low, high=high, size=size)
+        np_array1 = numpy.array(a + 1j * b, dtype=dtype)
+        a = numpy.random.uniform(low=low, high=high, size=size)
+        b = numpy.random.uniform(low=low, high=high, size=size)
+        np_array2 = numpy.array(a + 1j * b, dtype=dtype)
+        result = getattr(numpy, func_name)(np_array1, np_array2)
+    else:
+        a = numpy.random.uniform(low=low, high=high, size=size)
+        np_array1 = numpy.array(a, dtype=dtype)
+        a = numpy.random.uniform(low=low, high=high, size=size)
+        np_array2 = numpy.array(a, dtype=dtype)
+        result = getattr(numpy, func_name)(np_array1, np_array2)
+
+    return np_array1, np_array2, result
 
 
 def _get_output_data_type(dtype):
@@ -181,7 +213,7 @@ class TestUmath:
             "sinh",
             "sqrt",
             "tan",
-            "tnah",
+            "tanh",
         ],
     )
     def func_params(self, request):
@@ -192,7 +224,9 @@ class TestUmath:
     def test_out(self, func_params, dtype):
         func_name = func_params["func_name"]
         input_values = func_params["input_values"]
-        np_array, expected = _get_numpy_arrays(func_name, dtype, input_values)
+        np_array, expected = _get_numpy_arrays_1in_1out(
+            func_name, dtype, input_values
+        )
 
         dp_array = dpnp.array(np_array)
         out_dtype = _get_output_data_type(dtype)
@@ -231,12 +265,17 @@ class TestUmath:
         func_name = func_params["func_name"]
         a = dpnp.arange(10)
         numpy.testing.assert_raises(TypeError, getattr(dpnp, func_name), a, out)
+        numpy.testing.assert_raises(
+            TypeError, getattr(numpy, func_name), a.asnumpy(), out
+        )
 
 
 class TestCbrt:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_cbrt(self, dtype):
-        np_array, expected = _get_numpy_arrays("cbrt", dtype, [-5, 5, 10])
+        np_array, expected = _get_numpy_arrays_1in_1out(
+            "cbrt", dtype, [-5, 5, 10]
+        )
 
         dp_array = dpnp.array(np_array)
         out_dtype = _get_output_data_type(dtype)
@@ -272,7 +311,9 @@ class TestRsqrt:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_rsqrt(self, dtype):
-        np_array, expected = _get_numpy_arrays("sqrt", dtype, [0, 10, 10])
+        np_array, expected = _get_numpy_arrays_1in_1out(
+            "sqrt", dtype, [0, 10, 10]
+        )
         expected = numpy.reciprocal(expected)
 
         dp_array = dpnp.array(np_array)
@@ -316,7 +357,9 @@ class TestRsqrt:
 class TestSquare:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_square(self, dtype):
-        np_array, expected = _get_numpy_arrays("square", dtype, [-5, 5, 10])
+        np_array, expected = _get_numpy_arrays_1in_1out(
+            "square", dtype, [-5, 5, 10]
+        )
 
         dp_array = dpnp.array(np_array)
         out_dtype = numpy.int8 if dtype == numpy.bool_ else dtype
@@ -359,7 +402,9 @@ class TestSquare:
 class TestReciprocal:
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_reciprocal(self, dtype):
-        np_array, expected = _get_numpy_arrays("reciprocal", dtype, [-5, 5, 10])
+        np_array, expected = _get_numpy_arrays_1in_1out(
+            "reciprocal", dtype, [-5, 5, 10]
+        )
 
         dp_array = dpnp.array(np_array)
         out_dtype = _get_output_data_type(dtype)
@@ -375,9 +420,7 @@ class TestReciprocal:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        # TODO: change it to ValueError, when dpctl
-        # is being used in internal CI
-        with pytest.raises((TypeError, ValueError)):
+        with pytest.raises(ValueError):
             dpnp.reciprocal(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
@@ -394,9 +437,9 @@ class TestReciprocal:
 class TestArctan2:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_arctan2(self, dtype):
-        np_array1, _ = _get_numpy_arrays("array", dtype, [-5, 5, 10])
-        np_array2, _ = _get_numpy_arrays("array", dtype, [-5, 5, 10])
-        expected = numpy.arctan2(np_array1, np_array2)
+        np_array1, np_array2, expected = _get_numpy_arrays_2in_1out(
+            "arctan2", dtype, [0, 10, 10]
+        )
 
         dp_array1 = dpnp.array(np_array1)
         dp_array2 = dpnp.array(np_array2)
@@ -431,9 +474,9 @@ class TestArctan2:
 class TestCopySign:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_copysign(self, dtype):
-        np_array1, _ = _get_numpy_arrays("array", dtype, [1, 10, 10])
-        np_array2, _ = _get_numpy_arrays("array", dtype, [-10, -1, 10])
-        expected = numpy.copysign(np_array1, np_array2)
+        np_array1, np_array2, expected = _get_numpy_arrays_2in_1out(
+            "copysign", dtype, [0, 10, 10]
+        )
 
         dp_array1 = dpnp.array(np_array1)
         dp_array2 = dpnp.array(np_array2)
@@ -467,9 +510,9 @@ class TestCopySign:
 class TestLogaddexp:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_logaddexp(self, dtype):
-        np_array1, _ = _get_numpy_arrays("array", dtype, [-5, 5, 10])
-        np_array2, _ = _get_numpy_arrays("array", dtype, [-5, 5, 10])
-        expected = numpy.logaddexp(np_array1, np_array2)
+        np_array1, np_array2, expected = _get_numpy_arrays_2in_1out(
+            "logaddexp", dtype, [0, 10, 10]
+        )
 
         dp_array1 = dpnp.array(np_array1)
         dp_array2 = dpnp.array(np_array2)
