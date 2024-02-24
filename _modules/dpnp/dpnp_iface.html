@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.15.0dev0+24.gd67e83b48e documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.15.0dev0+26.g30486a1e5c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=38170738"></script>
+        <script src="../../_static/documentation_options.js?v=59d64074"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+24.gd67e83b48e
+                0.15.0dev0+26.g30486a1e5c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -273,6 +273,8 @@
 
 
 <span class="c1"># pylint: disable=redefined-outer-name</span>
+<div class="viewcode-block" id="astype">
+<a class="viewcode-back" href="../../reference/generated/dpnp.astype.html#dpnp.astype">[docs]</a>
 <span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copy the array with data type casting.</span>
@@ -326,7 +328,8 @@
     <span class="k">if</span> <span class="n">array_obj</span> <span class="ow">is</span> <span class="n">x1_obj</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x1</span>
 
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">array_obj</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">array_obj</span><span class="p">)</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">check_limitations</span><span class="p">(</span>

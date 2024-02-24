@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autodata:: invert
+.. autofunction:: invert

@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autodata:: floor_divide
+.. autofunction:: floor_divide

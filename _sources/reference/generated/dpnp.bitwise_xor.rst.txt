@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autodata:: bitwise_xor
+.. autofunction:: bitwise_xor

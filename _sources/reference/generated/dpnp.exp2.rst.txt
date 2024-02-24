@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autodata:: exp2
+.. autofunction:: exp2
