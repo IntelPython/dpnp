@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.15.0dev0+12.g5b82b6151b documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.15.0dev0+24.gd67e83b48e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4760a8cc"></script>
+        <script src="../../_static/documentation_options.js?v=38170738"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+12.g5b82b6151b
+                0.15.0dev0+24.gd67e83b48e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -127,6 +127,11 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="c1"># pylint: disable=protected-access</span>
+<span class="c1"># pylint: disable=c-extension-no-member</span>
+<span class="c1"># pylint: disable=duplicate-code</span>
+<span class="c1"># pylint: disable=no-name-in-module</span>
+
 
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_elementwise_impl</span> <span class="k">as</span> <span class="nn">ti</span>
@@ -134,10 +139,14 @@
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">import</span> <span class="nn">dpnp.backend.extensions.vm._vm_impl</span> <span class="k">as</span> <span class="nn">vmi</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">dpnp_degrees</span><span class="p">,</span>
+    <span class="n">dpnp_radians</span><span class="p">,</span>
+    <span class="n">dpnp_unwrap</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="n">call_origin</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;arccos&quot;</span><span class="p">,</span>
@@ -177,7 +186,7 @@
 <span class="p">]</span>
 
 
-<span class="n">_acos_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ACOS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes inverse cosine for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arccos`.</span>
@@ -225,14 +234,14 @@
     <span class="s2">&quot;arccos&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acos_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acos</span><span class="p">,</span>
-    <span class="n">_acos_docstring</span><span class="p">,</span>
+    <span class="n">_ACOS_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arccos</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_acos_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_acos</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_acosh_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ACOSH_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes hyperbolic inverse cosine for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arccosh`.</span>
@@ -280,14 +289,14 @@
     <span class="s2">&quot;arccosh&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acosh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acosh</span><span class="p">,</span>
-    <span class="n">_acosh_docstring</span><span class="p">,</span>
+    <span class="n">_ACOSH_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arccosh</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_acosh_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_acosh</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_asin_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ASIN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes inverse sine for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arcsin`.</span>
@@ -335,14 +344,14 @@
     <span class="s2">&quot;arcsin&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_asin_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_asin</span><span class="p">,</span>
-    <span class="n">_asin_docstring</span><span class="p">,</span>
+    <span class="n">_ASIN_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arcsin</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_asin_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_asin</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_asinh_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ASINH_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes inverse hyperbolic sine for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arcsinh`.</span>
@@ -390,14 +399,14 @@
     <span class="s2">&quot;arcsinh&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_asinh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_asinh</span><span class="p">,</span>
-    <span class="n">_asinh_docstring</span><span class="p">,</span>
+    <span class="n">_ASINH_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arcsinh</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_asinh_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_asinh</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_atan_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ATAN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes inverse tangent for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arctan`.</span>
@@ -447,14 +456,14 @@
     <span class="s2">&quot;arctan&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan</span><span class="p">,</span>
-    <span class="n">_atan_docstring</span><span class="p">,</span>
+    <span class="n">_ATAN_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arctan</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_atan_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_atan</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_atan2_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ATAN2_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the inverse tangent of the quotient `x1_i/x2_i` for each element</span>
 <span class="s2">`x1_i` of the input array `x1` with the respective element `x2_i` of the</span>
 <span class="s2">input array `x2`. Each element-wise result is expressed in radians.</span>
@@ -521,14 +530,14 @@
     <span class="s2">&quot;arctan2&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan2_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan2</span><span class="p">,</span>
-    <span class="n">_atan2_docstring</span><span class="p">,</span>
+    <span class="n">_ATAN2_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arctan2</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_atan2_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_atan2</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_atanh_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ATANH_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes hyperbolic inverse tangent for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arctanh`.</span>
@@ -576,14 +585,14 @@
     <span class="s2">&quot;arctanh&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atanh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atanh</span><span class="p">,</span>
-    <span class="n">_atanh_docstring</span><span class="p">,</span>
+    <span class="n">_ATANH_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arctanh</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_atanh_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_atanh</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_cbrt_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_CBRT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Returns the cbrting for each element `x_i` for input array `x`.</span>
 <span class="s2">The cbrt of the scalar `x` is the smallest integer `i`, such that `i &gt;= x`.</span>
 
@@ -628,14 +637,14 @@
     <span class="s2">&quot;cbrt&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cbrt_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cbrt</span><span class="p">,</span>
-    <span class="n">_cbrt_docstring</span><span class="p">,</span>
+    <span class="n">_CBRT_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">cbrt</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_cbrt_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_cbrt</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_cos_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_COS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes cosine for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.cos`.</span>
@@ -682,14 +691,14 @@
     <span class="s2">&quot;cos&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cos_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cos</span><span class="p">,</span>
-    <span class="n">_cos_docstring</span><span class="p">,</span>
+    <span class="n">_COS_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_cos_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_cos</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_cosh_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_COSH_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes hyperbolic cosine for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.cosh`.</span>
@@ -737,7 +746,7 @@
     <span class="s2">&quot;cosh&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cosh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cosh</span><span class="p">,</span>
-    <span class="n">_cosh_docstring</span><span class="p">,</span>
+    <span class="n">_COSH_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">cosh</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_cosh_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_cosh</span><span class="p">,</span>
@@ -769,7 +778,7 @@
 
 <div class="viewcode-block" id="degrees">
 <a class="viewcode-back" href="../../reference/generated/dpnp.degrees.html#dpnp.degrees">[docs]</a>
-<span class="k">def</span> <span class="nf">degrees</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">degrees</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert angles from radians to degrees.</span>
 
@@ -795,14 +804,16 @@
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
         <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">x1_desc</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp_degrees</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">degrees</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 
-<span class="n">_exp_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_EXP_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the exponential for each element `x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.exp`.</span>
@@ -848,14 +859,14 @@
     <span class="s2">&quot;exp&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_exp_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_exp</span><span class="p">,</span>
-    <span class="n">_exp_docstring</span><span class="p">,</span>
+    <span class="n">_EXP_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_exp_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_exp</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_exp2_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_EXP2_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the base-2 exponential for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.exp2`.</span>
@@ -902,14 +913,14 @@
     <span class="s2">&quot;exp2&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_exp2_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_exp2</span><span class="p">,</span>
-    <span class="n">_exp2_docstring</span><span class="p">,</span>
+    <span class="n">_EXP2_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">exp2</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_exp2_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_exp2</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_expm1_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_EXPM1_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the exponential minus 1 for each element `x_i` of input array `x`.</span>
 
 <span class="s2">This function calculates `exp(x) - 1.0` more accurately for small values of `x`.</span>
@@ -964,14 +975,14 @@
     <span class="s2">&quot;expm1&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_expm1_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_expm1</span><span class="p">,</span>
-    <span class="n">_expm1_docstring</span><span class="p">,</span>
+    <span class="n">_EXPM1_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">expm1</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_expm1_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_expm1</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_hypot_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_HYPOT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the hypotenuse for a right triangle with &quot;legs&quot; `x1_i` and `x2_i` of</span>
 <span class="s2">input arrays `x1` and `x2`.</span>
 
@@ -1028,14 +1039,14 @@
     <span class="s2">&quot;hypot&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_hypot_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_hypot</span><span class="p">,</span>
-    <span class="n">_hypot_docstring</span><span class="p">,</span>
+    <span class="n">_HYPOT_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">hypot</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_hypot_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_hypot</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_log_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOG_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the natural logarithm element-wise.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.log`.</span>
@@ -1083,14 +1094,14 @@
     <span class="s2">&quot;log&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log</span><span class="p">,</span>
-    <span class="n">_log_docstring</span><span class="p">,</span>
+    <span class="n">_LOG_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_ln_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_ln</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_log10_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOG10_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the base-10 logarithm for each element `x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.log10`.</span>
@@ -1140,14 +1151,14 @@
     <span class="s2">&quot;log10&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log10_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log10</span><span class="p">,</span>
-    <span class="n">_log10_docstring</span><span class="p">,</span>
+    <span class="n">_LOG10_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">log10</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_log10_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_log10</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_log1p_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOG1P_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes an approximation of `log(1+x)` element-wise.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.log1p`.</span>
@@ -1200,14 +1211,14 @@
     <span class="s2">&quot;log1p&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log1p_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log1p</span><span class="p">,</span>
-    <span class="n">_log1p_docstring</span><span class="p">,</span>
+    <span class="n">_LOG1P_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">log1p</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_log1p_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_log1p</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_log2_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOG2_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the base-2 logarithm for each element `x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.log2`.</span>
@@ -1258,14 +1269,14 @@
     <span class="s2">&quot;log2&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log2_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log2</span><span class="p">,</span>
-    <span class="n">_log2_docstring</span><span class="p">,</span>
+    <span class="n">_LOG2_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">log2</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_log2_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_log2</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_logaddexp_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOGADDEXP_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the natural logarithm of the sum of exponentiations for each element</span>
 <span class="s2">`x1_i` of the input array `x1` with the respective element `x2_i` of the input</span>
 <span class="s2">array `x2`.</span>
@@ -1324,7 +1335,7 @@
     <span class="s2">&quot;logaddexp&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_logaddexp_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_logaddexp</span><span class="p">,</span>
-    <span class="n">_logaddexp_docstring</span><span class="p">,</span>
+    <span class="n">_LOGADDEXP_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">logaddexp</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -1333,7 +1344,8 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.logsumexp.html#dpnp.logsumexp">[docs]</a>
 <span class="k">def</span> <span class="nf">logsumexp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the logarithm of the sum of exponentials of elements in the input array.</span>
+<span class="sd">    Calculates the logarithm of the sum of exponentials of elements in</span>
+<span class="sd">    the input array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1344,7 +1356,7 @@
 <span class="sd">        of unique integers, values are computed over multiple axes.</span>
 <span class="sd">        If ``None``, the result is computed over the entire array.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    dtype : data type, optional</span>
@@ -1385,7 +1397,8 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.log` : Natural logarithm, element-wise.</span>
 <span class="sd">    :obj:`dpnp.exp` : Exponential, element-wise.</span>
-<span class="sd">    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponentiations of the inputs, element-wise.</span>
+<span class="sd">    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponentiations of</span>
+<span class="sd">                            the inputs, element-wise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1407,7 +1420,7 @@
 
 
 
-<span class="n">_reciprocal_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_RECIPROCAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the reciprocal of each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.reciprocal`.</span>
@@ -1452,7 +1465,7 @@
     <span class="s2">&quot;reciprocal&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_reciprocal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_reciprocal</span><span class="p">,</span>
-    <span class="n">_reciprocal_docstring</span><span class="p">,</span>
+    <span class="n">_RECIPROCAL_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">reciprocal</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -1461,7 +1474,8 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.reduce_hypot.html#dpnp.reduce_hypot">[docs]</a>
 <span class="k">def</span> <span class="nf">reduce_hypot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the square root of the sum of squares of elements in the input array.</span>
+<span class="sd">    Calculates the square root of the sum of squares of elements in</span>
+<span class="sd">    the input array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1472,7 +1486,7 @@
 <span class="sd">        of unique integers, values are computed over multiple axes.</span>
 <span class="sd">        If ``None``, the result is computed over the entire array.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    dtype : data type, optional</span>
@@ -1511,7 +1525,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.hypot` : Given the &quot;legs&quot; of a right triangle, return its hypotenuse.</span>
+<span class="sd">    :obj:`dpnp.hypot` : Given the &quot;legs&quot; of a right triangle, return its</span>
+<span class="sd">                        hypotenuse.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1533,7 +1548,7 @@
 
 
 
-<span class="n">_rsqrt_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_RSQRT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the reciprocal square-root for each element `x_i` for input array `x`.</span>
 
 <span class="s2">Parameters</span>
@@ -1575,7 +1590,7 @@
     <span class="s2">&quot;rsqrt&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_rsqrt_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_rsqrt</span><span class="p">,</span>
-    <span class="n">_rsqrt_docstring</span><span class="p">,</span>
+    <span class="n">_RSQRT_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1604,7 +1619,7 @@
 
 <div class="viewcode-block" id="radians">
 <a class="viewcode-back" href="../../reference/generated/dpnp.radians.html#dpnp.radians">[docs]</a>
-<span class="k">def</span> <span class="nf">radians</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">radians</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert angles from degrees to radians.</span>
 
@@ -1630,14 +1645,16 @@
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
         <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">x1_desc</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp_radians</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">radians</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 
-<span class="n">_sin_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_SIN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes sine for each element `x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.sin`.</span>
@@ -1684,14 +1701,14 @@
     <span class="s2">&quot;sin&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sin_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sin</span><span class="p">,</span>
-    <span class="n">_sin_docstring</span><span class="p">,</span>
+    <span class="n">_SIN_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_sin_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_sin</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_sinh_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_SINH_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes hyperbolic sine for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.sinh`.</span>
@@ -1737,14 +1754,14 @@
     <span class="s2">&quot;sinh&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sinh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sinh</span><span class="p">,</span>
-    <span class="n">_sinh_docstring</span><span class="p">,</span>
+    <span class="n">_SINH_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">sinh</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_sinh_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_sinh</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_sqrt_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_SQRT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the non-negative square-root for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.sqrt`.</span>
@@ -1791,14 +1808,14 @@
     <span class="s2">&quot;sqrt&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sqrt_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sqrt</span><span class="p">,</span>
-    <span class="n">_sqrt_docstring</span><span class="p">,</span>
+    <span class="n">_SQRT_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_sqrt_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_sqrt</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_square_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_SQUARE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes `x_i**2` (or `x_i*x_i`) for each element `x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.square`.</span>
@@ -1845,14 +1862,14 @@
     <span class="s2">&quot;square&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_square_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_square</span><span class="p">,</span>
-    <span class="n">_square_docstring</span><span class="p">,</span>
+    <span class="n">_SQUARE_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">square</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_sqr_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_sqr</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_tan_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_TAN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes tangent for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.tan`.</span>
@@ -1899,14 +1916,14 @@
     <span class="s2">&quot;tan&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_tan_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_tan</span><span class="p">,</span>
-    <span class="n">_tan_docstring</span><span class="p">,</span>
+    <span class="n">_TAN_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">tan</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_tan_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_tan</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_tanh_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_TANH_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes hyperbolic tangent for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.tanh`.</span>
@@ -1953,7 +1970,7 @@
     <span class="s2">&quot;tanh&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_tanh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_tanh</span><span class="p">,</span>
-    <span class="n">_tanh_docstring</span><span class="p">,</span>
+    <span class="n">_TANH_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_tanh_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_tanh</span><span class="p">,</span>
@@ -1962,7 +1979,7 @@
 
 <div class="viewcode-block" id="unwrap">
 <a class="viewcode-back" href="../../reference/generated/dpnp.unwrap.html#dpnp.unwrap">[docs]</a>
-<span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Unwrap by changing deltas between values to 2*pi complement.</span>
 
@@ -1991,7 +2008,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">x1_desc</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp_unwrap</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">unwrap</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>

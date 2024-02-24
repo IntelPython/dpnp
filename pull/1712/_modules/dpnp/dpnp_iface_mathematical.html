@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev0+12.g5b82b6151b documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev0+24.gd67e83b48e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4760a8cc"></script>
+        <script src="../../_static/documentation_options.js?v=38170738"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+12.g5b82b6151b
+                0.15.0dev0+24.gd67e83b48e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -127,16 +127,18 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="c1"># pylint: disable=protected-access</span>
+<span class="c1"># pylint: disable=c-extension-no-member</span>
+<span class="c1"># pylint: disable=duplicate-code</span>
+<span class="c1"># pylint: disable=no-name-in-module</span>
+
 
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_elementwise_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">du</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">_acceptance_fn_divide</span><span class="p">,</span>
-    <span class="n">_acceptance_fn_negative</span><span class="p">,</span>
-    <span class="n">_acceptance_fn_subtract</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._reduction</span> <span class="kn">import</span> <span class="n">_default_reduction_dtype</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="kn">import</span> <span class="n">_acceptance_fn_divide</span>
 <span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">normalize_axis_index</span><span class="p">,</span>
     <span class="n">normalize_axis_tuple</span><span class="p">,</span>
@@ -144,9 +146,22 @@
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">import</span> <span class="nn">dpnp.backend.extensions.vm._vm_impl</span> <span class="k">as</span> <span class="nn">vmi</span>
+<span class="kn">from</span> <span class="nn">dpnp.backend.extensions.sycl_ext</span> <span class="kn">import</span> <span class="n">_sycl_ext_impl</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="n">call_origin</span><span class="p">,</span> <span class="n">get_usm_allocations</span>
 
-<span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">dpnp_cumprod</span><span class="p">,</span>
+    <span class="n">dpnp_cumsum</span><span class="p">,</span>
+    <span class="n">dpnp_ediff1d</span><span class="p">,</span>
+    <span class="n">dpnp_fabs</span><span class="p">,</span>
+    <span class="n">dpnp_fmax</span><span class="p">,</span>
+    <span class="n">dpnp_fmin</span><span class="p">,</span>
+    <span class="n">dpnp_fmod</span><span class="p">,</span>
+    <span class="n">dpnp_gradient</span><span class="p">,</span>
+    <span class="n">dpnp_modf</span><span class="p">,</span>
+    <span class="n">dpnp_trapz</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DPNPAngle</span><span class="p">,</span>
     <span class="n">DPNPBinaryFunc</span><span class="p">,</span>
@@ -154,8 +169,12 @@
     <span class="n">DPNPRound</span><span class="p">,</span>
     <span class="n">DPNPSign</span><span class="p">,</span>
     <span class="n">DPNPUnaryFunc</span><span class="p">,</span>
+    <span class="n">acceptance_fn_negative</span><span class="p">,</span>
+    <span class="n">acceptance_fn_positive</span><span class="p">,</span>
+    <span class="n">acceptance_fn_sign</span><span class="p">,</span>
+    <span class="n">acceptance_fn_subtract</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span> <span class="kn">import</span> <span class="n">dpnp_cross</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;abs&quot;</span><span class="p">,</span>
@@ -232,7 +251,7 @@
     <span class="n">combined</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
 
 
-<span class="n">_abs_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ABS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculate the absolute value element-wise.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.absolute`.</span>
@@ -288,7 +307,7 @@
     <span class="s2">&quot;abs&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_abs_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_abs</span><span class="p">,</span>
-    <span class="n">_abs_docstring</span><span class="p">,</span>
+    <span class="n">_ABS_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_abs_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_abs</span><span class="p">,</span>
@@ -298,7 +317,10 @@
 <span class="nb">abs</span> <span class="o">=</span> <span class="n">absolute</span>
 
 
-<span class="n">_add_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ADD_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">add(x1, x2, /, out=None, *, where=True, order=&quot;K&quot;, dtype=None, subok=True,</span>
+<span class="s2">**kwargs)</span>
+
 <span class="s2">Calculates the sum for each element `x1_i` of the input array `x1` with</span>
 <span class="s2">the respective element `x2_i` of the input array `x2`.</span>
 
@@ -362,7 +384,7 @@
     <span class="s2">&quot;add&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_add_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_add</span><span class="p">,</span>
-    <span class="n">_add_docstring</span><span class="p">,</span>
+    <span class="n">_ADD_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">add</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_add_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_add</span><span class="p">,</span>
@@ -370,7 +392,7 @@
 <span class="p">)</span>
 
 
-<span class="n">_angle_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ANGLE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the phase angle (also called the argument) of each element `x_i` for</span>
 <span class="s2">input array `x`.</span>
 
@@ -419,7 +441,7 @@
     <span class="s2">&quot;angle&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_angle_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_angle</span><span class="p">,</span>
-    <span class="n">_angle_docstring</span><span class="p">,</span>
+    <span class="n">_ANGLE_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">angle</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -469,7 +491,7 @@
 
 
 
-<span class="n">_ceil_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_CEIL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Returns the ceiling for each element `x_i` for input array `x`.</span>
 <span class="s2">The ceil of the scalar `x` is the smallest integer `i`, such that `i &gt;= x`.</span>
 
@@ -515,7 +537,7 @@
     <span class="s2">&quot;ceil&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_ceil_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_ceil</span><span class="p">,</span>
-    <span class="n">_ceil_docstring</span><span class="p">,</span>
+    <span class="n">_CEIL_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">ceil</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_ceil_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_ceil</span><span class="p">,</span>
@@ -535,11 +557,14 @@
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Array containing elements to clip.</span>
 <span class="sd">    a_min, a_max : {dpnp.ndarray, usm_ndarray, None}</span>
-<span class="sd">        Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.</span>
-<span class="sd">        Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        The results will be placed in this array. It may be the input array for in-place clipping.</span>
-<span class="sd">        `out` must be of the right shape to hold the output. Its type is preserved.</span>
+
+<span class="sd">        Minimum and maximum value. If ``None``, clipping is not performed on</span>
+<span class="sd">        the corresponding edge. Only one of `a_min` and `a_max` may be</span>
+<span class="sd">        ``None``. Both are broadcast against `a`.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        The results will be placed in this array. It may be the input array</span>
+<span class="sd">        for in-place clipping. `out` must be of the right shape to hold the</span>
+<span class="sd">        output. Its type is preserved.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array, if parameter `out` is `None`.</span>
 <span class="sd">        If `order` is ``None``, the default value &quot;K&quot; will be used.</span>
@@ -547,8 +572,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array with the elements of `a`, but where values &lt; `a_min` are replaced with `a_min`,</span>
-<span class="sd">        and those &gt; `a_max` with `a_max`.</span>
+<span class="sd">        An array with the elements of `a`, but where values &lt; `a_min` are</span>
+<span class="sd">        replaced with `a_min`, and those &gt; `a_max` with `a_max`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -581,7 +606,7 @@
 
     <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;kwargs=</span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2"> is currently not supported&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">a_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">a_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">a_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">a_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;One of max or min must be given&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -599,7 +624,7 @@
 
 
 
-<span class="n">_conj_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_CONJ_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes conjugate for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.conj`.</span>
@@ -642,7 +667,7 @@
     <span class="s2">&quot;conj&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_conj_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_conj</span><span class="p">,</span>
-    <span class="n">_conj_docstring</span><span class="p">,</span>
+    <span class="n">_CONJ_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">conj</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_conj_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_conj</span><span class="p">,</span>
@@ -671,7 +696,7 @@
 
 
 
-<span class="n">_copysign_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_COPYSING_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Composes a floating-point value with the magnitude of `x1_i` and the sign of</span>
 <span class="s2">`x2_i` for each element of input arrays `x1` and `x2`.</span>
 
@@ -684,7 +709,7 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Second input array, also expected to have a real floating-point data</span>
 <span class="s2">    type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -729,59 +754,163 @@
     <span class="s2">&quot;copysign&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_copysign_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_copysign</span><span class="p">,</span>
-    <span class="n">_copysign_docstring</span><span class="p">,</span>
+    <span class="n">_COPYSING_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">copysign</span><span class="p">,</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="cross">
 <a class="viewcode-back" href="../../reference/generated/dpnp.cross.html#dpnp.cross">[docs]</a>
-<span class="k">def</span> <span class="nf">cross</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">axisa</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisb</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisc</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cross</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axisa</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisb</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisc</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the cross product of two (arrays of) vectors.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.cross`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Sizes of input arrays are limited by `x1.size == 3 and x2.size == 3`.</span>
-<span class="sd">    Shapes of input arrays are limited by `x1.shape == (3,) and x2.shape == (3,)`.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        First input array.</span>
+<span class="sd">    b : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Second input array.</span>
+<span class="sd">    axisa : int, optional</span>
+<span class="sd">        Axis of `a` that defines the vector(s).  By default, the last axis.</span>
+<span class="sd">    axisb : int, optional</span>
+<span class="sd">        Axis of `b` that defines the vector(s).  By default, the last axis.</span>
+<span class="sd">    axisc : int, optional</span>
+<span class="sd">        Axis of `c` containing the cross product vector(s).  Ignored if</span>
+<span class="sd">        both input vectors have dimension 2, as the return is scalar.</span>
+<span class="sd">        By default, the last axis.</span>
+<span class="sd">    axis : {int, None}, optional</span>
+<span class="sd">        If defined, the axis of `a`, `b` and `c` that defines the vector(s)</span>
+<span class="sd">        and cross product(s).  Overrides `axisa`, `axisb` and `axisc`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Vector cross product(s).</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.inner` : Inner product.</span>
+<span class="sd">    :obj:`dpnp.outer` : Outer product.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
+<span class="sd">    Vector cross-product.</span>
+
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = [1, 2, 3]</span>
-<span class="sd">    &gt;&gt;&gt; y = [4, 5, 6]</span>
-<span class="sd">    &gt;&gt;&gt; result = np.cross(x, y)</span>
-<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
-<span class="sd">    [-3,  6, -3]</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; np.cross(x, y)</span>
+<span class="sd">    array([-3,  6, -3])</span>
+
+<span class="sd">    One vector with dimension 2.</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; np.cross(x, y)</span>
+<span class="sd">    array([12, -6, -3])</span>
+
+<span class="sd">    Equivalently:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([1, 2, 0])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; np.cross(x, y)</span>
+<span class="sd">    array([12, -6, -3])</span>
+
+<span class="sd">    Both vectors with dimension 2.</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; np.cross(x, y)</span>
+<span class="sd">    array(-3)</span>
+
+<span class="sd">    Multiple vector cross-products. Note that the direction of the cross</span>
+<span class="sd">    product vector is defined by the *right-hand rule*.</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([[1, 2, 3], [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([[4, 5, 6], [1, 2, 3]])</span>
+<span class="sd">    &gt;&gt;&gt; np.cross(x, y)</span>
+<span class="sd">    array([[-3,  6, -3],</span>
+<span class="sd">           [ 3, -6,  3]])</span>
+
+<span class="sd">    The orientation of `c` can be changed using the `axisc` keyword.</span>
+
+<span class="sd">    &gt;&gt;&gt; np.cross(x, y, axisc=0)</span>
+<span class="sd">    array([[-3,  3],</span>
+<span class="sd">           [ 6, -6],</span>
+<span class="sd">           [-3,  3]])</span>
+
+<span class="sd">    Change the vector definition of `x` and `y` using `axisa` and `axisb`.</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([[7, 8, 9], [4, 5, 6], [1, 2, 3]])</span>
+<span class="sd">    &gt;&gt;&gt; np.cross(x, y)</span>
+<span class="sd">    array([[ -6,  12,  -6],</span>
+<span class="sd">           [  0,   0,   0],</span>
+<span class="sd">           [  6, -12,   6]])</span>
+<span class="sd">    &gt;&gt;&gt; np.cross(x, y, axisa=0, axisb=0)</span>
+<span class="sd">    array([[-24,  48, -24],</span>
+<span class="sd">           [-30,  60, -30],</span>
+<span class="sd">           [-36,  72, -36]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;axis should be an integer but got, </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">axisa</span><span class="p">,</span> <span class="n">axisb</span><span class="p">,</span> <span class="n">axisc</span> <span class="o">=</span> <span class="p">(</span><span class="n">axis</span><span class="p">,)</span> <span class="o">*</span> <span class="mi">3</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Input arrays with boolean data type are not supported.&quot;</span>
+        <span class="p">)</span>
+    <span class="c1"># Check axisa and axisb are within bounds</span>
+    <span class="n">axisa</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axisa</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">msg_prefix</span><span class="o">=</span><span class="s2">&quot;axisa&quot;</span><span class="p">)</span>
+    <span class="n">axisb</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axisb</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">msg_prefix</span><span class="o">=</span><span class="s2">&quot;axisb&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)</span> <span class="ow">or</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">axisa</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">axisb</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">axisc</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_cross</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="c1"># Move working axis to the end of the shape</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axisa</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">axisb</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Incompatible vector dimensions for cross product</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;(the dimension of vector used in cross product must be 2 or 3)&quot;</span>
+        <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cross</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">axisa</span><span class="p">,</span> <span class="n">axisb</span><span class="p">,</span> <span class="n">axisc</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span></div>
+    <span class="c1"># Modify the shape of input arrays if necessary</span>
+    <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">b_shape</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span>
+    <span class="c1"># TODO: replace with dpnp.broadcast_shapes once implemented</span>
+    <span class="n">res_shape</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">b_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">res_shape</span> <span class="o">+</span> <span class="p">(</span><span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],))</span>
+        <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">b_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">res_shape</span> <span class="o">+</span> <span class="p">(</span><span class="n">b_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],))</span>
+        <span class="n">b_shape</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">if</span> <span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">b_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">res_shape</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)</span>
+        <span class="c1"># Check axisc is within bounds</span>
+        <span class="n">axisc</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axisc</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">res_shape</span><span class="p">),</span> <span class="n">msg_prefix</span><span class="o">=</span><span class="s2">&quot;axisc&quot;</span><span class="p">)</span>
+    <span class="c1"># Create the output array</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
+    <span class="n">cp</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span>
+    <span class="p">)</span>
+
+    <span class="c1"># recast arrays as dtype</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">cp</span> <span class="o">=</span> <span class="n">dpnp_cross</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">cp</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">b_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cp</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisc</span><span class="p">)</span></div>
 
 
 
@@ -839,7 +968,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.</span>
+<span class="sd">    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given</span>
+<span class="sd">                       axis.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -900,8 +1030,10 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.gradient` : Return the gradient of an N-dimensional array.</span>
-<span class="sd">    :obj:`dpnp.ediff1d` : Compute the differences between consecutive elements of an array.</span>
-<span class="sd">    :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along a given axis.</span>
+<span class="sd">    :obj:`dpnp.ediff1d` : Compute the differences between consecutive elements</span>
+<span class="sd">                          of an array.</span>
+<span class="sd">    :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along</span>
+<span class="sd">                         a given axis.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -957,7 +1089,7 @@
 
 
 
-<span class="n">_divide_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_DIVIDE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the ratio for each element `x1_i` of the input array `x1` with</span>
 <span class="s2">the respective element `x2_i` of the input array `x2`.</span>
 
@@ -1023,7 +1155,7 @@
     <span class="s2">&quot;divide&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_divide_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_divide</span><span class="p">,</span>
-    <span class="n">_divide_docstring</span><span class="p">,</span>
+    <span class="n">_DIVIDE_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">divide</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_div_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_div</span><span class="p">,</span>
@@ -1043,13 +1175,15 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `x1`is supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword arguments `to_end` and `to_begin` are currently supported only with default values `None`.</span>
+<span class="sd">    Keyword arguments `to_end` and `to_begin` are currently supported only</span>
+<span class="sd">    with default values `None`.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.</span>
+<span class="sd">    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given</span>
+<span class="sd">                       axis.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1116,7 +1250,7 @@
 
 
 
-<span class="n">_floor_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_FLOOR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Returns the floor for each element `x_i` for input array `x`.</span>
 <span class="s2">The floor of the scalar `x` is the largest integer `i`, such that `i &lt;= x`.</span>
 
@@ -1167,14 +1301,14 @@
     <span class="s2">&quot;floor&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_floor_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_floor</span><span class="p">,</span>
-    <span class="n">_floor_docstring</span><span class="p">,</span>
+    <span class="n">_FLOOR_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">floor</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_floor_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_floor</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_floor_divide_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_FLOOR_DIVIDE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the ratio for each element `x1_i` of the input array `x1` with</span>
 <span class="s2">the respective element `x2_i` of the input array `x2` to the greatest</span>
 <span class="s2">integer-value number that is not greater than the division result.</span>
@@ -1235,7 +1369,7 @@
     <span class="s2">&quot;floor_divide&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_floor_divide_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_floor_divide</span><span class="p">,</span>
-    <span class="n">_floor_divide_docstring</span><span class="p">,</span>
+    <span class="n">_FLOOR_DIVIDE_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_floor_divide_inplace</span><span class="p">,</span>
 <span class="p">)</span>
@@ -1256,20 +1390,26 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar,</span>
+<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`</span>
+<span class="sd">    and `x2` can not be scalars at the same time.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default</span>
+<span class="sd">    values.</span>
 <span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by real-valued data types.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.</span>
+<span class="sd">    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates</span>
+<span class="sd">                          NaNs.</span>
 <span class="sd">    :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignores NaNs.</span>
-<span class="sd">    :obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs..</span>
-<span class="sd">    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.</span>
-<span class="sd">    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.</span>
+<span class="sd">    :obj:`dpnp.max` : The maximum value of an array along a given axis,</span>
+<span class="sd">                      propagates NaNs..</span>
+<span class="sd">    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,</span>
+<span class="sd">                         ignores NaNs.</span>
+<span class="sd">    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates</span>
+<span class="sd">                          NaNs.</span>
 <span class="sd">    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.</span>
 
 <span class="sd">    Examples</span>
@@ -1305,7 +1445,8 @@
         <span class="c1"># at least either x1 or x2 has to be an array</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># get USM type and queue to copy scalar from the host memory into a USM allocation</span>
+        <span class="c1"># get USM type and queue to copy scalar from the host memory</span>
+        <span class="c1"># into a USM allocation</span>
         <span class="n">usm_type</span><span class="p">,</span> <span class="n">queue</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
@@ -1366,20 +1507,26 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar,</span>
+<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`</span>
+<span class="sd">    and `x2` can not be scalars at the same time.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default</span>
+<span class="sd">    values.</span>
 <span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by real-valued data types.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.</span>
+<span class="sd">    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates</span>
+<span class="sd">                          NaNs.</span>
 <span class="sd">    :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignores NaNs.</span>
-<span class="sd">    :obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.</span>
-<span class="sd">    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.</span>
-<span class="sd">    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.</span>
+<span class="sd">    :obj:`dpnp.min` : The minimum value of an array along a given axis,</span>
+<span class="sd">                      propagates NaNs.</span>
+<span class="sd">    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis,</span>
+<span class="sd">                         ignores NaNs.</span>
+<span class="sd">    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates</span>
+<span class="sd">                          NaNs.</span>
 <span class="sd">    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.</span>
 
 <span class="sd">    Examples</span>
@@ -1415,7 +1562,8 @@
         <span class="c1"># at least either x1 or x2 has to be an array</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># get USM type and queue to copy scalar from the host memory into a USM allocation</span>
+        <span class="c1"># get USM type and queue to copy scalar from the host memory into</span>
+        <span class="c1"># a USM allocation</span>
         <span class="n">usm_type</span><span class="p">,</span> <span class="n">queue</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
@@ -1476,9 +1624,11 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar,</span>
+<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`</span>
+<span class="sd">    and `x2` can not be scalars at the same time.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default</span>
+<span class="sd">    values.</span>
 <span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
@@ -1527,7 +1677,8 @@
         <span class="c1"># at least either x1 or x2 has to be an array</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># get USM type and queue to copy scalar from the host memory into a USM allocation</span>
+        <span class="c1"># get USM type and queue to copy scalar from the host memory into</span>
+        <span class="c1"># a USM allocation</span>
         <span class="n">usm_type</span><span class="p">,</span> <span class="n">queue</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
@@ -1591,7 +1742,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.</span>
+<span class="sd">    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given</span>
+<span class="sd">                       axis.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1622,7 +1774,7 @@
 
 
 
-<span class="n">_imag_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_IMAG_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes imaginary part of each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.imag`.</span>
@@ -1672,12 +1824,12 @@
     <span class="s2">&quot;imag&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_imag_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_imag</span><span class="p">,</span>
-    <span class="n">_imag_docstring</span><span class="p">,</span>
+    <span class="n">_IMAG_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_maximum_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_MAXIMUM_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Compares two input arrays `x1` and `x2` and returns</span>
 <span class="s2">a new array containing the element-wise maxima.</span>
 
@@ -1745,12 +1897,12 @@
     <span class="s2">&quot;maximum&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_maximum_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_maximum</span><span class="p">,</span>
-    <span class="n">_maximum_docstring</span><span class="p">,</span>
+    <span class="n">_MAXIMUM_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_minimum_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_MINIMUM_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Compares two input arrays `x1` and `x2` and returns</span>
 <span class="s2">a new array containing the element-wise minima.</span>
 
@@ -1818,7 +1970,7 @@
     <span class="s2">&quot;minimum&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_minimum_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_minimum</span><span class="p">,</span>
-    <span class="n">_minimum_docstring</span><span class="p">,</span>
+    <span class="n">_MINIMUM_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -1849,9 +2001,11 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as either scalar,</span>
+<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`</span>
+<span class="sd">    and `x2` can not be scalars at the same time.</span>
+<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default</span>
+<span class="sd">    values.</span>
 <span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
@@ -1915,7 +2069,7 @@
 
 
 
-<span class="n">_multiply_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_MULTIPLY_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the product for each element `x1_i` of the input array `x1`</span>
 <span class="s2">with the respective element `x2_i` of the input array `x2`.</span>
 
@@ -1977,7 +2131,7 @@
     <span class="s2">&quot;multiply&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_multiply_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_multiply</span><span class="p">,</span>
-    <span class="n">_multiply_docstring</span><span class="p">,</span>
+    <span class="n">_MULTIPLY_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">multiply</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_mul_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mul</span><span class="p">,</span>
@@ -1985,7 +2139,7 @@
 <span class="p">)</span>
 
 
-<span class="n">_negative_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_NEGATIVE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the numerical negative for each element `x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.negative`.</span>
@@ -2035,13 +2189,13 @@
     <span class="s2">&quot;negative&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_negative_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_negative</span><span class="p">,</span>
-    <span class="n">_negative_docstring</span><span class="p">,</span>
+    <span class="n">_NEGATIVE_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">negative</span><span class="p">,</span>
-    <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">_acceptance_fn_negative</span><span class="p">,</span>
+    <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn_negative</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_positive_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_POSITIVE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the numerical positive for each element `x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.positive`.</span>
@@ -2095,12 +2249,13 @@
     <span class="s2">&quot;positive&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_positive_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_positive</span><span class="p">,</span>
-    <span class="n">_positive_docstring</span><span class="p">,</span>
+    <span class="n">_POSITIVE_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">positive</span><span class="p">,</span>
+    <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn_positive</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_power_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_POWER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array</span>
 <span class="s2">`x1` with the respective element `x2_i` of the input array `x2`.</span>
 
@@ -2178,7 +2333,7 @@
     <span class="s2">&quot;power&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_pow_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_pow</span><span class="p">,</span>
-    <span class="n">_power_docstring</span><span class="p">,</span>
+    <span class="n">_POWER_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">power</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_pow_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_pow</span><span class="p">,</span>
@@ -2205,18 +2360,22 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        A new array holding the result is returned unless `out` is specified, in which case it is returned.</span>
+<span class="sd">        A new array holding the result is returned unless `out` is specified,</span>
+<span class="sd">        in which case it is returned.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameters `initial`, and `where` are only supported with their default values.</span>
+<span class="sd">    Input array is only supported as either :class:`dpnp.ndarray` or</span>
+<span class="sd">    :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    Parameters `initial`, and `where` are only supported with their default</span>
+<span class="sd">    values.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 <span class="sd">    Input array data types are limited by DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.nanprod` : Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.</span>
+<span class="sd">    :obj:`dpnp.nanprod` : Return the product of array elements over a given</span>
+<span class="sd">                          axis treating Not a Numbers (NaNs) as ones.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2239,8 +2398,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Product reduction for complex output are known to fail for Gen9 with 2024.0 compiler</span>
-    <span class="c1"># TODO: get rid of this temporary work around when OneAPI 2024.1 is released</span>
+    <span class="c1"># Product reduction for complex output are known to fail for Gen9 with</span>
+    <span class="c1"># 2024.0 compiler</span>
+    <span class="c1"># TODO: get rid of this temporary work around when OneAPI 2024.1 is</span>
+    <span class="c1"># released</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">_dtypes</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
     <span class="n">_any_complex</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
@@ -2264,25 +2425,24 @@
             <span class="c1"># numpy may return a scalar, convert it back to dpnp array</span>
             <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">res</span>
-    <span class="k">elif</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;initial keyword argument is only supported with its default value.&quot;</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
         <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
-            <span class="n">dpt</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
-        <span class="p">)</span>
+    <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
+    <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
-
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
 
 
-<span class="n">_proj_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">_PROJ_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes projection of each element `x_i` for input array `x`.</span>
 
 <span class="s2">Parameters</span>
@@ -2326,11 +2486,11 @@
     <span class="s2">&quot;proj&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_proj_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_proj</span><span class="p">,</span>
-    <span class="n">_proj_docstring</span><span class="p">,</span>
+    <span class="n">_PROJ_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_real_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_REAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes real part of each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.real`.</span>
@@ -2354,12 +2514,12 @@
     <span class="s2">&quot;real&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_real_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_real</span><span class="p">,</span>
-    <span class="n">_real_docstring</span><span class="p">,</span>
+    <span class="n">_REAL_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_remainder_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_REMAINDER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the remainder of division for each element `x1_i` of the input array</span>
 <span class="s2">`x1` with the respective element `x2_i` of the input array `x2`.</span>
 <span class="s2">This function is equivalent to the Python modulus operator.</span>
@@ -2419,13 +2579,13 @@
     <span class="s2">&quot;remainder&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_remainder_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_remainder</span><span class="p">,</span>
-    <span class="n">_remainder_docstring</span><span class="p">,</span>
+    <span class="n">_REMAINDER_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">remainder</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_remainder_inplace</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_rint_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_RINT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Round elements of the array to the nearest integer.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.rint`.</span>
@@ -2472,12 +2632,12 @@
     <span class="s2">&quot;rint&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_round_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_round</span><span class="p">,</span>
-    <span class="n">_rint_docstring</span><span class="p">,</span>
+    <span class="n">_RINT_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">rint</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_round_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ROUND_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Rounds each element `x_i` of the input array `x` to</span>
 <span class="s2">the nearest integer-valued number.</span>
 
@@ -2530,12 +2690,12 @@
     <span class="s2">&quot;round&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_round_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_round</span><span class="p">,</span>
-    <span class="n">_round_docstring</span><span class="p">,</span>
+    <span class="n">_ROUND_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">round</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_sign_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_SIGN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes an indication of the sign of each element `x_i` of input array `x`</span>
 <span class="s2">using the signum function.</span>
 
@@ -2587,12 +2747,13 @@
     <span class="s2">&quot;sign&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sign_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sign</span><span class="p">,</span>
-    <span class="n">_sign_docstring</span><span class="p">,</span>
+    <span class="n">_SIGN_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">sign</span><span class="p">,</span>
+    <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn_sign</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_signbit_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_SIGNBIT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes an indication of whether the sign bit of each element `x_i` of</span>
 <span class="s2">input array `x` is set.</span>
 
@@ -2639,12 +2800,12 @@
     <span class="s2">&quot;signbit&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_signbit_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_signbit</span><span class="p">,</span>
-    <span class="n">_signbit_docstring</span><span class="p">,</span>
+    <span class="n">_SIGNBIT_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">signbit</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_subtract_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_SUBTRACT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the difference between each element `x1_i` of the input</span>
 <span class="s2">array `x1` and the respective element `x2_i` of the input array `x2`.</span>
 
@@ -2705,12 +2866,12 @@
     <span class="s2">&quot;subtract&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_subtract_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_subtract</span><span class="p">,</span>
-    <span class="n">_subtract_docstring</span><span class="p">,</span>
+    <span class="n">_SUBTRACT_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">subtract</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_sub_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_sub</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_subtract_inplace</span><span class="p">,</span>
-    <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">_acceptance_fn_subtract</span><span class="p">,</span>
+    <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn_subtract</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2765,7 +2926,7 @@
 <span class="sd">        data type of `a`, the input array elements are cast to the</span>
 <span class="sd">        specified data type before computing the sum.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must</span>
 <span class="sd">        have the same shape as the expected output, but the type of</span>
 <span class="sd">        the output values will be cast if necessary.</span>
@@ -2787,14 +2948,16 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `initial` and `where` are only supported with their default values.</span>
+<span class="sd">    Parameters `initial` and `where` are only supported with their default</span>
+<span class="sd">    values.</span>
 <span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.ndarray.sum` : Equivalent method.</span>
 <span class="sd">    :obj:`dpnp.cumsum` : Cumulative sum of array elements.</span>
-<span class="sd">    :obj:`dpnp.trapz` : Integration of array values using the composite trapezoidal rule.</span>
+<span class="sd">    :obj:`dpnp.trapz` : Integration of array values using the composite</span>
+<span class="sd">                        trapezoidal rule.</span>
 <span class="sd">    :obj:`dpnp.mean` : Compute the arithmetic mean.</span>
 <span class="sd">    :obj:`dpnp.average` : Compute the weighted average.</span>
 
@@ -2825,69 +2988,62 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;initial keyword argument is only supported with its default value.&quot;</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
         <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-            <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">==</span> <span class="mi">4</span>
-            <span class="ow">and</span> <span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,)</span>
-                    <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
-                    <span class="ow">and</span> <span class="mi">32</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1024</span>
-                    <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="p">)</span>
-                <span class="ow">or</span> <span class="p">(</span>
-                    <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
-                    <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
-                    <span class="ow">and</span> <span class="mi">32</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1024</span>
-                    <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-        <span class="p">):</span>
-            <span class="kn">from</span> <span class="nn">dpctl.tensor._reduction</span> <span class="kn">import</span> <span class="n">_default_reduction_dtype</span>
 
-            <span class="kn">from</span> <span class="nn">dpnp.backend.extensions.sycl_ext</span> <span class="kn">import</span> <span class="n">_sycl_ext_impl</span>
-
-            <span class="nb">input</span> <span class="o">=</span> <span class="n">a</span>
-            <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span>
-                <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">T</span>
-            <span class="nb">input</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
-
-            <span class="n">queue</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">sycl_queue</span>
-            <span class="n">out_dtype</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">_default_reduction_dtype</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">queue</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span>
-                <span class="k">else</span> <span class="n">dtype</span>
-            <span class="p">)</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-                <span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">out_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span>
-            <span class="p">)</span>
-
-            <span class="n">get_sum</span> <span class="o">=</span> <span class="n">_sycl_ext_impl</span><span class="o">.</span><span class="n">_get_sum_over_axis_0</span>
-            <span class="nb">sum</span> <span class="o">=</span> <span class="n">get_sum</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="nb">sum</span><span class="p">:</span>
-                <span class="nb">sum</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">keepdims</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,):</span>
-                        <span class="n">res_sh</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">res_sh</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">res_sh</span><span class="p">)</span>
-
-                <span class="k">return</span> <span class="n">result</span>
-
-        <span class="n">y</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span>
+    <span class="n">sycl_sum_call</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">c_contiguous_rules</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,)</span>
+            <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
+            <span class="ow">and</span> <span class="mi">32</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1024</span>
+            <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span></div>
+        <span class="n">f_contiguous_rules</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
+            <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
+            <span class="ow">and</span> <span class="mi">32</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1024</span>
+            <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">sycl_sum_call</span> <span class="o">=</span> <span class="n">c_contiguous_rules</span> <span class="ow">or</span> <span class="n">f_contiguous_rules</span>
+
+    <span class="k">if</span> <span class="n">sycl_sum_call</span><span class="p">:</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">T</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+        <span class="n">queue</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="n">out_dtype</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">_default_reduction_dtype</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">queue</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">dtype</span>
+        <span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">out_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
+
+        <span class="n">get_sum</span> <span class="o">=</span> <span class="n">_sycl_ext_impl</span><span class="o">.</span><span class="n">_get_sum_over_axis_0</span>
+        <span class="n">sycl_sum</span> <span class="o">=</span> <span class="n">get_sum</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sycl_sum</span><span class="p">:</span>
+            <span class="n">sycl_sum</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">keepdims</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,):</span>
+                    <span class="n">res_sh</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">res_sh</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">res_sh</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">result</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span>
+    <span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span></div>
 
 
 
@@ -2957,7 +3113,7 @@
 <span class="n">true_divide</span> <span class="o">=</span> <span class="n">divide</span>
 
 
-<span class="n">_trunc_docstring</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_TRUNC_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">trunc(x, out=None, order=&#39;K&#39;)</span>
 
 <span class="s2">Returns the truncated value for each element `x_i` for input array `x`.</span>
@@ -3005,7 +3161,7 @@
     <span class="s2">&quot;trunc&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_trunc_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_trunc</span><span class="p">,</span>
-    <span class="n">_trunc_docstring</span><span class="p">,</span>
+    <span class="n">_TRUNC_DOCSTRING</span><span class="p">,</span>
     <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">trunc</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_trunc_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_trunc</span><span class="p">,</span>

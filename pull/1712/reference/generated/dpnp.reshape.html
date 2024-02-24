@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.reshape &mdash; Data Parallel Extension for NumPy 0.15.0dev0+12.g5b82b6151b documentation</title>
+  <title>dpnp.reshape &mdash; Data Parallel Extension for NumPy 0.15.0dev0+24.gd67e83b48e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4760a8cc"></script>
+        <script src="../../_static/documentation_options.js?v=38170738"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+12.g5b82b6151b
+                0.15.0dev0+24.gd67e83b48e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -143,14 +143,14 @@
 an integer, then the result will be a 1-D array of that length.
 One shape dimension can be -1. In this case, the value is
 inferred from the length of the array and remaining dimensions.</p></li>
-<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'}</em><em>, </em><em>optional</em>) – Read the elements of <cite>a</cite> using this index order, and place the
-elements into the reshaped array using this index order. ‘C’
+<li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;}</em><em>, </em><em>optional</em>) – Read the elements of <cite>a</cite> using this index order, and place the
+elements into the reshaped array using this index order. <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>
 means to read / write the elements using C-like index order,
 with the last axis index changing fastest, back to the first
-axis index changing slowest. ‘F’ means to read / write the
+axis index changing slowest. <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> means to read / write the
 elements using Fortran-like index order, with the first index
 changing fastest, and the last index changing slowest. Note that
-the ‘C’ and ‘F’ options take no account of the memory layout of
+the <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> options take no account of the memory layout of
 the underlying array, and only refer to the order of indexing.</p></li>
 <li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Boolean indicating whether or not to copy the input array.
 If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the result array will always be a copy of input <cite>a</cite>.
