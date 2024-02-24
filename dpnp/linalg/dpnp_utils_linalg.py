@@ -401,7 +401,7 @@ def _multi_dot(arrays, order, i, j, out=None):
 
 def _multi_dot_matrix_chain_order(n, arrays, return_costs=False):
     """
-    Return a dpnp.ndarray that encodes the optimal order of mutiplications.
+    Return a dpnp.ndarray that encodes the optimal order of multiplications.
 
     The optimal order array is then used by `_multi_dot()` to do the
     multiplication.

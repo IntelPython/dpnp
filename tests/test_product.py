@@ -8,6 +8,13 @@ import dpnp
 from .helper import assert_dtype_allclose, get_all_dtypes, get_complex_dtypes
 
 
+def _assert_selective_dtype_allclose(result, expected, dtype):
+    if dtype in [numpy.int32, numpy.float32, numpy.complex64]:
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+    else:
+        assert_dtype_allclose(result, expected)
+
+
 class TestCross:
     def setup_method(self):
         numpy.random.seed(42)
@@ -237,11 +244,11 @@ class TestDot:
 
         result = dpnp.dot(a, ib)
         expected = numpy.dot(a, b)
-        assert_allclose(result, expected)
+        _assert_selective_dtype_allclose(result, expected, dtype)
 
         result = dpnp.dot(ib, a)
         expected = numpy.dot(b, a)
-        assert_allclose(result, expected)
+        _assert_selective_dtype_allclose(result, expected, dtype)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
@@ -408,7 +415,7 @@ class TestDot:
         expected = numpy.dot(a, b)
 
         assert result is dp_out
-        assert_allclose(result, expected)
+        _assert_selective_dtype_allclose(result, expected, dtype)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
@@ -555,17 +562,11 @@ class TestInner:
 
         result = dpnp.inner(a, ib)
         expected = numpy.inner(a, b)
-        if dtype in [numpy.int32, numpy.float32, numpy.complex64]:
-            assert_dtype_allclose(result, expected, check_only_type_kind=True)
-        else:
-            assert_dtype_allclose(result, expected)
+        _assert_selective_dtype_allclose(result, expected, dtype)
 
         result = dpnp.inner(ib, a)
         expected = numpy.inner(b, a)
-        if dtype in [numpy.int32, numpy.float32, numpy.complex64]:
-            assert_dtype_allclose(result, expected, check_only_type_kind=True)
-        else:
-            assert_dtype_allclose(result, expected)
+        _assert_selective_dtype_allclose(result, expected, dtype)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
@@ -669,17 +670,11 @@ class TestKron:
 
         result = dpnp.kron(a, ib)
         expected = numpy.kron(a, b)
-        if dtype in [numpy.int32, numpy.float32, numpy.complex64]:
-            assert_dtype_allclose(result, expected, check_only_type_kind=True)
-        else:
-            assert_dtype_allclose(result, expected)
+        _assert_selective_dtype_allclose(result, expected, dtype)
 
         result = dpnp.kron(ib, a)
         expected = numpy.kron(b, a)
-        if dtype in [numpy.int32, numpy.float32, numpy.complex64]:
-            assert_dtype_allclose(result, expected, check_only_type_kind=True)
-        else:
-            assert_dtype_allclose(result, expected)
+        _assert_selective_dtype_allclose(result, expected, dtype)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
@@ -1001,11 +996,11 @@ class TestTensordot:
 
         result = dpnp.tensordot(a, ib, axes=0)
         expected = numpy.tensordot(a, b, axes=0)
-        assert_allclose(result, expected)
+        _assert_selective_dtype_allclose(result, expected, dtype)
 
         result = dpnp.tensordot(ib, a, axes=0)
         expected = numpy.tensordot(b, a, axes=0)
-        assert_allclose(result, expected)
+        _assert_selective_dtype_allclose(result, expected, dtype)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize("axes", [0, 1, 2])
@@ -1060,7 +1055,6 @@ class TestTensordot:
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
-        print(a.dtype, ia.dtype)
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
         assert_dtype_allclose(result, expected)
@@ -1154,11 +1148,11 @@ class TestVdot:
 
         result = dpnp.vdot(ia, b)
         expected = numpy.vdot(a, b)
-        assert_allclose(result, expected)
+        _assert_selective_dtype_allclose(result, expected, dtype)
 
         result = dpnp.vdot(b, ia)
         expected = numpy.vdot(b, a)
-        assert_allclose(result, expected)
+        _assert_selective_dtype_allclose(result, expected, dtype)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
