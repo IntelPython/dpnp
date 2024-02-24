@@ -1446,7 +1446,6 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
     return dpnp.get_result_array(result, out, casting="same_kind")
 
 
-
 _RSQRT_DOCSTRING = """
 Computes the reciprocal square-root for each element `x_i` for input array `x`.
 

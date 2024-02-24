@@ -58,11 +58,9 @@ import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
 from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
 from dpnp.dpnp_array import dpnp_array
-
 from dpnp.dpnp_utils import call_origin, get_usm_allocations
 
 from .dpnp_algo import (
-    dpnp_cross,
     dpnp_cumprod,
     dpnp_cumsum,
     dpnp_ediff1d,
@@ -74,7 +72,6 @@ from .dpnp_algo import (
     dpnp_modf,
     dpnp_trapz,
 )
-
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPAngle,
     DPNPBinaryFunc,
@@ -87,6 +84,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     acceptance_fn_sign,
     acceptance_fn_subtract,
 )
+from .dpnp_utils.dpnp_utils_linearalgebra import dpnp_cross
 
 __all__ = [
     "abs",
@@ -810,8 +808,8 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     cp = dpnp_cross(a, b, cp, exec_q)
     if a_shape[-1] == 2 and b_shape[-1] == 2:
         return cp
-    else:
-        return dpnp.moveaxis(cp, -1, axisc)
+
+    return dpnp.moveaxis(cp, -1, axisc)
 
 
 def cumprod(x1, **kwargs):
