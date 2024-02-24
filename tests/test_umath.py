@@ -10,8 +10,7 @@ from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
     get_float_complex_dtypes,
-    get_float_dtypes,
-    has_support_aspect16,
+    get_output_data_type,
     has_support_aspect64,
 )
 
@@ -95,7 +94,7 @@ def test_umaths(test_cases):
     assert_allclose(result, expected, rtol=1e-6)
 
 
-def _get_numpy_arrays(func_name, dtype, range):
+def _get_numpy_arrays_1in_1out(func_name, dtype, range):
     """
     Return a sample array and an output array.
 
@@ -119,22 +118,6 @@ def _get_numpy_arrays(func_name, dtype, range):
         result = getattr(numpy, func_name)(np_array)
 
     return np_array, result
-
-
-def _get_output_data_type(dtype):
-    """Return a data type specified by input `dtype` and device capabilities."""
-    if dpnp.issubdtype(dtype, dpnp.bool):
-        out_dtype = dpnp.float16 if has_support_aspect16() else dpnp.float32
-    elif dpnp.issubdtype(dtype, dpnp.complexfloating):
-        out_dtype = dpnp.complex64
-        if has_support_aspect64() and dtype != dpnp.complex64:
-            out_dtype = dpnp.complex128
-    else:
-        out_dtype = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            out_dtype = dpnp.float64
-
-    return out_dtype
 
 
 class TestUmath:
@@ -181,7 +164,7 @@ class TestUmath:
             "sinh",
             "sqrt",
             "tan",
-            "tnah",
+            "tanh",
         ],
     )
     def func_params(self, request):
@@ -192,10 +175,12 @@ class TestUmath:
     def test_out(self, func_params, dtype):
         func_name = func_params["func_name"]
         input_values = func_params["input_values"]
-        np_array, expected = _get_numpy_arrays(func_name, dtype, input_values)
+        np_array, expected = _get_numpy_arrays_1in_1out(
+            func_name, dtype, input_values
+        )
 
         dp_array = dpnp.array(np_array)
-        out_dtype = _get_output_data_type(dtype)
+        out_dtype = get_output_data_type(dtype)
         dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = getattr(dpnp, func_name)(dp_array, out=dp_out)
 
@@ -231,15 +216,20 @@ class TestUmath:
         func_name = func_params["func_name"]
         a = dpnp.arange(10)
         numpy.testing.assert_raises(TypeError, getattr(dpnp, func_name), a, out)
+        numpy.testing.assert_raises(
+            TypeError, getattr(numpy, func_name), a.asnumpy(), out
+        )
 
 
 class TestCbrt:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_cbrt(self, dtype):
-        np_array, expected = _get_numpy_arrays("cbrt", dtype, [-5, 5, 10])
+        np_array, expected = _get_numpy_arrays_1in_1out(
+            "cbrt", dtype, [-5, 5, 10]
+        )
 
         dp_array = dpnp.array(np_array)
-        out_dtype = _get_output_data_type(dtype)
+        out_dtype = get_output_data_type(dtype)
         dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.cbrt(dp_array, out=dp_out)
 
@@ -272,11 +262,13 @@ class TestRsqrt:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_rsqrt(self, dtype):
-        np_array, expected = _get_numpy_arrays("sqrt", dtype, [0, 10, 10])
+        np_array, expected = _get_numpy_arrays_1in_1out(
+            "sqrt", dtype, [0, 10, 10]
+        )
         expected = numpy.reciprocal(expected)
 
         dp_array = dpnp.array(np_array)
-        out_dtype = _get_output_data_type(dtype)
+        out_dtype = get_output_data_type(dtype)
         dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.rsqrt(dp_array, out=dp_out)
 
@@ -316,7 +308,9 @@ class TestRsqrt:
 class TestSquare:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_square(self, dtype):
-        np_array, expected = _get_numpy_arrays("square", dtype, [-5, 5, 10])
+        np_array, expected = _get_numpy_arrays_1in_1out(
+            "square", dtype, [-5, 5, 10]
+        )
 
         dp_array = dpnp.array(np_array)
         out_dtype = numpy.int8 if dtype == numpy.bool_ else dtype
@@ -359,10 +353,12 @@ class TestSquare:
 class TestReciprocal:
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_reciprocal(self, dtype):
-        np_array, expected = _get_numpy_arrays("reciprocal", dtype, [-5, 5, 10])
+        np_array, expected = _get_numpy_arrays_1in_1out(
+            "reciprocal", dtype, [-5, 5, 10]
+        )
 
         dp_array = dpnp.array(np_array)
-        out_dtype = _get_output_data_type(dtype)
+        out_dtype = get_output_data_type(dtype)
         dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.reciprocal(dp_array, out=dp_out)
 
@@ -375,126 +371,72 @@ class TestReciprocal:
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
 
-        # TODO: change it to ValueError, when dpctl
-        # is being used in internal CI
-        with pytest.raises((TypeError, ValueError)):
-            dpnp.reciprocal(dp_array, out=dp_out)
-
-    @pytest.mark.parametrize(
-        "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
-    )
-    def test_invalid_shape(self, shape):
-        dp_array = dpnp.arange(10)
-        dp_out = dpnp.empty(shape)
-
         with pytest.raises(ValueError):
             dpnp.reciprocal(dp_array, out=dp_out)
 
-
-class TestArctan2:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
-    def test_arctan2(self, dtype):
-        np_array1, _ = _get_numpy_arrays("array", dtype, [-5, 5, 10])
-        np_array2, _ = _get_numpy_arrays("array", dtype, [-5, 5, 10])
-        expected = numpy.arctan2(np_array1, np_array2)
-
-        dp_array1 = dpnp.array(np_array1)
-        dp_array2 = dpnp.array(np_array2)
-        out_dtype = _get_output_data_type(dtype)
-        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
-        result = dpnp.arctan2(dp_array1, dp_array2, out=dp_out)
-
-        assert result is dp_out
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
-    )
-    def test_invalid_dtype(self, dtype):
-        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
-        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
-        dp_out = dpnp.empty(10, dtype=dtype)
-
-        with pytest.raises(ValueError):
-            dpnp.arctan2(dp_array, dp_array, out=dp_out)
-
     @pytest.mark.parametrize(
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
     def test_invalid_shape(self, shape):
         dp_array = dpnp.arange(10)
         dp_out = dpnp.empty(shape)
+
         with pytest.raises(ValueError):
-            dpnp.arctan2(dp_array, dp_array, out=dp_out)
+            dpnp.reciprocal(dp_array, out=dp_out)
 
 
-class TestCopySign:
+class TestRoundingFuncs:
+    @pytest.fixture(
+        params=[
+            {"func_name": "ceil", "input_values": [-5, 5, 10]},
+            {"func_name": "floor", "input_values": [-5, 5, 10]},
+            {"func_name": "trunc", "input_values": [-5, 5, 10]},
+        ],
+        ids=[
+            "ceil",
+            "floor",
+            "trunc",
+        ],
+    )
+    def func_params(self, request):
+        return request.param
+
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
-    def test_copysign(self, dtype):
-        np_array1, _ = _get_numpy_arrays("array", dtype, [1, 10, 10])
-        np_array2, _ = _get_numpy_arrays("array", dtype, [-10, -1, 10])
-        expected = numpy.copysign(np_array1, np_array2)
+    def test_out(self, func_params, dtype):
+        func_name = func_params["func_name"]
+        input_values = func_params["input_values"]
+        np_array, expected = _get_numpy_arrays_1in_1out(
+            func_name, dtype, input_values
+        )
 
-        dp_array1 = dpnp.array(np_array1)
-        dp_array2 = dpnp.array(np_array2)
-        out_dtype = _get_output_data_type(dtype)
+        dp_array = dpnp.array(np_array)
+        out_dtype = numpy.int8 if dtype == numpy.bool_ else dtype
         dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
-        result = dpnp.copysign(dp_array1, dp_array2, out=dp_out)
+        result = getattr(dpnp, func_name)(dp_array, out=dp_out)
 
         assert result is dp_out
-        assert_dtype_allclose(result, expected)
+        check_type = True if dpnp.issubdtype(dtype, dpnp.floating) else False
+        assert_dtype_allclose(result, expected, check_type=check_type)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
     )
-    def test_invalid_dtype(self, dtype):
+    def test_invalid_dtype(self, func_params, dtype):
+        func_name = func_params["func_name"]
         dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
         dp_array = dpnp.arange(10, dtype=dpnp_dtype)
         dp_out = dpnp.empty(10, dtype=dtype)
+
         with pytest.raises(ValueError):
-            dpnp.copysign(dp_array, dp_array, out=dp_out)
+            getattr(dpnp, func_name)(dp_array, out=dp_out)
 
     @pytest.mark.parametrize(
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
     )
-    def test_invalid_shape(self, shape):
-        dp_array = dpnp.arange(10)
-        dp_out = dpnp.empty(shape)
+    def test_invalid_shape(self, func_params, shape):
+        func_name = func_params["func_name"]
+        dp_array = dpnp.arange(10, dtype=dpnp.float32)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float32)
+
         with pytest.raises(ValueError):
-            dpnp.copysign(dp_array, dp_array, out=dp_out)
-
-
-class TestLogaddexp:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
-    def test_logaddexp(self, dtype):
-        np_array1, _ = _get_numpy_arrays("array", dtype, [-5, 5, 10])
-        np_array2, _ = _get_numpy_arrays("array", dtype, [-5, 5, 10])
-        expected = numpy.logaddexp(np_array1, np_array2)
-
-        dp_array1 = dpnp.array(np_array1)
-        dp_array2 = dpnp.array(np_array2)
-        out_dtype = _get_output_data_type(dtype)
-        dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
-        result = dpnp.logaddexp(dp_array1, dp_array2, out=dp_out)
-
-        assert result is dp_out
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
-    )
-    def test_invalid_dtype(self, dtype):
-        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
-        dp_array = dpnp.arange(10, dtype=dpnp_dtype)
-        dp_out = dpnp.empty(10, dtype=dtype)
-        with pytest.raises(ValueError):
-            dpnp.logaddexp(dp_array, dp_array, out=dp_out)
-
-    @pytest.mark.parametrize(
-        "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15, )", "(2,2)"]
-    )
-    def test_invalid_shape(self, shape):
-        dp_array = dpnp.arange(10)
-        dp_out = dpnp.empty(shape)
-        with pytest.raises(ValueError):
-            dpnp.logaddexp(dp_array, dp_array, out=dp_out)
+            getattr(dpnp, func_name)(dp_array, out=dp_out)

@@ -96,6 +96,22 @@ def get_integer_dtypes():
     return [dpnp.int32, dpnp.int64]
 
 
+def get_output_data_type(dtype):
+    """Return a data type specified by input `dtype` and device capabilities."""
+    if dpnp.issubdtype(dtype, dpnp.bool):
+        out_dtype = dpnp.float16 if has_support_aspect16() else dpnp.float32
+    elif dpnp.issubdtype(dtype, dpnp.complexfloating):
+        out_dtype = dpnp.complex64
+        if has_support_aspect64() and dtype != dpnp.complex64:
+            out_dtype = dpnp.complex128
+    else:
+        out_dtype = dpnp.float32
+        if has_support_aspect64() and dtype != dpnp.float32:
+            out_dtype = dpnp.float64
+
+    return out_dtype
+
+
 def get_complex_dtypes(device=None):
     """
     Build a list of complex types supported by DPNP based on device capabilities.
