@@ -1,11 +1,11 @@
 .. _routines.creation:
 
-Array creation routines
+Array Creation Routines
 =======================
 
 .. https://docs.scipy.org/doc/numpy/reference/routines.array-creation.html
 
-From shape or value
+Basic creation routines
 -----------------------
 
 .. autosummary::
@@ -24,7 +24,7 @@ From shape or value
    dpnp.full_like
 
 
-From existing data
+Creation from other data
 ------------------------
 
 .. autosummary::
@@ -35,7 +35,6 @@ From existing data
    dpnp.asarray
    dpnp.asanyarray
    dpnp.ascontiguousarray
-   dpnp.astype
    dpnp.copy
    dpnp.frombuffer
    dpnp.from_dlpack
@@ -62,7 +61,7 @@ Numerical ranges
    dpnp.ogrid
 
 
-Building matrices
+Matrix creation
 ---------------
 
 .. autosummary::
@@ -83,4 +82,5 @@ The Matrix class
    :toctree: generated/
    :nosignatures:
 
+   dpnp.mat
    dpnp.bmat
