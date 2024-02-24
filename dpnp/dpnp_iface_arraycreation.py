@@ -2087,7 +2087,7 @@ def geomspace(
     *,
     dtype=None,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
     endpoint=True,
     axis=0,
@@ -2124,7 +2124,7 @@ def geomspace(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
     endpoint : bool, optional
@@ -2309,7 +2309,7 @@ def linspace(
     *,
     dtype=None,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
     endpoint=True,
     retstep=False,
@@ -2345,7 +2345,7 @@ def linspace(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
     endpoint : bool, optional
@@ -2526,7 +2526,7 @@ def logspace(
     num=50,
     *,
     device=None,
-    usm_type="device",
+    usm_type=None,
     sycl_queue=None,
     endpoint=True,
     base=10.0,
@@ -2563,7 +2563,7 @@ def logspace(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
     endpoint : bool, optional
