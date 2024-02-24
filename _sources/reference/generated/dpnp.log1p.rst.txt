@@ -3,4 +3,4 @@
 
 .. currentmodule:: dpnp
 
-.. autofunction:: log1p
+.. autodata:: log1p
