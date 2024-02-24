@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev0+25.gbfe18c7317 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev0+16.g4cc0dba07b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=f06f18e5"></script>
+        <script src="../../_static/documentation_options.js?v=dda5e180"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+25.gbfe18c7317
+                0.15.0dev0+16.g4cc0dba07b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -134,14 +134,12 @@
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">dpnp_kron</span><span class="p">,</span>
-<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">call_origin</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_dot</span><span class="p">,</span>
+    <span class="n">dpnp_kron</span><span class="p">,</span>
     <span class="n">dpnp_matmul</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -409,22 +407,72 @@
 
 <div class="viewcode-block" id="kron">
 <a class="viewcode-back" href="../../reference/generated/dpnp.kron.html#dpnp.kron">[docs]</a>
-<span class="k">def</span> <span class="nf">kron</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">kron</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the kronecker product of two arrays.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.kron`.</span>
 
-<span class="sd">    .. seealso:: :obj:`dpnp.outer` returns the outer product of two arrays.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        First input array. Both inputs `a` and `b` can not be scalars</span>
+<span class="sd">        at the same time.</span>
+<span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        Second input array. Both inputs `a` and `b` can not be scalars</span>
+<span class="sd">        at the same time.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Returns the Kronecker product.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.outer` : Returns the outer product of two arrays.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 10, 100])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([5, 6, 7])</span>
+<span class="sd">    &gt;&gt;&gt; np.kron(a, b)</span>
+<span class="sd">    array([  5,   6,   7, ..., 500, 600, 700])</span>
+<span class="sd">    &gt;&gt;&gt; np.kron(b, a)</span>
+<span class="sd">    array([  5,  50, 500, ...,   7,  70, 700])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.kron(np.eye(2), np.ones((2,2)))</span>
+<span class="sd">    array([[1.,  1.,  0.,  0.],</span>
+<span class="sd">           [1.,  1.,  0.,  0.],</span>
+<span class="sd">           [0.,  0.,  1.,  1.],</span>
+<span class="sd">           [0.,  0.,  1.,  1.]])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.arange(100).reshape((2,5,2,5))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(24).reshape((2,3,4))</span>
+<span class="sd">    &gt;&gt;&gt; c = np.kron(a,b)</span>
+<span class="sd">    &gt;&gt;&gt; c.shape</span>
+<span class="sd">    (2, 10, 6, 20)</span>
+<span class="sd">    &gt;&gt;&gt; I = (1,3,0,2)</span>
+<span class="sd">    &gt;&gt;&gt; J = (0,2,1)</span>
+<span class="sd">    &gt;&gt;&gt; J1 = (0,) + J             # extend to ndim=4</span>
+<span class="sd">    &gt;&gt;&gt; S1 = (1,) + b.shape</span>
+<span class="sd">    &gt;&gt;&gt; K = tuple(np.array(I) * np.array(S1) + np.array(J1))</span>
+<span class="sd">    &gt;&gt;&gt; c[K] == a[I]*b[J]</span>
+<span class="sd">    array(True)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_kron</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">kron</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">b_ndim</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">a_ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">b_ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_kron</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">b_ndim</span><span class="p">)</span></div>
 
 
 
