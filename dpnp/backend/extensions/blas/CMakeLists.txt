@@ -32,6 +32,8 @@ set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/dotu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm_batch.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/nrm2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/nrm2_batch.cpp
 )
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})

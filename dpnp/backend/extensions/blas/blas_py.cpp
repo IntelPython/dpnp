@@ -32,6 +32,7 @@
 
 #include "dot.hpp"
 #include "gemm.hpp"
+#include "nrm2.hpp"
 
 namespace blas_ext = dpnp::backend::ext::blas;
 namespace py = pybind11;
@@ -44,6 +45,7 @@ void init_dispatch_tables(void)
     blas_ext::init_dotu_dispatch_table();
     blas_ext::init_gemm_batch_dispatch_table();
     blas_ext::init_gemm_dispatch_table();
+    blas_ext::init_nrm2_dispatch_table();
 }
 
 PYBIND11_MODULE(_blas_impl, m)
@@ -90,6 +92,22 @@ PYBIND11_MODULE(_blas_impl, m)
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
               py::arg("result"), py::arg("batch_size"), py::arg("stridea"),
               py::arg("strideb"), py::arg("stridec"),
+              py::arg("depends") = py::list());
+    }
+
+    {
+        m.def("_nrm2", &blas_ext::nrm2,
+              "Call `nrm2` from OneMKL BLAS library to"
+              "compute the Euclidean norm of a vector.",
+              py::arg("sycl_queue"), py::arg("VectorX"), py::arg("result"),
+              py::arg("depends") = py::list());
+    }
+
+    {
+        m.def("_nrm2_batch", &blas_ext::nrm2_batch,
+              "Call `nrm2` from OneMKL BLAS library to compute"
+              "the Euclidean norm of a batch of vectors.",
+              py::arg("sycl_queue"), py::arg("arrayX"), py::arg("result"),
               py::arg("depends") = py::list());
     }
 }
