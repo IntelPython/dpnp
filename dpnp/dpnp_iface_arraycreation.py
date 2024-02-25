@@ -188,6 +188,9 @@ def arange(
 
     dpnp.check_limitations(like=like)
 
+    if usm_type is None:
+        usm_type = "device"
+
     return dpnp_container.arange(
         start,
         stop=stop,
@@ -1140,6 +1143,10 @@ def empty(
     """
 
     dpnp.check_limitations(order=order, like=like)
+
+    if usm_type is None:
+        usm_type = "device"
+
     return dpnp_container.empty(
         shape,
         dtype=dtype,
@@ -1349,6 +1356,9 @@ def eye(
     """
 
     dpnp.check_limitations(order=order, like=like)
+
+    if usm_type is None:
+        usm_type = "device"
 
     return dpnp_container.eye(
         N,
@@ -2968,6 +2978,9 @@ def ones(
 
     dpnp.check_limitations(order=order, like=like)
 
+    if usm_type is None:
+        usm_type = "device"
+
     return dpnp_container.ones(
         shape,
         dtype=dtype,
@@ -3555,6 +3568,9 @@ def zeros(
     """
 
     dpnp.check_limitations(order=order, like=like)
+
+    if usm_type is None:
+        usm_type = "device"
 
     return dpnp_container.zeros(
         shape,

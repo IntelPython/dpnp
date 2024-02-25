@@ -211,7 +211,7 @@ def test_array_creation_from_2d_array(func, args, usm_type_x, usm_type_y):
         pytest.param("zeros", [(2, 2)], {}),
     ],
 )
-@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
 def test_array_creation_from_scratch(func, arg, kwargs, usm_type):
     dpnp_kwargs = dict(kwargs)
     dpnp_kwargs["usm_type"] = usm_type
@@ -221,12 +221,29 @@ def test_array_creation_from_scratch(func, arg, kwargs, usm_type):
     numpy_kwargs["dtype"] = dpnp_array.dtype
     numpy_array = getattr(numpy, func)(*arg, **numpy_kwargs)
 
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
+
     assert_dtype_allclose(dpnp_array, numpy_array)
     assert dpnp_array.shape == numpy_array.shape
     assert dpnp_array.usm_type == usm_type
 
 
-@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
+def test_array_creation_empty(usm_type):
+    dpnp_array = dp.empty((3, 4), usm_type=usm_type)
+    numpy_array = numpy.empty((3, 4))
+
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
+
+    assert dpnp_array.shape == numpy_array.shape
+    assert dpnp_array.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
 def test_array_creation_from_file(usm_type):
     with tempfile.TemporaryFile() as fh:
         fh.write(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08")
@@ -238,12 +255,16 @@ def test_array_creation_from_file(usm_type):
         fh.seek(0)
         dpnp_array = dp.fromfile(fh, usm_type=usm_type)
 
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
+
     assert_dtype_allclose(dpnp_array, numpy_array)
     assert dpnp_array.shape == numpy_array.shape
     assert dpnp_array.usm_type == usm_type
 
 
-@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
 def test_array_creation_load_txt(usm_type):
     with tempfile.TemporaryFile() as fh:
         fh.write(b"1 2 3 4")
@@ -254,6 +275,10 @@ def test_array_creation_load_txt(usm_type):
 
         fh.seek(0)
         dpnp_array = dp.loadtxt(fh, usm_type=usm_type)
+
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
 
     assert_dtype_allclose(dpnp_array, numpy_array)
     assert dpnp_array.shape == numpy_array.shape
@@ -694,10 +719,14 @@ def test_indices(usm_type):
     assert x.usm_type == usm_type
 
 
-@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
 @pytest.mark.parametrize("func", ["mgrid", "ogrid"])
 def test_grid(usm_type, func):
-    assert getattr(dp, func)(usm_type=usm_type)[0:4].usm_type == usm_type
+    if usm_type is None:
+        # assert against default USM type
+        assert getattr(dp, func)(usm_type=usm_type)[0:4].usm_type == "device"
+    else:
+        assert getattr(dp, func)(usm_type=usm_type)[0:4].usm_type == usm_type
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
