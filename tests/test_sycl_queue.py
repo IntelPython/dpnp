@@ -89,6 +89,12 @@ def vvsort(val, vec, size, xp):
         pytest.param(
             "frombuffer", [b"\x01\x02\x03\x04"], {"dtype": dpnp.int32}
         ),
+        pytest.param(
+            "fromfunction",
+            [(lambda i, j: i + j), (3, 3)],
+            {"dtype": dpnp.int32},
+        ),
+        pytest.param("fromiter", [[1, 2, 3, 4]], {"dtype": dpnp.int64}),
         pytest.param("fromstring", ["1, 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
@@ -335,6 +341,26 @@ def test_array_creation_from_file(device):
 
         fh.seek(0)
         dpnp_array = dpnp.fromfile(fh, device=device)
+
+    assert_dtype_allclose(dpnp_array, numpy_array)
+    assert dpnp_array.sycl_device == device
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_array_creation_load_txt(device):
+    with tempfile.TemporaryFile() as fh:
+        fh.write(b"1 2 3 4")
+        fh.flush()
+
+        fh.seek(0)
+        numpy_array = numpy.loadtxt(fh)
+
+        fh.seek(0)
+        dpnp_array = dpnp.loadtxt(fh, device=device)
 
     assert_dtype_allclose(dpnp_array, numpy_array)
     assert dpnp_array.sycl_device == device
