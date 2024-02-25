@@ -2884,21 +2884,16 @@ class TestMatmul:
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
-    def test_matmul_strided(self):
+    @pytest.mark.parametrize(
+        "stride",
+        [(-2, -2, -2, -2), (2, 2, 2, 2), (-2, 2, -2, 2), (2, -2, 2, -2)],
+        ids=["-2", "2", "(-2, 2)", "(2, -2)"],
+    )
+    def test_matmul_strided(self, stride):
         for dim in [1, 2, 3, 4]:
             A = numpy.random.rand(*([20] * dim))
             B = dpnp.asarray(A)
-            # positive stride
-            slices = tuple(slice(None, None, 2) for _ in range(dim))
-            a = A[slices]
-            b = B[slices]
-
-            result = dpnp.matmul(b, b)
-            expected = numpy.matmul(a, a)
-            assert_dtype_allclose(result, expected)
-
-            # negative stride
-            slices = tuple(slice(None, None, -2) for _ in range(dim))
+            slices = tuple(slice(None, None, stride[i]) for i in range(dim))
             a = A[slices]
             b = B[slices]
 

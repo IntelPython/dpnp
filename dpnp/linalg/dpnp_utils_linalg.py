@@ -28,6 +28,7 @@ import dpctl
 import dpctl.tensor._tensor_impl as ti
 import numpy
 from numpy import prod
+from numpy.core.numeric import normalize_axis_index
 
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
@@ -42,6 +43,7 @@ __all__ = [
     "dpnp_inv",
     "dpnp_matrix_rank",
     "dpnp_multi_dot",
+    "dpnp_norm",
     "dpnp_pinv",
     "dpnp_qr",
     "dpnp_slogdet",
@@ -463,6 +465,35 @@ def _multi_dot_three(A, B, C, out=None):
         return dpnp.dot(dpnp.dot(A, B), C, out=out)
 
     return dpnp.dot(A, dpnp.dot(B, C), out=out)
+
+
+def _multi_svd_norm(x, row_axis, col_axis, op):
+    """
+    Compute a function of the singular values of the 2-D matrices in `x`.
+
+    This is a private utility function used by `dpnp.linalg.norm()`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+    row_axis, col_axis : int
+        The axes of `x` that hold the 2-D matrices.
+    op : callable
+        This should be either `dpnp.amin` or `dpnp.amax` or `dpnp.sum`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        If `x` is 2-D, the return values is a 0-d array.
+        Otherwise, it is an array with ``x.ndim - 2`` dimensions.
+        The return values are either the minimum or maximum or sum of the
+        singular values of the matrices, depending on whether `op`
+        is `dpnp.amin` or `dpnp.amax` or `dpnp.sum`.
+
+    """
+    y = dpnp.moveaxis(x, (row_axis, col_axis), (-2, -1))
+    result = op(dpnp.linalg.svd(y, compute_uv=False), axis=-1)
+    return result
 
 
 def _real_type(dtype, device=None):
@@ -1132,6 +1163,124 @@ def dpnp_multi_dot(n, arrays, out=None):
         result = _multi_dot(arrays, order, 0, n - 1, out=out)
 
     return result
+
+
+def dpnp_norm(x, ord=None, axis=None, keepdims=False):
+    """Compute matrix or vector norm."""
+
+    if not dpnp.issubdtype(x.dtype, dpnp.inexact):
+        x_copy = dpnp.empty_like(x, dtype=dpnp.default_float_type(x.device))
+        ht_copy_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=dpnp.get_usm_ndarray(x),
+            dst=x_copy.get_array(),
+            sycl_queue=x.sycl_queue,
+        )
+        ht_copy_ev.wait()
+        x = x_copy
+
+    ndim = x.ndim
+    # Immediately handle some default, simple, fast, and common cases.
+    if axis is None:
+        if (
+            (ord is None)
+            or (ord in ("f", "fro") and ndim == 2)
+            or (ord == 2 and ndim == 1)
+        ):
+            # TODO: use order="K" when it is supported in dpnp.ravel
+            x = dpnp.ravel(x)
+            if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
+                x_real = x.real
+                x_imag = x.imag
+                sqnorm = dpnp.dot(x_real, x_real) + dpnp.dot(x_imag, x_imag)
+            else:
+                sqnorm = dpnp.dot(x, x)
+            ret = dpnp.sqrt(sqnorm)
+            if keepdims:
+                ret = ret.reshape((1,) * ndim)
+            return ret
+
+    # Normalize the `axis` argument to a tuple.
+    if axis is None:
+        axis = tuple(range(ndim))
+    elif not isinstance(axis, tuple):
+        try:
+            axis = int(axis)
+        except Exception as e:
+            raise TypeError(
+                "'axis' must be None, an integer or a tuple of integers"
+            ) from e
+        axis = (axis,)
+
+    if len(axis) == 1:
+        axis = normalize_axis_index(axis[0], ndim)
+        if ord == dpnp.inf:
+            return dpnp.abs(x).max(axis=axis, keepdims=keepdims)
+        elif ord == -dpnp.inf:
+            return dpnp.abs(x).min(axis=axis, keepdims=keepdims)
+        elif ord == 0:
+            # Zero norm
+            # Convert to Python float in accordance with NumPy
+            return (
+                (x != 0).astype(x.real.dtype).sum(axis=axis, keepdims=keepdims)
+            )
+        elif ord == 1:
+            # special case for speedup
+            return dpnp.abs(x).sum(axis=axis, keepdims=keepdims)
+        elif ord is None or ord == 2:
+            # special case for speedup
+            s = (dpnp.conj(x) * x).real
+            return dpnp.sqrt(dpnp.sum(s, axis=axis, keepdims=keepdims))
+        else:
+            try:
+                float(ord)
+            except (TypeError, ValueError):
+                raise ValueError(f"Invalid norm order '{ord}' for vectors")
+
+            absx = dpnp.abs(x)
+            absx **= ord
+            ret = absx.sum(axis=axis, keepdims=keepdims)
+            ret **= numpy.reciprocal(ord, dtype=ret.dtype)
+            return ret
+    elif len(axis) == 2:
+        row_axis, col_axis = axis
+        row_axis = normalize_axis_index(row_axis, ndim)
+        col_axis = normalize_axis_index(col_axis, ndim)
+        if row_axis == col_axis:
+            raise ValueError("Duplicate axes given.")
+        if ord == 2:
+            ret = _multi_svd_norm(x, row_axis, col_axis, dpnp.amax)
+        elif ord == -2:
+            ret = _multi_svd_norm(x, row_axis, col_axis, dpnp.amin)
+        elif ord == 1:
+            if col_axis > row_axis:
+                col_axis -= 1
+            ret = dpnp.abs(x).sum(axis=row_axis).max(axis=col_axis)
+        elif ord == dpnp.inf:
+            if row_axis > col_axis:
+                row_axis -= 1
+            ret = dpnp.abs(x).sum(axis=col_axis).max(axis=row_axis)
+        elif ord == -1:
+            if col_axis > row_axis:
+                col_axis -= 1
+            ret = dpnp.abs(x).sum(axis=row_axis).min(axis=col_axis)
+        elif ord == -dpnp.inf:
+            if row_axis > col_axis:
+                row_axis -= 1
+            ret = dpnp.abs(x).sum(axis=col_axis).min(axis=row_axis)
+        elif ord in [None, "fro", "f"]:
+            ret = dpnp.sqrt(dpnp.sum((dpnp.conj(x) * x).real, axis=axis))
+        elif ord == "nuc":
+            ret = _multi_svd_norm(x, row_axis, col_axis, dpnp.sum)
+        else:
+            raise ValueError("Invalid norm order for matrices.")
+        if keepdims:
+            ret_shape = list(x.shape)
+            ret_shape[axis[0]] = 1
+            ret_shape[axis[1]] = 1
+            ret = ret.reshape(ret_shape)
+        return ret
+    else:
+        raise ValueError("Improper number of dimensions to norm.")
 
 
 def dpnp_pinv(a, rcond=1e-15, hermitian=False):
