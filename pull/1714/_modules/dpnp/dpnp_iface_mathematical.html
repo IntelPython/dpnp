@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev0+39.g5cce810e7c documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev0+44.g0afa98ec08 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=a9d98463"></script>
+        <script src="../../_static/documentation_options.js?v=ec402551"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+39.g5cce810e7c
+                0.15.0dev0+44.g0afa98ec08
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -556,7 +556,7 @@
 <span class="sd">    a_min, a_max : {dpnp.ndarray, usm_ndarray, None}</span>
 <span class="sd">        Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.</span>
 <span class="sd">        Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        The results will be placed in this array. It may be the input array for in-place clipping.</span>
 <span class="sd">        `out` must be of the right shape to hold the output. Its type is preserved.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
@@ -730,8 +730,8 @@
 <span class="sd">    out : ({None, dpnp.ndarray, usm_ndarray}, optional):</span>
 <span class="sd">        Output array to populate.</span>
 <span class="sd">        Array must have the correct shape and the expected data type.</span>
-<span class="sd">    order : ({&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}, optional):</span>
-<span class="sd">        Memory layout of the newly output array, if parameter `out` is `None`.</span>
+<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="sd">        Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="sd">        Default: &quot;K&quot;.</span>
 
 <span class="sd">    Returns</span>
@@ -3060,7 +3060,7 @@
 <span class="sd">        data type of `a`, the input array elements are cast to the</span>
 <span class="sd">        specified data type before computing the sum.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must</span>
 <span class="sd">        have the same shape as the expected output, but the type of</span>
 <span class="sd">        the output values will be cast if necessary.</span>
