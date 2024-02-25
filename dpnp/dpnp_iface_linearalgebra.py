@@ -44,14 +44,12 @@ from numpy.core.numeric import normalize_axis_tuple
 import dpnp
 
 # pylint: disable=no-name-in-module
-from .dpnp_algo import (
-    dpnp_kron,
-)
 from .dpnp_utils import (
     call_origin,
 )
 from .dpnp_utils.dpnp_utils_linearalgebra import (
     dpnp_dot,
+    dpnp_kron,
     dpnp_matmul,
 )
 
@@ -82,7 +80,7 @@ def dot(a, b, out=None):
     b : {dpnp.ndarray, usm_ndarray, scalar}
         Second input array. Both inputs `a` and `b` can not be scalars
         at the same time.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape and data type as the expected output and should be
         C-contiguous. If these conditions are not met, an exception is
@@ -305,22 +303,72 @@ def inner(a, b):
     return dpnp.tensordot(a, b, axes=(-1, -1))
 
 
-def kron(x1, x2):
+def kron(a, b):
     """
     Returns the kronecker product of two arrays.
 
     For full documentation refer to :obj:`numpy.kron`.
 
-    .. seealso:: :obj:`dpnp.outer` returns the outer product of two arrays.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray, scalar}
+        First input array. Both inputs `a` and `b` can not be scalars
+        at the same time.
+    b : {dpnp.ndarray, usm_ndarray, scalar}
+        Second input array. Both inputs `a` and `b` can not be scalars
+        at the same time.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Returns the Kronecker product.
+
+    See Also
+    --------
+    :obj:`dpnp.outer` : Returns the outer product of two arrays.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 10, 100])
+    >>> b = np.array([5, 6, 7])
+    >>> np.kron(a, b)
+    array([  5,   6,   7, ..., 500, 600, 700])
+    >>> np.kron(b, a)
+    array([  5,  50, 500, ...,   7,  70, 700])
+
+    >>> np.kron(np.eye(2), np.ones((2,2)))
+    array([[1.,  1.,  0.,  0.],
+           [1.,  1.,  0.,  0.],
+           [0.,  0.,  1.,  1.],
+           [0.,  0.,  1.,  1.]])
+
+    >>> a = np.arange(100).reshape((2,5,2,5))
+    >>> b = np.arange(24).reshape((2,3,4))
+    >>> c = np.kron(a,b)
+    >>> c.shape
+    (2, 10, 6, 20)
+    >>> I = (1,3,0,2)
+    >>> J = (0,2,1)
+    >>> J1 = (0,) + J             # extend to ndim=4
+    >>> S1 = (1,) + b.shape
+    >>> K = tuple(np.array(I) * np.array(S1) + np.array(J1))
+    >>> c[K] == a[I]*b[J]
+    array(True)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-    if x1_desc and x2_desc:
-        return dpnp_kron(x1_desc, x2_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
-    return call_origin(numpy.kron, x1, x2)
+    if dpnp.isscalar(a) or dpnp.isscalar(b):
+        return dpnp.multiply(a, b)
+
+    a_ndim = a.ndim
+    b_ndim = b.ndim
+    if a_ndim == 0 or b_ndim == 0:
+        return dpnp.multiply(a, b)
+
+    return dpnp_kron(a, b, a_ndim, b_ndim)
 
 
 def matmul(
@@ -345,11 +393,11 @@ def matmul(
 
     Parameters
     ----------
-    x1 : {dpnp_array, usm_ndarray}
+    x1 : {dpnp.ndarray, usm_ndarray}
         First input array.
-    x2 : {dpnp_array, usm_ndarray}
+    x2 : {dpnp.ndarray, usm_ndarray}
         Second input array.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         a shape that matches the signature `(n,k),(k,m)->(n,m)` but the type
         (of the calculated values) will be cast if necessary. Default: ``None``.

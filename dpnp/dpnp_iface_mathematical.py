@@ -449,7 +449,7 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     a_min, a_max : {dpnp.ndarray, usm_ndarray, None}
         Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.
         Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         The results will be placed in this array. It may be the input array for in-place clipping.
         `out` must be of the right shape to hold the output. Its type is preserved.
     order : {"C", "F", "A", "K", None}, optional
@@ -614,8 +614,8 @@ def copysign(
     out : ({None, dpnp.ndarray, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
-    order : ({'C', 'F', 'A', 'K'}, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 
     Returns
@@ -2848,7 +2848,7 @@ def sum(
         data type of `a`, the input array elements are cast to the
         specified data type before computing the sum.
         Default: ``None``.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must
         have the same shape as the expected output, but the type of
         the output values will be cast if necessary.

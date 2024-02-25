@@ -56,6 +56,7 @@ __all__ = [
     "array_equal",
     "asnumpy",
     "astype",
+    "check_limitations",
     "check_supported_arrays_type",
     "convert_single_elem_array_to_scalar",
     "default_float_type",
@@ -230,6 +231,58 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True):
         return x1
 
     return dpnp_array._create_from_usm_ndarray(array_obj)
+
+
+def check_limitations(
+    order=None, subok=False, like=None, initial=None, where=True
+):
+    """
+    Checking limitation kwargs for their supported values.
+
+    Parameter `order` is only supported with values ``"C"``, ``"F"``
+    and ``None``.
+    Parameter `subok` is only supported with default value ``False``.
+    Parameter `like` is only supported with default value ``None``.
+    Parameter `initial` is only supported with default value ``None``.
+    Parameter `where` is only supported with default value ``True``.
+
+    Raises
+    ------
+    NotImplementedError
+        If any input kwargs is of unsupported value.
+
+    """
+
+    if order in ("A", "a", "K", "k"):
+        raise NotImplementedError(
+            "Keyword argument `order` is supported only with "
+            f"values ``'C'`` and ``'F'``, but got {order}"
+        )
+    if order not in ("C", "c", "F", "f", None):
+        raise ValueError(
+            "Unrecognized `order` keyword value, expecting "
+            f"``'C'`` or ``'F'``, but got {order}"
+        )
+    if like is not None:
+        raise NotImplementedError(
+            "Keyword argument `like` is supported only with "
+            f"default value ``None``, but got {like}"
+        )
+    if subok is not False:
+        raise NotImplementedError(
+            "Keyword argument `subok` is supported only with "
+            f"default value ``False``, but got {subok}"
+        )
+    if initial is not None:
+        raise NotImplementedError(
+            "Keyword argument `initial` is only supported with "
+            f"default value ``None``, but got {initial}"
+        )
+    if where is not True:
+        raise NotImplementedError(
+            "Keyword argument `where` is supported only with "
+            f"default value ``True``, but got {where}"
+        )
 
 
 def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):

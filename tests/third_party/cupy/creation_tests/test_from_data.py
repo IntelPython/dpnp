@@ -117,7 +117,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="src_order")
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes_combination(names=("dtype1", "dtype2"))
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_array_from_list_of_cupy(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
@@ -127,15 +127,6 @@ class TestFromData(unittest.TestCase):
             testing.shaped_arange((3, 4), xp, dtype1, src_order),
             testing.shaped_arange((3, 4), xp, dtype2, src_order),
         ]
-
-        # need to align with the use case when device doesn't has aspect fp64
-        if xp is numpy and not has_support_aspect64():
-            dt = numpy.promote_types(dtype1, dtype2)
-            if dt == numpy.float64:
-                return numpy.array(a, order=dst_order, dtype=numpy.float32)
-            elif dt == numpy.complex128:
-                return numpy.array(a, order=dst_order, dtype=numpy.complex64)
-
         return xp.array(a, order=dst_order)
 
     @testing.for_orders("CFAK", name="src_order")
@@ -501,9 +492,6 @@ class TestFromData(unittest.TestCase):
         # happens to work before the change in #5828
         return b + b
 
-    @pytest.mark.skip(
-        "TODO: remove once dpctl gh-1376 is merged to gold branch"
-    )
     @testing.for_CF_orders()
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -551,7 +539,6 @@ class TestFromData(unittest.TestCase):
             fh.seek(0)
             return xp.fromfile(fh, dtype="u1")
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_fromfunction(self, xp):
         def function(i, j):
@@ -559,7 +546,6 @@ class TestFromData(unittest.TestCase):
 
         return xp.fromfunction(function, shape=(3, 3), dtype=int)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_fromiter(self, xp):
         iterable = (x * x for x in range(5))
@@ -573,7 +559,6 @@ class TestFromData(unittest.TestCase):
     def test_frombuffer(self, xp):
         return xp.frombuffer(b"\x01\x02", dtype=numpy.uint8)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_loadtxt(self, xp):
         with tempfile.TemporaryFile() as fh:
@@ -610,7 +595,7 @@ max_cuda_array_interface_version = 1
 @testing.parameterize(
     *testing.product(
         {
-            "ver": (max_cuda_array_interface_version,),
+            "ver": tuple(range(max_cuda_array_interface_version + 1)),
             "strides": (False, None, True),
         }
     )

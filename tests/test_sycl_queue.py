@@ -9,6 +9,7 @@ from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import get_usm_allocations
 
 from .helper import (
     assert_dtype_allclose,
@@ -93,6 +94,12 @@ def vvsort(val, vec, size, xp):
         pytest.param(
             "frombuffer", [b"\x01\x02\x03\x04"], {"dtype": dpnp.int32}
         ),
+        pytest.param(
+            "fromfunction",
+            [(lambda i, j: i + j), (3, 3)],
+            {"dtype": dpnp.int32},
+        ),
+        pytest.param("fromiter", [[1, 2, 3, 4]], {"dtype": dpnp.int64}),
         pytest.param("fromstring", ["1, 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
@@ -345,6 +352,26 @@ def test_array_creation_from_file(device):
 
 
 @pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_array_creation_load_txt(device):
+    with tempfile.TemporaryFile() as fh:
+        fh.write(b"1 2 3 4")
+        fh.flush()
+
+        fh.seek(0)
+        numpy_array = numpy.loadtxt(fh)
+
+        fh.seek(0)
+        dpnp_array = dpnp.loadtxt(fh, device=device)
+
+    assert_dtype_allclose(dpnp_array, numpy_array)
+    assert dpnp_array.sycl_device == device
+
+
+@pytest.mark.parametrize(
     "device_x",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
@@ -584,6 +611,7 @@ def test_reduce_hypot(device):
             "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
+        pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param(
             "matmul", [[1.0, 0.0], [0.0, 1.0]], [[4.0, 1.0], [1.0, 2.0]]
@@ -968,6 +996,56 @@ def test_modf(device):
 
     assert_sycl_queue_equal(result1_queue, expected_queue)
     assert_sycl_queue_equal(result2_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_multi_dot(device):
+    numpy_array_list = []
+    dpnp_array_list = []
+    for num_array in [3, 5]:  # number of arrays in multi_dot
+        for _ in range(num_array):  # creat arrays one by one
+            a = numpy.random.rand(10, 10)
+            b = dpnp.array(a, device=device)
+
+            numpy_array_list.append(a)
+            dpnp_array_list.append(b)
+
+        result = dpnp.linalg.multi_dot(dpnp_array_list)
+        expected = numpy.linalg.multi_dot(numpy_array_list)
+        assert_dtype_allclose(result, expected)
+
+        _, exec_q = get_usm_allocations(dpnp_array_list)
+        assert_sycl_queue_equal(result.sycl_queue, exec_q)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_out_multi_dot(device):
+    numpy_array_list = []
+    dpnp_array_list = []
+    for num_array in [3, 5]:  # number of arrays in multi_dot
+        for _ in range(num_array):  # creat arrays one by one
+            a = numpy.random.rand(10, 10)
+            b = dpnp.array(a, device=device)
+
+            numpy_array_list.append(a)
+            dpnp_array_list.append(b)
+
+        dp_out = dpnp.empty((10, 10), device=device)
+        result = dpnp.linalg.multi_dot(dpnp_array_list, out=dp_out)
+        assert result is dp_out
+        expected = numpy.linalg.multi_dot(numpy_array_list)
+        assert_dtype_allclose(result, expected)
+
+        _, exec_q = get_usm_allocations(dpnp_array_list)
+        assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
 
 @pytest.mark.parametrize("type", ["complex128"])

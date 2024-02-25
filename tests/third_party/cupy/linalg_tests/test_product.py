@@ -392,6 +392,19 @@ class TestProduct:
         b = testing.shaped_arange((4, 5), xp, dtype)
         return xp.kron(a, b)
 
+    @pytest.mark.parametrize(
+        "a, b",
+        [
+            # (2, 3.0),  # dpnp does not support both inputs as scalar
+            (2, [[0, -1j / 2], [1j / 2, 0]]),
+            ([[0, -1j / 2], [1j / 2, 0]], 2),
+        ],
+    )
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
+    def test_kron_accepts_numbers_as_arguments(self, a, b, xp):
+        args = [xp.array(arg) if type(arg) == list else arg for arg in [a, b]]
+        return xp.kron(*args)
+
 
 @testing.parameterize(
     *testing.product(
