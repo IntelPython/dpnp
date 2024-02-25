@@ -35,7 +35,7 @@ import dpnp.backend.extensions.blas._blas_impl as bi
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 
-__all__ = ["dpnp_cross", "dpnp_dot", "dpnp_matmul"]
+__all__ = ["dpnp_cross", "dpnp_dot", "dpnp_kron", "dpnp_matmul"]
 
 
 def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
@@ -474,6 +474,34 @@ def dpnp_cross(a, b, cp, exec_q):
 
     dpctl.SyclEvent.wait_for(host_events)
     return cp
+
+
+def dpnp_kron(a, b, a_ndim, b_ndim):
+    """Returns the kronecker product of two arrays."""
+
+    a_shape = a.shape
+    b_shape = b.shape
+    if not a.flags.contiguous:
+        a = dpnp.reshape(a, a_shape)
+    if not b.flags.contiguous:
+        b = dpnp.reshape(b, b_shape)
+
+    # Equalise the shapes by prepending smaller one with 1s
+    a_shape = (1,) * max(0, b_ndim - a_ndim) + a_shape
+    b_shape = (1,) * max(0, a_ndim - b_ndim) + b_shape
+
+    # Insert empty dimensions
+    a_arr = dpnp.expand_dims(a, axis=tuple(range(b_ndim - a_ndim)))
+    b_arr = dpnp.expand_dims(b, axis=tuple(range(a_ndim - b_ndim)))
+
+    # Compute the product
+    ndim = max(b_ndim, a_ndim)
+    a_arr = dpnp.expand_dims(a_arr, axis=tuple(range(1, 2 * ndim, 2)))
+    b_arr = dpnp.expand_dims(b_arr, axis=tuple(range(0, 2 * ndim, 2)))
+    result = dpnp.multiply(a_arr, b_arr)
+
+    # Reshape back
+    return result.reshape(tuple(numpy.multiply(a_shape, b_shape)))
 
 
 def dpnp_dot(a, b, /, out=None, *, conjugate=False):
