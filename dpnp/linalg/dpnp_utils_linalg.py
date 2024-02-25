@@ -45,6 +45,7 @@ from dpctl.tensor._numpy_helper import normalize_axis_index
 from numpy import prod
 
 import dpnp
+import dpnp.backend.extensions.blas._blas_impl as bi
 import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.linalg import LinAlgError as LinAlgError
@@ -1095,8 +1096,10 @@ def _norm_int_axis(x, ord, axis, keepdims):
         return dpnp.abs(x).sum(axis=axis, keepdims=keepdims)
     if ord is None or ord == 2:
         # special case for speedup
-        s = (dpnp.conj(x) * x).real
-        return dpnp.sqrt(dpnp.sum(s, axis=axis, keepdims=keepdims))
+        # TODO: Maybe only call the batched implementation when number
+        # of elements is much more than a number of iterations of the
+        # loop with nrm2 call
+        return _nrm2_batch_backend(x, axis=axis, keepdims=keepdims)
     if isinstance(ord, (int, float)):
         absx = dpnp.abs(x)
         absx **= ord
@@ -1141,6 +1144,7 @@ def _norm_tuple_axis(x, ord, row_axis, col_axis, keepdims):
             row_axis -= 1
         ret = dpnp.abs(x).sum(axis=col_axis).min(axis=row_axis)
     elif ord in [None, "fro", "f"]:
+        # TODO: implement a modified version of nrm2_batch and use it here
         ret = dpnp.sqrt(dpnp.sum((dpnp.conj(x) * x).real, axis=axis))
     elif ord == "nuc":
         ret = _multi_svd_norm(x, row_axis, col_axis, dpnp.sum)
@@ -1184,6 +1188,71 @@ def _nrm2_last_axis(x):
     else:
         y = dpnp.square(x)
     return dpnp.sum(y, axis=-1, dtype=real_dtype)
+
+
+def _nrm2(x):
+    """Computes the Euclidean norm of a vector."""
+
+    result = dpnp.empty(
+        (),
+        dtype=x.real.dtype,
+        usm_type=x.usm_type,
+        sycl_queue=x.sycl_queue,
+    )
+
+    ht_ev, _ = bi._nrm2(
+        x.sycl_queue,
+        dpnp.get_usm_ndarray(x),
+        dpnp.get_usm_ndarray(result),
+        [],
+    )
+    ht_ev.wait()
+
+    return result
+
+
+def _nrm2_batch(x, axis):
+    """Computes the Euclidean norm of a batch of vectors."""
+    y = dpnp.moveaxis(x, axis, -1)
+    res_shape = y.shape[:-1]
+
+    res = dpnp.empty(
+        res_shape,
+        dtype=x.real.dtype,
+        sycl_queue=x.sycl_queue,
+        usm_type=x.usm_type,
+    )
+    for index in numpy.ndindex(*res_shape):
+        res[index] = _nrm2(y[index + (slice(None),)])
+
+    return res
+
+
+def _nrm2_batch_backend(x, axis=None, keepdims=False):
+    """Computes the Euclidean norm of a batch of vectors."""
+    y = dpnp.moveaxis(x, axis, -1)
+    res_shape = y.shape[:-1]
+    res = dpnp.empty(
+        res_shape,
+        dtype=x.real.dtype,
+        sycl_queue=x.sycl_queue,
+        usm_type=x.usm_type,
+    )
+
+    ht_ev, _ = bi._nrm2_batch(
+        x.sycl_queue,
+        dpnp.get_usm_ndarray(y),
+        dpnp.get_usm_ndarray(res),
+        [],
+    )
+    ht_ev.wait()
+
+    if keepdims:
+        res_shape = list(x.shape)
+        res_shape[axis] = 1
+        res = res.reshape(res_shape)
+
+    return res
 
 
 def _real_type(dtype, device=None):
@@ -2250,13 +2319,7 @@ def dpnp_norm(x, ord=None, axis=None, keepdims=False):
         ):
             # TODO: use order="K" when it is supported in dpnp.ravel
             x = dpnp.ravel(x)
-            if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
-                x_real = x.real
-                x_imag = x.imag
-                sqnorm = dpnp.dot(x_real, x_real) + dpnp.dot(x_imag, x_imag)
-            else:
-                sqnorm = dpnp.dot(x, x)
-            ret = dpnp.sqrt(sqnorm)
+            ret = _nrm2(x)
             if keepdims:
                 ret = ret.reshape((1,) * ndim)
             return ret
