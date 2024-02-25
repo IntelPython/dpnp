@@ -182,4 +182,25 @@ struct GemvTypePairSupportFactory
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL BLAS library provides support in oneapi::mkl::blas::nrm2<Tab, Tc>
+ * function.
+ *
+ * @tparam Tab Type of arrays containing input vectors A and B.
+ * @tparam Tc Type of array containing output.
+ */
+template <typename Tab, typename Tc>
+struct Nrm2TypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<Tab, float, Tc, float>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab, double, Tc, double>,
+        dpctl_td_ns::TypePairDefinedEntry<Tab, std::complex<float>, Tc, float>,
+        dpctl_td_ns::
+            TypePairDefinedEntry<Tab, std::complex<double>, Tc, double>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
 } // namespace dpnp::extensions::blas::types
