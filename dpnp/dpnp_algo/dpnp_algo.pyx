@@ -60,7 +60,6 @@ __all__ = [
 
 include "dpnp_algo_arraycreation.pxi"
 include "dpnp_algo_indexing.pxi"
-include "dpnp_algo_linearalgebra.pxi"
 include "dpnp_algo_logic.pxi"
 include "dpnp_algo_mathematical.pxi"
 include "dpnp_algo_sorting.pxi"
