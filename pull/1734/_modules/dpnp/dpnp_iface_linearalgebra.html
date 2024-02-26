@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev0+18.gd452fea7e5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=07ea9917"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+              <div class="version">
+                0.15.0dev0+18.gd452fea7e5
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dpnp.dpnp_iface_linearalgebra</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dpnp.dpnp_iface_linearalgebra</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># *****************************************************************************</span>
+<span class="c1"># Copyright (c) 2016-2024, Intel Corporation</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Redistribution and use in source and binary forms, with or without</span>
+<span class="c1"># modification, are permitted provided that the following conditions are met:</span>
+<span class="c1"># - Redistributions of source code must retain the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer.</span>
+<span class="c1"># - Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer in the documentation</span>
+<span class="c1">#   and/or other materials provided with the distribution.</span>
+<span class="c1">#</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
+<span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
+<span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
+<span class="c1"># LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR</span>
+<span class="c1"># CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF</span>
+<span class="c1"># SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS</span>
+<span class="c1"># INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN</span>
+<span class="c1"># CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)</span>
+<span class="c1"># ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF</span>
+<span class="c1"># THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c1"># *****************************************************************************</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Interface of the Linear Algebra part of the DPNP</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">This module is a face or public interface file for the library</span>
+<span class="sd">it contains:</span>
+<span class="sd"> - Interface functions</span>
+<span class="sd"> - documentation for the functions</span>
+<span class="sd"> - The functions parameters check</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
+
+<span class="kn">import</span> <span class="nn">dpnp</span>
+
+<span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">call_origin</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">dpnp_dot</span><span class="p">,</span>
+    <span class="n">dpnp_kron</span><span class="p">,</span>
+    <span class="n">dpnp_matmul</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;dot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;einsum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;einsum_path&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inner&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;kron&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;matmul&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;outer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tensordot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vdot&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="dot">
+<a class="viewcode-back" href="../../reference/generated/dpnp.dot.html#dpnp.dot">[docs]</a>
+<span class="k">def</span> <span class="nf">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dot product of `a` and `b`.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.dot`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        First input array. Both inputs `a` and `b` can not be scalars</span>
+<span class="sd">        at the same time.</span>
+<span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        Second input array. Both inputs `a` and `b` can not be scalars</span>
+<span class="sd">        at the same time.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have</span>
+<span class="sd">        the same shape and data type as the expected output and should be</span>
+<span class="sd">        C-contiguous. If these conditions are not met, an exception is</span>
+<span class="sd">        raised, instead of attempting to be flexible.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Returns the dot product of `a` and `b`.</span>
+<span class="sd">        If `out` is given, then it is returned.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.ndarray.dot` : Equivalent method.</span>
+<span class="sd">    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.</span>
+<span class="sd">    :obj:`dpnp.vdot` : Complex-conjugating dot product.</span>
+<span class="sd">    :obj:`dpnp.einsum` : Einstein summation convention.</span>
+<span class="sd">    :obj:`dpnp.matmul` : Matrix product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.linalg.multi_dot` : Chained dot product.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.dot(a, b)</span>
+<span class="sd">    array(14)</span>
+
+<span class="sd">    Neither argument is complex-conjugated:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.dot(np.array([2j, 3j]), np.array([2j, 3j]))</span>
+<span class="sd">    array(-13+0j)</span>
+
+<span class="sd">    For 2-D arrays it is the matrix product:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 0], [0, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([[4, 1], [2, 2]])</span>
+<span class="sd">    &gt;&gt;&gt; np.dot(a, b)</span>
+<span class="sd">    array([[4, 1],</span>
+<span class="sd">           [2, 2]])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.arange(3*4*5*6).reshape((3,4,5,6))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(3*4*5*6)[::-1].reshape((5,4,6,3))</span>
+<span class="sd">    &gt;&gt;&gt; np.dot(a, b)[2,3,2,1,2,2]</span>
+<span class="sd">    array(499128)</span>
+<span class="sd">    &gt;&gt;&gt; sum(a[2,3,2,:] * b[1,2,:,2])</span>
+<span class="sd">    array(499128)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only C-contiguous array is acceptable.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="c1"># TODO: investigate usage of axpy (axpy_batch) or scal</span>
+        <span class="c1"># functions from BLAS here instead of dpnp.multiply</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># TODO: investigate usage of axpy (axpy_batch) or scal</span>
+        <span class="c1"># functions from BLAS here instead of dpnp.multiply</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># NumPy does not allow casting even if it is safe</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;no&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># NumPy does not allow casting even if it is safe</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;no&quot;</span><span class="p">)</span>
+
+    <span class="c1"># TODO: investigate usage of matmul for some possible</span>
+    <span class="c1"># use cases instead of dpnp.tensordot</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">))</span>
+    <span class="c1"># NumPy does not allow casting even if it is safe</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;no&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="einsum">
+<a class="viewcode-back" href="../../reference/generated/dpnp.einsum.html#dpnp.einsum">[docs]</a>
+<span class="k">def</span> <span class="nf">einsum</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluates the Einstein summation convention on the operands.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.einsum`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Function is executed sequentially on CPU.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`dpnp.einsum_path` : Evaluates the lowest cost contraction order</span>
+<span class="sd">                              for an einsum expression.</span>
+<span class="sd">    :obj:`dpnp.dot` : Returns the dot product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.inner` : Returns the inner product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.outer` : Returns the outer product of two arrays.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="einsum_path">
+<a class="viewcode-back" href="../../reference/generated/dpnp.einsum_path.html#dpnp.einsum_path">[docs]</a>
+<span class="k">def</span> <span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    einsum_path(subscripts, *operands, optimize=&#39;greedy&#39;)</span>
+
+<span class="sd">    Evaluates the lowest cost contraction order for an einsum expression</span>
+<span class="sd">    by considering the creation of intermediate arrays.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.einsum_path`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Function is executed sequentially on CPU.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention</span>
+<span class="sd">                         on the operands.</span>
+<span class="sd">    :obj:`dpnp.dot` : Returns the dot product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.inner` : Returns the inner product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.outer` : Returns the outer product of two arrays.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">einsum_path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="inner">
+<a class="viewcode-back" href="../../reference/generated/dpnp.inner.html#dpnp.inner">[docs]</a>
+<span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the inner product of two arrays.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.inner`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        First input array. Both inputs `a` and `b` can not be scalars</span>
+<span class="sd">        at the same time.</span>
+<span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        Second input array. Both inputs `a` and `b` can not be scalars</span>
+<span class="sd">        at the same time.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        If either `a` or `b` is a scalar, the shape of the returned arrays</span>
+<span class="sd">        matches that of the array between `a` and `b`, whichever is an array.</span>
+<span class="sd">        If `a` and `b` are both 1-D arrays then a 0-d array is returned;</span>
+<span class="sd">        otherwise an array with a shape as</span>
+<span class="sd">        ``out.shape = (*a.shape[:-1], *b.shape[:-1])`` is returned.</span>
+
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.einsum` : Einstein summation convention..</span>
+<span class="sd">    :obj:`dpnp.dot` : Generalised matrix product,</span>
+<span class="sd">                      using second last dimension of `b`.</span>
+<span class="sd">    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    # Ordinary inner product for vectors</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([0, 1, 0])</span>
+<span class="sd">    &gt;&gt;&gt; np.inner(a, b)</span>
+<span class="sd">    array(2)</span>
+
+<span class="sd">    # Some multidimensional examples</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.arange(24).reshape((2,3,4))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(4)</span>
+<span class="sd">    &gt;&gt;&gt; c = np.inner(a, b)</span>
+<span class="sd">    &gt;&gt;&gt; c.shape</span>
+<span class="sd">    (2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; c</span>
+<span class="sd">    array([[ 14,  38,  62],</span>
+<span class="sd">           [86, 110, 134]])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.arange(2).reshape((1,1,2))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(6).reshape((3,2))</span>
+<span class="sd">    &gt;&gt;&gt; c = np.inner(a, b)</span>
+<span class="sd">    &gt;&gt;&gt; c.shape</span>
+<span class="sd">    (1, 1, 3)</span>
+<span class="sd">    &gt;&gt;&gt; c</span>
+<span class="sd">    array([[[1, 3, 5]]])</span>
+
+<span class="sd">    An example where `b` is a scalar</span>
+
+<span class="sd">    &gt;&gt;&gt; np.inner(np.eye(2), 7)</span>
+<span class="sd">    array([[7., 0.],</span>
+<span class="sd">           [0., 7.]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;shape of input arrays is not similar at the last axis.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="kron">
+<a class="viewcode-back" href="../../reference/generated/dpnp.kron.html#dpnp.kron">[docs]</a>
+<span class="k">def</span> <span class="nf">kron</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the kronecker product of two arrays.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.kron`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        First input array. Both inputs `a` and `b` can not be scalars</span>
+<span class="sd">        at the same time.</span>
+<span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        Second input array. Both inputs `a` and `b` can not be scalars</span>
+<span class="sd">        at the same time.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Returns the Kronecker product.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.outer` : Returns the outer product of two arrays.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 10, 100])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([5, 6, 7])</span>
+<span class="sd">    &gt;&gt;&gt; np.kron(a, b)</span>
+<span class="sd">    array([  5,   6,   7, ..., 500, 600, 700])</span>
+<span class="sd">    &gt;&gt;&gt; np.kron(b, a)</span>
+<span class="sd">    array([  5,  50, 500, ...,   7,  70, 700])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.kron(np.eye(2), np.ones((2,2)))</span>
+<span class="sd">    array([[1.,  1.,  0.,  0.],</span>
+<span class="sd">           [1.,  1.,  0.,  0.],</span>
+<span class="sd">           [0.,  0.,  1.,  1.],</span>
+<span class="sd">           [0.,  0.,  1.,  1.]])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.arange(100).reshape((2,5,2,5))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(24).reshape((2,3,4))</span>
+<span class="sd">    &gt;&gt;&gt; c = np.kron(a,b)</span>
+<span class="sd">    &gt;&gt;&gt; c.shape</span>
+<span class="sd">    (2, 10, 6, 20)</span>
+<span class="sd">    &gt;&gt;&gt; I = (1,3,0,2)</span>
+<span class="sd">    &gt;&gt;&gt; J = (0,2,1)</span>
+<span class="sd">    &gt;&gt;&gt; J1 = (0,) + J             # extend to ndim=4</span>
+<span class="sd">    &gt;&gt;&gt; S1 = (1,) + b.shape</span>
+<span class="sd">    &gt;&gt;&gt; K = tuple(np.array(I) * np.array(S1) + np.array(J1))</span>
+<span class="sd">    &gt;&gt;&gt; c[K] == a[I]*b[J]</span>
+<span class="sd">    array(True)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">b_ndim</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">a_ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">b_ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_kron</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">b_ndim</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="matmul">
+<a class="viewcode-back" href="../../reference/generated/dpnp.matmul.html#dpnp.matmul">[docs]</a>
+<span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span>
+    <span class="n">x1</span><span class="p">,</span>
+    <span class="n">x2</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">signature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">extobj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Matrix product of two arrays.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.matmul`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        First input array.</span>
+<span class="sd">    x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Second input array.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have</span>
+<span class="sd">        a shape that matches the signature `(n,k),(k,m)-&gt;(n,m)` but the type</span>
+<span class="sd">        (of the calculated values) will be cast if necessary. Default: ``None``.</span>
+<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">        Type to use in computing the matrix product. By default, the returned</span>
+<span class="sd">        array will have data type that is determined by considering</span>
+<span class="sd">        Promotion Type Rule and device capabilities.</span>
+<span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
+<span class="sd">        Controls what kind of data casting may occur. Default: ``&quot;same_kind&quot;``.</span>
+<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
+<span class="sd">        Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="sd">        Default: &quot;K&quot;.</span>
+<span class="sd">    axes : list of tuples, optional</span>
+<span class="sd">        A list of tuples with indices of axes the matrix product should operate</span>
+<span class="sd">        on. For instance, for the signature of ``(i,j),(j,k)-&gt;(i,k)``, the base</span>
+<span class="sd">        elements are 2d matrices and these are taken to be stored in the two</span>
+<span class="sd">        last axes of each argument. The corresponding axes keyword would be</span>
+<span class="sd">        [(-2, -1), (-2, -1), (-2, -1)].</span>
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Returns the matrix product of the inputs.</span>
+<span class="sd">        This is a 0-d array only when both `x1`, `x2` are 1-d vectors.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Keyword arguments `subok`, `signature`, `extobj`, and `axis` are</span>
+<span class="sd">    only supported with their default value.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.vdot` : Complex-conjugating dot product.</span>
+<span class="sd">    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.</span>
+<span class="sd">    :obj:`dpnp.einsum` : Einstein summation convention.</span>
+<span class="sd">    :obj:`dpnp.dot` : Alternative matrix product with</span>
+<span class="sd">                      different broadcasting rules.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    For 2-D arrays it is the matrix product:</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 0], [0, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([[4, 1], [2, 2]])</span>
+<span class="sd">    &gt;&gt;&gt; np.matmul(a, b)</span>
+<span class="sd">    array([[4, 1],</span>
+<span class="sd">           [2, 2]])</span>
+
+<span class="sd">    For 2-D mixed with 1-D, the result is the usual.</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 0], [0, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; np.matmul(a, b)</span>
+<span class="sd">    array([1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; np.matmul(b, a)</span>
+<span class="sd">    array([1, 2])</span>
+
+<span class="sd">    Broadcasting is conventional for stacks of arrays</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.arange(2 * 2 * 4).reshape((2, 2, 4))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(2 * 2 * 4).reshape((2, 4, 2))</span>
+<span class="sd">    &gt;&gt;&gt; np.matmul(a,b).shape</span>
+<span class="sd">    (2, 2, 2)</span>
+<span class="sd">    &gt;&gt;&gt; np.matmul(a, b)[0, 1, 1]</span>
+<span class="sd">    array(98)</span>
+<span class="sd">    &gt;&gt;&gt; np.sum(a[0, 1, :] * b[0 , :, 1])</span>
+<span class="sd">    array(98)</span>
+
+<span class="sd">    Vector, vector returns the scalar inner product, but neither argument</span>
+<span class="sd">    is complex-conjugated:</span>
+
+<span class="sd">    &gt;&gt;&gt; x1 = np.array([2j, 3j])</span>
+<span class="sd">    &gt;&gt;&gt; x2 = np.array([2j, 3j])</span>
+<span class="sd">    &gt;&gt;&gt; np.matmul(x1, x2)</span>
+<span class="sd">    array(-13+0j)</span>
+
+<span class="sd">    The ``@`` operator can be used as a shorthand for ``matmul`` on</span>
+<span class="sd">    :class:`dpnp.ndarray`.</span>
+
+<span class="sd">    &gt;&gt;&gt; x1 @ x2</span>
+<span class="sd">    array(-13+0j)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;subok keyword argument is only supported by its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">signature</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;signature keyword argument is only supported by its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">extobj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;extobj keyword argument is only supported by its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;axis keyword argument is only supported by its default value.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_matmul</span><span class="p">(</span>
+        <span class="n">x1</span><span class="p">,</span>
+        <span class="n">x2</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="outer">
+<a class="viewcode-back" href="../../reference/generated/dpnp.outer.html#dpnp.outer">[docs]</a>
+<span class="k">def</span> <span class="nf">outer</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the outer product of two arrays.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.outer`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">        Parameters `x1` and `x2` are supported as either scalar,</span>
+<span class="sd">        :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both</span>
+<span class="sd">        `x1` and `x2` can not be scalars at the same time. Otherwise</span>
+<span class="sd">        the functions will be executed sequentially on CPU.</span>
+<span class="sd">        Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention</span>
+<span class="sd">                         on the operands.</span>
+<span class="sd">    :obj:`dpnp.inner` : Returns the inner product of two arrays.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 1, 1])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; result = np.outer(a, b)</span>
+<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
+<span class="sd">    array([[1, 2, 3],</span>
+<span class="sd">           [1, 2, 3],</span>
+<span class="sd">           [1, 2, 3]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x1_is_scalar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x2_is_scalar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x1_is_scalar</span> <span class="ow">and</span> <span class="n">x2_is_scalar</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">x2</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x1_in</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">x1</span>
+            <span class="k">if</span> <span class="n">x1_is_scalar</span>
+            <span class="k">else</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">x1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">x2_in</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">x2</span>
+            <span class="k">if</span> <span class="n">x2_is_scalar</span>
+            <span class="k">else</span> <span class="p">(</span><span class="n">x2</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">x2</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">x2</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x1_in</span><span class="p">,</span> <span class="n">x2_in</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">outer</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="tensordot">
+<a class="viewcode-back" href="../../reference/generated/dpnp.tensordot.html#dpnp.tensordot">[docs]</a>
+<span class="k">def</span> <span class="nf">tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute tensor dot product along specified axes.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.tensordot`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        First input array. Both inputs `a` and `b` can not be scalars</span>
+<span class="sd">        at the same time.</span>
+<span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        Second input array. Both inputs `a` and `b` can not be scalars</span>
+<span class="sd">        at the same time.</span>
+<span class="sd">    axes : int or (2,) array_like</span>
+<span class="sd">        * integer_like</span>
+<span class="sd">          If an int `N`, sum over the last `N` axes of `a` and the first `N`</span>
+<span class="sd">          axes of `b` in order. The sizes of the corresponding axes must match.</span>
+<span class="sd">        * (2,) array_like</span>
+<span class="sd">          Or, a list of axes to be summed over, first sequence applying to `a`,</span>
+<span class="sd">          second to `b`. Both elements array_like must be of the same length.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Returns the tensordot product of `a` and `b`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.dot` : Returns the dot product.</span>
+<span class="sd">    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention</span>
+<span class="sd">                         on the operands.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Three common use cases are:</span>
+<span class="sd">        * ``axes = 0`` : tensor product :math:`a \otimes b`</span>
+<span class="sd">        * ``axes = 1`` : tensor dot product :math:`a \cdot b`</span>
+<span class="sd">        * ``axes = 2`` : (default) tensor double contraction :math:`a:b`</span>
+
+<span class="sd">    When `axes` is integer, the sequence for evaluation will be: first</span>
+<span class="sd">    the -Nth axis in `a` and 0th axis in `b`, and the -1th axis in `a` and</span>
+<span class="sd">    Nth axis in `b` last.</span>
+
+<span class="sd">    When there is more than one axis to sum over - and they are not the last</span>
+<span class="sd">    (first) axes of `a` (`b`) - the argument `axes` should consist of</span>
+<span class="sd">    two sequences of the same length, with the first axis to sum over given</span>
+<span class="sd">    first in both sequences, the second axis second, and so forth.</span>
+
+<span class="sd">    The shape of the result consists of the non-contracted axes of the</span>
+<span class="sd">    first tensor, followed by the non-contracted axes of the second.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.tensordot(a, b, 1)</span>
+<span class="sd">    array([14, 32, 50])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.arange(60.).reshape(3,4,5)</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(24.).reshape(4,3,2)</span>
+<span class="sd">    &gt;&gt;&gt; c = np.tensordot(a,b, axes=([1,0],[0,1]))</span>
+<span class="sd">    &gt;&gt;&gt; c.shape</span>
+<span class="sd">    (5, 2)</span>
+<span class="sd">    &gt;&gt;&gt; c</span>
+<span class="sd">    array([[4400., 4730.],</span>
+<span class="sd">           [4532., 4874.],</span>
+<span class="sd">           [4664., 5018.],</span>
+<span class="sd">           [4796., 5162.],</span>
+<span class="sd">           [4928., 5306.]])</span>
+
+<span class="sd">    A slower but equivalent way of computing the same...</span>
+
+<span class="sd">    &gt;&gt;&gt; d = np.zeros((5,2))</span>
+<span class="sd">    &gt;&gt;&gt; for i in range(5):</span>
+<span class="sd">    ...   for j in range(2):</span>
+<span class="sd">    ...     for k in range(3):</span>
+<span class="sd">    ...       for n in range(4):</span>
+<span class="sd">    ...         d[i,j] += a[k,n,i] * b[n,k,j]</span>
+<span class="sd">    &gt;&gt;&gt; c == d</span>
+<span class="sd">    array([[ True,  True],</span>
+<span class="sd">           [ True,  True],</span>
+<span class="sd">           [ True,  True],</span>
+<span class="sd">           [ True,  True],</span>
+<span class="sd">           [ True,  True]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">axes</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;One of the inputs is scalar, axes should be zero.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">iter</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-exception-caught</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Axes must be an integer.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="k">if</span> <span class="n">axes</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Axes must be a nonnegative integer.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="n">axes_a</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">axes</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">axes_b</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">axes</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Axes must consist of two sequences.&quot;</span><span class="p">)</span>
+
+        <span class="n">axes_a</span><span class="p">,</span> <span class="n">axes_b</span> <span class="o">=</span> <span class="n">axes</span>
+        <span class="n">axes_a</span> <span class="o">=</span> <span class="p">(</span><span class="n">axes_a</span><span class="p">,)</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">axes_a</span><span class="p">)</span> <span class="k">else</span> <span class="n">axes_a</span>
+        <span class="n">axes_b</span> <span class="o">=</span> <span class="p">(</span><span class="n">axes_b</span><span class="p">,)</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">axes_b</span><span class="p">)</span> <span class="k">else</span> <span class="n">axes_b</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes_a</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes_b</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Axes length mismatch.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Make the axes non-negative</span>
+    <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">b_ndim</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">axes_a</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axes_a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="s2">&quot;axis_a&quot;</span><span class="p">)</span>
+    <span class="n">axes_b</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axes_b</span><span class="p">,</span> <span class="n">b_ndim</span><span class="p">,</span> <span class="s2">&quot;axis_b&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">b_shape</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">for</span> <span class="n">axis_a</span><span class="p">,</span> <span class="n">axis_b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes_a</span><span class="p">,</span> <span class="n">axes_b</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">a_shape</span><span class="p">[</span><span class="n">axis_a</span><span class="p">]</span> <span class="o">!=</span> <span class="n">b_shape</span><span class="p">[</span><span class="n">axis_b</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;shape of input arrays is not similar at requested axes.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Move the axes to sum over, to the end of &quot;a&quot;</span>
+    <span class="n">notin</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a_ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">axes_a</span><span class="p">)</span>
+    <span class="n">newaxes_a</span> <span class="o">=</span> <span class="n">notin</span> <span class="o">+</span> <span class="n">axes_a</span>
+    <span class="n">n1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">a_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">notin</span><span class="p">]))</span>
+    <span class="n">n2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">a_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes_a</span><span class="p">]))</span>
+    <span class="n">newshape_a</span> <span class="o">=</span> <span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
+    <span class="n">olda</span> <span class="o">=</span> <span class="p">[</span><span class="n">a_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">notin</span><span class="p">]</span>
+
+    <span class="c1"># Move the axes to sum over, to the front of &quot;b&quot;</span>
+    <span class="n">notin</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">b_ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">axes_b</span><span class="p">)</span>
+    <span class="n">newaxes_b</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">axes_b</span> <span class="o">+</span> <span class="n">notin</span><span class="p">)</span>
+    <span class="n">n1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">b_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes_b</span><span class="p">]))</span>
+    <span class="n">n2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">b_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">notin</span><span class="p">]))</span>
+    <span class="n">newshape_b</span> <span class="o">=</span> <span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
+    <span class="n">oldb</span> <span class="o">=</span> <span class="p">[</span><span class="n">b_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">notin</span><span class="p">]</span>
+
+    <span class="n">at</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">newaxes_a</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">newshape_a</span><span class="p">)</span>
+    <span class="n">bt</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">newaxes_b</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">newshape_b</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="n">bt</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">olda</span> <span class="o">+</span> <span class="n">oldb</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="vdot">
+<a class="viewcode-back" href="../../reference/generated/dpnp.vdot.html#dpnp.vdot">[docs]</a>
+<span class="k">def</span> <span class="nf">vdot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the dot product of two vectors.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.dot`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        First input array. Both inputs `a` and `b` can not be</span>
+<span class="sd">        scalars at the same time. If `a` is complex, the complex</span>
+<span class="sd">        conjugate is taken before the calculation of the dot product.</span>
+<span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        Second input array. Both inputs `a` and `b` can not be</span>
+<span class="sd">        scalars at the same time.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Returns the dot product of `a` and `b`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.dot` : Returns the dot product.</span>
+<span class="sd">    :obj:`dpnp.matmul` : Returns the matrix product.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1+2j,3+4j])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([5+6j,7+8j])</span>
+<span class="sd">    &gt;&gt;&gt; np.vdot(a, b)</span>
+<span class="sd">    array(70-8j)</span>
+<span class="sd">    &gt;&gt;&gt; np.vdot(b, a)</span>
+<span class="sd">    array(70+8j)</span>
+
+<span class="sd">    Note that higher-dimensional arrays are flattened!</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 4], [5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([[4, 1], [2, 2]])</span>
+<span class="sd">    &gt;&gt;&gt; np.vdot(a, b)</span>
+<span class="sd">    array(30)</span>
+<span class="sd">    &gt;&gt;&gt; np.vdot(b, a)</span>
+<span class="sd">    array(30)</span>
+<span class="sd">    &gt;&gt;&gt; 1*4 + 4*1 + 5*2 + 6*2</span>
+<span class="sd">    30</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The first array should be of size one.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The second array should be of size one.&quot;</span><span class="p">)</span>
+        <span class="n">a_conj</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="c1"># TODO: investigate usage of axpy (axpy_batch) or scal</span>
+        <span class="c1"># functions from BLAS here instead of dpnp.multiply</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a_conj</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conjugate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># dot product of flatten arrays</span>
+    <span class="k">return</span> <span class="n">dpnp_dot</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conjugate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
