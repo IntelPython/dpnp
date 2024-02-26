@@ -1,0 +1,6 @@
+﻿dpnp.logsumexp
+==============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: logsumexp
