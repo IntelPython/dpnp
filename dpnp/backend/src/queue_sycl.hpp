@@ -40,16 +40,6 @@
 
 #include <ctime>
 
-#if !defined(DPNP_LOCAL_QUEUE)
-#if defined __has_include
-#if __has_include(<dpctl_sycl_interface.h>)
-#include <dpctl_sycl_interface.h>
-#else
-#include <dpctl_sycl_queue_manager.h>
-#endif
-#endif
-#endif
-
 #include "dpnp_pstl.hpp" // this header must be included after <mkl.hpp>
 
 #include "verbose.hpp"
@@ -69,10 +59,8 @@ namespace mkl_rng = oneapi::mkl::rng;
  */
 class backend_sycl
 {
-#if defined(DPNP_LOCAL_QUEUE)
     static sycl::queue *queue; /**< contains SYCL queue pointer initialized in
                                   @ref backend_sycl_queue_init */
-#endif
     static mkl_rng::mt19937
         *rng_engine; /**< RNG MT19937 engine ptr. initialized in @ref
                         backend_sycl_rng_engine_init */
@@ -83,10 +71,7 @@ class backend_sycl
     static void destroy()
     {
         backend_sycl::destroy_rng_engine();
-#if defined(DPNP_LOCAL_QUEUE)
         delete queue;
-        queue = nullptr;
-#endif
     }
 
     static void destroy_rng_engine()
@@ -101,10 +86,9 @@ class backend_sycl
 public:
     backend_sycl()
     {
-#if defined(DPNP_LOCAL_QUEUE)
         queue = nullptr;
         rng_engine = nullptr;
-#endif
+	rng_mcg59_engine = nullptr;
     }
 
     virtual ~backend_sycl()
@@ -139,27 +123,11 @@ public:
      */
     static sycl::queue &get_queue()
     {
-#if defined(DPNP_LOCAL_QUEUE)
         if (!queue) {
             backend_sycl_queue_init();
         }
 
         return *queue;
-#else
-        // temporal solution. Started from Sept-2020
-        DPCTLSyclQueueRef DPCtrl_queue = DPCTLQueueMgr_GetCurrentQueue();
-        if (DPCtrl_queue == nullptr) {
-            std::string reason =
-                (DPCTLQueueMgr_GetQueueStackSize() == static_cast<size_t>(-1))
-                    ? ": the queue stack is empty, probably no device is "
-                      "available."
-                    : ".";
-            throw std::runtime_error(
-                "Failed to create a copy of SYCL queue with default device" +
-                reason);
-        }
-        return *(reinterpret_cast<sycl::queue *>(DPCtrl_queue));
-#endif
     }
 
     /**

@@ -31,9 +31,7 @@
 #include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
-#if defined(DPNP_LOCAL_QUEUE)
 sycl::queue *backend_sycl::queue = nullptr;
-#endif
 mkl_rng::mt19937 *backend_sycl::rng_engine = nullptr;
 mkl_rng::mcg59 *backend_sycl::rng_mcg59_engine = nullptr;
 
@@ -61,7 +59,7 @@ static void dpnpc_show_mathlib_version()
 #endif
 }
 
-#if (not defined(NDEBUG)) && defined(DPNP_LOCAL_QUEUE)
+#if (not defined(NDEBUG))
 static void show_available_sycl_devices()
 {
     const std::vector<sycl::device> devices = sycl::device::get_devices();
@@ -86,11 +84,10 @@ static void show_available_sycl_devices()
 }
 #endif
 
-#if defined(DPNP_LOCAL_QUEUE)
 static sycl::device get_default_sycl_device()
 {
     int dpnpc_queue_gpu = 0;
-    sycl::device dev = sycl::device(sycl::cpu_selector());
+    sycl::device dev = sycl::device(sycl::cpu_selector_v);
 
     const char *dpnpc_queue_gpu_var = getenv("DPNPC_QUEUE_GPU");
     if (dpnpc_queue_gpu_var != NULL) {
@@ -98,12 +95,11 @@ static sycl::device get_default_sycl_device()
     }
 
     if (dpnpc_queue_gpu) {
-        dev = sycl::device(sycl::gpu_selector());
+        dev = sycl::device(sycl::gpu_selector_v);
     }
 
     return dev;
 }
-#endif
 
 #if defined(DPNPC_TOUCH_KERNEL_TO_LINK)
 /**
@@ -135,7 +131,6 @@ static long dpnp_kernels_link()
 }
 #endif
 
-#if defined(DPNP_LOCAL_QUEUE)
 // Catch asynchronous exceptions
 static void exception_handler(sycl::exception_list exceptions)
 {
@@ -148,11 +143,9 @@ static void exception_handler(sycl::exception_list exceptions)
         }
     }
 };
-#endif
 
 void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 {
-#if defined(DPNP_LOCAL_QUEUE)
     std::chrono::high_resolution_clock::time_point t1 =
         std::chrono::high_resolution_clock::now();
 
@@ -167,10 +160,10 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 #endif
 
     if (QueueOptions::CPU_SELECTOR == selector) {
-        dev = sycl::device(sycl::cpu_selector());
+        dev = sycl::device(sycl::cpu_selector_v);
     }
     else if (QueueOptions::GPU_SELECTOR == selector) {
-        dev = sycl::device(sycl::gpu_selector());
+        dev = sycl::device(sycl::gpu_selector_v);
     }
     else {
         dev = get_default_sycl_device();
@@ -189,9 +182,6 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
         std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> time_queue_init =
         std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-#else
-    (void)selector;
-#endif
 
     std::chrono::high_resolution_clock::time_point t3 =
         std::chrono::high_resolution_clock::now();
@@ -207,12 +197,8 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
     std::cout << "Running on: "
               << DPNP_QUEUE.get_device().get_info<sycl::info::device::name>()
               << "\n";
-#if defined(DPNP_LOCAL_QUEUE)
     std::cout << "queue initialization time: " << time_queue_init.count()
               << " (sec.)\n";
-#else
-    std::cout << "DPCtrl SYCL queue used\n";
-#endif
     std::cout << "SYCL kernels link time: " << time_kernels_link.count()
               << " (sec.)\n";
     dpnpc_show_mathlib_version();
@@ -222,7 +208,7 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 
 bool backend_sycl::backend_sycl_is_cpu()
 {
-    sycl::queue &qptr = get_queue();
+    const sycl::queue &qptr = get_queue();
 
     if (qptr.get_device().is_cpu()) {
         return true;
