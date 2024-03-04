@@ -10,23 +10,20 @@ Interplay with the Data Parallel Control Library
 An example below demonstrates how the Data Parallel Extension for NumPy* can be
 easily combined with the device management interface provided by dpctl package.
 
+Literally, the SYCL* queue manager interface from the dpctl package allows
+to set an input queue as the currently usable queue inside the context
+manager's scope. This way an array creation function from the dpnp package
+which is defined inside the context will allocate the data using that queue.
+
 .. code-block:: python
   :linenos:
 
-      import dpctl
-      import dpnp
+  import dpctl
+  import dpnp as np
 
-      d = dpctl.select_cpu_device()
-      x = dpnp.array([1, 2, 3], device=d)
-      s = dpnp.sum(x)
-
-      y = dpnp.linspace(0, dpnp.pi, num=10**6, device="gpu")
-      f = 1 + y * dpnp.sin(y)
-
-      # locate argument where function attains global maximum
-      max_arg = x[dpnp.argmax(f)]
-      max_val = dpnp.max(f)
-      
+  with dpctl.device_context("opencl:gpu"):
+      x = np.array([1, 2, 3])
+      s = np.sum(x)
 
 For more information please refer to `Data Parallel Control Library`_
 documentation.
