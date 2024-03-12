@@ -1,6 +1,0 @@
-﻿dpnp.reduce\_hypot
-==================
-
-.. currentmodule:: dpnp
-
-.. autofunction:: reduce_hypot
