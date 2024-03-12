@@ -107,7 +107,7 @@ jobs:
         run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
 
       - name: Cache conda packages
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+        uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -198,7 +198,7 @@ jobs:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
       - name: Cache conda packages
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+        uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
         env:
           CACHE_NUMBER: 1 # Increase to reset cache
         with:
@@ -323,7 +323,7 @@ jobs:
         run: more lockfile
 
       - name: Cache conda packages
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+        uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
