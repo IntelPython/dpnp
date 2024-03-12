@@ -27,8 +27,8 @@ requirements:
       - scikit-build
     build:
       - {{ compiler('cxx') }}
-      - {{ compiler('dpcpp') }} >={{ required_compiler_version }},!={{ excluded_compiler_version1 }},!={{ excluded_compiler_version2 }},!={{ excluded_compiler_version3 }} # [win]
-      - {{ compiler('dpcpp') }} >={{ required_compiler_version }},!={{ excluded_compiler_version1 }},!={{ excluded_compiler_version2 }} # [linux]
+      - {{ compiler('dpcpp') }} >={{ required_compiler_and_mkl_version }},!={{ excluded_compiler_version1 }},!={{ excluded_compiler_version2 }},!={{ excluded_compiler_version3 }} # [win]
+      - {{ compiler('dpcpp') }} >={{ required_compiler_and_mkl_version }},!={{ excluded_compiler_version1 }},!={{ excluded_compiler_version2 }} # [linux]
       - sysroot_linux-64 >=2.28 # [linux]
     run:
       - python
