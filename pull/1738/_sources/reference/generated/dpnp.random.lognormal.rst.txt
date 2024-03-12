@@ -1,6 +1,0 @@
-﻿dpnp.random.lognormal
-=====================
-
-.. currentmodule:: dpnp.random
-
-.. autofunction:: lognormal

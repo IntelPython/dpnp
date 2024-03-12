@@ -1,6 +1,0 @@
-﻿dpnp.arctanh
-============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: arctanh
