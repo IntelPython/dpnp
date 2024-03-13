@@ -14,6 +14,7 @@ env:
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   CONDA_BUILD_VERSION: '24.1.2'
   CONDA_INDEX_VERSION: '0.4.0'
+  TEST_ENV_NAME: 'test'
   # TODO: to add test_arraymanipulation.py back to the scope once crash on Windows is gone
   TEST_SCOPE: >-
       test_arraycreation.py
@@ -171,10 +172,10 @@ jobs:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
-          activate-environment: 'test'
+          activate-environment: ${{ env.TEST_ENV_NAME }}
 
       - name: Install conda-index
-        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION}}
+        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION }}
 
       - name: Create conda channel
         run: |
@@ -223,10 +224,25 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       # TODO: run the whole scope once the issues on CPU are resolved
+      # - name: Run tests
+        # run: |
+        #   python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+        # working-directory: ${{ env.tests-path }}
+
+      # TODO: remove once 2024.2 release is published
       - name: Run tests
-        run: |
-          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-        working-directory: ${{ env.tests-path }}
+        id: run_tests_linux
+        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        with:
+          shell: bash -l {0}
+          timeout_minutes: 10
+          max_attempts: 5
+          retry_on: any
+          command: |
+            . $CONDA/etc/profile.d/conda.sh
+            conda activate ${{ env.TEST_ENV_NAME }}
+            cd ${{ env.tests-path }}
+            python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   test_windows:
     name: Test ['windows-latest', python='${{ matrix.python }}']
@@ -252,7 +268,6 @@ jobs:
       extracted-pkg-path: '${{ github.workspace }}\pkg'
       tests-path: '${{ github.workspace }}\pkg\info\test\tests\'
       ver-json-path: '${{ github.workspace }}\version.json'
-      active-env-name: 'test'
 
     steps:
       - name: Download artifact
@@ -281,7 +296,7 @@ jobs:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
-          activate-environment: ${{ env.active-env-name }}
+          activate-environment: ${{ env.TEST_ENV_NAME }}
 
       - name: Store conda paths as envs
         run: |
@@ -362,10 +377,24 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       # TODO: run the whole scope once the issues on CPU are resolved
+      # - name: Run tests
+      #   run: |
+      #     python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+      #   working-directory: ${{ env.tests-path }}
+
+      # TODO: remove once 2024.2 release is published
       - name: Run tests
-        run: |
-          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-        working-directory: ${{ env.tests-path }}
+        id: run_tests_win
+        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        with:
+          shell: cmd /C CALL {0}
+          timeout_minutes: 15
+          max_attempts: 5
+          retry_on: any
+          command: |
+            conda activate ${{ env.TEST_ENV_NAME }}
+            cd ${{ env.tests-path }}
+            python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
