@@ -86,7 +86,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@392cf345b1784333caa1a1185081c71e6ffd61bc # v3.0.2
+        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -107,7 +107,7 @@ jobs:
         run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
 
       - name: Cache conda packages
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+        uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -155,7 +155,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -166,7 +166,7 @@ jobs:
           tar -xvf ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.tar.bz2 -C ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@392cf345b1784333caa1a1185081c71e6ffd61bc # v3.0.2
+        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -198,7 +198,7 @@ jobs:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
       - name: Cache conda packages
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+        uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
         env:
           CACHE_NUMBER: 1 # Increase to reset cache
         with:
@@ -256,7 +256,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -276,7 +276,7 @@ jobs:
           dir ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@392cf345b1784333caa1a1185081c71e6ffd61bc # v3.0.2
+        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -323,7 +323,7 @@ jobs:
         run: more lockfile
 
       - name: Cache conda packages
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+        uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -391,12 +391,12 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@392cf345b1784333caa1a1185081c71e6ffd61bc # v3.0.2
+        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -419,7 +419,7 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
-      - uses: conda-incubator/setup-miniconda@392cf345b1784333caa1a1185081c71e6ffd61bc # v3.0.2
+      - uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           run-post: false
           channel-priority: "disabled"
