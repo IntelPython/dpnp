@@ -479,7 +479,7 @@ def _multi_svd_norm(x, row_axis, col_axis, op):
     row_axis, col_axis : int
         The axes of `x` that hold the 2-D matrices.
     op : callable
-        This should be either `dpnp.amin` or `dpnp.amax` or `dpnp.sum`.
+        This should be either `dpnp.min` or `dpnp.max` or `dpnp.sum`.
 
     Returns
     -------
@@ -488,7 +488,7 @@ def _multi_svd_norm(x, row_axis, col_axis, op):
         Otherwise, it is an array with ``x.ndim - 2`` dimensions.
         The return values are either the minimum or maximum or sum of the
         singular values of the matrices, depending on whether `op`
-        is `dpnp.amin` or `dpnp.amax` or `dpnp.sum`.
+        is `dpnp.min` or `dpnp.max` or `dpnp.sum`.
 
     """
     y = dpnp.moveaxis(x, (row_axis, col_axis), (-2, -1))
@@ -1169,14 +1169,7 @@ def dpnp_norm(x, ord=None, axis=None, keepdims=False):
     """Compute matrix or vector norm."""
 
     if not dpnp.issubdtype(x.dtype, dpnp.inexact):
-        x_copy = dpnp.empty_like(x, dtype=dpnp.default_float_type(x.device))
-        ht_copy_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=dpnp.get_usm_ndarray(x),
-            dst=x_copy.get_array(),
-            sycl_queue=x.sycl_queue,
-        )
-        ht_copy_ev.wait()
-        x = x_copy
+        x = dpnp.astype(x, dtype=dpnp.default_float_type(x.device))
 
     ndim = x.ndim
     # Immediately handle some default, simple, fast, and common cases.
@@ -1230,17 +1223,16 @@ def dpnp_norm(x, ord=None, axis=None, keepdims=False):
             # special case for speedup
             s = (dpnp.conj(x) * x).real
             return dpnp.sqrt(dpnp.sum(s, axis=axis, keepdims=keepdims))
-        else:
-            try:
-                float(ord)
-            except (TypeError, ValueError):
-                raise ValueError(f"Invalid norm order '{ord}' for vectors")
-
+        elif isinstance(ord, (int, float)):
             absx = dpnp.abs(x)
             absx **= ord
             ret = absx.sum(axis=axis, keepdims=keepdims)
             ret **= numpy.reciprocal(ord, dtype=ret.dtype)
             return ret
+        else:
+            # including str-type keywords for ord ("fro", "nuc") which
+            # are not valid for vectors
+            raise ValueError(f"Invalid norm order '{ord}' for vectors")
     elif len(axis) == 2:
         row_axis, col_axis = axis
         row_axis = normalize_axis_index(row_axis, ndim)
@@ -1248,9 +1240,9 @@ def dpnp_norm(x, ord=None, axis=None, keepdims=False):
         if row_axis == col_axis:
             raise ValueError("Duplicate axes given.")
         if ord == 2:
-            ret = _multi_svd_norm(x, row_axis, col_axis, dpnp.amax)
+            ret = _multi_svd_norm(x, row_axis, col_axis, dpnp.max)
         elif ord == -2:
-            ret = _multi_svd_norm(x, row_axis, col_axis, dpnp.amin)
+            ret = _multi_svd_norm(x, row_axis, col_axis, dpnp.min)
         elif ord == 1:
             if col_axis > row_axis:
                 col_axis -= 1

@@ -580,7 +580,7 @@ def norm(x, ord=None, axis=None, keepdims=False):
         Input array.  If `axis` is ``None``, `x` must be 1-D or 2-D, unless
         `ord` is ``None``. If both `axis` and `ord` are ``None``, the 2-norm
         of ``x.ravel`` will be returned.
-    ord : {non-zero int, inf, -inf, "fro", "nuc"}, optional
+    ord : {int, inf, -inf, "fro", "nuc"}, optional
         Norm type. inf means dpnp's `inf` object. The default is ``None``.
     axis : {None, int, 2-tuple of ints}, optional
         If `axis` is an integer, it specifies the axis of `x` along which to

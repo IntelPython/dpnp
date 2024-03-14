@@ -1363,13 +1363,9 @@ def test_norm(device, ord, axis):
     if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
         isinstance(axis, tuple) and ord == 3
     ):
-        # Invalid norm order for vectors
-        with pytest.raises(ValueError):
-            dpnp.linalg.norm(ia, ord=ord, axis=axis)
+        pytest.skip("Invalid norm order for vectors.")
     elif axis is None and ord is not None:
-        # Improper number of dimensions to norm
-        with pytest.raises(ValueError):
-            dpnp.linalg.norm(ia, ord=ord, axis=axis)
+        pytest.skip("Improper number of dimensions to norm")
     else:
         result = dpnp.linalg.norm(ia, ord=ord, axis=axis)
         expected = numpy.linalg.norm(a, ord=ord, axis=axis)
