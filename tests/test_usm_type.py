@@ -681,6 +681,20 @@ def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "p",
+    [None, -dp.Inf, -2, -1, 1, 2, dp.Inf, "fro"],
+    ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+)
+def test_cond(usm_type, p):
+    ia = dp.arange(32, usm_type=usm_type).reshape(2, 4, 4)
+
+    result = dp.linalg.cond(ia, p=p)
+    assert ia.usm_type == usm_type
+    assert result.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_multi_dot(usm_type):
     numpy_array_list = []
     dpnp_array_list = []

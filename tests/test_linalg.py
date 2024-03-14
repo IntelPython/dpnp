@@ -209,25 +209,139 @@ class TestCholesky:
         assert_raises(inp.linalg.LinAlgError, inp.linalg.cholesky, a_dp)
 
 
-@pytest.mark.parametrize(
-    "arr",
-    [[[1, 0, -1], [0, 1, 0], [1, 0, 1]], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]],
-    ids=[
-        "[[1, 0, -1], [0, 1, 0], [1, 0, 1]]",
-        "[[1, 2, 3], [4, 5, 6], [7, 8, 9]]",
-    ],
-)
-@pytest.mark.parametrize(
-    "p",
-    [None, 1, -1, 2, -2, numpy.inf, -numpy.inf, "fro"],
-    ids=["None", "1", "-1", "2", "-2", "numpy.inf", "-numpy.inf", '"fro"'],
-)
-def test_cond(arr, p):
-    a = numpy.array(arr)
-    ia = inp.array(a)
-    result = inp.linalg.cond(ia, p)
-    expected = numpy.linalg.cond(a, p)
-    assert_array_equal(expected, result)
+class TestCond:
+    def setup_method(self):
+        numpy.random.seed(42)
+
+    @pytest.mark.parametrize(
+        "shape", [(0, 4, 4), (4, 0, 3, 3)], ids=["(0, 5, 3)", "(4, 0, 2, 3)"]
+    )
+    @pytest.mark.parametrize(
+        "p",
+        [None, -inp.Inf, -2, -1, 1, 2, inp.Inf, "fro"],
+        ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+    )
+    def test_cond_empty(self, shape, p):
+        a = numpy.empty(shape)
+        ia = inp.array(a)
+
+        result = inp.linalg.cond(ia, p=p)
+        expected = numpy.linalg.cond(a, p=p)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "shape", [(4, 4), (2, 4, 3, 3)], ids=["(4, 4)", "(2, 4, 3, 3)"]
+    )
+    @pytest.mark.parametrize(
+        "p",
+        [None, -inp.Inf, -2, -1, 1, 2, inp.Inf, "fro"],
+        ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+    )
+    def test_cond(self, dtype, shape, p):
+        a = numpy.array(
+            numpy.random.uniform(-5, 5, numpy.prod(shape)), dtype=dtype
+        ).reshape(shape)
+        ia = inp.array(a)
+
+        result = inp.linalg.cond(ia, p=p)
+        expected = numpy.linalg.cond(a, p=p)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "p",
+        [None, -inp.Inf, -2, -1, 1, 2, inp.Inf, "fro"],
+        ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+    )
+    def test_cond_bool(self, p):
+        a = numpy.array([[True, True], [True, False]])
+        ia = inp.array(a)
+
+        result = inp.linalg.cond(ia, p=p)
+        expected = numpy.linalg.cond(a, p=p)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize(
+        "shape", [(4, 4), (2, 4, 3, 3)], ids=["(4, 4)", "(2, 4, 3, 3)"]
+    )
+    @pytest.mark.parametrize(
+        "p",
+        [None, -inp.Inf, -2, -1, 1, 2, inp.Inf, "fro"],
+        ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+    )
+    def test_cond_complex(self, dtype, shape, p):
+        x1 = numpy.random.uniform(-5, 5, numpy.prod(shape))
+        x2 = numpy.random.uniform(-5, 5, numpy.prod(shape))
+        a = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(shape)
+        ia = inp.array(a)
+
+        result = inp.linalg.cond(ia, p=p)
+        expected = numpy.linalg.cond(a, p=p)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "p",
+        [-inp.Inf, -1, 1, inp.Inf, "fro"],
+        ids=["-dpnp.Inf", "-1", "1", "dpnp.Inf", "fro"],
+    )
+    def test_cond_nan_input(self, p):
+        a = numpy.array(numpy.random.uniform(-10, 10, 9)).reshape(3, 3)
+        a[1, 1] = numpy.nan
+        ia = inp.array(a)
+
+        result = inp.linalg.cond(ia, p=p)
+        expected = numpy.linalg.cond(a, p=p)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "p",
+        [None, -inp.Inf, -2, -1, 1, 2, inp.Inf, "fro"],
+        ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+    )
+    def test_cond_nan(self, p):
+        a = numpy.array(numpy.random.uniform(-5, 5, 16)).reshape(2, 2, 2, 2)
+        a[0, 0] = 0
+        a[1, 1] = 0
+        ia = inp.array(a)
+
+        result = inp.linalg.cond(ia, p=p)
+        expected = numpy.linalg.cond(a, p=p)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "p",
+        [None, -inp.Inf, -2, -1, 1, 2, inp.Inf, "fro"],
+        ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+    )
+    @pytest.mark.parametrize(
+        "stride",
+        [(-2, -3, 2, -2), (-2, 4, -4, -4), (2, 3, 4, 4), (-1, 3, 3, -3)],
+        ids=[
+            "(-2, -3, 2, -2)",
+            "(-2, 4, -4, -4)",
+            "(2, 3, 4, 4)",
+            "(-1, 3, 3, -3)",
+        ],
+    )
+    def test_cond_strided(self, p, stride):
+        A = numpy.random.rand(6, 8, 10, 10)
+        B = inp.asarray(A)
+        slices = tuple(slice(None, None, stride[i]) for i in range(A.ndim))
+        a = A[slices]
+        b = B[slices]
+
+        result = inp.linalg.cond(b, p=p)
+        expected = numpy.linalg.cond(a, p=p)
+        assert_dtype_allclose(result, expected)
+
+    def test_cond_error(self):
+        # cond is not defined on empty arrays
+        ia = inp.empty((2, 0))
+        with pytest.raises(ValueError):
+            inp.linalg.cond(ia, p=1)
 
 
 class TestDet:
@@ -1110,8 +1224,7 @@ class TestNorm:
         assert_dtype_allclose(result, expected)
 
     def test_norm_error(self):
-        a = numpy.arange(120).reshape(2, 3, 4, 5)
-        ia = inp.array(a)
+        ia = inp.arange(120).reshape(2, 3, 4, 5)
 
         # Duplicate axes given
         with pytest.raises(ValueError):

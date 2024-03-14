@@ -48,6 +48,7 @@ from .dpnp_utils_linalg import (
     check_stacked_2d,
     check_stacked_square,
     dpnp_cholesky,
+    dpnp_cond,
     dpnp_det,
     dpnp_eigh,
     dpnp_inv,
@@ -144,32 +145,60 @@ def cholesky(a, upper=False):
     return dpnp_cholesky(a, upper=upper)
 
 
-def cond(input, p=None):
+def cond(x, p=None):
     """
     Compute the condition number of a matrix.
 
     For full documentation refer to :obj:`numpy.linalg.cond`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter p=[None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, 'fro'] is supported.
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        The matrix whose condition number is sought.
+    p : {None, 1, -1, 2, -2, inf, -inf, "fro"}, optional
+        Order of the norm used in the condition number computation.
+        inf means dpnp's `inf` object. The default is ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The condition number of the matrix. May be infinite.
 
     See Also
     --------
     :obj:`dpnp.norm` : Matrix or vector norm.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, 0, -1], [0, 1, 0], [1, 0, 1]])
+    >>> a
+    array([[ 1,  0, -1],
+           [ 0,  1,  0],
+           [ 1,  0,  1]])
+    >>> np.linalg.cond(a)
+    array(1.4142135623730951)
+    >>> np.linalg.cond(a, 'fro')
+    array(3.1622776601683795)
+    >>> np.linalg.cond(a, np.inf)
+    array(2.)
+    >>> np.linalg.cond(a, -np.inf)
+    array(1.)
+    >>> np.linalg.cond(a, 1)
+    array(2.)
+    >>> np.linalg.cond(a, -1)
+    array(1.)
+    >>> np.linalg.cond(a, 2)
+    array(1.4142135623730951)
+    >>> np.linalg.cond(a, -2)
+    array(0.70710678118654746) # may vary
+    >>> min(np.linalg.svd(a, compute_uv=False))*min(np.linalg.svd(np.linalg.inv(a), compute_uv=False))
+    array(0.70710678118654746) # may vary
+
     """
 
-    if not use_origin_backend(input):
-        if p in [None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, "fro"]:
-            result_obj = dpnp_cond(input, p)
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
-
-            return result
-        else:
-            pass
-
-    return call_origin(numpy.linalg.cond, input, p)
+    dpnp.check_supported_arrays_type(x)
+    return dpnp_cond(x, p)
 
 
 def det(a):

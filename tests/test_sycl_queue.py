@@ -1147,6 +1147,30 @@ def test_cholesky(data, is_empty, device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+@pytest.mark.parametrize(
+    "p",
+    [None, -dpnp.Inf, -2, -1, 1, 2, dpnp.Inf, "fro"],
+    ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+)
+def test_cond(device, p):
+    numpy.random.seed(42)
+    a = numpy.array(numpy.random.uniform(-5, 5, 16)).reshape(4, 4)
+    ia = dpnp.array(a, device=device)
+
+    result = dpnp.linalg.cond(ia, p=p)
+    expected = numpy.linalg.cond(a, p=p)
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = ia.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_det(device):
     data = [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]
     numpy_data = numpy.array(data)
