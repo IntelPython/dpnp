@@ -37,19 +37,6 @@ tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_23_{axes=None, norm
 
 tests/third_party/intel/test_zero_copy_test1.py::test_dpnp_interaction_with_dpctl_memory
 
-tests/test_linalg.py::test_cond[-1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond[1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond[-2-[[1, 0, -1], [0, 1, 0], [1, 0, 1]]]
-tests/test_linalg.py::test_cond[2-[[1, 0, -1], [0, 1, 0], [1, 0, 1]]]
-tests/test_linalg.py::test_cond[-2-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond[2-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond["fro"-[[1, 0, -1], [0, 1, 0], [1, 0, 1]]]
-tests/test_linalg.py::test_cond["fro"-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond[None-[[1, 0, -1], [0, 1, 0], [1, 0, 1]]]
-tests/test_linalg.py::test_cond[None-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond[-numpy.inf-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond[numpy.inf-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-
 tests/test_linalg.py::test_matrix_rank[None-[0, 1]-float64]
 tests/test_linalg.py::test_matrix_rank[None-[0, 1]-float32]
 tests/test_linalg.py::test_matrix_rank[None-[0, 1]-int64]

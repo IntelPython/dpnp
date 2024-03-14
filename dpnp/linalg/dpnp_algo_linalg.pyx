@@ -45,7 +45,6 @@ cimport numpy
 cimport dpnp.dpnp_utils as utils
 
 __all__ = [
-    "dpnp_cond",
     "dpnp_eig",
     "dpnp_eigvals",
 ]
@@ -58,30 +57,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*custom_linalg_1in_1out_with_size_func_ptr_t_
 ctypedef c_dpctl.DPCTLSyclEventRef(*custom_linalg_2in_1out_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                        void *, void * , void * , size_t,
                                                                        const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef object dpnp_cond(object input, object p):
-    if p in ('f', 'fro'):
-        # TODO: change order='K' when support is implemented
-        input = dpnp.ravel(input, order='C')
-        sqnorm = dpnp.dot(input, input)
-        res = dpnp.sqrt(sqnorm)
-        ret = dpnp.array([res])
-    elif p == dpnp.inf:
-        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=1)
-        ret = dpnp.max(dpnp_sum_val)
-    elif p == -dpnp.inf:
-        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=1)
-        ret = dpnp.min(dpnp_sum_val)
-    elif p == 1:
-        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=0)
-        ret = dpnp.max(dpnp_sum_val)
-    elif p == -1:
-        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=0)
-        ret = dpnp.min(dpnp_sum_val)
-    else:
-        ret = dpnp.array([input.item(0)])
-    return ret
 
 
 cpdef tuple dpnp_eig(utils.dpnp_descriptor x1):
