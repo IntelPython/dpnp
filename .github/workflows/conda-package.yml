@@ -391,10 +391,10 @@ jobs:
           timeout_minutes: 15
           max_attempts: 5
           retry_on: any
-          command: |
+          command: >-
             conda activate ${{ env.TEST_ENV_NAME }}
-            cd ${{ env.tests-path }}
-            python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+            & cd ${{ env.tests-path }}
+            & python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
