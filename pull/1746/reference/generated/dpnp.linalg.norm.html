@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.norm &mdash; Data Parallel Extension for NumPy 0.15.0dev0+32.g05607adb82 documentation</title>
+  <title>dpnp.linalg.norm &mdash; Data Parallel Extension for NumPy 0.15.0dev0+35.g94838429f5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=e471f8a7"></script>
+        <script src="../../_static/documentation_options.js?v=9ab4a130"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+32.g05607adb82
+                0.15.0dev0+35.g94838429f5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -136,7 +136,7 @@
 <li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Input array.  If <cite>axis</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, <cite>x</cite> must be 1-D or 2-D, unless
 <cite>ord</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>. If both <cite>axis</cite> and <cite>ord</cite> are <code class="docutils literal notranslate"><span class="pre">None</span></code>, the 2-norm
 of <code class="docutils literal notranslate"><span class="pre">x.ravel</span></code> will be returned.</p></li>
-<li><p><strong>ord</strong> (<em>{int</em><em>, </em><em>inf</em><em>, </em><em>-inf</em><em>, </em><em>&quot;fro&quot;</em><em>, </em><em>&quot;nuc&quot;}</em><em>, </em><em>optional</em>) – Norm type. inf means dpnp’s <cite>inf</cite> object. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>ord</strong> (<em>{int</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>inf</em><em>, </em><em>-inf</em><em>, </em><em>&quot;fro&quot;</em><em>, </em><em>&quot;nuc&quot;}</em><em>, </em><em>optional</em>) – Norm type. inf means dpnp’s <cite>inf</cite> object. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>2-tuple</em><em> of </em><em>ints}</em><em>, </em><em>optional</em>) – If <cite>axis</cite> is an integer, it specifies the axis of <cite>x</cite> along which to
 compute the vector norms.  If <cite>axis</cite> is a 2-tuple, it specifies the
 axes that hold 2-D matrices, and the matrix norms of these matrices
