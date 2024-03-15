@@ -933,8 +933,8 @@ class TestNorm:
     )
     @pytest.mark.parametrize(
         "axis",
-        [-1, 0, 1, (0, 1), (-2, -1), None],
-        ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
+        [-1, 0, 1, (0, 1), (-1, -2), None],
+        ids=["-1", "0", "1", "(0, 1)", "(-1, -2)", "None"],
     )
     @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
     def test_norm_ND_complex(self, dtype, ord, axis, keepdims):
