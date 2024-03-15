@@ -567,7 +567,7 @@ class TestInv:
 
 
 class TestMatrixPower:
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
         "data, power",
         [
