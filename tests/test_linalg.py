@@ -800,7 +800,7 @@ class TestNorm:
         ],
     )
     @pytest.mark.parametrize(
-        "axis", [0, 1, (0, 1), None], ids=["0", "1", "(0, 1)", "None"]
+        "axis", [0, 1, (1, 0), None], ids=["0", "1", "(1, 0)", "None"]
     )
     @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
     def test_norm_2D(self, dtype, ord, axis, keepdims):
@@ -842,7 +842,7 @@ class TestNorm:
         ],
     )
     @pytest.mark.parametrize(
-        "axis", [0, 1, (0, 1), None], ids=["0", "1", "(0, 1)", "None"]
+        "axis", [0, 1, (1, 0), None], ids=["0", "1", "(1, 0)", "None"]
     )
     @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
     def test_norm_2D_complex(self, dtype, ord, axis, keepdims):
@@ -885,8 +885,8 @@ class TestNorm:
     )
     @pytest.mark.parametrize(
         "axis",
-        [-1, 0, 1, (0, 1), (-2, -1), None],
-        ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
+        [-1, 0, 1, (0, 1), (-1, -2), None],
+        ids=["-1", "0", "1", "(0, 1)", "(-1, -2)", "None"],
     )
     @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
     def test_norm_ND(self, dtype, ord, axis, keepdims):
