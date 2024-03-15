@@ -37,7 +37,7 @@ namespace dpnp::backend::ext::rng::device::engine::builder
 template <typename EngineT, typename SeedT, typename OffsetT>
 class BaseBuilder {
 private:
-    static constexpr std::uint8_t max_n = 10;
+    static constexpr std::uint8_t max_n = EngineBase::max_vec_n;
 
     std::uint8_t no_of_seeds;
     std::uint8_t no_of_offsets;
@@ -75,7 +75,7 @@ public:
     {
         switch (no_of_seeds) {
             case 1: {
-                if constexpr (std::is_same_v<EngineT, mkl_rng_dev::mcg59<8>>) {
+                if constexpr (std::is_same_v<EngineT, mkl_rng_dev::mcg59<EngineT::vec_size>>) {
                     // issue with mcg59<>() constructor which breaks compilation
                     return EngineT(seeds[0], offsets[0]);
                 }
@@ -90,16 +90,16 @@ public:
         return EngineT();
     }
 
-    inline auto operator()(OffsetT offset) const
+    inline auto operator()(const OffsetT offset) const
     {
         switch (no_of_seeds) {
             case 1: {
-                if constexpr (std::is_same_v<EngineT, mkl_rng_dev::mcg59<8>>) {
+                if constexpr (std::is_same_v<EngineT, mkl_rng_dev::mcg59<EngineT::vec_size>>) {
                     // issue with mcg59<>() constructor which breaks compilation
-                    return EngineT(seeds[0], offsets[0]);
+                    return EngineT(seeds[0], offsets[0] + offset);
                 }
                 else {
-                    return EngineT({seeds[0]}, {offset});
+                    return EngineT({seeds[0]}, {offsets[0] + offset});
                 }
             }
             // TODO: implement full switch
