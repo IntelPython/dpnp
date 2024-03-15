@@ -430,7 +430,6 @@ class TestProductZeroLength(unittest.TestCase):
 
 
 class TestMatrixPower(unittest.TestCase):
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_matrix_power_0(self, xp, dtype):
@@ -455,7 +454,6 @@ class TestMatrixPower(unittest.TestCase):
         a = testing.shaped_arange((3, 3), xp, dtype)
         return xp.linalg.matrix_power(a, 3)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-5)
     def test_matrix_power_inv1(self, xp, dtype):
@@ -463,7 +461,6 @@ class TestMatrixPower(unittest.TestCase):
         a = a * a % 30
         return xp.linalg.matrix_power(a, -1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-5)
     def test_matrix_power_inv2(self, xp, dtype):
@@ -471,7 +468,6 @@ class TestMatrixPower(unittest.TestCase):
         a = a * a % 30
         return xp.linalg.matrix_power(a, -2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-4)
     def test_matrix_power_inv3(self, xp, dtype):
