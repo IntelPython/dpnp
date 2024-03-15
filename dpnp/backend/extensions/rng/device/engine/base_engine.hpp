@@ -56,13 +56,19 @@ private:
 };
 
 // A total number of supported engines == EngineType::Base
-constexpr int no_of_engines = EngineType::base_id();
+constexpr std::uint8_t no_of_engines = EngineType::base_id();
 
 class EngineBase {
 private:
     sycl::queue q_{};
     std::vector<std::uint64_t> seed_vec{};
     std::vector<std::uint64_t> offset_vec{};
+
+    void validate_vec_size(const std::size_t size) {
+        if (size > max_vec_n) {
+            throw std::runtime_error("TODO: add text");
+        }
+    }
 
 public:
     EngineBase() {}
@@ -71,20 +77,32 @@ public:
         q_(q), seed_vec(1, seed), offset_vec(1, offset) {}
 
     EngineBase(sycl::queue &q, std::vector<std::uint64_t> &seeds, std::uint64_t offset) :
-        q_(q), seed_vec(seeds), offset_vec(1, offset) {}
+        q_(q), seed_vec(seeds), offset_vec(1, offset) {
+            validate_vec_size(seeds.size());
+        }
 
     EngineBase(sycl::queue &q, std::vector<std::uint32_t> &seeds, std::uint64_t offset) : q_(q), offset_vec(1, offset) {
+        validate_vec_size(seeds.size());
+
         seed_vec.reserve(seeds.size());
         seed_vec.assign(seeds.begin(), seeds.end());
     }
 
     EngineBase(sycl::queue &q, std::uint64_t seed, std::vector<std::uint64_t> &offsets) :
-        q_(q), seed_vec(1, seed), offset_vec(offsets) {}
+        q_(q), seed_vec(1, seed), offset_vec(offsets) {
+            validate_vec_size(offsets.size());
+        }
 
     EngineBase(sycl::queue &q, std::vector<std::uint64_t> &seeds, std::vector<std::uint64_t> &offsets) :
-        q_(q), seed_vec(seeds), offset_vec(offsets) {}
+        q_(q), seed_vec(seeds), offset_vec(offsets) {
+            validate_vec_size(seeds.size());
+            validate_vec_size(offsets.size());
+        }
 
     EngineBase(sycl::queue &q, std::vector<std::uint32_t> &seeds, std::vector<std::uint64_t> &offsets) : q_(q), offset_vec(offsets) {
+        validate_vec_size(seeds.size());
+        validate_vec_size(offsets.size());
+
         seed_vec.reserve(seeds.size());
         seed_vec.assign(seeds.begin(), seeds.end());
     }
@@ -106,5 +124,8 @@ public:
     std::vector<std::uint64_t>& get_offsets() noexcept {
         return offset_vec;
     }
+
+    //
+    static constexpr std::uint8_t max_vec_n = 1;
 };
 } // dpnp::backend::ext::rng::device::engine
