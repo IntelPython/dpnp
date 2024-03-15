@@ -566,6 +566,54 @@ class TestInv:
         assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp)
 
 
+class TestMatrixPower:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "data, power",
+        [
+            (
+                numpy.block(
+                    [
+                        [numpy.eye(2), numpy.zeros((2, 2))],
+                        [numpy.zeros((2, 2)), numpy.eye(2) * 2],
+                    ]
+                ),
+                3,
+            ),  # Block-diagonal matrix
+            (numpy.eye(3, k=1) + numpy.eye(3), 3),  # Non-diagonal matrix
+            (
+                numpy.eye(3, k=1) + numpy.eye(3),
+                -3,
+            ),  # Inverse of non-diagonal matrix
+        ],
+    )
+    def test_matrix_power(self, data, power, dtype):
+        a = data.astype(dtype)
+        a_dp = inp.array(a)
+
+        result = inp.linalg.matrix_power(a_dp, power)
+        expected = numpy.linalg.matrix_power(a, power)
+
+        assert_dtype_allclose(result, expected)
+
+    def test_matrix_power_errors(self):
+        a_dp = inp.eye(4, dtype="float32")
+
+        # unsupported type `a`
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.matrix_power, a_np, 2)
+
+        # unsupported type `power`
+        assert_raises(TypeError, inp.linalg.matrix_power, a_dp, 1.5)
+        assert_raises(TypeError, inp.linalg.matrix_power, a_dp, [2])
+
+        # not invertible
+        noninv = inp.array([[1, 0], [0, 0]])
+        assert_raises(
+            inp.linalg.LinAlgError, inp.linalg.matrix_power, noninv, -1
+        )
+
+
 class TestMatrixRank:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
