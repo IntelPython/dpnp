@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Interplay with the Data Parallel Control Library &mdash; Data Parallel Extension for NumPy 0.15.0dev0+33.g09d12d8359 documentation</title>
+  <title>Interplay with the Data Parallel Control Library &mdash; Data Parallel Extension for NumPy 0.15.0dev0+34.gb570a0f63 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=fdead8a7"></script>
+        <script src="_static/documentation_options.js?v=7d8d9e41"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -44,7 +44,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+33.g09d12d8359
+                0.15.0dev0+34.gb570a0f63
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -94,16 +94,19 @@
 <a class="reference external" href="https://www.khronos.org/sycl/">SYCL*</a> resources for SYCL-based Python packages.</p>
 <p>An example below demonstrates how the Data Parallel Extension for NumPy* can be
 easily combined with the device management interface provided by dpctl package.</p>
-<p>Literally, the SYCL* queue manager interface from the dpctl package allows
-to set an input queue as the currently usable queue inside the context
-manager’s scope. This way an array creation function from the dpnp package
-which is defined inside the context will allocate the data using that queue.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="linenos">2</span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="linenos">3</span>
-<span class="linenos">4</span><span class="k">with</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">device_context</span><span class="p">(</span><span class="s2">&quot;opencl:gpu&quot;</span><span class="p">):</span>
-<span class="linenos">5</span>    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-<span class="linenos">6</span>    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>    <span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="linenos"> 2</span>    <span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span>    <span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_cpu_device</span><span class="p">()</span>
+<span class="linenos"> 5</span>    <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+<span class="linenos"> 6</span>    <span class="n">s</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span>    <span class="n">y</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
+<span class="linenos"> 9</span>    <span class="n">f</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>    <span class="c1"># locate argument where function attains global maximum</span>
+<span class="linenos">12</span>    <span class="n">max_arg</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">dpnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span>
+<span class="linenos">13</span>    <span class="n">max_val</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For more information please refer to <a class="reference external" href="https://intelpython.github.io/dpctl/latest/index.html">Data Parallel Control Library</a>
@@ -165,15 +168,10 @@ documentation.</p>
 <span class="linenos">53</span>
 <span class="linenos">54</span>
 <span class="linenos">55</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-<span class="linenos">56</span>    <span class="k">try</span><span class="p">:</span>
-<span class="linenos">57</span>        <span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="linenos">58</span>
-<span class="linenos">59</span>        <span class="k">with</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">device_context</span><span class="p">(</span><span class="s2">&quot;opencl:gpu&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">gpu_queue</span><span class="p">:</span>
-<span class="linenos">60</span>            <span class="n">gpu_queue</span><span class="o">.</span><span class="n">get_sycl_device</span><span class="p">()</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
-<span class="linenos">61</span>            <span class="n">example</span><span class="p">()</span>
-<span class="linenos">62</span>
-<span class="linenos">63</span>    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-<span class="linenos">64</span>        <span class="n">example</span><span class="p">()</span>
+<span class="linenos">56</span>    <span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="linenos">57</span>
+<span class="linenos">58</span>    <span class="n">dpctl</span><span class="o">.</span><span class="n">select_default_device</span><span class="p">()</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
+<span class="linenos">59</span>    <span class="n">example</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
