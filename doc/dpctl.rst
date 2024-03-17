@@ -26,7 +26,7 @@ easily combined with the device management interface provided by dpctl package.
       # locate argument where function attains global maximum
       max_arg = x[dpnp.argmax(f)]
       max_val = dpnp.max(f)
-      
+
 
 For more information please refer to `Data Parallel Control Library`_
 documentation.
