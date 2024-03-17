@@ -88,7 +88,7 @@ public:
     {
         queue = nullptr;
         rng_engine = nullptr;
-	rng_mcg59_engine = nullptr;
+        rng_mcg59_engine = nullptr;
     }
 
     virtual ~backend_sycl()
