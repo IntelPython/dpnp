@@ -31,11 +31,7 @@
 #include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
-sycl::queue *backend_sycl::queue = nullptr;
-mkl_rng::mt19937 *backend_sycl::rng_engine = nullptr;
-mkl_rng::mcg59 *backend_sycl::rng_mcg59_engine = nullptr;
-
-static void dpnpc_show_mathlib_version()
+[[maybe_unused]] static void dpnpc_show_mathlib_version()
 {
 #if 1
     const int len = 256;
@@ -60,7 +56,7 @@ static void dpnpc_show_mathlib_version()
 }
 
 #if (not defined(NDEBUG))
-static void show_available_sycl_devices()
+[[maybe_unused]] static void show_available_sycl_devices()
 {
     const std::vector<sycl::device> devices = sycl::device::get_devices();
 
@@ -84,22 +80,6 @@ static void show_available_sycl_devices()
 }
 #endif
 
-static sycl::device get_default_sycl_device()
-{
-    int dpnpc_queue_gpu = 0;
-    sycl::device dev = sycl::device(sycl::cpu_selector_v);
-
-    const char *dpnpc_queue_gpu_var = getenv("DPNPC_QUEUE_GPU");
-    if (dpnpc_queue_gpu_var != NULL) {
-        dpnpc_queue_gpu = atoi(dpnpc_queue_gpu_var);
-    }
-
-    if (dpnpc_queue_gpu) {
-        dev = sycl::device(sycl::gpu_selector_v);
-    }
-
-    return dev;
-}
 
 #if defined(DPNPC_TOUCH_KERNEL_TO_LINK)
 /**
@@ -131,107 +111,13 @@ static long dpnp_kernels_link()
 }
 #endif
 
-// Catch asynchronous exceptions
-static void exception_handler(sycl::exception_list exceptions)
+void dpnp_queue_initialize_c(QueueOptions)
 {
-    for (std::exception_ptr const &e : exceptions) {
-        try {
-            std::rethrow_exception(e);
-        } catch (sycl::exception const &e) {
-            std::cout << "DPNP. Caught asynchronous SYCL exception:\n"
-                      << e.what() << std::endl;
-        }
-    }
-};
-
-void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
-{
-    std::chrono::high_resolution_clock::time_point t1 =
-        std::chrono::high_resolution_clock::now();
-
-    if (queue) {
-        backend_sycl::destroy();
-    }
-
-    sycl::device dev;
-
-#if not defined(NDEBUG)
-    show_available_sycl_devices();
-#endif
-
-    if (QueueOptions::CPU_SELECTOR == selector) {
-        dev = sycl::device(sycl::cpu_selector_v);
-    }
-    else if (QueueOptions::GPU_SELECTOR == selector) {
-        dev = sycl::device(sycl::gpu_selector_v);
-    }
-    else {
-        dev = get_default_sycl_device();
-    }
-
-    if (is_verbose_mode()) {
-        sycl::property_list properties{
-            sycl::property::queue::enable_profiling()};
-        queue = new sycl::queue(dev, exception_handler, properties);
-    }
-    else {
-        queue = new sycl::queue(dev, exception_handler);
-    }
-
-    std::chrono::high_resolution_clock::time_point t2 =
-        std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_queue_init =
-        std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-
-    std::chrono::high_resolution_clock::time_point t3 =
-        std::chrono::high_resolution_clock::now();
-#if defined(DPNPC_TOUCH_KERNEL_TO_LINK)
-    // Remove pre-link kernel library at startup time
-    dpnp_kernels_link();
-#endif
-    std::chrono::high_resolution_clock::time_point t4 =
-        std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_kernels_link =
-        std::chrono::duration_cast<std::chrono::duration<double>>(t4 - t3);
-
-    std::cout << "Running on: "
-              << DPNP_QUEUE.get_device().get_info<sycl::info::device::name>()
-              << "\n";
-    std::cout << "queue initialization time: " << time_queue_init.count()
-              << " (sec.)\n";
-    std::cout << "SYCL kernels link time: " << time_kernels_link.count()
-              << " (sec.)\n";
-    dpnpc_show_mathlib_version();
-
-    std::cout << std::endl;
-}
-
-bool backend_sycl::backend_sycl_is_cpu()
-{
-    const sycl::queue &qptr = get_queue();
-
-    if (qptr.get_device().is_cpu()) {
-        return true;
-    }
-
-    return false;
-}
-
-void backend_sycl::backend_sycl_rng_engine_init(size_t seed)
-{
-    if (rng_engine) {
-        backend_sycl::destroy_rng_engine();
-    }
-    rng_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
-    rng_mcg59_engine = new mkl_rng::mcg59(DPNP_QUEUE, seed);
-}
-
-void dpnp_queue_initialize_c(QueueOptions selector)
-{
-    backend_sycl::backend_sycl_queue_init(selector);
+    [[maybe_unused]] auto &be = backend_sycl_singleton::get();
 }
 
 size_t dpnp_queue_is_cpu_c()
 {
-    return backend_sycl::backend_sycl_is_cpu();
+    const auto &be = backend_sycl_singleton::get();
+    return be.backend_sycl_is_cpu();
 }
