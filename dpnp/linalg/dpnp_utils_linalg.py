@@ -1137,22 +1137,22 @@ def dpnp_matrix_power(a, n):
         a = dpnp.linalg.inv(a)
         n *= -1
 
-    if n <= 3:
-        if n == 1:
-            return a
-        elif n == 2:
-            return dpnp.matmul(a, a)
-        else:
-            return dpnp.matmul(dpnp.matmul(a, a), a)
+    if n == 1:
+        return a
+    elif n == 2:
+        return dpnp.matmul(a, a)
+    elif n == 3:
+        return dpnp.matmul(dpnp.matmul(a, a), a)
 
-    # binary decomposition to reduce the number of matrix
+    # Use binary decomposition to reduce the number of matrix
     # multiplications for n > 3.
     # `result` will hold the final matrix power,
     # while `acc` serves as an accumulator for the intermediate matrix powers.
     result, acc = None, None
-    for b in numpy.base_repr(n)[::-1]:
+    while n > 0:
         acc = a if acc is None else dpnp.matmul(acc, acc)
-        if b == "1":
+        n, bit = divmod(n, 2)
+        if bit:
             result = acc if result is None else dpnp.matmul(result, acc)
 
     return result
