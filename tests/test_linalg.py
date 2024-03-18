@@ -567,7 +567,7 @@ class TestInv:
 
 
 class TestMatrixPower:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "data, power",
         [
@@ -608,10 +608,12 @@ class TestMatrixPower:
         assert_raises(TypeError, inp.linalg.matrix_power, a_dp, [2])
 
         # not invertible
-        noninv = inp.array([[1, 0], [0, 0]])
-        assert_raises(
-            inp.linalg.LinAlgError, inp.linalg.matrix_power, noninv, -1
-        )
+        # TODO: remove it when mkl>=2024.0 is released (MKLD-16626)
+        if not is_cpu_device():
+            noninv = inp.array([[1, 0], [0, 0]])
+            assert_raises(
+                inp.linalg.LinAlgError, inp.linalg.matrix_power, noninv, -1
+            )
 
 
 class TestMatrixRank:
