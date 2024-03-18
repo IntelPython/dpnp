@@ -527,9 +527,10 @@ def _stacked_identity(
     """
 
     shape = batch_shape + (n, n)
-    idx = dpnp.arange(n, usm_type=usm_type, sycl_queue=sycl_queue)
-    x = dpnp.zeros(shape, dtype=dtype, usm_type=usm_type, sycl_queue=sycl_queue)
-    x[..., idx, idx] = 1
+    x = dpnp.empty(shape, dtype=dtype, usm_type=usm_type, sycl_queue=sycl_queue)
+    x[...] = dpnp.eye(
+        n, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=x.sycl_queue
+    )
     return x
 
 
@@ -566,10 +567,10 @@ def _stacked_identity_like(x):
 
     """
 
-    n = x.shape[-1]
-    idx = dpnp.arange(n, usm_type=x.usm_type, sycl_queue=x.sycl_queue)
-    x = dpnp.zeros_like(x)
-    x[..., idx, idx] = 1
+    x = dpnp.empty_like(x)
+    x[...] = dpnp.eye(
+        x.shape[-2], dtype=x.dtype, usm_type=x.usm_type, sycl_queue=x.sycl_queue
+    )
     return x
 
 
