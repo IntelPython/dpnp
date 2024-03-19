@@ -18,7 +18,7 @@ var hierarchy =
     [ "dpnp::backend::ext::vm::AtanhContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_atanh_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::AtanhOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_atanh_output_type.html", null ],
     [ "dpnp::backend::ext::vm::types::AtanOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_atan_output_type.html", null ],
-    [ "backend_sycl", "classbackend__sycl.html", null ],
+    [ "backend_sycl_singleton", "classbackend__sycl__singleton.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product< Args >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product< std::tuple< std::tuple< FirstTupleArgs... > > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product_3_01std_1_1tuple_3_01std_1_1tupl8eeb66d10f7723d0fc0b38e3d181763c.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product< std::tuple< Tuples... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product_3_01std_1_1tuple_3_01_tuples_8_8_8_01_4_01_4.html", null ],
