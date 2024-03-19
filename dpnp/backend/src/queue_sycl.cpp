@@ -80,7 +80,6 @@
 }
 #endif
 
-
 #if defined(DPNPC_TOUCH_KERNEL_TO_LINK)
 /**
  * Function push the SYCL kernels to be linked (final stage of the compilation)

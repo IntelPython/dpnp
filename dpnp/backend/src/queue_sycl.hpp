@@ -58,91 +58,87 @@ namespace mkl_rng = oneapi::mkl::rng;
  * initialization order is undefined. This class postpone initialization of the
  * SYCL queue and mt19937 random number generation engine.
  */
-class backend_sycl 
+class backend_sycl
 {
 public:
     ~backend_sycl() {}
 
-    static backend_sycl& get()
+    static backend_sycl &get()
     {
         static backend_sycl backend{};
         return backend;
     }
 
-    static sycl::queue& get_queue()
+    static sycl::queue &get_queue()
     {
         auto &be = backend_sycl::get();
         return *(be.queue_ptr);
-    } 
+    }
 
-    static mkl_rng::mt19937& get_rng_engine()
+    static mkl_rng::mt19937 &get_rng_engine()
     {
         auto &be = backend_sycl::get();
         return *(be.rng_mt19937_engine_ptr);
-    } 
+    }
 
-    static mkl_rng::mcg59& get_rng_mcg59_engine()
+    static mkl_rng::mcg59 &get_rng_mcg59_engine()
     {
         auto &be = backend_sycl::get();
         return *(be.rng_mcg59_engine_ptr);
     }
 
     template <typename SeedT>
-    void set_rng_engines_seed(const SeedT &seed) 
+    void set_rng_engines_seed(const SeedT &seed)
     {
-        auto rng_eng_mt19937 = 
+        auto rng_eng_mt19937 =
             std::make_shared<mkl_rng::mt19937>(*queue_ptr, seed);
         if (!rng_eng_mt19937) {
             throw std::runtime_error(
-                "Could not create MT19937 engine with given seed"
-            );
+                "Could not create MT19937 engine with given seed");
         }
-        auto rng_eng_mcg59 = 
-            std::make_shared<mkl_rng::mcg59>(*queue_ptr, seed);
+        auto rng_eng_mcg59 = std::make_shared<mkl_rng::mcg59>(*queue_ptr, seed);
         if (!rng_eng_mcg59) {
             throw std::runtime_error(
-                "Could not create MCG59 engine with given seed"
-            );
+                "Could not create MCG59 engine with given seed");
         }
 
         rng_mt19937_engine_ptr.swap(rng_eng_mt19937);
         rng_mcg59_engine_ptr.swap(rng_eng_mcg59);
     }
 
-    bool backend_sycl_is_cpu() const 
+    bool backend_sycl_is_cpu() const
     {
         const sycl::queue &q = *queue_ptr;
         return q.get_device().is_cpu();
     }
 
 private:
-    backend_sycl() 
-        : queue_ptr{}, rng_mt19937_engine_ptr{}, rng_mcg59_engine_ptr{} 
+    backend_sycl()
+        : queue_ptr{}, rng_mt19937_engine_ptr{}, rng_mcg59_engine_ptr{}
     {
-        const sycl::property_list &prop = (is_verbose_mode()) ? 
-              sycl::property_list{sycl::property::queue::enable_profiling()}
-            : sycl::property_list{};
-        queue_ptr = std::make_shared<sycl::queue>(sycl::default_selector_v, prop);
+        const sycl::property_list &prop =
+            (is_verbose_mode())
+                ? sycl::property_list{sycl::property::queue::enable_profiling()}
+                : sycl::property_list{};
+        queue_ptr =
+            std::make_shared<sycl::queue>(sycl::default_selector_v, prop);
 
         if (!queue_ptr) {
             throw std::runtime_error(
-                "Could not create queue for default-selected device"
-            );
+                "Could not create queue for default-selected device");
         }
 
         constexpr std::size_t default_seed = 1;
-        rng_mt19937_engine_ptr = std::make_shared<mkl_rng::mt19937>(*queue_ptr, default_seed);
+        rng_mt19937_engine_ptr =
+            std::make_shared<mkl_rng::mt19937>(*queue_ptr, default_seed);
         if (!rng_mt19937_engine_ptr) {
-            throw std::runtime_error(
-                "Could not create MT19937 engine"
-            );
+            throw std::runtime_error("Could not create MT19937 engine");
         }
 
-        rng_mcg59_engine_ptr = std::make_shared<mkl_rng::mcg59>(*queue_ptr, default_seed);
+        rng_mcg59_engine_ptr =
+            std::make_shared<mkl_rng::mcg59>(*queue_ptr, default_seed);
         if (!rng_mcg59_engine_ptr) {
-            throw std::runtime_error(
-                "Could not create MCG59 engine"
-            );
+            throw std::runtime_error("Could not create MCG59 engine");
         }
     }
 

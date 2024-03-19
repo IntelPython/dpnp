@@ -68,7 +68,6 @@ typedef ssize_t shape_elem_type;
  * @}
  */
 
-
 /**
  * @ingroup BACKEND_API
  * @brief SYCL queue device status.
