@@ -70,7 +70,7 @@ static VSLStreamStatePtr get_rng_stream()
 
 void dpnp_rng_srand_c(size_t seed)
 {
-    auto &be = backend_sycl_singleton::get();
+    auto &be = backend_sycl::get();
     be.set_rng_engines_seed(seed);
     set_rng_stream(seed);
 }

@@ -50,8 +50,6 @@ void test_dpnp_random_normal(const size_t size,
     double dev_time_used = 0.0;
     double sum_dev_time_used = 0.0;
 
-    dpnp_queue_initialize_c(QueueOptions::GPU_SELECTOR);
-
     double *result = (double *)dpnp_memory_alloc_c(size * sizeof(double));
 
     dpnp_rng_srand_c(seed); // TODO: will move

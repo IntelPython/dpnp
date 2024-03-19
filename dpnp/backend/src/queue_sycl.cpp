@@ -111,13 +111,8 @@ static long dpnp_kernels_link()
 }
 #endif
 
-void dpnp_queue_initialize_c(QueueOptions)
-{
-    [[maybe_unused]] auto &be = backend_sycl_singleton::get();
-}
-
 size_t dpnp_queue_is_cpu_c()
 {
-    const auto &be = backend_sycl_singleton::get();
+    const auto &be = backend_sycl::get();
     return be.backend_sycl_is_cpu();
 }
