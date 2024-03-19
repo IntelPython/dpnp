@@ -37,6 +37,9 @@ for device in available_devices:
         pass
     elif device.device_type.name not in list_of_device_type_str:
         pass
+    elif device.backend.name in "opencl" and device.is_gpu:
+        # due to reproted crash on Windows: CMPLRLLVM-55640
+        pass
     else:
         valid_devices.append(device)
 
@@ -474,9 +477,6 @@ def test_meshgrid(device_x, device_y):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_1in_1out(func, data, device):
-    if func in ("std", "var") and "opencl:gpu" in device.filter_string:
-        pytest.skip("due to reproted crash on Windows: CMPLRLLVM-55640")
-
     x = dpnp.array(data, device=device)
     result = getattr(dpnp, func)(x)
 
