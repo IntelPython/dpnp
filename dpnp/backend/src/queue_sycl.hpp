@@ -31,7 +31,6 @@
 //#pragma clang diagnostic ignored "-Wpass-failed"
 #include <sycl/sycl.hpp>
 //#pragma clang diagnostic pop
-#include <memory>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -39,7 +38,7 @@
 #include <oneapi/mkl.hpp>
 #pragma clang diagnostic pop
 
-#include <ctime>
+#include <utility>
 
 #include "dpnp_pstl.hpp" // this header must be included after <mkl.hpp>
 
@@ -72,83 +71,59 @@ public:
     static sycl::queue &get_queue()
     {
         auto &be = backend_sycl::get();
-        return *(be.queue_ptr);
+        return be.queue_;
     }
 
     static mkl_rng::mt19937 &get_rng_engine()
     {
         auto &be = backend_sycl::get();
-        return *(be.rng_mt19937_engine_ptr);
+        return be.rng_mt19937_engine_;
     }
 
     static mkl_rng::mcg59 &get_rng_mcg59_engine()
     {
         auto &be = backend_sycl::get();
-        return *(be.rng_mcg59_engine_ptr);
+        return be.rng_mcg59_engine_;
     }
 
     template <typename SeedT>
     void set_rng_engines_seed(const SeedT &seed)
     {
-        auto rng_eng_mt19937 =
-            std::make_shared<mkl_rng::mt19937>(*queue_ptr, seed);
-        if (!rng_eng_mt19937) {
-            throw std::runtime_error(
-                "Could not create MT19937 engine with given seed");
-        }
-        auto rng_eng_mcg59 = std::make_shared<mkl_rng::mcg59>(*queue_ptr, seed);
-        if (!rng_eng_mcg59) {
-            throw std::runtime_error(
-                "Could not create MCG59 engine with given seed");
-        }
+        mkl_rng::mt19937 rng_eng_mt19937(queue_, seed);
+        mkl_rng::mcg59 rng_eng_mcg59(queue_, seed);
 
-        rng_mt19937_engine_ptr.swap(rng_eng_mt19937);
-        rng_mcg59_engine_ptr.swap(rng_eng_mcg59);
+        // now that instances are created, let's move them
+        rng_mt19937_engine_ = std::move(rng_eng_mt19937);
+        rng_mcg59_engine_ = std::move(rng_eng_mcg59);
     }
 
     bool backend_sycl_is_cpu() const
     {
-        const sycl::queue &q = *queue_ptr;
-        return q.get_device().is_cpu();
+        const auto &dev = queue_.get_device();
+        return dev.is_cpu();
     }
 
 private:
+    static constexpr std::size_t default_seed = 1;
+
     backend_sycl()
-        : queue_ptr{}, rng_mt19937_engine_ptr{}, rng_mcg59_engine_ptr{}
+        : queue_{sycl::default_selector_v,
+                 (is_verbose_mode())
+                     ? sycl::property_list{sycl::property::queue::
+                                               enable_profiling()}
+                     : sycl::property_list{}},
+          rng_mt19937_engine_{queue_, default_seed}, rng_mcg59_engine_{
+                                                         queue_, default_seed}
     {
-        const sycl::property_list &prop =
-            (is_verbose_mode())
-                ? sycl::property_list{sycl::property::queue::enable_profiling()}
-                : sycl::property_list{};
-        queue_ptr =
-            std::make_shared<sycl::queue>(sycl::default_selector_v, prop);
-
-        if (!queue_ptr) {
-            throw std::runtime_error(
-                "Could not create queue for default-selected device");
-        }
-
-        constexpr std::size_t default_seed = 1;
-        rng_mt19937_engine_ptr =
-            std::make_shared<mkl_rng::mt19937>(*queue_ptr, default_seed);
-        if (!rng_mt19937_engine_ptr) {
-            throw std::runtime_error("Could not create MT19937 engine");
-        }
-
-        rng_mcg59_engine_ptr =
-            std::make_shared<mkl_rng::mcg59>(*queue_ptr, default_seed);
-        if (!rng_mcg59_engine_ptr) {
-            throw std::runtime_error("Could not create MCG59 engine");
-        }
     }
 
     backend_sycl(backend_sycl const &) = default;
     backend_sycl &operator=(backend_sycl const &) = default;
     backend_sycl &operator=(backend_sycl &&) = default;
 
-    std::shared_ptr<sycl::queue> queue_ptr;
-    std::shared_ptr<mkl_rng::mt19937> rng_mt19937_engine_ptr;
-    std::shared_ptr<mkl_rng::mcg59> rng_mcg59_engine_ptr;
+    sycl::queue queue_;
+    mkl_rng::mt19937 rng_mt19937_engine_;
+    mkl_rng::mcg59 rng_mcg59_engine_;
 };
 
 #endif // QUEUE_SYCL_H
