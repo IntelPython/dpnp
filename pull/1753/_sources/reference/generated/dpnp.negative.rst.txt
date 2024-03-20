@@ -1,0 +1,6 @@
+﻿dpnp.negative
+=============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: negative
