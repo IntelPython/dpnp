@@ -1409,3 +1409,42 @@ class TestPinv:
         a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
         rcond_dp_q = inp.array([0.5], dtype="float32", sycl_queue=rcond_queue)
         assert_raises(ValueError, inp.linalg.pinv, a_dp_q, rcond_dp_q)
+
+
+class TestTensorinv:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "shape, ind",
+        [
+            ((4, 6, 8, 3), 2),
+            ((24, 8, 3), 1),
+        ],
+        ids=[
+            "(4, 6, 8, 3)",
+            "(24, 8, 3)",
+        ],
+    )
+    def test_tensorinv(self, dtype, shape, ind):
+        a = numpy.eye(24, dtype=dtype).reshape(shape)
+        a_dp = inp.array(a)
+
+        ainv = numpy.linalg.tensorinv(a, ind=ind)
+        ainv_dp = inp.linalg.tensorinv(a_dp, ind=ind)
+
+        assert ainv.shape == ainv_dp.shape
+        assert_dtype_allclose(ainv_dp, ainv)
+
+    def test_test_tensorinv_errors(self):
+        a_dp = inp.eye(24, dtype="float32").reshape(4, 6, 8, 3)
+
+        # unsupported type `a`
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.pinv, a_np)
+
+        # unsupported type `ind`
+        assert_raises(TypeError, inp.linalg.tensorinv, a_dp, 2.0)
+        assert_raises(TypeError, inp.linalg.tensorinv, a_dp, [2.0])
+        assert_raises(ValueError, inp.linalg.tensorinv, a_dp, -1)
+
+        # non-square
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.tensorinv, a_dp, 1)
