@@ -77,6 +77,7 @@ __all__ = [
     "solve",
     "svd",
     "slogdet",
+    "tensorinv",
 ]
 
 
@@ -897,3 +898,61 @@ def slogdet(a):
     check_stacked_square(a)
 
     return dpnp_slogdet(a)
+
+
+def tensorinv(a, ind=2):
+    """
+    Compute the `inverse` of a tensor.
+
+    For full documentation refer to :obj:`numpy.linalg.tensorinv`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Tensor to `invert`. Its shape must be 'square', i. e.,
+        ``prod(a.shape[:ind]) == prod(a.shape[ind:])``.
+    ind : int
+        Number of first indices that are involved in the inverse sum.
+        Must be a positive integer.
+        Default: 2.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The inverse of a tensor whose shape is equivalent to
+        ``a.shape[ind:] + a.shape[:ind]``.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.
+    :obj:`dpnp.linalg.tensorsolve` : Solve the tensor equation ``a x = b`` for x.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.eye(4*6)
+    >>> a.shape = (4, 6, 8, 3)
+    >>> ainv = np.linalg.tensorinv(a, ind=2)
+    >>> ainv.shape
+    (8, 3, 4, 6)
+
+    >>> a = np.eye(4*6)
+    >>> a.shape = (24, 8, 3)
+    >>> ainv = np.linalg.tensorinv(a, ind=1)
+    >>> ainv.shape
+    (8, 3, 24)
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+
+    if ind <= 0:
+        raise ValueError("Invalid ind argument")
+
+    old_shape = a.shape
+    inv_shape = old_shape[ind:] + old_shape[:ind]
+    prod = numpy.prod(old_shape[ind:])
+    a = a.reshape(prod, -1)
+    a_inv = inv(a)
+
+    return a_inv.reshape(*inv_shape)
