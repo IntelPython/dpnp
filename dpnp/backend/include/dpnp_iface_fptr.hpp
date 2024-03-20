@@ -339,13 +339,11 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_ZIPF_EXT, /**< Used in numpy.random.zipf() impl, requires extra
                              parameters */
     DPNP_FN_SEARCHSORTED, /**< Used in numpy.searchsorted() impl  */
-    DPNP_FN_SEARCHSORTED_EXT, /**< Used in numpy.searchsorted() impl, requires
-                                 extra parameters */
-    DPNP_FN_SIGN,             /**< Used in numpy.sign() impl  */
-    DPNP_FN_SIN,              /**< Used in numpy.sin() impl  */
-    DPNP_FN_SINH,             /**< Used in numpy.sinh() impl  */
-    DPNP_FN_SORT,             /**< Used in numpy.sort() impl  */
-    DPNP_FN_SQRT,             /**< Used in numpy.sqrt() impl  */
+    DPNP_FN_SIGN,         /**< Used in numpy.sign() impl  */
+    DPNP_FN_SIN,          /**< Used in numpy.sin() impl  */
+    DPNP_FN_SINH,         /**< Used in numpy.sinh() impl  */
+    DPNP_FN_SORT,         /**< Used in numpy.sort() impl  */
+    DPNP_FN_SQRT,         /**< Used in numpy.sqrt() impl  */
     DPNP_FN_SQRT_EXT, /**< Used in numpy.sqrt() impl, requires extra parameters
                        */
     DPNP_FN_SQUARE,   /**< Used in numpy.square() impl  */

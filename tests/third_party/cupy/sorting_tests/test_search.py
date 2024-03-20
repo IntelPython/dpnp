@@ -1,12 +1,9 @@
-import unittest
-
 import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
-
-# from cupy.core import _accelerator
 
 
 class TestSearch:
@@ -84,6 +81,14 @@ class TestSearch:
         a = testing.shaped_random((0, 1), xp, dtype)
         return a.argmax(axis=1)
 
+    @testing.slow
+    def test_argmax_int32_overflow(self):
+        try:
+            a = testing.shaped_arange((2**32 + 1,), cupy, numpy.float64)
+        except MemoryError as e:
+            pytest.skip("Not enough memory: " + str(e))
+        assert a.argmax().item() == 2**32
+
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_argmin_all(self, xp, dtype):
@@ -158,62 +163,116 @@ class TestSearch:
         a = testing.shaped_random((0, 1), xp, dtype)
         return a.argmin(axis=1)
 
+    @testing.slow
+    def test_argmin_int32_overflow(self):
+        try:
+            a = testing.shaped_arange((2**32 + 1,), cupy, numpy.float64)
+        except MemoryError as e:
+            pytest.skip("Not enough memory: " + str(e))
+        cupy.negative(a, out=a)
+        assert a.argmin().item() == 2**32
+
 
 # This class compares CUB results against NumPy's
 # TODO(leofang): test axis after support is added
-# @testing.parameterize(*testing.product({
-# 'shape': [(10,), (10, 20), (10, 20, 30), (10, 20, 30, 40)],
-# 'order': ('C', 'F'),
-# }))
-# @unittest.skipUnless(cupy.cuda.cub.available, 'The CUB routine is not enabled')
-# class TestCubReduction(unittest.TestCase):
+@testing.parameterize(
+    *testing.product(
+        {
+            "shape": [(10,), (10, 20), (10, 20, 30), (10, 20, 30, 40)],
+            "order_and_axis": (("C", -1), ("C", None), ("F", 0), ("F", None)),
+            "backend": ("device", "block"),
+        }
+    )
+)
+@pytest.mark.skip("The CUB routine is not enabled")
+class TestCubReduction:
+    @pytest.fixture(autouse=True)
+    def setUp(self):
+        self.order, self.axis = self.order_and_axis
+        old_routine_accelerators = _acc.get_routine_accelerators()
+        old_reduction_accelerators = _acc.get_reduction_accelerators()
+        if self.backend == "device":
+            if self.axis is not None:
+                pytest.skip("does not support")
+            _acc.set_routine_accelerators(["cub"])
+            _acc.set_reduction_accelerators([])
+        elif self.backend == "block":
+            _acc.set_routine_accelerators([])
+            _acc.set_reduction_accelerators(["cub"])
+        yield
+        _acc.set_routine_accelerators(old_routine_accelerators)
+        _acc.set_reduction_accelerators(old_reduction_accelerators)
 
-# def setUp(self):
-# self.old_accelerators = _accelerator.get_routine_accelerators()
-# _accelerator.set_routine_accelerators(['cub'])
+    @testing.for_dtypes("bhilBHILefdFD")
+    @testing.numpy_cupy_allclose(rtol=1e-5, contiguous_check=False)
+    def test_cub_argmin(self, xp, dtype):
+        a = testing.shaped_random(self.shape, xp, dtype)
+        if self.order == "C":
+            a = xp.ascontiguousarray(a)
+        else:
+            a = xp.asfortranarray(a)
 
-# def tearDown(self):
-# _accelerator.set_routine_accelerators(self.old_accelerators)
+        if xp is numpy:
+            return a.argmin(axis=self.axis)
 
-# @testing.for_dtypes('bhilBHILefdFD')
-# @testing.numpy_cupy_allclose(rtol=1E-5)
-# def test_cub_argmin(self, xp, dtype):
-# a = testing.shaped_random(self.shape, xp, dtype)
-# if self.order == 'C':
-# a = xp.ascontiguousarray(a)
-# else:
-# a = xp.asfortranarray(a)
+        # xp is cupy, first ensure we really use CUB
+        ret = cupy.empty(())  # Cython checks return type, need to fool it
+        if self.backend == "device":
+            func_name = "cupy._core._routines_statistics.cub."
+            func_name += "device_reduce"
+            with testing.AssertFunctionIsCalled(func_name, return_value=ret):
+                a.argmin(axis=self.axis)
+        elif self.backend == "block":
+            # this is the only function we can mock; the rest is cdef'd
+            func_name = "cupy._core._cub_reduction."
+            func_name += "_SimpleCubReductionKernel_get_cached_function"
+            # func = _cub_reduction._SimpleCubReductionKernel_get_cached_function
+            if self.axis is not None and len(self.shape) > 1:
+                times_called = 1  # one pass
+            else:
+                times_called = 2  # two passes
+            with testing.AssertFunctionIsCalled(
+                func_name, wraps=func, times_called=times_called
+            ):
+                a.argmin(axis=self.axis)
+        # ...then perform the actual computation
+        return a.argmin(axis=self.axis)
 
-# if xp is numpy:
-# return a.argmin()
+    @testing.for_dtypes("bhilBHILefdFD")
+    @testing.numpy_cupy_allclose(rtol=1e-5, contiguous_check=False)
+    def test_cub_argmax(self, xp, dtype):
+        # _skip_cuda90(dtype)
+        a = testing.shaped_random(self.shape, xp, dtype)
+        if self.order == "C":
+            a = xp.ascontiguousarray(a)
+        else:
+            a = xp.asfortranarray(a)
 
-# # xp is cupy, first ensure we really use CUB
-# ret = cupy.empty(())  # Cython checks return type, need to fool it
-# func = 'cupy.core._routines_statistics.cub.device_reduce'
-# with testing.AssertFunctionIsCalled(func, return_value=ret):
-# a.argmin()
-# # ...then perform the actual computation
-# return a.argmin()
+        if xp is numpy:
+            return a.argmax(axis=self.axis)
 
-# @testing.for_dtypes('bhilBHILefdFD')
-# @testing.numpy_cupy_allclose(rtol=1E-5)
-# def test_cub_argmax(self, xp, dtype):
-# a = testing.shaped_random(self.shape, xp, dtype)
-# if self.order == 'C':
-# a = xp.ascontiguousarray(a)
-# else:
-# a = xp.asfortranarray(a)
-
-# if xp is numpy:
-# return a.argmax()
-
-# # xp is cupy, first ensure we really use CUB
-# ret = cupy.empty(())  # Cython checks return type, need to fool it
-# func = 'cupy.core._routines_statistics.cub.device_reduce'
-# with testing.AssertFunctionIsCalled(func, return_value=ret):
-# a.argmax()
-# # ...then perform the actual computation
-# return a.argmax()
+        # xp is cupy, first ensure we really use CUB
+        ret = cupy.empty(())  # Cython checks return type, need to fool it
+        if self.backend == "device":
+            func_name = "cupy._core._routines_statistics.cub."
+            func_name += "device_reduce"
+            with testing.AssertFunctionIsCalled(func_name, return_value=ret):
+                a.argmax(axis=self.axis)
+        elif self.backend == "block":
+            # this is the only function we can mock; the rest is cdef'd
+            func_name = "cupy._core._cub_reduction."
+            func_name += "_SimpleCubReductionKernel_get_cached_function"
+            # func = _cub_reduction._SimpleCubReductionKernel_get_cached_function
+            if self.axis is not None and len(self.shape) > 1:
+                times_called = 1  # one pass
+            else:
+                times_called = 2  # two passes
+            with testing.AssertFunctionIsCalled(
+                func_name, wraps=func, times_called=times_called
+            ):
+                a.argmax(axis=self.axis)
+        # ...then perform the actual computation
+        return a.argmax(axis=self.axis)
 
 
 @testing.parameterize(
@@ -225,6 +284,7 @@ class TestSearch:
         }
     )
 )
+@pytest.mark.skip("dtype is not supported")
 class TestArgMinMaxDtype:
     @testing.for_dtypes(
         dtypes=[numpy.int8, numpy.int16, numpy.int32, numpy.int64],
@@ -249,9 +309,9 @@ class TestArgMinMaxDtype:
     {"cond_shape": (2, 3, 4), "x_shape": (2, 3, 4), "y_shape": (3, 4)},
     {"cond_shape": (3, 4), "x_shape": (2, 3, 4), "y_shape": (4,)},
 )
-class TestWhereTwoArrays(unittest.TestCase):
+class TestWhereTwoArrays:
     @testing.for_all_dtypes_combination(names=["cond_type", "x_type", "y_type"])
-    @testing.numpy_cupy_allclose(type_check=False)
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_where_two_arrays(self, xp, cond_type, x_type, y_type):
         m = testing.shaped_random(self.cond_shape, xp, xp.bool_)
         # Almost all values of a matrix `shaped_random` makes are not zero.
@@ -268,7 +328,7 @@ class TestWhereTwoArrays(unittest.TestCase):
     {"cond_shape": (2, 3, 4)},
     {"cond_shape": (3, 4)},
 )
-class TestWhereCond(unittest.TestCase):
+class TestWhereCond:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_where_cond(self, xp, dtype):
@@ -277,7 +337,7 @@ class TestWhereCond(unittest.TestCase):
         return xp.where(cond)
 
 
-class TestWhereError(unittest.TestCase):
+class TestWhereError:
     def test_one_argument(self):
         for xp in (numpy, cupy):
             cond = testing.shaped_random((3, 4), xp, dtype=xp.bool_)
@@ -287,6 +347,8 @@ class TestWhereError(unittest.TestCase):
 
 
 @testing.parameterize(
+    {"array": numpy.random.randint(0, 2, (20,))},
+    {"array": numpy.random.randn(3, 2, 4)},
     {"array": numpy.empty((0,))},
     {"array": numpy.empty((0, 2))},
     {"array": numpy.empty((0, 2, 0))},
@@ -304,17 +366,20 @@ class TestNonzero:
     {"array": numpy.array(0)},
     {"array": numpy.array(1)},
 )
+@pytest.mark.skip("Only positive rank is supported")
 @testing.with_requires("numpy>=1.17.0")
-class TestNonzeroZeroDimension(unittest.TestCase):
+class TestNonzeroZeroDimension:
     @testing.for_all_dtypes()
-    def test_nonzero(self, dtype):
-        for xp in (numpy, cupy):
-            array = xp.array(self.array, dtype=dtype)
-            with pytest.raises(DeprecationWarning):
-                xp.nonzero(array)
+    @testing.numpy_cupy_array_equal()
+    def test_nonzero(self, xp, dtype):
+        array = xp.array(self.array, dtype=dtype)
+        with testing.assert_warns(DeprecationWarning):
+            return xp.nonzero(array)
 
 
 @testing.parameterize(
+    {"array": numpy.random.randint(0, 2, (20,))},
+    {"array": numpy.random.randn(3, 2, 4)},
     {"array": numpy.array(0)},
     {"array": numpy.array(1)},
     {"array": numpy.empty((0,))},
@@ -322,6 +387,7 @@ class TestNonzeroZeroDimension(unittest.TestCase):
     {"array": numpy.empty((0, 2, 0))},
     _ids=False,  # Do not generate ids from randomly generated params
 )
+@pytest.mark.skip("flatnonzero isn't implemented yet")
 class TestFlatNonzero:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -331,11 +397,14 @@ class TestFlatNonzero:
 
 
 @testing.parameterize(
+    {"array": numpy.random.randint(0, 2, (20,))},
+    {"array": numpy.random.randn(3, 2, 4)},
     {"array": numpy.empty((0,))},
     {"array": numpy.empty((0, 2))},
     {"array": numpy.empty((0, 2, 0))},
     _ids=False,  # Do not generate ids from randomly generated params
 )
+@pytest.mark.skip("argwhere isn't implemented yet")
 class TestArgwhere:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -344,19 +413,18 @@ class TestArgwhere:
         return xp.argwhere(array)
 
 
-# DPNP_BUG
-# dpnp/backend.pyx:86: in dpnp.backend.dpnp_array
-# raise TypeError(f"Intel NumPy array(): Unsupported non-sequence obj={type(obj)}")
-# E   TypeError: Intel NumPy array(): Unsupported non-sequence obj=<class 'int'>
-# @testing.parameterize(
-# {'array': cupy.array(1)},
-# )
-
-# class TestArgwhereZeroDimension(unittest.TestCase):
-
-# def test_argwhere(self):
-# with testing.assert_warns(DeprecationWarning):
-# return cupy.nonzero(self.array)
+@testing.parameterize(
+    {"value": 0},
+    {"value": 3},
+)
+@pytest.mark.skip("argwhere isn't implemented yet")
+@testing.with_requires("numpy>=1.18")
+class TestArgwhereZeroDimension:
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_argwhere(self, xp, dtype):
+        array = xp.array(self.value, dtype=dtype)
+        return xp.argwhere(array)
 
 
 class TestNanArgMin:
@@ -560,8 +628,7 @@ class TestNanArgMax:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestSearchSorted(unittest.TestCase):
+class TestSearchSorted:
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_searchsorted(self, xp, dtype):
@@ -570,10 +637,17 @@ class TestSearchSorted(unittest.TestCase):
         y = xp.searchsorted(bins, x, side=self.side)
         return (y,)
 
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_array_equal()
+    def test_ndarray_searchsorted(self, xp, dtype):
+        x = testing.shaped_arange(self.shape, xp, dtype)
+        bins = xp.array(self.bins)
+        y = bins.searchsorted(x, side=self.side)
+        return (y,)
+
 
 @testing.parameterize({"side": "left"}, {"side": "right"})
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestSearchSortedNanInf(unittest.TestCase):
+class TestSearchSortedNanInf:
     @testing.numpy_cupy_array_equal()
     def test_searchsorted_nanbins(self, xp):
         x = testing.shaped_arange((10,), xp, xp.float64)
@@ -589,33 +663,37 @@ class TestSearchSortedNanInf(unittest.TestCase):
         y = xp.searchsorted(bins, x, side=self.side)
         return (y,)
 
-    # DPNP_BUG
-    # Segmentation fault on access to negative index # x[-1] = float('nan') #######
-    # @testing.numpy_cupy_array_equal()
-    # def test_searchsorted_nan_last(self, xp):
-    # x = testing.shaped_arange((10,), xp, xp.float64)
-    # x[-1] = float('nan')
-    # bins = xp.array([0, 1, 2, 4, float('nan')])
-    # y = xp.searchsorted(bins, x, side=self.side)
-    # return y,
+    @testing.numpy_cupy_array_equal()
+    def test_searchsorted_nan_last(self, xp):
+        x = testing.shaped_arange((10,), xp, xp.float64)
+        x[-1] = float("nan")
+        bins = xp.array([0, 1, 2, 4, float("nan")])
+        y = xp.searchsorted(bins, x, side=self.side)
+        return (y,)
 
-    # @testing.numpy_cupy_array_equal()
-    # def test_searchsorted_nan_last_repeat(self, xp):
-    # x = testing.shaped_arange((10,), xp, xp.float64)
-    # x[-1] = float('nan')
-    # bins = xp.array([0, 1, 2, float('nan'), float('nan')])
-    # y = xp.searchsorted(bins, x, side=self.side)
-    # return y,
+    @testing.numpy_cupy_array_equal()
+    def test_searchsorted_nan_last_repeat(self, xp):
+        x = testing.shaped_arange((10,), xp, xp.float64)
+        x[-1] = float("nan")
+        bins = xp.array([0, 1, 2, float("nan"), float("nan")])
+        y = xp.searchsorted(bins, x, side=self.side)
+        return (y,)
 
-    # @testing.numpy_cupy_array_equal()
-    # def test_searchsorted_all_nans(self, xp):
-    # x = testing.shaped_arange((10,), xp, xp.float64)
-    # x[-1] = float('nan')
-    # bins = xp.array([float('nan'), float('nan'), float('nan'),
-    # float('nan'), float('nan')])
-    # y = xp.searchsorted(bins, x, side=self.side)
-    # return y,
-    ###############################################################################
+    @testing.numpy_cupy_array_equal()
+    def test_searchsorted_all_nans(self, xp):
+        x = testing.shaped_arange((10,), xp, xp.float64)
+        x[-1] = float("nan")
+        bins = xp.array(
+            [
+                float("nan"),
+                float("nan"),
+                float("nan"),
+                float("nan"),
+                float("nan"),
+            ]
+        )
+        y = xp.searchsorted(bins, x, side=self.side)
+        return (y,)
 
     @testing.numpy_cupy_array_equal()
     def test_searchsorted_inf(self, xp):
@@ -634,8 +712,7 @@ class TestSearchSortedNanInf(unittest.TestCase):
         return (y,)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestSearchSortedInvalid(unittest.TestCase):
+class TestSearchSortedInvalid:
     # Cant test unordered bins due to numpy undefined
     # behavior for searchsorted
 
@@ -646,9 +723,15 @@ class TestSearchSortedInvalid(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.searchsorted(bins, x)
 
+    def test_ndarray_searchsorted_ndbins(self):
+        for xp in (numpy, cupy):
+            x = testing.shaped_arange((10,), xp, xp.float64)
+            bins = xp.array([[10, 4], [2, 1], [7, 8]])
+            with pytest.raises(ValueError):
+                bins.searchsorted(x)
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestSearchSortedWithSorter(unittest.TestCase):
+
+class TestSearchSortedWithSorter:
     @testing.numpy_cupy_array_equal()
     def test_sorter(self, xp):
         x = testing.shaped_arange((12,), xp, xp.float64)
@@ -667,8 +750,102 @@ class TestSearchSortedWithSorter(unittest.TestCase):
 
     def test_nonint_sorter(self):
         for xp in (numpy, cupy):
-            x = testing.shaped_arange((12,), xp, xp.float32)
+            dt = cupy.default_float_type()
+            x = testing.shaped_arange((12,), xp, dt)
             bins = xp.array([10, 4, 2, 1, 8])
-            sorter = xp.array([], dtype=xp.float32)
-            with pytest.raises(TypeError):
+            sorter = xp.array([], dtype=dt)
+            with pytest.raises((TypeError, ValueError)):
                 xp.searchsorted(bins, x, sorter=sorter)
+
+
+@testing.parameterize({"side": "left"}, {"side": "right"})
+class TestNdarraySearchSortedNanInf:
+    @testing.numpy_cupy_array_equal()
+    def test_searchsorted_nanbins(self, xp):
+        x = testing.shaped_arange((10,), xp, xp.float64)
+        bins = xp.array([0, 1, 2, 4, 10, float("nan")])
+        y = bins.searchsorted(x, side=self.side)
+        return (y,)
+
+    @testing.numpy_cupy_array_equal()
+    def test_searchsorted_nan(self, xp):
+        x = testing.shaped_arange((10,), xp, xp.float64)
+        x[5] = float("nan")
+        bins = xp.array([0, 1, 2, 4, 10])
+        y = bins.searchsorted(x, side=self.side)
+        return (y,)
+
+    @testing.numpy_cupy_array_equal()
+    def test_searchsorted_nan_last(self, xp):
+        x = testing.shaped_arange((10,), xp, xp.float64)
+        x[-1] = float("nan")
+        bins = xp.array([0, 1, 2, 4, float("nan")])
+        y = bins.searchsorted(x, side=self.side)
+        return (y,)
+
+    @testing.numpy_cupy_array_equal()
+    def test_searchsorted_nan_last_repeat(self, xp):
+        x = testing.shaped_arange((10,), xp, xp.float64)
+        x[-1] = float("nan")
+        bins = xp.array([0, 1, 2, float("nan"), float("nan")])
+        y = bins.searchsorted(x, side=self.side)
+        return (y,)
+
+    @testing.numpy_cupy_array_equal()
+    def test_searchsorted_all_nans(self, xp):
+        x = testing.shaped_arange((10,), xp, xp.float64)
+        x[-1] = float("nan")
+        bins = xp.array(
+            [
+                float("nan"),
+                float("nan"),
+                float("nan"),
+                float("nan"),
+                float("nan"),
+            ]
+        )
+        y = bins.searchsorted(x, side=self.side)
+        return (y,)
+
+    @testing.numpy_cupy_array_equal()
+    def test_searchsorted_inf(self, xp):
+        x = testing.shaped_arange((10,), xp, xp.float64)
+        x[5] = float("inf")
+        bins = xp.array([0, 1, 2, 4, 10])
+        y = bins.searchsorted(x, side=self.side)
+        return (y,)
+
+    @testing.numpy_cupy_array_equal()
+    def test_searchsorted_minf(self, xp):
+        x = testing.shaped_arange((10,), xp, xp.float64)
+        x[5] = float("-inf")
+        bins = xp.array([0, 1, 2, 4, 10])
+        y = bins.searchsorted(x, side=self.side)
+        return (y,)
+
+
+class TestNdarraySearchSortedWithSorter:
+    @testing.numpy_cupy_array_equal()
+    def test_sorter(self, xp):
+        x = testing.shaped_arange((12,), xp, xp.float64)
+        bins = xp.array([10, 4, 2, 1, 8])
+        sorter = xp.array([3, 2, 1, 4, 0])
+        y = bins.searchsorted(x, sorter=sorter)
+        return (y,)
+
+    def test_invalid_sorter(self):
+        for xp in (numpy, cupy):
+            x = testing.shaped_arange((12,), xp, xp.float64)
+            bins = xp.array([10, 4, 2, 1, 8])
+            sorter = xp.array([0])
+            with pytest.raises(ValueError):
+                bins.searchsorted(x, sorter=sorter)
+
+    def test_nonint_sorter(self):
+        for xp in (numpy, cupy):
+            dt = cupy.default_float_type()
+            x = testing.shaped_arange((12,), xp, dt)
+            bins = xp.array([10, 4, 2, 1, 8])
+            sorter = xp.array([], dtype=dt)
+            with pytest.raises((TypeError, ValueError)):
+                bins.searchsorted(x, sorter=sorter)

@@ -631,6 +631,7 @@ def test_reduce_hypot(device):
             [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
             [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
         ),
+        pytest.param("searchsorted", [11, 12, 13, 14, 15], [-10, 20, 12, 13]),
         pytest.param(
             "subtract",
             [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
@@ -666,6 +667,28 @@ def test_2in_1out(func, data1, data2, device):
 
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "func, data, scalar",
+    [
+        pytest.param("searchsorted", [11, 12, 13, 14, 15], 13),
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_2in_with_scalar_1out(func, data, scalar, device):
+    x1_orig = numpy.array(data)
+    expected = getattr(numpy, func)(x1_orig, scalar)
+
+    x1 = dpnp.array(data, device=device)
+    result = getattr(dpnp, func)(x1, scalar)
+
+    assert_allclose(result, expected)
+    assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
 
 
 @pytest.mark.parametrize(

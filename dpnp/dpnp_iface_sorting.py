@@ -47,14 +47,13 @@ import dpnp
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
     dpnp_partition,
-    dpnp_searchsorted,
 )
 from .dpnp_array import dpnp_array
 from .dpnp_utils import (
     call_origin,
 )
 
-__all__ = ["argsort", "partition", "searchsorted", "sort"]
+__all__ = ["argsort", "partition", "sort"]
 
 
 def argsort(a, axis=-1, kind=None, order=None):
@@ -187,41 +186,6 @@ def partition(x1, kth, axis=-1, kind="introselect", order=None):
             return dpnp_partition(x1_desc, kth, axis, kind, order).get_pyobj()
 
     return call_origin(numpy.partition, x1, kth, axis, kind, order)
-
-
-def searchsorted(x1, x2, side="left", sorter=None):
-    """
-    Find indices where elements should be inserted to maintain order.
-
-    For full documentation refer to :obj:`numpy.searchsorted`.
-
-    Limitations
-    -----------
-    Input arrays is supported as :obj:`dpnp.ndarray`.
-    Input array is supported only sorted.
-    Input side is supported only values ``left``, ``right``.
-    Parameter `sorter` is supported only with default values.
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-    # pylint: disable=condition-evals-to-constant
-    if 0 and x1_desc and x2_desc:
-        if x1_desc.ndim != 1:
-            pass
-        elif x1_desc.dtype != x2_desc.dtype:
-            pass
-        elif side not in ["left", "right"]:
-            pass
-        elif sorter is not None:
-            pass
-        elif x1_desc.size < 2:
-            pass
-        else:
-            return dpnp_searchsorted(x1_desc, x2_desc, side=side).get_pyobj()
-
-    return call_origin(numpy.searchsorted, x1, x2, side=side, sorter=sorter)
 
 
 def sort(a, axis=-1, kind=None, order=None):
