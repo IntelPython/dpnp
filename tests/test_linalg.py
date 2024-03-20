@@ -387,7 +387,7 @@ def test_eig_arange(type, size):
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_none=True))
 @pytest.mark.parametrize("size", [2, 4, 8])
 def test_eigh_arange(type, size):
-    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
+    if dpctl.SyclDevice().device_type != dpctl.device_type.gpu:
         pytest.skip(
             "eig function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
         )
