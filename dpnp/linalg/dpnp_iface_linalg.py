@@ -77,6 +77,7 @@ __all__ = [
     "solve",
     "svd",
     "slogdet",
+    "tensorsolve",
 ]
 
 
@@ -897,3 +898,73 @@ def slogdet(a):
     check_stacked_square(a)
 
     return dpnp_slogdet(a)
+
+
+def tensorsolve(a, b, axes=None):
+    """
+    Solve the tensor equation ``a x = b`` for x.
+
+    For full documentation refer to :obj:`numpy.linalg.tensorsolve`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Coefficient tensor, of shape ``b.shape + Q``. `Q`, a tuple, equals
+        the shape of that sub-tensor of `a` consisting of the appropriate
+        number of its rightmost indices, and must be such that
+        ``prod(Q) == prod(b.shape)`` (in which sense `a` is said to be
+        'square').
+    b : {dpnp.ndarray, usm_ndarray}
+        Right-hand tensor, which can be of any shape.
+    axes : tuple of ints, optional
+        Axes in `a` to reorder to the right, before inversion.
+        If None , no reordering is done.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The tensor with shape ``Q`` such that ``b.shape + Q == a.shape``.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.
+    :obj:`dpnp.linalg.tensorinv` : Compute the `inverse` of a tensor.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.eye(2*3*4)
+    >>> a.shape = (2*3, 4, 2, 3, 4)
+    >>> b = np.random.randn(2*3, 4)
+    >>> x = np.linalg.tensorsolve(a, b)
+    >>> x.shape
+    (2, 3, 4)
+    >>> np.allclose(np.tensordot(a, x, axes=3), b)
+    array([ True])
+
+    """
+
+    dpnp.check_supported_arrays_type(a, b)
+    a_ndim = a.ndim
+
+    if axes is not None:
+        all_axes = list(range(a_ndim))
+        for k in axes:
+            all_axes.remove(k)
+            all_axes.insert(a_ndim, k)
+        a = a.transpose(tuple(all_axes))
+
+    old_shape = a.shape[-(a_ndim - b.ndim) :]
+    prod = numpy.prod(old_shape)
+
+    if a.size != prod**2:
+        raise dpnp.linalg.LinAlgError(
+            "Input arrays must satisfy the requirement \
+            prod(a.shape[b.ndim:]) == prod(a.shape[:b.ndim])"
+        )
+
+    a = a.reshape(-1, prod)
+    b = b.ravel()
+    res = solve(a, b)
+    return res.reshape(old_shape)
