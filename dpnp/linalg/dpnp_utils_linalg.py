@@ -1149,12 +1149,17 @@ def dpnp_matrix_power(a, n):
     # multiplications for n > 3.
     # `result` will hold the final matrix power,
     # while `acc` serves as an accumulator for the intermediate matrix powers.
-    result, acc = None, None
+    result = None
+    acc = a.copy()
     while n > 0:
-        acc = a if acc is None else dpnp.matmul(acc, acc)
         n, bit = divmod(n, 2)
         if bit:
-            result = acc if result is None else dpnp.matmul(result, acc)
+            if result is None:
+                result = acc.copy()
+            else:
+                dpnp.matmul(result, acc, out=result)
+        if n > 0:
+            dpnp.matmul(acc, acc, out=acc)
 
     return result
 
