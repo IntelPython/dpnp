@@ -98,6 +98,26 @@ class TestSolve(unittest.TestCase):
 @testing.parameterize(
     *testing.product(
         {
+            "a_shape": [(2, 3, 6), (3, 4, 4, 3)],
+            "axes": [None, (0, 2)],
+        }
+    )
+)
+@testing.fix_random()
+class TestTensorSolve(unittest.TestCase):
+    @testing.for_dtypes("ifdFD")
+    @testing.numpy_cupy_allclose(atol=0.02, type_check=has_support_aspect64())
+    def test_tensorsolve(self, xp, dtype):
+        a_shape = self.a_shape
+        b_shape = self.a_shape[:2]
+        a = testing.shaped_random(a_shape, xp, dtype=dtype, seed=0)
+        b = testing.shaped_random(b_shape, xp, dtype=dtype, seed=1)
+        return xp.linalg.tensorsolve(a, b, axes=self.axes)
+
+
+@testing.parameterize(
+    *testing.product(
+        {
             "order": ["C", "F"],
         }
     )

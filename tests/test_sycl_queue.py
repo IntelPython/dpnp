@@ -1849,3 +1849,24 @@ def test_pinv(shape, hermitian, rcond_as_array, device):
     B_queue = B_result.sycl_queue
 
     assert_sycl_queue_equal(B_queue, a_dp.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_tensorsolve(device):
+    a_np = numpy.random.randn(3, 2, 6).astype(dpnp.default_float_type())
+    b_np = numpy.ones(a_np.shape[:2], dtype=a_np.dtype)
+
+    a_dp = dpnp.array(a_np, device=device)
+    b_dp = dpnp.array(b_np, device=device)
+
+    result = dpnp.linalg.tensorsolve(a_dp, b_dp)
+    expected = numpy.linalg.tensorsolve(a_np, b_np)
+    assert_dtype_allclose(result, expected)
+
+    result_queue = result.sycl_queue
+
+    assert_sycl_queue_equal(result_queue, a_dp.sycl_queue)

@@ -1409,3 +1409,24 @@ class TestPinv:
         a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
         rcond_dp_q = inp.array([0.5], dtype="float32", sycl_queue=rcond_queue)
         assert_raises(ValueError, inp.linalg.pinv, a_dp_q, rcond_dp_q)
+
+
+class TestTensorsolve:
+    def test_tensorsolve_errors(self):
+        a_dp = inp.eye(24, dtype="float32").reshape(4, 6, 8, 3)
+        b_dp = inp.ones(a_dp.shape[:2], dtype="float32")
+
+        # unsupported type `a` and `b`
+        a_np = inp.asnumpy(a_dp)
+        b_np = inp.asnumpy(b_dp)
+        assert_raises(TypeError, inp.linalg.tensorsolve, a_np, b_dp)
+        assert_raises(TypeError, inp.linalg.tensorsolve, a_dp, b_np)
+
+        # unsupported type `axes`
+        assert_raises(TypeError, inp.linalg.tensorsolve, a_dp, 2.0)
+        assert_raises(TypeError, inp.linalg.tensorsolve, a_dp, -2)
+
+        # incorrect axes
+        assert_raises(
+            inp.linalg.LinAlgError, inp.linalg.tensorsolve, a_dp, b_dp, (1,)
+        )
