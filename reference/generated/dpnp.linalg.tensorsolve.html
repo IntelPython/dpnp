@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.pinv &mdash; Data Parallel Extension for NumPy 0.15.0dev0+33.gfba8d7aa2b documentation</title>
+  <title>dpnp.linalg.tensorsolve &mdash; Data Parallel Extension for NumPy 0.15.0dev0+33.gfba8d7aa2b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -30,8 +30,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Logic Functions" href="../logic.html" />
-    <link rel="prev" title="dpnp.linalg.inv" href="dpnp.linalg.inv.html" /> 
+    <link rel="next" title="dpnp.linalg.inv" href="dpnp.linalg.inv.html" />
+    <link rel="prev" title="dpnp.linalg.solve" href="dpnp.linalg.solve.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -113,9 +113,9 @@
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
           <li class="breadcrumb-item"><a href="../linalg.html">Linear Algebra</a></li>
-      <li class="breadcrumb-item active">dpnp.linalg.pinv</li>
+      <li class="breadcrumb-item active">dpnp.linalg.tensorsolve</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/reference/generated/dpnp.linalg.pinv.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.linalg.tensorsolve.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -123,44 +123,52 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dpnp-linalg-pinv">
-<h1>dpnp.linalg.pinv<a class="headerlink" href="#dpnp-linalg-pinv" title="Link to this heading"></a></h1>
+  <section id="dpnp-linalg-tensorsolve">
+<h1>dpnp.linalg.tensorsolve<a class="headerlink" href="#dpnp-linalg-tensorsolve" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="dpnp.linalg.pinv">
-<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">pinv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rcond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hermitian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#pinv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.pinv" title="Link to this definition"></a></dt>
-<dd><p>Compute the (Moore-Penrose) pseudo-inverse of a matrix.</p>
-<p>Calculate the generalized inverse of a matrix using its
-singular-value decomposition (SVD) and including all large singular values.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.inv</span></code></a>.</p>
+<dt class="sig sig-object py" id="dpnp.linalg.tensorsolve">
+<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">tensorsolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#tensorsolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.tensorsolve" title="Link to this definition"></a></dt>
+<dd><p>Solve the tensor equation <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">b</span></code> for x.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.tensorsolve.html#numpy.linalg.tensorsolve" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.tensorsolve</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>N</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Matrix or stack of matrices to be pseudo-inverted.</p></li>
-<li><p><strong>rcond</strong> (<em>{float</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) – Cutoff for small singular values.
-Singular values less than or equal to <code class="docutils literal notranslate"><span class="pre">rcond</span> <span class="pre">*</span> <span class="pre">largest_singular_value</span></code>
-are set to zero. Broadcasts against the stack of matrices.
-Default: <code class="docutils literal notranslate"><span class="pre">1e-15</span></code>.</p></li>
-<li><p><strong>hermitian</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, a is assumed to be Hermitian (symmetric if real-valued),
-enabling a more efficient method for finding singular values.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Coefficient tensor, of shape <code class="docutils literal notranslate"><span class="pre">b.shape</span> <span class="pre">+</span> <span class="pre">Q</span></code>. <cite>Q</cite>, a tuple, equals
+the shape of that sub-tensor of <cite>a</cite> consisting of the appropriate
+number of its rightmost indices, and must be such that
+<code class="docutils literal notranslate"><span class="pre">prod(Q)</span> <span class="pre">==</span> <span class="pre">prod(b.shape)</span></code> (in which sense <cite>a</cite> is said to be
+‘square’).</p></li>
+<li><p><strong>b</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Right-hand tensor, which can be of any shape.</p></li>
+<li><p><strong>axes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em><em>, </em><em>optional</em>) – Axes in <cite>a</cite> to reorder to the right, before inversion.
+If None , no reordering is done.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – The pseudo-inverse of a.</p>
+<dd class="field-even"><p><strong>out</strong> – The tensor with shape <code class="docutils literal notranslate"><span class="pre">Q</span></code> such that <code class="docutils literal notranslate"><span class="pre">b.shape</span> <span class="pre">+</span> <span class="pre">Q</span> <span class="pre">==</span> <span class="pre">a.shape</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(…, N, M) dpnp.ndarray</p>
+<dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.tensordot</span></code></dt><dd><p>Compute tensor dot product along specified axes.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.tensorinv</span></code></dt><dd><p>Compute the <cite>inverse</cite> of a tensor.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Examples</p>
-<p>The following example checks that <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">*</span> <span class="pre">a+</span> <span class="pre">*</span> <span class="pre">a</span> <span class="pre">==</span> <span class="pre">a</span></code> and
-<code class="docutils literal notranslate"><span class="pre">a+</span> <span class="pre">*</span> <span class="pre">a</span> <span class="pre">*</span> <span class="pre">a+</span> <span class="pre">==</span> <span class="pre">a+</span></code>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">a</span><span class="p">)))</span>
-<span class="go">array([ True])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">B</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="mi">3</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">tensorsolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(2, 3, 4)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> <span class="n">b</span><span class="p">)</span>
 <span class="go">array([ True])</span>
 </pre></div>
 </div>
@@ -172,8 +180,8 @@ Default: <code class="docutils literal notranslate"><span class="pre">False</spa
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.linalg.inv.html" class="btn btn-neutral float-left" title="dpnp.linalg.inv" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../logic.html" class="btn btn-neutral float-right" title="Logic Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.linalg.solve.html" class="btn btn-neutral float-left" title="dpnp.linalg.solve" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.linalg.inv.html" class="btn btn-neutral float-right" title="dpnp.linalg.inv" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
