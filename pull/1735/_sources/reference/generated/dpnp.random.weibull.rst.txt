@@ -1,6 +1,0 @@
-﻿dpnp.random.weibull
-===================
-
-.. currentmodule:: dpnp.random
-
-.. autofunction:: weibull
