@@ -32,7 +32,6 @@ def skip_int_equality_before_numpy_1_20(names=("dtype",)):
     return decorator
 
 
-@testing.gpu
 class TestRanges(unittest.TestCase):
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
@@ -312,7 +311,6 @@ class TestRanges(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestMeshgrid(unittest.TestCase):
     @testing.for_all_dtypes()
     def test_meshgrid0(self, dtype):
@@ -349,7 +347,6 @@ class TestMeshgrid(unittest.TestCase):
         )
 
 
-@testing.gpu
 class TestMgrid(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_mgrid0(self, xp):
@@ -382,7 +379,6 @@ class TestMgrid(unittest.TestCase):
         return xp.mgrid[x:y:10j, x:y:10j]
 
 
-@testing.gpu
 class TestOgrid(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_ogrid0(self, xp):
