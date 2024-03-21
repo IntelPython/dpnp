@@ -77,12 +77,13 @@ public:
     Dispatch3DTableBuilder() = default;
     ~Dispatch3DTableBuilder() = default;
 
-    void populate(funcPtrT table[][_no_of_types][_no_of_methods]) const
+    template <std::uint8_t... VecSizes>
+    void populate(funcPtrT table[][_no_of_types][_no_of_methods], std::integer_sequence<std::uint8_t, VecSizes...>) const
     {
-        const auto map_by_engine = {table_per_type_and_method<mkl_rng_dev::mrg32k3a<8>>(),
-                                    table_per_type_and_method<mkl_rng_dev::philox4x32x10<8>>(),
-                                    table_per_type_and_method<mkl_rng_dev::mcg31m1<8>>(),
-                                    table_per_type_and_method<mkl_rng_dev::mcg59<8>>()};
+        const auto map_by_engine = {table_per_type_and_method<mkl_rng_dev::mrg32k3a<VecSizes>>()...,
+                                    table_per_type_and_method<mkl_rng_dev::philox4x32x10<VecSizes>>()...,
+                                    table_per_type_and_method<mkl_rng_dev::mcg31m1<VecSizes>>()...,
+                                    table_per_type_and_method<mkl_rng_dev::mcg59<VecSizes>>()...};
         assert(map_by_engine.size() == _no_of_engines);
 
         std::uint16_t engine_id = 0;

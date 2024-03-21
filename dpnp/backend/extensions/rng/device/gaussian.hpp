@@ -34,6 +34,7 @@ namespace dpnp::backend::ext::rng::device
 {
 extern std::pair<sycl::event, sycl::event> gaussian(engine::EngineBase *engine,
                                                     const std::uint8_t method_id,
+                                                    const std::uint8_t vec_size,
                                                     const double mean,
                                                     const double stddev,
                                                     const std::uint64_t n,

@@ -100,7 +100,8 @@ PYBIND11_MODULE(_rng_dev_impl, m)
     m.def("_gaussian", &rng_dev_ext::gaussian,
           "",
           py::arg("engine"),
-          py::arg("method"), py::arg("mean"), py::arg("stddev"),
+          py::arg("method_id"), py::arg("vec_size"),
+          py::arg("mean"), py::arg("stddev"),
           py::arg("n"), py::arg("res"),
           py::arg("depends") = py::list());
 }
