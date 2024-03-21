@@ -1,3 +1,5 @@
+from ast import Raise
+
 import dpctl
 import dpctl.tensor as dpt
 import numpy
@@ -582,6 +584,23 @@ class TestEigenvalue:
         # invalid UPLO
         if func in ("eigh", "eigvalsh"):
             assert_raises(ValueError, dpnp_func, a_dp, UPLO="N")
+
+
+class TestEinsum:
+    def test_einsum_error(self):
+        a = inp.ones((5, 5))
+        # unknown keyword argument
+        with pytest.raises(TypeError):
+            inp.einsum("ii->i", a, copy=False)
+
+        # unknown value for optimize keyword
+        with pytest.raises(TypeError):
+            inp.einsum("ii->i", a, optimize="average")
+
+        a = inp.ones((5, 4))
+        # different size for same label 5 != 4
+        with pytest.raises(ValueError):
+            inp.einsum("ii", a)
 
 
 class TestInv:

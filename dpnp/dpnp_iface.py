@@ -202,7 +202,7 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True):
             - 'equiv' means only byte-order changes are allowed.
             - 'safe' means only casts which can preserve values are allowed.
             - 'same_kind' means only safe casts or casts within a kind, like
-            float64 to float32, are allowed.
+              float64 to float32, are allowed.
             - 'unsafe' means any data conversions may be done.
     copy : bool, optional
         By default, astype always returns a newly allocated array. If this
@@ -326,7 +326,7 @@ def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
             f"An array must be any of supported type, but got {type(a)}"
         )
 
-    if len(arrays) > 1 and not (all_scalars or any_is_array):
+    if len(arrays) > 0 and not (all_scalars or any_is_array):
         raise TypeError(
             "At least one input must be of supported array type, "
             "but got all scalars."
