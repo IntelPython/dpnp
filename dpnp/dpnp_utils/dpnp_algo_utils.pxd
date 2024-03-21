@@ -90,12 +90,6 @@ Returns a tuple of:
 2. dtype
 """
 
-cpdef find_common_type(object x1_obj, object x2_obj)
-"""
-Find common type of 2 input objects
-"""
-
-
 cpdef long _get_linear_index(key, tuple shape, int ndim)
 """
 Compute linear index of an element in memory from array indices

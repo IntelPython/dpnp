@@ -14,6 +14,7 @@ env:
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   CONDA_BUILD_VERSION: '24.1.2'
   CONDA_INDEX_VERSION: '0.4.0'
+  TEST_ENV_NAME: 'test'
   # TODO: to add test_arraymanipulation.py back to the scope once crash on Windows is gone
   TEST_SCOPE: >-
       test_arraycreation.py
@@ -81,12 +82,12 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
         with:
           fetch-depth: 0
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@11b562958363ec5770fef326fe8ef0366f8cbf8a # v3.0.1
+        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -107,7 +108,7 @@ jobs:
         run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
 
       - name: Cache conda packages
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+        uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -155,7 +156,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -166,15 +167,15 @@ jobs:
           tar -xvf ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.tar.bz2 -C ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@11b562958363ec5770fef326fe8ef0366f8cbf8a # v3.0.1
+        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
-          activate-environment: 'test'
+          activate-environment: ${{ env.TEST_ENV_NAME }}
 
       - name: Install conda-index
-        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION}}
+        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION }}
 
       - name: Create conda channel
         run: |
@@ -198,7 +199,7 @@ jobs:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
       - name: Cache conda packages
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+        uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
         env:
           CACHE_NUMBER: 1 # Increase to reset cache
         with:
@@ -223,10 +224,25 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       # TODO: run the whole scope once the issues on CPU are resolved
+      # - name: Run tests
+        # run: |
+        #   python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+        # working-directory: ${{ env.tests-path }}
+
+      # TODO: remove once 2024.2 release is published
       - name: Run tests
-        run: |
-          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-        working-directory: ${{ env.tests-path }}
+        id: run_tests_linux
+        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        with:
+          shell: bash
+          timeout_minutes: 10
+          max_attempts: 5
+          retry_on: any
+          command: |
+            . $CONDA/etc/profile.d/conda.sh
+            conda activate ${{ env.TEST_ENV_NAME }}
+            cd ${{ env.tests-path }}
+            python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   test_windows:
     name: Test ['windows-latest', python='${{ matrix.python }}']
@@ -252,11 +268,10 @@ jobs:
       extracted-pkg-path: '${{ github.workspace }}\pkg'
       tests-path: '${{ github.workspace }}\pkg\info\test\tests\'
       ver-json-path: '${{ github.workspace }}\version.json'
-      active-env-name: 'test'
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -276,12 +291,12 @@ jobs:
           dir ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@11b562958363ec5770fef326fe8ef0366f8cbf8a # v3.0.1
+        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
-          activate-environment: ${{ env.active-env-name }}
+          activate-environment: ${{ env.TEST_ENV_NAME }}
 
       - name: Store conda paths as envs
         run: |
@@ -323,7 +338,7 @@ jobs:
         run: more lockfile
 
       - name: Cache conda packages
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+        uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -333,9 +348,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
-
-      - name: Install opencl_rt
-        run: conda install opencl_rt -c intel --override-channels
 
       - name: Install dpnp
         run: |
@@ -362,10 +374,24 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       # TODO: run the whole scope once the issues on CPU are resolved
+      # - name: Run tests
+      #   run: |
+      #     python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+      #   working-directory: ${{ env.tests-path }}
+
+      # TODO: remove once 2024.2 release is published
       - name: Run tests
-        run: |
-          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-        working-directory: ${{ env.tests-path }}
+        id: run_tests_win
+        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        with:
+          shell: cmd
+          timeout_minutes: 15
+          max_attempts: 5
+          retry_on: any
+          command: >-
+            conda activate ${{ env.TEST_ENV_NAME }}
+            & cd ${{ env.tests-path }}
+            & python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
@@ -391,12 +417,12 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@11b562958363ec5770fef326fe8ef0366f8cbf8a # v3.0.1
+        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -419,7 +445,7 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
-      - uses: conda-incubator/setup-miniconda@11b562958363ec5770fef326fe8ef0366f8cbf8a # v3.0.1
+      - uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           run-post: false
           channel-priority: "disabled"
@@ -430,7 +456,7 @@ jobs:
         run: conda install anaconda-client
 
       - name: Checkout repo
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0

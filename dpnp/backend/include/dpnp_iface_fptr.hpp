@@ -174,8 +174,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_INV,         /**< Used in numpy.linalg.inv() impl  */
     DPNP_FN_INVERT,      /**< Used in numpy.invert() impl  */
     DPNP_FN_KRON,        /**< Used in numpy.kron() impl  */
-    DPNP_FN_KRON_EXT, /**< Used in numpy.kron() impl, requires extra parameters
-                       */
     DPNP_FN_LEFT_SHIFT,  /**< Used in numpy.left_shift() impl  */
     DPNP_FN_LOG,         /**< Used in numpy.log() impl  */
     DPNP_FN_LOG10,       /**< Used in numpy.log10() impl  */

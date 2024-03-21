@@ -229,7 +229,6 @@ int main(int, char **)
     const double RISK_FREE = 0.1;
     const double VOLATILITY = 0.2;
 
-    dpnp_queue_initialize_c(QueueOptions::GPU_SELECTOR);
     std::cout << "SYCL queue is CPU: " << dpnp_queue_is_cpu_c() << std::endl;
 
     double *price = (double *)dpnp_memory_alloc_c(SIZE * sizeof(double));

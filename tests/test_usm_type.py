@@ -195,6 +195,10 @@ def test_array_creation_from_2d_array(func, args, usm_type_x, usm_type_y):
     [
         pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
         pytest.param("frombuffer", [b"\x01\x02\x03\x04"], {"dtype": dp.int32}),
+        pytest.param(
+            "fromfunction", [(lambda i, j: i + j), (3, 3)], {"dtype": dp.int32}
+        ),
+        pytest.param("fromiter", [[1, 2, 3, 4]], {"dtype": dp.int64}),
         pytest.param("fromstring", ["1, 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
@@ -207,7 +211,7 @@ def test_array_creation_from_2d_array(func, args, usm_type_x, usm_type_y):
         pytest.param("zeros", [(2, 2)], {}),
     ],
 )
-@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
 def test_array_creation_from_scratch(func, arg, kwargs, usm_type):
     dpnp_kwargs = dict(kwargs)
     dpnp_kwargs["usm_type"] = usm_type
@@ -217,12 +221,29 @@ def test_array_creation_from_scratch(func, arg, kwargs, usm_type):
     numpy_kwargs["dtype"] = dpnp_array.dtype
     numpy_array = getattr(numpy, func)(*arg, **numpy_kwargs)
 
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
+
     assert_dtype_allclose(dpnp_array, numpy_array)
     assert dpnp_array.shape == numpy_array.shape
     assert dpnp_array.usm_type == usm_type
 
 
-@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
+def test_array_creation_empty(usm_type):
+    dpnp_array = dp.empty((3, 4), usm_type=usm_type)
+    numpy_array = numpy.empty((3, 4))
+
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
+
+    assert dpnp_array.shape == numpy_array.shape
+    assert dpnp_array.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
 def test_array_creation_from_file(usm_type):
     with tempfile.TemporaryFile() as fh:
         fh.write(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08")
@@ -233,6 +254,31 @@ def test_array_creation_from_file(usm_type):
 
         fh.seek(0)
         dpnp_array = dp.fromfile(fh, usm_type=usm_type)
+
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
+
+    assert_dtype_allclose(dpnp_array, numpy_array)
+    assert dpnp_array.shape == numpy_array.shape
+    assert dpnp_array.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
+def test_array_creation_load_txt(usm_type):
+    with tempfile.TemporaryFile() as fh:
+        fh.write(b"1 2 3 4")
+        fh.flush()
+
+        fh.seek(0)
+        numpy_array = numpy.loadtxt(fh)
+
+        fh.seek(0)
+        dpnp_array = dp.loadtxt(fh, usm_type=usm_type)
+
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
 
     assert_dtype_allclose(dpnp_array, numpy_array)
     assert dpnp_array.shape == numpy_array.shape
@@ -525,6 +571,7 @@ def test_1in_1out(func, data, usm_type):
             "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
+        pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param("maximum", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
         pytest.param("minimum", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
@@ -673,10 +720,14 @@ def test_indices(usm_type):
     assert x.usm_type == usm_type
 
 
-@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
 @pytest.mark.parametrize("func", ["mgrid", "ogrid"])
 def test_grid(usm_type, func):
-    assert getattr(dp, func)(usm_type=usm_type)[0:4].usm_type == usm_type
+    if usm_type is None:
+        # assert against default USM type
+        assert getattr(dp, func)(usm_type=usm_type)[0:4].usm_type == "device"
+    else:
+        assert getattr(dp, func)(usm_type=usm_type)[0:4].usm_type == usm_type
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
