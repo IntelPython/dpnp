@@ -111,6 +111,7 @@ public:
 
     // TODO: remove
     void print() {
+        std::cout << "vector size = " << std::to_string(EngineT::vec_size) << std::endl;
         std::cout << "list_of_seeds: ";
         for (auto &val: seeds) {
             std::cout << std::to_string(val) << ", ";
