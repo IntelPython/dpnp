@@ -349,9 +349,6 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
-      - name: Install opencl_rt
-        run: conda install opencl_rt -c intel --override-channels
-
       - name: Install dpnp
         run: |
           @echo on

@@ -30,8 +30,6 @@
 #include "dpnp_iterator.hpp"
 #include "dpnp_test_utils.hpp"
 
-// TODO need to fix build procedure and remove this workaround. Issue #551
-#define DPNP_LOCAL_QUEUE 1
 #include "queue_sycl.hpp"
 
 using namespace std;

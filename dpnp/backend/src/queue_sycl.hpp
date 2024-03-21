@@ -29,7 +29,7 @@
 
 //#pragma clang diagnostic push
 //#pragma clang diagnostic ignored "-Wpass-failed"
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 //#pragma clang diagnostic pop
 
 #pragma clang diagnostic push
@@ -38,17 +38,7 @@
 #include <oneapi/mkl.hpp>
 #pragma clang diagnostic pop
 
-#include <ctime>
-
-#if !defined(DPNP_LOCAL_QUEUE)
-#if defined __has_include
-#if __has_include(<dpctl_sycl_interface.h>)
-#include <dpctl_sycl_interface.h>
-#else
-#include <dpctl_sycl_queue_manager.h>
-#endif
-#endif
-#endif
+#include <utility>
 
 #include "dpnp_pstl.hpp" // this header must be included after <mkl.hpp>
 
@@ -69,120 +59,71 @@ namespace mkl_rng = oneapi::mkl::rng;
  */
 class backend_sycl
 {
-#if defined(DPNP_LOCAL_QUEUE)
-    static sycl::queue *queue; /**< contains SYCL queue pointer initialized in
-                                  @ref backend_sycl_queue_init */
-#endif
-    static mkl_rng::mt19937
-        *rng_engine; /**< RNG MT19937 engine ptr. initialized in @ref
-                        backend_sycl_rng_engine_init */
-    static mkl_rng::mcg59
-        *rng_mcg59_engine; /**< RNG MCG59 engine ptr. initialized in @ref
-                              backend_sycl_rng_engine_init */
-
-    static void destroy()
-    {
-        backend_sycl::destroy_rng_engine();
-#if defined(DPNP_LOCAL_QUEUE)
-        delete queue;
-        queue = nullptr;
-#endif
-    }
-
-    static void destroy_rng_engine()
-    {
-        delete rng_engine;
-        delete rng_mcg59_engine;
-
-        rng_engine = nullptr;
-        rng_mcg59_engine = nullptr;
-    }
-
 public:
-    backend_sycl()
+    ~backend_sycl() {}
+
+    static backend_sycl &get()
     {
-#if defined(DPNP_LOCAL_QUEUE)
-        queue = nullptr;
-        rng_engine = nullptr;
-#endif
+        static backend_sycl backend{};
+        return backend;
     }
 
-    virtual ~backend_sycl()
-    {
-        backend_sycl::destroy();
-    }
-
-    /**
-     * Explicitly disallow copying
-     */
-    backend_sycl(const backend_sycl &) = delete;
-    backend_sycl &operator=(const backend_sycl &) = delete;
-
-    /**
-     * Initialize @ref queue
-     */
-    static void backend_sycl_queue_init(
-        QueueOptions selector = QueueOptions::CPU_SELECTOR);
-
-    /**
-     * Return True if current @ref queue is related to cpu device
-     */
-    static bool backend_sycl_is_cpu();
-
-    /**
-     * Initialize @ref rng_engine and @ref rng_mcg59_engine
-     */
-    static void backend_sycl_rng_engine_init(size_t seed = 1);
-
-    /**
-     * Return the @ref queue to the user
-     */
     static sycl::queue &get_queue()
     {
-#if defined(DPNP_LOCAL_QUEUE)
-        if (!queue) {
-            backend_sycl_queue_init();
-        }
-
-        return *queue;
-#else
-        // temporal solution. Started from Sept-2020
-        DPCTLSyclQueueRef DPCtrl_queue = DPCTLQueueMgr_GetCurrentQueue();
-        if (DPCtrl_queue == nullptr) {
-            std::string reason =
-                (DPCTLQueueMgr_GetQueueStackSize() == static_cast<size_t>(-1))
-                    ? ": the queue stack is empty, probably no device is "
-                      "available."
-                    : ".";
-            throw std::runtime_error(
-                "Failed to create a copy of SYCL queue with default device" +
-                reason);
-        }
-        return *(reinterpret_cast<sycl::queue *>(DPCtrl_queue));
-#endif
+        auto &be = backend_sycl::get();
+        return be.queue_;
     }
 
-    /**
-     * Return the @ref rng_engine to the user
-     */
     static mkl_rng::mt19937 &get_rng_engine()
     {
-        if (!rng_engine) {
-            backend_sycl_rng_engine_init();
-        }
-        return *rng_engine;
+        auto &be = backend_sycl::get();
+        return be.rng_mt19937_engine_;
     }
 
-    /**
-     * Return the @ref rng_mcg59_engine to the user
-     */
     static mkl_rng::mcg59 &get_rng_mcg59_engine()
     {
-        if (!rng_engine) {
-            backend_sycl_rng_engine_init();
-        }
-        return *rng_mcg59_engine;
+        auto &be = backend_sycl::get();
+        return be.rng_mcg59_engine_;
     }
+
+    template <typename SeedT>
+    void set_rng_engines_seed(const SeedT &seed)
+    {
+        mkl_rng::mt19937 rng_eng_mt19937(queue_, seed);
+        mkl_rng::mcg59 rng_eng_mcg59(queue_, seed);
+
+        // now that instances are created, let's move them
+        rng_mt19937_engine_ = std::move(rng_eng_mt19937);
+        rng_mcg59_engine_ = std::move(rng_eng_mcg59);
+    }
+
+    bool backend_sycl_is_cpu() const
+    {
+        const auto &dev = queue_.get_device();
+        return dev.is_cpu();
+    }
+
+private:
+    static constexpr std::size_t default_seed = 1;
+
+    backend_sycl()
+        : queue_{sycl::default_selector_v,
+                 (is_verbose_mode())
+                     ? sycl::property_list{sycl::property::queue::
+                                               enable_profiling()}
+                     : sycl::property_list{}},
+          rng_mt19937_engine_{queue_, default_seed}, rng_mcg59_engine_{
+                                                         queue_, default_seed}
+    {
+    }
+
+    backend_sycl(backend_sycl const &) = default;
+    backend_sycl &operator=(backend_sycl const &) = default;
+    backend_sycl &operator=(backend_sycl &&) = default;
+
+    sycl::queue queue_;
+    mkl_rng::mt19937 rng_mt19937_engine_;
+    mkl_rng::mcg59 rng_mcg59_engine_;
 };
 
 #endif // QUEUE_SYCL_H

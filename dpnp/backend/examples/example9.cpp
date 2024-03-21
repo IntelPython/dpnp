@@ -46,8 +46,6 @@ int main(int, char **)
     long result = 0;
     long result_verification = 0;
 
-    dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);
-
     long *array =
         reinterpret_cast<long *>(dpnp_memory_alloc_c(size * sizeof(long)));
 

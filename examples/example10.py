@@ -87,12 +87,7 @@ def example():
 
 
 if __name__ == "__main__":
-    try:
-        import dpctl
+    import dpctl
 
-        with dpctl.device_context("opencl:gpu") as gpu_queue:
-            gpu_queue.get_sycl_device().print_device_info()
-            example()
-
-    except ImportError:
-        example()
+    dpctl.select_default_device().print_device_info()
+    example()
