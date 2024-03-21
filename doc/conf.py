@@ -6,6 +6,10 @@
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 
+from sphinx.ext.autodoc import FunctionDocumenter
+
+from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
+
 try:
     import comparison_generator
 except ImportError:
@@ -188,7 +192,17 @@ texinfo_documents = [
 
 # -- Extension configuration -------------------------------------------------
 
+
 # -- Options for todo extension ----------------------------------------------
+def _can_document_member(member, *args, **kwargs):
+    if isinstance(member, (DPNPBinaryFunc, DPNPUnaryFunc)):
+        return True
+    return orig(member, *args, **kwargs)
+
+
+documenter = FunctionDocumenter
+orig = documenter.can_document_member
+documenter.can_document_member = _can_document_member
 
 autosummary_generate = True
 

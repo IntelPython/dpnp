@@ -228,9 +228,6 @@ abs = absolute
 
 
 _ADD_DOCSTRING = """
-add(x1, x2, /, out=None, *, where=True, order="K", dtype=None, subok=True,
-**kwargs)
-
 Calculates the sum for each element `x1_i` of the input array `x1` with
 the respective element `x2_i` of the input array `x2`.
 
