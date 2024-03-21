@@ -429,7 +429,7 @@ def test_eigh_arange(type, size):
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_eigvals(type):
-    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
+    if dpctl.SyclDevice().device_type != dpctl.device_type.gpu:
         pytest.skip(
             "eigvals function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
         )
