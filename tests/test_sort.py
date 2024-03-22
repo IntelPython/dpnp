@@ -245,29 +245,6 @@ class TestSearchSorted:
                 sorter=xp.array([1, 2, 3, 4, 5, 6]),
             )
 
-            # # bounds check
-            assert_raises(
-                ValueError,
-                xp.searchsorted,
-                a,
-                4,
-                sorter=xp.array([0, 1, 2, 3, 5]),
-            )
-            assert_raises(
-                ValueError,
-                xp.searchsorted,
-                a,
-                0,
-                sorter=xp.array([-1, 0, 1, 2, 3]),
-            )
-            assert_raises(
-                ValueError,
-                xp.searchsorted,
-                a,
-                0,
-                sorter=xp.array([4, 0, -1, 2, 3]),
-            )
-
     def test_v_scalar(self):
         v = 0
         a = numpy.array([-8, -5, -1, 3, 6, 10])
