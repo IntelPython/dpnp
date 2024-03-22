@@ -1,10 +1,5 @@
 var group___b_a_c_k_e_n_d___a_p_i =
 [
-    [ "QueueOptions", "group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1", [
-      [ "QueueOptions::CPU_SELECTOR", "group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1acc7580c6d50ad116c1c0deb3f7adf468", null ],
-      [ "QueueOptions::GPU_SELECTOR", "group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1a332c42fe262bf0855ca1de84d27049b1", null ],
-      [ "QueueOptions::AUTO_SELECTOR", "group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1a8625883de23e4800c0b865aef6e284ae", null ]
-    ] ],
     [ "dpnp_acos_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga41389cdb814b0d6f583161c68911d8d9", null ],
     [ "dpnp_acosh_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaf8d8c5974dc40a7fc640fb61f5b7061c", null ],
     [ "dpnp_add_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga0aa4fab91e27e82e51588ac19e7250d9", null ],
@@ -102,7 +97,6 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_put_along_axis_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga26d668721f9475ff3fa8449e4680e4a6", null ],
     [ "dpnp_put_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaa6078a448077da00df8dca66aec48648", null ],
     [ "dpnp_python_constants_initialize_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga96eabd32a2b65f49e715ccdbc33c45d4", null ],
-    [ "dpnp_queue_initialize_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga0368d7cc2e2eb7a3f8c4184b6aca3547", null ],
     [ "dpnp_queue_is_cpu_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2df766b3642aa4e94c8cef7927d6022d", null ],
     [ "dpnp_radians_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga0dffbc87d5ab5ea413cf631a0d59ba77", null ],
     [ "dpnp_remainder_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab7b1e961c807c6f69e1e0bc741c3abbb", null ],
