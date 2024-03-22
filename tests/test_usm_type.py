@@ -1027,3 +1027,11 @@ def test_qr(shape, mode, usm_type):
 
         assert a.usm_type == dp_q.usm_type
         assert a.usm_type == dp_r.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_tensorinv(usm_type):
+    a = dp.eye(12, usm_type=usm_type).reshape(12, 4, 3)
+    ainv = dp.linalg.tensorinv(a, ind=1)
+
+    assert a.usm_type == ainv.usm_type

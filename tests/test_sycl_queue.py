@@ -1873,3 +1873,21 @@ def test_pinv(shape, hermitian, rcond_as_array, device):
     B_queue = B_result.sycl_queue
 
     assert_sycl_queue_equal(B_queue, a_dp.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_tensorinv(device):
+    a_np = numpy.eye(12).reshape(12, 4, 3)
+    a_dp = dpnp.array(a_np, device=device)
+
+    result = dpnp.linalg.tensorinv(a_dp, ind=1)
+    expected = numpy.linalg.tensorinv(a_np, ind=1)
+    assert_dtype_allclose(result, expected)
+
+    result_queue = result.sycl_queue
+
+    assert_sycl_queue_equal(result_queue, a_dp.sycl_queue)
