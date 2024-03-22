@@ -1010,7 +1010,7 @@ def tensorsolve(a, b, axes=None):
         Right-hand tensor, which can be of any shape.
     axes : tuple of ints, optional
         Axes in `a` to reorder to the right, before inversion.
-        If None , no reordering is done.
+        If ``None`` , no reordering is done.
         Default: ``None``.
 
     Returns
@@ -1022,6 +1022,7 @@ def tensorsolve(a, b, axes=None):
     --------
     :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.
     :obj:`dpnp.linalg.tensorinv` : Compute the `inverse` of a tensor.
+    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
 
     Examples
     --------
