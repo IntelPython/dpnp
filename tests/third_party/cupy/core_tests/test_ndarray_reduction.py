@@ -394,7 +394,6 @@ class TestArrayReductionZeroSize:
         }
     )
 )
-
 # @unittest.skipUnless(cupy.cuda.cub.available, 'The CUB routine is not enabled')
 class TestCubReduction(unittest.TestCase):
     # def setUp(self):

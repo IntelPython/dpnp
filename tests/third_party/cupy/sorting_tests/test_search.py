@@ -165,7 +165,6 @@ class TestSearch:
 # 'shape': [(10,), (10, 20), (10, 20, 30), (10, 20, 30, 40)],
 # 'order': ('C', 'F'),
 # }))
-
 # @unittest.skipUnless(cupy.cuda.cub.available, 'The CUB routine is not enabled')
 # class TestCubReduction(unittest.TestCase):
 

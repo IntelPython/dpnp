@@ -39,8 +39,6 @@ class TestRandint(unittest.TestCase):
 
 
 # @testing.fix_random()
-
-
 class TestRandint2(unittest.TestCase):
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @_condition.repeat(3, 10)
