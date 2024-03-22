@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev0+32.ge44469c9e2 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev0+33.ge5d312712e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=2747db63"></script>
+        <script src="../../../_static/documentation_options.js?v=bcacc1d3"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+32.ge44469c9e2
+                0.15.0dev0+33.ge5d312712e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -168,6 +168,7 @@
     <span class="s2">&quot;solve&quot;</span><span class="p">,</span>
     <span class="s2">&quot;svd&quot;</span><span class="p">,</span>
     <span class="s2">&quot;slogdet&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tensorinv&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -1067,6 +1068,67 @@
     <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_slogdet</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="tensorinv">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.tensorinv.html#dpnp.linalg.tensorinv">[docs]</a>
+<span class="k">def</span> <span class="nf">tensorinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the `inverse` of a tensor.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.linalg.tensorinv`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Tensor to `invert`. Its shape must be &#39;square&#39;, i. e.,</span>
+<span class="sd">        ``prod(a.shape[:ind]) == prod(a.shape[ind:])``.</span>
+<span class="sd">    ind : int</span>
+<span class="sd">        Number of first indices that are involved in the inverse sum.</span>
+<span class="sd">        Must be a positive integer.</span>
+<span class="sd">        Default: 2.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The inverse of a tensor whose shape is equivalent to</span>
+<span class="sd">        ``a.shape[ind:] + a.shape[:ind]``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.</span>
+<span class="sd">    :obj:`dpnp.linalg.tensorsolve` : Solve the tensor equation ``a x = b`` for x.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.eye(4*6)</span>
+<span class="sd">    &gt;&gt;&gt; a.shape = (4, 6, 8, 3)</span>
+<span class="sd">    &gt;&gt;&gt; ainv = np.linalg.tensorinv(a, ind=2)</span>
+<span class="sd">    &gt;&gt;&gt; ainv.shape</span>
+<span class="sd">    (8, 3, 4, 6)</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.eye(4*6)</span>
+<span class="sd">    &gt;&gt;&gt; a.shape = (24, 8, 3)</span>
+<span class="sd">    &gt;&gt;&gt; ainv = np.linalg.tensorinv(a, ind=1)</span>
+<span class="sd">    &gt;&gt;&gt; ainv.shape</span>
+<span class="sd">    (8, 3, 24)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ind</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid ind argument&quot;</span><span class="p">)</span>
+
+    <span class="n">old_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">inv_shape</span> <span class="o">=</span> <span class="n">old_shape</span><span class="p">[</span><span class="n">ind</span><span class="p">:]</span> <span class="o">+</span> <span class="n">old_shape</span><span class="p">[:</span><span class="n">ind</span><span class="p">]</span>
+    <span class="n">prod</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">old_shape</span><span class="p">[</span><span class="n">ind</span><span class="p">:])</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">prod</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">a_inv</span> <span class="o">=</span> <span class="n">inv</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">a_inv</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">*</span><span class="n">inv_shape</span><span class="p">)</span></div>
 
 </pre></div>
 
