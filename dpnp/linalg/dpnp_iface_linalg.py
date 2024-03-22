@@ -936,7 +936,7 @@ def slogdet(a):
 
 def tensorinv(a, ind=2):
     """
-    Compute the `inverse` of a tensor.
+    Compute the 'inverse' of an N-dimensional array.
 
     For full documentation refer to :obj:`numpy.linalg.tensorinv`.
 
@@ -945,7 +945,7 @@ def tensorinv(a, ind=2):
     a : {dpnp.ndarray, usm_ndarray}
         Tensor to `invert`. Its shape must be 'square', i. e.,
         ``prod(a.shape[:ind]) == prod(a.shape[ind:])``.
-    ind : int
+    ind : int, optional
         Number of first indices that are involved in the inverse sum.
         Must be a positive integer.
         Default: 2.
@@ -1021,7 +1021,7 @@ def tensorsolve(a, b, axes=None):
     See Also
     --------
     :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.
-    :obj:`dpnp.linalg.tensorinv` : Compute the `inverse` of a tensor.
+    :obj:`dpnp.linalg.tensorinv` : Compute the 'inverse' of an N-dimensional array.
     :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
 
     Examples
