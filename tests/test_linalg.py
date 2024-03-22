@@ -387,7 +387,7 @@ def test_eig_arange(type, size):
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_none=True))
 @pytest.mark.parametrize("size", [2, 4, 8])
 def test_eigh_arange(type, size):
-    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
+    if dpctl.SyclDevice().device_type != dpctl.device_type.gpu:
         pytest.skip(
             "eig function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
         )
@@ -429,7 +429,7 @@ def test_eigh_arange(type, size):
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_eigvals(type):
-    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
+    if dpctl.SyclDevice().device_type != dpctl.device_type.gpu:
         pytest.skip(
             "eigvals function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
         )
@@ -564,6 +564,56 @@ class TestInv:
         # a is not square
         a_dp = inp.ones((2, 3))
         assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp)
+
+
+class TestMatrixPower:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "data, power",
+        [
+            (
+                numpy.block(
+                    [
+                        [numpy.eye(2), numpy.zeros((2, 2))],
+                        [numpy.zeros((2, 2)), numpy.eye(2) * 2],
+                    ]
+                ),
+                3,
+            ),  # Block-diagonal matrix
+            (numpy.eye(3, k=1) + numpy.eye(3), 3),  # Non-diagonal matrix
+            (
+                numpy.eye(3, k=1) + numpy.eye(3),
+                -3,
+            ),  # Inverse of non-diagonal matrix
+        ],
+    )
+    def test_matrix_power(self, data, power, dtype):
+        a = data.astype(dtype)
+        a_dp = inp.array(a)
+
+        result = inp.linalg.matrix_power(a_dp, power)
+        expected = numpy.linalg.matrix_power(a, power)
+
+        assert_dtype_allclose(result, expected)
+
+    def test_matrix_power_errors(self):
+        a_dp = inp.eye(4, dtype="float32")
+
+        # unsupported type `a`
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.matrix_power, a_np, 2)
+
+        # unsupported type `power`
+        assert_raises(TypeError, inp.linalg.matrix_power, a_dp, 1.5)
+        assert_raises(TypeError, inp.linalg.matrix_power, a_dp, [2])
+
+        # not invertible
+        # TODO: remove it when mkl>=2024.0 is released (MKLD-16626)
+        if not is_cpu_device():
+            noninv = inp.array([[1, 0], [0, 0]])
+            assert_raises(
+                inp.linalg.LinAlgError, inp.linalg.matrix_power, noninv, -1
+            )
 
 
 class TestMatrixRank:
@@ -1409,6 +1459,45 @@ class TestPinv:
         a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
         rcond_dp_q = inp.array([0.5], dtype="float32", sycl_queue=rcond_queue)
         assert_raises(ValueError, inp.linalg.pinv, a_dp_q, rcond_dp_q)
+
+
+class TestTensorinv:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "shape, ind",
+        [
+            ((4, 6, 8, 3), 2),
+            ((24, 8, 3), 1),
+        ],
+        ids=[
+            "(4, 6, 8, 3)",
+            "(24, 8, 3)",
+        ],
+    )
+    def test_tensorinv(self, dtype, shape, ind):
+        a = numpy.eye(24, dtype=dtype).reshape(shape)
+        a_dp = inp.array(a)
+
+        ainv = numpy.linalg.tensorinv(a, ind=ind)
+        ainv_dp = inp.linalg.tensorinv(a_dp, ind=ind)
+
+        assert ainv.shape == ainv_dp.shape
+        assert_dtype_allclose(ainv_dp, ainv)
+
+    def test_test_tensorinv_errors(self):
+        a_dp = inp.eye(24, dtype="float32").reshape(4, 6, 8, 3)
+
+        # unsupported type `a`
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.pinv, a_np)
+
+        # unsupported type `ind`
+        assert_raises(TypeError, inp.linalg.tensorinv, a_dp, 2.0)
+        assert_raises(TypeError, inp.linalg.tensorinv, a_dp, [2.0])
+        assert_raises(ValueError, inp.linalg.tensorinv, a_dp, -1)
+
+        # non-square
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.tensorinv, a_dp, 1)
 
 
 class TestTensorsolve:

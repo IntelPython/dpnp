@@ -51,6 +51,7 @@ from .dpnp_utils_linalg import (
     dpnp_det,
     dpnp_eigh,
     dpnp_inv,
+    dpnp_matrix_power,
     dpnp_matrix_rank,
     dpnp_multi_dot,
     dpnp_pinv,
@@ -77,6 +78,7 @@ __all__ = [
     "solve",
     "svd",
     "slogdet",
+    "tensorinv",
     "tensorsolve",
 ]
 
@@ -371,33 +373,65 @@ def inv(a):
     return dpnp_inv(a)
 
 
-def matrix_power(input, count):
+def matrix_power(a, n):
     """
-    Raise a square matrix to the (integer) power `count`.
+    Raise a square matrix to the (integer) power `n`.
+
+    For full documentation refer to :obj:`numpy.linalg.matrix_power`.
 
     Parameters
     ----------
-    input : sequence of array_like
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Matrix to be "powered".
+    n : int
+        The exponent can be any integer or long integer, positive, negative, or zero.
 
     Returns
     -------
-    output : array
-        Returns the dot product of the supplied arrays.
+    a**n : (..., M, M) dpnp.ndarray
+        The return value is the same shape and type as `M`;
+        if the exponent is positive or zero then the type of the
+        elements is the same as those of `M`. If the exponent is
+        negative the elements are floating-point.
 
-    See Also
-    --------
-    :obj:`numpy.linalg.matrix_power`
+    >>> import dpnp as np
+    >>> i = np.array([[0, 1], [-1, 0]]) # matrix equiv. of the imaginary unit
+    >>> np.linalg.matrix_power(i, 3) # should = -i
+    array([[ 0, -1],
+           [ 1,  0]])
+    >>> np.linalg.matrix_power(i, 0)
+    array([[1, 0],
+           [0, 1]])
+    >>> np.linalg.matrix_power(i, -3) # should = 1/(-i) = i, but w/ f.p. elements
+    array([[ 0.,  1.],
+           [-1.,  0.]])
+
+    Somewhat more sophisticated example
+
+    >>> q = np.zeros((4, 4))
+    >>> q[0:2, 0:2] = -i
+    >>> q[2:4, 2:4] = i
+    >>> q # one of the three quaternion units not equal to 1
+    array([[ 0., -1.,  0.,  0.],
+           [ 1.,  0.,  0.,  0.],
+           [ 0.,  0.,  0.,  1.],
+           [ 0.,  0., -1.,  0.]])
+    >>> np.linalg.matrix_power(q, 2) # = -np.eye(4)
+    array([[-1.,  0.,  0.,  0.],
+           [ 0., -1.,  0.,  0.],
+           [ 0.,  0., -1.,  0.],
+           [ 0.,  0.,  0., -1.]])
 
     """
 
-    if not use_origin_backend() and count > 0:
-        result = input
-        for _ in range(count - 1):
-            result = dpnp.matmul(result, input)
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-        return result
+    if not isinstance(n, int):
+        raise TypeError("exponent must be an integer")
 
-    return call_origin(numpy.linalg.matrix_power, input, count)
+    return dpnp_matrix_power(a, n)
 
 
 def matrix_rank(A, tol=None, hermitian=False):
@@ -898,6 +932,64 @@ def slogdet(a):
     check_stacked_square(a)
 
     return dpnp_slogdet(a)
+
+
+def tensorinv(a, ind=2):
+    """
+    Compute the `inverse` of a tensor.
+
+    For full documentation refer to :obj:`numpy.linalg.tensorinv`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Tensor to `invert`. Its shape must be 'square', i. e.,
+        ``prod(a.shape[:ind]) == prod(a.shape[ind:])``.
+    ind : int
+        Number of first indices that are involved in the inverse sum.
+        Must be a positive integer.
+        Default: 2.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The inverse of a tensor whose shape is equivalent to
+        ``a.shape[ind:] + a.shape[:ind]``.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.
+    :obj:`dpnp.linalg.tensorsolve` : Solve the tensor equation ``a x = b`` for x.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.eye(4*6)
+    >>> a.shape = (4, 6, 8, 3)
+    >>> ainv = np.linalg.tensorinv(a, ind=2)
+    >>> ainv.shape
+    (8, 3, 4, 6)
+
+    >>> a = np.eye(4*6)
+    >>> a.shape = (24, 8, 3)
+    >>> ainv = np.linalg.tensorinv(a, ind=1)
+    >>> ainv.shape
+    (8, 3, 24)
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+
+    if ind <= 0:
+        raise ValueError("Invalid ind argument")
+
+    old_shape = a.shape
+    inv_shape = old_shape[ind:] + old_shape[:ind]
+    prod = numpy.prod(old_shape[ind:])
+    a = a.reshape(prod, -1)
+    a_inv = inv(a)
+
+    return a_inv.reshape(*inv_shape)
 
 
 def tensorsolve(a, b, axes=None):

@@ -193,7 +193,6 @@ class TestIndexing(unittest.TestCase):
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestChoose(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -253,7 +252,6 @@ class TestChoose(unittest.TestCase):
                 return a.choose(c)
 
 
-@testing.gpu
 class TestSelect(unittest.TestCase):
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
