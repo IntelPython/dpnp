@@ -10,7 +10,6 @@ from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
-@testing.gpu
 class TestCorrcoef(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
@@ -143,7 +142,6 @@ class TestCov(unittest.TestCase):
         self.check((0, 1))
 
 
-@testing.gpu
 @testing.parameterize(
     *testing.product(
         {
@@ -163,7 +161,6 @@ class TestCorrelateShapeCombination(unittest.TestCase):
         return xp.correlate(a, b, mode=self.mode)
 
 
-@testing.gpu
 @testing.parameterize(*testing.product({"mode": ["valid", "full", "same"]}))
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestCorrelate(unittest.TestCase):
@@ -189,7 +186,6 @@ class TestCorrelate(unittest.TestCase):
         return xp.correlate(a, b, mode=self.mode)
 
 
-@testing.gpu
 @testing.parameterize(*testing.product({"mode": ["valid", "same", "full"]}))
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestCorrelateInvalid(unittest.TestCase):

@@ -14,7 +14,6 @@ from tests.third_party.cupy import testing
         }
     )
 )
-@testing.gpu
 class TestShape(unittest.TestCase):
     def test_shape(self):
         shape = self.shape
@@ -29,7 +28,6 @@ class TestShape(unittest.TestCase):
         assert cupy.shape(a) == shape
 
 
-@testing.gpu
 class TestReshape(unittest.TestCase):
     # order = 'A' is out of support currently
     _supported_orders = "CF"
@@ -157,7 +155,6 @@ class TestReshape(unittest.TestCase):
                 self._test_ndim_limit(xp, 33, dtype, order)
 
 
-@testing.gpu
 class TestRavel(unittest.TestCase):
     @testing.for_orders("CF")
     # order = 'A' is out of support currently
@@ -204,7 +201,6 @@ class TestRavel(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestReshapeOrder(unittest.TestCase):
     def test_reshape_contiguity(self):
         shape_init, shape_final = self.shape_in_out

@@ -74,14 +74,14 @@ class TestAllAny(unittest.TestCase):
     )
 )
 class TestAllAnyWithNaN(unittest.TestCase):
-    @testing.for_dtypes((*testing.helper._float_dtypes, numpy.bool_))
+    @testing.for_dtypes((*testing._loops._float_dtypes, numpy.bool_))
     @testing.numpy_cupy_array_equal()
     def test_without_out(self, xp, dtype):
         x = xp.asarray(self.x).astype(dtype)
         return getattr(xp, self.f)(x, self.axis, None, self.keepdims)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @testing.for_dtypes((*testing.helper._float_dtypes, numpy.bool_))
+    @testing.for_dtypes((*testing._loops._float_dtypes, numpy.bool_))
     @testing.numpy_cupy_array_equal()
     def test_with_out(self, xp, dtype):
         x = xp.asarray(self.x).astype(dtype)
