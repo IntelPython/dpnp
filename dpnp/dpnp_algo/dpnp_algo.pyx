@@ -83,12 +83,7 @@ cpdef dpnp_queue_initialize():
     It takes visible time and needs to be done in the module loading procedure.
     """
     cdef time_t seed_from_time
-    cdef QueueOptions queue_type = CPU_SELECTOR
 
-    if (config.__DPNP_QUEUE_GPU__):
-        queue_type = GPU_SELECTOR
-
-    dpnp_queue_initialize_c(queue_type)
     dpnp_python_constants_initialize_c(< void*> None,
                                         < void * > dpnp.nan)
 

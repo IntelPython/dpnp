@@ -70,33 +70,6 @@ typedef ssize_t shape_elem_type;
 
 /**
  * @ingroup BACKEND_API
- * @brief SYCL queue initialization selector.
- *
- * The structure defines the parameters that are used for the library
- * initialization by @ref dpnp_queue_initialize_c "dpnp_queue_initialize".
- */
-enum class QueueOptions : uint32_t
-{
-    CPU_SELECTOR, /**< CPU side execution mode */
-    GPU_SELECTOR, /**< Intel GPU side execution mode */
-    AUTO_SELECTOR /**< Automatic selection based on environment variable with
-                     @ref CPU_SELECTOR default */
-};
-
-/**
- * @ingroup BACKEND_API
- * @brief SYCL queue initialization.
- *
- * Global SYCL queue initialization.
- *
- * @param [in]  selector       Select type @ref QueueOptions of the SYCL queue.
- * Default @ref AUTO_SELECTOR
- */
-INP_DLLEXPORT void dpnp_queue_initialize_c(
-    QueueOptions selector = QueueOptions::AUTO_SELECTOR);
-
-/**
- * @ingroup BACKEND_API
  * @brief SYCL queue device status.
  *
  * Return 1 if current @ref queue is related to cpu device. return 0 otherwise.
@@ -112,8 +85,7 @@ INP_DLLEXPORT size_t dpnp_queue_is_cpu_c();
  * @param [in]  size_in_bytes  Number of bytes for requested memory allocation.
  * @param [in]  q_ref          Reference to SYCL queue.
  *
- * @return  A pointer to newly created memory on @ref dpnp_queue_initialize_c
- * "initialized SYCL device".
+ * @return  A pointer to newly created memory on SYCL device.
  */
 INP_DLLEXPORT char *dpnp_memory_alloc_c(DPCTLSyclQueueRef q_ref,
                                         size_t size_in_bytes);
