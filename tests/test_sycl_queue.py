@@ -1323,6 +1323,30 @@ def test_inv(shape, is_empty, device):
 
 
 @pytest.mark.parametrize(
+    "n",
+    [-1, 0, 1, 2, 3],
+    ids=["-1", "0", "1", "2", "3"],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_matrix_power(n, device):
+    data = numpy.array([[1, 2], [3, 5]], dtype=dpnp.default_float_type(device))
+    dp_data = dpnp.array(data, device=device)
+
+    result = dpnp.linalg.matrix_power(dp_data, n)
+    expected = numpy.linalg.matrix_power(data, n)
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = dp_data.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
     "data, tol",
     [
         (numpy.array([1, 2]), None),
