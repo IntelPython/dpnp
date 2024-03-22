@@ -6,7 +6,7 @@ import pytest
 import dpnp as cupy
 from dpnp import random as _distributions
 from tests.third_party.cupy import testing
-from tests.third_party.cupy.testing import helper
+from tests.third_party.cupy.testing import _helper, _loops
 
 _regular_float_dtypes = (numpy.float64, numpy.float32)
 _float_dtypes = _regular_float_dtypes + (numpy.float16,)
@@ -39,9 +39,8 @@ class RandomDistributionsTestCase(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsBeta(RandomDistributionsTestCase):
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         _regular_float_dtypes, names=["a_dtype", "b_dtype"]
     )
     def test_beta(self, a_dtype, b_dtype):
@@ -60,13 +59,12 @@ class TestDistributionsBeta(RandomDistributionsTestCase):
         }
     )
 )
-@testing.gpu
 class TestDistributionsBinomial(RandomDistributionsTestCase):
-    @helper.for_signed_dtypes("n_dtype")
-    @helper.for_float_dtypes("p_dtype")
+    @_loops.for_signed_dtypes("n_dtype")
+    @_loops.for_float_dtypes("p_dtype")
     def test_binomial(self, n_dtype, p_dtype):
         if numpy.dtype("l") == numpy.int32 and n_dtype == numpy.int64:
-            self.skipTest("n must be able to cast to long")
+            pytest.skip("n must be able to cast to long")
         n = numpy.full(self.n_shape, 5, dtype=n_dtype)
         p = numpy.full(self.p_shape, 0.5, dtype=p_dtype)
         self.check_distribution("binomial", {"n": n, "p": p}, self.dtype)
@@ -81,7 +79,6 @@ class TestDistributionsBinomial(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsChisquare(unittest.TestCase):
     def check_distribution(self, dist_func, df_dtype):
         df = cupy.full(self.df_shape, 5, dtype=df_dtype)
@@ -90,7 +87,7 @@ class TestDistributionsChisquare(unittest.TestCase):
         # numpy and dpdp output dtype is float64
         self.assertEqual(out.dtype, numpy.float64)
 
-    @helper.for_float_dtypes("df_dtype")
+    @_loops.for_float_dtypes("df_dtype")
     def test_chisquare(self, df_dtype):
         self.check_distribution(_distributions.chisquare, df_dtype)
 
@@ -104,9 +101,8 @@ class TestDistributionsChisquare(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsDirichlet(RandomDistributionsTestCase):
-    @helper.for_dtypes_combination(_regular_float_dtypes, names=["alpha_dtype"])
+    @_loops.for_dtypes_combination(_regular_float_dtypes, names=["alpha_dtype"])
     def test_dirichlet(self, alpha_dtype):
         alpha = numpy.ones(self.alpha_shape, dtype=alpha_dtype)
         self.check_distribution("dirichlet", {"alpha": alpha})
@@ -121,16 +117,14 @@ class TestDistributionsDirichlet(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsExponential(RandomDistributionsTestCase):
-    @helper.for_float_dtypes("scale_dtype")
+    @_loops.for_float_dtypes("scale_dtype")
     def test_exponential(self, scale_dtype):
         scale = numpy.ones(self.scale_shape, dtype=scale_dtype)
         self.check_distribution("exponential", {"scale": scale})
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsExponentialError(RandomDistributionsTestCase):
     def test_negative_scale(self):
         scale = cupy.array([2, -1, 3], dtype=numpy.float32)
@@ -148,7 +142,6 @@ class TestDistributionsExponentialError(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsF(unittest.TestCase):
     def check_distribution(self, dist_func, dfnum_dtype, dfden_dtype):
         dfnum = cupy.ones(self.dfnum_shape, dtype=dfnum_dtype)
@@ -158,8 +151,8 @@ class TestDistributionsF(unittest.TestCase):
         # numpy and dpdp output dtype is float64
         self.assertEqual(out.dtype, numpy.float64)
 
-    @helper.for_float_dtypes("dfnum_dtype")
-    @helper.for_float_dtypes("dfden_dtype")
+    @_loops.for_float_dtypes("dfnum_dtype")
+    @_loops.for_float_dtypes("dfden_dtype")
     def test_f(self, dfnum_dtype, dfden_dtype):
         self.check_distribution(_distributions.f, dfnum_dtype, dfden_dtype)
 
@@ -174,7 +167,6 @@ class TestDistributionsF(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsGamma(unittest.TestCase):
     def check_distribution(self, dist_func, shape_dtype, scale_dtype):
         shape = cupy.ones(self.shape_shape, dtype=shape_dtype)
@@ -184,7 +176,7 @@ class TestDistributionsGamma(unittest.TestCase):
         # numpy and dpdp output dtype is float64
         self.assertEqual(out.dtype, numpy.float64)
 
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         _regular_float_dtypes, names=["shape_dtype", "scale_dtype"]
     )
     def test_gamma(self, shape_dtype, scale_dtype):
@@ -199,7 +191,6 @@ class TestDistributionsGamma(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestDistributionsGeometric(unittest.TestCase):
     def check_distribution(self, dist_func, p_dtype):
         p = 0.5 * cupy.ones(self.p_shape, dtype=p_dtype)
@@ -208,7 +199,7 @@ class TestDistributionsGeometric(unittest.TestCase):
         # numpy output dtype is int64, dpnp output is int32
         self.assertEqual(out.dtype, numpy.int64)
 
-    @helper.for_float_dtypes("p_dtype")
+    @_loops.for_float_dtypes("p_dtype")
     def test_geometric(self, p_dtype):
         self.check_distribution(_distributions.geometric, p_dtype)
 
@@ -223,9 +214,8 @@ class TestDistributionsGeometric(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsGumbel(RandomDistributionsTestCase):
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         _regular_float_dtypes, names=["loc_dtype", "scale_dtype"]
     )
     def test_gumbel(self, loc_dtype, scale_dtype):
@@ -245,7 +235,6 @@ class TestDistributionsGumbel(RandomDistributionsTestCase):
         }
     )
 )
-@testing.gpu
 class TestDistributionsHyperGeometric(unittest.TestCase):
     def check_distribution(
         self, dist_func, ngood_dtype, nbad_dtype, nsample_dtype
@@ -258,7 +247,7 @@ class TestDistributionsHyperGeometric(unittest.TestCase):
         # numpy output dtype is int64, dpnp output is int32
         self.assertEqual(out.dtype, numpy.int64)
 
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         [numpy.int32, numpy.int64], names=["ngood_dtype", "nbad_dtype"]
     )
     def test_hypergeometric(self, ngood_dtype, nbad_dtype):
@@ -280,9 +269,8 @@ class TestDistributionsHyperGeometric(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsuLaplace(RandomDistributionsTestCase):
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         _regular_float_dtypes, names=["loc_dtype", "scale_dtype"]
     )
     def test_laplace(self, loc_dtype, scale_dtype):
@@ -301,9 +289,8 @@ class TestDistributionsuLaplace(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsLogistic(RandomDistributionsTestCase):
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         _regular_float_dtypes, names=["loc_dtype", "scale_dtype"]
     )
     def test_logistic(self, loc_dtype, scale_dtype):
@@ -321,9 +308,8 @@ class TestDistributionsLogistic(RandomDistributionsTestCase):
         }
     )
 )
-@testing.gpu
 class TestDistributionsLognormal(RandomDistributionsTestCase):
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         _regular_float_dtypes, names=["mean_dtype", "sigma_dtype"]
     )
     def test_lognormal(self, mean_dtype, sigma_dtype):
@@ -340,14 +326,13 @@ class TestDistributionsLognormal(RandomDistributionsTestCase):
         }
     )
 )
-@testing.gpu
 class TestDistributionsLogseries(RandomDistributionsTestCase):
-    @helper.for_float_dtypes("p_dtype", no_float16=True)
+    @_loops.for_float_dtypes("p_dtype", no_float16=True)
     def test_logseries(self, p_dtype):
         p = numpy.full(self.p_shape, 0.5, dtype=p_dtype)
         self.check_distribution("logseries", {"p": p})
 
-    @helper.for_float_dtypes("p_dtype", no_float16=True)
+    @_loops.for_float_dtypes("p_dtype", no_float16=True)
     def test_logseries_for_invalid_p(self, p_dtype):
         with self.assertRaises(ValueError):
             cp_params = {"p": cupy.zeros(self.p_shape, dtype=p_dtype)}
@@ -365,7 +350,6 @@ class TestDistributionsLogseries(RandomDistributionsTestCase):
         }
     )
 )
-@testing.gpu
 class TestDistributionsMultivariateNormal(unittest.TestCase):
     def check_distribution(self, dist_func, mean_dtype, cov_dtype):
         mean = cupy.zeros(self.d, dtype=mean_dtype)
@@ -381,8 +365,8 @@ class TestDistributionsMultivariateNormal(unittest.TestCase):
         # numpy and dpdp output dtype is float64
         self.assertEqual(out.dtype, numpy.float64)
 
-    @helper.for_float_dtypes("mean_dtype", no_float16=True)
-    @helper.for_float_dtypes("cov_dtype", no_float16=True)
+    @_loops.for_float_dtypes("mean_dtype", no_float16=True)
+    @_loops.for_float_dtypes("cov_dtype", no_float16=True)
     def test_normal(self, mean_dtype, cov_dtype):
         self.check_distribution(
             _distributions.multivariate_normal, mean_dtype, cov_dtype
@@ -399,17 +383,16 @@ class TestDistributionsMultivariateNormal(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsNegativeBinomial(RandomDistributionsTestCase):
-    @helper.for_float_dtypes("n_dtype")
-    @helper.for_float_dtypes("p_dtype")
+    @_loops.for_float_dtypes("n_dtype")
+    @_loops.for_float_dtypes("p_dtype")
     def test_negative_binomial(self, n_dtype, p_dtype):
         n = numpy.full(self.n_shape, 5, dtype=n_dtype)
         p = numpy.full(self.p_shape, 0.5, dtype=p_dtype)
         self.check_distribution("negative_binomial", {"n": n, "p": p})
 
-    @helper.for_float_dtypes("n_dtype")
-    @helper.for_float_dtypes("p_dtype")
+    @_loops.for_float_dtypes("n_dtype")
+    @_loops.for_float_dtypes("p_dtype")
     def test_negative_binomial_for_noninteger_n(self, n_dtype, p_dtype):
         n = numpy.full(self.n_shape, 5.5, dtype=n_dtype)
         p = numpy.full(self.p_shape, 0.5, dtype=p_dtype)
@@ -426,9 +409,8 @@ class TestDistributionsNegativeBinomial(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         _regular_float_dtypes, names=["df_dtype", "nonc_dtype"]
     )
     def test_noncentral_chisquare(self, df_dtype, nonc_dtype):
@@ -438,7 +420,7 @@ class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
             "noncentral_chisquare", {"df": df, "nonc": nonc}
         )
 
-    @helper.for_float_dtypes("param_dtype", no_float16=True)
+    @_loops.for_float_dtypes("param_dtype", no_float16=True)
     def test_noncentral_chisquare_for_invalid_params(self, param_dtype):
         df = cupy.full(self.df_shape, -1, dtype=param_dtype)
         nonc = cupy.full(self.nonc_shape, 1, dtype=param_dtype)
@@ -462,9 +444,8 @@ class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsNoncentralF(RandomDistributionsTestCase):
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         _regular_float_dtypes,
         names=["dfnum_dtype", "dfden_dtype", "nonc_dtype"],
     )
@@ -476,7 +457,7 @@ class TestDistributionsNoncentralF(RandomDistributionsTestCase):
             "noncentral_f", {"dfnum": dfnum, "dfden": dfden, "nonc": nonc}
         )
 
-    @helper.for_float_dtypes("param_dtype", no_float16=True)
+    @_loops.for_float_dtypes("param_dtype", no_float16=True)
     def test_noncentral_f_for_invalid_params(self, param_dtype):
         dfnum = numpy.full(self.dfnum_shape, -1, dtype=param_dtype)
         dfden = numpy.full(self.dfden_shape, 1, dtype=param_dtype)
@@ -507,9 +488,8 @@ class TestDistributionsNoncentralF(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsNormal(RandomDistributionsTestCase):
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         _regular_float_dtypes, names=["loc_dtype", "scale_dtype"]
     )
     def test_normal(self, loc_dtype, scale_dtype):
@@ -527,7 +507,6 @@ class TestDistributionsNormal(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsPareto(unittest.TestCase):
     def check_distribution(self, dist_func, a_dtype):
         a = cupy.ones(self.a_shape, dtype=a_dtype)
@@ -536,7 +515,7 @@ class TestDistributionsPareto(unittest.TestCase):
         # numpy and dpdp output dtype is float64
         self.assertEqual(out.dtype, numpy.float64)
 
-    @helper.for_float_dtypes("a_dtype")
+    @_loops.for_float_dtypes("a_dtype")
     def test_pareto(self, a_dtype):
         self.check_distribution(_distributions.pareto, a_dtype)
 
@@ -549,7 +528,6 @@ class TestDistributionsPareto(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestDistributionsPoisson(unittest.TestCase):
     def check_distribution(self, dist_func, lam_dtype):
         lam = cupy.full(self.lam_shape, 5, dtype=lam_dtype)
@@ -558,7 +536,7 @@ class TestDistributionsPoisson(unittest.TestCase):
         # numpy output dtype is int64, dpnp output is int32
         self.assertEqual(out.dtype, numpy.int64)
 
-    @helper.for_float_dtypes("lam_dtype")
+    @_loops.for_float_dtypes("lam_dtype")
     def test_poisson(self, lam_dtype):
         self.check_distribution(_distributions.poisson, lam_dtype)
 
@@ -571,14 +549,13 @@ class TestDistributionsPoisson(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestDistributionsPower(RandomDistributionsTestCase):
-    @helper.for_float_dtypes("a_dtype")
+    @_loops.for_float_dtypes("a_dtype")
     def test_power(self, a_dtype):
         a = numpy.full(self.a_shape, 0.5, dtype=a_dtype)
         self.check_distribution("power", {"a": a})
 
-    @helper.for_float_dtypes("a_dtype")
+    @_loops.for_float_dtypes("a_dtype")
     def test_power_for_negative_a(self, a_dtype):
         a = numpy.full(self.a_shape, -0.5, dtype=a_dtype)
         with self.assertRaises(ValueError):
@@ -595,19 +572,18 @@ class TestDistributionsPower(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsRayleigh(RandomDistributionsTestCase):
-    @helper.for_float_dtypes("scale_dtype")
+    @_loops.for_float_dtypes("scale_dtype")
     def test_rayleigh(self, scale_dtype):
         scale = numpy.full(self.scale_shape, 3, dtype=scale_dtype)
         self.check_distribution("rayleigh", {"scale": scale})
 
-    @helper.for_float_dtypes("scale_dtype")
+    @_loops.for_float_dtypes("scale_dtype")
     def test_rayleigh_for_zero_scale(self, scale_dtype):
         scale = numpy.zeros(self.scale_shape, dtype=scale_dtype)
         self.check_distribution("rayleigh", {"scale": scale})
 
-    @helper.for_float_dtypes("scale_dtype")
+    @_loops.for_float_dtypes("scale_dtype")
     def test_rayleigh_for_negative_scale(self, scale_dtype):
         scale = numpy.full(self.scale_shape, -0.5, dtype=scale_dtype)
         with self.assertRaises(ValueError):
@@ -622,7 +598,6 @@ class TestDistributionsRayleigh(RandomDistributionsTestCase):
         }
     )
 )
-@testing.gpu
 class TestDistributionsStandardCauchy(RandomDistributionsTestCase):
     def test_standard_cauchy(self):
         self.check_distribution("standard_cauchy", {})
@@ -635,7 +610,6 @@ class TestDistributionsStandardCauchy(RandomDistributionsTestCase):
         }
     )
 )
-@testing.gpu
 class TestDistributionsStandardExponential(RandomDistributionsTestCase):
     def test_standard_exponential(self):
         self.check_distribution("standard_exponential", {})
@@ -650,9 +624,8 @@ class TestDistributionsStandardExponential(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsStandardGamma(RandomDistributionsTestCase):
-    @helper.for_float_dtypes("shape_dtype")
+    @_loops.for_float_dtypes("shape_dtype")
     def test_standard_gamma(self, shape_dtype):
         shape = numpy.ones(self.shape_shape, dtype=shape_dtype)
         self.check_distribution("standard_gamma", {"shape": shape})
@@ -665,7 +638,6 @@ class TestDistributionsStandardGamma(RandomDistributionsTestCase):
         }
     )
 )
-@testing.gpu
 class TestDistributionsStandardNormal(RandomDistributionsTestCase):
     def test_standard_normal(self):
         self.check_distribution("standard_normal", {})
@@ -680,7 +652,6 @@ class TestDistributionsStandardNormal(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsStandardT(unittest.TestCase):
     def check_distribution(self, dist_func, df_dtype):
         df = cupy.ones(self.df_shape, dtype=df_dtype)
@@ -689,7 +660,7 @@ class TestDistributionsStandardT(unittest.TestCase):
         # numpy and dpdp output dtype is float64
         self.assertEqual(out.dtype, numpy.float64)
 
-    @helper.for_float_dtypes("df_dtype")
+    @_loops.for_float_dtypes("df_dtype")
     def test_standard_t(self, df_dtype):
         self.check_distribution(_distributions.standard_t, df_dtype)
 
@@ -705,9 +676,8 @@ class TestDistributionsStandardT(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsTriangular(RandomDistributionsTestCase):
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         _regular_float_dtypes, names=["left_dtype", "mode_dtype", "right_dtype"]
     )
     def test_triangular(self, left_dtype, mode_dtype, right_dtype):
@@ -718,7 +688,7 @@ class TestDistributionsTriangular(RandomDistributionsTestCase):
             "triangular", {"left": left, "mode": mode, "right": right}
         )
 
-    @helper.for_float_dtypes("param_dtype", no_float16=True)
+    @_loops.for_float_dtypes("param_dtype", no_float16=True)
     def test_triangular_for_invalid_params(self, param_dtype):
         left = cupy.full(self.left_shape, 1, dtype=param_dtype)
         mode = cupy.full(self.mode_shape, 0, dtype=param_dtype)
@@ -749,9 +719,8 @@ class TestDistributionsTriangular(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsUniform(RandomDistributionsTestCase):
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         _regular_float_dtypes, names=["low_dtype", "high_dtype"]
     )
     def test_uniform(self, low_dtype, high_dtype):
@@ -770,7 +739,6 @@ class TestDistributionsUniform(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsVonmises(unittest.TestCase):
     def check_distribution(self, dist_func, mu_dtype, kappa_dtype):
         mu = cupy.ones(self.mu_shape, dtype=mu_dtype)
@@ -780,7 +748,7 @@ class TestDistributionsVonmises(unittest.TestCase):
         # numpy and dpdp output dtype is float64
         self.assertEqual(out.dtype, numpy.float64)
 
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         _regular_float_dtypes, names=["mu_dtype", "kappa_dtype"]
     )
     def test_vonmises(self, mu_dtype, kappa_dtype):
@@ -797,9 +765,8 @@ class TestDistributionsVonmises(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsWald(RandomDistributionsTestCase):
-    @helper.for_dtypes_combination(
+    @_loops.for_dtypes_combination(
         _regular_float_dtypes, names=["mean_dtype", "scale_dtype"]
     )
     def test_wald(self, mean_dtype, scale_dtype):
@@ -817,19 +784,18 @@ class TestDistributionsWald(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsWeibull(RandomDistributionsTestCase):
-    @helper.for_float_dtypes("a_dtype")
+    @_loops.for_float_dtypes("a_dtype")
     def test_weibull(self, a_dtype):
         a = numpy.ones(self.a_shape, dtype=a_dtype)
         self.check_distribution("weibull", {"a": a})
 
-    @helper.for_float_dtypes("a_dtype")
+    @_loops.for_float_dtypes("a_dtype")
     def test_weibull_for_inf_a(self, a_dtype):
         a = numpy.full(self.a_shape, numpy.inf, dtype=a_dtype)
         self.check_distribution("weibull", {"a": a})
 
-    @helper.for_float_dtypes("a_dtype")
+    @_loops.for_float_dtypes("a_dtype")
     def test_weibull_for_negative_a(self, a_dtype):
         a = numpy.full(self.a_shape, -0.5, dtype=a_dtype)
         with self.assertRaises(ValueError):
@@ -846,10 +812,9 @@ class TestDistributionsWeibull(RandomDistributionsTestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDistributionsZipf(RandomDistributionsTestCase):
-    @helper.for_dtypes([numpy.int32, numpy.int64], "dtype")
-    @helper.for_float_dtypes("a_dtype")
+    @_loops.for_dtypes([numpy.int32, numpy.int64], "dtype")
+    @_loops.for_float_dtypes("a_dtype")
     def test_zipf(self, a_dtype, dtype):
         a = numpy.full(self.a_shape, 2, dtype=a_dtype)
         self.check_distribution("zipf", {"a": a})

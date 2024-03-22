@@ -165,7 +165,6 @@ class TestSearch:
 # 'shape': [(10,), (10, 20), (10, 20, 30), (10, 20, 30, 40)],
 # 'order': ('C', 'F'),
 # }))
-# @testing.gpu
 # @unittest.skipUnless(cupy.cuda.cub.available, 'The CUB routine is not enabled')
 # class TestCubReduction(unittest.TestCase):
 
@@ -250,7 +249,6 @@ class TestArgMinMaxDtype:
     {"cond_shape": (2, 3, 4), "x_shape": (2, 3, 4), "y_shape": (3, 4)},
     {"cond_shape": (3, 4), "x_shape": (2, 3, 4), "y_shape": (4,)},
 )
-@testing.gpu
 class TestWhereTwoArrays(unittest.TestCase):
     @testing.for_all_dtypes_combination(names=["cond_type", "x_type", "y_type"])
     @testing.numpy_cupy_allclose(type_check=False)
@@ -270,7 +268,6 @@ class TestWhereTwoArrays(unittest.TestCase):
     {"cond_shape": (2, 3, 4)},
     {"cond_shape": (3, 4)},
 )
-@testing.gpu
 class TestWhereCond(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -280,7 +277,6 @@ class TestWhereCond(unittest.TestCase):
         return xp.where(cond)
 
 
-@testing.gpu
 class TestWhereError(unittest.TestCase):
     def test_one_argument(self):
         for xp in (numpy, cupy):
@@ -294,9 +290,9 @@ class TestWhereError(unittest.TestCase):
     {"array": numpy.empty((0,))},
     {"array": numpy.empty((0, 2))},
     {"array": numpy.empty((0, 2, 0))},
+    _ids=False,  # Do not generate ids from randomly generated params
 )
-@testing.gpu
-class TestNonzero(unittest.TestCase):
+class TestNonzero:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_nonzero(self, xp, dtype):
@@ -308,7 +304,6 @@ class TestNonzero(unittest.TestCase):
     {"array": numpy.array(0)},
     {"array": numpy.array(1)},
 )
-@testing.gpu
 @testing.with_requires("numpy>=1.17.0")
 class TestNonzeroZeroDimension(unittest.TestCase):
     @testing.for_all_dtypes()
@@ -325,9 +320,9 @@ class TestNonzeroZeroDimension(unittest.TestCase):
     {"array": numpy.empty((0,))},
     {"array": numpy.empty((0, 2))},
     {"array": numpy.empty((0, 2, 0))},
+    _ids=False,  # Do not generate ids from randomly generated params
 )
-@testing.gpu
-class TestFlatNonzero(unittest.TestCase):
+class TestFlatNonzero:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_flatnonzero(self, xp, dtype):
@@ -339,9 +334,9 @@ class TestFlatNonzero(unittest.TestCase):
     {"array": numpy.empty((0,))},
     {"array": numpy.empty((0, 2))},
     {"array": numpy.empty((0, 2, 0))},
+    _ids=False,  # Do not generate ids from randomly generated params
 )
-@testing.gpu
-class TestArgwhere(unittest.TestCase):
+class TestArgwhere:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_argwhere(self, xp, dtype):
@@ -356,7 +351,7 @@ class TestArgwhere(unittest.TestCase):
 # @testing.parameterize(
 # {'array': cupy.array(1)},
 # )
-# @testing.gpu
+
 # class TestArgwhereZeroDimension(unittest.TestCase):
 
 # def test_argwhere(self):
@@ -544,7 +539,6 @@ class TestNanArgMax:
         return xp.nanargmax(a, axis=1)
 
 
-@testing.gpu
 @testing.parameterize(
     *testing.product(
         {
@@ -577,7 +571,6 @@ class TestSearchSorted(unittest.TestCase):
         return (y,)
 
 
-@testing.gpu
 @testing.parameterize({"side": "left"}, {"side": "right"})
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestSearchSortedNanInf(unittest.TestCase):
@@ -642,7 +635,6 @@ class TestSearchSortedNanInf(unittest.TestCase):
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestSearchSortedInvalid(unittest.TestCase):
     # Cant test unordered bins due to numpy undefined
     # behavior for searchsorted
@@ -656,7 +648,6 @@ class TestSearchSortedInvalid(unittest.TestCase):
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestSearchSortedWithSorter(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_sorter(self, xp):

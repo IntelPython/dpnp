@@ -1,6 +1,6 @@
 import numpy.testing
 
-import dpnp
+import dpnp as cupy
 
 # NumPy-like assertion functions that accept both NumPy and CuPy arrays
 
@@ -22,10 +22,9 @@ def assert_allclose(
     .. seealso:: :func:`numpy.testing.assert_allclose`
 
     """
-
     numpy.testing.assert_allclose(
-        dpnp.asnumpy(actual),
-        dpnp.asnumpy(desired),
+        cupy.asnumpy(actual),
+        cupy.asnumpy(desired),
         rtol=rtol,
         atol=atol,
         err_msg=err_msg,
@@ -45,12 +44,10 @@ def assert_array_almost_equal(x, y, decimal=6, err_msg="", verbose=True):
              values are appended to the error message.
 
     .. seealso:: :func:`numpy.testing.assert_array_almost_equal`
-
     """
-
     numpy.testing.assert_array_almost_equal(
-        dpnp.asnumpy(x),
-        dpnp.asnumpy(y),
+        cupy.asnumpy(x),
+        cupy.asnumpy(y),
         decimal=decimal,
         err_msg=err_msg,
         verbose=verbose,
@@ -68,7 +65,7 @@ def assert_array_almost_equal_nulp(x, y, nulp=1):
     .. seealso:: :func:`numpy.testing.assert_array_almost_equal_nulp`
     """
     numpy.testing.assert_array_almost_equal_nulp(
-        dpnp.asnumpy(x), dpnp.asnumpy(y), nulp=nulp
+        cupy.asnumpy(x), cupy.asnumpy(y), nulp=nulp
     )
 
 
@@ -83,15 +80,15 @@ def assert_array_max_ulp(a, b, maxulp=1, dtype=None):
          dtype(numpy.dtype): Data-type to convert ``a`` and ``b`` to if given.
 
     .. seealso:: :func:`numpy.testing.assert_array_max_ulp`
-
     """
-
     numpy.testing.assert_array_max_ulp(
-        dpnp.asnumpy(a), dpnp.asnumpy(b), maxulp=maxulp, dtype=dtype
+        cupy.asnumpy(a), cupy.asnumpy(b), maxulp=maxulp, dtype=dtype
     )
 
 
-def assert_array_equal(x, y, err_msg="", verbose=True, strides_check=False):
+def assert_array_equal(
+    x, y, err_msg="", verbose=True, strides_check=False, **kwargs
+):
     """Raises an AssertionError if two array_like objects are not equal.
 
     Args:
@@ -102,11 +99,18 @@ def assert_array_equal(x, y, err_msg="", verbose=True, strides_check=False):
          err_msg(str): The error message to be printed in case of failure.
          verbose(bool): If ``True``, the conflicting values
              are appended to the error message.
+         strict(bool): If ``True``, raise an AssertionError when either
+             the shape or the data type of the array_like objects does not
+             match. Requires NumPy version 1.24 or above.
 
     .. seealso:: :func:`numpy.testing.assert_array_equal`
     """
     numpy.testing.assert_array_equal(
-        dpnp.asnumpy(x), dpnp.asnumpy(y), err_msg=err_msg, verbose=verbose
+        cupy.asnumpy(x),
+        cupy.asnumpy(y),
+        err_msg=err_msg,
+        verbose=verbose,
+        **kwargs,
     )
 
     if strides_check:
@@ -155,7 +159,7 @@ def assert_array_list_equal(xlist, ylist, err_msg="", verbose=True):
         raise AssertionError("List size is different")
     for x, y in zip(xlist, ylist):
         numpy.testing.assert_array_equal(
-            dpnp.asnumpy(x), dpnp.asnumpy(y), err_msg=err_msg, verbose=verbose
+            cupy.asnumpy(x), cupy.asnumpy(y), err_msg=err_msg, verbose=verbose
         )
 
 
@@ -170,9 +174,7 @@ def assert_array_less(x, y, err_msg="", verbose=True):
              are appended to the error message.
 
     .. seealso:: :func:`numpy.testing.assert_array_less`
-
     """
-
     numpy.testing.assert_array_less(
-        dpnp.asnumpy(x), dpnp.asnumpy(y), err_msg=err_msg, verbose=verbose
+        cupy.asnumpy(x), cupy.asnumpy(y), err_msg=err_msg, verbose=verbose
     )

@@ -9,7 +9,7 @@ import dpnp as cupy
 from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
-float_types = list(testing.helper._float_dtypes)
+float_types = list(testing._loops._float_dtypes)
 complex_types = []
 signed_int_types = [numpy.int32, numpy.int64]
 unsigned_int_types = []
@@ -243,7 +243,7 @@ class ArithmeticBinaryBase:
             return xp.array(True)
 
         func = getattr(xp, self.name)
-        with testing.NumpyError(divide="ignore"):
+        with numpy.errstate(divide="ignore"):
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore")
                 if self.use_dtype:
@@ -270,7 +270,6 @@ class ArithmeticBinaryBase:
         return y
 
 
-@testing.gpu
 @testing.parameterize(
     *(
         testing.product(
@@ -312,7 +311,6 @@ class TestArithmeticBinary(ArithmeticBinaryBase, unittest.TestCase):
         self.check_binary()
 
 
-@testing.gpu
 @testing.parameterize(
     *(
         testing.product(
@@ -411,7 +409,6 @@ class TestArithmeticModf(unittest.TestCase):
 @testing.parameterize(
     *testing.product({"xp": [numpy, cupy], "shape": [(3, 2), (), (3, 0, 2)]})
 )
-@testing.gpu
 class TestBoolSubtract(unittest.TestCase):
     def test_bool_subtract(self):
         xp = self.xp
