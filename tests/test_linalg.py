@@ -1498,3 +1498,47 @@ class TestTensorinv:
 
         # non-square
         assert_raises(inp.linalg.LinAlgError, inp.linalg.tensorinv, a_dp, 1)
+
+
+class TestTensorsolve:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "axes",
+        [None, (1,), (2,)],
+        ids=[
+            "None",
+            "(1,)",
+            "(2,)",
+        ],
+    )
+    def test_tensorsolve_axes(self, dtype, axes):
+        a = numpy.eye(12).reshape(12, 3, 4).astype(dtype)
+        b = numpy.ones(a.shape[0], dtype=dtype)
+
+        a_dp = inp.array(a)
+        b_dp = inp.array(b)
+
+        res_np = numpy.linalg.tensorsolve(a, b, axes=axes)
+        res_dp = inp.linalg.tensorsolve(a_dp, b_dp, axes=axes)
+
+        assert res_np.shape == res_dp.shape
+        assert_dtype_allclose(res_dp, res_np)
+
+    def test_tensorsolve_errors(self):
+        a_dp = inp.eye(24, dtype="float32").reshape(4, 6, 8, 3)
+        b_dp = inp.ones(a_dp.shape[:2], dtype="float32")
+
+        # unsupported type `a` and `b`
+        a_np = inp.asnumpy(a_dp)
+        b_np = inp.asnumpy(b_dp)
+        assert_raises(TypeError, inp.linalg.tensorsolve, a_np, b_dp)
+        assert_raises(TypeError, inp.linalg.tensorsolve, a_dp, b_np)
+
+        # unsupported type `axes`
+        assert_raises(TypeError, inp.linalg.tensorsolve, a_dp, 2.0)
+        assert_raises(TypeError, inp.linalg.tensorsolve, a_dp, -2)
+
+        # incorrect axes
+        assert_raises(
+            inp.linalg.LinAlgError, inp.linalg.tensorsolve, a_dp, b_dp, (1,)
+        )

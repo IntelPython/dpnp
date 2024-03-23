@@ -1035,3 +1035,17 @@ def test_tensorinv(usm_type):
     ainv = dp.linalg.tensorinv(a, ind=1)
 
     assert a.usm_type == ainv.usm_type
+
+
+@pytest.mark.parametrize("usm_type_a", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_b", list_of_usm_types, ids=list_of_usm_types)
+def test_tensorsolve(usm_type_a, usm_type_b):
+    data = numpy.random.randn(3, 2, 6)
+    a = dp.array(data, usm_type=usm_type_a)
+    b = dp.ones(a.shape[:2], dtype=a.dtype, usm_type=usm_type_b)
+
+    result = dp.linalg.tensorsolve(a, b)
+
+    assert a.usm_type == usm_type_a
+    assert b.usm_type == usm_type_b
+    assert result.usm_type == du.get_coerced_usm_type([usm_type_a, usm_type_b])
