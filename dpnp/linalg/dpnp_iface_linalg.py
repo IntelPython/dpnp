@@ -78,6 +78,8 @@ __all__ = [
     "solve",
     "svd",
     "slogdet",
+    "tensorinv",
+    "tensorsolve",
 ]
 
 
@@ -930,3 +932,132 @@ def slogdet(a):
     check_stacked_square(a)
 
     return dpnp_slogdet(a)
+
+
+def tensorinv(a, ind=2):
+    """
+    Compute the 'inverse' of an N-dimensional array.
+
+    For full documentation refer to :obj:`numpy.linalg.tensorinv`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Tensor to `invert`. Its shape must be 'square', i. e.,
+        ``prod(a.shape[:ind]) == prod(a.shape[ind:])``.
+    ind : int, optional
+        Number of first indices that are involved in the inverse sum.
+        Must be a positive integer.
+        Default: 2.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The inverse of a tensor whose shape is equivalent to
+        ``a.shape[ind:] + a.shape[:ind]``.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.
+    :obj:`dpnp.linalg.tensorsolve` : Solve the tensor equation ``a x = b`` for x.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.eye(4*6)
+    >>> a.shape = (4, 6, 8, 3)
+    >>> ainv = np.linalg.tensorinv(a, ind=2)
+    >>> ainv.shape
+    (8, 3, 4, 6)
+
+    >>> a = np.eye(4*6)
+    >>> a.shape = (24, 8, 3)
+    >>> ainv = np.linalg.tensorinv(a, ind=1)
+    >>> ainv.shape
+    (8, 3, 24)
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+
+    if ind <= 0:
+        raise ValueError("Invalid ind argument")
+
+    old_shape = a.shape
+    inv_shape = old_shape[ind:] + old_shape[:ind]
+    prod = numpy.prod(old_shape[ind:])
+    a = a.reshape(prod, -1)
+    a_inv = inv(a)
+
+    return a_inv.reshape(*inv_shape)
+
+
+def tensorsolve(a, b, axes=None):
+    """
+    Solve the tensor equation ``a x = b`` for x.
+
+    For full documentation refer to :obj:`numpy.linalg.tensorsolve`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Coefficient tensor, of shape ``b.shape + Q``. `Q`, a tuple, equals
+        the shape of that sub-tensor of `a` consisting of the appropriate
+        number of its rightmost indices, and must be such that
+        ``prod(Q) == prod(b.shape)`` (in which sense `a` is said to be
+        'square').
+    b : {dpnp.ndarray, usm_ndarray}
+        Right-hand tensor, which can be of any shape.
+    axes : tuple of ints, optional
+        Axes in `a` to reorder to the right, before inversion.
+        If ``None`` , no reordering is done.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The tensor with shape ``Q`` such that ``b.shape + Q == a.shape``.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.
+    :obj:`dpnp.linalg.tensorinv` : Compute the 'inverse' of an N-dimensional array.
+    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.eye(2*3*4)
+    >>> a.shape = (2*3, 4, 2, 3, 4)
+    >>> b = np.random.randn(2*3, 4)
+    >>> x = np.linalg.tensorsolve(a, b)
+    >>> x.shape
+    (2, 3, 4)
+    >>> np.allclose(np.tensordot(a, x, axes=3), b)
+    array([ True])
+
+    """
+
+    dpnp.check_supported_arrays_type(a, b)
+    a_ndim = a.ndim
+
+    if axes is not None:
+        all_axes = list(range(a_ndim))
+        for k in axes:
+            all_axes.remove(k)
+            all_axes.insert(a_ndim, k)
+        a = a.transpose(tuple(all_axes))
+
+    old_shape = a.shape[-(a_ndim - b.ndim) :]
+    prod = numpy.prod(old_shape)
+
+    if a.size != prod**2:
+        raise dpnp.linalg.LinAlgError(
+            "Input arrays must satisfy the requirement \
+            prod(a.shape[b.ndim:]) == prod(a.shape[:b.ndim])"
+        )
+
+    a = a.reshape(-1, prod)
+    b = b.ravel()
+    res = solve(a, b)
+    return res.reshape(old_shape)
