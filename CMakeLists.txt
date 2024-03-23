@@ -135,6 +135,9 @@ elseif(UNIX)
         "${CMAKE_CXX_FLAGS_DEBUG} ${CXXFLAGS} -O0 -g1 -DDEBUG"
     )
     set(DPNP_LDFLAGS "-z,noexecstack,-z,relro,-z,now")
+
+    # Enable LLVM Linker to reduce link time
+    add_link_options("-fuse-ld=lld")
 else()
     message(FATAL_ERROR "Unsupported system.")
 endif()
