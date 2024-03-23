@@ -925,6 +925,19 @@ def test_svd(usm_type, shape, full_matrices_param, compute_uv_param):
 
 
 @pytest.mark.parametrize(
+    "n",
+    [-1, 0, 1, 2, 3],
+    ids=["-1", "0", "1", "2", "3"],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_matrix_power(n, usm_type):
+    a = dp.array([[1, 2], [3, 5]], usm_type=usm_type)
+
+    dp_res = dp.linalg.matrix_power(a, n)
+    assert a.usm_type == dp_res.usm_type
+
+
+@pytest.mark.parametrize(
     "data, tol",
     [
         (numpy.array([1, 2]), None),
@@ -1014,3 +1027,25 @@ def test_qr(shape, mode, usm_type):
 
         assert a.usm_type == dp_q.usm_type
         assert a.usm_type == dp_r.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_tensorinv(usm_type):
+    a = dp.eye(12, usm_type=usm_type).reshape(12, 4, 3)
+    ainv = dp.linalg.tensorinv(a, ind=1)
+
+    assert a.usm_type == ainv.usm_type
+
+
+@pytest.mark.parametrize("usm_type_a", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_b", list_of_usm_types, ids=list_of_usm_types)
+def test_tensorsolve(usm_type_a, usm_type_b):
+    data = numpy.random.randn(3, 2, 6)
+    a = dp.array(data, usm_type=usm_type_a)
+    b = dp.ones(a.shape[:2], dtype=a.dtype, usm_type=usm_type_b)
+
+    result = dp.linalg.tensorsolve(a, b)
+
+    assert a.usm_type == usm_type_a
+    assert b.usm_type == usm_type_b
+    assert result.usm_type == du.get_coerced_usm_type([usm_type_a, usm_type_b])

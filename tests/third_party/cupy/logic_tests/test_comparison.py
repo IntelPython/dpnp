@@ -8,7 +8,6 @@ import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
-@testing.gpu
 class TestComparison(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
@@ -36,7 +35,6 @@ class TestComparison(unittest.TestCase):
         self.check_binary("equal")
 
 
-@testing.gpu
 class TestComparisonOperator(unittest.TestCase):
     operators = [
         operator.lt,

@@ -210,7 +210,6 @@ class TestSort(unittest.TestCase):
         return xp.sort(a, axis=-1)
 
 
-@testing.gpu
 class TestLexsort(unittest.TestCase):
     # Test ranks
 
@@ -412,7 +411,6 @@ class TestArgsort(unittest.TestCase):
         return self.argsort(a)
 
 
-@testing.gpu
 class TestMsort(unittest.TestCase):
     # Test base cases
 
@@ -437,7 +435,6 @@ class TestMsort(unittest.TestCase):
         return xp.msort(a)
 
 
-@testing.gpu
 class TestSort_complex(unittest.TestCase):
     def test_sort_complex_zero_dim(self):
         for xp in (numpy, cupy):
@@ -621,7 +618,6 @@ class TestPartition(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestArgpartition(unittest.TestCase):
     def argpartition(self, a, kth, axis=-1):
         if self.external:
