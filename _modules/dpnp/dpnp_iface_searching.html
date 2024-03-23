@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.15.0dev0+34.g7ca1aff02f documentation</title>
+  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.15.0dev0+39.g66a43bfdb1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=b6b79355"></script>
+        <script src="../../_static/documentation_options.js?v=dcffd50b"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+34.g7ca1aff02f
+                0.15.0dev0+39.g66a43bfdb1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -322,15 +322,70 @@
 
 
 
+<div class="viewcode-block" id="searchsorted">
+<a class="viewcode-back" href="../../reference/generated/dpnp.searchsorted.html#dpnp.searchsorted">[docs]</a>
 <span class="k">def</span> <span class="nf">searchsorted</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">sorter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find indices where elements should be inserted to maintain order.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.searchsorted`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input 1-D array. If `sorter` is ``None``, then it must be sorted in</span>
+<span class="sd">        ascending order, otherwise `sorter` must be an array of indices that</span>
+<span class="sd">        sort it.</span>
+<span class="sd">    v : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        Values to insert into `a`.</span>
+<span class="sd">    side : {&#39;left&#39;, &#39;right&#39;}, optional</span>
+<span class="sd">        If ``&#39;left&#39;``, the index of the first suitable location found is given.</span>
+<span class="sd">        If ``&#39;right&#39;``, return the last such index. If there is no suitable</span>
+<span class="sd">        index, return either 0 or N (where N is the length of `a`).</span>
+<span class="sd">        Default is ``&#39;left&#39;``.</span>
+<span class="sd">    sorter : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Optional 1-D array of integer indices that sort array a into ascending</span>
+<span class="sd">        order. They are typically the result of argsort.</span>
+<span class="sd">        Out of bound index values of `sorter` array are treated using `&quot;wrap&quot;`</span>
+<span class="sd">        mode documented in :py:func:`dpnp.take`.</span>
+<span class="sd">        Default is ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    indices : dpnp.ndarray</span>
+<span class="sd">        Array of insertion points with the same shape as `v`,</span>
+<span class="sd">        or 0-D array if `v` is a scalar.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.sort` : Return a sorted copy of an array.</span>
+<span class="sd">    :obj:`dpnp.histogram` : Produce histogram from 1-D data.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([11,12,13,14,15])</span>
+<span class="sd">    &gt;&gt;&gt; np.searchsorted(a, 13)</span>
+<span class="sd">    array(2)</span>
+<span class="sd">    &gt;&gt;&gt; np.searchsorted(a, 13, side=&#39;right&#39;)</span>
+<span class="sd">    array(3)</span>
+<span class="sd">    &gt;&gt;&gt; v = np.array([-10, 20, 12, 13])</span>
+<span class="sd">    &gt;&gt;&gt; np.searchsorted(a, v)</span>
+<span class="sd">    array([0, 5, 1, 2])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">side</span><span class="p">,</span> <span class="n">sorter</span><span class="p">)</span>
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="n">usm_v</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usm_v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="n">usm_sorter</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">sorter</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">sorter</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_v</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">side</span><span class="p">,</span> <span class="n">sorter</span><span class="o">=</span><span class="n">usm_sorter</span><span class="p">)</span>
+    <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="where">
