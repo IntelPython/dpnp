@@ -27,7 +27,7 @@
 cimport dpctl as c_dpctl
 from libcpp cimport bool as cpp_bool
 
-from dpnp.dpnp_algo cimport shape_elem_type
+from dpnp.dpnp_algo cimport shape_elem_type, shape_type_c
 from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
 
 
