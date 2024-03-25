@@ -858,6 +858,7 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
     a_order = "C" if a.flags.c_contiguous else "F"
 
     if a.ndim > 2:
+        is_cpu_device = a.sycl_device.has_aspect_cpu
         orig_shape = a.shape
         # get 3d input array by reshape
         a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
@@ -888,6 +889,14 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
                 dst=eig_vecs[i].get_array(),
                 sycl_queue=a_sycl_queue,
             )
+
+            # TODO: Remove this w/a when MKLD-17201 is solved.
+            # Waiting for a host task executing an OneMKL LAPACK syevd call
+            # on CPU causes deadlock due to serialization of all host tasks
+            # in the queue.
+            # We need to wait for each host tasks before calling _seyvd to avoid deadlock.
+            if lapack_func == "_syevd" and is_cpu_device:
+                ht_list_ev[2 * i].wait()
 
             # call LAPACK extension function to get eigenvalues and eigenvectors of a portion of matrix A
             ht_list_ev[2 * i + 1], _ = getattr(li, lapack_func)(
