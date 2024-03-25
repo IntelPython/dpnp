@@ -19,6 +19,23 @@ var hierarchy =
     [ "dpnp::backend::ext::vm::types::AtanhOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_atanh_output_type.html", null ],
     [ "dpnp::backend::ext::vm::types::AtanOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_atan_output_type.html", null ],
     [ "backend_sycl", "classbackend__sycl.html", null ],
+    [ "dpnp::backend::ext::rng::device::engine::builder::BaseBuilder< EngineT, SeedT, OffsetT >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_base_builder.html", null ],
+    [ "dpnp::backend::ext::rng::device::engine::builder::BaseBuilder< mkl_rng_dev::mcg31m1< VecSize >, std::uint32_t, std::uint64_t >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_base_builder.html", [
+      [ "dpnp::backend::ext::rng::device::engine::builder::Builder< mkl_rng_dev::mcg31m1< VecSize > >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_builder_3_01mkl__rng__dev_c455832313b7444a9e75c45c2370414d.html", null ]
+    ] ],
+    [ "dpnp::backend::ext::rng::device::engine::builder::BaseBuilder< mkl_rng_dev::mcg59< VecSize >, std::uint32_t, std::uint64_t >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_base_builder.html", [
+      [ "dpnp::backend::ext::rng::device::engine::builder::Builder< mkl_rng_dev::mcg59< VecSize > >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_builder_3_01mkl__rng__dev_c27e2deb8f2aeb9b2c00b16e0ec5a117.html", null ]
+    ] ],
+    [ "dpnp::backend::ext::rng::device::engine::builder::BaseBuilder< mkl_rng_dev::mrg32k3a< VecSize >, std::uint32_t, std::uint64_t >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_base_builder.html", [
+      [ "dpnp::backend::ext::rng::device::engine::builder::Builder< mkl_rng_dev::mrg32k3a< VecSize > >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_builder_3_01mkl__rng__dev_8a70045a40cd3d8aeed4c08259167cfa.html", null ]
+    ] ],
+    [ "dpnp::backend::ext::rng::device::engine::builder::BaseBuilder< mkl_rng_dev::philox4x32x10< VecSize >, std::uint64_t, std::uint64_t >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_base_builder.html", [
+      [ "dpnp::backend::ext::rng::device::engine::builder::Builder< mkl_rng_dev::philox4x32x10< VecSize > >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_builder_3_01mkl__rng__dev_6d2184b07f16507df9dcc5af28a65856.html", null ]
+    ] ],
+    [ "std::bool_constant", null, [
+      [ "dpnp::backend::ext::rng::device::dispatch::TypePairDefinedEntry< Ty, ArgTy, Method, argMethod >", "structdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_type_pair_defined_entry.html", null ]
+    ] ],
+    [ "dpnp::backend::ext::rng::device::engine::builder::Builder< Type >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_builder.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product< Args >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product< std::tuple< std::tuple< FirstTupleArgs... > > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product_3_01std_1_1tuple_3_01std_1_1tupl8eeb66d10f7723d0fc0b38e3d181763c.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product< std::tuple< Tuples... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product_3_01std_1_1tuple_3_01_tuples_8_8_8_01_4_01_4.html", null ],
@@ -45,6 +62,7 @@ var hierarchy =
     [ "std::disjunction", null, [
       [ "is_any< T, Ts >", "structis__any.html", null ]
     ] ],
+    [ "dpnp::backend::ext::rng::device::dispatch::Dispatch3DTableBuilder< funcPtrT, factory, _no_of_engines, _no_of_types, _no_of_methods >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_dispatch3_d_table_builder.html", null ],
     [ "dpnp::backend::ext::vm::DivContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_div_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::DivOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_div_output_type.html", null ],
     [ "dpnp::backend::ext::blas::types::DotcTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html", null ],
@@ -62,6 +80,13 @@ var hierarchy =
       [ "mcg59_struct", "structmcg59__struct.html", null ],
       [ "mt19937_struct", "structmt19937__struct.html", null ]
     ] ],
+    [ "dpnp::backend::ext::rng::device::engine::EngineBase", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_engine_base.html", [
+      [ "dpnp::backend::ext::rng::device::engine::MCG31M1", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_m_c_g31_m1.html", null ],
+      [ "dpnp::backend::ext::rng::device::engine::MCG59", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_m_c_g59.html", null ],
+      [ "dpnp::backend::ext::rng::device::engine::MRG32k3a", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_m_r_g32k3a.html", null ],
+      [ "dpnp::backend::ext::rng::device::engine::PHILOX4x32x10", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_p_h_i_l_o_x4x32x10.html", null ]
+    ] ],
+    [ "dpnp::backend::ext::rng::device::engine::EngineType", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_engine_type.html", null ],
     [ "std::exception", null, [
       [ "dpnp::backend::ext::lapack::LinAlgError", "classdpnp_1_1backend_1_1ext_1_1lapack_1_1_lin_alg_error.html", null ]
     ] ],
@@ -76,6 +101,7 @@ var hierarchy =
     [ "dpnp::backend::ext::vm::FloorContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_floor_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::FloorOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_floor_output_type.html", null ],
     [ "func_type_pair_t< FuncType, T >", "structfunc__type__pair__t.html", null ],
+    [ "dpnp::backend::ext::rng::device::dispatch::GaussianTypePairSupportFactory< T, M >", "structdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_gaussian_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::blas::types::GemmBatchTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::blas::types::GemmTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::lapack::types::GeqrfBatchTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_geqrf_batch_type_pair_support_factory.html", null ],
@@ -126,6 +152,7 @@ var hierarchy =
     [ "python_constants", "structpython__constants.html", null ],
     [ "dpnp::backend::ext::sycl_ext::resolve_type< C, Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1resolve__type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::resolve_type< C, std::tuple< Args... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1resolve__type_3_01_c_00_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html", null ],
+    [ "dpnp::backend::ext::rng::device::details::RngContigFunctor< EngineBuilderT, DistributorBuilderT, items_per_wi, enable_sg_load >", "structdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1details_1_1_rng_contig_functor.html", null ],
     [ "dpnp::backend::ext::vm::RoundContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_round_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::RoundOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_round_output_type.html", null ],
     [ "dpnp::backend::ext::vm::SinContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sin_contig_factory.html", null ],

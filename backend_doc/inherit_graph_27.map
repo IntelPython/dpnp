@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_17b2e4d9f422d6a255a67e036ce4e46b3.html" title=" " alt="" coords="5,5,206,91"/>
+<area shape="rect" id="Node000000" href="$classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_base_builder.html" title=" " alt="" coords="5,5,175,106"/>
+<area shape="rect" id="Node000001" href="$classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_builder_3_01mkl__rng__dev_c455832313b7444a9e75c45c2370414d.html" title=" " alt="" coords="223,20,441,91"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="191,53,222,53,222,58,191,58"/>
 </map>
