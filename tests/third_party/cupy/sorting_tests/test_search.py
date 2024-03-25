@@ -82,11 +82,9 @@ class TestSearch:
         return a.argmax(axis=1)
 
     @testing.slow
+    @pytest.mark.skip("slow mark is not implemented")
     def test_argmax_int32_overflow(self):
-        try:
-            a = testing.shaped_arange((2**32 + 1,), cupy, numpy.float64)
-        except MemoryError as e:
-            pytest.skip("Not enough memory: " + str(e))
+        a = testing.shaped_arange((2**32 + 1,), cupy, numpy.float64)
         assert a.argmax().item() == 2**32
 
     @testing.for_all_dtypes(no_complex=True)
@@ -164,11 +162,9 @@ class TestSearch:
         return a.argmin(axis=1)
 
     @testing.slow
+    @pytest.mark.skip("slow mark is not implemented")
     def test_argmin_int32_overflow(self):
-        try:
-            a = testing.shaped_arange((2**32 + 1,), cupy, numpy.float64)
-        except MemoryError as e:
-            pytest.skip("Not enough memory: " + str(e))
+        a = testing.shaped_arange((2**32 + 1,), cupy, numpy.float64)
         cupy.negative(a, out=a)
         assert a.argmin().item() == 2**32
 
