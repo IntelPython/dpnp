@@ -27,13 +27,13 @@
 
 #include <oneapi/mkl/rng/device.hpp>
 
-
 namespace dpnp::backend::ext::rng::device::dispatch
 {
 namespace mkl_rng_dev = oneapi::mkl::rng::device;
 
 template <typename funcPtrT,
-          template <typename fnT, typename E, typename T, typename M> typename factory,
+          template <typename fnT, typename E, typename T, typename M>
+          typename factory,
           int _no_of_engines,
           int _no_of_types,
           int _no_of_methods>
@@ -44,8 +44,10 @@ private:
     const std::vector<funcPtrT> row_per_method() const
     {
         std::vector<funcPtrT> per_method = {
-            factory<funcPtrT, E, T, mkl_rng_dev::gaussian_method::by_default>{}.get(),
-            factory<funcPtrT, E, T, mkl_rng_dev::gaussian_method::box_muller2>{}.get(),
+            factory<funcPtrT, E, T, mkl_rng_dev::gaussian_method::by_default>{}
+                .get(),
+            factory<funcPtrT, E, T, mkl_rng_dev::gaussian_method::box_muller2>{}
+                .get(),
         };
         assert(per_method.size() == _no_of_methods);
         return per_method;
@@ -54,21 +56,21 @@ private:
     template <typename E>
     auto table_per_type_and_method() const
     {
-        std::vector<std::vector<funcPtrT>>
-                   table_by_type = {row_per_method<E, bool>(),
-                                    row_per_method<E, int8_t>(),
-                                    row_per_method<E, uint8_t>(),
-                                    row_per_method<E, int16_t>(),
-                                    row_per_method<E, uint16_t>(),
-                                    row_per_method<E, int32_t>(),
-                                    row_per_method<E, uint32_t>(),
-                                    row_per_method<E, int64_t>(),
-                                    row_per_method<E, uint64_t>(),
-                                    row_per_method<E, sycl::half>(),
-                                    row_per_method<E, float>(),
-                                    row_per_method<E, double>(),
-                                    row_per_method<E, std::complex<float>>(),
-                                    row_per_method<E, std::complex<double>>()};
+        std::vector<std::vector<funcPtrT>> table_by_type = {
+            row_per_method<E, bool>(),
+            row_per_method<E, int8_t>(),
+            row_per_method<E, uint8_t>(),
+            row_per_method<E, int16_t>(),
+            row_per_method<E, uint16_t>(),
+            row_per_method<E, int32_t>(),
+            row_per_method<E, uint32_t>(),
+            row_per_method<E, int64_t>(),
+            row_per_method<E, uint64_t>(),
+            row_per_method<E, sycl::half>(),
+            row_per_method<E, float>(),
+            row_per_method<E, double>(),
+            row_per_method<E, std::complex<float>>(),
+            row_per_method<E, std::complex<double>>()};
         assert(table_by_type.size() == _no_of_types);
         return table_by_type;
     }
@@ -78,12 +80,15 @@ public:
     ~Dispatch3DTableBuilder() = default;
 
     template <std::uint8_t... VecSizes>
-    void populate(funcPtrT table[][_no_of_types][_no_of_methods], std::integer_sequence<std::uint8_t, VecSizes...>) const
+    void populate(funcPtrT table[][_no_of_types][_no_of_methods],
+                  std::integer_sequence<std::uint8_t, VecSizes...>) const
     {
-        const auto map_by_engine = {table_per_type_and_method<mkl_rng_dev::mrg32k3a<VecSizes>>()...,
-                                    table_per_type_and_method<mkl_rng_dev::philox4x32x10<VecSizes>>()...,
-                                    table_per_type_and_method<mkl_rng_dev::mcg31m1<VecSizes>>()...,
-                                    table_per_type_and_method<mkl_rng_dev::mcg59<VecSizes>>()...};
+        const auto map_by_engine = {
+            table_per_type_and_method<mkl_rng_dev::mrg32k3a<VecSizes>>()...,
+            table_per_type_and_method<
+                mkl_rng_dev::philox4x32x10<VecSizes>>()...,
+            table_per_type_and_method<mkl_rng_dev::mcg31m1<VecSizes>>()...,
+            table_per_type_and_method<mkl_rng_dev::mcg59<VecSizes>>()...};
         assert(map_by_engine.size() == _no_of_engines);
 
         std::uint16_t engine_id = 0;
@@ -101,4 +106,4 @@ public:
         }
     }
 };
-} // dpnp::backend::ext::rng::device::dispatch
+} // namespace dpnp::backend::ext::rng::device::dispatch

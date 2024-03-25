@@ -27,19 +27,26 @@
 
 #include "base_engine.hpp"
 
-
 namespace dpnp::backend::ext::rng::device::engine
 {
-class MCG59 : public EngineBase {
+class MCG59 : public EngineBase
+{
 public:
-    MCG59(sycl::queue &q, std::uint32_t seed, std::uint64_t offset = 0) :
-        EngineBase(q, seed, offset) {}
+    MCG59(sycl::queue &q, std::uint32_t seed, std::uint64_t offset = 0)
+        : EngineBase(q, seed, offset)
+    {
+    }
 
-    MCG59(sycl::queue &q, std::vector<std::uint32_t> &seeds, std::uint64_t offset = 0) :
-        EngineBase(q, seeds, offset) {}
+    MCG59(sycl::queue &q,
+          std::vector<std::uint32_t> &seeds,
+          std::uint64_t offset = 0)
+        : EngineBase(q, seeds, offset)
+    {
+    }
 
-    virtual EngineType get_type() const noexcept override {
+    virtual EngineType get_type() const noexcept override
+    {
         return EngineType::MCG59;
     }
 };
-} // dpnp::backend::ext::rng::device::engine
+} // namespace dpnp::backend::ext::rng::device::engine

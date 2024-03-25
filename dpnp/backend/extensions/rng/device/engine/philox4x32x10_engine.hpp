@@ -27,25 +27,40 @@
 
 #include "base_engine.hpp"
 
-
 namespace dpnp::backend::ext::rng::device::engine
 {
-class PHILOX4x32x10 : public EngineBase {
+class PHILOX4x32x10 : public EngineBase
+{
 public:
-    PHILOX4x32x10(sycl::queue &q, std::uint64_t seed, std::uint64_t offset = 0) :
-        EngineBase(q, seed, offset) {}
+    PHILOX4x32x10(sycl::queue &q, std::uint64_t seed, std::uint64_t offset = 0)
+        : EngineBase(q, seed, offset)
+    {
+    }
 
-    PHILOX4x32x10(sycl::queue &q, std::vector<std::uint64_t> &seeds, std::uint64_t offset = 0) :
-        EngineBase(q, seeds, offset) {}
+    PHILOX4x32x10(sycl::queue &q,
+                  std::vector<std::uint64_t> &seeds,
+                  std::uint64_t offset = 0)
+        : EngineBase(q, seeds, offset)
+    {
+    }
 
-    PHILOX4x32x10(sycl::queue &q, std::uint64_t seed, std::vector<std::uint64_t> &offsets) :
-        EngineBase(q, seed, offsets) {}
+    PHILOX4x32x10(sycl::queue &q,
+                  std::uint64_t seed,
+                  std::vector<std::uint64_t> &offsets)
+        : EngineBase(q, seed, offsets)
+    {
+    }
 
-    PHILOX4x32x10(sycl::queue &q, std::vector<std::uint64_t> &seeds, std::vector<std::uint64_t> &offsets) :
-        EngineBase(q, seeds, offsets) {}
+    PHILOX4x32x10(sycl::queue &q,
+                  std::vector<std::uint64_t> &seeds,
+                  std::vector<std::uint64_t> &offsets)
+        : EngineBase(q, seeds, offsets)
+    {
+    }
 
-    virtual EngineType get_type() const noexcept override {
+    virtual EngineType get_type() const noexcept override
+    {
         return EngineType::PHILOX4x32x10;
     }
 };
-} // dpnp::backend::ext::rng::device::engine
+} // namespace dpnp::backend::ext::rng::device::engine

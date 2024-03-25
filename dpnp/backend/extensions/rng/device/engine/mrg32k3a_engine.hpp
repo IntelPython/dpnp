@@ -27,25 +27,40 @@
 
 #include "base_engine.hpp"
 
-
 namespace dpnp::backend::ext::rng::device::engine
 {
-class MRG32k3a : public EngineBase {
+class MRG32k3a : public EngineBase
+{
 public:
-    MRG32k3a(sycl::queue &q, std::uint32_t seed, std::uint64_t offset = 0) :
-        EngineBase(q, seed, offset) {}
+    MRG32k3a(sycl::queue &q, std::uint32_t seed, std::uint64_t offset = 0)
+        : EngineBase(q, seed, offset)
+    {
+    }
 
-    MRG32k3a(sycl::queue &q, std::vector<std::uint32_t> &seeds, std::uint64_t offset = 0) :
-        EngineBase(q, seeds, offset) {}
+    MRG32k3a(sycl::queue &q,
+             std::vector<std::uint32_t> &seeds,
+             std::uint64_t offset = 0)
+        : EngineBase(q, seeds, offset)
+    {
+    }
 
-    MRG32k3a(sycl::queue &q, std::uint32_t seed, std::vector<std::uint64_t> &offsets) :
-        EngineBase(q, seed, offsets) {}
+    MRG32k3a(sycl::queue &q,
+             std::uint32_t seed,
+             std::vector<std::uint64_t> &offsets)
+        : EngineBase(q, seed, offsets)
+    {
+    }
 
-    MRG32k3a(sycl::queue &q, std::vector<std::uint32_t> &seeds, std::vector<std::uint64_t> &offsets) :
-        EngineBase(q, seeds, offsets) {}
+    MRG32k3a(sycl::queue &q,
+             std::vector<std::uint32_t> &seeds,
+             std::vector<std::uint64_t> &offsets)
+        : EngineBase(q, seeds, offsets)
+    {
+    }
 
-    virtual EngineType get_type() const noexcept override {
+    virtual EngineType get_type() const noexcept override
+    {
         return EngineType::MRG32k3a;
     }
 };
-} // dpnp::backend::ext::rng::device::engine
+} // namespace dpnp::backend::ext::rng::device::engine

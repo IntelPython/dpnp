@@ -58,7 +58,6 @@ build_dpnp_cython_ext_with_backend(dparray ${CMAKE_CURRENT_SOURCE_DIR}/dparray.p
 add_subdirectory(backend)
 add_subdirectory(backend/extensions/blas)
 add_subdirectory(backend/extensions/lapack)
-add_subdirectory(backend/extensions/rng)
 add_subdirectory(backend/extensions/rng/device)
 add_subdirectory(backend/extensions/vm)
 add_subdirectory(backend/extensions/sycl_ext)
