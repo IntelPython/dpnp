@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.15.0dev0+37.g726738d032 documentation</title>
+  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.15.0dev0+45.g257e9d9c0e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=fda909f6"></script>
+        <script src="../../_static/documentation_options.js?v=0cc82522"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+37.g726738d032
+                0.15.0dev0+45.g257e9d9c0e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -137,14 +137,13 @@
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_partition</span><span class="p">,</span>
-    <span class="n">dpnp_searchsorted</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">call_origin</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argsort&quot;</span><span class="p">,</span> <span class="s2">&quot;partition&quot;</span><span class="p">,</span> <span class="s2">&quot;searchsorted&quot;</span><span class="p">,</span> <span class="s2">&quot;sort&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argsort&quot;</span><span class="p">,</span> <span class="s2">&quot;partition&quot;</span><span class="p">,</span> <span class="s2">&quot;sort&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="argsort">
@@ -282,44 +281,6 @@
             <span class="k">return</span> <span class="n">dpnp_partition</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">partition</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="searchsorted">
-<a class="viewcode-back" href="../../reference/generated/dpnp.searchsorted.html#dpnp.searchsorted">[docs]</a>
-<span class="k">def</span> <span class="nf">searchsorted</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">sorter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Find indices where elements should be inserted to maintain order.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.searchsorted`.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Input arrays is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Input array is supported only sorted.</span>
-<span class="sd">    Input side is supported only values ``left``, ``right``.</span>
-<span class="sd">    Parameter `sorter` is supported only with default values.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="c1"># pylint: disable=condition-evals-to-constant</span>
-    <span class="k">if</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">side</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">]:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">sorter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_searchsorted</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">side</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">side</span><span class="p">,</span> <span class="n">sorter</span><span class="o">=</span><span class="n">sorter</span><span class="p">)</span></div>
 
 
 
