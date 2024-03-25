@@ -20,6 +20,7 @@ from .helper import (
     get_float_complex_dtypes,
     has_support_aspect64,
     is_cpu_device,
+    is_win_platform,
 )
 
 
@@ -890,6 +891,9 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
     def test_norm_ND(self, dtype, ord, axis, keepdims):
+        # TODO: remove skiping in mkl 2024.1
+        if is_win_platform():
+            pytest.skip("CPU driver experiences an instability on Windows.")
         a = numpy.array(numpy.random.uniform(-5, 5, 120), dtype=dtype).reshape(
             2, 3, 4, 5
         )
@@ -938,6 +942,9 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
     def test_norm_ND_complex(self, dtype, ord, axis, keepdims):
+        # TODO: remove skiping in mkl 2024.1
+        if is_win_platform():
+            pytest.skip("CPU driver experiences an instability on Windows.")
         x1 = numpy.random.uniform(-5, 5, 120)
         x2 = numpy.random.uniform(-5, 5, 120)
         a = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(2, 3, 4, 5)
@@ -986,6 +993,9 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
     def test_norm_usm_ndarray(self, dtype, ord, axis, keepdims):
+        # TODO: remove skiping in mkl 2024.1
+        if is_win_platform():
+            pytest.skip("CPU driver experiences an instability on Windows.")
         a = numpy.array(numpy.random.uniform(-5, 5, 120), dtype=dtype).reshape(
             2, 3, 4, 5
         )
