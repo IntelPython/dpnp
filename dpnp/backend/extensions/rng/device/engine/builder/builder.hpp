@@ -25,14 +25,15 @@
 
 #pragma once
 
-
 namespace dpnp::backend::ext::rng::device::engine::builder
 {
 template <typename Type>
-class Builder {};
-} // dpnp::backend::ext::rng::device::engine::builder
+class Builder
+{
+};
+} // namespace dpnp::backend::ext::rng::device::engine::builder
 
-#include "mrg32k3a.hpp"
-#include "philox4x32x10.hpp"
 #include "mcg31m1.hpp"
 #include "mcg59.hpp"
+#include "mrg32k3a.hpp"
+#include "philox4x32x10.hpp"

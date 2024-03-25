@@ -29,15 +29,15 @@
 
 #include "utils/type_dispatch.hpp"
 
-
 namespace dpnp::backend::ext::rng::device::dispatch
 {
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 namespace mkl_rng_dev = oneapi::mkl::rng::device;
 
 template <typename Ty, typename ArgTy, typename Method, typename argMethod>
-struct TypePairDefinedEntry : std::bool_constant<std::is_same_v<Ty, ArgTy> &&
-                                                 std::is_same_v<Method, argMethod>>
+struct TypePairDefinedEntry
+    : std::bool_constant<std::is_same_v<Ty, ArgTy> &&
+                         std::is_same_v<Method, argMethod>>
 {
     static constexpr bool is_defined = true;
 };
@@ -46,11 +46,23 @@ template <typename T, typename M>
 struct GaussianTypePairSupportFactory
 {
     static constexpr bool is_defined = std::disjunction<
-        TypePairDefinedEntry<T, double, M, mkl_rng_dev::gaussian_method::by_default>,
-        TypePairDefinedEntry<T, double, M, mkl_rng_dev::gaussian_method::box_muller2>,
-        TypePairDefinedEntry<T, float, M, mkl_rng_dev::gaussian_method::by_default>,
-        TypePairDefinedEntry<T, float, M, mkl_rng_dev::gaussian_method::box_muller2>,
+        TypePairDefinedEntry<T,
+                             double,
+                             M,
+                             mkl_rng_dev::gaussian_method::by_default>,
+        TypePairDefinedEntry<T,
+                             double,
+                             M,
+                             mkl_rng_dev::gaussian_method::box_muller2>,
+        TypePairDefinedEntry<T,
+                             float,
+                             M,
+                             mkl_rng_dev::gaussian_method::by_default>,
+        TypePairDefinedEntry<T,
+                             float,
+                             M,
+                             mkl_rng_dev::gaussian_method::box_muller2>,
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
-} // dpnp::backend::ext::rng::device::dispatch
+} // namespace dpnp::backend::ext::rng::device::dispatch

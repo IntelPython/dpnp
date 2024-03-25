@@ -26,19 +26,18 @@
 #include <pybind11/pybind11.h>
 
 // dpctl tensor headers
+#include "kernels/alignment.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
-#include "kernels/alignment.hpp"
 
-#include "gaussian.hpp"
 #include "common_impl.hpp"
+#include "gaussian.hpp"
 
 #include "engine/builder/builder.hpp"
 
 #include "dispatch/matrix.hpp"
 #include "dispatch/table_builder.hpp"
-
 
 namespace dpnp::backend::ext::rng::device
 {
@@ -54,18 +53,24 @@ using dpctl_krn_ns::required_alignment;
 
 constexpr auto no_of_methods = 2; // number of methods of gaussian distribution
 
-constexpr auto seq_of_vec_sizes = std::integer_sequence<std::uint8_t, 2, 4, 8, 16>{};
+constexpr auto seq_of_vec_sizes =
+    std::integer_sequence<std::uint8_t, 2, 4, 8, 16>{};
 constexpr auto vec_sizes_len = seq_of_vec_sizes.size();
 constexpr auto no_of_engines = engine::no_of_engines * vec_sizes_len;
 
-template <typename VecSizeT, VecSizeT ...Ints, auto ...Indices>
-inline auto find_vec_size_impl(const VecSizeT vec_size, std::index_sequence<Indices...>) {
-    return std::min({ ((Ints == vec_size) ? Indices : sizeof...(Indices))... });
+template <typename VecSizeT, VecSizeT... Ints, auto... Indices>
+inline auto find_vec_size_impl(const VecSizeT vec_size,
+                               std::index_sequence<Indices...>)
+{
+    return std::min({((Ints == vec_size) ? Indices : sizeof...(Indices))...});
 }
 
-template <typename VecSizeT, VecSizeT ...Ints>
-int find_vec_size(const VecSizeT vec_size, std::integer_sequence<VecSizeT, Ints...>) {
-    auto res = find_vec_size_impl<VecSizeT, Ints...>(vec_size, std::make_index_sequence<sizeof...(Ints)>{}); 
+template <typename VecSizeT, VecSizeT... Ints>
+int find_vec_size(const VecSizeT vec_size,
+                  std::integer_sequence<VecSizeT, Ints...>)
+{
+    auto res = find_vec_size_impl<VecSizeT, Ints...>(
+        vec_size, std::make_index_sequence<sizeof...(Ints)>{});
     return (res == sizeof...(Ints)) ? -1 : res;
 }
 
@@ -99,9 +104,14 @@ typedef sycl::event (*gaussian_impl_fn_ptr_t)(engine::EngineBase *engine,
                                               char *,
                                               const std::vector<sycl::event> &);
 
-static gaussian_impl_fn_ptr_t gaussian_dispatch_table[no_of_engines][dpctl_td_ns::num_types][no_of_methods];
+static gaussian_impl_fn_ptr_t gaussian_dispatch_table[no_of_engines]
+                                                     [dpctl_td_ns::num_types]
+                                                     [no_of_methods];
 
-template <typename EngineT, typename DataT,  typename Method, unsigned int items_per_wi>
+template <typename EngineT,
+          typename DataT,
+          typename Method,
+          unsigned int items_per_wi>
 class gaussian_kernel;
 
 template <typename EngineT, typename DataT, typename Method>
@@ -123,7 +133,8 @@ static sycl::event gaussian_impl(engine::EngineBase *engine,
     constexpr std::size_t items_per_wi = 4;
     constexpr std::size_t local_size = 256;
     const std::size_t wg_items = local_size * vec_sz * items_per_wi;
-    const std::size_t global_size = ((n + wg_items - 1) / (wg_items)) * local_size;
+    const std::size_t global_size =
+        ((n + wg_items - 1) / (wg_items)) * local_size;
 
     sycl::event distr_event;
 
@@ -140,42 +151,57 @@ static sycl::event gaussian_impl(engine::EngineBase *engine,
 
             if (is_aligned<required_alignment>(out_ptr)) {
                 constexpr bool enable_sg_load = true;
-                using KernelName = gaussian_kernel<EngineT, DataT, Method, items_per_wi>;
+                using KernelName =
+                    gaussian_kernel<EngineT, DataT, Method, items_per_wi>;
 
-                cgh.parallel_for<KernelName>(sycl::nd_range<1>({global_size}, {local_size}),
-                    details::RngContigFunctor<EngineBuilderT, DistributorBuilderT, items_per_wi, enable_sg_load>(eng_builder, dist_builder, out, n));
+                cgh.parallel_for<KernelName>(
+                    sycl::nd_range<1>({global_size}, {local_size}),
+                    details::RngContigFunctor<EngineBuilderT,
+                                              DistributorBuilderT, items_per_wi,
+                                              enable_sg_load>(
+                        eng_builder, dist_builder, out, n));
             }
             else {
                 constexpr bool disable_sg_load = false;
-                using InnerKernelName = gaussian_kernel<EngineT, DataT, Method, items_per_wi>;
-                using KernelName = disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
+                using InnerKernelName =
+                    gaussian_kernel<EngineT, DataT, Method, items_per_wi>;
+                using KernelName =
+                    disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
 
-                cgh.parallel_for<KernelName>(sycl::nd_range<1>({global_size}, {local_size}),
-                    details::RngContigFunctor<EngineBuilderT, DistributorBuilderT, items_per_wi, disable_sg_load>(eng_builder, dist_builder, out, n));
+                cgh.parallel_for<KernelName>(
+                    sycl::nd_range<1>({global_size}, {local_size}),
+                    details::RngContigFunctor<EngineBuilderT,
+                                              DistributorBuilderT, items_per_wi,
+                                              disable_sg_load>(
+                        eng_builder, dist_builder, out, n));
             }
         });
     } catch (oneapi::mkl::exception const &e) {
         std::stringstream error_msg;
 
-        error_msg << "Unexpected MKL exception caught during gaussian call:\nreason: " << e.what();
+        error_msg
+            << "Unexpected MKL exception caught during gaussian call:\nreason: "
+            << e.what();
         throw std::runtime_error(error_msg.str());
     } catch (sycl::exception const &e) {
         std::stringstream error_msg;
 
-        error_msg << "Unexpected SYCL exception caught during gaussian call:\n" << e.what();
+        error_msg << "Unexpected SYCL exception caught during gaussian call:\n"
+                  << e.what();
         throw std::runtime_error(error_msg.str());
     }
     return distr_event;
 }
 
-std::pair<sycl::event, sycl::event> gaussian(engine::EngineBase *engine,
-                                             const std::uint8_t method_id,
-                                             const std::uint8_t vec_size,
-                                             const double mean,
-                                             const double stddev,
-                                             const std::uint64_t n,
-                                             dpctl::tensor::usm_ndarray res,
-                                             const std::vector<sycl::event> &depends)
+std::pair<sycl::event, sycl::event>
+    gaussian(engine::EngineBase *engine,
+             const std::uint8_t method_id,
+             const std::uint8_t vec_size,
+             const double mean,
+             const double stddev,
+             const std::uint64_t n,
+             dpctl::tensor::usm_ndarray res,
+             const std::vector<sycl::event> &depends)
 {
     auto &exec_q = engine->get_queue();
 
@@ -196,42 +222,52 @@ std::pair<sycl::event, sycl::event> gaussian(engine::EngineBase *engine,
     dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(res, res_nelems);
 
     if (!dpctl::utils::queues_are_compatible(exec_q, {res})) {
-        throw py::value_error("Execution queue is not compatible with the allocation queue");
+        throw py::value_error(
+            "Execution queue is not compatible with the allocation queue");
     }
 
     bool is_res_c_contig = res.is_c_contiguous();
     if (!is_res_c_contig) {
-        throw std::runtime_error("Only population of contiguous array is supported.");
+        throw std::runtime_error(
+            "Only population of contiguous array is supported.");
     }
 
     auto enginge_id = engine->get_type().id();
     if (enginge_id >= engine::no_of_engines) {
-        throw std::runtime_error("Unknown engine type=" + std::to_string(enginge_id) + " for gaussian distribution.");
+        throw std::runtime_error(
+            "Unknown engine type=" + std::to_string(enginge_id) +
+            " for gaussian distribution.");
     }
 
     if (method_id >= no_of_methods) {
-        throw std::runtime_error("Unknown method=" + std::to_string(method_id) + " for gaussian distribution.");
+        throw std::runtime_error("Unknown method=" + std::to_string(method_id) +
+                                 " for gaussian distribution.");
     }
 
     int vec_size_id = find_vec_size(vec_size, seq_of_vec_sizes);
     if (vec_size_id < 0) {
-        throw std::runtime_error("Vector size=" + std::to_string(vec_size) + " is out of supported range");
+        throw std::runtime_error("Vector size=" + std::to_string(vec_size) +
+                                 " is out of supported range");
     }
     enginge_id = enginge_id * vec_sizes_len + vec_size_id;
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int res_type_id = array_types.typenum_to_lookup_id(res.get_typenum());
 
-    auto gaussian_fn = gaussian_dispatch_table[enginge_id][res_type_id][method_id];
+    auto gaussian_fn =
+        gaussian_dispatch_table[enginge_id][res_type_id][method_id];
     if (gaussian_fn == nullptr) {
-        throw py::value_error("No gaussian implementation defined for a required type");
+        throw py::value_error(
+            "No gaussian implementation defined for a required type");
     }
 
     char *res_data = res.get_data();
-    sycl::event gaussian_ev = gaussian_fn(engine, mean, stddev, n, res_data, depends);
+    sycl::event gaussian_ev =
+        gaussian_fn(engine, mean, stddev, n, res_data, depends);
 
-    sycl::event ht_ev = dpctl::utils::keep_args_alive(exec_q, {res}, {gaussian_ev});
-     return std::make_pair(ht_ev, gaussian_ev);
+    sycl::event ht_ev =
+        dpctl::utils::keep_args_alive(exec_q, {res}, {gaussian_ev});
+    return std::make_pair(ht_ev, gaussian_ev);
 }
 
 template <typename fnT, typename E, typename T, typename M>
@@ -239,7 +275,8 @@ struct GaussianContigFactory
 {
     fnT get()
     {
-        if constexpr (dispatch::GaussianTypePairSupportFactory<T, M>::is_defined) {
+        if constexpr (dispatch::GaussianTypePairSupportFactory<T,
+                                                               M>::is_defined) {
             return gaussian_impl<E, T, M>;
         }
         else {
@@ -250,7 +287,10 @@ struct GaussianContigFactory
 
 void init_gaussian_dispatch_3d_table(void)
 {
-    dispatch::Dispatch3DTableBuilder<gaussian_impl_fn_ptr_t, GaussianContigFactory, no_of_engines, dpctl_td_ns::num_types, no_of_methods> contig;
+    dispatch::Dispatch3DTableBuilder<gaussian_impl_fn_ptr_t,
+                                     GaussianContigFactory, no_of_engines,
+                                     dpctl_td_ns::num_types, no_of_methods>
+        contig;
     contig.populate(gaussian_dispatch_table, seq_of_vec_sizes);
 }
-} // dpnp::backend::ext::rng::device
+} // namespace dpnp::backend::ext::rng::device

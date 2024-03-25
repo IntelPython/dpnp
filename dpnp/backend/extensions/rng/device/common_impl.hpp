@@ -27,8 +27,8 @@
 
 #include <pybind11/pybind11.h>
 
-#include <sycl/sycl.hpp>
 #include <oneapi/mkl/rng/device.hpp>
+#include <sycl/sycl.hpp>
 
 namespace dpnp
 {
@@ -57,11 +57,14 @@ private:
 
     EngineBuilderT engine_;
     DistributorBuilderT distr_;
-    DataT * const res_ = nullptr;
+    DataT *const res_ = nullptr;
     const std::size_t nelems_;
 
 public:
-    RngContigFunctor(EngineBuilderT& engine, DistributorBuilderT& distr, DataT *res, const std::size_t n_elems)
+    RngContigFunctor(EngineBuilderT &engine,
+                     DistributorBuilderT &distr,
+                     DataT *res,
+                     const std::size_t n_elems)
         : engine_(engine), distr_(distr), res_(res), nelems_(n_elems)
     {
     }
@@ -82,21 +85,33 @@ public:
         DistrT distr = distr_();
 
         if constexpr (enable_sg_load) {
-            const std::size_t base = vi_per_wi * (nd_it.get_group(0) * nd_it.get_local_range(0) + sg.get_group_id()[0] * max_sg_size);
+            const std::size_t base =
+                vi_per_wi * (nd_it.get_group(0) * nd_it.get_local_range(0) +
+                             sg.get_group_id()[0] * max_sg_size);
 
-            if ((sg_size == max_sg_size) && (base + vi_per_wi * sg_size < nelems_)) {
+            if ((sg_size == max_sg_size) &&
+                (base + vi_per_wi * sg_size < nelems_)) {
 #pragma unroll
                 for (std::uint16_t it = 0; it < vi_per_wi; it += vec_sz) {
-                    std::size_t offset = base + static_cast<std::size_t>(it) * static_cast<std::size_t>(sg_size);
-                    auto out_multi_ptr = sycl::address_space_cast<sycl::access::address_space::global_space, sycl::access::decorated::yes>(&res_[offset]);
+                    std::size_t offset =
+                        base + static_cast<std::size_t>(it) *
+                                   static_cast<std::size_t>(sg_size);
+                    auto out_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&res_[offset]);
 
-                    sycl::vec<DataT, vec_sz> rng_val_vec = mkl_rng_dev::generate<DistrT, EngineT>(distr, engine);
+                    sycl::vec<DataT, vec_sz> rng_val_vec =
+                        mkl_rng_dev::generate<DistrT, EngineT>(distr, engine);
                     sg.store<vec_sz>(out_multi_ptr, rng_val_vec);
                 }
             }
             else {
-                for (std::size_t offset = base + sg.get_local_id()[0]; offset < nelems_; offset += sg_size) {
-                    res_[offset] = mkl_rng_dev::generate_single<DistrT, EngineT>(distr, engine);
+                for (std::size_t offset = base + sg.get_local_id()[0];
+                     offset < nelems_; offset += sg_size)
+                {
+                    res_[offset] =
+                        mkl_rng_dev::generate_single<DistrT, EngineT>(distr,
+                                                                      engine);
                 }
             }
         }
@@ -104,9 +119,12 @@ public:
             std::size_t base = nd_it.get_global_linear_id();
 
             base = (base / sg_size) * sg_size * vi_per_wi + (base % sg_size);
-            for (std::size_t offset = base; offset < std::min(nelems_, base + sg_size * vi_per_wi); offset += sg_size)
+            for (std::size_t offset = base;
+                 offset < std::min(nelems_, base + sg_size * vi_per_wi);
+                 offset += sg_size)
             {
-                res_[offset] = mkl_rng_dev::generate_single<DistrT, EngineT>(distr, engine);
+                res_[offset] = mkl_rng_dev::generate_single<DistrT, EngineT>(
+                    distr, engine);
             }
         }
     }

@@ -29,17 +29,17 @@
 
 #include "engine/base_engine.hpp"
 
-
 namespace dpnp::backend::ext::rng::device
 {
-extern std::pair<sycl::event, sycl::event> gaussian(engine::EngineBase *engine,
-                                                    const std::uint8_t method_id,
-                                                    const std::uint8_t vec_size,
-                                                    const double mean,
-                                                    const double stddev,
-                                                    const std::uint64_t n,
-                                                    dpctl::tensor::usm_ndarray res,
-                                                    const std::vector<sycl::event> &depends = {});
+extern std::pair<sycl::event, sycl::event>
+    gaussian(engine::EngineBase *engine,
+             const std::uint8_t method_id,
+             const std::uint8_t vec_size,
+             const double mean,
+             const double stddev,
+             const std::uint64_t n,
+             dpctl::tensor::usm_ndarray res,
+             const std::vector<sycl::event> &depends = {});
 
 extern void init_gaussian_dispatch_3d_table(void);
 } // namespace dpnp::backend::ext::rng::device
