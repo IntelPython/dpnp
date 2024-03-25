@@ -42,6 +42,9 @@ for device in available_devices:
         pass
     elif device.device_type.name not in list_of_device_type_str:
         pass
+    elif device.backend.name in "opencl" and device.is_gpu:
+        # due to reproted crash on Windows: CMPLRLLVM-55640
+        pass
     else:
         valid_devices.append(device)
 
@@ -479,9 +482,6 @@ def test_meshgrid(device_x, device_y):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_1in_1out(func, data, device):
-    if func in ("std", "var") and "opencl:gpu" in device.filter_string:
-        pytest.skip("due to reproted crash on Windows: CMPLRLLVM-55640")
-
     x = dpnp.array(data, device=device)
     result = getattr(dpnp, func)(x)
 
@@ -1329,6 +1329,30 @@ def test_inv(shape, is_empty, device):
 
 
 @pytest.mark.parametrize(
+    "n",
+    [-1, 0, 1, 2, 3],
+    ids=["-1", "0", "1", "2", "3"],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_matrix_power(n, device):
+    data = numpy.array([[1, 2], [3, 5]], dtype=dpnp.default_float_type(device))
+    dp_data = dpnp.array(data, device=device)
+
+    result = dpnp.linalg.matrix_power(dp_data, n)
+    expected = numpy.linalg.matrix_power(data, n)
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = dp_data.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
     "data, tol",
     [
         (numpy.array([1, 2]), None),
@@ -1877,3 +1901,42 @@ def test_pinv(shape, hermitian, rcond_as_array, device):
     B_queue = B_result.sycl_queue
 
     assert_sycl_queue_equal(B_queue, a_dp.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_tensorinv(device):
+    a_np = numpy.eye(12).reshape(12, 4, 3)
+    a_dp = dpnp.array(a_np, device=device)
+
+    result = dpnp.linalg.tensorinv(a_dp, ind=1)
+    expected = numpy.linalg.tensorinv(a_np, ind=1)
+    assert_dtype_allclose(result, expected)
+
+    result_queue = result.sycl_queue
+
+    assert_sycl_queue_equal(result_queue, a_dp.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_tensorsolve(device):
+    a_np = numpy.random.randn(3, 2, 6).astype(dpnp.default_float_type())
+    b_np = numpy.ones(a_np.shape[:2], dtype=a_np.dtype)
+
+    a_dp = dpnp.array(a_np, device=device)
+    b_dp = dpnp.array(b_np, device=device)
+
+    result = dpnp.linalg.tensorsolve(a_dp, b_dp)
+    expected = numpy.linalg.tensorsolve(a_np, b_np)
+    assert_dtype_allclose(result, expected)
+
+    result_queue = result.sycl_queue
+
+    assert_sycl_queue_equal(result_queue, a_dp.sycl_queue)

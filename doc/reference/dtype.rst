@@ -44,7 +44,6 @@ Data type testing
    dpnp.issubdtype
    dpnp.issubsctype
    dpnp.issubclass_
-   dpnp.find_common_type
 
 Miscellaneous
 -------------

@@ -194,17 +194,10 @@ cdef extern from "dpnp_iface_fptr.hpp":
     DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
 
 
-cdef extern from "dpnp_iface.hpp" namespace "QueueOptions":  # need this namespace for Enum import
-    cdef enum QueueOptions "QueueOptions":
-        CPU_SELECTOR
-        GPU_SELECTOR
-        AUTO_SELECTOR
-
 cdef extern from "constants.hpp":
     void dpnp_python_constants_initialize_c(void * py_none, void * py_nan)
 
 cdef extern from "dpnp_iface.hpp":
-    void dpnp_queue_initialize_c(QueueOptions selector)
 
     char * dpnp_memory_alloc_c(size_t size_in_bytes) except +
     void dpnp_memory_free_c(void * ptr)
