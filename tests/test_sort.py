@@ -47,7 +47,12 @@ class TestArgsort:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axis", [None, -2, -1, 0, 1])
     def test_argsort_ndarray(self, dtype, axis):
-        a = numpy.random.uniform(-10, 10, 12)
+        if dtype and issubclass(dtype, numpy.integer):
+            a = numpy.random.choice(
+                numpy.arange(-10, 10), replace=False, size=12
+            )
+        else:
+            a = numpy.random.uniform(-10, 10, 12)
         np_array = numpy.array(a, dtype=dtype).reshape(6, 2)
         dp_array = dpnp.array(np_array)
 
