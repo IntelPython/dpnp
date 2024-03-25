@@ -41,6 +41,7 @@ __all__ = [
     "dpnp_det",
     "dpnp_eigh",
     "dpnp_inv",
+    "dpnp_matrix_power",
     "dpnp_matrix_rank",
     "dpnp_multi_dot",
     "dpnp_norm",
@@ -557,9 +558,50 @@ def _stacked_identity(
     """
 
     shape = batch_shape + (n, n)
-    idx = dpnp.arange(n, usm_type=usm_type, sycl_queue=sycl_queue)
-    x = dpnp.zeros(shape, dtype=dtype, usm_type=usm_type, sycl_queue=sycl_queue)
-    x[..., idx, idx] = 1
+    x = dpnp.empty(shape, dtype=dtype, usm_type=usm_type, sycl_queue=sycl_queue)
+    x[...] = dpnp.eye(
+        n, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=x.sycl_queue
+    )
+    return x
+
+
+def _stacked_identity_like(x):
+    """
+    Create stacked identity matrices based on the shape and properties of `x`.
+
+    Parameters
+    ----------
+    x : dpnp.ndarray
+        Input array based on whose properties (shape, data type, USM type and SYCL queue)
+        the identity matrices will be created.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array of stacked `n x n` identity matrices,
+        where `n` is the size of the last dimension of `x`.
+        The returned array has the same shape, data type, USM type
+        and uses the same SYCL queue as `x`, if applicable.
+
+    Example
+    -------
+    >>> import dpnp
+    >>> x = dpnp.zeros((2, 3, 3), dtype=dpnp.int64)
+    >>> _stacked_identity_like(x)
+    array([[[1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1]],
+
+           [[1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1]]], dtype=int32)
+
+    """
+
+    x = dpnp.empty_like(x)
+    x[...] = dpnp.eye(
+        x.shape[-2], dtype=x.dtype, usm_type=x.usm_type, sycl_queue=x.sycl_queue
+    )
     return x
 
 
@@ -1111,6 +1153,46 @@ def dpnp_inv(a):
     a_ht_copy_ev.wait()
 
     return b_f
+
+
+def dpnp_matrix_power(a, n):
+    """
+    dpnp_matrix_power(a, n)
+
+    Raise a square matrix to the (integer) power `n`.
+
+    """
+
+    if n == 0:
+        return _stacked_identity_like(a)
+    elif n < 0:
+        a = dpnp.linalg.inv(a)
+        n *= -1
+
+    if n == 1:
+        return a
+    elif n == 2:
+        return dpnp.matmul(a, a)
+    elif n == 3:
+        return dpnp.matmul(dpnp.matmul(a, a), a)
+
+    # Use binary decomposition to reduce the number of matrix
+    # multiplications for n > 3.
+    # `result` will hold the final matrix power,
+    # while `acc` serves as an accumulator for the intermediate matrix powers.
+    result = None
+    acc = a.copy()
+    while n > 0:
+        n, bit = divmod(n, 2)
+        if bit:
+            if result is None:
+                result = acc.copy()
+            else:
+                dpnp.matmul(result, acc, out=result)
+        if n > 0:
+            dpnp.matmul(acc, acc, out=acc)
+
+    return result
 
 
 def dpnp_matrix_rank(A, tol=None, hermitian=False):

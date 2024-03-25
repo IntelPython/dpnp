@@ -430,7 +430,6 @@ class TestProductZeroLength(unittest.TestCase):
 
 
 class TestMatrixPower(unittest.TestCase):
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_matrix_power_0(self, xp, dtype):
@@ -455,7 +454,6 @@ class TestMatrixPower(unittest.TestCase):
         a = testing.shaped_arange((3, 3), xp, dtype)
         return xp.linalg.matrix_power(a, 3)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-5)
     def test_matrix_power_inv1(self, xp, dtype):
@@ -463,7 +461,6 @@ class TestMatrixPower(unittest.TestCase):
         a = a * a % 30
         return xp.linalg.matrix_power(a, -1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-5)
     def test_matrix_power_inv2(self, xp, dtype):
@@ -471,7 +468,6 @@ class TestMatrixPower(unittest.TestCase):
         a = a * a % 30
         return xp.linalg.matrix_power(a, -2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-4)
     def test_matrix_power_inv3(self, xp, dtype):
@@ -496,3 +492,20 @@ class TestMatrixPower(unittest.TestCase):
     def test_matrix_power_invlarge(self, xp, dtype):
         a = xp.eye(23, k=17, dtype=dtype) + xp.eye(23, k=-6, dtype=dtype)
         return xp.linalg.matrix_power(a, -987654321987654321)
+
+
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (2, 3, 3),
+        (3, 0, 0),
+    ],
+)
+@pytest.mark.parametrize("n", [0, 5, -7])
+class TestMatrixPowerBatched:
+    @testing.for_float_dtypes(no_float16=True)
+    @testing.numpy_cupy_allclose(rtol=5e-5)
+    def test_matrix_power_batched(self, xp, dtype, shape, n):
+        a = testing.shaped_arange(shape, xp, dtype)
+        a += xp.identity(shape[-1], dtype)
+        return xp.linalg.matrix_power(a, n)

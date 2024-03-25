@@ -6,7 +6,6 @@ import pytest
 from tests.third_party.cupy import testing
 
 
-@testing.gpu
 class TestContent(unittest.TestCase):
     @testing.for_dtypes("fd")
     @testing.numpy_cupy_array_equal()
