@@ -54,6 +54,7 @@ from .dpnp_utils_linalg import (
     dpnp_matrix_power,
     dpnp_matrix_rank,
     dpnp_multi_dot,
+    dpnp_norm,
     dpnp_pinv,
     dpnp_qr,
     dpnp_slogdet,
@@ -491,7 +492,7 @@ def multi_dot(arrays, *, out=None):
     """
     Compute the dot product of two or more arrays in a single function call.
 
-    For full documentation refer to :obj:`numpy.multi_dot`.
+    For full documentation refer to :obj:`numpy.linalg.multi_dot`.
 
     Parameters
     ----------
@@ -602,60 +603,109 @@ def pinv(a, rcond=1e-15, hermitian=False):
     return dpnp_pinv(a, rcond=rcond, hermitian=hermitian)
 
 
-def norm(x1, ord=None, axis=None, keepdims=False):
+def norm(x, ord=None, axis=None, keepdims=False):
     """
     Matrix or vector norm.
 
-    This function is able to return one of eight different matrix norms,
-    or one of an infinite number of vector norms (described below), depending
-    on the value of the ``ord`` parameter.
+    For full documentation refer to :obj:`numpy.linalg.norm`.
 
     Parameters
     ----------
-    input : array_like
-        Input array.  If `axis` is None, `x` must be 1-D or 2-D, unless `ord`
-        is None. If both `axis` and `ord` are None, the 2-norm of
-        ``x.ravel`` will be returned.
-    ord : optional
-        Order of the norm (see table under ``Notes``). inf means numpy's
-        `inf` object. The default is None.
-    axis : optional.
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.  If `axis` is ``None``, `x` must be 1-D or 2-D, unless
+        `ord` is ``None``. If both `axis` and `ord` are ``None``, the 2-norm
+        of ``x.ravel`` will be returned.
+    ord : {int, float, inf, -inf, "fro", "nuc"}, optional
+        Norm type. inf means dpnp's `inf` object. The default is ``None``.
+    axis : {None, int, 2-tuple of ints}, optional
         If `axis` is an integer, it specifies the axis of `x` along which to
         compute the vector norms.  If `axis` is a 2-tuple, it specifies the
         axes that hold 2-D matrices, and the matrix norms of these matrices
-        are computed.  If `axis` is None then either a vector norm (when `x`
-        is 1-D) or a matrix norm (when `x` is 2-D) is returned. The default
-        is None.
+        are computed.  If `axis` is ``None`` then either a vector norm (when
+        `x` is 1-D) or a matrix norm (when `x` is 2-D) is returned.
+        The default is ``None``.
     keepdims : bool, optional
-        If this is set to True, the axes which are normed over are left in the
-        result as dimensions with size one.  With this option the result will
-        broadcast correctly against the original `x`.
+        If this is set to ``True``, the axes which are normed over are left in
+        the result as dimensions with size one.  With this option the result
+        will broadcast correctly against the original `x`.
 
     Returns
     -------
-    n : float or ndarray
+    out : dpnp.ndarray
         Norm of the matrix or vector(s).
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(9) - 4
+    >>> a
+    array([-4, -3, -2, -1,  0,  1,  2,  3,  4])
+    >>> b = a.reshape((3, 3))
+    >>> b
+    array([[-4, -3, -2],
+           [-1,  0,  1],
+           [ 2,  3,  4]])
+
+    >>> np.linalg.norm(a)
+    array(7.745966692414834)
+    >>> np.linalg.norm(b)
+    array(7.745966692414834)
+    >>> np.linalg.norm(b, 'fro')
+    array(7.745966692414834)
+    >>> np.linalg.norm(a, np.inf)
+    array(4.)
+    >>> np.linalg.norm(b, np.inf)
+    array(9.)
+    >>> np.linalg.norm(a, -np.inf)
+    array(0.)
+    >>> np.linalg.norm(b, -np.inf)
+    array(2.)
+
+    >>> np.linalg.norm(a, 1)
+    array(20.)
+    >>> np.linalg.norm(b, 1)
+    array(7.)
+    >>> np.linalg.norm(a, -1)
+    array(0.)
+    >>> np.linalg.norm(b, -1)
+    array(6.)
+    >>> np.linalg.norm(a, 2)
+    array(7.745966692414834)
+    >>> np.linalg.norm(b, 2)
+    array(7.3484692283495345)
+
+    >>> np.linalg.norm(a, -2)
+    array(0.)
+    >>> np.linalg.norm(b, -2)
+    array(1.8570331885190563e-016) # may vary
+    >>> np.linalg.norm(a, 3)
+    array(5.8480354764257312) # may vary
+    >>> np.linalg.norm(a, -3)
+    array(0.)
+
+    Using the `axis` argument to compute vector norms:
+
+    >>> c = np.array([[ 1, 2, 3],
+    ...               [-1, 1, 4]])
+    >>> np.linalg.norm(c, axis=0)
+    array([ 1.41421356,  2.23606798,  5.        ])
+    >>> np.linalg.norm(c, axis=1)
+    array([ 3.74165739,  4.24264069])
+    >>> np.linalg.norm(c, ord=1, axis=1)
+    array([ 6.,  6.])
+
+    Using the `axis` argument to compute matrix norms:
+
+    >>> m = np.arange(8).reshape(2,2,2)
+    >>> np.linalg.norm(m, axis=(1,2))
+    array([  3.74165739,  11.22497216])
+    >>> np.linalg.norm(m[0, :, :]), np.linalg.norm(m[1, :, :])
+    (array(3.7416573867739413), array(11.224972160321824))
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if (
-            not isinstance(axis, int)
-            and not isinstance(axis, tuple)
-            and axis is not None
-        ):
-            pass
-        elif keepdims is not False:
-            pass
-        elif ord not in [None, 0, 3, "fro", "f"]:
-            pass
-        else:
-            result_obj = dpnp_norm(x1, ord=ord, axis=axis)
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
-
-            return result
-
-    return call_origin(numpy.linalg.norm, x1, ord, axis, keepdims)
+    dpnp.check_supported_arrays_type(x)
+    return dpnp_norm(x, ord, axis, keepdims)
 
 
 def qr(a, mode="reduced"):
