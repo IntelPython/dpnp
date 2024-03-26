@@ -1121,7 +1121,17 @@ class dpnp_array:
 
         return dpnp.around(self, decimals, out)
 
-    # 'searchsorted',
+    def searchsorted(self, v, side="left", sorter=None):
+        """
+        Find indices where elements of `v` should be inserted in `a`
+        to maintain order.
+
+        Refer to :obj:`dpnp.searchsorted` for full documentation
+
+        """
+
+        return dpnp.searchsorted(self, v, side=side, sorter=sorter)
+
     # 'setfield',
     # 'setflags',
 
