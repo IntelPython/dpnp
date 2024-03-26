@@ -932,14 +932,6 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
                 sycl_queue=a_sycl_queue,
             )
 
-            # TODO: Remove this w/a when MKLD-17201 is solved.
-            # Waiting for a host task executing an OneMKL LAPACK syevd call
-            # on CPU causes deadlock due to serialization of all host tasks
-            # in the queue.
-            # We need to wait for each host tasks before calling _seyvd to avoid deadlock.
-            if lapack_func == "_syevd" and is_cpu_device:
-                ht_list_ev[2 * i].wait()
-
             # call LAPACK extension function to get eigenvalues and eigenvectors of a portion of matrix A
             ht_list_ev[2 * i + 1], _ = getattr(li, lapack_func)(
                 a_sycl_queue,
@@ -949,6 +941,15 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
                 w[i].get_array(),
                 depends=[copy_ev],
             )
+
+            # TODO: Remove this w/a when MKLD-17201 is solved.
+            # Waiting for a host task executing an OneMKL LAPACK syevd call
+            # on CPU causes deadlock due to serialization of all host tasks
+            # in the queue.
+            # We need to wait for each host tasks before calling _seyvd again
+            # to avoid deadlock.
+            if lapack_func == "_syevd" and is_cpu_device:
+                ht_list_ev[2 * i + 1].wait()
 
         dpctl.SyclEvent.wait_for(ht_list_ev)
 
