@@ -232,9 +232,61 @@ def searchsorted(a, v, side="left", sorter=None):
 
     For full documentation refer to :obj:`numpy.searchsorted`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input 1-D array. If `sorter` is ``None``, then it must be sorted in
+        ascending order, otherwise `sorter` must be an array of indices that
+        sort it.
+    v : {dpnp.ndarray, usm_ndarray, scalar}
+        Values to insert into `a`.
+    side : {'left', 'right'}, optional
+        If ``'left'``, the index of the first suitable location found is given.
+        If ``'right'``, return the last such index. If there is no suitable
+        index, return either 0 or N (where N is the length of `a`).
+        Default is ``'left'``.
+    sorter : {dpnp.ndarray, usm_ndarray}, optional
+        Optional 1-D array of integer indices that sort array a into ascending
+        order. They are typically the result of argsort.
+        Out of bound index values of `sorter` array are treated using `"wrap"`
+        mode documented in :py:func:`dpnp.take`.
+        Default is ``None``.
+
+    Returns
+    -------
+    indices : dpnp.ndarray
+        Array of insertion points with the same shape as `v`,
+        or 0-D array if `v` is a scalar.
+
+    See Also
+    --------
+    :obj:`dpnp.sort` : Return a sorted copy of an array.
+    :obj:`dpnp.histogram` : Produce histogram from 1-D data.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([11,12,13,14,15])
+    >>> np.searchsorted(a, 13)
+    array(2)
+    >>> np.searchsorted(a, 13, side='right')
+    array(3)
+    >>> v = np.array([-10, 20, 12, 13])
+    >>> np.searchsorted(a, v)
+    array([0, 5, 1, 2])
+
     """
 
-    return call_origin(numpy.where, a, v, side, sorter)
+    usm_a = dpnp.get_usm_ndarray(a)
+    if dpnp.isscalar(v):
+        usm_v = dpt.asarray(v, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
+    else:
+        usm_v = dpnp.get_usm_ndarray(v)
+
+    usm_sorter = None if sorter is None else dpnp.get_usm_ndarray(sorter)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.searchsorted(usm_a, usm_v, side=side, sorter=usm_sorter)
+    )
 
 
 def where(condition, x=None, y=None, /):
