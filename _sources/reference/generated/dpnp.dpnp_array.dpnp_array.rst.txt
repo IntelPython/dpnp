@@ -124,9 +124,6 @@
    .. automethod:: round
 
 
-   .. automethod:: searchsorted
-
-
    .. automethod:: sort
 
 
