@@ -1264,7 +1264,19 @@ def test_eigenvalue(func, shape, device):
         dp_val, dp_vec = dpnp.linalg.eigh(dp_a)
         np_val, np_vec = numpy.linalg.eigh(a)
 
-        assert_allclose(dp_vec, np_vec, rtol=1e-05, atol=1e-05)
+        # Check the eigenvalue decomposition
+        if a.ndim == 2:
+            assert_allclose(
+                dp_a @ dp_vec, dp_vec @ dpnp.diag(dp_val), rtol=1e-5, atol=1e-5
+            )
+        else:  # a.ndim == 3
+            for i in range(a.shape[0]):
+                assert_allclose(
+                    dp_a[i].dot(dp_vec[i]),
+                    dp_val[i] * dp_vec[i],
+                    rtol=1e-5,
+                    atol=1e-5,
+                )
         assert dp_vec.shape == np_vec.shape
         assert dp_vec.dtype == np_vec.dtype
 
