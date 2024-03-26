@@ -386,6 +386,23 @@ def test_eig_arange(type, size):
 
 
 class TestEigenvalue:
+    # Eigenvalue decomposition of a matrix or a batch of matrices
+    # by checking if the eigen equation A*v=w*v holds for given eigenvalues(w)
+    # and eigenvectors(v).
+    def assert_eigen_decomposition(self, a, w, v, rtol=1e-5, atol=1e-5):
+        a_ndim = a.ndim
+        if a_ndim == 2:
+            assert_allclose(a @ v, v @ inp.diag(w), rtol=rtol, atol=atol)
+        else:  # a_ndim > 2
+            if a_ndim > 3:
+                a = a.reshape(-1, *a.shape[-2:])
+                w = w.reshape(-1, w.shape[-1])
+                v = v.reshape(-1, *v.shape[-2:])
+            for i in range(a.shape[0]):
+                assert_allclose(
+                    a[i].dot(v[i]), w[i] * v[i], rtol=rtol, atol=atol
+                )
+
     @pytest.mark.parametrize(
         "func",
         [
@@ -413,11 +430,16 @@ class TestEigenvalue:
         a_order = numpy.array(a, order=order)
         a_dp = inp.array(a, order=order)
 
+        # NumPy with OneMKL and with rocSOLVER sorts in ascending order,
+        # so w's should be directly comparable.
+        # However, both OneMKL and rocSOLVER pick a different convention for
+        # constructing eigenvectors, so v's are not directly comparible and
+        # we verify them through the eigen equation A*v=w*v.
         if func == "eigh":
-            w, v = numpy.linalg.eigh(a_order)
+            w, _ = numpy.linalg.eigh(a_order)
             w_dp, v_dp = inp.linalg.eigh(a_dp)
 
-            assert_dtype_allclose(v_dp, v)
+            self.assert_eigen_decomposition(a_dp, w_dp, v_dp)
 
         else:  # eighvalsh
             w = numpy.linalg.eigvalsh(a_order)
