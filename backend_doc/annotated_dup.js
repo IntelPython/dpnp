@@ -36,6 +36,41 @@ var annotated_dup =
             ] ],
             [ "LinAlgError", "classdpnp_1_1backend_1_1ext_1_1lapack_1_1_lin_alg_error.html", null ]
           ] ],
+          [ "rng", null, [
+            [ "device", null, [
+              [ "details", null, [
+                [ "RngContigFunctor", "structdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1details_1_1_rng_contig_functor.html", null ]
+              ] ],
+              [ "dispatch", null, [
+                [ "Dispatch3DTableBuilder", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_dispatch3_d_table_builder.html", null ],
+                [ "GaussianTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_gaussian_type_pair_support_factory.html", null ],
+                [ "TypePairDefinedEntry", "structdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_type_pair_defined_entry.html", null ]
+              ] ],
+              [ "engine", null, [
+                [ "builder", null, [
+                  [ "BaseBuilder", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_base_builder.html", null ],
+                  [ "Builder", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_builder.html", null ],
+                  [ "Builder< mkl_rng_dev::mcg31m1< VecSize > >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_builder_3_01mkl__rng__dev_c455832313b7444a9e75c45c2370414d.html", null ],
+                  [ "Builder< mkl_rng_dev::mcg59< VecSize > >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_builder_3_01mkl__rng__dev_c27e2deb8f2aeb9b2c00b16e0ec5a117.html", null ],
+                  [ "Builder< mkl_rng_dev::mrg32k3a< VecSize > >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_builder_3_01mkl__rng__dev_8a70045a40cd3d8aeed4c08259167cfa.html", null ],
+                  [ "Builder< mkl_rng_dev::philox4x32x10< VecSize > >", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1builder_1_1_builder_3_01mkl__rng__dev_6d2184b07f16507df9dcc5af28a65856.html", null ]
+                ] ],
+                [ "EngineBase", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_engine_base.html", null ],
+                [ "EngineType", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_engine_type.html", null ],
+                [ "MCG31M1", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_m_c_g31_m1.html", null ],
+                [ "MCG59", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_m_c_g59.html", null ],
+                [ "MRG32k3a", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_m_r_g32k3a.html", null ],
+                [ "PHILOX4x32x10", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_p_h_i_l_o_x4x32x10.html", null ]
+              ] ]
+            ] ],
+            [ "host", null, [
+              [ "dispatch", null, [
+                [ "Dispatch3DTableBuilder", "classdpnp_1_1backend_1_1ext_1_1rng_1_1host_1_1dispatch_1_1_dispatch3_d_table_builder.html", null ],
+                [ "GaussianTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1rng_1_1host_1_1dispatch_1_1_gaussian_type_pair_support_factory.html", null ],
+                [ "TypePairDefinedEntry", "structdpnp_1_1backend_1_1ext_1_1rng_1_1host_1_1dispatch_1_1_type_pair_defined_entry.html", null ]
+              ] ]
+            ] ]
+          ] ],
           [ "sycl_ext", null, [
             [ "cartesian_product", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product.html", null ],
             [ "cartesian_product< std::tuple< std::tuple< FirstTupleArgs... > > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product_3_01std_1_1tuple_3_01std_1_1tupl8eeb66d10f7723d0fc0b38e3d181763c.html", null ],
