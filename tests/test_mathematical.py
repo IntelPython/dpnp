@@ -3129,3 +3129,16 @@ def test_elemenwise_error():
         dpnp.add(x, x, out=out, dtype="f4")
     with pytest.raises(ValueError):
         dpnp.add(x, x, order="H")
+
+
+def test_elemenwise_order_none():
+    x_np = numpy.array([1, 2, 3])
+    x = dpnp.array([1, 2, 3])
+
+    result = dpnp.abs(x, order=None)
+    expected = numpy.abs(x_np, order=None)
+    assert_dtype_allclose(result, expected)
+
+    result = dpnp.add(x, x, order=None)
+    expected = numpy.add(x_np, x_np, order=None)
+    assert_dtype_allclose(result, expected)
