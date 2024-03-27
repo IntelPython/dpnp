@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Logic Functions &mdash; Data Parallel Extension for NumPy 0.15.0dev1+17.gb9565e7cac documentation</title>
+  <title>Logic Functions &mdash; Data Parallel Extension for NumPy 0.15.0dev1+3.ga15197490b documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=5fd4fc0d"></script>
+        <script src="../_static/documentation_options.js?v=b5e703a9"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+17.gb9565e7cac
+                0.15.0dev1+3.ga15197490b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -142,13 +142,13 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.isfinite.html#dpnp.isfinite" title="dpnp.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isfinite</span></code></a></p></td>
-<td><p>Checks if each element of input array is a finite number.</p></td>
+<td><p>Test element-wise for finiteness (not infinity or not Not a Number).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.isinf.html#dpnp.isinf" title="dpnp.isinf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isinf</span></code></a></p></td>
-<td><p>Checks if each element of input array is an infinity.</p></td>
+<td><p>Test element-wise for positive or negative infinity.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.isnan.html#dpnp.isnan" title="dpnp.isnan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isnan</span></code></a></p></td>
-<td><p>Checks if each element of an input array is a NaN.</p></td>
+<td><p>Test element-wise for NaN and return result as a boolean array.</p></td>
 </tr>
 </tbody>
 </table>
@@ -168,16 +168,16 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.logical_and.html#dpnp.logical_and" title="dpnp.logical_and"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_and</span></code></a></p></td>
-<td><p>Computes the logical AND for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Compute the truth value of x1 AND x2 element-wise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.logical_or.html#dpnp.logical_or" title="dpnp.logical_or"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_or</span></code></a></p></td>
-<td><p>Computes the logical OR for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Compute the truth value of x1 OR x2 element-wise.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.logical_not.html#dpnp.logical_not" title="dpnp.logical_not"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_not</span></code></a></p></td>
-<td><p>Computes the logical NOT for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
+<td><p>Compute the truth value of NOT x element-wise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.logical_xor.html#dpnp.logical_xor" title="dpnp.logical_xor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_xor</span></code></a></p></td>
-<td><p>Computes the logical XOR for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Compute the truth value of x1 XOR x2 element-wise.</p></td>
 </tr>
 </tbody>
 </table>
@@ -196,22 +196,22 @@
 <td><p>True if two arrays have the same shape and elements, False otherwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.greater.html#dpnp.greater" title="dpnp.greater"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.greater</span></code></a></p></td>
-<td><p>Calculates the greater-than results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Return the truth value of (x1 &gt; x2) element-wise.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.greater_equal.html#dpnp.greater_equal" title="dpnp.greater_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.greater_equal</span></code></a></p></td>
-<td><p>Calculates the greater-than or equal-to results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Return the truth value of (x1 &gt;= x2) element-wise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.less.html#dpnp.less" title="dpnp.less"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.less</span></code></a></p></td>
-<td><p>Calculates the less-than results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Return the truth value of (x1 &lt; x2) element-wise.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.less_equal.html#dpnp.less_equal" title="dpnp.less_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.less_equal</span></code></a></p></td>
-<td><p>Calculates the less-than or equal-to results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Return the truth value of (x1 &lt;= x2) element-wise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.equal.html#dpnp.equal" title="dpnp.equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.equal</span></code></a></p></td>
-<td><p>Calculates equality results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Return the truth value of (x1 == x2) element-wise.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.not_equal.html#dpnp.not_equal" title="dpnp.not_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.not_equal</span></code></a></p></td>
-<td><p>Calculates inequality results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Return the truth value of (x1 != x2) element-wise.</p></td>
 </tr>
 </tbody>
 </table>
