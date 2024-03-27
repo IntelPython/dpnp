@@ -62,6 +62,13 @@ var annotated_dup =
                 [ "MRG32k3a", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_m_r_g32k3a.html", null ],
                 [ "PHILOX4x32x10", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1engine_1_1_p_h_i_l_o_x4x32x10.html", null ]
               ] ]
+            ] ],
+            [ "host", null, [
+              [ "dispatch", null, [
+                [ "Dispatch3DTableBuilder", "classdpnp_1_1backend_1_1ext_1_1rng_1_1host_1_1dispatch_1_1_dispatch3_d_table_builder.html", null ],
+                [ "GaussianTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1rng_1_1host_1_1dispatch_1_1_gaussian_type_pair_support_factory.html", null ],
+                [ "TypePairDefinedEntry", "structdpnp_1_1backend_1_1ext_1_1rng_1_1host_1_1dispatch_1_1_type_pair_defined_entry.html", null ]
+              ] ]
             ] ]
           ] ],
           [ "sycl_ext", null, [

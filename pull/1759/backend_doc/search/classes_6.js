@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['gaussiantypepairsupportfactory_0',['GaussianTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_gaussian_type_pair_support_factory.html',1,'dpnp::backend::ext::rng::device::dispatch']]],
+  ['gaussiantypepairsupportfactory_0',['gaussiantypepairsupportfactory',['../structdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_gaussian_type_pair_support_factory.html',1,'dpnp::backend::ext::rng::device::dispatch::GaussianTypePairSupportFactory&lt; T, M &gt;'],['../structdpnp_1_1backend_1_1ext_1_1rng_1_1host_1_1dispatch_1_1_gaussian_type_pair_support_factory.html',1,'dpnp::backend::ext::rng::host::dispatch::GaussianTypePairSupportFactory&lt; T, M &gt;']]],
   ['gemmbatchtypepairsupportfactory_1',['GemmBatchTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html',1,'dpnp::backend::ext::blas::types']]],
   ['gemmtypepairsupportfactory_2',['GemmTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html',1,'dpnp::backend::ext::blas::types']]],
   ['geqrfbatchtypepairsupportfactory_3',['GeqrfBatchTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_geqrf_batch_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
