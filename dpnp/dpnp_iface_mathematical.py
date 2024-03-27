@@ -77,7 +77,6 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPBinaryFunc,
     DPNPReal,
     DPNPRound,
-    DPNPSign,
     DPNPUnaryFunc,
     acceptance_fn_negative,
     acceptance_fn_positive,
@@ -218,7 +217,6 @@ absolute = DPNPUnaryFunc(
     ti._abs_result_type,
     ti._abs,
     _ABS_DOCSTRING,
-    origin_fn=numpy.abs,
     mkl_fn_to_call=vmi._mkl_abs_to_call,
     mkl_impl_fn=vmi._abs,
 )
@@ -292,7 +290,6 @@ add = DPNPBinaryFunc(
     ti._add_result_type,
     ti._add,
     _ADD_DOCSTRING,
-    origin_fn=numpy.add,
     mkl_fn_to_call=vmi._mkl_add_to_call,
     mkl_impl_fn=vmi._add,
     binary_inplace_fn=ti._add_inplace,
@@ -349,7 +346,6 @@ angle = DPNPAngle(
     ti._angle_result_type,
     ti._angle,
     _ANGLE_DOCSTRING,
-    origin_fn=numpy.angle,
 )
 
 
@@ -442,7 +438,6 @@ ceil = DPNPUnaryFunc(
     ti._ceil_result_type,
     ti._ceil,
     _CEIL_DOCSTRING,
-    origin_fn=numpy.ceil,
     mkl_fn_to_call=vmi._mkl_ceil_to_call,
     mkl_impl_fn=vmi._ceil,
 )
@@ -569,7 +564,6 @@ conjugate = DPNPUnaryFunc(
     ti._conj_result_type,
     ti._conj,
     _CONJ_DOCSTRING,
-    origin_fn=numpy.conj,
     mkl_fn_to_call=vmi._mkl_conj_to_call,
     mkl_impl_fn=vmi._conj,
 )
@@ -653,7 +647,6 @@ copysign = DPNPBinaryFunc(
     ti._copysign_result_type,
     ti._copysign,
     _COPYSING_DOCSTRING,
-    origin_fn=numpy.copysign,
 )
 
 
@@ -1042,7 +1035,6 @@ divide = DPNPBinaryFunc(
     ti._divide_result_type,
     ti._divide,
     _DIVIDE_DOCSTRING,
-    origin_fn=numpy.divide,
     mkl_fn_to_call=vmi._mkl_div_to_call,
     mkl_impl_fn=vmi._div,
     binary_inplace_fn=ti._divide_inplace,
@@ -1182,7 +1174,6 @@ floor = DPNPUnaryFunc(
     ti._floor_result_type,
     ti._floor,
     _FLOOR_DOCSTRING,
-    origin_fn=numpy.floor,
     mkl_fn_to_call=vmi._mkl_floor_to_call,
     mkl_impl_fn=vmi._floor,
 )
@@ -1250,7 +1241,6 @@ floor_divide = DPNPBinaryFunc(
     ti._floor_divide_result_type,
     ti._floor_divide,
     _FLOOR_DIVIDE_DOCSTRING,
-    origin_fn=numpy.floor_divide,
     binary_inplace_fn=ti._floor_divide_inplace,
 )
 
@@ -1693,7 +1683,6 @@ imag = DPNPUnaryFunc(
     ti._imag_result_type,
     ti._imag,
     _IMAG_DOCSTRING,
-    origin_fn=numpy.imag,
 )
 
 
@@ -1766,7 +1755,6 @@ maximum = DPNPBinaryFunc(
     ti._maximum_result_type,
     ti._maximum,
     _MAXIMUM_DOCSTRING,
-    origin_fn=numpy.maximum,
 )
 
 
@@ -1839,7 +1827,6 @@ minimum = DPNPBinaryFunc(
     ti._minimum_result_type,
     ti._minimum,
     _MINIMUM_DOCSTRING,
-    origin_fn=numpy.minimum,
 )
 
 
@@ -1994,7 +1981,6 @@ multiply = DPNPBinaryFunc(
     ti._multiply_result_type,
     ti._multiply,
     _MULTIPLY_DOCSTRING,
-    origin_fn=numpy.multiply,
     mkl_fn_to_call=vmi._mkl_mul_to_call,
     mkl_impl_fn=vmi._mul,
     binary_inplace_fn=ti._multiply_inplace,
@@ -2052,7 +2038,6 @@ negative = DPNPUnaryFunc(
     ti._negative_result_type,
     ti._negative,
     _NEGATIVE_DOCSTRING,
-    origin_fn=numpy.negative,
     acceptance_fn=acceptance_fn_negative,
 )
 
@@ -2112,7 +2097,6 @@ positive = DPNPUnaryFunc(
     ti._positive_result_type,
     ti._positive,
     _POSITIVE_DOCSTRING,
-    origin_fn=numpy.positive,
     acceptance_fn=acceptance_fn_positive,
 )
 
@@ -2196,7 +2180,6 @@ power = DPNPBinaryFunc(
     ti._pow_result_type,
     ti._pow,
     _POWER_DOCSTRING,
-    origin_fn=numpy.power,
     mkl_fn_to_call=vmi._mkl_pow_to_call,
     mkl_impl_fn=vmi._pow,
     binary_inplace_fn=ti._pow_inplace,
@@ -2374,7 +2357,6 @@ real = DPNPReal(
     ti._real_result_type,
     ti._real,
     _REAL_DOCSTRING,
-    origin_fn=numpy.real,
 )
 
 
@@ -2439,7 +2421,6 @@ remainder = DPNPBinaryFunc(
     ti._remainder_result_type,
     ti._remainder,
     _REMAINDER_DOCSTRING,
-    origin_fn=numpy.remainder,
     binary_inplace_fn=ti._remainder_inplace,
 )
 
@@ -2492,7 +2473,6 @@ rint = DPNPUnaryFunc(
     ti._round_result_type,
     ti._round,
     _RINT_DOCSTRING,
-    origin_fn=numpy.rint,
 )
 
 
@@ -2550,7 +2530,6 @@ round = DPNPRound(
     ti._round_result_type,
     ti._round,
     _ROUND_DOCSTRING,
-    origin_fn=numpy.round,
 )
 
 
@@ -2602,12 +2581,11 @@ array(0)
 array([1+0j])
 """
 
-sign = DPNPSign(
+sign = DPNPUnaryFunc(
     "sign",
     ti._sign_result_type,
     ti._sign,
     _SIGN_DOCSTRING,
-    origin_fn=numpy.sign,
     acceptance_fn=acceptance_fn_sign,
 )
 
@@ -2660,7 +2638,6 @@ signbit = DPNPUnaryFunc(
     ti._signbit_result_type,
     ti._signbit,
     _SIGNBIT_DOCSTRING,
-    origin_fn=numpy.signbit,
 )
 
 
@@ -2726,7 +2703,6 @@ subtract = DPNPBinaryFunc(
     ti._subtract_result_type,
     ti._subtract,
     _SUBTRACT_DOCSTRING,
-    origin_fn=numpy.subtract,
     mkl_fn_to_call=vmi._mkl_sub_to_call,
     mkl_impl_fn=vmi._sub,
     binary_inplace_fn=ti._subtract_inplace,
@@ -3015,7 +2991,6 @@ trunc = DPNPUnaryFunc(
     ti._trunc_result_type,
     ti._trunc,
     _TRUNC_DOCSTRING,
-    origin_fn=numpy.trunc,
     mkl_fn_to_call=vmi._mkl_trunc_to_call,
     mkl_impl_fn=vmi._trunc,
 )

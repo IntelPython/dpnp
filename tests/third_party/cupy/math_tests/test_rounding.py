@@ -158,11 +158,11 @@ class TestRoundExtreme(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRoundBorder(unittest.TestCase):
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_positive1(self, xp):
         a, decimals = self.value
+        a = xp.asarray(a)
         return xp.around(a, decimals)
 
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
@@ -174,6 +174,7 @@ class TestRoundBorder(unittest.TestCase):
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_negative1(self, xp):
         a, decimals = self.value
+        a = xp.asarray(a)
         return xp.around(-a, decimals)
 
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())

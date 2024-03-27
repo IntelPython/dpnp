@@ -145,7 +145,6 @@ arccos = DPNPUnaryFunc(
     ti._acos_result_type,
     ti._acos,
     _ACOS_DOCSTRING,
-    origin_fn=numpy.arccos,
     mkl_fn_to_call=vmi._mkl_acos_to_call,
     mkl_impl_fn=vmi._acos,
 )
@@ -200,7 +199,6 @@ arccosh = DPNPUnaryFunc(
     ti._acosh_result_type,
     ti._acosh,
     _ACOSH_DOCSTRING,
-    origin_fn=numpy.arccosh,
     mkl_fn_to_call=vmi._mkl_acosh_to_call,
     mkl_impl_fn=vmi._acosh,
 )
@@ -255,7 +253,6 @@ arcsin = DPNPUnaryFunc(
     ti._asin_result_type,
     ti._asin,
     _ASIN_DOCSTRING,
-    origin_fn=numpy.arcsin,
     mkl_fn_to_call=vmi._mkl_asin_to_call,
     mkl_impl_fn=vmi._asin,
 )
@@ -310,7 +307,6 @@ arcsinh = DPNPUnaryFunc(
     ti._asinh_result_type,
     ti._asinh,
     _ASINH_DOCSTRING,
-    origin_fn=numpy.arcsinh,
     mkl_fn_to_call=vmi._mkl_asinh_to_call,
     mkl_impl_fn=vmi._asinh,
 )
@@ -367,7 +363,6 @@ arctan = DPNPUnaryFunc(
     ti._atan_result_type,
     ti._atan,
     _ATAN_DOCSTRING,
-    origin_fn=numpy.arctan,
     mkl_fn_to_call=vmi._mkl_atan_to_call,
     mkl_impl_fn=vmi._atan,
 )
@@ -441,7 +436,6 @@ arctan2 = DPNPBinaryFunc(
     ti._atan2_result_type,
     ti._atan2,
     _ATAN2_DOCSTRING,
-    origin_fn=numpy.arctan2,
     mkl_fn_to_call=vmi._mkl_atan2_to_call,
     mkl_impl_fn=vmi._atan2,
 )
@@ -496,7 +490,6 @@ arctanh = DPNPUnaryFunc(
     ti._atanh_result_type,
     ti._atanh,
     _ATANH_DOCSTRING,
-    origin_fn=numpy.arctanh,
     mkl_fn_to_call=vmi._mkl_atanh_to_call,
     mkl_impl_fn=vmi._atanh,
 )
@@ -548,7 +541,6 @@ cbrt = DPNPUnaryFunc(
     ti._cbrt_result_type,
     ti._cbrt,
     _CBRT_DOCSTRING,
-    origin_fn=numpy.cbrt,
     mkl_fn_to_call=vmi._mkl_cbrt_to_call,
     mkl_impl_fn=vmi._cbrt,
 )
@@ -602,7 +594,6 @@ cos = DPNPUnaryFunc(
     ti._cos_result_type,
     ti._cos,
     _COS_DOCSTRING,
-    origin_fn=numpy.cos,
     mkl_fn_to_call=vmi._mkl_cos_to_call,
     mkl_impl_fn=vmi._cos,
 )
@@ -657,7 +648,6 @@ cosh = DPNPUnaryFunc(
     ti._cosh_result_type,
     ti._cosh,
     _COSH_DOCSTRING,
-    origin_fn=numpy.cosh,
     mkl_fn_to_call=vmi._mkl_cosh_to_call,
     mkl_impl_fn=vmi._cosh,
 )
@@ -764,7 +754,6 @@ exp = DPNPUnaryFunc(
     ti._exp_result_type,
     ti._exp,
     _EXP_DOCSTRING,
-    origin_fn=numpy.exp,
     mkl_fn_to_call=vmi._mkl_exp_to_call,
     mkl_impl_fn=vmi._exp,
 )
@@ -818,7 +807,6 @@ exp2 = DPNPUnaryFunc(
     ti._exp2_result_type,
     ti._exp2,
     _EXP2_DOCSTRING,
-    origin_fn=numpy.exp2,
     mkl_fn_to_call=vmi._mkl_exp2_to_call,
     mkl_impl_fn=vmi._exp2,
 )
@@ -880,7 +868,6 @@ expm1 = DPNPUnaryFunc(
     ti._expm1_result_type,
     ti._expm1,
     _EXPM1_DOCSTRING,
-    origin_fn=numpy.expm1,
     mkl_fn_to_call=vmi._mkl_expm1_to_call,
     mkl_impl_fn=vmi._expm1,
 )
@@ -944,7 +931,6 @@ hypot = DPNPBinaryFunc(
     ti._hypot_result_type,
     ti._hypot,
     _HYPOT_DOCSTRING,
-    origin_fn=numpy.hypot,
     mkl_fn_to_call=vmi._mkl_hypot_to_call,
     mkl_impl_fn=vmi._hypot,
 )
@@ -999,7 +985,6 @@ log = DPNPUnaryFunc(
     ti._log_result_type,
     ti._log,
     _LOG_DOCSTRING,
-    origin_fn=numpy.log,
     mkl_fn_to_call=vmi._mkl_ln_to_call,
     mkl_impl_fn=vmi._ln,
 )
@@ -1056,7 +1041,6 @@ log10 = DPNPUnaryFunc(
     ti._log10_result_type,
     ti._log10,
     _LOG10_DOCSTRING,
-    origin_fn=numpy.log10,
     mkl_fn_to_call=vmi._mkl_log10_to_call,
     mkl_impl_fn=vmi._log10,
 )
@@ -1116,7 +1100,6 @@ log1p = DPNPUnaryFunc(
     ti._log1p_result_type,
     ti._log1p,
     _LOG1P_DOCSTRING,
-    origin_fn=numpy.log1p,
     mkl_fn_to_call=vmi._mkl_log1p_to_call,
     mkl_impl_fn=vmi._log1p,
 )
@@ -1174,7 +1157,6 @@ log2 = DPNPUnaryFunc(
     ti._log2_result_type,
     ti._log2,
     _LOG2_DOCSTRING,
-    origin_fn=numpy.log2,
     mkl_fn_to_call=vmi._mkl_log2_to_call,
     mkl_impl_fn=vmi._log2,
 )
@@ -1240,7 +1222,6 @@ logaddexp = DPNPBinaryFunc(
     ti._logaddexp_result_type,
     ti._logaddexp,
     _LOGADDEXP_DOCSTRING,
-    origin_fn=numpy.logaddexp,
 )
 
 
@@ -1367,7 +1348,6 @@ reciprocal = DPNPUnaryFunc(
     ti._reciprocal_result_type,
     ti._reciprocal,
     _RECIPROCAL_DOCSTRING,
-    origin_fn=numpy.reciprocal,
 )
 
 
@@ -1594,7 +1574,6 @@ sin = DPNPUnaryFunc(
     ti._sin_result_type,
     ti._sin,
     _SIN_DOCSTRING,
-    origin_fn=numpy.sin,
     mkl_fn_to_call=vmi._mkl_sin_to_call,
     mkl_impl_fn=vmi._sin,
 )
@@ -1647,7 +1626,6 @@ sinh = DPNPUnaryFunc(
     ti._sinh_result_type,
     ti._sinh,
     _SINH_DOCSTRING,
-    origin_fn=numpy.sinh,
     mkl_fn_to_call=vmi._mkl_sinh_to_call,
     mkl_impl_fn=vmi._sinh,
 )
@@ -1701,7 +1679,6 @@ sqrt = DPNPUnaryFunc(
     ti._sqrt_result_type,
     ti._sqrt,
     _SQRT_DOCSTRING,
-    origin_fn=numpy.sqrt,
     mkl_fn_to_call=vmi._mkl_sqrt_to_call,
     mkl_impl_fn=vmi._sqrt,
 )
@@ -1755,7 +1732,6 @@ square = DPNPUnaryFunc(
     ti._square_result_type,
     ti._square,
     _SQUARE_DOCSTRING,
-    origin_fn=numpy.square,
     mkl_fn_to_call=vmi._mkl_sqr_to_call,
     mkl_impl_fn=vmi._sqr,
 )
@@ -1809,7 +1785,6 @@ tan = DPNPUnaryFunc(
     ti._tan_result_type,
     ti._tan,
     _TAN_DOCSTRING,
-    origin_fn=numpy.tan,
     mkl_fn_to_call=vmi._mkl_tan_to_call,
     mkl_impl_fn=vmi._tan,
 )
@@ -1863,7 +1838,6 @@ tanh = DPNPUnaryFunc(
     ti._tanh_result_type,
     ti._tanh,
     _TANH_DOCSTRING,
-    origin_fn=numpy.tanh,
     mkl_fn_to_call=vmi._mkl_tanh_to_call,
     mkl_impl_fn=vmi._tanh,
 )

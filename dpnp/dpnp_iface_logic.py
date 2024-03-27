@@ -363,7 +363,6 @@ equal = DPNPBinaryFunc(
     ti._equal_result_type,
     ti._equal,
     _EQUAL_DOCSTRING,
-    origin_fn=numpy.equal,
 )
 
 
@@ -428,7 +427,6 @@ greater = DPNPBinaryFunc(
     ti._greater_result_type,
     ti._greater,
     _GREATER_DOCSTRING,
-    origin_fn=numpy.greater,
 )
 
 
@@ -493,7 +491,6 @@ greater_equal = DPNPBinaryFunc(
     ti._greater_equal_result_type,
     ti._greater_equal,
     _GREATER_EQUAL_DOCSTRING,
-    origin_fn=numpy.greater_equal,
 )
 
 
@@ -597,7 +594,6 @@ isfinite = DPNPUnaryFunc(
     ti._isfinite_result_type,
     ti._isfinite,
     _ISFINITE_DOCSTRING,
-    origin_fn=numpy.isfinite,
 )
 
 
@@ -652,7 +648,6 @@ isinf = DPNPUnaryFunc(
     ti._isinf_result_type,
     ti._isinf,
     _ISINF_DOCSTRING,
-    origin_fn=numpy.isinf,
 )
 
 
@@ -708,7 +703,6 @@ isnan = DPNPUnaryFunc(
     ti._isnan_result_type,
     ti._isnan,
     _ISNAN_DOCSTRING,
-    origin_fn=numpy.isnan,
 )
 
 
@@ -773,7 +767,6 @@ less = DPNPBinaryFunc(
     ti._less_result_type,
     ti._less,
     _LESS_DOCSTRING,
-    origin_fn=numpy.less,
 )
 
 
@@ -838,7 +831,6 @@ less_equal = DPNPBinaryFunc(
     ti._less_equal_result_type,
     ti._less_equal,
     _LESS_EQUAL_DOCSTRING,
-    origin_fn=numpy.less_equal,
 )
 
 
@@ -905,7 +897,6 @@ logical_and = DPNPBinaryFunc(
     ti._logical_and_result_type,
     ti._logical_and,
     _LOGICAL_AND_DOCSTRING,
-    origin_fn=numpy.logical_and,
 )
 
 
@@ -959,7 +950,6 @@ logical_not = DPNPUnaryFunc(
     ti._logical_not_result_type,
     ti._logical_not,
     _LOGICAL_NOT_DOCSTRING,
-    origin_fn=numpy.logical_not,
 )
 
 
@@ -1026,7 +1016,6 @@ logical_or = DPNPBinaryFunc(
     ti._logical_or_result_type,
     ti._logical_or,
     _LOGICAL_OR_DOCSTRING,
-    origin_fn=numpy.logical_or,
 )
 
 
@@ -1089,7 +1078,6 @@ logical_xor = DPNPBinaryFunc(
     ti._logical_xor_result_type,
     ti._logical_xor,
     _LOGICAL_XOR_DOCSTRING,
-    origin_fn=numpy.logical_xor,
 )
 
 
@@ -1154,5 +1142,4 @@ not_equal = DPNPBinaryFunc(
     ti._not_equal_result_type,
     ti._not_equal,
     _NOT_EQUAL_DOCSTRING,
-    origin_fn=numpy.not_equal,
 )

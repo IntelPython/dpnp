@@ -32,19 +32,16 @@ from dpctl.tensor._elementwise_common import (
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import call_origin
 
 __all__ = [
     "acceptance_fn_negative",
     "acceptance_fn_positive",
     "acceptance_fn_sign",
     "acceptance_fn_subtract",
-    "check_nd_call_func",
     "DPNPAngle",
     "DPNPBinaryFunc",
     "DPNPReal",
     "DPNPRound",
-    "DPNPSign",
     "DPNPUnaryFunc",
 ]
 
@@ -76,8 +73,6 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
         corresponds to computational tasks associated with function evaluation.
     docs : {str}
         Documentation string for the unary function.
-    origin_fn : {callable}
-        Original function to call if any of the parameters are not supported.
     mkl_fn_to_call : {callable}
         Check input arguments to answer if function from OneMKL VM library
         can be used.
@@ -102,7 +97,6 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
         result_type_resolver_fn,
         unary_dp_impl_fn,
         docs,
-        origin_fn=None,
         mkl_fn_to_call=None,
         mkl_impl_fn=None,
         acceptance_fn=None,
@@ -131,7 +125,6 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
             acceptance_fn=acceptance_fn,
         )
         self.__name__ = "DPNPUnaryFunc"
-        self.origin_fn = origin_fn
 
     def __call__(
         self,
@@ -144,36 +137,31 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
         **kwargs,
     ):
         if kwargs:
-            if self.origin_fn is None:
-                raise NotImplementedError(
-                    f"Requested function={self.name_} with kwargs={kwargs} "
-                    "isn't currently supported."
-                )
+            raise NotImplementedError(
+                f"Requested function={self.name_} with kwargs={kwargs} "
+                "isn't currently supported."
+            )
         elif where is not True:
-            if self.origin_fn is None:
-                raise NotImplementedError(
-                    f"Requested function={self.name_} with where={where} "
-                    "isn't currently supported."
-                )
-        elif dtype is not None:
-            if self.origin_fn is None:
-                raise NotImplementedError(
-                    f"Requested function={self.name_} with dtype={dtype} "
-                    "isn't currently supported."
-                )
+            raise NotImplementedError(
+                f"Requested function={self.name_} with where={where} "
+                "isn't currently supported."
+            )
         elif subok is not True:
-            if self.origin_fn is None:
-                raise NotImplementedError(
-                    f"Requested function={self.name_} with subok={subok} "
-                    "isn't currently supported."
-                )
+            raise NotImplementedError(
+                f"Requested function={self.name_} with subok={subok} "
+                "isn't currently supported."
+            )
         elif dpnp.isscalar(x):
             # input has to be an array
-            if self.origin_fn is None:
-                raise NotImplementedError(
-                    f"Requested function={self.name_} with args={x} "
-                    "isn't currently supported."
-                )
+            raise NotImplementedError(
+                f"Requested function={self.name_} with args={x} "
+                "isn't currently supported."
+            )
+        elif dtype is not None and out is not None:
+            raise TypeError(
+                f"Requested function={self.name_} only takes `out` or `dtype`"
+                "as an argument, but both were provided."
+            )
         else:
             if order in "afkcAFKC":
                 order = order.upper()
@@ -184,23 +172,14 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
                     "order must be one of 'C', 'F', 'A', or 'K' "
                     f"(got '{order}')"
                 )
+            if dtype is not None:
+                x = dpnp.asarray(x, dtype=dtype)
             x_usm = dpnp.get_usm_ndarray(x)
             out_usm = None if out is None else dpnp.get_usm_ndarray(out)
             res_usm = super().__call__(x_usm, out=out_usm, order=order)
             if out is not None and isinstance(out, dpnp_array):
                 return out
             return dpnp_array._create_from_usm_ndarray(res_usm)
-
-        return call_origin(
-            self.origin_fn,
-            x,
-            out=out,
-            where=where,
-            order=order,
-            dtype=dtype,
-            subok=subok,
-            **kwargs,
-        )
 
 
 class DPNPBinaryFunc(BinaryElementwiseFunc):
@@ -230,8 +209,6 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         evaluation.
     docs : {str}
         Documentation string for the unary function.
-    origin_fn : {callable}
-        Original function to call if any of the parameters are not supported.
     mkl_fn_to_call : {callable}
         Check input arguments to answer if function from OneMKL VM library
         can be used.
@@ -270,7 +247,6 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         result_type_resolver_fn,
         binary_dp_impl_fn,
         docs,
-        origin_fn=None,
         mkl_fn_to_call=None,
         mkl_impl_fn=None,
         binary_inplace_fn=None,
@@ -301,7 +277,6 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             acceptance_fn=acceptance_fn,
         )
         self.__name__ = "DPNPBinaryFunc"
-        self.origin_fn = origin_fn
 
     def __call__(
         self,
@@ -315,36 +290,31 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         **kwargs,
     ):
         if kwargs:
-            if self.origin_fn is None:
-                raise NotImplementedError(
-                    f"Requested function={self.name_} with kwargs={kwargs} "
-                    "isn't currently supported."
-                )
+            raise NotImplementedError(
+                f"Requested function={self.name_} with kwargs={kwargs} "
+                "isn't currently supported."
+            )
         elif where is not True:
-            if self.origin_fn is None:
-                raise NotImplementedError(
-                    f"Requested function={self.name_} with where={where} "
-                    "isn't currently supported."
-                )
-        elif dtype is not None:
-            if self.origin_fn is None:
-                raise NotImplementedError(
-                    f"Requested function={self.name_} with dtype={dtype} "
-                    "isn't currently supported."
-                )
+            raise NotImplementedError(
+                f"Requested function={self.name_} with where={where} "
+                "isn't currently supported."
+            )
         elif subok is not True:
-            if self.origin_fn is None:
-                raise NotImplementedError(
-                    f"Requested function={self.name_} with subok={subok} "
-                    "isn't currently supported."
-                )
+            raise NotImplementedError(
+                f"Requested function={self.name_} with subok={subok} "
+                "isn't currently supported."
+            )
         elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
             # input has to be an array
-            if self.origin_fn is None:
-                raise NotImplementedError(
-                    f"Requested function={self.name_} with args={x1, x2} "
-                    "isn't currently supported."
-                )
+            raise NotImplementedError(
+                f"Requested function={self.name_} with args={x1, x2} "
+                "isn't currently supported."
+            )
+        elif dtype is not None and out is not None:
+            raise TypeError(
+                f"Requested function={self.name_} only takes `out` or `dtype`"
+                "as an argument, but both were provided."
+            )
         else:
             if order in "afkcAFKC":
                 order = order.upper()
@@ -355,6 +325,11 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                     "order must be one of 'C', 'F', 'A', or 'K' "
                     f"(got '{order}')"
                 )
+
+            if dtype is not None:
+                x1 = dpnp.asarray(x1, dtype=dtype)
+                x2 = dpnp.asarray(x2, dtype=dtype)
+
             x1_usm = dpnp.get_usm_ndarray_or_scalar(x1)
             x2_usm = dpnp.get_usm_ndarray_or_scalar(x2)
             out_usm = None if out is None else dpnp.get_usm_ndarray(out)
@@ -362,18 +337,6 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             if out is not None and isinstance(out, dpnp_array):
                 return out
             return dpnp_array._create_from_usm_ndarray(res_usm)
-
-        return call_origin(
-            self.origin_fn,
-            x1,
-            x2,
-            out=out,
-            where=where,
-            order=order,
-            dtype=dtype,
-            subok=subok,
-            **kwargs,
-        )
 
 
 class DPNPAngle(DPNPUnaryFunc):
@@ -385,14 +348,12 @@ class DPNPAngle(DPNPUnaryFunc):
         result_type_resolver_fn,
         unary_dp_impl_fn,
         docs,
-        origin_fn=None,
     ):
         super().__init__(
             name,
             result_type_resolver_fn,
             unary_dp_impl_fn,
             docs,
-            origin_fn=origin_fn,
         )
 
     def __call__(self, x, deg=False):
@@ -411,14 +372,12 @@ class DPNPReal(DPNPUnaryFunc):
         result_type_resolver_fn,
         unary_dp_impl_fn,
         docs,
-        origin_fn=None,
     ):
         super().__init__(
             name,
             result_type_resolver_fn,
             unary_dp_impl_fn,
             docs,
-            origin_fn=origin_fn,
         )
 
     def __call__(self, x):
@@ -436,85 +395,26 @@ class DPNPRound(DPNPUnaryFunc):
         result_type_resolver_fn,
         unary_dp_impl_fn,
         docs,
-        origin_fn=None,
     ):
         super().__init__(
             name,
             result_type_resolver_fn,
             unary_dp_impl_fn,
             docs,
-            origin_fn=origin_fn,
         )
 
-    def __call__(self, x, decimals=0, out=None):
+    def __call__(self, x, decimals=0, out=None, dtype=None):
         if decimals != 0:
-            if self.origin_fn is None:
-                raise NotImplementedError(
-                    f"Requested function={self.name_} with decimals={decimals} "
-                    "isn't currently supported."
-                )
-        elif dpnp.isscalar(x):
-            if self.origin_fn is None:
-                raise NotImplementedError(
-                    f"Requested function={self.name_} with args={x} "
-                    "isn't currently supported."
-                )
-        else:
-            return super().__call__(x, out=out)
-        return call_origin(self.origin_fn, x, decimals=decimals, out=out)
-
-
-class DPNPSign(DPNPUnaryFunc):
-    """Class that implements dpnp.sign unary element-wise functions."""
-
-    def __init__(
-        self,
-        name,
-        result_type_resolver_fn,
-        unary_dp_impl_fn,
-        docs,
-        origin_fn=None,
-        acceptance_fn=None,
-    ):
-        super().__init__(
-            name,
-            result_type_resolver_fn,
-            unary_dp_impl_fn,
-            docs,
-            origin_fn=origin_fn,
-            acceptance_fn=acceptance_fn,
-        )
-
-    def __call__(
-        self,
-        x,
-        out=None,
-        where=True,
-        order="K",
-        dtype=None,
-        subok=True,
-        **kwargs,
-    ):
-        if numpy.iscomplexobj(x):
-            return call_origin(
-                self.origin_fn,
-                x,
-                out=out,
-                where=where,
-                order=order,
-                dtype=dtype,
-                subok=subok,
-                **kwargs,
+            if numpy.issubdtype(x.dtype, numpy.integer) and dtype is None:
+                dtype = x.dtype
+            res = dpnp.true_divide(
+                dpnp.rint(x * 10**decimals, out=out), 10**decimals, out=out
             )
-        return super().__call__(
-            x,
-            out=out,
-            where=where,
-            order=order,
-            dtype=dtype,
-            subok=subok,
-            **kwargs,
-        )
+            if dtype is not None:
+                res = res.astype(dtype)
+            return res
+        else:
+            return super().__call__(x, out=out, dtype=dtype)
 
 
 def acceptance_fn_negative(arg_dtype, buf_dt, res_dt, sycl_dev):
@@ -562,73 +462,3 @@ def acceptance_fn_subtract(
         )
     else:
         return True
-
-
-def check_nd_call_func(
-    origin_func,
-    dpnp_func,
-    *x_args,
-    out=None,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Checks arguments and calls a function.
-
-    Chooses a common internal elementwise function to call in DPNP based on
-    input arguments or to fallback on NumPy call if any passed argument is not
-    currently supported.
-
-    """
-
-    args_len = len(x_args)
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif args_len < 1 or args_len > 2:
-        raise ValueError(
-            "Unsupported number of input arrays to pass in elementwise "
-            f"function {dpnp_func.__name__}"
-        )
-    elif args_len == 1 and dpnp.isscalar(x_args[0]):
-        # input has to be an array
-        pass
-    elif (
-        args_len == 2 and dpnp.isscalar(x_args[0]) and dpnp.isscalar(x_args[1])
-    ):
-        # at least one of input has to be an array
-        pass
-    else:
-        if order in "afkcAFKC":
-            order = order.upper()
-        elif order is None:
-            order = "K"
-        else:
-            raise ValueError(
-                f"order must be one of 'C', 'F', 'A', or 'K' (got '{order}')"
-            )
-        return dpnp_func(*x_args, out=out, order=order)
-    if origin_func is not None:
-        return call_origin(
-            origin_func,
-            *x_args,
-            out=out,
-            where=where,
-            order=order,
-            dtype=dtype,
-            subok=subok,
-            **kwargs,
-        )
-
-    raise NotImplementedError(
-        f"Requested function={dpnp_func.__name__} with args={x_args} and "
-        f"kwargs={kwargs} isn't currently supported."
-    )

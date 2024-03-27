@@ -42,7 +42,6 @@ it contains:
 
 
 import dpctl.tensor._tensor_elementwise_impl as ti
-import numpy
 
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
@@ -121,7 +120,6 @@ bitwise_and = DPNPBinaryFunc(
     ti._bitwise_and_result_type,
     ti._bitwise_and,
     _BITWISE_AND_DOCSTRING,
-    origin_fn=numpy.bitwise_and,
 )
 
 
@@ -184,7 +182,6 @@ bitwise_or = DPNPBinaryFunc(
     ti._bitwise_or_result_type,
     ti._bitwise_or,
     _BITWISE_OR_DOCSTRING,
-    origin_fn=numpy.bitwise_or,
 )
 
 
@@ -252,7 +249,6 @@ bitwise_xor = DPNPBinaryFunc(
     ti._bitwise_xor_result_type,
     ti._bitwise_xor,
     _BITWISE_XOR_DOCSTRING,
-    origin_fn=numpy.bitwise_xor,
 )
 
 
@@ -315,7 +311,6 @@ invert = DPNPUnaryFunc(
     ti._bitwise_invert_result_type,
     ti._bitwise_invert,
     _INVERT_DOCSTRING,
-    origin_fn=numpy.invert,
 )
 
 
@@ -378,7 +373,6 @@ left_shift = DPNPBinaryFunc(
     ti._bitwise_left_shift_result_type,
     ti._bitwise_left_shift,
     _LEFT_SHIFT_DOCSTRING,
-    origin_fn=numpy.left_shift,
 )
 
 
@@ -438,5 +432,4 @@ right_shift = DPNPBinaryFunc(
     ti._bitwise_right_shift_result_type,
     ti._bitwise_right_shift,
     _RIGHT_SHIFT_DOCSTRING,
-    origin_fn=numpy.right_shift,
 )

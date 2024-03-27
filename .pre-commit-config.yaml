@@ -94,4 +94,4 @@ repos:
             "--disable=redefined-builtin",
             "--disable=unused-wildcard-import"
             ]
-        files: '^dpnp/dpnp_iface(|_arraycreation|_bitwise|_counting|_indexing|_libmath|_linearalgebra|_logic|_manipulation|_mathematical|_nanfunctions|_searching|_sorting|_statistics|_trigonometric|_types").py$'
+        files: '^dpnp/dpnp_iface.*'
