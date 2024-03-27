@@ -25,7 +25,6 @@
 # *****************************************************************************
 
 import numpy
-from dpctl.tensor import asarray
 from dpctl.tensor._elementwise_common import (
     BinaryElementwiseFunc,
     UnaryElementwiseFunc,
@@ -164,18 +163,18 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
                 "as an argument, but both were provided."
             )
         else:
-            if order in "afkcAFKC":
-                order = order.upper()
-            elif order is None:
+            if order is None:
                 order = "K"
+            elif order in "afkcAFKC":
+                order = order.upper()
             else:
                 raise ValueError(
                     "order must be one of 'C', 'F', 'A', or 'K' "
                     f"(got '{order}')"
                 )
-            x_usm = dpnp.get_usm_ndarray(x)
             if dtype is not None:
-                x_usm = asarray(x_usm, dtype=dtype, copy=False)
+                x = dpnp.astype(x, dtype=dtype, copy=False)
+            x_usm = dpnp.get_usm_ndarray(x)
             out_usm = None if out is None else dpnp.get_usm_ndarray(out)
             res_usm = super().__call__(x_usm, out=out_usm, order=order)
             if out is not None and isinstance(out, dpnp_array):
@@ -317,21 +316,28 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                 "as an argument, but both were provided."
             )
         else:
-            if order in "afkcAFKC":
-                order = order.upper()
-            elif order is None:
+            if order is None:
                 order = "K"
+            elif order in "afkcAFKC":
+                order = order.upper()
             else:
                 raise ValueError(
                     "order must be one of 'C', 'F', 'A', or 'K' "
                     f"(got '{order}')"
                 )
+            if dtype is not None:
+                if dpnp.isscalar(x1):
+                    x1 = dpnp.asarray(x1, dtype=dtype)
+                    x2 = dpnp.astype(x2, dtype=dtype, copy=False)
+                elif dpnp.isscalar(x2):
+                    x1 = dpnp.astype(x1, dtype=dtype, copy=False)
+                    x2 = dpnp.asarray(x2, dtype=dtype)
+                else:
+                    x1 = dpnp.astype(x1, dtype=dtype, copy=False)
+                    x2 = dpnp.astype(x2, dtype=dtype, copy=False)
+
             x1_usm = dpnp.get_usm_ndarray_or_scalar(x1)
             x2_usm = dpnp.get_usm_ndarray_or_scalar(x2)
-
-            if dtype is not None:
-                x1_usm = asarray(x1_usm, dtype=dtype, copy=False)
-                x2_usm = asarray(x2_usm, dtype=dtype, copy=False)
 
             out_usm = None if out is None else dpnp.get_usm_ndarray(out)
             res_usm = super().__call__(x1_usm, x2_usm, out=out_usm, order=order)
