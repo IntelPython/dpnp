@@ -200,7 +200,7 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
             # TODO: change order='K' when support is implemented
             input = dpnp.ravel(input, order='C')
             sqnorm = dpnp.dot(input, input)
-            ret = dpnp.sqrt([sqnorm], dtype=res_type)
+            ret = dpnp.sqrt(sqnorm, dtype=res_type)
             return dpnp.array(ret.reshape(1, *ret.shape), dtype=res_type)
 
     len_axis = 1 if axis is None else len(axis_)

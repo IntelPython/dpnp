@@ -323,9 +323,8 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -393,9 +392,8 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -457,9 +455,8 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -562,9 +559,8 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -621,9 +617,8 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -675,9 +670,8 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -733,10 +727,8 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
-
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
@@ -797,9 +789,8 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -860,9 +851,8 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -923,9 +913,8 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -979,9 +968,8 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -1043,9 +1031,8 @@ dpnp.ndarray:
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -1108,9 +1095,8 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------

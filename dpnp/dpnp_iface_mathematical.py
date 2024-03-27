@@ -188,9 +188,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -252,9 +252,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 Notes
 -----
@@ -359,6 +359,10 @@ def around(x, /, decimals=0, out=None):
     ----------
     x : {dpnp.ndarray, usm_ndarray}
         Input array, expected to have numeric data type.
+    decimals : int, optional
+        Number of decimal places to round to (default: 0). If decimals is
+        negative, it specifies the number of positions to the left of the
+        decimal point.
     out : {None, dpnp.ndarray}, optional
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -368,11 +372,6 @@ def around(x, /, decimals=0, out=None):
     -------
     out : dpnp.ndarray
         The rounded value of elements of the array.
-
-    Limitations
-    -----------
-    Parameters `decimals` is supported with its default value.
-    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
@@ -416,9 +415,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype`, and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -454,7 +453,6 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     a : {dpnp.ndarray, usm_ndarray}
         Array containing elements to clip.
     a_min, a_max : {dpnp.ndarray, usm_ndarray, None}
-
         Minimum and maximum value. If ``None``, clipping is not performed on
         the corresponding edge. Only one of `a_min` and `a_max` may be
         ``None``. Both are broadcast against `a`.
@@ -544,8 +542,8 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
-Otherwise the function will be executed sequentially on CPU.
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 Examples
 --------
@@ -616,9 +614,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -995,9 +993,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 Notes
 -----
@@ -1147,9 +1145,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype`, and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -1208,9 +1206,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -1713,9 +1711,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -1785,9 +1783,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -1908,7 +1906,6 @@ def modf(x1, **kwargs):
     >>> [[x for x in y] for y in result ]
     [[1.0, 2.0], [0.0, 0.0]]
 
-
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
@@ -1945,9 +1942,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 Notes
 -----
@@ -2010,9 +2007,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -2065,9 +2062,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -2129,9 +2126,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -2306,8 +2303,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where' and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -2387,9 +2385,9 @@ out : dpnp.ndarray
     the returned array is determined by the Type Promotion Rules.
 
 Limitations
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -2450,7 +2448,7 @@ out : dpnp.ndarray
 Limitations
 -----------
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -2486,6 +2484,9 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have numeric data type.
+decimals : int, optional
+    Number of decimal places to round to (default: 0). If decimals is negative,
+    it specifies the number of positions to the left of the decimal point.
 out : {None, dpnp.ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2495,11 +2496,6 @@ Returns
 out : dpnp.ndarray
     An array containing the element-wise rounded value. The data type
     of the returned array is determined by the Type Promotion Rules.
-
-Limitations
------------
-Parameters `decimals` is supported with its default value.
-Otherwise the function will be executed sequentially on CPU.
 
 See Also
 --------
@@ -2519,9 +2515,9 @@ array([0.,  2.])
 array([0.4,  1.6])
 >>> np.round(np.array([.5, 1.5, 2.5, 3.5, 4.5])) # rounds to nearest even value
 array([0.,  2.,  2.,  4.,  4.])
->>> np.round(np.array([1,2,3,11]), decimals=1) # ndarray of ints is returned
+>>> np.round(np.array([1, 2, 3, 11]), decimals=1) # ndarray of ints is returned
 array([ 1,  2,  3, 11])
->>> np.round(np.array([1,2,3,11]), decimals=-1)
+>>> np.round(np.array([1, 2, 3, 11]), decimals=-1)
 array([ 0,  0,  0, 10])
 """
 
@@ -2561,10 +2557,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Input array data types are limited by supported real-valued data types.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -2615,9 +2610,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` nd `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -2668,9 +2663,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype` and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 Notes
 -----
@@ -2969,9 +2964,9 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where`, `dtype`, and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
-Otherwise the function will be executed sequentially on CPU.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------

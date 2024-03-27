@@ -3110,8 +3110,10 @@ def test_elemenwise_error():
         dpnp.abs(x, where=False)
     with pytest.raises(NotImplementedError):
         dpnp.abs(x, subok=False)
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(TypeError):
         dpnp.abs(1)
+    with pytest.raises(TypeError):
+        dpnp.abs([1, 2])
     with pytest.raises(TypeError):
         dpnp.abs(x, out=out, dtype="f4")
     with pytest.raises(ValueError):
@@ -3123,8 +3125,14 @@ def test_elemenwise_error():
         dpnp.add(x, x, where=False)
     with pytest.raises(NotImplementedError):
         dpnp.add(x, x, subok=False)
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(TypeError):
         dpnp.add(1, 2)
+    with pytest.raises(TypeError):
+        dpnp.add([1, 2], [1, 2])
+    with pytest.raises(TypeError):
+        dpnp.add(x, [1, 2])
+    with pytest.raises(TypeError):
+        dpnp.add([1, 2], x)
     with pytest.raises(TypeError):
         dpnp.add(x, x, out=out, dtype="f4")
     with pytest.raises(ValueError):
@@ -3141,4 +3149,17 @@ def test_elemenwise_order_none():
 
     result = dpnp.add(x, x, order=None)
     expected = numpy.add(x_np, x_np, order=None)
+    assert_dtype_allclose(result, expected)
+
+
+def test_bitwise_1array_input():
+    x = dpnp.array([1, 2, 3])
+    x_np = numpy.array([1, 2, 3])
+
+    result = dpnp.add(x, 1)
+    expected = numpy.add(x_np, 1)
+    assert_dtype_allclose(result, expected)
+
+    result = dpnp.add(1, x)
+    expected = numpy.add(1, x_np)
     assert_dtype_allclose(result, expected)

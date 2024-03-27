@@ -151,11 +151,10 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
                 f"Requested function={self.name_} with subok={subok} "
                 "isn't currently supported."
             )
-        elif dpnp.isscalar(x):
-            # input has to be an array
-            raise NotImplementedError(
-                f"Requested function={self.name_} with args={x} "
-                "isn't currently supported."
+        elif not dpnp.is_supported_array_type(x):
+            raise TypeError(
+                "Input array must be any of supported type, "
+                f"but got {type(x)}"
             )
         elif dtype is not None and out is not None:
             raise TypeError(
@@ -304,11 +303,15 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                 f"Requested function={self.name_} with subok={subok} "
                 "isn't currently supported."
             )
-        elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-            # input has to be an array
-            raise NotImplementedError(
-                f"Requested function={self.name_} with args={x1, x2} "
-                "isn't currently supported."
+        elif (
+            not dpnp.is_supported_array_or_scalar(x1)
+            or not dpnp.is_supported_array_or_scalar(x2)
+            or dpnp.isscalar(x1)
+            and dpnp.isscalar(x2)
+        ):
+            raise TypeError(
+                "Input arrays must be any of supported type, "
+                f"but got {type(x1)} and {type(x2)}"
             )
         elif dtype is not None and out is not None:
             raise TypeError(
