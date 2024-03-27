@@ -1397,33 +1397,7 @@ static constexpr DPNPFuncType get_divide_res_type()
 template <DPNPFuncType FT1, DPNPFuncType... FTs>
 static void func_map_elemwise_2arg_3type_core(func_map_t &fmap)
 {
-    ((fmap[DPNPFuncName::DPNP_FN_ADD_EXT][FT1][FTs] =
-          {populate_func_types<FT1, FTs>(),
-           (void *)dpnp_add_c_ext<
-               func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>}),
-     ...);
-    ((fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][FT1][FTs] =
-          {get_divide_res_type<FT1, FTs>(),
-           (void *)dpnp_divide_c_ext<
-               func_type_map_t::find_type<get_divide_res_type<FT1, FTs>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>,
-           get_divide_res_type<FT1, FTs, std::false_type>(),
-           (void *)
-               dpnp_divide_c_ext<func_type_map_t::find_type<get_divide_res_type<
-                                     FT1, FTs, std::false_type>()>,
-                                 func_type_map_t::find_type<FT1>,
-                                 func_type_map_t::find_type<FTs>>}),
-     ...);
-    ((fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][FT1][FTs] =
-          {populate_func_types<FT1, FTs>(),
-           (void *)dpnp_multiply_c_ext<
-               func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>}),
-     ...);
+    // dpnp_subtract_c_ext is implicitly used by dpnp_ptp_c
     ((fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][FT1][FTs] =
           {populate_func_types<FT1, FTs>(),
            (void *)dpnp_subtract_c_ext<
