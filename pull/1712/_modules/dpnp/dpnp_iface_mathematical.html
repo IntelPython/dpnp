@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev0+49.g940408d3f1 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev1+14.gcd49160115 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4a64f43e"></script>
+        <script src="../../_static/documentation_options.js?v=3a8e7cd7"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev0+49.g940408d3f1
+                0.15.0dev1+14.gcd49160115
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -167,7 +167,6 @@
     <span class="n">DPNPBinaryFunc</span><span class="p">,</span>
     <span class="n">DPNPReal</span><span class="p">,</span>
     <span class="n">DPNPRound</span><span class="p">,</span>
-    <span class="n">DPNPSign</span><span class="p">,</span>
     <span class="n">DPNPUnaryFunc</span><span class="p">,</span>
     <span class="n">acceptance_fn_negative</span><span class="p">,</span>
     <span class="n">acceptance_fn_positive</span><span class="p">,</span>
@@ -308,7 +307,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_abs_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_abs</span><span class="p">,</span>
     <span class="n">_ABS_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_abs_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_abs</span><span class="p">,</span>
 <span class="p">)</span>
@@ -382,7 +380,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_add_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_add</span><span class="p">,</span>
     <span class="n">_ADD_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">add</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_add_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_add</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_add_inplace</span><span class="p">,</span>
@@ -439,7 +436,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_angle_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_angle</span><span class="p">,</span>
     <span class="n">_ANGLE_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">angle</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -535,7 +531,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_ceil_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_ceil</span><span class="p">,</span>
     <span class="n">_CEIL_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">ceil</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_ceil_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_ceil</span><span class="p">,</span>
 <span class="p">)</span>
@@ -665,7 +660,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_conj_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_conj</span><span class="p">,</span>
     <span class="n">_CONJ_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">conj</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_conj_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_conj</span><span class="p">,</span>
 <span class="p">)</span>
@@ -752,7 +746,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_copysign_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_copysign</span><span class="p">,</span>
     <span class="n">_COPYSING_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">copysign</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1153,7 +1146,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_divide_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_divide</span><span class="p">,</span>
     <span class="n">_DIVIDE_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">divide</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_div_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_div</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_divide_inplace</span><span class="p">,</span>
@@ -1299,7 +1291,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_floor_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_floor</span><span class="p">,</span>
     <span class="n">_FLOOR_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">floor</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_floor_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_floor</span><span class="p">,</span>
 <span class="p">)</span>
@@ -1367,7 +1358,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_floor_divide_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_floor_divide</span><span class="p">,</span>
     <span class="n">_FLOOR_DIVIDE_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_floor_divide_inplace</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -1822,7 +1812,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_imag_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_imag</span><span class="p">,</span>
     <span class="n">_IMAG_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1895,7 +1884,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_maximum_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_maximum</span><span class="p">,</span>
     <span class="n">_MAXIMUM_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1968,7 +1956,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_minimum_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_minimum</span><span class="p">,</span>
     <span class="n">_MINIMUM_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2129,7 +2116,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_multiply_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_multiply</span><span class="p">,</span>
     <span class="n">_MULTIPLY_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">multiply</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_mul_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mul</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_multiply_inplace</span><span class="p">,</span>
@@ -2187,7 +2173,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_negative_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_negative</span><span class="p">,</span>
     <span class="n">_NEGATIVE_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">negative</span><span class="p">,</span>
     <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn_negative</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -2247,7 +2232,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_positive_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_positive</span><span class="p">,</span>
     <span class="n">_POSITIVE_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">positive</span><span class="p">,</span>
     <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn_positive</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -2331,7 +2315,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_pow_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_pow</span><span class="p">,</span>
     <span class="n">_POWER_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">power</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_pow_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_pow</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_pow_inplace</span><span class="p">,</span>
@@ -2512,7 +2495,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_real_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_real</span><span class="p">,</span>
     <span class="n">_REAL_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2577,7 +2559,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_remainder_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_remainder</span><span class="p">,</span>
     <span class="n">_REMAINDER_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">remainder</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_remainder_inplace</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -2630,7 +2611,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_round_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_round</span><span class="p">,</span>
     <span class="n">_RINT_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">rint</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2688,7 +2668,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_round_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_round</span><span class="p">,</span>
     <span class="n">_ROUND_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">round</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2740,12 +2719,11 @@
 <span class="s2">array([1+0j])</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">sign</span> <span class="o">=</span> <span class="n">DPNPSign</span><span class="p">(</span>
+<span class="n">sign</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;sign&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sign_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sign</span><span class="p">,</span>
     <span class="n">_SIGN_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">sign</span><span class="p">,</span>
     <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn_sign</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -2798,7 +2776,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_signbit_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_signbit</span><span class="p">,</span>
     <span class="n">_SIGNBIT_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">signbit</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2864,7 +2841,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_subtract_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_subtract</span><span class="p">,</span>
     <span class="n">_SUBTRACT_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">subtract</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_sub_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_sub</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_subtract_inplace</span><span class="p">,</span>
@@ -3159,7 +3135,6 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_trunc_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_trunc</span><span class="p">,</span>
     <span class="n">_TRUNC_DOCSTRING</span><span class="p">,</span>
-    <span class="n">origin_fn</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">trunc</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_trunc_to_call</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_trunc</span><span class="p">,</span>
 <span class="p">)</span>
