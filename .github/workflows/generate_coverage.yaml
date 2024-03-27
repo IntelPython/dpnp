@@ -49,7 +49,7 @@ jobs:
       - name: Install dpnp dependencies
         run: |
           conda install cython llvm cmake">=3.21" scikit-build ninja pytest pytest-cov coverage[toml] \
-              dpctl dpcpp_linux-64 mkl-devel-dpcpp tbb-devel onedpl-devel ${{ env.CHANNELS }}
+              dpctl">=0.17.0dev0" dpctl dpcpp_linux-64 mkl-devel-dpcpp tbb-devel onedpl-devel ${{ env.CHANNELS }}
 
       - name: Conda info
         run: |
