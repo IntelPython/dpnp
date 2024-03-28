@@ -8,7 +8,6 @@ from tests.helper import (
     assert_dtype_allclose,
     has_support_aspect64,
     is_cpu_device,
-    is_win_platform,
 )
 from tests.third_party.cupy import testing
 from tests.third_party.cupy.testing import _condition
