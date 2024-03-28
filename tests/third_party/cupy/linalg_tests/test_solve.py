@@ -36,11 +36,11 @@ class TestSolve(unittest.TestCase):
     @testing.numpy_cupy_allclose(
         atol=1e-3, contiguous_check=False, type_check=has_support_aspect64()
     )
+    @pytest.mark.skipif(
+        is_cpu_device() and is_win_platform(), reason="SAT-6842"
+    )
     def check_x(self, a_shape, b_shape, xp, dtype):
         a = testing.shaped_random(a_shape, xp, dtype=dtype, seed=0, scale=20)
-        if a.ndim > 2 and a.device.sycl_device.is_cpu and is_win_platform():
-            pytest.skip("SAT-6842: reported hanging in public CI")
-
         b = testing.shaped_random(b_shape, xp, dtype=dtype, seed=1)
         a = a.copy(order=self.order)
         b = b.copy(order=self.order)
