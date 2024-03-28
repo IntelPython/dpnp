@@ -18,5 +18,6 @@ var searchData=
   ['get_5fxyz_5fid_5fby_5fid_5finkernel_15',['get_xyz_id_by_id_inkernel',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#gad37eb9ce0ad29590cc931a9b6cd538e2',1,'dpnp_utils.hpp']]],
   ['getrfbatchtypepairsupportfactory_16',['GetrfBatchTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
   ['getrftypepairsupportfactory_17',['GetrfTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
-  ['getribatchtypepairsupportfactory_18',['GetriBatchTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]]
+  ['getribatchtypepairsupportfactory_18',['GetriBatchTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
+  ['getrstypepairsupportfactory_19',['GetrsTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]]
 ];
