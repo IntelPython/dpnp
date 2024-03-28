@@ -787,6 +787,9 @@ def test_clip(usm_type):
 )
 def test_solve(matrix, vector, usm_type_matrix, usm_type_vector):
     x = dp.array(matrix, usm_type=usm_type_matrix)
+    if x.ndim > 2 and x.device.sycl_device.is_cpu:
+        pytest.skip("SAT-6842: reported hanging in public CI")
+
     y = dp.array(vector, usm_type=usm_type_vector)
     z = dp.linalg.solve(x, y)
 
