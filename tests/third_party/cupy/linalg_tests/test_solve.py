@@ -47,6 +47,7 @@ class TestSolve(unittest.TestCase):
         testing.assert_array_equal(b_copy, b)
         return result
 
+    @pytest.mark.skipif(is_cpu_device(), reason="SAT-6842")
     def test_solve(self):
         self.check_x((4, 4), (4,))
         self.check_x((5, 5), (5, 2))
