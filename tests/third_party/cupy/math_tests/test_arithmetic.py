@@ -128,8 +128,7 @@ class TestArithmeticUnary:
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_unary(self, xp):
         arg1 = self.arg1
-        if isinstance(arg1, numpy.ndarray):
-            arg1 = xp.asarray(arg1)
+        arg1 = xp.asarray(arg1)
 
         if self.name in ("reciprocal") and xp is numpy:
             # In Numpy, for integer arguments with absolute value larger than 1 the result is always zero.
@@ -224,15 +223,13 @@ class ArithmeticBinaryBase:
 
         # TODO(niboshi): Fix this: xp.add(0j, xp.array([2.], 'f')).dtype
         #     numpy => complex64
-        #     cupy => complex128
-        if isinstance(arg1, complex):
-            if dtype2 in (numpy.float16, numpy.float32):
-                return xp.array(True)
+        # #     cupy => complex128
+        # if isinstance(arg1, complex):
+        #     if dtype2 in (numpy.float16, numpy.float32):
+        #         return xp.array(True)
 
-        if isinstance(arg1, numpy.ndarray):
-            arg1 = xp.asarray(arg1)
-        if isinstance(arg2, numpy.ndarray):
-            arg2 = xp.asarray(arg2)
+        arg1 = xp.asarray(arg1)
+        arg2 = xp.asarray(arg2)
 
         # Subtraction between booleans is not allowed.
         if (
