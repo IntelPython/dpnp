@@ -17,7 +17,7 @@ int_types = signed_int_types + unsigned_int_types
 all_types = float_types + int_types + complex_types
 negative_types_wo_fp16 = (
     [numpy.bool_]
-    + [numpy.float32, numpy.float64]
+    + float_types
     + [numpy.int16, numpy.int32, numpy.int64]
     + complex_types
 )
@@ -323,7 +323,7 @@ class TestArithmeticBinary(ArithmeticBinaryBase, unittest.TestCase):
                 ]
                 + [0, 0.0, 2, 2.0, -2, -2.0],
                 "name": ["true_divide"],
-                "dtype": [numpy.float64],
+                "dtype": float_types,
                 "use_dtype": [True, False],
             }
         )
@@ -340,7 +340,7 @@ class TestArithmeticBinary(ArithmeticBinaryBase, unittest.TestCase):
                 ]
                 + [0.0, 2.0, -2.0],
                 "name": ["power", "true_divide", "subtract"],
-                "dtype": [numpy.float64],
+                "dtype": float_types,
                 "use_dtype": [True, False],
             }
         )
@@ -357,7 +357,7 @@ class TestArithmeticBinary(ArithmeticBinaryBase, unittest.TestCase):
                 ]
                 + [0, 0.0, 2, 2.0, -2, -2.0],
                 "name": ["floor_divide", "fmod", "remainder", "mod"],
-                "dtype": [numpy.float64],
+                "dtype": float_types,
                 "use_dtype": [True, False],
             }
         )
@@ -374,7 +374,7 @@ class TestArithmeticBinary(ArithmeticBinaryBase, unittest.TestCase):
                 ]
                 + [0, 0.0, 2, 2.0, -2, -2.0],
                 "name": ["floor_divide", "fmod", "remainder", "mod"],
-                "dtype": [numpy.float64],
+                "dtype": float_types,
                 "use_dtype": [True, False],
             }
         )
