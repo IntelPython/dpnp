@@ -288,6 +288,9 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         subok=True,
         **kwargs,
     ):
+        dpnp.check_supported_arrays_type(
+            x1, x2, scalar_type=True, all_scalars=False
+        )
         if kwargs:
             raise NotImplementedError(
                 f"Requested function={self.name_} with kwargs={kwargs} "
@@ -302,16 +305,6 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             raise NotImplementedError(
                 f"Requested function={self.name_} with subok={subok} "
                 "isn't currently supported."
-            )
-        elif (
-            not dpnp.is_supported_array_or_scalar(x1)
-            or not dpnp.is_supported_array_or_scalar(x2)
-            or dpnp.isscalar(x1)
-            and dpnp.isscalar(x2)
-        ):
-            raise TypeError(
-                "Input arrays must be any of supported type, "
-                f"but got {type(x1)} and {type(x2)}"
             )
         elif dtype is not None and out is not None:
             raise TypeError(
