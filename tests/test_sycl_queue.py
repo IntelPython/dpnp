@@ -1763,6 +1763,18 @@ def test_indices(device, sparse):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+def test_nonzero(device):
+    a = dpnp.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], device=device)
+    x = dpnp.nonzero(a)
+    for x_el in x:
+        assert_sycl_queue_equal(x_el.sycl_queue, a.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 @pytest.mark.parametrize("func", ["mgrid", "ogrid"])
 def test_grid(device, func):
     sycl_queue = dpctl.SyclQueue(device)

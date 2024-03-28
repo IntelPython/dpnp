@@ -493,28 +493,32 @@ def indices(
     return res
 
 
-def nonzero(x, /):
+def nonzero(a):
     """
     Return the indices of the elements that are non-zero.
 
+    Returns a tuple of arrays, one for each dimension of `a`,
+    containing the indices of the non-zero elements in that
+    dimension. The values in `a` are always tested and returned in
+    row-major, C-style order.
+
     For full documentation refer to :obj:`numpy.nonzero`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
 
     Returns
     -------
     out : tuple[dpnp.ndarray]
         Indices of elements that are non-zero.
 
-    Limitations
-    -----------
-    Parameters `x` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
     See Also
     --------
     :obj:`dpnp.flatnonzero` : Return indices that are non-zero in
                               the flattened version of the input array.
+    :obj:`dpnp.ndarray.nonzero` : Equivalent ndarray method.
     :obj:`dpnp.count_nonzero` : Counts the number of non-zero elements
                                 in the input array.
 
@@ -528,27 +532,53 @@ def nonzero(x, /):
     --------
     >>> import dpnp as np
     >>> x = np.array([[3, 0, 0], [0, 4, 0], [5, 6, 0]])
-    >>> out = np.nonzero(x)
-    >>> for arr in out:
-    >>>     [i for i in arr]
-    [0, 1, 2, 2]
-    [0, 1, 0, 1]
+    >>> x
+    array([[3, 0, 0],
+           [0, 4, 0],
+           [5, 6, 0]])
+    >>> np.nonzero(x)
+    (array([0, 1, 2, 2]), array([0, 1, 0, 1]))
 
-    >>> x2 = np.array([3, 0, 0, 0, 4, 0, 5, 6, 0])
-    >>> out2 = np.nonzero(x2)
-    >>> for arr in out2:
-    >>>     [i for i in arr]
-    [0, 4, 6, 7]
+    >>> x[np.nonzero(x)]
+    array([3, 4, 5, 6])
+    >>> np.stack(np.nonzero(x)).T
+    array([[0, 0],
+           [1, 1],
+           [2, 0],
+           [2, 1]])
+
+    A common use for ``nonzero`` is to find the indices of an array, where
+    a condition is ``True.``  Given an array `a`, the condition `a` > 3 is
+    a boolean array and since ``False`` is interpreted as ``0``,
+    ``np.nonzero(a > 3)`` yields the indices of the `a` where the condition is
+    true.
+
+    >>> a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    >>> a > 3
+    array([[False, False, False],
+           [ True,  True,  True],
+           [ True,  True,  True]])
+    >>> np.nonzero(a > 3)
+    (array([1, 1, 1, 2, 2, 2]), array([0, 1, 2, 0, 1, 2]))
+
+    Using this result to index `a` is equivalent to using the mask directly:
+
+    >>> a[np.nonzero(a > 3)]
+    array([4, 5, 6, 7, 8, 9])
+    >>> a[a > 3]  # prefer this spelling
+    array([4, 5, 6, 7, 8, 9])
+
+    ``nonzero`` can also be called as a method of the array.
+
+    >>> (a > 3).nonzero()
+    (array([1, 1, 1, 2, 2, 2]), array([0, 1, 2, 0, 1, 2]))
 
     """
 
-    if dpnp.is_supported_array_type(x):
-        usx_x = dpnp.get_usm_ndarray(x)
-        return tuple(
-            dpnp_array._create_from_usm_ndarray(y) for y in dpt.nonzero(usx_x)
-        )
-
-    return call_origin(numpy.nonzero, x)
+    usx_a = dpnp.get_usm_ndarray(a)
+    return tuple(
+        dpnp_array._create_from_usm_ndarray(y) for y in dpt.nonzero(usx_a)
+    )
 
 
 def place(x, mask, vals, /):
