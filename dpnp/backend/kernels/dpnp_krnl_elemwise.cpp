@@ -34,6 +34,12 @@
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
+// dpctl tensor headers
+#include "kernels/alignment.hpp"
+
+using dpctl::tensor::kernels::alignment_utils::is_aligned;
+using dpctl::tensor::kernels::alignment_utils::required_alignment;
+
 #define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)         \
     template <typename _KernelNameSpecialization1,                             \
               typename _KernelNameSpecialization2>                             \
@@ -928,15 +934,6 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_RECIP][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_recip_c_default<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RECIP_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_recip_c_ext<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_RECIP_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_recip_c_ext<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_RECIP_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_recip_c_ext<float>};
-    fmap[DPNPFuncName::DPNP_FN_RECIP_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_recip_c_ext<double>};
-
     fmap[DPNPFuncName::DPNP_FN_SIGN][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_sign_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_SIGN][eft_LNG][eft_LNG] = {
@@ -1198,8 +1195,12 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                         (nd_it.get_group(0) * nd_it.get_local_range(0) +       \
                          sg.get_group_id()[0] * max_sg_size);                  \
                                                                                \
-                    if (start + static_cast<size_t>(vec_sz) * max_sg_size <    \
-                        result_size) {                                         \
+                    if (is_aligned<required_alignment>(input1_data) &&         \
+                        is_aligned<required_alignment>(input2_data) &&         \
+                        is_aligned<required_alignment>(result) &&              \
+                        (start + static_cast<size_t>(vec_sz) * max_sg_size <   \
+                         result_size))                                         \
+                    {                                                          \
                         auto input1_multi_ptr = sycl::address_space_cast<      \
                             sycl::access::address_space::global_space,         \
                             sycl::access::decorated::yes>(                     \
@@ -1396,33 +1397,7 @@ static constexpr DPNPFuncType get_divide_res_type()
 template <DPNPFuncType FT1, DPNPFuncType... FTs>
 static void func_map_elemwise_2arg_3type_core(func_map_t &fmap)
 {
-    ((fmap[DPNPFuncName::DPNP_FN_ADD_EXT][FT1][FTs] =
-          {populate_func_types<FT1, FTs>(),
-           (void *)dpnp_add_c_ext<
-               func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>}),
-     ...);
-    ((fmap[DPNPFuncName::DPNP_FN_DIVIDE_EXT][FT1][FTs] =
-          {get_divide_res_type<FT1, FTs>(),
-           (void *)dpnp_divide_c_ext<
-               func_type_map_t::find_type<get_divide_res_type<FT1, FTs>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>,
-           get_divide_res_type<FT1, FTs, std::false_type>(),
-           (void *)
-               dpnp_divide_c_ext<func_type_map_t::find_type<get_divide_res_type<
-                                     FT1, FTs, std::false_type>()>,
-                                 func_type_map_t::find_type<FT1>,
-                                 func_type_map_t::find_type<FTs>>}),
-     ...);
-    ((fmap[DPNPFuncName::DPNP_FN_MULTIPLY_EXT][FT1][FTs] =
-          {populate_func_types<FT1, FTs>(),
-           (void *)dpnp_multiply_c_ext<
-               func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>}),
-     ...);
+    // dpnp_subtract_c_ext is implicitly used by dpnp_ptp_c
     ((fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][FT1][FTs] =
           {populate_func_types<FT1, FTs>(),
            (void *)dpnp_subtract_c_ext<

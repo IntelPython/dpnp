@@ -40,10 +40,9 @@ def for_signed_dtypes_bincount(name="dtype"):
 
 
 def for_all_dtypes_combination_bincount(names):
-    return testing.helper.for_dtypes_combination(_all_types, names=names)
+    return testing._loops.for_dtypes_combination(_all_types, names=names)
 
 
-@testing.gpu
 class TestHistogram(unittest.TestCase):
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
@@ -335,7 +334,7 @@ class TestHistogram(unittest.TestCase):
 
 
 # This class compares CUB results against NumPy's
-# @testing.gpu
+
 # @unittest.skipUnless(cupy.cuda.cub.available, 'The CUB routine is not enabled')
 # class TestCubHistogram(unittest.TestCase):
 
@@ -370,7 +369,6 @@ class TestHistogram(unittest.TestCase):
 # return h, b
 
 
-@testing.gpu
 @testing.parameterize(
     *testing.product(
         {
@@ -401,7 +399,6 @@ class TestDigitize(unittest.TestCase):
         return (y,)
 
 
-@testing.gpu
 @testing.parameterize({"right": True}, {"right": False})
 class TestDigitizeNanInf(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
@@ -472,7 +469,6 @@ class TestDigitizeNanInf(unittest.TestCase):
         return (y,)
 
 
-@testing.gpu
 class TestDigitizeInvalid(unittest.TestCase):
     def test_digitize_complex(self):
         for xp in (numpy, cupy):

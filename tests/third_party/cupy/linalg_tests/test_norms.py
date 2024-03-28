@@ -8,6 +8,36 @@ from tests.helper import is_cpu_device
 from tests.third_party.cupy import testing
 
 
+@testing.parameterize(
+    *testing.product(
+        {
+            "array": [
+                [[1, 2], [3, 4]],
+                [[1, 2], [1, 2]],
+                [[0, 0], [0, 0]],
+                [1, 2],
+                [0, 1],
+                [0, 0],
+            ],
+            "tol": [None, 1],
+        }
+    )
+)
+class TestMatrixRank(unittest.TestCase):
+    @testing.for_all_dtypes(no_float16=True)
+    @testing.numpy_cupy_array_equal(type_check=True)
+    def test_matrix_rank(self, xp, dtype):
+        a = xp.array(self.array, dtype=dtype)
+        y = xp.linalg.matrix_rank(a, tol=self.tol)
+        if xp is cupy:
+            assert isinstance(y, cupy.ndarray)
+            assert y.shape == ()
+        else:
+            # Note numpy returns numpy scalar or python int
+            y = xp.array(y)
+        return y
+
+
 # TODO: Remove the use of fixture for all tests in this file
 # when dpnp.prod() will support complex dtypes on Gen9
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")

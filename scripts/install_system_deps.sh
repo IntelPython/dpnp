@@ -1,7 +1,5 @@
 #!/bin/bash
 
-THEDIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
-
 # echo +++++++++++++++++++++++++ System prerequisites +++++++++++++++++++++++++++
 # sudo apt-get install -f
 # sudo dpkg --configure -a

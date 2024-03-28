@@ -7,7 +7,6 @@ import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
-@testing.gpu
 class TestMatrix(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_diag1(self, xp):
@@ -107,7 +106,6 @@ class TestMatrix(unittest.TestCase):
     {"shape": (3, 3)},
     {"shape": (4, 3)},
 )
-@testing.gpu
 class TestTri(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -131,8 +129,6 @@ class TestTri(unittest.TestCase):
     {"shape": (4, 3)},
     {"shape": (2, 3, 4)},
 )
-@testing.gpu
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestTriLowerAndUpper(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
@@ -140,6 +136,7 @@ class TestTriLowerAndUpper(unittest.TestCase):
         m = testing.shaped_arange(self.shape, xp, dtype)
         return xp.tril(m)
 
+    @pytest.mark.skip("list as input arg is not supported")
     @testing.numpy_cupy_array_equal()
     def test_tril_array_like(self, xp):
         return xp.tril([[1, 2], [3, 4]])
@@ -162,6 +159,7 @@ class TestTriLowerAndUpper(unittest.TestCase):
         m = testing.shaped_arange(self.shape, xp, dtype)
         return xp.triu(m)
 
+    @pytest.mark.skip("list as input arg is not supported")
     @testing.numpy_cupy_array_equal()
     def test_triu_array_like(self, xp):
         return xp.triu([[1, 2], [3, 4]])

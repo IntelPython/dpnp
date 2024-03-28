@@ -42,9 +42,14 @@ import dpctl.tensor as dpt
 import numpy
 
 import dpnp
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import *
+
+from .dpnp_array import dpnp_array
+
+# pylint: disable=no-name-in-module
+from .dpnp_utils import (
+    call_origin,
+    get_usm_allocations,
+)
 
 __all__ = ["argmax", "argmin", "searchsorted", "where"]
 
@@ -57,13 +62,13 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
 
     Parameters
     ----------
-    a :  {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int, optional
         Axis along which to search. If ``None``, the function must return
         the index of the maximum value of the flattened array.
         Default: ``None``.
-    out :  {dpnp_array, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool
@@ -77,15 +82,17 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     -------
     out : dpnp.ndarray
         If `axis` is ``None``, a zero-dimensional array containing the index of
-        the first occurrence of the maximum value; otherwise, a non-zero-dimensional
-        array containing the indices of the minimum values. The returned array
-        must have the default array index data type.
+        the first occurrence of the maximum value; otherwise,
+        a non-zero-dimensional array containing the indices of the minimum
+        values. The returned array must have the default array index data type.
 
     See Also
     --------
     :obj:`dpnp.ndarray.argmax` : Equivalent function.
-    :obj:`dpnp.nanargmax` : Returns the indices of the maximum values along an axis, igonring NaNs.
-    :obj:`dpnp.argmin` : Returns the indices of the minimum values along an axis.
+    :obj:`dpnp.nanargmax` : Returns the indices of the maximum values along
+                            an axis, igonring NaNs.
+    :obj:`dpnp.argmin` : Returns the indices of the minimum values
+                         along an axis.
     :obj:`dpnp.max` : The maximum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
     :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``
@@ -141,13 +148,13 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : int, optional
         Axis along which to search. If ``None``, the function must return
         the index of the minimum value of the flattened array.
         Default: ``None``.
-    out : {dpnp_array, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     keepdims : bool, optional
@@ -161,15 +168,17 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     -------
     out : dpnp.ndarray
         If `axis` is ``None``, a zero-dimensional array containing the index of
-        the first occurrence of the minimum value; otherwise, a non-zero-dimensional
-        array containing the indices of the minimum values. The returned array
-        must have the default array index data type.
+        the first occurrence of the minimum value; otherwise,
+        a non-zero-dimensional array containing the indices of the minimum
+        values. The returned array must have the default array index data type.
 
     See Also
     --------
     :obj:`dpnp.ndarray.argmin` : Equivalent function.
-    :obj:`dpnp.nanargmin` : Returns the indices of the minimum values along an axis, igonring NaNs.
-    :obj:`dpnp.argmax` : Returns the indices of the maximum values along an axis.
+    :obj:`dpnp.nanargmin` : Returns the indices of the minimum values
+                            along an axis, igonring NaNs.
+    :obj:`dpnp.argmax` : Returns the indices of the maximum values
+                         along an axis.
     :obj:`dpnp.min` : The minimum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
     :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``
@@ -223,9 +232,61 @@ def searchsorted(a, v, side="left", sorter=None):
 
     For full documentation refer to :obj:`numpy.searchsorted`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input 1-D array. If `sorter` is ``None``, then it must be sorted in
+        ascending order, otherwise `sorter` must be an array of indices that
+        sort it.
+    v : {dpnp.ndarray, usm_ndarray, scalar}
+        Values to insert into `a`.
+    side : {'left', 'right'}, optional
+        If ``'left'``, the index of the first suitable location found is given.
+        If ``'right'``, return the last such index. If there is no suitable
+        index, return either 0 or N (where N is the length of `a`).
+        Default is ``'left'``.
+    sorter : {dpnp.ndarray, usm_ndarray}, optional
+        Optional 1-D array of integer indices that sort array a into ascending
+        order. They are typically the result of argsort.
+        Out of bound index values of `sorter` array are treated using `"wrap"`
+        mode documented in :py:func:`dpnp.take`.
+        Default is ``None``.
+
+    Returns
+    -------
+    indices : dpnp.ndarray
+        Array of insertion points with the same shape as `v`,
+        or 0-D array if `v` is a scalar.
+
+    See Also
+    --------
+    :obj:`dpnp.sort` : Return a sorted copy of an array.
+    :obj:`dpnp.histogram` : Produce histogram from 1-D data.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([11,12,13,14,15])
+    >>> np.searchsorted(a, 13)
+    array(2)
+    >>> np.searchsorted(a, 13, side='right')
+    array(3)
+    >>> v = np.array([-10, 20, 12, 13])
+    >>> np.searchsorted(a, v)
+    array([0, 5, 1, 2])
+
     """
 
-    return call_origin(numpy.where, a, v, side, sorter)
+    usm_a = dpnp.get_usm_ndarray(a)
+    if dpnp.isscalar(v):
+        usm_v = dpt.asarray(v, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
+    else:
+        usm_v = dpnp.get_usm_ndarray(v)
+
+    usm_sorter = None if sorter is None else dpnp.get_usm_ndarray(sorter)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.searchsorted(usm_a, usm_v, side=side, sorter=usm_sorter)
+    )
 
 
 def where(condition, x=None, y=None, /):
@@ -250,7 +311,8 @@ def where(condition, x=None, y=None, /):
     Parameters `x` and `y` are supported as either scalar, :class:`dpnp.ndarray`
     or :class:`dpctl.tensor.usm_ndarray`
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types of `x` and `y` are limited by supported DPNP :ref:`Data types`.
+    Input array data types of `x` and `y` are limited by supported DPNP
+    :ref:`Data types`.
 
     See Also
     --------
@@ -270,12 +332,15 @@ def where(condition, x=None, y=None, /):
     missing = (x is None, y is None).count(True)
     if missing == 1:
         raise ValueError("Must provide both 'x' and 'y' or neither.")
-    elif missing == 2:
+
+    if missing == 2:
         return dpnp.nonzero(condition)
-    elif missing == 0:
+
+    if missing == 0:
         if dpnp.is_supported_array_type(condition):
             if numpy.isscalar(x) or numpy.isscalar(y):
-                # get USM type and queue to copy scalar from the host memory into a USM allocation
+                # get USM type and queue to copy scalar from the host memory
+                # into a USM allocation
                 usm_type, queue = get_usm_allocations([condition, x, y])
                 x = (
                     dpt.asarray(x, usm_type=usm_type, sycl_queue=queue)

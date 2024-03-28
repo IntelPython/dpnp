@@ -42,8 +42,6 @@ int main(int, char **)
 {
     const size_t size = 16;
 
-    dpnp_queue_initialize_c(QueueOptions::GPU_SELECTOR);
-
     double *array = (double *)dpnp_memory_alloc_c(size * sizeof(double));
     long *result = (long *)dpnp_memory_alloc_c(size * sizeof(long));
 

@@ -1,13 +1,21 @@
 import dpctl
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_array_equal, assert_raises
+from dpctl.utils import ExecutionPlacementError
+from numpy.testing import (
+    assert_allclose,
+    assert_almost_equal,
+    assert_array_equal,
+    assert_raises,
+)
 
 import dpnp as inp
+from tests.third_party.cupy import testing
 
 from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
+    get_float_complex_dtypes,
     has_support_aspect64,
     is_cpu_device,
 )
@@ -44,44 +52,159 @@ def vvsort(val, vec, size, xp):
         vec[:, imax] = temp
 
 
-@pytest.mark.parametrize(
-    "array",
-    [
-        [[[1, -2], [2, 5]]],
-        [[[1.0, -2.0], [2.0, 5.0]]],
-        [[[1.0, -2.0], [2.0, 5.0]], [[1.0, -2.0], [2.0, 5.0]]],
-    ],
-    ids=[
-        "[[[1, -2], [2, 5]]]",
-        "[[[1., -2.], [2., 5.]]]",
-        "[[[1., -2.], [2., 5.]], [[1., -2.], [2., 5.]]]",
-    ],
-)
-def test_cholesky(array):
-    a = numpy.array(array)
-    ia = inp.array(a)
-    result = inp.linalg.cholesky(ia)
-    expected = numpy.linalg.cholesky(a)
-    assert_array_equal(expected, result)
+class TestCholesky:
+    @pytest.mark.parametrize(
+        "array",
+        [
+            [[1, 2], [2, 5]],
+            [[[5, 2], [2, 6]], [[7, 3], [3, 8]], [[3, 1], [1, 4]]],
+            [
+                [[[5, 2], [2, 5]], [[6, 3], [3, 6]]],
+                [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
+            ],
+        ],
+        ids=[
+            "2D_array",
+            "3D_array",
+            "4D_array",
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_cholesky(self, array, dtype):
+        a = numpy.array(array, dtype=dtype)
+        ia = inp.array(a)
+        result = inp.linalg.cholesky(ia)
+        expected = numpy.linalg.cholesky(a)
+        assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize(
+        "array",
+        [
+            [[1, 2], [2, 5]],
+            [[[5, 2], [2, 6]], [[7, 3], [3, 8]], [[3, 1], [1, 4]]],
+            [
+                [[[5, 2], [2, 5]], [[6, 3], [3, 6]]],
+                [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
+            ],
+        ],
+        ids=[
+            "2D_array",
+            "3D_array",
+            "4D_array",
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_cholesky_upper(self, array, dtype):
+        ia = inp.array(array, dtype=dtype)
+        result = inp.linalg.cholesky(ia, upper=True)
 
-@pytest.mark.parametrize(
-    "shape",
-    [
-        (0, 0),
-        (3, 0, 0),
-    ],
-    ids=[
-        "(0, 0)",
-        "(3, 0, 0)",
-    ],
-)
-def test_cholesky_0D(shape):
-    a = numpy.empty(shape)
-    ia = inp.array(a)
-    result = inp.linalg.cholesky(ia)
-    expected = numpy.linalg.cholesky(a)
-    assert_array_equal(expected, result)
+        if ia.ndim > 2:
+            n = ia.shape[-1]
+            ia_reshaped = ia.reshape(-1, n, n)
+            res_reshaped = result.reshape(-1, n, n)
+            batch_size = ia_reshaped.shape[0]
+            for idx in range(batch_size):
+                # Reconstruct the matrix using the Cholesky decomposition result
+                if inp.issubdtype(dtype, inp.complexfloating):
+                    reconstructed = (
+                        res_reshaped[idx].T.conj() @ res_reshaped[idx]
+                    )
+                else:
+                    reconstructed = res_reshaped[idx].T @ res_reshaped[idx]
+                assert_dtype_allclose(
+                    reconstructed, ia_reshaped[idx], check_type=False
+                )
+        else:
+            # Reconstruct the matrix using the Cholesky decomposition result
+            if inp.issubdtype(dtype, inp.complexfloating):
+                reconstructed = result.T.conj() @ result
+            else:
+                reconstructed = result.T @ result
+            assert_dtype_allclose(reconstructed, ia, check_type=False)
+
+    # upper parameter support will be added in numpy 2.0 version
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize(
+        "array",
+        [
+            [[1, 2], [2, 5]],
+            [[[5, 2], [2, 6]], [[7, 3], [3, 8]], [[3, 1], [1, 4]]],
+            [
+                [[[5, 2], [2, 5]], [[6, 3], [3, 6]]],
+                [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
+            ],
+        ],
+        ids=[
+            "2D_array",
+            "3D_array",
+            "4D_array",
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_cholesky_upper_numpy(self, array, dtype):
+        a = numpy.array(array, dtype=dtype)
+        ia = inp.array(a)
+        result = inp.linalg.cholesky(ia, upper=True)
+        expected = numpy.linalg.cholesky(a, upper=True)
+        assert_dtype_allclose(result, expected)
+
+    def test_cholesky_strides(self):
+        a_np = numpy.array(
+            [
+                [5, 2, 0, 0, 1],
+                [2, 6, 0, 0, 2],
+                [0, 0, 7, 0, 0],
+                [0, 0, 0, 4, 0],
+                [1, 2, 0, 0, 5],
+            ]
+        )
+
+        a_dp = inp.array(a_np)
+
+        # positive strides
+        expected = numpy.linalg.cholesky(a_np[::2, ::2])
+        result = inp.linalg.cholesky(a_dp[::2, ::2])
+        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+
+        # negative strides
+        expected = numpy.linalg.cholesky(a_np[::-2, ::-2])
+        result = inp.linalg.cholesky(a_dp[::-2, ::-2])
+        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (0, 0),
+            (3, 0, 0),
+            (0, 2, 2),
+        ],
+        ids=[
+            "(0, 0)",
+            "(3, 0, 0)",
+            "(0, 2, 2)",
+        ],
+    )
+    def test_cholesky_empty(self, shape):
+        a = numpy.empty(shape)
+        ia = inp.array(a)
+        result = inp.linalg.cholesky(ia)
+        expected = numpy.linalg.cholesky(a)
+        assert_array_equal(expected, result)
+
+    def test_cholesky_errors(self):
+        a_dp = inp.array([[1, 2], [2, 5]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.cholesky, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.cholesky, a_dp_ndim_1)
+
+        # a is not square
+        a_dp = inp.ones((2, 3))
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.cholesky, a_dp)
 
 
 @pytest.mark.parametrize(
@@ -191,8 +314,8 @@ class TestDet:
         a_np = numpy.array(matrix, dtype="float32")
         a_dp = inp.array(a_np)
 
-        expected = numpy.linalg.slogdet(a_np)
-        result = inp.linalg.slogdet(a_dp)
+        expected = numpy.linalg.det(a_np)
+        result = inp.linalg.det(a_dp)
 
         assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
@@ -264,7 +387,7 @@ def test_eig_arange(type, size):
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_none=True))
 @pytest.mark.parametrize("size", [2, 4, 8])
 def test_eigh_arange(type, size):
-    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
+    if dpctl.SyclDevice().device_type != dpctl.device_type.gpu:
         pytest.skip(
             "eig function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
         )
@@ -306,7 +429,7 @@ def test_eigh_arange(type, size):
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
 def test_eigvals(type):
-    if dpctl.get_current_device_type() != dpctl.device_type.gpu:
+    if dpctl.SyclDevice().device_type != dpctl.device_type.gpu:
         pytest.skip(
             "eigvals function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
         )
@@ -319,51 +442,287 @@ def test_eigvals(type):
         assert_allclose(expected, result, atol=0.5)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize(
-    "array",
-    [[[1.0, 2.0], [3.0, 4.0]], [[0, 1, 2], [3, 2, -1], [4, -2, 3]]],
-    ids=["[[1., 2.], [3., 4.]]", "[[0, 1, 2], [3, 2, -1], [4, -2, 3]]"],
-)
-def test_inv(type, array):
-    a = numpy.array(array, dtype=type)
-    ia = inp.array(a)
-    result = inp.linalg.inv(ia)
-    expected = numpy.linalg.inv(a)
-    assert_allclose(expected, result, rtol=1e-06)
+class TestInv:
+    @pytest.mark.parametrize(
+        "array",
+        [
+            [[1, 2], [3, 4]],
+            [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
+            [
+                [[[1, 2], [3, 4]], [[1, 2], [2, 1]]],
+                [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
+            ],
+        ],
+        ids=[
+            "2D_array",
+            "3D_array",
+            "4D_array",
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_inv(self, array, dtype):
+        a = numpy.array(array, dtype=dtype)
+        ia = inp.array(a)
+        result = inp.linalg.inv(ia)
+        expected = numpy.linalg.inv(a)
+        assert_dtype_allclose(result, expected)
+
+    def test_inv_strides(self):
+        a_np = numpy.array(
+            [
+                [2, 3, 1, 4, 5],
+                [5, 6, 7, 8, 9],
+                [9, 7, 7, 2, 3],
+                [1, 4, 5, 1, 8],
+                [8, 9, 8, 5, 3],
+            ]
+        )
+
+        a_dp = inp.array(a_np)
+
+        # positive strides
+        expected = numpy.linalg.inv(a_np[::2, ::2])
+        result = inp.linalg.inv(a_dp[::2, ::2])
+        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+
+        # negative strides
+        expected = numpy.linalg.inv(a_np[::-2, ::-2])
+        result = inp.linalg.inv(a_dp[::-2, ::-2])
+        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (0, 0),
+            (3, 0, 0),
+            (0, 2, 2),
+        ],
+        ids=[
+            "(0, 0)",
+            "(3, 0, 0)",
+            "(0, 2, 2)",
+        ],
+    )
+    def test_inv_empty(self, shape):
+        a = numpy.empty(shape)
+        ia = inp.array(a)
+        result = inp.linalg.inv(ia)
+        expected = numpy.linalg.inv(a)
+        assert_dtype_allclose(result, expected)
+
+    # TODO: remove skipif when MKLD-16626 is resolved
+    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
+    @pytest.mark.parametrize(
+        "matrix",
+        [
+            [[1, 2], [2, 4]],
+            [[0, 0], [0, 0]],
+            [[1, 1], [1, 1]],
+            [[2, 4], [1, 2]],
+            [[1, 2], [0, 0]],
+            [[1, 0], [2, 0]],
+        ],
+        ids=[
+            "Linearly dependent rows",
+            "Zero matrix",
+            "Identical rows",
+            "Linearly dependent columns",
+            "Zero row",
+            "Zero column",
+        ],
+    )
+    def test_inv_singular_matrix(self, matrix):
+        a_np = numpy.array(matrix, dtype="float32")
+        a_dp = inp.array(a_np)
+
+        assert_raises(numpy.linalg.LinAlgError, numpy.linalg.inv, a_np)
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp)
+
+    # TODO: remove skipif when MKLD-16626 is resolved
+    # _getrf_batch does not raise an error with singular matrices.
+    @pytest.mark.skip("MKLD-16626")
+    def test_inv_singular_matrix_3D(self):
+        a_np = numpy.array(
+            [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
+        )
+        a_dp = inp.array(a_np)
+
+        assert_raises(numpy.linalg.LinAlgError, numpy.linalg.inv, a_np)
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp)
+
+    def test_inv_errors(self):
+        a_dp = inp.array([[1, 2], [2, 5]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.inv, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp_ndim_1)
+
+        # a is not square
+        a_dp = inp.ones((2, 3))
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp)
 
 
-@pytest.mark.parametrize(
-    "type", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
-)
-@pytest.mark.parametrize(
-    "array",
-    [
-        [0, 0],
-        [0, 1],
-        [1, 2],
-        [[0, 0], [0, 0]],
-        [[1, 2], [1, 2]],
-        [[1, 2], [3, 4]],
-    ],
-    ids=[
-        "[0, 0]",
-        "[0, 1]",
-        "[1, 2]",
-        "[[0, 0], [0, 0]]",
-        "[[1, 2], [1, 2]]",
-        "[[1, 2], [3, 4]]",
-    ],
-)
-@pytest.mark.parametrize("tol", [None], ids=["None"])
-def test_matrix_rank(type, tol, array):
-    a = numpy.array(array, dtype=type)
-    ia = inp.array(a)
+class TestMatrixPower:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "data, power",
+        [
+            (
+                numpy.block(
+                    [
+                        [numpy.eye(2), numpy.zeros((2, 2))],
+                        [numpy.zeros((2, 2)), numpy.eye(2) * 2],
+                    ]
+                ),
+                3,
+            ),  # Block-diagonal matrix
+            (numpy.eye(3, k=1) + numpy.eye(3), 3),  # Non-diagonal matrix
+            (
+                numpy.eye(3, k=1) + numpy.eye(3),
+                -3,
+            ),  # Inverse of non-diagonal matrix
+        ],
+    )
+    def test_matrix_power(self, data, power, dtype):
+        a = data.astype(dtype)
+        a_dp = inp.array(a)
 
-    result = inp.linalg.matrix_rank(ia, tol=tol)
-    expected = numpy.linalg.matrix_rank(a, tol=tol)
+        result = inp.linalg.matrix_power(a_dp, power)
+        expected = numpy.linalg.matrix_power(a, power)
 
-    assert_allclose(expected, result)
+        assert_dtype_allclose(result, expected)
+
+    def test_matrix_power_errors(self):
+        a_dp = inp.eye(4, dtype="float32")
+
+        # unsupported type `a`
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.matrix_power, a_np, 2)
+
+        # unsupported type `power`
+        assert_raises(TypeError, inp.linalg.matrix_power, a_dp, 1.5)
+        assert_raises(TypeError, inp.linalg.matrix_power, a_dp, [2])
+
+        # not invertible
+        # TODO: remove it when mkl>=2024.0 is released (MKLD-16626)
+        if not is_cpu_device():
+            noninv = inp.array([[1, 0], [0, 0]])
+            assert_raises(
+                inp.linalg.LinAlgError, inp.linalg.matrix_power, noninv, -1
+            )
+
+
+class TestMatrixRank:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "data",
+        [
+            numpy.eye(4),
+            numpy.diag([1, 1, 1, 0]),
+            numpy.zeros((4, 4)),
+            numpy.array([1, 0, 0, 0]),
+            numpy.zeros((4,)),
+            numpy.array(1),
+        ],
+    )
+    def test_matrix_rank(self, data, dtype):
+        a = data.astype(dtype)
+        a_dp = inp.array(a)
+
+        np_rank = numpy.linalg.matrix_rank(a)
+        dp_rank = inp.linalg.matrix_rank(a_dp)
+        assert np_rank == dp_rank
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "data",
+        [
+            numpy.eye(4),
+            numpy.ones((4, 4)),
+            numpy.zeros((4, 4)),
+            numpy.diag([1, 1, 1, 0]),
+        ],
+    )
+    def test_matrix_rank_hermitian(self, data, dtype):
+        a = data.astype(dtype)
+        a_dp = inp.array(a)
+
+        np_rank = numpy.linalg.matrix_rank(a, hermitian=True)
+        dp_rank = inp.linalg.matrix_rank(a_dp, hermitian=True)
+        assert np_rank == dp_rank
+
+    @pytest.mark.parametrize(
+        "high_tol, low_tol",
+        [
+            (0.99e-6, 1.01e-6),
+            (numpy.array(0.99e-6), numpy.array(1.01e-6)),
+            (numpy.array([0.99e-6]), numpy.array([1.01e-6])),
+        ],
+        ids=[
+            "float",
+            "0-D array",
+            "1-D array",
+        ],
+    )
+    def test_matrix_rank_tolerance(self, high_tol, low_tol):
+        a = numpy.eye(4)
+        a[-1, -1] = 1e-6
+        a_dp = inp.array(a)
+
+        if isinstance(high_tol, numpy.ndarray):
+            dp_high_tol = inp.array(
+                high_tol, usm_type=a_dp.usm_type, sycl_queue=a_dp.sycl_queue
+            )
+            dp_low_tol = inp.array(
+                low_tol, usm_type=a_dp.usm_type, sycl_queue=a_dp.sycl_queue
+            )
+        else:
+            dp_high_tol = high_tol
+            dp_low_tol = low_tol
+
+        np_rank_high_tol = numpy.linalg.matrix_rank(
+            a, hermitian=True, tol=high_tol
+        )
+        dp_rank_high_tol = inp.linalg.matrix_rank(
+            a_dp, hermitian=True, tol=dp_high_tol
+        )
+        assert np_rank_high_tol == dp_rank_high_tol
+
+        np_rank_low_tol = numpy.linalg.matrix_rank(
+            a, hermitian=True, tol=low_tol
+        )
+        dp_rank_low_tol = inp.linalg.matrix_rank(
+            a_dp, hermitian=True, tol=dp_low_tol
+        )
+        assert np_rank_low_tol == dp_rank_low_tol
+
+    def test_matrix_rank_errors(self):
+        a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
+
+        # unsupported type `a`
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.matrix_rank, a_np)
+
+        # unsupported type `tol`
+        tol = numpy.array(0.5, dtype="float32")
+        assert_raises(TypeError, inp.linalg.matrix_rank, a_dp, tol)
+        assert_raises(TypeError, inp.linalg.matrix_rank, a_dp, [0.5])
+
+        # diffetent queue
+        a_queue = dpctl.SyclQueue()
+        tol_queue = dpctl.SyclQueue()
+        a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
+        tol_dp_q = inp.array([0.5], dtype="float32", sycl_queue=tol_queue)
+        assert_raises(
+            ExecutionPlacementError,
+            inp.linalg.matrix_rank,
+            a_dp_q,
+            tol_dp_q,
+        )
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -445,146 +804,148 @@ def test_norm3(array, ord, axis):
     assert_allclose(expected, result)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize(
-    "shape",
-    [(2, 2), (3, 4), (5, 3), (16, 16), (0, 0), (0, 2), (2, 0)],
-    ids=["(2,2)", "(3,4)", "(5,3)", "(16,16)", "(0,0)", "(0,2)", "(2,0)"],
-)
-@pytest.mark.parametrize(
-    "mode", ["complete", "reduced"], ids=["complete", "reduced"]
-)
-def test_qr(type, shape, mode):
-    a = numpy.arange(shape[0] * shape[1], dtype=type).reshape(shape)
-    ia = inp.array(a)
+class TestQr:
+    # Set numpy.random.seed for test methods to prevent
+    # random generation of the input singular matrix
+    def setup_method(self):
+        numpy.random.seed(81)
 
-    np_q, np_r = numpy.linalg.qr(a, mode)
-    dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
-
-    support_aspect64 = has_support_aspect64()
-
-    if support_aspect64:
-        assert dpnp_q.dtype == np_q.dtype
-        assert dpnp_r.dtype == np_r.dtype
-    assert dpnp_q.shape == np_q.shape
-    assert dpnp_r.shape == np_r.shape
-
-    tol = 1e-6
-    if type == inp.float32:
-        tol = 1e-02
-    elif not support_aspect64 and type in (inp.int32, inp.int64, None):
-        tol = 1e-02
-
-    # check decomposition
-    assert_allclose(
-        ia,
-        inp.dot(dpnp_q, dpnp_r),
-        rtol=tol,
-        atol=tol,
+    # TODO: New packages that fix issue CMPLRLLVM-53771 are only available in internal CI.
+    # Skip the tests on cpu until these packages are available for the external CI.
+    # Specifically dpcpp_linux-64>=2024.1.0
+    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (3, 4), (5, 3), (16, 16), (2, 2, 2), (2, 4, 2), (2, 2, 4)],
+        ids=[
+            "(2, 2)",
+            "(3, 4)",
+            "(5, 3)",
+            "(16, 16)",
+            "(2, 2, 2)",
+            "(2, 4, 2)",
+            "(2, 2, 4)",
+        ],
     )
-
-    # NP change sign for comparison
-    ncols = min(a.shape[0], a.shape[1])
-    for i in range(ncols):
-        j = numpy.where(numpy.abs(np_q[:, i]) > tol)[0][0]
-        if np_q[j, i] * dpnp_q[j, i] < 0:
-            np_q[:, i] = -np_q[:, i]
-            np_r[i, :] = -np_r[i, :]
-
-        if numpy.any(numpy.abs(np_r[i, :]) > tol):
-            assert_allclose(
-                inp.asnumpy(dpnp_q)[:, i], np_q[:, i], rtol=tol, atol=tol
-            )
-
-    assert_allclose(dpnp_r, np_r, rtol=tol, atol=tol)
-
-
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-def test_qr_not_2D():
-    a = numpy.arange(12, dtype=numpy.float32).reshape((3, 2, 2))
-    ia = inp.array(a)
-
-    np_q, np_r = numpy.linalg.qr(a)
-    dpnp_q, dpnp_r = inp.linalg.qr(ia)
-
-    assert dpnp_q.dtype == np_q.dtype
-    assert dpnp_r.dtype == np_r.dtype
-    assert dpnp_q.shape == np_q.shape
-    assert dpnp_r.shape == np_r.shape
-
-    assert_allclose(ia, inp.matmul(dpnp_q, dpnp_r))
-
-    a = numpy.empty((0, 3, 2), dtype=numpy.float32)
-    ia = inp.array(a)
-
-    np_q, np_r = numpy.linalg.qr(a)
-    dpnp_q, dpnp_r = inp.linalg.qr(ia)
-
-    assert dpnp_q.dtype == np_q.dtype
-    assert dpnp_r.dtype == np_r.dtype
-    assert dpnp_q.shape == np_q.shape
-    assert dpnp_r.shape == np_r.shape
-
-    assert_allclose(ia, inp.matmul(dpnp_q, dpnp_r))
-
-
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize(
-    "shape",
-    [(2, 2), (3, 4), (5, 3), (16, 16)],
-    ids=["(2,2)", "(3,4)", "(5,3)", "(16,16)"],
-)
-def test_svd(type, shape):
-    a = numpy.arange(shape[0] * shape[1], dtype=type).reshape(shape)
-    ia = inp.array(a)
-
-    np_u, np_s, np_vt = numpy.linalg.svd(a)
-    dpnp_u, dpnp_s, dpnp_vt = inp.linalg.svd(ia)
-
-    support_aspect64 = has_support_aspect64()
-
-    if support_aspect64:
-        assert dpnp_u.dtype == np_u.dtype
-        assert dpnp_s.dtype == np_s.dtype
-        assert dpnp_vt.dtype == np_vt.dtype
-    assert dpnp_u.shape == np_u.shape
-    assert dpnp_s.shape == np_s.shape
-    assert dpnp_vt.shape == np_vt.shape
-
-    tol = 1e-12
-    if type == inp.float32:
-        tol = 1e-03
-    elif not support_aspect64 and type in (inp.int32, inp.int64, None):
-        tol = 1e-03
-
-    # check decomposition
-    dpnp_diag_s = inp.zeros(shape, dtype=dpnp_s.dtype)
-    for i in range(dpnp_s.size):
-        dpnp_diag_s[i, i] = dpnp_s[i]
-
-    # check decomposition
-    assert_allclose(
-        ia, inp.dot(dpnp_u, inp.dot(dpnp_diag_s, dpnp_vt)), rtol=tol, atol=tol
+    @pytest.mark.parametrize(
+        "mode",
+        ["r", "raw", "complete", "reduced"],
+        ids=["r", "raw", "complete", "reduced"],
     )
+    def test_qr(self, dtype, shape, mode):
+        a = numpy.random.randn(*shape).astype(dtype)
+        if numpy.issubdtype(dtype, numpy.complexfloating):
+            a += 1j * numpy.random.randn(*shape)
+        ia = inp.array(a)
 
-    # compare singular values
-    # assert_allclose(dpnp_s, np_s, rtol=tol, atol=tol)
+        if mode == "r":
+            np_r = numpy.linalg.qr(a, mode)
+            dpnp_r = inp.linalg.qr(ia, mode)
+        else:
+            np_q, np_r = numpy.linalg.qr(a, mode)
+            dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
 
-    # change sign of vectors
-    for i in range(min(shape[0], shape[1])):
-        if np_u[0, i] * dpnp_u[0, i] < 0:
-            np_u[:, i] = -np_u[:, i]
-            np_vt[i, :] = -np_vt[i, :]
+            # check decomposition
+            if mode in ("complete", "reduced"):
+                if a.ndim == 2:
+                    assert_almost_equal(
+                        inp.dot(dpnp_q, dpnp_r),
+                        a,
+                        decimal=5,
+                    )
+                else:  # a.ndim > 2
+                    assert_almost_equal(
+                        inp.matmul(dpnp_q, dpnp_r),
+                        a,
+                        decimal=5,
+                    )
+            else:  # mode=="raw"
+                assert_dtype_allclose(dpnp_q, np_q)
 
-    # compare vectors for non-zero values
-    for i in range(numpy.count_nonzero(np_s > tol)):
-        assert_allclose(
-            inp.asnumpy(dpnp_u)[:, i], np_u[:, i], rtol=tol, atol=tol
-        )
-        assert_allclose(
-            inp.asnumpy(dpnp_vt)[i, :], np_vt[i, :], rtol=tol, atol=tol
-        )
+        if mode in ("raw", "r"):
+            assert_dtype_allclose(dpnp_r, np_r)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(0, 0), (0, 2), (2, 0), (2, 0, 3), (2, 3, 0), (0, 2, 3)],
+        ids=[
+            "(0, 0)",
+            "(0, 2)",
+            "(2 ,0)",
+            "(2, 0, 3)",
+            "(2, 3, 0)",
+            "(0, 2, 3)",
+        ],
+    )
+    @pytest.mark.parametrize(
+        "mode",
+        ["r", "raw", "complete", "reduced"],
+        ids=["r", "raw", "complete", "reduced"],
+    )
+    def test_qr_empty(self, dtype, shape, mode):
+        a = numpy.empty(shape, dtype=dtype)
+        ia = inp.array(a)
+
+        if mode == "r":
+            np_r = numpy.linalg.qr(a, mode)
+            dpnp_r = inp.linalg.qr(ia, mode)
+        else:
+            np_q, np_r = numpy.linalg.qr(a, mode)
+            dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
+
+            assert_dtype_allclose(dpnp_q, np_q)
+
+        assert_dtype_allclose(dpnp_r, np_r)
+
+    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
+    @pytest.mark.parametrize(
+        "mode",
+        ["r", "raw", "complete", "reduced"],
+        ids=["r", "raw", "complete", "reduced"],
+    )
+    def test_qr_strides(self, mode):
+        a = numpy.random.randn(5, 5)
+        ia = inp.array(a)
+
+        # positive strides
+        if mode == "r":
+            np_r = numpy.linalg.qr(a[::2, ::2], mode)
+            dpnp_r = inp.linalg.qr(ia[::2, ::2], mode)
+        else:
+            np_q, np_r = numpy.linalg.qr(a[::2, ::2], mode)
+            dpnp_q, dpnp_r = inp.linalg.qr(ia[::2, ::2], mode)
+
+            assert_dtype_allclose(dpnp_q, np_q)
+
+        assert_dtype_allclose(dpnp_r, np_r)
+
+        # negative strides
+        if mode == "r":
+            np_r = numpy.linalg.qr(a[::-2, ::-2], mode)
+            dpnp_r = inp.linalg.qr(ia[::-2, ::-2], mode)
+        else:
+            np_q, np_r = numpy.linalg.qr(a[::-2, ::-2], mode)
+            dpnp_q, dpnp_r = inp.linalg.qr(ia[::-2, ::-2], mode)
+
+            assert_dtype_allclose(dpnp_q, np_q)
+
+        assert_dtype_allclose(dpnp_r, np_r)
+
+    def test_qr_errors(self):
+        a_dp = inp.array([[1, 2], [3, 5]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.qr, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.qr, a_dp_ndim_1)
+
+        # invalid mode
+        assert_raises(ValueError, inp.linalg.qr, a_dp, "c")
 
 
 class TestSolve:
@@ -802,3 +1163,382 @@ class TestSlogdet:
         # unsupported type
         a_np = inp.asnumpy(a_dp)
         assert_raises(TypeError, inp.linalg.slogdet, a_np)
+
+
+class TestSvd:
+    # Set numpy.random.seed for test methods to prevent
+    # random generation of the input singular matrix
+    def setup_method(self):
+        numpy.random.seed(81)
+
+    def get_tol(self, dtype):
+        tol = 1e-06
+        if dtype in (inp.float32, inp.complex64):
+            tol = 1e-04
+        elif not has_support_aspect64() and dtype in (
+            inp.int32,
+            inp.int64,
+            None,
+        ):
+            tol = 1e-04
+        self._tol = tol
+
+    def check_types_shapes(
+        self, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt=True
+    ):
+        if has_support_aspect64():
+            if compute_vt:
+                assert dp_u.dtype == np_u.dtype
+                assert dp_vt.dtype == np_vt.dtype
+            assert dp_s.dtype == np_s.dtype
+        else:
+            if compute_vt:
+                assert dp_u.dtype.kind == np_u.dtype.kind
+                assert dp_vt.dtype.kind == np_vt.dtype.kind
+            assert dp_s.dtype.kind == np_s.dtype.kind
+
+        if compute_vt:
+            assert dp_u.shape == np_u.shape
+            assert dp_vt.shape == np_vt.shape
+        assert dp_s.shape == np_s.shape
+
+    # Checks the accuracy of singular value decomposition (SVD).
+    # Compares the reconstructed matrix from the decomposed components
+    # with the original matrix.
+    # Additionally checks for equality of singular values
+    # between dpnp and numpy decompositions
+    def check_decomposition(
+        self, dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
+    ):
+        tol = self._tol
+        if compute_vt:
+            dpnp_diag_s = inp.zeros_like(dp_a, dtype=dp_s.dtype)
+            for i in range(min(dp_a.shape[-2], dp_a.shape[-1])):
+                dpnp_diag_s[..., i, i] = dp_s[..., i]
+                reconstructed = inp.dot(dp_u, inp.dot(dpnp_diag_s, dp_vt))
+            # TODO: use assert dpnp.allclose() inside check_decomposition()
+            # when it will support complex dtypes
+            assert_allclose(dp_a, reconstructed, rtol=tol, atol=1e-4)
+
+        assert_allclose(dp_s, np_s, rtol=tol, atol=1e-03)
+
+        if compute_vt:
+            for i in range(min(dp_a.shape[-2], dp_a.shape[-1])):
+                if np_u[..., 0, i] * dp_u[..., 0, i] < 0:
+                    np_u[..., :, i] = -np_u[..., :, i]
+                    np_vt[..., i, :] = -np_vt[..., i, :]
+            for i in range(numpy.count_nonzero(np_s > tol)):
+                assert_allclose(
+                    inp.asnumpy(dp_u[..., :, i]),
+                    np_u[..., :, i],
+                    rtol=tol,
+                    atol=tol,
+                )
+                assert_allclose(
+                    inp.asnumpy(dp_vt[..., i, :]),
+                    np_vt[..., i, :],
+                    rtol=tol,
+                    atol=tol,
+                )
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (3, 4), (5, 3), (16, 16)],
+        ids=["(2,2)", "(3,4)", "(5,3)", "(16,16)"],
+    )
+    def test_svd(self, dtype, shape):
+        a = numpy.arange(shape[0] * shape[1], dtype=dtype).reshape(shape)
+        dp_a = inp.array(a)
+
+        np_u, np_s, np_vt = numpy.linalg.svd(a)
+        dp_u, dp_s, dp_vt = inp.linalg.svd(dp_a)
+
+        self.check_types_shapes(dp_u, dp_s, dp_vt, np_u, np_s, np_vt)
+        self.get_tol(dtype)
+        self.check_decomposition(
+            dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, True
+        )
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("compute_vt", [True, False], ids=["True", "False"])
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (16, 16)],
+        ids=["(2, 2)", "(16, 16)"],
+    )
+    def test_svd_hermitian(self, dtype, compute_vt, shape):
+        a = numpy.random.randn(*shape).astype(dtype)
+        if numpy.issubdtype(dtype, numpy.complexfloating):
+            a += 1j * numpy.random.randn(*shape)
+        a = (a + a.conj().T) / 2
+
+        dp_a = inp.array(a)
+
+        if compute_vt:
+            np_u, np_s, np_vt = numpy.linalg.svd(
+                a, compute_uv=compute_vt, hermitian=True
+            )
+            dp_u, dp_s, dp_vt = inp.linalg.svd(
+                dp_a, compute_uv=compute_vt, hermitian=True
+            )
+        else:
+            np_s = numpy.linalg.svd(a, compute_uv=compute_vt, hermitian=True)
+            dp_s = inp.linalg.svd(dp_a, compute_uv=compute_vt, hermitian=True)
+            np_u = np_vt = dp_u = dp_vt = None
+
+        self.check_types_shapes(
+            dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
+        )
+
+        self.get_tol(dtype)
+
+        self.check_decomposition(
+            dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
+        )
+
+    def test_svd_errors(self):
+        a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.svd, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.svd, a_dp_ndim_1)
+
+
+class TestPinv:
+    # Set numpy.random.seed for test methods to prevent
+    # random generation of the input singular matrix
+    def setup_method(self):
+        numpy.random.seed(81)
+
+    def get_tol(self, dtype):
+        tol = 1e-06
+        if dtype in (inp.float32, inp.complex64):
+            tol = 1e-04
+        elif not has_support_aspect64() and dtype in (
+            inp.int32,
+            inp.int64,
+            None,
+        ):
+            tol = 1e-04
+        self._tol = tol
+
+    def check_types_shapes(self, dp_B, np_B):
+        if has_support_aspect64():
+            assert dp_B.dtype == np_B.dtype
+        else:
+            assert dp_B.dtype.kind == np_B.dtype.kind
+
+        assert dp_B.shape == np_B.shape
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (3, 4), (5, 3), (16, 16), (2, 2, 2), (2, 4, 2), (2, 2, 4)],
+        ids=[
+            "(2, 2)",
+            "(3, 4)",
+            "(5, 3)",
+            "(16, 16)",
+            "(2, 2, 2)",
+            "(2, 4, 2)",
+            "(2, 2, 4)",
+        ],
+    )
+    def test_pinv(self, dtype, shape):
+        a = numpy.random.randn(*shape).astype(dtype)
+        if numpy.issubdtype(dtype, numpy.complexfloating):
+            a += 1j * numpy.random.randn(*shape)
+        a_dp = inp.array(a)
+
+        B = numpy.linalg.pinv(a)
+        B_dp = inp.linalg.pinv(a_dp)
+
+        self.check_types_shapes(B_dp, B)
+        self.get_tol(dtype)
+        tol = self._tol
+        assert_allclose(B_dp, B, rtol=tol, atol=tol)
+
+        if a.ndim == 2:
+            reconstructed = inp.dot(a_dp, inp.dot(B_dp, a_dp))
+        else:  # a.ndim > 2
+            reconstructed = inp.matmul(a_dp, inp.matmul(B_dp, a_dp))
+
+        assert_allclose(reconstructed, a_dp, rtol=tol, atol=tol)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (16, 16)],
+        ids=["(2, 2)", "(16, 16)"],
+    )
+    def test_pinv_hermitian(self, dtype, shape):
+        a = numpy.random.randn(*shape).astype(dtype)
+        if numpy.issubdtype(dtype, numpy.complexfloating):
+            a += 1j * numpy.random.randn(*shape)
+        a = (a + a.conj().T) / 2
+
+        a_dp = inp.array(a)
+
+        B = numpy.linalg.pinv(a, hermitian=True)
+        B_dp = inp.linalg.pinv(a_dp, hermitian=True)
+
+        self.check_types_shapes(B_dp, B)
+        self.get_tol(dtype)
+        tol = self._tol
+
+        reconstructed = inp.dot(inp.dot(a_dp, B_dp), a_dp)
+        assert_allclose(reconstructed, a_dp, rtol=tol, atol=tol)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(0, 0), (0, 2), (2, 0), (2, 0, 3), (2, 3, 0), (0, 2, 3)],
+        ids=[
+            "(0, 0)",
+            "(0, 2)",
+            "(2 ,0)",
+            "(2, 0, 3)",
+            "(2, 3, 0)",
+            "(0, 2, 3)",
+        ],
+    )
+    def test_pinv_empty(self, dtype, shape):
+        a = numpy.empty(shape, dtype=dtype)
+        a_dp = inp.array(a)
+
+        B = numpy.linalg.pinv(a)
+        B_dp = inp.linalg.pinv(a_dp)
+
+        assert_dtype_allclose(B_dp, B)
+
+    def test_pinv_strides(self):
+        a = numpy.random.randn(5, 5)
+        a_dp = inp.array(a)
+
+        self.get_tol(a_dp.dtype)
+        tol = self._tol
+
+        # positive strides
+        B = numpy.linalg.pinv(a[::2, ::2])
+        B_dp = inp.linalg.pinv(a_dp[::2, ::2])
+        assert_allclose(B_dp, B, rtol=tol, atol=tol)
+
+        # negative strides
+        B = numpy.linalg.pinv(a[::-2, ::-2])
+        B_dp = inp.linalg.pinv(a_dp[::-2, ::-2])
+        assert_allclose(B_dp, B, rtol=tol, atol=tol)
+
+    def test_pinv_errors(self):
+        a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
+
+        # unsupported type `a`
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.pinv, a_np)
+
+        # unsupported type `rcond`
+        rcond = numpy.array(0.5, dtype="float32")
+        assert_raises(TypeError, inp.linalg.pinv, a_dp, rcond)
+        assert_raises(TypeError, inp.linalg.pinv, a_dp, [0.5])
+
+        # non-broadcastable `rcond`
+        rcond_dp = inp.array([0.5], dtype="float32")
+        assert_raises(ValueError, inp.linalg.pinv, a_dp, rcond_dp)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.pinv, a_dp_ndim_1)
+
+        # diffetent queue
+        a_queue = dpctl.SyclQueue()
+        rcond_queue = dpctl.SyclQueue()
+        a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
+        rcond_dp_q = inp.array([0.5], dtype="float32", sycl_queue=rcond_queue)
+        assert_raises(ValueError, inp.linalg.pinv, a_dp_q, rcond_dp_q)
+
+
+class TestTensorinv:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "shape, ind",
+        [
+            ((4, 6, 8, 3), 2),
+            ((24, 8, 3), 1),
+        ],
+        ids=[
+            "(4, 6, 8, 3)",
+            "(24, 8, 3)",
+        ],
+    )
+    def test_tensorinv(self, dtype, shape, ind):
+        a = numpy.eye(24, dtype=dtype).reshape(shape)
+        a_dp = inp.array(a)
+
+        ainv = numpy.linalg.tensorinv(a, ind=ind)
+        ainv_dp = inp.linalg.tensorinv(a_dp, ind=ind)
+
+        assert ainv.shape == ainv_dp.shape
+        assert_dtype_allclose(ainv_dp, ainv)
+
+    def test_test_tensorinv_errors(self):
+        a_dp = inp.eye(24, dtype="float32").reshape(4, 6, 8, 3)
+
+        # unsupported type `a`
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.pinv, a_np)
+
+        # unsupported type `ind`
+        assert_raises(TypeError, inp.linalg.tensorinv, a_dp, 2.0)
+        assert_raises(TypeError, inp.linalg.tensorinv, a_dp, [2.0])
+        assert_raises(ValueError, inp.linalg.tensorinv, a_dp, -1)
+
+        # non-square
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.tensorinv, a_dp, 1)
+
+
+class TestTensorsolve:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "axes",
+        [None, (1,), (2,)],
+        ids=[
+            "None",
+            "(1,)",
+            "(2,)",
+        ],
+    )
+    def test_tensorsolve_axes(self, dtype, axes):
+        a = numpy.eye(12).reshape(12, 3, 4).astype(dtype)
+        b = numpy.ones(a.shape[0], dtype=dtype)
+
+        a_dp = inp.array(a)
+        b_dp = inp.array(b)
+
+        res_np = numpy.linalg.tensorsolve(a, b, axes=axes)
+        res_dp = inp.linalg.tensorsolve(a_dp, b_dp, axes=axes)
+
+        assert res_np.shape == res_dp.shape
+        assert_dtype_allclose(res_dp, res_np)
+
+    def test_tensorsolve_errors(self):
+        a_dp = inp.eye(24, dtype="float32").reshape(4, 6, 8, 3)
+        b_dp = inp.ones(a_dp.shape[:2], dtype="float32")
+
+        # unsupported type `a` and `b`
+        a_np = inp.asnumpy(a_dp)
+        b_np = inp.asnumpy(b_dp)
+        assert_raises(TypeError, inp.linalg.tensorsolve, a_np, b_dp)
+        assert_raises(TypeError, inp.linalg.tensorsolve, a_dp, b_np)
+
+        # unsupported type `axes`
+        assert_raises(TypeError, inp.linalg.tensorsolve, a_dp, 2.0)
+        assert_raises(TypeError, inp.linalg.tensorsolve, a_dp, -2)
+
+        # incorrect axes
+        assert_raises(
+            inp.linalg.LinAlgError, inp.linalg.tensorsolve, a_dp, b_dp, (1,)
+        )

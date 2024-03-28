@@ -6,6 +6,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
 
+permissions: read-all
+
 env:
   GH_BOT_NAME: 'github-actions[bot]'
   GH_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
@@ -25,13 +27,21 @@ jobs:
 
     runs-on: ubuntu-20.04
 
+    permissions:
+      # Needed to cancel any previous runs that are not completed for a given workflow
+      actions: write
+      # Needed to deploy static files to GitHub Pages
+      contents: write
+      # Needed to add a comment to a pull request's issue
+      pull-requests: write
+
     env:
       python-ver: '3.9'
       CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
         with:
           access_token: ${{ github.token }}
 
@@ -42,7 +52,7 @@ jobs:
           echo "$GITHUB_CONTEXT"
 
       - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
         with:
           docker-images: false
 
@@ -76,13 +86,13 @@ jobs:
           sudo apt-get install -y nvidia-cuda-toolkit clinfo
 
       - name: Checkout repo
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
         with:
           fetch-depth: 0
 
       # https://github.com/marketplace/actions/setup-miniconda
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.2.0
+        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           auto-update-conda: true
           python-version: ${{ env.python-ver }}
@@ -93,12 +103,12 @@ jobs:
       - name: Install sphinx dependencies
         run: |
           conda install sphinx sphinx_rtd_theme
-          pip install sphinxcontrib-googleanalytics
+          pip install sphinxcontrib-googleanalytics==0.4
 
       - name: Install dpnp dependencies
         run: |
-          conda install numpy"<1.24" dpctl">=0.15.1dev2" mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64"<2024.0.1" \
-              cmake cython pytest ninja scikit-build sysroot_linux-64">=2.28" ${{ env.CHANNELS }}
+          conda install numpy"<1.24" dpctl">=0.17.0dev0" mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
+              cmake cython pytest ninja scikit-build ${{ env.CHANNELS }}
 
       - name: Install cuPy dependencies
         run: conda install cupy cudatoolkit=10.0
@@ -110,8 +120,7 @@ jobs:
         run: conda list
 
       - name: Build library
-        run: |
-          CC=icx CXX=icpx python setup.py develop -G Ninja -- -DDPCTL_MODULE_PATH=$(python -m dpctl --cmakedir)
+        run: python scripts/build_locally.py
 
       - name: Build docs
         run: make html
@@ -126,7 +135,7 @@ jobs:
 
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
-        uses: mattnotmitt/doxygen-action@v1.9.5
+        uses: mattnotmitt/doxygen-action@cbe72c8e402e8a3faa1f0b247ef90aa6c8e4ce74 # v1.9.8
         with:
             working-directory: 'dpnp/backend/doc'
 
@@ -137,7 +146,7 @@ jobs:
       # The step is only used to build docs while pushing a PR to "master"
       - name: Deploy docs
         if: env.GH_EVENT_PUSH_UPSTREAM
-        uses: peaceiris/actions-gh-pages@v3.9.3
+        uses: peaceiris/actions-gh-pages@373f7f263a76c20808c831209c920827a82a2847 # v3.9.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.PUBLISH_DIR }}
@@ -150,7 +159,7 @@ jobs:
       # The step is only used to build docs while pushing to PR branch
       - name: Publish pull-request docs
         if: env.GH_EVENT_OPEN_PR_UPSTREAM
-        uses: peaceiris/actions-gh-pages@v3.9.3
+        uses: peaceiris/actions-gh-pages@373f7f263a76c20808c831209c920827a82a2847 # v3.9.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.PUBLISH_DIR }}
@@ -167,7 +176,7 @@ jobs:
         if: env.GH_EVENT_OPEN_PR_UPSTREAM
         env:
           PR_NUM: ${{ github.event.number }}
-        uses: mshick/add-pr-comment@v2.8.1
+        uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc # v2.8.2
         with:
           message: |
             View rendered docs @ https://intelpython.github.io/dpnp/pull/${{ env.PR_NUM }}/index.html
@@ -181,10 +190,16 @@ jobs:
 
     needs: build-and-deploy
 
+    permissions:
+      # Needed to remove docs for closed pull request from the repo
+      contents: write
+      # Needed to modify a comment in the pull request's issue
+      pull-requests: write
+
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
         with:
           fetch-depth: 0
 
@@ -203,7 +218,7 @@ jobs:
           git push tokened_docs gh-pages
 
       - name: Modify the comment with URL to official documentation
-        uses: mshick/add-pr-comment@v2.8.1
+        uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc # v2.8.2
         with:
           find: |
             View rendered docs @.+

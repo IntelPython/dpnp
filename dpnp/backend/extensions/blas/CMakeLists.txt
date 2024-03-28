@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2016-2023, Intel Corporation
+# Copyright (c) 2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,9 @@
 set(python_module_name _blas_impl)
 set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/blas_py.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dotc.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dotu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm_batch.cpp
 )

@@ -20,12 +20,15 @@ def do_setup(deterministic=True):
     global _old_cupy_random_states
     _old_python_random_state = random.getstate()
     _old_numpy_random_state = numpy.random.get_state()
-    _old_cupy_random_states = cupy.random.generator._random_states
-    cupy.random.reset_states()
+    _old_cupy_random_states = cupy.random.dpnp_iface_random._dpnp_random_states
+    cupy.random.dpnp_iface_random._dpnp_random_states = {}
     # Check that _random_state has been recreated in
     # cupy.random.reset_states(). Otherwise the contents of
     # _old_cupy_random_states would be overwritten.
-    assert cupy.random.generator._random_states is not _old_cupy_random_states
+    assert (
+        cupy.random.dpnp_iface_random._dpnp_random_states
+        is not _old_cupy_random_states
+    )
 
     if not deterministic:
         random.seed()
@@ -43,7 +46,7 @@ def do_teardown():
     global _old_cupy_random_states
     random.setstate(_old_python_random_state)
     numpy.random.set_state(_old_numpy_random_state)
-    cupy.random.generator._random_states = _old_cupy_random_states
+    cupy.random.dpnp_iface_random._dpnp_random_states = _old_cupy_random_states
     _old_python_random_state = None
     _old_numpy_random_state = None
     _old_cupy_random_states = None

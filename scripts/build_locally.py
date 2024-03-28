@@ -28,8 +28,6 @@ import os
 import subprocess
 import sys
 
-import dpctl
-
 
 def run(
     use_oneapi=True,
@@ -60,16 +58,31 @@ def run(
         cmake_args += [
             "--cmake-executable=" + cmake_executable,
         ]
-    dpctl_module_path = os.path.join(
-        dpctl.get_include(), "..", "resources", "cmake"
+
+    # if dpctl is locally built using `script/build_locally.py`, it is needed
+    # to pass the -DDpctl_ROOT=$(python -m dpctl --cmakedir)
+    # if dpctl is conda installed, it is optional to pass this parameter
+    process = subprocess.Popen(
+        ["python", "-m", "dpctl", "--cmakedir"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
+    output, error = process.communicate()
+    if process.returncode == 0:
+        cmake_dir = output.decode("utf-8").strip()
+    else:
+        raise RuntimeError(
+            "Failed to retrieve dpctl cmake directory: "
+            + error.decode("utf-8").strip()
+        )
+
     cmake_args += [
         "--build-type=" + build_type,
         "--generator=" + build_system,
         "--",
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
-        "-DDPCTL_MODULE_PATH:PATH=" + dpctl_module_path,
+        "-DDpctl_ROOT=" + cmake_dir,
     ]
     if verbose:
         cmake_args += [

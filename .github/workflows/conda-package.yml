@@ -6,15 +6,19 @@ on:
       - master
   pull_request:
 
+permissions: read-all
+
 env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+  CONDA_BUILD_VERSION: '24.1.2'
+  CONDA_INDEX_VERSION: '0.4.0'
+  TEST_ENV_NAME: 'test'
   # TODO: to add test_arraymanipulation.py back to the scope once crash on Windows is gone
   TEST_SCOPE: >-
       test_arraycreation.py
       test_amin_amax.py
-      test_dot.py
       test_dparray.py
       test_copy.py
       test_fft.py
@@ -22,6 +26,7 @@ env:
       test_logic.py
       test_manipulation.py
       test_mathematical.py
+      test_product.py
       test_random_state.py
       test_sort.py
       test_special.py
@@ -30,6 +35,7 @@ env:
       test_umath.py
       test_usm_type.py
       third_party/cupy/core_tests
+      third_party/cupy/linalg_tests/test_decomposition.py
       third_party/cupy/linalg_tests/test_norms.py
       third_party/cupy/linalg_tests/test_product.py
       third_party/cupy/linalg_tests/test_solve.py
@@ -57,6 +63,10 @@ jobs:
         python: ['3.9', '3.10', '3.11']
         os: [ubuntu-20.04, windows-latest]
 
+    permissions:
+      # Needed to cancel any previous runs that are not completed for a given workflow
+      actions: write
+
     runs-on: ${{ matrix.os }}
 
     defaults:
@@ -67,17 +77,17 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
         with:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
         with:
           fetch-depth: 0
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.2.0
+        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -95,10 +105,10 @@ jobs:
           (echo CONDA_BLD=%CONDA_PREFIX%\conda-bld\win-64\) >> %GITHUB_ENV%
 
       - name: Install conda-build
-        run: conda install conda-build
+        run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
 
       - name: Cache conda packages
-        uses: actions/cache@v3.3.0
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -110,10 +120,10 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Build conda package
-        run: conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} conda-recipe
+        run: conda build --no-test --python ${{ matrix.python }} --numpy 1.23 ${{ env.CHANNELS }} conda-recipe
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
@@ -146,7 +156,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.2
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -157,19 +167,19 @@ jobs:
           tar -xvf ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.tar.bz2 -C ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.2.0
+        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
-          activate-environment: 'test'
+          activate-environment: ${{ env.TEST_ENV_NAME }}
 
-      # Needed to be able to run conda index
-      - name: Install conda-build
-        run: conda install conda-build
+      - name: Install conda-index
+        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION }}
 
       - name: Create conda channel
-        run: conda index ${{ env.channel-path }}
+        run: |
+          python -m conda_index ${{ env.channel-path }}
 
       - name: Test conda channel
         run: |
@@ -189,7 +199,7 @@ jobs:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
       - name: Cache conda packages
-        uses: actions/cache@v3.3.0
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         env:
           CACHE_NUMBER: 1 # Increase to reset cache
         with:
@@ -214,10 +224,25 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       # TODO: run the whole scope once the issues on CPU are resolved
+      # - name: Run tests
+        # run: |
+        #   python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+        # working-directory: ${{ env.tests-path }}
+
+      # TODO: remove once 2024.2 release is published
       - name: Run tests
-        run: |
-          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-        working-directory: ${{ env.tests-path }}
+        id: run_tests_linux
+        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        with:
+          shell: bash
+          timeout_minutes: 10
+          max_attempts: 5
+          retry_on: any
+          command: |
+            . $CONDA/etc/profile.d/conda.sh
+            conda activate ${{ env.TEST_ENV_NAME }}
+            cd ${{ env.tests-path }}
+            python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   test_windows:
     name: Test ['windows-latest', python='${{ matrix.python }}']
@@ -243,11 +268,10 @@ jobs:
       extracted-pkg-path: '${{ github.workspace }}\pkg'
       tests-path: '${{ github.workspace }}\pkg\info\test\tests\'
       ver-json-path: '${{ github.workspace }}\version.json'
-      active-env-name: 'test'
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.2
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -267,12 +291,12 @@ jobs:
           dir ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.2.0
+        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
           miniconda-version: 'latest'
-          activate-environment: ${{ env.active-env-name }}
+          activate-environment: ${{ env.TEST_ENV_NAME }}
 
       - name: Store conda paths as envs
         run: |
@@ -280,12 +304,13 @@ jobs:
           (echo CONDA_LIB_PATH=%CONDA_PREFIX%\Library\lib\) >> %GITHUB_ENV%
           (echo CONDA_LIB_BIN_PATH=%CONDA_PREFIX%\Library\bin\) >> %GITHUB_ENV%
 
-      # Needed to be able to run conda index
-      - name: Install conda-build
-        run: conda install conda-build
+      - name: Install conda-index
+        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION}}
 
       - name: Create conda channel
-        run: conda index ${{ env.channel-path }}
+        run: |
+          @echo on
+          python -m conda_index ${{ env.channel-path }}
 
       - name: Test conda channel
         run: |
@@ -313,7 +338,7 @@ jobs:
         run: more lockfile
 
       - name: Cache conda packages
-        uses: actions/cache@v3.3.0
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -323,9 +348,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
-
-      - name: Install opencl_rt
-        run: conda install opencl_rt -c intel --override-channels
 
       - name: Install dpnp
         run: |
@@ -352,10 +374,24 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       # TODO: run the whole scope once the issues on CPU are resolved
+      # - name: Run tests
+      #   run: |
+      #     python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+      #   working-directory: ${{ env.tests-path }}
+
+      # TODO: remove once 2024.2 release is published
       - name: Run tests
-        run: |
-          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-        working-directory: ${{ env.tests-path }}
+        id: run_tests_win
+        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        with:
+          shell: cmd
+          timeout_minutes: 15
+          max_attempts: 5
+          retry_on: any
+          command: >-
+            conda activate ${{ env.TEST_ENV_NAME }}
+            & cd ${{ env.tests-path }}
+            & python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
@@ -381,12 +417,12 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.2
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2.2.0
+        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -409,7 +445,7 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
           run-post: false
           channel-priority: "disabled"
@@ -420,7 +456,7 @@ jobs:
         run: conda install anaconda-client
 
       - name: Checkout repo
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0

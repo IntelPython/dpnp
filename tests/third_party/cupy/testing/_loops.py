@@ -1,4 +1,3 @@
-import contextlib
 import functools
 import inspect
 import os
@@ -11,22 +10,12 @@ from typing import Tuple, Type
 import numpy
 from dpctl import select_default_device
 
-import dpnp
 import dpnp as cupy
-import dpnp as cupyx
+from tests.third_party.cupy.testing import _array, _parameterized
+from tests.third_party.cupy.testing._pytest_impl import is_available
 
-# from dpnp.core import internal
-from tests.third_party.cupy.testing import array, parameterized
-
-# import dpnp
-# import dpnp.scipy.sparse
-from tests.third_party.cupy.testing.attr import is_available
-
-
-def prod(args, init=1):
-    for arg in args:
-        init *= arg
-    return init
+# import cupyx
+# import cupyx.scipy.sparse
 
 
 if is_available():
@@ -574,7 +563,7 @@ def numpy_cupy_allclose(
     should return same value.
 
     >>> import unittest
-    >>> from cupy import testing
+    >>> from tests.third_party.cupy import testing
     >>> class TestFoo(unittest.TestCase):
     ...
     ...     @testing.numpy_cupy_allclose()
@@ -602,7 +591,7 @@ def numpy_cupy_allclose(
 
     def check_func(c, n):
         rtol1, atol1 = _resolve_tolerance(type_check, c, rtol, atol)
-        array.assert_allclose(c, n, rtol1, atol1, err_msg, verbose)
+        _array.assert_allclose(c, n, rtol1, atol1, err_msg, verbose)
 
     return _make_decorator(
         check_func,
@@ -657,7 +646,7 @@ def numpy_cupy_array_almost_equal(
     """
 
     def check_func(x, y):
-        array.assert_array_almost_equal(x, y, decimal, err_msg, verbose)
+        _array.assert_array_almost_equal(x, y, decimal, err_msg, verbose)
 
     return _make_decorator(
         check_func, name, type_check, False, accept_error, sp_name, scipy_name
@@ -700,7 +689,7 @@ def numpy_cupy_array_almost_equal_nulp(
     """
 
     def check_func(x, y):
-        array.assert_array_almost_equal_nulp(x, y, nulp)
+        _array.assert_array_almost_equal_nulp(x, y, nulp)
 
     return _make_decorator(
         check_func,
@@ -754,7 +743,7 @@ def numpy_cupy_array_max_ulp(
     """
 
     def check_func(x, y):
-        array.assert_array_max_ulp(x, y, maxulp, dtype)
+        _array.assert_array_max_ulp(x, y, maxulp, dtype)
 
     return _make_decorator(
         check_func, name, type_check, False, accept_error, sp_name, scipy_name
@@ -803,7 +792,7 @@ def numpy_cupy_array_equal(
     """
 
     def check_func(x, y):
-        array.assert_array_equal(x, y, err_msg, verbose, strides_check)
+        _array.assert_array_equal(x, y, err_msg, verbose, strides_check)
 
     return _make_decorator(
         check_func, name, type_check, False, accept_error, sp_name, scipy_name
@@ -840,7 +829,7 @@ def numpy_cupy_array_list_equal(
     )
 
     def check_func(x, y):
-        array.assert_array_equal(x, y, err_msg, verbose)
+        _array.assert_array_equal(x, y, err_msg, verbose)
 
     return _make_decorator(
         check_func, name, False, False, False, sp_name, scipy_name
@@ -885,7 +874,7 @@ def numpy_cupy_array_less(
     """
 
     def check_func(x, y):
-        array.assert_array_less(x, y, err_msg, verbose)
+        _array.assert_array_less(x, y, err_msg, verbose)
 
     return _make_decorator(
         check_func, name, type_check, False, accept_error, sp_name, scipy_name
@@ -1064,22 +1053,6 @@ def _make_all_dtypes(no_float16, no_bool, no_complex):
     return (numpy.int64, numpy.int32) + _get_supported_float_dtypes()
 
 
-#     if no_float16:
-#         dtypes = _regular_float_dtypes
-#     else:
-#         dtypes = _float_dtypes
-#
-#     if no_bool:
-#         dtypes += _int_dtypes
-#     else:
-#         dtypes += _int_bool_dtypes
-#
-#     if not no_complex:
-#         dtypes += _complex_dtypes
-#
-#     return dtypes
-
-
 def for_all_dtypes(
     name="dtype", no_float16=False, no_bool=False, no_complex=False
 ):
@@ -1108,7 +1081,7 @@ def for_all_dtypes(
     ``dtype`` is an argument inserted by the decorator.
 
     >>> import unittest
-    >>> from cupy import testing
+    >>> from tests.third_party.cupy import testing
     >>> class TestNpz(unittest.TestCase):
     ...
     ...     @testing.for_all_dtypes()
@@ -1124,7 +1097,7 @@ def for_all_dtypes(
     The following is such an example.
 
     >>> import unittest
-    >>> from cupy import testing
+    >>> from tests.third_party.cupy import testing
     >>> class TestMean(unittest.TestCase):
     ...
     ...     @testing.for_all_dtypes()
@@ -1176,7 +1149,7 @@ def for_signed_dtypes(name="dtype"):
 
 
 def for_unsigned_dtypes(name="dtype"):
-    """Decorator that checks the fixture with unsigned dtypes.
+    """Decorator that checks the fixture with unsinged dtypes.
 
     Args:
          name(str): Argument name to which specified dtypes are passed.
@@ -1263,7 +1236,7 @@ def for_dtypes_combination(types, names=("dtype",), full=None):
         full = int(os.environ.get("CUPY_TEST_FULL_COMBINATION", "0")) != 0
 
     if full:
-        combination = parameterized.product({name: types for name in names})
+        combination = _parameterized.product({name: types for name in names})
     else:
         ts = []
         for _ in range(len(names)):
@@ -1500,213 +1473,3 @@ def for_contiguous_axes(name="axis"):
         return test_func
 
     return decorator
-
-
-def with_requires(*requirements):
-    """Run a test case only when given requirements are satisfied.
-
-    .. admonition:: Example
-
-       This test case runs only when `numpy>=1.18` is installed.
-
-       >>> from dpnp import testing
-       ... class Test(unittest.TestCase):
-       ...     @testing.with_requires('numpy>=1.18')
-       ...     def test_for_numpy_1_18(self):
-       ...         pass
-
-    Args:
-        requirements: A list of string representing requirement condition to
-            run a given test case.
-
-    """
-    # Delay import of pkg_resources because it is excruciatingly slow.
-    # See https://github.com/pypa/setuptools/issues/510
-    import pkg_resources
-
-    ws = pkg_resources.WorkingSet()
-    try:
-        ws.require(*requirements)
-        skip = False
-    except pkg_resources.ResolutionError:
-        skip = True
-
-    msg = "requires: {}".format(",".join(requirements))
-    return unittest.skipIf(skip, msg)
-
-
-def numpy_satisfies(version_range):
-    """Returns True if numpy version satisfies the specified criteria.
-
-    Args:
-        version_range: A version specifier (e.g., `>=1.13.0`).
-    """
-    # Delay import of pkg_resources because it is excruciatingly slow.
-    # See https://github.com/pypa/setuptools/issues/510
-    import pkg_resources
-
-    spec = "numpy{}".format(version_range)
-    try:
-        pkg_resources.require(spec)
-    except pkg_resources.VersionConflict:
-        return False
-    return True
-
-
-def shaped_arange(shape, xp=cupy, dtype=numpy.float32, order="C", device=None):
-    """Returns an array with given shape, array module, and dtype.
-
-    Args:
-         shape(tuple of int): Shape of returned ndarray.
-         xp(numpy or cupy): Array module to use.
-         dtype(dtype): Dtype of returned ndarray.
-         order({'C', 'F'}): Order of returned ndarray.
-         device(None or device): A device where the output array is created.
-
-    Returns:
-         numpy.ndarray or cupy.ndarray:
-         The array filled with :math:`1, \\cdots, N` with specified dtype
-         with given shape, array module. Here, :math:`N` is
-         the size of the returned array.
-         If ``dtype`` is ``numpy.bool_``, evens (resp. odds) are converted to
-         ``True`` (resp. ``False``).
-
-    """
-    dtype = numpy.dtype(dtype)
-    kw = {} if xp is numpy else {"device": device}
-    a = numpy.arange(1, prod(shape) + 1, 1)
-    if dtype == "?":
-        a = a % 2 == 0
-    elif dtype.kind == "c":
-        a = a + a * 1j
-    return xp.array(a.astype(dtype).reshape(shape), order=order, **kw)
-
-
-def shaped_reverse_arange(shape, xp=cupy, dtype=numpy.float32, device=None):
-    """Returns an array filled with decreasing numbers.
-
-    Args:
-         shape(tuple of int): Shape of returned ndarray.
-         xp(numpy or cupy): Array module to use.
-         dtype(dtype): Dtype of returned ndarray.
-         device(None or device): A device where the output array is created.
-
-    Returns:
-         numpy.ndarray or cupy.ndarray:
-         The array filled with :math:`N, \\cdots, 1` with specified dtype
-         with given shape, array module.
-         Here, :math:`N` is the size of the returned array.
-         If ``dtype`` is ``numpy.bool_``, evens (resp. odds) are converted to
-         ``True`` (resp. ``False``).
-    """
-    dtype = numpy.dtype(dtype)
-    kw = {} if xp is numpy else {"device": device}
-    size = prod(shape)
-    a = numpy.arange(size, 0, -1)
-    if dtype == "?":
-        a = a % 2 == 0
-    elif dtype.kind == "c":
-        a = a + a * 1j
-    return xp.array(a.astype(dtype).reshape(shape), **kw)
-
-
-def shaped_random(
-    shape, xp=cupy, dtype=numpy.float32, scale=10, seed=0, order="C"
-):
-    """Returns an array filled with random values.
-
-    Args:
-         shape(tuple): Shape of returned ndarray.
-         xp(numpy or cupy): Array module to use.
-         dtype(dtype): Dtype of returned ndarray.
-         scale(float): Scaling factor of elements.
-         seed(int): Random seed.
-
-    Returns:
-         numpy.ndarray or cupy.ndarray: The array with
-         given shape, array module,
-
-    If ``dtype`` is ``numpy.bool_``, the elements are
-    independently drawn from ``True`` and ``False``
-    with same probabilities.
-    Otherwise, the array is filled with samples
-    independently and identically drawn
-    from uniform distribution over :math:`[0, scale)`
-    with specified dtype.
-    """
-    numpy.random.seed(seed)
-    dtype = numpy.dtype(dtype)
-    if dtype == "?":
-        a = numpy.random.randint(2, size=shape)
-    elif dtype.kind == "c":
-        a = numpy.random.rand(*shape) + 1j * numpy.random.rand(*shape)
-        a *= scale
-    else:
-        a = numpy.random.rand(*shape) * scale
-    return xp.asarray(a, dtype=dtype, order=order)
-
-
-def empty(xp=dpnp, dtype=numpy.float64):
-    return xp.zeros((0,))
-
-
-class NumpyError(object):
-    def __init__(self, **kw):
-        self.kw = kw
-
-    def __enter__(self):
-        self.err = numpy.geterr()
-        numpy.seterr(**self.kw)
-
-    def __exit__(self, *_):
-        numpy.seterr(**self.err)
-
-
-@contextlib.contextmanager
-def assert_warns(expected):
-    with warnings.catch_warnings(record=True) as w:
-        warnings.simplefilter("always")
-        yield
-
-    if any(isinstance(m.message, expected) for m in w):
-        return
-
-    try:
-        exc_name = expected.__name__
-    except AttributeError:
-        exc_name = str(expected)
-
-    raise AssertionError("%s not triggerred" % exc_name)
-
-
-class NumpyAliasTestBase(unittest.TestCase):
-    @property
-    def func(self):
-        raise NotImplementedError()
-
-    @property
-    def cupy_func(self):
-        return getattr(cupy, self.func)
-
-    @property
-    def numpy_func(self):
-        return getattr(numpy, self.func)
-
-
-class NumpyAliasBasicTestBase(NumpyAliasTestBase):
-    def test_argspec(self):
-        f = inspect.signature
-        assert f(self.cupy_func) == f(self.numpy_func)
-
-    def test_docstring(self):
-        cupy_func = self.cupy_func
-        numpy_func = self.numpy_func
-        assert hasattr(cupy_func, "__doc__")
-        assert cupy_func.__doc__ is not None
-        assert cupy_func.__doc__ != ""
-        assert cupy_func.__doc__ is not numpy_func.__doc__
-
-
-class NumpyAliasValuesTestBase(NumpyAliasTestBase):
-    def test_values(self):
-        assert self.cupy_func(*self.args) == self.numpy_func(*self.args)

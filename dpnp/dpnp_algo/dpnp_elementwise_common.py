@@ -38,6 +38,7 @@ __all__ = [
     "dpnp_acos",
     "dpnp_acosh",
     "dpnp_add",
+    "dpnp_angle",
     "dpnp_asin",
     "dpnp_asinh",
     "dpnp_atan",
@@ -88,6 +89,7 @@ __all__ = [
     "dpnp_power",
     "dpnp_proj",
     "dpnp_real",
+    "dpnp_reciprocal",
     "dpnp_remainder",
     "dpnp_right_shift",
     "dpnp_round",
@@ -189,6 +191,7 @@ def _make_unary_func(
 ):
     impl_fn = dpt_unary_fn.get_implementation_function()
     type_resolver_fn = dpt_unary_fn.get_type_result_resolver_function()
+    acceptance_fn = dpt_unary_fn.get_type_promotion_path_acceptance_function()
 
     def _call_func(src, dst, sycl_queue, depends=None):
         """A callback to register in UnaryElementwiseFunc class of dpctl.tensor"""
@@ -202,7 +205,7 @@ def _make_unary_func(
         return impl_fn(src, dst, sycl_queue, depends)
 
     func = dpt_unary_fn.__class__(
-        name, type_resolver_fn, _call_func, fn_docstring
+        name, type_resolver_fn, _call_func, fn_docstring, acceptance_fn
     )
     return func
 
@@ -408,6 +411,42 @@ def dpnp_add(x1, x2, out=None, order="K"):
     res_usm = add_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order
     )
+    return _get_result(res_usm, out=out)
+
+
+_angle_docstring = """
+angle(x, out=None, order="K")
+
+Computes the phase angle (also called the argument) of each element `x_i` for
+input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have a complex-valued floating-point data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C", "F", "A", "K", optional):
+        Memory layout of the newly output array, if parameter `out` is ``None``.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise phase angles.
+        The returned array has a floating-point data type determined
+        by the Type Promotion Rules.
+"""
+
+angle_func = _make_unary_func("angle", dpt.angle, _angle_docstring)
+
+
+def dpnp_angle(x, out=None, order="K"):
+    """Invokes angle() from dpctl.tensor implementation for angle() function."""
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = angle_func(x1_usm, out=out_usm, order=order)
     return _get_result(res_usm, out=out)
 
 
@@ -2245,16 +2284,16 @@ negative_func = _make_unary_func("negative", dpt.negative, _negative_docstring)
 def dpnp_negative(x, out=None, order="K"):
     """Invokes negative() from dpctl.tensor implementation for negative() function."""
 
-    # TODO: discuss with dpctl if the check is needed to be moved there
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    # TODO: discuss with dpctl if the check is needed to be moved out of there
     if not dpnp.isscalar(x) and x.dtype == dpnp.bool:
         raise TypeError(
             "DPNP boolean negative, the `-` operator, is not supported, "
             "use the `~` operator or the logical_not function instead."
         )
-
-    # dpctl.tensor only works with usm_ndarray
-    x1_usm = dpnp.get_usm_ndarray(x)
-    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = negative_func(x1_usm, out=out_usm, order=order)
     return _get_result(res_usm, out=out)
@@ -2456,6 +2495,43 @@ def dpnp_real(x, out=None, order="K"):
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
     res_usm = real_func(x1_usm, out=out_usm, order=order)
+    return _get_result(res_usm, out=out)
+
+
+_reciprocal_docstring = """
+reciprocal(x, out=None, order="K")
+
+Computes the reciprocal of each element `x_i` for input array `x`.
+
+Args:
+    x (dpnp.ndarray):
+        Input array, expected to have a real-valued floating-point data type.
+    out ({None, dpnp.ndarray}, optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C", "F", "A", "K", optional):
+        Memory layout of the newly output array, if parameter `out` is ``None``.
+        Default: "K".
+Returns:
+    dpnp.ndarray:
+        An array containing the element-wise reciprocals.
+        The returned array has a floating-point data type determined
+        by the Type Promotion Rules.
+"""
+
+reciprocal_func = _make_unary_func(
+    "reciprocal", dpt.reciprocal, _reciprocal_docstring
+)
+
+
+def dpnp_reciprocal(x, out=None, order="K"):
+    """Invokes reciprocal() from dpctl.tensor implementation for reciprocal() function."""
+
+    # dpctl.tensor only works with usm_ndarray
+    x1_usm = dpnp.get_usm_ndarray(x)
+    out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    res_usm = reciprocal_func(x1_usm, out=out_usm, order=order)
     return _get_result(res_usm, out=out)
 
 
@@ -2890,23 +2966,30 @@ def dpnp_subtract(x1, x2, out=None, order="K"):
     Invokes sub() function from pybind11 extension of OneMKL VM if possible.
 
     Otherwise fully relies on dpctl.tensor implementation for subtract() function.
-    """
 
-    # TODO: discuss with dpctl if the check is needed to be moved there
-    if (
-        not dpnp.isscalar(x1)
-        and not dpnp.isscalar(x2)
-        and x1.dtype == x2.dtype == dpnp.bool
-    ):
-        raise TypeError(
-            "DPNP boolean subtract, the `-` operator, is not supported, "
-            "use the bitwise_xor, the `^` operator, or the logical_xor function instead."
-        )
+    """
 
     # dpctl.tensor only works with usm_ndarray or scalar
     x1_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x1)
     x2_usm_or_scalar = dpnp.get_usm_ndarray_or_scalar(x2)
     out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+    # TODO: discuss with dpctl if the check is needed to be moved out of there
+    boolean_subtract = False
+    if dpnp.isscalar(x1):
+        if isinstance(x1, bool) and x2.dtype == dpnp.bool:
+            boolean_subtract = True
+    elif dpnp.isscalar(x2):
+        if isinstance(x2, bool) and x1.dtype == dpnp.bool:
+            boolean_subtract = True
+    elif x1.dtype == x2.dtype == dpnp.bool:
+        boolean_subtract = True
+
+    if boolean_subtract:
+        raise TypeError(
+            "DPNP boolean subtract, the `-` operator, is not supported, "
+            "use the bitwise_xor, the `^` operator, or the logical_xor function instead."
+        )
 
     res_usm = subtract_func(
         x1_usm_or_scalar, x2_usm_or_scalar, out=out_usm, order=order

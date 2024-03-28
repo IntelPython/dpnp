@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ namespace mkl_blas = oneapi::mkl::blas;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
-typedef sycl::event (*gemm_impl_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*gemm_impl_fn_ptr_t)(sycl::queue &,
                                           oneapi::mkl::transpose,
                                           oneapi::mkl::transpose,
                                           const std::int64_t,
@@ -64,7 +64,7 @@ static gemm_impl_fn_ptr_t gemm_dispatch_table[dpctl_td_ns::num_types]
                                              [dpctl_td_ns::num_types];
 
 template <typename Tab, typename Tc>
-static sycl::event gemm_impl(sycl::queue exec_q,
+static sycl::event gemm_impl(sycl::queue &exec_q,
                              oneapi::mkl::transpose transA,
                              oneapi::mkl::transpose transB,
                              const std::int64_t m,
@@ -130,7 +130,7 @@ static sycl::event gemm_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    gemm(sycl::queue exec_q,
+    gemm(sycl::queue &exec_q,
          dpctl::tensor::usm_ndarray matrixA,
          dpctl::tensor::usm_ndarray matrixB,
          dpctl::tensor::usm_ndarray resultC,

@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2024, Intel Corporation
@@ -69,6 +67,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     dpnp_log2,
     dpnp_log10,
     dpnp_logaddexp,
+    dpnp_reciprocal,
     dpnp_rsqrt,
     dpnp_sin,
     dpnp_sinh,
@@ -559,12 +558,12 @@ def cbrt(
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a real-valued data type.
+        Input array, must have a real-valued data type.
     out : ({None, dpnp.ndarray, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
-    order : ({'C', 'F', 'A', 'K'}, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 
     Returns
@@ -574,11 +573,9 @@ def cbrt(
 
     Limitations
     -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by real-valued data types.
 
     See Also
     --------
@@ -850,12 +847,12 @@ def exp2(
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a floating-point data type.
+        Input array.
     out : ({None, dpnp.ndarray, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
-    order : ({'C', 'F', 'A', 'K'}, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 
     Returns
@@ -865,11 +862,9 @@ def exp2(
 
     Limitations
     -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -1346,14 +1341,14 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
 
     Parameters
     ----------
-    x : {dpnp_array, usm_ndarray}
+    x : {dpnp.ndarray, usm_ndarray}
         Input array, expected to have a real-valued data type.
     axis : int or tuple of ints, optional
         Axis or axes along which values must be computed. If a tuple
         of unique integers, values are computed over multiple axes.
         If ``None``, the result is computed over the entire array.
         Default: ``None``.
-    out : {dpnp_array, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     dtype : data type, optional
@@ -1415,36 +1410,75 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
     return dpnp.get_result_array(result, out, casting="same_kind")
 
 
-def reciprocal(x1, **kwargs):
+def reciprocal(
+    x,
+    /,
+    out=None,
+    *,
+    order="K",
+    where=True,
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
     """
     Return the reciprocal of the argument, element-wise.
 
     For full documentation refer to :obj:`numpy.reciprocal`.
 
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, if parameter `out` is ``None``.
+        Default: "K".
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array containing the element-wise reciprocals.
+
+    Notes
+    -----
+    If `x` has a integral data type, the output will have the default
+    real-valued floating-point data type for the device where
+    input array `x` is allocated. If `x` has a floating-point
+    data type, the output will have the same data type.
+
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.rsqrt` : Return the reciprocal square-root of an array, element-wise.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([1, 2., 3.33])
-    >>> out = np.reciprocal(x)
-    >>> [i for i in out]
-    [1.0, 0.5, 0.3003003]
+    >>> np.reciprocal(x)
+    array([1.0, 0.5, 0.3003003])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
+    return check_nd_call_func(
+        numpy.reciprocal,
+        dpnp_reciprocal,
+        x,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
     )
-    if x1_desc and not kwargs:
-        return dpnp_recip(x1_desc).get_pyobj()
-
-    return call_origin(numpy.reciprocal, x1, **kwargs)
 
 
 def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
@@ -1453,14 +1487,14 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
 
     Parameters
     ----------
-    x : {dpnp_array, usm_ndarray}
+    x : {dpnp.ndarray, usm_ndarray}
         Input array, expected to have a real-valued data type.
     axis : int or tuple of ints, optional
         Axis or axes along which values must be computed. If a tuple
         of unique integers, values are computed over multiple axes.
         If ``None``, the result is computed over the entire array.
         Default: ``None``.
-    out : {dpnp_array, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     dtype : data type, optional
@@ -1537,13 +1571,13 @@ def rsqrt(
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a real floating-point data type.
+        Input array, must have a real-valued data type.
     out : ({None, dpnp.ndarray, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
-    order : ({'C', 'F', 'A', 'K'}, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
-        Default: "K"
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, if parameter `out` is ``None``.
+        Default: "K".
 
     Returns
     -------
@@ -1552,11 +1586,9 @@ def rsqrt(
 
     Limitations
     -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by real-valued data types.
 
     See Also
     --------

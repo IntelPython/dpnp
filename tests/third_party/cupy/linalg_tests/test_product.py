@@ -36,10 +36,9 @@ from tests.third_party.cupy import testing
         }
     )
 )
-@testing.gpu
 class TestDot(unittest.TestCase):
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_dot(self, xp, dtype_a, dtype_b):
         shape_a, shape_b = self.shape
         if self.trans_a:
@@ -71,8 +70,13 @@ class TestDot(unittest.TestCase):
         else:
             shape_c = shape_a[:-1] + shape_b[:-2] + shape_b[-1:]
         c = xp.empty(shape_c, dtype=dtype_c)
-        out = xp.dot(a, b, out=c)
-        self.assertIs(out, c)
+        try:
+            out = xp.dot(a, b, out=c)
+        except TypeError:
+            # When output dtype is incorrect, NumPy raises ValueError
+            # While DPNP raises TypeError, so we change it to ValueError
+            raise ValueError
+        assert out is c
         return c
 
 
@@ -97,14 +101,9 @@ class TestDot(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestCrossProduct(unittest.TestCase):
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
-    # TODO: remove 'contiguous_check=False' once fixed in dpnp.cross()
-    @testing.numpy_cupy_allclose(
-        type_check=has_support_aspect64(), contiguous_check=False
-    )
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_cross(self, xp, dtype_a, dtype_b):
         if dtype_a == dtype_b == numpy.bool_:
             # cross does not support bool-bool inputs.
@@ -128,10 +127,11 @@ class TestCrossProduct(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestDotFor0Dim(unittest.TestCase):
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
-    @testing.numpy_cupy_allclose(contiguous_check=False)
+    @testing.numpy_cupy_allclose(
+        type_check=has_support_aspect64(), contiguous_check=False
+    )
     def test_dot(self, xp, dtype_a, dtype_b):
         shape_a, shape_b = self.shape
         if self.trans_a:
@@ -145,8 +145,7 @@ class TestDotFor0Dim(unittest.TestCase):
         return xp.dot(a, b)
 
 
-@testing.gpu
-class TestProduct(unittest.TestCase):
+class TestProduct:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_dot_vec1(self, xp, dtype):
@@ -236,7 +235,6 @@ class TestProduct(unittest.TestCase):
         b = testing.shaped_arange((2, 2, 2, 3), xp, dtype).transpose(1, 3, 0, 2)
         return xp.vdot(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_inner(self, xp, dtype):
@@ -244,7 +242,6 @@ class TestProduct(unittest.TestCase):
         b = testing.shaped_reverse_arange((5,), xp, dtype)
         return xp.inner(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_reversed_inner(self, xp, dtype):
@@ -252,7 +249,6 @@ class TestProduct(unittest.TestCase):
         b = testing.shaped_reverse_arange((5,), xp, dtype)[::-1]
         return xp.inner(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_multidim_inner(self, xp, dtype):
@@ -288,7 +284,6 @@ class TestProduct(unittest.TestCase):
         b = testing.shaped_arange((4, 5), xp, dtype)
         return xp.outer(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot(self, xp, dtype):
@@ -303,7 +298,6 @@ class TestProduct(unittest.TestCase):
         b = testing.shaped_arange((4, 3, 2), xp, dtype).transpose(2, 0, 1)
         return xp.tensordot(a, b)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot_with_int_axes(self, xp, dtype):
@@ -333,7 +327,6 @@ class TestProduct(unittest.TestCase):
             )
             return xp.tensordot(a, b, axes=3)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot_with_list_axes(self, xp, dtype):
@@ -399,6 +392,19 @@ class TestProduct(unittest.TestCase):
         b = testing.shaped_arange((4, 5), xp, dtype)
         return xp.kron(a, b)
 
+    @pytest.mark.parametrize(
+        "a, b",
+        [
+            # (2, 3.0),  # dpnp does not support both inputs as scalar
+            (2, [[0, -1j / 2], [1j / 2, 0]]),
+            ([[0, -1j / 2], [1j / 2, 0]], 2),
+        ],
+    )
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
+    def test_kron_accepts_numbers_as_arguments(self, a, b, xp):
+        args = [xp.array(arg) if type(arg) == list else arg for arg in [a, b]]
+        return xp.kron(*args)
+
 
 @testing.parameterize(
     *testing.product(
@@ -414,8 +420,6 @@ class TestProduct(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestProductZeroLength(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
@@ -426,7 +430,6 @@ class TestProductZeroLength(unittest.TestCase):
 
 
 class TestMatrixPower(unittest.TestCase):
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_matrix_power_0(self, xp, dtype):
@@ -451,7 +454,6 @@ class TestMatrixPower(unittest.TestCase):
         a = testing.shaped_arange((3, 3), xp, dtype)
         return xp.linalg.matrix_power(a, 3)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-5)
     def test_matrix_power_inv1(self, xp, dtype):
@@ -459,7 +461,6 @@ class TestMatrixPower(unittest.TestCase):
         a = a * a % 30
         return xp.linalg.matrix_power(a, -1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-5)
     def test_matrix_power_inv2(self, xp, dtype):
@@ -467,7 +468,6 @@ class TestMatrixPower(unittest.TestCase):
         a = a * a % 30
         return xp.linalg.matrix_power(a, -2)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-4)
     def test_matrix_power_inv3(self, xp, dtype):
@@ -492,3 +492,20 @@ class TestMatrixPower(unittest.TestCase):
     def test_matrix_power_invlarge(self, xp, dtype):
         a = xp.eye(23, k=17, dtype=dtype) + xp.eye(23, k=-6, dtype=dtype)
         return xp.linalg.matrix_power(a, -987654321987654321)
+
+
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (2, 3, 3),
+        (3, 0, 0),
+    ],
+)
+@pytest.mark.parametrize("n", [0, 5, -7])
+class TestMatrixPowerBatched:
+    @testing.for_float_dtypes(no_float16=True)
+    @testing.numpy_cupy_allclose(rtol=5e-5)
+    def test_matrix_power_batched(self, xp, dtype, shape, n):
+        a = testing.shaped_arange(shape, xp, dtype)
+        a += xp.identity(shape[-1], dtype)
+        return xp.linalg.matrix_power(a, n)

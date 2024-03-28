@@ -97,14 +97,6 @@ template <typename _DataType, typename _idx_DataType>
 void (*dpnp_argsort_default_c)(void *, void *, size_t) =
     dpnp_argsort_c<_DataType, _idx_DataType>;
 
-template <typename _DataType, typename _idx_DataType>
-DPCTLSyclEventRef (*dpnp_argsort_ext_c)(DPCTLSyclQueueRef,
-                                        void *,
-                                        void *,
-                                        size_t,
-                                        const DPCTLEventVectorRef) =
-    dpnp_argsort_c<_DataType, _idx_DataType>;
-
 // template void dpnp_argsort_c<double, long>(void* array1_in, void* result1,
 // size_t size); template void dpnp_argsort_c<float, long>(void* array1_in,
 // void* result1, size_t size); template void dpnp_argsort_c<long, long>(void*
@@ -411,17 +403,6 @@ void (*dpnp_searchsorted_default_c)(void *,
                                     const size_t) =
     dpnp_searchsorted_c<_DataType, _IndexingType>;
 
-template <typename _DataType, typename _IndexingType>
-DPCTLSyclEventRef (*dpnp_searchsorted_ext_c)(DPCTLSyclQueueRef,
-                                             void *,
-                                             const void *,
-                                             const void *,
-                                             bool,
-                                             const size_t,
-                                             const size_t,
-                                             const DPCTLEventVectorRef) =
-    dpnp_searchsorted_c<_DataType, _IndexingType>;
-
 template <typename _DataType>
 class dpnp_sort_c_kernel;
 
@@ -471,14 +452,6 @@ void dpnp_sort_c(void *array1_in, void *result1, size_t size)
 template <typename _DataType>
 void (*dpnp_sort_default_c)(void *, void *, size_t) = dpnp_sort_c<_DataType>;
 
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_sort_ext_c)(DPCTLSyclQueueRef,
-                                     void *,
-                                     void *,
-                                     size_t,
-                                     const DPCTLEventVectorRef) =
-    dpnp_sort_c<_DataType>;
-
 void func_map_init_sorting(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_INT][eft_INT] = {
@@ -489,15 +462,6 @@ void func_map_init_sorting(func_map_t &fmap)
         eft_LNG, (void *)dpnp_argsort_default_c<float, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_DBL][eft_DBL] = {
         eft_LNG, (void *)dpnp_argsort_default_c<double, int64_t>};
-
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT_EXT][eft_INT][eft_INT] = {
-        eft_LNG, (void *)dpnp_argsort_ext_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_argsort_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT_EXT][eft_FLT][eft_FLT] = {
-        eft_LNG, (void *)dpnp_argsort_ext_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT_EXT][eft_DBL][eft_DBL] = {
-        eft_LNG, (void *)dpnp_argsort_ext_c<double, int64_t>};
 
     fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_partition_default_c<int32_t>};
@@ -532,15 +496,6 @@ void func_map_init_sorting(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_searchsorted_default_c<double, int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_searchsorted_ext_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_searchsorted_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_searchsorted_ext_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_searchsorted_ext_c<double, int64_t>};
-
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_sort_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_LNG][eft_LNG] = {
@@ -549,15 +504,6 @@ void func_map_init_sorting(func_map_t &fmap)
         eft_FLT, (void *)dpnp_sort_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_sort_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_SORT_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_sort_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_SORT_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_sort_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SORT_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_sort_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_SORT_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_sort_ext_c<double>};
 
     return;
 }

@@ -12,16 +12,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 
-if (NOT DEFINED DPCTL_MODULE_PATH)
-  if (DEFINED ENV{DPCTL_MODULE_PATH})
-    set(DPCTL_MODULE_PATH $ENV{DPCTL_MODULE_PATH})
-  else ()
-    message(FATAL_ERROR "Specify DPCTL_MODULE_PATH, either via cmake or as environment varibale")
-  endif()
-endif()
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${DPCTL_MODULE_PATH})
-
 
 find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
 find_package(TBB QUIET)
@@ -73,14 +63,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(pybind11)
 
-find_package(Python REQUIRED COMPONENTS Development.Module)
-find_package(NumPy REQUIRED)
+find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
 
 set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
 find_package(Cython REQUIRED)
-find_package(Dpctl REQUIRED)
 
-message(STATUS "Dpctl_INCLUDE_DIRS=" ${Dpctl_INCLUDE_DIRS})
+find_package(Dpctl REQUIRED)
+message(STATUS "Dpctl_INCLUDE_DIR=" ${Dpctl_INCLUDE_DIR})
 message(STATUS "Dpctl_TENSOR_INCLUDE_DIR=" ${Dpctl_TENSOR_INCLUDE_DIR})
 
 if(WIN32)

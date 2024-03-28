@@ -2,6 +2,27 @@
 line-length = 80
 target-version = ['py38', 'py39', 'py310']
 
+[tool.pylint.basic]
+include-naming-hint = true
+
+[tool.pylint.classes]
+exclude-protected = ["_create_from_usm_ndarray"]
+
+[tool.pylint.design]
+max-args = 11
+max-locals = 24
+max-branches = 15
+
+[tool.pylint.format]
+max-line-length = 80
+max-module-lines = 5000
+
+[tool.pylint.imports]
+allow-wildcard-with-all = true
+
+[tool.pylint.miscellaneous]
+notes = ["FIXME", "XXX"]
+
 [tool.isort]
 multi_line_output = 3
 include_trailing_comma = true

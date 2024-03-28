@@ -21,28 +21,65 @@ from .helper import (
 
 
 @pytest.mark.parametrize(
-    "func, kwargs",
+    "func, args",
     [
-        pytest.param("array", {"subok": True}),
-        pytest.param("array", {"ndmin": 1}),
-        pytest.param("array", {"like": dpnp.ones(10)}),
-        pytest.param("asanyarray", {"like": dpnp.array(7)}),
-        pytest.param("asarray", {"like": dpnp.array([1, 5])}),
-        pytest.param("ascontiguousarray", {"like": dpnp.zeros(4)}),
-        pytest.param("asfortranarray", {"like": dpnp.empty((2, 4))}),
-        pytest.param("copy", {"subok": True}),
+        pytest.param("empty", [3]),
+        pytest.param("empty_like", [dpnp.ones(10)]),
+        pytest.param("eye", [3]),
+        pytest.param("full", [3, 7]),
+        pytest.param("full_like", [dpnp.ones(10), 7]),
+        pytest.param("ones", [3]),
+        pytest.param("ones_like", [dpnp.ones(10)]),
+        pytest.param("zeros", [3]),
+        pytest.param("zeros_like", [dpnp.ones(10)]),
     ],
 )
-def test_array_copy_exception(func, kwargs):
-    sh = (3, 5)
-    x = dpnp.arange(1, prod(sh) + 1, 1).reshape(sh)
+def test_exception_order(func, args):
+    with pytest.raises(NotImplementedError):
+        getattr(dpnp, func)(*args, order="K")
+    with pytest.raises(ValueError):
+        getattr(dpnp, func)(*args, order="S")
 
-    with pytest.raises(
-        ValueError,
-        match=f"Keyword argument `{list(kwargs.keys())[0]}` is supported "
-        "only with default value",
-    ):
-        getattr(dpnp, func)(x, **kwargs)
+
+@pytest.mark.parametrize(
+    "func, args",
+    [
+        pytest.param("arange", [2]),
+        pytest.param("array", [2]),
+        pytest.param("asanyarray", [2]),
+        pytest.param("asarray", [2]),
+        pytest.param("ascontiguousarray", [2]),
+        pytest.param("asfortranarray", [2]),
+        pytest.param("empty", [(2,)]),
+        pytest.param("eye", [2]),
+        pytest.param("frombuffer", [b"\x01\x02\x03\x04"]),
+        pytest.param("full", [(2,), 4]),
+        pytest.param("identity", [2]),
+        pytest.param("ones", [(2,)]),
+        pytest.param("zeros", [(2,)]),
+    ],
+)
+def test_exception_like(func, args):
+    like = dpnp.array([1, 2])
+    with pytest.raises(NotImplementedError):
+        getattr(dpnp, func)(*args, like=like)
+
+
+@pytest.mark.parametrize(
+    "func, args",
+    [
+        pytest.param("array", []),
+        pytest.param("copy", []),
+        pytest.param("empty_like", []),
+        pytest.param("full_like", [5]),
+        pytest.param("ones_like", []),
+        pytest.param("zeros_like", []),
+    ],
+)
+def test_exception_subok(func, args):
+    x = dpnp.ones((3,))
+    with pytest.raises(NotImplementedError):
+        getattr(dpnp, func)(x, *args, subok=True)
 
 
 @pytest.mark.parametrize(
@@ -172,21 +209,14 @@ def test_eye(N, M, k, dtype, order):
     assert_array_equal(func(numpy), func(dpnp))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize(
-    "dtype",
-    get_all_dtypes(
-        no_float16=False, no_none=False if has_support_aspect64() else True
-    ),
-)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_frombuffer(dtype):
     buffer = b"12345678ABCDEF00"
     func = lambda xp: xp.frombuffer(buffer, dtype=dtype)
-    assert_allclose(func(dpnp), func(numpy))
+    assert_dtype_allclose(func(dpnp), func(numpy))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize("dtype", get_all_dtypes())
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_fromfile(dtype):
     with tempfile.TemporaryFile() as fh:
         fh.write(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08")
@@ -200,10 +230,9 @@ def test_fromfile(dtype):
         fh.seek(0)
         dpnp_res = func(dpnp)
 
-        assert_almost_equal(dpnp_res, np_res)
+    assert_dtype_allclose(dpnp_res, np_res)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_float16=False)
 )
@@ -216,7 +245,6 @@ def test_fromfunction(dtype):
     assert_array_equal(call_func(dpnp), call_func(numpy))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_fromiter(dtype):
     _iter = [1, 2, 3, 4]
@@ -224,7 +252,6 @@ def test_fromiter(dtype):
     assert_array_equal(func(dpnp), func(numpy))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_fromstring(dtype):
     string = "1 2 3 4"
@@ -239,7 +266,6 @@ def test_identity(n, dtype):
     assert_array_equal(func(numpy), func(dpnp))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_loadtxt(dtype):
     func = lambda xp: xp.loadtxt(fh, dtype=dtype)
@@ -253,7 +279,7 @@ def test_loadtxt(dtype):
         fh.seek(0)
         dpnp_res = func(dpnp)
 
-        assert_array_equal(dpnp_res, np_res)
+    assert_array_equal(dpnp_res, np_res)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
@@ -878,3 +904,75 @@ def test_logspace_axis(axis):
         [2, 3], [20, 15], num=2, base=[[1, 3], [5, 7]], axis=axis
     )
     assert_dtype_allclose(func(dpnp), func(numpy))
+
+
+@pytest.mark.parametrize(
+    "data", [(), 1, (2, 3), [4], numpy.array(5), numpy.array([6, 7])]
+)
+def test_ascontiguousarray(data):
+    result = dpnp.ascontiguousarray(data)
+    expected = numpy.ascontiguousarray(data)
+    assert_dtype_allclose(result, expected)
+    assert result.shape == expected.shape
+
+
+@pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
+def test_ascontiguousarray1(data):
+    result = dpnp.ascontiguousarray(dpnp.array(data))
+    expected = numpy.ascontiguousarray(numpy.array(data))
+    assert_dtype_allclose(result, expected)
+    assert result.shape == expected.shape
+
+
+@pytest.mark.parametrize(
+    "data", [(), 1, (2, 3), [4], numpy.array(5), numpy.array([6, 7])]
+)
+def test_asfortranarray(data):
+    result = dpnp.asfortranarray(data)
+    expected = numpy.asfortranarray(data)
+    assert_dtype_allclose(result, expected)
+    assert result.shape == expected.shape
+
+
+@pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
+def test_asfortranarray1(data):
+    result = dpnp.asfortranarray(dpnp.array(data))
+    expected = numpy.asfortranarray(numpy.array(data))
+    assert_dtype_allclose(result, expected)
+    assert result.shape == expected.shape
+
+
+def test_meshgrid_raise_error():
+    a = numpy.array([1, 2, 3, 4])
+    with pytest.raises(TypeError):
+        dpnp.meshgrid(a)
+    b = dpnp.array([1, 2, 3, 4])
+    with pytest.raises(ValueError):
+        dpnp.meshgrid(b, indexing="ab")
+
+
+def test_exception_tri():
+    x = dpnp.ones((2, 2))
+    with pytest.raises(TypeError):
+        dpnp.tri(x)
+    with pytest.raises(TypeError):
+        dpnp.tri(1, x)
+    with pytest.raises(TypeError):
+        dpnp.tri(1, 1, k=1.2)
+    with pytest.raises(TypeError):
+        dpnp.tril(x, k=1.2)
+    with pytest.raises(TypeError):
+        dpnp.triu(x, k=1.2)
+    with pytest.raises(TypeError):
+        dpnp.tril(1)
+    with pytest.raises(TypeError):
+        dpnp.triu(1)
+
+    with pytest.raises(ValueError):
+        dpnp.tri(-1)
+    with pytest.raises(ValueError):
+        dpnp.tri(1, -1)
+    with pytest.raises(ValueError):
+        dpnp.tril(dpnp.array(5))
+    with pytest.raises(ValueError):
+        dpnp.triu(dpnp.array(5))

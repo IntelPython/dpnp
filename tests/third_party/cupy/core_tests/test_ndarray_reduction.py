@@ -9,7 +9,6 @@ import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
-@testing.gpu
 @testing.parameterize(
     *testing.product(
         {
@@ -395,7 +394,6 @@ class TestArrayReductionZeroSize:
         }
     )
 )
-@testing.gpu
 # @unittest.skipUnless(cupy.cuda.cub.available, 'The CUB routine is not enabled')
 class TestCubReduction(unittest.TestCase):
     # def setUp(self):

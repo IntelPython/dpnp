@@ -86,6 +86,23 @@ def test_flags_strides(dtype, order, strides):
     assert numpy_array.flags.f_contiguous == dpnp_array.flags.f_contiguous
 
 
+def test_flags_writable():
+    a = dpnp.arange(10, dtype="f4")
+    a.flags["W"] = False
+
+    a.shape = (5, 2)
+    assert not a.flags.writable
+    assert not a.T.flags.writable
+    assert not a.real.flags.writable
+    assert not a[0:3].flags.writable
+
+    a = dpnp.arange(10, dtype="c8")
+    a.flags["W"] = False
+
+    assert not a.real.flags.writable
+    assert not a.imag.flags.writable
+
+
 def test_print_dpnp_int():
     result = repr(dpnp.array([1, 0, 2, -3, -1, 2, 21, -9], dtype="i4"))
     expected = "array([ 1,  0,  2, -3, -1,  2, 21, -9], dtype=int32)"

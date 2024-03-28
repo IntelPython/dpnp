@@ -3,7 +3,6 @@ import unittest
 from tests.third_party.cupy import testing
 
 
-@testing.gpu
 class TestElementwise(unittest.TestCase):
     @testing.for_int_dtypes()
     @testing.numpy_cupy_array_equal()

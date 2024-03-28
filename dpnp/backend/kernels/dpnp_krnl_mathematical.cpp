@@ -35,6 +35,12 @@
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
+// dpctl tensor headers
+#include "kernels/alignment.hpp"
+
+using dpctl::tensor::kernels::alignment_utils::is_aligned;
+using dpctl::tensor::kernels::alignment_utils::required_alignment;
+
 static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VECTOR_ABS_CHANGED,
               "SYCL DPC++ compiler does not meet minimum version requirement");
 
@@ -163,7 +169,10 @@ DPCTLSyclEventRef
                 vec_sz * (nd_it.get_group(0) * nd_it.get_local_range(0) +
                           sg.get_group_id()[0] * max_sg_size);
 
-            if (start + static_cast<size_t>(vec_sz) * max_sg_size < size) {
+            if (is_aligned<required_alignment>(array1) &&
+                is_aligned<required_alignment>(result) &&
+                (start + static_cast<size_t>(vec_sz) * max_sg_size < size))
+            {
                 auto array_multi_ptr = sycl::address_space_cast<
                     sycl::access::address_space::global_space,
                     sycl::access::decorated::yes>(&array1[start]);
@@ -300,23 +309,6 @@ void (*dpnp_cross_default_c)(void *,
                              const shape_elem_type *,
                              const size_t,
                              const size_t *) =
-    dpnp_cross_c<_DataType_output, _DataType_input1, _DataType_input2>;
-
-template <typename _DataType_output,
-          typename _DataType_input1,
-          typename _DataType_input2>
-DPCTLSyclEventRef (*dpnp_cross_ext_c)(DPCTLSyclQueueRef,
-                                      void *,
-                                      const void *,
-                                      const size_t,
-                                      const shape_elem_type *,
-                                      const size_t,
-                                      const void *,
-                                      const size_t,
-                                      const shape_elem_type *,
-                                      const size_t,
-                                      const size_t *,
-                                      const DPCTLEventVectorRef) =
     dpnp_cross_c<_DataType_output, _DataType_input1, _DataType_input2>;
 
 template <typename _KernelNameSpecialization1,
@@ -1107,31 +1099,6 @@ DPCTLSyclEventRef (*dpnp_trapz_ext_c)(DPCTLSyclQueueRef,
                                       const DPCTLEventVectorRef) =
     dpnp_trapz_c<_DataType_input1, _DataType_input2, _DataType_output>;
 
-template <DPNPFuncType FT1, DPNPFuncType... FTs>
-static void func_map_elemwise_2arg_3type_core(func_map_t &fmap)
-{
-    ((fmap[DPNPFuncName::DPNP_FN_CROSS_EXT][FT1][FTs] =
-          {get_floating_res_type<FT1, FTs, std::true_type, std::true_type>(),
-           (void *)dpnp_cross_ext_c<
-               func_type_map_t::find_type<get_floating_res_type<
-                   FT1, FTs, std::true_type, std::true_type>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>,
-           get_floating_res_type<FT1, FTs, std::false_type, std::true_type>(),
-           (void *)dpnp_cross_ext_c<
-               func_type_map_t::find_type<get_floating_res_type<
-                   FT1, FTs, std::false_type, std::true_type>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>}),
-     ...);
-}
-
-template <DPNPFuncType... FTs>
-static void func_map_elemwise_2arg_3type_helper(func_map_t &fmap)
-{
-    ((func_map_elemwise_2arg_3type_core<FTs, FTs...>(fmap)), ...);
-}
-
 void func_map_init_mathematical(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_INT][eft_INT] = {
@@ -1392,9 +1359,6 @@ void func_map_init_mathematical(func_map_t &fmap)
         eft_DBL, (void *)dpnp_trapz_ext_c<double, float, double>};
     fmap[DPNPFuncName::DPNP_FN_TRAPZ_EXT][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_trapz_ext_c<double, double, double>};
-
-    func_map_elemwise_2arg_3type_helper<eft_INT, eft_LNG, eft_FLT, eft_DBL>(
-        fmap);
 
     return;
 }
