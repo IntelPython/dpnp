@@ -1691,39 +1691,70 @@ def dpnp_solve(a, b):
             out_v = out_v.reshape(orig_shape_b)
         return out_v
     else:
-        # oneMKL LAPACK gesv overwrites `a` and `b` and assumes fortran-like array as input.
-        # Allocate 'F' order memory for dpnp arrays to comply with these requirements.
-        a_f = dpnp.empty_like(
-            a, order="F", dtype=res_type, usm_type=res_usm_type
+        # Due to MKLD-17226 we can not use _gesv directly.
+        # This w/a uses _getrf and _getrs instead
+        # to handle cases where nrhs > n for a.shape = (n x n)
+        # and b.shape=(n x nrhs).
+
+        # oneMKL LAPACK getrf overwrites `a`.
+        a_h = dpnp.empty_like(
+            a, order="C", dtype=res_type, usm_type=res_usm_type
         )
 
-        # use DPCTL tensor function to fill the coefficient matrix array
-        # with content from the input array `a`
+        # use DPCTL tensor function to fill the сopy of the input array
+        # from the input array
         a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a.sycl_queue
+            src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
         )
 
-        b_f = dpnp.empty_like(
+        # oneMKL LAPACK getrs overwrites `b` and assumes fortran-like array as input.
+        # Allocate 'F' order memory for dpnp arrays to comply with these requirements.
+        b_h = dpnp.empty_like(
             b, order="F", dtype=res_type, usm_type=res_usm_type
         )
 
         # use DPCTL tensor function to fill the array of multiple dependent variables
         # with content from the input array `b`
         b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=b_usm_arr, dst=b_f.get_array(), sycl_queue=b.sycl_queue
+            src=b_usm_arr, dst=b_h.get_array(), sycl_queue=b.sycl_queue
         )
 
-        # Call the LAPACK extension function _gesv to solve the system of linear
-        # equations with the coefficient square matrix and the dependent variables array.
-        ht_lapack_ev, _ = li._gesv(
-            exec_q, a_f.get_array(), b_f.get_array(), [a_copy_ev, b_copy_ev]
+        n = a.shape[0]
+
+        ipiv_h = dpnp.empty_like(
+            a,
+            shape=(n,),
+            dtype=dpnp.int64,
+        )
+        dev_info_h = [0]
+
+        # Call the LAPACK extension function _getrf
+        # to perform LU decomposition of the input matrix
+        ht_getrf_ev, getrf_ev = li._getrf(
+            exec_q,
+            a_h.get_array(),
+            ipiv_h.get_array(),
+            dev_info_h,
+            [a_copy_ev],
         )
 
-        ht_lapack_ev.wait()
-        b_ht_copy_ev.wait()
-        a_ht_copy_ev.wait()
+        _check_lapack_dev_info(dev_info_h)
 
-        return b_f
+        # Call the LAPACK extension function _getrs
+        # to solve the system of linear equations with an LU-factored
+        # coefficient square matrix, with multiple right-hand sides.
+        ht_getrs_ev, _ = li._getrs(
+            exec_q,
+            a_h.get_array(),
+            ipiv_h.get_array(),
+            b_h.get_array(),
+            [b_copy_ev, getrf_ev],
+        )
+
+        ht_list_ev = [a_ht_copy_ev, b_ht_copy_ev, ht_getrf_ev, ht_getrs_ev]
+        dpctl.SyclEvent.wait_for(ht_list_ev)
+
+        return b_h
 
 
 def dpnp_slogdet(a):
