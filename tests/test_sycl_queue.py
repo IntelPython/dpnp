@@ -1775,23 +1775,44 @@ def test_grid(device, func):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_solve(device):
-    x = [[1.0, 2.0], [3.0, 5.0]]
-    y = [1.0, 2.0]
+@pytest.mark.parametrize(
+    "matrix, vector",
+    [
+        ([[1, 2], [3, 5]], numpy.empty((2, 0))),
+        ([[1, 2], [3, 5]], [1, 2]),
+        (
+            [
+                [[1, 1, 1], [0, 2, 5], [2, 5, -1]],
+                [[3, -1, 1], [1, 2, 3], [2, 3, 1]],
+                [[1, 4, 1], [1, 2, -2], [4, 1, 2]],
+            ],
+            [[6, -4, 27], [9, -6, 15], [15, 1, 11]],
+        ),
+    ],
+    ids=[
+        "2D_Matrix_Empty_Vector",
+        "2D_Matrix_1D_Vector",
+        "3D_Matrix_and_Vectors",
+    ],
+)
+def test_solve(matrix, vector, device):
+    a_np = numpy.array(matrix)
+    b_np = numpy.array(vector)
 
-    numpy_x = numpy.array(x)
-    numpy_y = numpy.array(y)
-    dpnp_x = dpnp.array(x, device=device)
-    dpnp_y = dpnp.array(y, device=device)
+    a_dp = dpnp.array(a_np, device=device)
+    b_dp = dpnp.array(b_np, device=device)
 
-    result = dpnp.linalg.solve(dpnp_x, dpnp_y)
-    expected = numpy.linalg.solve(numpy_x, numpy_y)
+    if a_dp.ndim > 2 and a_dp.device.sycl_device.is_cpu:
+        pytest.skip("SAT-6842: reported hanging in public CI")
+
+    result = dpnp.linalg.solve(a_dp, b_dp)
+    expected = numpy.linalg.solve(a_np, b_np)
     assert_dtype_allclose(result, expected)
 
     result_queue = result.sycl_queue
 
-    assert_sycl_queue_equal(result_queue, dpnp_x.sycl_queue)
-    assert_sycl_queue_equal(result_queue, dpnp_y.sycl_queue)
+    assert_sycl_queue_equal(result_queue, a_dp.sycl_queue)
+    assert_sycl_queue_equal(result_queue, b_dp.sycl_queue)
 
 
 @pytest.mark.parametrize(
