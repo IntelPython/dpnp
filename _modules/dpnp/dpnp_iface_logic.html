@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.15.0dev1+4.g9ee9289074 documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.15.0dev1+23.gd99bf26dbe documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=55739cee"></script>
+        <script src="../../_static/documentation_options.js?v=c2c95912"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+4.g9ee9289074
+                0.15.0dev1+23.gd99bf26dbe
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -129,31 +129,21 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="c1"># pylint: disable=protected-access</span>
+<span class="c1"># pylint: disable=c-extension-no-member</span>
+<span class="c1"># pylint: disable=duplicate-code</span>
+<span class="c1"># pylint: disable=no-name-in-module</span>
+
 
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_elementwise_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="n">dpnp_allclose</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
-
-<span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">check_nd_call_func</span><span class="p">,</span>
-    <span class="n">dpnp_equal</span><span class="p">,</span>
-    <span class="n">dpnp_greater</span><span class="p">,</span>
-    <span class="n">dpnp_greater_equal</span><span class="p">,</span>
-    <span class="n">dpnp_isfinite</span><span class="p">,</span>
-    <span class="n">dpnp_isinf</span><span class="p">,</span>
-    <span class="n">dpnp_isnan</span><span class="p">,</span>
-    <span class="n">dpnp_less</span><span class="p">,</span>
-    <span class="n">dpnp_less_equal</span><span class="p">,</span>
-    <span class="n">dpnp_logical_and</span><span class="p">,</span>
-    <span class="n">dpnp_logical_not</span><span class="p">,</span>
-    <span class="n">dpnp_logical_or</span><span class="p">,</span>
-    <span class="n">dpnp_logical_xor</span><span class="p">,</span>
-    <span class="n">dpnp_not_equal</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="n">call_origin</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;all&quot;</span><span class="p">,</span>
@@ -201,7 +191,8 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.ndarray.all` : equivalent method</span>
-<span class="sd">    :obj:`dpnp.any` : Test whether any element along a given axis evaluates to True.</span>
+<span class="sd">    :obj:`dpnp.any` : Test whether any element along a given axis evaluates</span>
+<span class="sd">                      to True.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -311,15 +302,11 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">rtol</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;An argument `rtol` must be a scalar, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="nb">type</span><span class="p">(</span><span class="n">rtol</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;An argument `rtol` must be a scalar, but got </span><span class="si">{</span><span class="n">rtol</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">atol</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">atol</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;An argument `atol` must be a scalar, but got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="nb">type</span><span class="p">(</span><span class="n">atol</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;An argument `atol` must be a scalar, but got </span><span class="si">{</span><span class="n">atol</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
@@ -363,7 +350,8 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.ndarray.any` : equivalent method</span>
-<span class="sd">    :obj:`dpnp.all` : Test whether all elements along a given axis evaluate to True.</span>
+<span class="sd">    :obj:`dpnp.all` : Test whether all elements along a given axis evaluate</span>
+<span class="sd">                      to True.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -407,236 +395,207 @@
 
 
 
-<div class="viewcode-block" id="equal">
-<a class="viewcode-back" href="../../reference/generated/dpnp.equal.html#dpnp.equal">[docs]</a>
-<span class="k">def</span> <span class="nf">equal</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the truth value of (x1 == x2) element-wise.</span>
+<span class="n">_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates equality results for each element `x1_i` of</span>
+<span class="s2">the input array `x1` the respective element `x2_i` of the input array `x2`.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.equal`.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.equal`.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    First input array, expected to have numeric data type.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array have the correct shape and the expected data type.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: &quot;K&quot;.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    an array containing the result of element-wise equality comparison.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion Rules.</span>
 
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.greater_equal` : Return the truth value of (x1 &gt;= x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.less_equal` : Return the truth value of (x1 =&lt; x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.greater` : Return the truth value of (x1 &gt; x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.less` : Return the truth value of (x1 &lt; x2) element-wise.</span>
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([0, 1, 3])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.arange(3)</span>
-<span class="sd">    &gt;&gt;&gt; np.equal(x1, x2)</span>
-<span class="sd">    array([ True,  True, False])</span>
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.greater_equal` : Return the truth value of (x1 &gt;= x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.less_equal` : Return the truth value of (x1 =&lt; x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.greater` : Return the truth value of (x1 &gt; x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.less` : Return the truth value of (x1 &lt; x2) element-wise.</span>
 
-<span class="sd">    What is compared are values, not types. So an int (1) and an array of</span>
-<span class="sd">    length one can evaluate as True:</span>
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([0, 1, 3])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.arange(3)</span>
+<span class="s2">&gt;&gt;&gt; np.equal(x1, x2)</span>
+<span class="s2">array([ True,  True, False])</span>
 
-<span class="sd">    &gt;&gt;&gt; np.equal(1, np.ones(1))</span>
-<span class="sd">    array([ True])</span>
+<span class="s2">What is compared are values, not types. So an int (1) and an array of</span>
+<span class="s2">length one can evaluate as True:</span>
 
-<span class="sd">    The ``==`` operator can be used as a shorthand for ``equal`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
+<span class="s2">&gt;&gt;&gt; np.equal(1, np.ones(1))</span>
+<span class="s2">array([ True])</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.array([2, 4, 6])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([2, 4, 2])</span>
-<span class="sd">    &gt;&gt;&gt; a == b</span>
-<span class="sd">    array([ True,  True, False])</span>
+<span class="s2">The ``==`` operator can be used as a shorthand for ``equal`` on</span>
+<span class="s2">:class:`dpnp.ndarray`.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="s2">&gt;&gt;&gt; a = np.array([2, 4, 6])</span>
+<span class="s2">&gt;&gt;&gt; b = np.array([2, 4, 2])</span>
+<span class="s2">&gt;&gt;&gt; a == b</span>
+<span class="s2">array([ True,  True, False])</span>
+<span class="s2">&quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">equal</span><span class="p">,</span>
-        <span class="n">dpnp_equal</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
+<span class="n">equal</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;equal&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_equal_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_equal</span><span class="p">,</span>
+    <span class="n">_EQUAL_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
 
 
+<span class="n">_GREATER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates the greater-than results for each element `x1_i` of</span>
+<span class="s2">the input array `x1` the respective element `x2_i` of the input array `x2`.</span>
 
-<div class="viewcode-block" id="greater">
-<a class="viewcode-back" href="../../reference/generated/dpnp.greater.html#dpnp.greater">[docs]</a>
-<span class="k">def</span> <span class="nf">greater</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the truth value of (x1 &gt; x2) element-wise.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.greater`.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.greater`.</span>
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    First input array, expected to have numeric data type.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: &quot;K&quot;.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    an array containing the result of element-wise greater-than comparison.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion Rules.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.greater_equal` : Return the truth value of (x1 &gt;= x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.less` : Return the truth value of (x1 &lt; x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.less_equal` : Return the truth value of (x1 =&lt; x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.greater_equal` : Return the truth value of (x1 &gt;= x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.less` : Return the truth value of (x1 &lt; x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.less_equal` : Return the truth value of (x1 =&lt; x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([4, 2])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([2, 2])</span>
-<span class="sd">    &gt;&gt;&gt; np.greater(x1, x2)</span>
-<span class="sd">    array([ True, False])</span>
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([4, 2])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([2, 2])</span>
+<span class="s2">&gt;&gt;&gt; np.greater(x1, x2)</span>
+<span class="s2">array([ True, False])</span>
 
-<span class="sd">    The ``&gt;`` operator can be used as a shorthand for ``greater`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
+<span class="s2">The ``&gt;`` operator can be used as a shorthand for ``greater`` on</span>
+<span class="s2">:class:`dpnp.ndarray`.</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.array([4, 2])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([2, 2])</span>
-<span class="sd">    &gt;&gt;&gt; a &gt; b</span>
-<span class="sd">    array([ True, False])</span>
+<span class="s2">&gt;&gt;&gt; a = np.array([4, 2])</span>
+<span class="s2">&gt;&gt;&gt; b = np.array([2, 2])</span>
+<span class="s2">&gt;&gt;&gt; a &gt; b</span>
+<span class="s2">array([ True, False])</span>
+<span class="s2">&quot;&quot;&quot;</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">greater</span><span class="p">,</span>
-        <span class="n">dpnp_greater</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
+<span class="n">greater</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;greater&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_greater_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_greater</span><span class="p">,</span>
+    <span class="n">_GREATER_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
 
 
+<span class="n">_GREATER_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates the greater-than or equal-to results for each element `x1_i` of</span>
+<span class="s2">the input array `x1` the respective element `x2_i` of the input array `x2`.</span>
 
-<div class="viewcode-block" id="greater_equal">
-<a class="viewcode-back" href="../../reference/generated/dpnp.greater_equal.html#dpnp.greater_equal">[docs]</a>
-<span class="k">def</span> <span class="nf">greater_equal</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the truth value of (x1 &gt;= x2) element-wise.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.greater_equal`.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.greater_equal`.</span>
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    First input array, expected to have numeric data type.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: &quot;K&quot;.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    an array containing the result of element-wise greater-than or equal-to comparison.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion Rules.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.greater` : Return the truth value of (x1 &gt; x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.less` : Return the truth value of (x1 &lt; x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.less_equal` : Return the truth value of (x1 =&lt; x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.greater` : Return the truth value of (x1 &gt; x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.less` : Return the truth value of (x1 &lt; x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.less_equal` : Return the truth value of (x1 =&lt; x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([4, 2, 1])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([2, 2, 2])</span>
-<span class="sd">    &gt;&gt;&gt; np.greater_equal(x1, x2)</span>
-<span class="sd">    array([ True,  True, False])</span>
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([4, 2, 1])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([2, 2, 2])</span>
+<span class="s2">&gt;&gt;&gt; np.greater_equal(x1, x2)</span>
+<span class="s2">array([ True,  True, False])</span>
 
-<span class="sd">    The ``&gt;=`` operator can be used as a shorthand for ``greater_equal`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
+<span class="s2">The ``&gt;=`` operator can be used as a shorthand for ``greater_equal`` on</span>
+<span class="s2">:class:`dpnp.ndarray`.</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.array([4, 2, 1])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([2, 2, 2])</span>
-<span class="sd">    &gt;&gt;&gt; a &gt;= b</span>
-<span class="sd">    array([ True,  True, False])</span>
+<span class="s2">&gt;&gt;&gt; a = np.array([4, 2, 1])</span>
+<span class="s2">&gt;&gt;&gt; b = np.array([2, 2, 2])</span>
+<span class="s2">&gt;&gt;&gt; a &gt;= b</span>
+<span class="s2">array([ True,  True, False])</span>
+<span class="s2">&quot;&quot;&quot;</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">,</span>
-        <span class="n">dpnp_greater_equal</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
+<span class="n">greater_equal</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;greater&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_greater_equal_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_greater_equal</span><span class="p">,</span>
+    <span class="n">_GREATER_EQUAL_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="isclose">
 <a class="viewcode-back" href="../../reference/generated/dpnp.isclose.html#dpnp.isclose">[docs]</a>
 <span class="k">def</span> <span class="nf">isclose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns a boolean array where two arrays are element-wise equal within a tolerance.</span>
+<span class="sd">    Returns a boolean array where two arrays are element-wise equal within</span>
+<span class="sd">    a tolerance.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.isclose`.</span>
 
@@ -649,7 +608,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.allclose` : Returns True if two arrays are element-wise equal within a tolerance.</span>
+<span class="sd">    :obj:`dpnp.allclose` : Returns True if two arrays are element-wise equal</span>
+<span class="sd">                           within a tolerance.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -665,7 +625,9 @@
     <span class="c1"># x1_desc = dpnp.get_dpnp_descriptor(x1)</span>
     <span class="c1"># x2_desc = dpnp.get_dpnp_descriptor(x2)</span>
     <span class="c1"># if x1_desc and x2_desc:</span>
-    <span class="c1">#     result_obj = dpnp_isclose(x1_desc, x2_desc, rtol, atol, equal_nan).get_pyobj()</span>
+    <span class="c1">#     result_obj = dpnp_isclose(</span>
+    <span class="c1">#         x1_desc, x2_desc, rtol, atol, equal_nan</span>
+    <span class="c1">#     ).get_pyobj()</span>
     <span class="c1">#     return result_obj</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
@@ -674,672 +636,601 @@
 
 
 
-<div class="viewcode-block" id="isfinite">
-<a class="viewcode-back" href="../../reference/generated/dpnp.isfinite.html#dpnp.isfinite">[docs]</a>
-<span class="k">def</span> <span class="nf">isfinite</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Test element-wise for finiteness (not infinity or not Not a Number).</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.isfinite`.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.</span>
-<span class="sd">    :obj:`dpnp.isneginf` : Test element-wise for negative infinity,</span>
-<span class="sd">                           return result as bool array.</span>
-<span class="sd">    :obj:`dpnp.isposinf` : Test element-wise for positive infinity,</span>
-<span class="sd">                           return result as bool array.</span>
-<span class="sd">    :obj:`dpnp.isnan` : Test element-wise for NaN and</span>
-<span class="sd">                        return result as a boolean array.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    Not a Number, positive infinity and negative infinity are considered</span>
-<span class="sd">    to be non-finite.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
-<span class="sd">    &gt;&gt;&gt; np.isfinite(x)</span>
-<span class="sd">    array([False,  True, False])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">,</span>
-        <span class="n">dpnp_isfinite</span><span class="p">,</span>
-        <span class="n">x</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="isinf">
-<a class="viewcode-back" href="../../reference/generated/dpnp.isinf.html#dpnp.isinf">[docs]</a>
-<span class="k">def</span> <span class="nf">isinf</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Test element-wise for positive or negative infinity.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.isinf`.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.isneginf` : Test element-wise for negative infinity,</span>
-<span class="sd">                           return result as bool array.</span>
-<span class="sd">    :obj:`dpnp.isposinf` : Test element-wise for positive infinity,</span>
-<span class="sd">                           return result as bool array.</span>
-<span class="sd">    :obj:`dpnp.isnan` : Test element-wise for NaN and</span>
-<span class="sd">                        return result as a boolean array.</span>
-<span class="sd">    :obj:`dpnp.isfinite` : Test element-wise for finiteness.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
-<span class="sd">    &gt;&gt;&gt; np.isinf(x)</span>
-<span class="sd">    array([ True, False,  True])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">isinf</span><span class="p">,</span>
-        <span class="n">dpnp_isinf</span><span class="p">,</span>
-        <span class="n">x</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="isnan">
-<a class="viewcode-back" href="../../reference/generated/dpnp.isnan.html#dpnp.isnan">[docs]</a>
-<span class="k">def</span> <span class="nf">isnan</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Test element-wise for NaN and return result as a boolean array.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.isnan`.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.</span>
-<span class="sd">    :obj:`dpnp.isneginf` : Test element-wise for negative infinity,</span>
-<span class="sd">                           return result as bool array.</span>
-<span class="sd">    :obj:`dpnp.isposinf` : Test element-wise for positive infinity,</span>
-<span class="sd">                           return result as bool array.</span>
-<span class="sd">    :obj:`dpnp.isfinite` : Test element-wise for finiteness.</span>
-<span class="sd">    :obj:`dpnp.isnat` : Test element-wise for NaT (not a time)</span>
-<span class="sd">                        and return result as a boolean array.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([np.inf, 0., np.nan])</span>
-<span class="sd">    &gt;&gt;&gt; np.isnan(x)</span>
-<span class="sd">    array([False, False,  True])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">isnan</span><span class="p">,</span>
-        <span class="n">dpnp_isnan</span><span class="p">,</span>
-        <span class="n">x</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="less">
-<a class="viewcode-back" href="../../reference/generated/dpnp.less.html#dpnp.less">[docs]</a>
-<span class="k">def</span> <span class="nf">less</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the truth value of (x1 &lt; x2) element-wise.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.less`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.greater` : Return the truth value of (x1 &gt; x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.less_equal` : Return the truth value of (x1 =&lt; x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.greater_equal` : Return the truth value of (x1 &gt;= x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([1, 2])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([2, 2])</span>
-<span class="sd">    &gt;&gt;&gt; np.less(x1, x2)</span>
-<span class="sd">    array([ True, False])</span>
-
-<span class="sd">    The ``&lt;`` operator can be used as a shorthand for ``less`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
-
-<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([2, 2])</span>
-<span class="sd">    &gt;&gt;&gt; a &lt; b</span>
-<span class="sd">    array([ True, False])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">less</span><span class="p">,</span>
-        <span class="n">dpnp_less</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="less_equal">
-<a class="viewcode-back" href="../../reference/generated/dpnp.less_equal.html#dpnp.less_equal">[docs]</a>
-<span class="k">def</span> <span class="nf">less_equal</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the truth value of (x1 &lt;= x2) element-wise.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.less_equal`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.greater` : Return the truth value of (x1 &gt; x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.less` : Return the truth value of (x1 &lt; x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.greater_equal` : Return the truth value of (x1 &gt;= x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([4, 2, 1])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([2, 2, 2]</span>
-<span class="sd">    &gt;&gt;&gt; np.less_equal(x1, x2)</span>
-<span class="sd">    array([False,  True,  True])</span>
-
-<span class="sd">    The ``&lt;=`` operator can be used as a shorthand for ``less_equal`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
-
-<span class="sd">    &gt;&gt;&gt; a = np.array([4, 2, 1])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([2, 2, 2])</span>
-<span class="sd">    &gt;&gt;&gt; a &lt;= b</span>
-<span class="sd">    array([False,  True,  True])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">less_equal</span><span class="p">,</span>
-        <span class="n">dpnp_less_equal</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="logical_and">
-<a class="viewcode-back" href="../../reference/generated/dpnp.logical_and.html#dpnp.logical_and">[docs]</a>
-<span class="k">def</span> <span class="nf">logical_and</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the truth value of x1 AND x2 element-wise.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.logical_and`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Boolean result of the logical AND operation applied to the elements</span>
-<span class="sd">        of `x1` and `x2`; the shape is determined by broadcasting.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.</span>
-<span class="sd">    :obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.</span>
-<span class="sd">    :obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.</span>
-<span class="sd">    :obj:`dpnp.bitwise_and` : Compute the bit-wise AND of two arrays element-wise.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([True, False])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([False, False])</span>
-<span class="sd">    &gt;&gt;&gt; np.logical_and(x1, x2)</span>
-<span class="sd">    array([False, False])</span>
-
-<span class="sd">    &gt;&gt;&gt; x = np.arange(5)</span>
-<span class="sd">    &gt;&gt;&gt; np.logical_and(x &gt; 1, x &lt; 4)</span>
-<span class="sd">    array([False, False,  True,  True, False])</span>
-
-<span class="sd">    The ``&amp;`` operator can be used as a shorthand for ``logical_and`` on</span>
-<span class="sd">    boolean :class:`dpnp.ndarray`.</span>
-
-<span class="sd">    &gt;&gt;&gt; a = np.array([True, False])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([False, False])</span>
-<span class="sd">    &gt;&gt;&gt; a &amp; b</span>
-<span class="sd">    array([False, False])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">,</span>
-        <span class="n">dpnp_logical_and</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="logical_not">
-<a class="viewcode-back" href="../../reference/generated/dpnp.logical_not.html#dpnp.logical_not">[docs]</a>
-<span class="k">def</span> <span class="nf">logical_not</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the truth value of NOT x element-wise.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.logical_not`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Boolean result with the same shape as `x` of the NOT operation</span>
-<span class="sd">        on elements of `x`.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.</span>
-<span class="sd">    :obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.</span>
-<span class="sd">    :obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([True, False, 0, 1])</span>
-<span class="sd">    &gt;&gt;&gt; np.logical_not(x)</span>
-<span class="sd">    array([False,  True,  True, False])</span>
-
-<span class="sd">    &gt;&gt;&gt; x = np.arange(5)</span>
-<span class="sd">    &gt;&gt;&gt; np.logical_not(x &lt; 3)</span>
-<span class="sd">    array([False, False, False,  True,  True])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">logical_not</span><span class="p">,</span>
-        <span class="n">dpnp_logical_not</span><span class="p">,</span>
-        <span class="n">x</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="logical_or">
-<a class="viewcode-back" href="../../reference/generated/dpnp.logical_or.html#dpnp.logical_or">[docs]</a>
-<span class="k">def</span> <span class="nf">logical_or</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the truth value of x1 OR x2 element-wise.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.logical_or`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Boolean result of the logical OR operation applied to the elements</span>
-<span class="sd">        of `x1` and `x2`; the shape is determined by broadcasting.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.</span>
-<span class="sd">    :obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.</span>
-<span class="sd">    :obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.</span>
-<span class="sd">    :obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([True, False])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([False, False])</span>
-<span class="sd">    &gt;&gt;&gt; np.logical_or(x1, x2)</span>
-<span class="sd">    array([ True, False])</span>
-
-<span class="sd">    &gt;&gt;&gt; x = np.arange(5)</span>
-<span class="sd">    &gt;&gt;&gt; np.logical_or(x &lt; 1, x &gt; 3)</span>
-<span class="sd">    array([ True, False, False, False,  True])</span>
-
-<span class="sd">    The ``|`` operator can be used as a shorthand for ``logical_or`` on</span>
-<span class="sd">    boolean :class:`dpnp.ndarray`.</span>
-
-<span class="sd">    &gt;&gt;&gt; a = np.array([True, False])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([False, False])</span>
-<span class="sd">    &gt;&gt;&gt; a | b</span>
-<span class="sd">    array([ True, False])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">,</span>
-        <span class="n">dpnp_logical_or</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="logical_xor">
-<a class="viewcode-back" href="../../reference/generated/dpnp.logical_xor.html#dpnp.logical_xor">[docs]</a>
-<span class="k">def</span> <span class="nf">logical_xor</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the truth value of x1 XOR x2 element-wise.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.logical_xor`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Boolean result of the logical XOR operation applied to the elements</span>
-<span class="sd">        of `x1` and `x2`; the shape is determined by broadcasting.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.</span>
-<span class="sd">    :obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.</span>
-<span class="sd">    :obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.</span>
-<span class="sd">    :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([True, True, False, False])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([True, False, True, False])</span>
-<span class="sd">    &gt;&gt;&gt; np.logical_xor(x1, x2)</span>
-<span class="sd">    array([False,  True,  True, False])</span>
-
-<span class="sd">    &gt;&gt;&gt; x = np.arange(5)</span>
-<span class="sd">    &gt;&gt;&gt; np.logical_xor(x &lt; 1, x &gt; 3)</span>
-<span class="sd">    array([ True, False, False, False,  True])</span>
-
-<span class="sd">    Simple example showing support of broadcasting</span>
-
-<span class="sd">    &gt;&gt;&gt; np.logical_xor(0, np.eye(2))</span>
-<span class="sd">    array([[ True, False],</span>
-<span class="sd">           [False,  True]])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">logical_xor</span><span class="p">,</span>
-        <span class="n">dpnp_logical_xor</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="not_equal">
-<a class="viewcode-back" href="../../reference/generated/dpnp.not_equal.html#dpnp.not_equal">[docs]</a>
-<span class="k">def</span> <span class="nf">not_equal</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the truth value of (x1 != x2) element-wise.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.not_equal`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Output array of bool type, element-wise comparison of `x1` and `x2`.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.greater` : Return the truth value of (x1 &gt; x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.greater_equal` : Return the truth value of (x1 &gt;= x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.less` : Return the truth value of (x1 &lt; x2) element-wise.</span>
-<span class="sd">    :obj:`dpnp.less_equal` : Return the truth value of (x1 =&lt; x2) element-wise.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([1., 2.])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.arange(1., 3.)</span>
-<span class="sd">    &gt;&gt;&gt; np.not_equal(x1, x2)</span>
-<span class="sd">    array([False, False])</span>
-
-<span class="sd">    The ``!=`` operator can be used as a shorthand for ``not_equal`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
-
-<span class="sd">    &gt;&gt;&gt; a = np.array([1., 2.])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([1., 3.])</span>
-<span class="sd">    &gt;&gt;&gt; a != b</span>
-<span class="sd">    array([False,  True])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">not_equal</span><span class="p">,</span>
-        <span class="n">dpnp_not_equal</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
+<span class="n">_ISFINITE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Checks if each element of input array is a finite number.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.isfinite`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: &quot;K&quot;.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array which is True where `x` is not positive infinity,</span>
+<span class="s2">    negative infinity, or NaN, False otherwise.</span>
+<span class="s2">    The data type of the returned array is `bool`.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.</span>
+<span class="s2">:obj:`dpnp.isneginf` : Test element-wise for negative infinity,</span>
+<span class="s2">                        return result as bool array.</span>
+<span class="s2">:obj:`dpnp.isposinf` : Test element-wise for positive infinity,</span>
+<span class="s2">                        return result as bool array.</span>
+<span class="s2">:obj:`dpnp.isnan` : Test element-wise for NaN and</span>
+<span class="s2">                    return result as a boolean array.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">Not a Number, positive infinity and negative infinity are considered</span>
+<span class="s2">to be non-finite.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
+<span class="s2">&gt;&gt;&gt; np.isfinite(x)</span>
+<span class="s2">array([False,  True, False])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">isfinite</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;isfinite&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_isfinite_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_isfinite</span><span class="p">,</span>
+    <span class="n">_ISFINITE_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_ISINF_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Checks if each element of input array is an infinity.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.isinf`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: &quot;K&quot;.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array which is True where `x` is positive or negative infinity,</span>
+<span class="s2">    False otherwise. The data type of the returned array is `bool`.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.isneginf` : Test element-wise for negative infinity,</span>
+<span class="s2">                        return result as bool array.</span>
+<span class="s2">:obj:`dpnp.isposinf` : Test element-wise for positive infinity,</span>
+<span class="s2">                        return result as bool array.</span>
+<span class="s2">:obj:`dpnp.isnan` : Test element-wise for NaN and</span>
+<span class="s2">                    return result as a boolean array.</span>
+<span class="s2">:obj:`dpnp.isfinite` : Test element-wise for finiteness.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
+<span class="s2">&gt;&gt;&gt; np.isinf(x)</span>
+<span class="s2">array([ True, False,  True])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">isinf</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;isinf&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_isinf_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_isinf</span><span class="p">,</span>
+    <span class="n">_ISINF_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_ISNAN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Checks if each element of an input array is a NaN.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.isnan`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: &quot;K&quot;.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array which is True where x is NaN, False otherwise.</span>
+<span class="s2">    The data type of the returned array is `bool`.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.</span>
+<span class="s2">:obj:`dpnp.isneginf` : Test element-wise for negative infinity,</span>
+<span class="s2">                        return result as bool array.</span>
+<span class="s2">:obj:`dpnp.isposinf` : Test element-wise for positive infinity,</span>
+<span class="s2">                        return result as bool array.</span>
+<span class="s2">:obj:`dpnp.isfinite` : Test element-wise for finiteness.</span>
+<span class="s2">:obj:`dpnp.isnat` : Test element-wise for NaT (not a time)</span>
+<span class="s2">                    and return result as a boolean array.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([np.inf, 0., np.nan])</span>
+<span class="s2">&gt;&gt;&gt; np.isnan(x)</span>
+<span class="s2">array([False, False,  True])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">isnan</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;isnan&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_isnan_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_isnan</span><span class="p">,</span>
+    <span class="n">_ISNAN_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_LESS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates the less-than results for each element `x1_i` of</span>
+<span class="s2">the input array `x1` the respective element `x2_i` of the input array `x2`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.less`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    First input array, expected to have numeric data type.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: &quot;K&quot;.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the result of element-wise less-than comparison.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.greater` : Return the truth value of (x1 &gt; x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.less_equal` : Return the truth value of (x1 =&lt; x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.greater_equal` : Return the truth value of (x1 &gt;= x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([1, 2])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([2, 2])</span>
+<span class="s2">&gt;&gt;&gt; np.less(x1, x2)</span>
+<span class="s2">array([ True, False])</span>
+
+<span class="s2">The ``&lt;`` operator can be used as a shorthand for ``less`` on</span>
+<span class="s2">:class:`dpnp.ndarray`.</span>
+
+<span class="s2">&gt;&gt;&gt; a = np.array([1, 2])</span>
+<span class="s2">&gt;&gt;&gt; b = np.array([2, 2])</span>
+<span class="s2">&gt;&gt;&gt; a &lt; b</span>
+<span class="s2">array([ True, False])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">less</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;less&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_less_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_less</span><span class="p">,</span>
+    <span class="n">_LESS_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_LESS_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates the less-than or equal-to results for each element `x1_i` of</span>
+<span class="s2">the input array `x1` the respective element `x2_i` of the input array `x2`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.less_equal`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    First input array, expected to have numeric data type.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: &quot;K&quot;.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the result of element-wise less-than or equal-to comparison.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.greater` : Return the truth value of (x1 &gt; x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.less` : Return the truth value of (x1 &lt; x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.greater_equal` : Return the truth value of (x1 &gt;= x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([4, 2, 1])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([2, 2, 2]</span>
+<span class="s2">&gt;&gt;&gt; np.less_equal(x1, x2)</span>
+<span class="s2">array([False,  True,  True])</span>
+
+<span class="s2">The ``&lt;=`` operator can be used as a shorthand for ``less_equal`` on</span>
+<span class="s2">:class:`dpnp.ndarray`.</span>
+
+<span class="s2">&gt;&gt;&gt; a = np.array([4, 2, 1])</span>
+<span class="s2">&gt;&gt;&gt; b = np.array([2, 2, 2])</span>
+<span class="s2">&gt;&gt;&gt; a &lt;= b</span>
+<span class="s2">array([False,  True,  True])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">less_equal</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;less_equal&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_less_equal_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_less_equal</span><span class="p">,</span>
+    <span class="n">_LESS_EQUAL_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_LOGICAL_AND_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the logical AND for each element `x1_i` of the input array `x1`</span>
+<span class="s2">with the respective element `x2_i` of the input array `x2`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.logical_and`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    First input array.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Second input array.</span>
+<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: &quot;K&quot;.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise logical AND results.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.</span>
+<span class="s2">:obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.</span>
+<span class="s2">:obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.</span>
+<span class="s2">:obj:`dpnp.bitwise_and` : Compute the bit-wise AND of two arrays element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([True, False])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([False, False])</span>
+<span class="s2">&gt;&gt;&gt; np.logical_and(x1, x2)</span>
+<span class="s2">array([False, False])</span>
+
+<span class="s2">&gt;&gt;&gt; x = np.arange(5)</span>
+<span class="s2">&gt;&gt;&gt; np.logical_and(x &gt; 1, x &lt; 4)</span>
+<span class="s2">array([False, False,  True,  True, False])</span>
+
+<span class="s2">The ``&amp;`` operator can be used as a shorthand for ``logical_and`` on</span>
+<span class="s2">boolean :class:`dpnp.ndarray`.</span>
+
+<span class="s2">&gt;&gt;&gt; a = np.array([True, False])</span>
+<span class="s2">&gt;&gt;&gt; b = np.array([False, False])</span>
+<span class="s2">&gt;&gt;&gt; a &amp; b</span>
+<span class="s2">array([False, False])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">logical_and</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;logical_and&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logical_and_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logical_and</span><span class="p">,</span>
+    <span class="n">_LOGICAL_AND_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_LOGICAL_NOT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the logical NOT for each element `x_i` of input array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.logical_not`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array.</span>
+<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: &quot;K&quot;.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise logical NOT results.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.</span>
+<span class="s2">:obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.</span>
+<span class="s2">:obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([True, False, 0, 1])</span>
+<span class="s2">&gt;&gt;&gt; np.logical_not(x)</span>
+<span class="s2">array([False,  True,  True, False])</span>
+
+<span class="s2">&gt;&gt;&gt; x = np.arange(5)</span>
+<span class="s2">&gt;&gt;&gt; np.logical_not(x &lt; 3)</span>
+<span class="s2">array([False, False, False,  True,  True])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">logical_not</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;logical_not&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logical_not_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logical_not</span><span class="p">,</span>
+    <span class="n">_LOGICAL_NOT_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_LOGICAL_OR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the logical OR for each element `x1_i` of the input array `x1`</span>
+<span class="s2">with the respective element `x2_i` of the input array `x2`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.logical_or`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    First input array.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Second input array.</span>
+<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: &quot;K&quot;.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise logical OR results.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.</span>
+<span class="s2">:obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.</span>
+<span class="s2">:obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.</span>
+<span class="s2">:obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([True, False])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([False, False])</span>
+<span class="s2">&gt;&gt;&gt; np.logical_or(x1, x2)</span>
+<span class="s2">array([ True, False])</span>
+
+<span class="s2">&gt;&gt;&gt; x = np.arange(5)</span>
+<span class="s2">&gt;&gt;&gt; np.logical_or(x &lt; 1, x &gt; 3)</span>
+<span class="s2">array([ True, False, False, False,  True])</span>
+
+<span class="s2">The ``|`` operator can be used as a shorthand for ``logical_or`` on</span>
+<span class="s2">boolean :class:`dpnp.ndarray`.</span>
+
+<span class="s2">&gt;&gt;&gt; a = np.array([True, False])</span>
+<span class="s2">&gt;&gt;&gt; b = np.array([False, False])</span>
+<span class="s2">&gt;&gt;&gt; a | b</span>
+<span class="s2">array([ True, False])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">logical_or</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;logical_or&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logical_or_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logical_or</span><span class="p">,</span>
+    <span class="n">_LOGICAL_OR_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_LOGICAL_XOR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the logical XOR for each element `x1_i` of the input array `x1`</span>
+<span class="s2">with the respective element `x2_i` of the input array `x2`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.logical_xor`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    First input array.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Second input array.</span>
+<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">Returns:</span>
+<span class="s2">dpnp.ndarray:</span>
+<span class="s2">    An array containing the element-wise logical XOR results.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.</span>
+<span class="s2">:obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.</span>
+<span class="s2">:obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.</span>
+<span class="s2">:obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([True, True, False, False])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([True, False, True, False])</span>
+<span class="s2">&gt;&gt;&gt; np.logical_xor(x1, x2)</span>
+<span class="s2">array([False,  True,  True, False])</span>
+
+<span class="s2">&gt;&gt;&gt; x = np.arange(5)</span>
+<span class="s2">&gt;&gt;&gt; np.logical_xor(x &lt; 1, x &gt; 3)</span>
+<span class="s2">array([ True, False, False, False,  True])</span>
+
+<span class="s2">Simple example showing support of broadcasting</span>
+
+<span class="s2">&gt;&gt;&gt; np.logical_xor(0, np.eye(2))</span>
+<span class="s2">array([[ True, False],</span>
+<span class="s2">       [False,  True]])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">logical_xor</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;logical_xor&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logical_xor_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logical_xor</span><span class="p">,</span>
+    <span class="n">_LOGICAL_XOR_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_NOT_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates inequality results for each element `x1_i` of</span>
+<span class="s2">the input array `x1` the respective element `x2_i` of the input array `x2`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.not_equal`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    First input array, expected to have numeric data type.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: &quot;K&quot;.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    an array containing the result of element-wise inequality comparison.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.greater` : Return the truth value of (x1 &gt; x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.greater_equal` : Return the truth value of (x1 &gt;= x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.less` : Return the truth value of (x1 &lt; x2) element-wise.</span>
+<span class="s2">:obj:`dpnp.less_equal` : Return the truth value of (x1 =&lt; x2) element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([1., 2.])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.arange(1., 3.)</span>
+<span class="s2">&gt;&gt;&gt; np.not_equal(x1, x2)</span>
+<span class="s2">array([False, False])</span>
+
+<span class="s2">The ``!=`` operator can be used as a shorthand for ``not_equal`` on</span>
+<span class="s2">:class:`dpnp.ndarray`.</span>
+
+<span class="s2">&gt;&gt;&gt; a = np.array([1., 2.])</span>
+<span class="s2">&gt;&gt;&gt; b = np.array([1., 3.])</span>
+<span class="s2">&gt;&gt;&gt; a != b</span>
+<span class="s2">array([False,  True])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">not_equal</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;not_equal&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_not_equal_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_not_equal</span><span class="p">,</span>
+    <span class="n">_NOT_EQUAL_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 
            </div>
