@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dstack &mdash; Data Parallel Extension for NumPy 0.13.1dev2+11.g0c6a749845 documentation</title>
+  <title>dpnp.dstack &mdash; Data Parallel Extension for NumPy 0.15.0dev1+6.g0fe9097fac documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=d2a675e0"></script>
+        <script src="../../_static/documentation_options.js?v=deaa28fe"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+11.g0c6a749845
+                0.15.0dev1+6.g0fe9097fac
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -63,7 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array creation routines</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#basic-operations">Basic operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-array-shape">Changing array shape</a></li>
@@ -142,7 +142,8 @@ of shape <cite>(M, N)</cite> have been reshaped to <cite>(M, N, 1)</cite> and 1-
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>tup</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – One or more array-like sequences. The arrays must have the same shape
-along all but the third axis. 1-D or 2-D arrays must have the same shape.</p>
+along all but the third axis. 1-D or 2-D arrays must have the same
+shape.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>out</strong> – The array formed by stacking the given arrays, will be at least 3-D.</p>

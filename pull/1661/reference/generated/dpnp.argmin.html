@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.argmin &mdash; Data Parallel Extension for NumPy 0.13.1dev2+11.g0c6a749845 documentation</title>
+  <title>dpnp.argmin &mdash; Data Parallel Extension for NumPy 0.15.0dev1+6.g0fe9097fac documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=d2a675e0"></script>
+        <script src="../../_static/documentation_options.js?v=deaa28fe"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.13.1dev2+11.g0c6a749845
+                0.15.0dev1+6.g0fe9097fac
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -63,7 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array creation routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../indexing.html">Array Indexing Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
@@ -131,11 +131,11 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp_array</em><em>, </em><em>usm_ndarray}</em>) – Input array.</p></li>
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Input array.</p></li>
 <li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Axis along which to search. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the function must return
 the index of the minimum value of the flattened array.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>out</strong> (<em>{dpnp_array</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) – If provided, the result will be inserted into this array. It should
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) – If provided, the result will be inserted into this array. It should
 be of the appropriate shape and dtype.</p></li>
 <li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) must be included in the
 result as singleton dimensions, and, accordingly, the result must be
@@ -146,9 +146,9 @@ Default: <code class="docutils literal notranslate"><span class="pre">False</spa
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>out</strong> – If <cite>axis</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, a zero-dimensional array containing the index of
-the first occurrence of the minimum value; otherwise, a non-zero-dimensional
-array containing the indices of the minimum values. The returned array
-must have the default array index data type.</p>
+the first occurrence of the minimum value; otherwise,
+a non-zero-dimensional array containing the indices of the minimum
+values. The returned array must have the default array index data type.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>

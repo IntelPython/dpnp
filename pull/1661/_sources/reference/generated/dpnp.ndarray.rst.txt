@@ -124,6 +124,12 @@
    .. automethod:: round
 
 
+   .. automethod:: searchsorted
+
+
+   .. automethod:: sort
+
+
    .. automethod:: squeeze
 
 
