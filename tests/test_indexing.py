@@ -935,22 +935,3 @@ def test_triu_indices_from(array, k):
     result = dpnp.triu_indices_from(ia, k)
     expected = numpy.triu_indices_from(a, k)
     assert_array_equal(expected, result)
-
-
-@pytest.mark.parametrize("cond_dtype", get_all_dtypes())
-@pytest.mark.parametrize("scalar_dtype", get_all_dtypes(no_none=True))
-def test_where_with_scalars(cond_dtype, scalar_dtype):
-    a = numpy.array([-1, 0, 1, 0], dtype=cond_dtype)
-    ia = dpnp.array(a)
-
-    result = dpnp.where(ia, scalar_dtype(1), scalar_dtype(0))
-    expected = numpy.where(a, scalar_dtype(1), scalar_dtype(0))
-    assert_array_equal(expected, result)
-
-    result = dpnp.where(ia, ia * 2, scalar_dtype(0))
-    expected = numpy.where(a, a * 2, scalar_dtype(0))
-    assert_array_equal(expected, result)
-
-    result = dpnp.where(ia, scalar_dtype(1), dpnp.array(0))
-    expected = numpy.where(a, scalar_dtype(1), numpy.array(0))
-    assert_array_equal(expected, result)

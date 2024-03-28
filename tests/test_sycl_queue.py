@@ -1787,6 +1787,24 @@ def test_grid(device, func):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+def test_where(device):
+    a = numpy.array([[0, 1, 2], [0, 2, 4], [0, 3, 6]])
+    ia = dpnp.array(a, device=device)
+
+    result = dpnp.where(ia < 4, ia, -1)
+    expected = numpy.where(a < 4, a, -1)
+    assert_allclose(expected, result)
+
+    expected_queue = ia.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_solve(device):
     x = [[1.0, 2.0], [3.0, 5.0]]
     y = [1.0, 2.0]
