@@ -8,6 +8,7 @@ from tests.helper import (
     assert_dtype_allclose,
     has_support_aspect64,
     is_cpu_device,
+    is_win_platform,
 )
 from tests.third_party.cupy import testing
 from tests.third_party.cupy.testing import _condition
@@ -37,6 +38,9 @@ class TestSolve(unittest.TestCase):
     )
     def check_x(self, a_shape, b_shape, xp, dtype):
         a = testing.shaped_random(a_shape, xp, dtype=dtype, seed=0, scale=20)
+        if a.ndim > 2 and a.device.sycl_device.is_cpu and is_win_platform():
+            pytest.skip("SAT-6842: reported hanging in public CI")
+
         b = testing.shaped_random(b_shape, xp, dtype=dtype, seed=1)
         a = a.copy(order=self.order)
         b = b.copy(order=self.order)
