@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev1+17.gb9565e7cac documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev1+22.g6c03bb32da documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=5fd4fc0d"></script>
+        <script src="../../_static/documentation_options.js?v=63cf7525"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+17.gb9565e7cac
+                0.15.0dev1+22.g6c03bb32da
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -278,9 +278,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -342,9 +342,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
@@ -451,6 +451,10 @@
 <span class="sd">    ----------</span>
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array, expected to have numeric data type.</span>
+<span class="sd">    decimals : int, optional</span>
+<span class="sd">        Number of decimal places to round to (default: 0). If decimals is</span>
+<span class="sd">        negative, it specifies the number of positions to the left of the</span>
+<span class="sd">        decimal point.</span>
 <span class="sd">    out : {None, dpnp.ndarray}, optional</span>
 <span class="sd">        Output array to populate.</span>
 <span class="sd">        Array must have the correct shape and the expected data type.</span>
@@ -460,11 +464,6 @@
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        The rounded value of elements of the array.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `decimals` is supported with its default value.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -509,9 +508,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype`, and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -549,7 +548,6 @@
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Array containing elements to clip.</span>
 <span class="sd">    a_min, a_max : {dpnp.ndarray, usm_ndarray, None}</span>
-
 <span class="sd">        Minimum and maximum value. If ``None``, clipping is not performed on</span>
 <span class="sd">        the corresponding edge. Only one of `a_min` and `a_max` may be</span>
 <span class="sd">        ``None``. Both are broadcast against `a`.</span>
@@ -640,8 +638,8 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -715,9 +713,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -1106,9 +1104,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
@@ -1264,9 +1262,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype`, and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -1325,9 +1323,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -1842,9 +1840,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -1914,9 +1912,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2042,7 +2040,6 @@
 <span class="sd">    &gt;&gt;&gt; [[x for x in y] for y in result ]</span>
 <span class="sd">    [[1.0, 2.0], [0.0, 0.0]]</span>
 
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -2080,9 +2077,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
@@ -2145,9 +2142,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2200,9 +2197,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2264,9 +2261,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2444,8 +2441,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where&#39; and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2525,9 +2523,9 @@
 <span class="s2">    the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2588,7 +2586,7 @@
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2624,6 +2622,9 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">decimals : int, optional</span>
+<span class="s2">    Number of decimal places to round to (default: 0). If decimals is negative,</span>
+<span class="s2">    it specifies the number of positions to the left of the decimal point.</span>
 <span class="s2">out : {None, dpnp.ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2633,11 +2634,6 @@
 <span class="s2">out : dpnp.ndarray</span>
 <span class="s2">    An array containing the element-wise rounded value. The data type</span>
 <span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
-
-<span class="s2">Limitations</span>
-<span class="s2">-----------</span>
-<span class="s2">Parameters `decimals` is supported with its default value.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2657,9 +2653,9 @@
 <span class="s2">array([0.4,  1.6])</span>
 <span class="s2">&gt;&gt;&gt; np.round(np.array([.5, 1.5, 2.5, 3.5, 4.5])) # rounds to nearest even value</span>
 <span class="s2">array([0.,  2.,  2.,  4.,  4.])</span>
-<span class="s2">&gt;&gt;&gt; np.round(np.array([1,2,3,11]), decimals=1) # ndarray of ints is returned</span>
+<span class="s2">&gt;&gt;&gt; np.round(np.array([1, 2, 3, 11]), decimals=1) # ndarray of ints is returned</span>
 <span class="s2">array([ 1,  2,  3, 11])</span>
-<span class="s2">&gt;&gt;&gt; np.round(np.array([1,2,3,11]), decimals=-1)</span>
+<span class="s2">&gt;&gt;&gt; np.round(np.array([1, 2, 3, 11]), decimals=-1)</span>
 <span class="s2">array([ 0,  0,  0, 10])</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
@@ -2699,10 +2695,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Input array data types are limited by supported real-valued data types.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2753,9 +2748,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` nd `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -2806,9 +2801,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
@@ -3113,9 +3108,9 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where`, `dtype`, and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise the function will be executed sequentially on CPU.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
