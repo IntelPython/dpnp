@@ -959,6 +959,19 @@ class TestSolve:
 
         assert_allclose(expected, result, rtol=1e-06)
 
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_solve_sat_6701(self, dtype):
+        a_np = numpy.array([[1, 2], [3, 5]], dtype=dtype)
+        b_np = numpy.array([[1, 1, 1], [2, 2, 2]], dtype=dtype)
+
+        a_dp = inp.array(a_np)
+        b_dp = inp.array(b_np)
+
+        expected = numpy.linalg.solve(a_np, b_np)
+        result = inp.linalg.solve(a_dp, b_dp)
+
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize("a_dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("b_dtype", get_all_dtypes(no_bool=True))
     def test_solve_diff_type(self, a_dtype, b_dtype):
