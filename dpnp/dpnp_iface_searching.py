@@ -312,7 +312,7 @@ def where(condition, x=None, y=None, /):
 
     See Also
     --------
-    :obj:`dpnp.choose` : Build an array from an index array and a set of
+    :obj:`dpnp.choose` : Construct an array from an index array and a list of
                          arrays to choose from.
     :obj:`dpnp.nonzero` : Return the indices of the elements that are non-zero.
 
