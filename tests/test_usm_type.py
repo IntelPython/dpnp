@@ -759,6 +759,13 @@ def test_clip(usm_type):
     assert x.usm_type == y.usm_type
 
 
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_where(usm_type):
+    a = dp.array([[0, 1, 2], [0, 2, 4], [0, 3, 6]], usm_type=usm_type)
+    result = dp.where(a < 4, a, -1)
+    assert result.usm_type == usm_type
+
+
 @pytest.mark.parametrize(
     "usm_type_matrix", list_of_usm_types, ids=list_of_usm_types
 )
