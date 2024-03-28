@@ -35,7 +35,6 @@ class TestSolve(unittest.TestCase):
     @testing.numpy_cupy_allclose(
         atol=1e-3, contiguous_check=False, type_check=has_support_aspect64()
     )
-    @pytest.mark.skipif(is_cpu_device(), reason="SAT-6842")
     def check_x(self, a_shape, b_shape, xp, dtype):
         a = testing.shaped_random(a_shape, xp, dtype=dtype, seed=0, scale=20)
         b = testing.shaped_random(b_shape, xp, dtype=dtype, seed=1)
@@ -48,6 +47,7 @@ class TestSolve(unittest.TestCase):
         testing.assert_array_equal(b_copy, b)
         return result
 
+    @pytest.mark.skipif(is_cpu_device(), reason="SAT-6842")
     def test_solve(self):
         self.check_x((4, 4), (4,))
         self.check_x((5, 5), (5, 2))
