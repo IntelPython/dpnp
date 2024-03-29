@@ -21,7 +21,7 @@ jobs:
 
     env:
       python-ver: '3.10'
-      CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+      CHANNELS: '-c dppy/label/coverage -c intel -c conda-forge --override-channels'
 
     steps:
       - name: Cancel Previous Runs
