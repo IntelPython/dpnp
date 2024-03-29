@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.round &mdash; Data Parallel Extension for NumPy 0.15.0dev1+8.g78bfb44af documentation</title>
+  <title>dpnp.round &mdash; Data Parallel Extension for NumPy 0.15.0dev1+26.g87bae9368b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3e6a250f"></script>
+        <script src="../../_static/documentation_options.js?v=875bbf36"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+8.g78bfb44af
+                0.15.0dev1+26.g87bae9368b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -134,22 +134,28 @@
 <h1>dpnp.round<a class="headerlink" href="#dpnp-round" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.round">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">round</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#round"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.round" title="Link to this definition"></a></dt>
-<dd><p>Evenly round to the given number of decimals.</p>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">round</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.round" title="Link to this definition"></a></dt>
+<dd><p>Rounds each element <cite>x_i</cite> of the input array <cite>x</cite> to
+the nearest integer-valued number.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.round.html#numpy.round" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.round</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>out</strong> – The rounded value of elements of the array.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Input array, expected to have numeric data type.</p></li>
+<li><p><strong>decimals</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of decimal places to round to (default: 0). If decimals is negative,
+it specifies the number of positions to the left of the decimal point.</p></li>
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray}</em><em>, </em><em>optional</em>) – Output array to populate.
+Array must have the correct shape and the expected data type.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dpnp.ndarray</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – An array containing the element-wise rounded value. The data type
+of the returned array is determined by the Type Promotion Rules.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
-<p class="rubric">Limitations</p>
-<p>Parameter <cite>x</cite> is only supported as either <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
-Parameters <cite>decimals</cite> is supported with its default value.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -175,9 +181,9 @@ Input array data types are limited by supported DPNP <span class="xref std std-r
 <span class="go">array([0.4,  1.6])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">]))</span> <span class="c1"># rounds to nearest even value</span>
 <span class="go">array([0.,  2.,  2.,  4.,  4.])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">11</span><span class="p">]),</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># ndarray of ints is returned</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">]),</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># ndarray of ints is returned</span>
 <span class="go">array([ 1,  2,  3, 11])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">11</span><span class="p">]),</span> <span class="n">decimals</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">]),</span> <span class="n">decimals</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 <span class="go">array([ 0,  0,  0, 10])</span>
 </pre></div>
 </div>
