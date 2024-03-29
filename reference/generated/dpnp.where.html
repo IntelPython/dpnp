@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.where &mdash; Data Parallel Extension for NumPy 0.15.0dev1+9.g3822bfc463 documentation</title>
+  <title>dpnp.where &mdash; Data Parallel Extension for NumPy 0.15.0dev1+41.gef7eeccd4a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=d0434335"></script>
+        <script src="../../_static/documentation_options.js?v=cd7b84a6"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+9.g3822bfc463
+                0.15.0dev1+41.gef7eeccd4a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -133,7 +133,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>condition</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, yield <cite>x</cite>, otherwise yield <cite>y</cite>.</p></li>
+<li><p><strong>condition</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Where True, yield <cite>x</cite>, otherwise yield <cite>y</cite>.</p></li>
 <li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) – Values from which to choose. <cite>x</cite>, <cite>y</cite> and <cite>condition</cite> need to be
 broadcastable to some shape.</p></li>
 <li><p><strong>y</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) – Values from which to choose. <cite>x</cite>, <cite>y</cite> and <cite>condition</cite> need to be
@@ -141,8 +141,8 @@ broadcastable to some shape.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>y</strong> – An array with elements from <cite>x</cite> when <cite>condition</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, and
-elements from <cite>y</cite> elsewhere.</p>
+<dd class="field-even"><p><strong>y</strong> – An array with elements from <cite>x</cite> where <cite>condition</cite> is True, and elements
+from <cite>y</cite> elsewhere.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
