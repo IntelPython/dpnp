@@ -3156,10 +3156,10 @@ def test_bitwise_1array_input():
     x = dpnp.array([1, 2, 3])
     x_np = numpy.array([1, 2, 3])
 
-    result = dpnp.add(x, 1)
-    expected = numpy.add(x_np, 1)
+    result = dpnp.add(x, 1, dtype="f4")
+    expected = numpy.add(x_np, 1, dtype="f4")
     assert_dtype_allclose(result, expected)
 
-    result = dpnp.add(1, x)
-    expected = numpy.add(1, x_np)
+    result = dpnp.add(1, x, dtype="f4")
+    expected = numpy.add(1, x_np, dtype="f4")
     assert_dtype_allclose(result, expected)
