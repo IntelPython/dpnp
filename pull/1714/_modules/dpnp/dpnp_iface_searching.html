@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.15.0dev1+37.gafd3c504fb documentation</title>
+  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.15.0dev1+41.gef7eeccd4a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8718fac9"></script>
+        <script src="../../_static/documentation_options.js?v=cd7b84a6"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+37.gafd3c504fb
+                0.15.0dev1+41.gef7eeccd4a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -129,7 +129,6 @@
 
 
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
@@ -137,7 +136,6 @@
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">call_origin</span><span class="p">,</span>
     <span class="n">get_usm_allocations</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -399,34 +397,58 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.where`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    condition : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Where True, yield `x`, otherwise yield `y`.</span>
+<span class="sd">    x, y : {dpnp.ndarray, usm_ndarray, scalar}, optional</span>
+<span class="sd">        Values from which to choose. `x`, `y` and `condition` need to be</span>
+<span class="sd">        broadcastable to some shape.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    y : dpnp.ndarray</span>
 <span class="sd">        An array with elements from `x` where `condition` is True, and elements</span>
 <span class="sd">        from `y` elsewhere.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `condition` is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameters `x` and `y` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types of `x` and `y` are limited by supported DPNP</span>
-<span class="sd">    :ref:`Data types`.</span>
-
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`nonzero` : The function that is called when `x` and `y`are omitted.</span>
+<span class="sd">    :obj:`dpnp.choose` : Construct an array from an index array and a list of</span>
+<span class="sd">                         arrays to choose from.</span>
+<span class="sd">    :obj:`dpnp.nonzero` : Return the indices of the elements that are non-zero.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
-<span class="sd">    &gt;&gt;&gt; a = dp.arange(10)</span>
-<span class="sd">    &gt;&gt;&gt; d</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(10)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])</span>
-<span class="sd">    &gt;&gt;&gt; dp.where(a &lt; 5, a, 10*a)</span>
+<span class="sd">    &gt;&gt;&gt; np.where(a &lt; 5, a, 10*a)</span>
 <span class="sd">    array([ 0,  1,  2,  3,  4, 50, 60, 70, 80, 90])</span>
+
+<span class="sd">    This can be used on multidimensional arrays too:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.where(np.array([[True, False], [True, True]]),</span>
+<span class="sd">    ...          np.array([[1, 2], [3, 4]]),</span>
+<span class="sd">    ...          np.array([[9, 8], [7, 6]]))</span>
+<span class="sd">    array([[1, 8],</span>
+<span class="sd">           [3, 4]])</span>
+
+<span class="sd">    The shapes of x, y, and the condition are broadcast together:</span>
+
+<span class="sd">    &gt;&gt;&gt; x, y = np.ogrid[:3, :4]</span>
+<span class="sd">    &gt;&gt;&gt; np.where(x &lt; y, x, 10 + y)  # both x and 10+y are broadcast</span>
+<span class="sd">    array([[10,  0,  0,  0],</span>
+<span class="sd">           [10, 11,  1,  1],</span>
+<span class="sd">           [10, 11, 12,  2]])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[0, 1, 2],</span>
+<span class="sd">    ...               [0, 2, 4],</span>
+<span class="sd">    ...               [0, 3, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; np.where(a &lt; 4, a, -1)  # -1 is broadcast</span>
+<span class="sd">    array([[ 0,  1,  2],</span>
+<span class="sd">           [ 0,  2, -1],</span>
+<span class="sd">           [ 0,  3, -1]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -437,37 +459,20 @@
     <span class="k">if</span> <span class="n">missing</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">missing</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">condition</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">or</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
-                <span class="c1"># get USM type and queue to copy scalar from the host memory</span>
-                <span class="c1"># into a USM allocation</span>
-                <span class="n">usm_type</span><span class="p">,</span> <span class="n">queue</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">x</span>
-                <span class="p">)</span>
-                <span class="n">y</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">y</span>
-                <span class="p">)</span>
-            <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span>
-                <span class="n">y</span>
-            <span class="p">):</span>
-                <span class="n">dpt_condition</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">condition</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">condition</span>
-                <span class="p">)</span>
-                <span class="n">dpt_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
-                <span class="n">dpt_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">y</span>
-                <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
-                    <span class="n">dpt</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dpt_condition</span><span class="p">,</span> <span class="n">dpt_x</span><span class="p">,</span> <span class="n">dpt_y</span><span class="p">)</span>
-                <span class="p">)</span>
+    <span class="n">usm_x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">usm_y</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">usm_condition</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
+    <span class="n">usm_type</span><span class="p">,</span> <span class="n">queue</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">usm_x</span><span class="p">):</span>
+        <span class="n">usm_x</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">usm_x</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">usm_y</span><span class="p">):</span>
+        <span class="n">usm_y</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">usm_y</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">usm_condition</span><span class="p">,</span> <span class="n">usm_x</span><span class="p">,</span> <span class="n">usm_y</span><span class="p">)</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 
