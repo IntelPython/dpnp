@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+26.g87bae9368b documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+9.g3822bfc463 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=875bbf36"></script>
+        <script src="../../_static/documentation_options.js?v=d0434335"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+26.g87bae9368b
+                0.15.0dev1+9.g3822bfc463
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -606,28 +606,32 @@
 
 <div class="viewcode-block" id="nonzero">
 <a class="viewcode-back" href="../../reference/generated/dpnp.nonzero.html#dpnp.nonzero">[docs]</a>
-<span class="k">def</span> <span class="nf">nonzero</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">nonzero</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices of the elements that are non-zero.</span>
 
+<span class="sd">    Returns a tuple of arrays, one for each dimension of `a`,</span>
+<span class="sd">    containing the indices of the non-zero elements in that</span>
+<span class="sd">    dimension. The values in `a` are always tested and returned in</span>
+<span class="sd">    row-major, C-style order.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.nonzero`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : tuple[dpnp.ndarray]</span>
 <span class="sd">        Indices of elements that are non-zero.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x` is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.flatnonzero` : Return indices that are non-zero in</span>
 <span class="sd">                              the flattened version of the input array.</span>
+<span class="sd">    :obj:`dpnp.ndarray.nonzero` : Equivalent ndarray method.</span>
 <span class="sd">    :obj:`dpnp.count_nonzero` : Counts the number of non-zero elements</span>
 <span class="sd">                                in the input array.</span>
 
@@ -641,27 +645,53 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.array([[3, 0, 0], [0, 4, 0], [5, 6, 0]])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.nonzero(x)</span>
-<span class="sd">    &gt;&gt;&gt; for arr in out:</span>
-<span class="sd">    &gt;&gt;&gt;     [i for i in arr]</span>
-<span class="sd">    [0, 1, 2, 2]</span>
-<span class="sd">    [0, 1, 0, 1]</span>
+<span class="sd">    &gt;&gt;&gt; x</span>
+<span class="sd">    array([[3, 0, 0],</span>
+<span class="sd">           [0, 4, 0],</span>
+<span class="sd">           [5, 6, 0]])</span>
+<span class="sd">    &gt;&gt;&gt; np.nonzero(x)</span>
+<span class="sd">    (array([0, 1, 2, 2]), array([0, 1, 0, 1]))</span>
 
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([3, 0, 0, 0, 4, 0, 5, 6, 0])</span>
-<span class="sd">    &gt;&gt;&gt; out2 = np.nonzero(x2)</span>
-<span class="sd">    &gt;&gt;&gt; for arr in out2:</span>
-<span class="sd">    &gt;&gt;&gt;     [i for i in arr]</span>
-<span class="sd">    [0, 4, 6, 7]</span>
+<span class="sd">    &gt;&gt;&gt; x[np.nonzero(x)]</span>
+<span class="sd">    array([3, 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; np.stack(np.nonzero(x)).T</span>
+<span class="sd">    array([[0, 0],</span>
+<span class="sd">           [1, 1],</span>
+<span class="sd">           [2, 0],</span>
+<span class="sd">           [2, 1]])</span>
+
+<span class="sd">    A common use for ``nonzero`` is to find the indices of an array, where</span>
+<span class="sd">    a condition is ``True.``  Given an array `a`, the condition `a` &gt; 3 is</span>
+<span class="sd">    a boolean array and since ``False`` is interpreted as ``0``,</span>
+<span class="sd">    ``np.nonzero(a &gt; 3)`` yields the indices of the `a` where the condition is</span>
+<span class="sd">    true.</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])</span>
+<span class="sd">    &gt;&gt;&gt; a &gt; 3</span>
+<span class="sd">    array([[False, False, False],</span>
+<span class="sd">           [ True,  True,  True],</span>
+<span class="sd">           [ True,  True,  True]])</span>
+<span class="sd">    &gt;&gt;&gt; np.nonzero(a &gt; 3)</span>
+<span class="sd">    (array([1, 1, 1, 2, 2, 2]), array([0, 1, 2, 0, 1, 2]))</span>
+
+<span class="sd">    Using this result to index `a` is equivalent to using the mask directly:</span>
+
+<span class="sd">    &gt;&gt;&gt; a[np.nonzero(a &gt; 3)]</span>
+<span class="sd">    array([4, 5, 6, 7, 8, 9])</span>
+<span class="sd">    &gt;&gt;&gt; a[a &gt; 3]  # prefer this spelling</span>
+<span class="sd">    array([4, 5, 6, 7, 8, 9])</span>
+
+<span class="sd">    ``nonzero`` can also be called as a method of the array.</span>
+
+<span class="sd">    &gt;&gt;&gt; (a &gt; 3).nonzero()</span>
+<span class="sd">    (array([1, 1, 1, 2, 2, 2]), array([0, 1, 2, 0, 1, 2]))</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="n">usx_x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
-            <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dpt</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">usx_x</span><span class="p">)</span>
-        <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nonzero</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
+    <span class="n">usx_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dpt</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">usx_a</span><span class="p">)</span>
+    <span class="p">)</span></div>
 
 
 
