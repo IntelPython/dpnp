@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.15.0dev1+4.g46375c8e1c documentation</title>
+  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.15.0dev1+5.ga134bdc34e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=00628ce3"></script>
+        <script src="../../_static/documentation_options.js?v=98762391"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+4.g46375c8e1c
+                0.15.0dev1+5.ga134bdc34e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -400,7 +400,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    condition : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Where True, yield `x`, otherwise yield `y`.</span>
+<span class="sd">        When ``True``, yield `x`, otherwise yield `y`.</span>
 <span class="sd">    x, y : {dpnp.ndarray, usm_ndarray, scalar}, optional</span>
 <span class="sd">        Values from which to choose. `x`, `y` and `condition` need to be</span>
 <span class="sd">        broadcastable to some shape.</span>
@@ -408,8 +408,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    y : dpnp.ndarray</span>
-<span class="sd">        An array with elements from `x` where `condition` is True, and elements</span>
-<span class="sd">        from `y` elsewhere.</span>
+<span class="sd">        An array with elements from `x` when `condition` is ``True``, and</span>
+<span class="sd">        elements from `y` elsewhere.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
