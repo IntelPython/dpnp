@@ -525,7 +525,7 @@ def nonzero(a):
     Notes
     -----
     While the nonzero values can be obtained with ``a[nonzero(a)]``, it is
-    recommended to use ``x[x.astype(bool)]`` or ``x[x != 0]`` instead, which
+    recommended to use ``a[a.astype(bool)]`` or ``a[a != 0]`` instead, which
     will correctly handle 0-d arrays.
 
     Examples
