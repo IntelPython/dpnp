@@ -691,28 +691,6 @@ tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_bo
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_goodness_of_fit
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_goodness_of_fit_2
 
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype::test_argminmax_dtype[_param_0_{func='argmin', is_module=True, shape=(3, 4)}]
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype::test_argminmax_dtype[_param_1_{func='argmin', is_module=True, shape=()}]
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype::test_argminmax_dtype[_param_2_{func='argmin', is_module=False, shape=(3, 4)}]
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype::test_argminmax_dtype[_param_3_{func='argmin', is_module=False, shape=()}]
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype::test_argminmax_dtype[_param_4_{func='argmax', is_module=True, shape=(3, 4)}]
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype::test_argminmax_dtype[_param_5_{func='argmax', is_module=True, shape=()}]
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype::test_argminmax_dtype[_param_6_{func='argmax', is_module=False, shape=(3, 4)}]
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype::test_argminmax_dtype[_param_7_{func='argmax', is_module=False, shape=()}]
-
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere::test_argwhere[0]
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere::test_argwhere[1]
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere::test_argwhere[2]
-
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero::test_flatnonzero[0]
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero::test_flatnonzero[1]
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero::test_flatnonzero[2]
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero::test_flatnonzero[3]
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero::test_flatnonzero[4]
-
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_0_{array=array(0)}::test_nonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
-
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_invalid_axis1
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_invalid_axis2

@@ -37,7 +37,6 @@ and the rest of the library
 
 __all__ += [
     "dpnp_partition",
-    "dpnp_searchsorted",
 ]
 
 
@@ -49,14 +48,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_partition_t)(c_dpctl.DPCTLSyclQueu
                                                            const shape_elem_type * ,
                                                            const size_t,
                                                            const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_searchsorted_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                              void * ,
-                                                              const void * ,
-                                                              const void * ,
-                                                              bool,
-                                                              const size_t,
-                                                              const size_t,
-                                                              const c_dpctl.DPCTLEventVectorRef)
 
 
 cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, axis=-1, kind='introselect', order=None):
@@ -92,47 +83,6 @@ cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, a
                                                     kth_,
                                                     shape1.data(),
                                                     arr.ndim,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_searchsorted(utils.dpnp_descriptor arr, utils.dpnp_descriptor v, side='left'):
-    if side is 'left':
-        side_ = True
-    else:
-        side_ = False
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SEARCHSORTED_EXT, param1_type, param1_type)
-
-    arr_obj = arr.get_array()
-
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(v.shape,
-                                                                             dpnp.int64,
-                                                                             None,
-                                                                             device=arr_obj.sycl_device,
-                                                                             usm_type=arr_obj.usm_type,
-                                                                             sycl_queue=arr_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_dpnp_searchsorted_t func = <fptr_dpnp_searchsorted_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    arr.get_data(),
-                                                    v.get_data(),
-                                                    result.get_data(),
-                                                    side_,
-                                                    arr.size,
-                                                    v.size,
                                                     NULL)  # dep_events_ref
 
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)

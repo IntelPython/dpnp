@@ -39,7 +39,6 @@ it contains:
 
 
 import dpctl.tensor as dpt
-import numpy
 
 import dpnp
 
@@ -47,7 +46,6 @@ from .dpnp_array import dpnp_array
 
 # pylint: disable=no-name-in-module
 from .dpnp_utils import (
-    call_origin,
     get_usm_allocations,
 )
 
@@ -232,9 +230,61 @@ def searchsorted(a, v, side="left", sorter=None):
 
     For full documentation refer to :obj:`numpy.searchsorted`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input 1-D array. If `sorter` is ``None``, then it must be sorted in
+        ascending order, otherwise `sorter` must be an array of indices that
+        sort it.
+    v : {dpnp.ndarray, usm_ndarray, scalar}
+        Values to insert into `a`.
+    side : {'left', 'right'}, optional
+        If ``'left'``, the index of the first suitable location found is given.
+        If ``'right'``, return the last such index. If there is no suitable
+        index, return either 0 or N (where N is the length of `a`).
+        Default is ``'left'``.
+    sorter : {dpnp.ndarray, usm_ndarray}, optional
+        Optional 1-D array of integer indices that sort array a into ascending
+        order. They are typically the result of argsort.
+        Out of bound index values of `sorter` array are treated using `"wrap"`
+        mode documented in :py:func:`dpnp.take`.
+        Default is ``None``.
+
+    Returns
+    -------
+    indices : dpnp.ndarray
+        Array of insertion points with the same shape as `v`,
+        or 0-D array if `v` is a scalar.
+
+    See Also
+    --------
+    :obj:`dpnp.sort` : Return a sorted copy of an array.
+    :obj:`dpnp.histogram` : Produce histogram from 1-D data.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([11,12,13,14,15])
+    >>> np.searchsorted(a, 13)
+    array(2)
+    >>> np.searchsorted(a, 13, side='right')
+    array(3)
+    >>> v = np.array([-10, 20, 12, 13])
+    >>> np.searchsorted(a, v)
+    array([0, 5, 1, 2])
+
     """
 
-    return call_origin(numpy.where, a, v, side, sorter)
+    usm_a = dpnp.get_usm_ndarray(a)
+    if dpnp.isscalar(v):
+        usm_v = dpt.asarray(v, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
+    else:
+        usm_v = dpnp.get_usm_ndarray(v)
+
+    usm_sorter = None if sorter is None else dpnp.get_usm_ndarray(sorter)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.searchsorted(usm_a, usm_v, side=side, sorter=usm_sorter)
+    )
 
 
 def where(condition, x=None, y=None, /):
@@ -246,34 +296,58 @@ def where(condition, x=None, y=None, /):
 
     For full documentation refer to :obj:`numpy.where`.
 
+    Parameters
+    ----------
+    condition : {dpnp.ndarray, usm_ndarray}
+        Where True, yield `x`, otherwise yield `y`.
+    x, y : {dpnp.ndarray, usm_ndarray, scalar}, optional
+        Values from which to choose. `x`, `y` and `condition` need to be
+        broadcastable to some shape.
+
     Returns
     -------
     y : dpnp.ndarray
         An array with elements from `x` where `condition` is True, and elements
         from `y` elsewhere.
 
-    Limitations
-    -----------
-    Parameter `condition` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `x` and `y` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types of `x` and `y` are limited by supported DPNP
-    :ref:`Data types`.
-
     See Also
     --------
-    :obj:`nonzero` : The function that is called when `x` and `y`are omitted.
+    :obj:`dpnp.choose` : Construct an array from an index array and a list of
+                         arrays to choose from.
+    :obj:`dpnp.nonzero` : Return the indices of the elements that are non-zero.
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> a = dp.arange(10)
-    >>> d
+    >>> import dpnp as np
+    >>> a = np.arange(10)
+    >>> a
     array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-    >>> dp.where(a < 5, a, 10*a)
+    >>> np.where(a < 5, a, 10*a)
     array([ 0,  1,  2,  3,  4, 50, 60, 70, 80, 90])
+
+    This can be used on multidimensional arrays too:
+
+    >>> np.where(np.array([[True, False], [True, True]]),
+    ...          np.array([[1, 2], [3, 4]]),
+    ...          np.array([[9, 8], [7, 6]]))
+    array([[1, 8],
+           [3, 4]])
+
+    The shapes of x, y, and the condition are broadcast together:
+
+    >>> x, y = np.ogrid[:3, :4]
+    >>> np.where(x < y, x, 10 + y)  # both x and 10+y are broadcast
+    array([[10,  0,  0,  0],
+           [10, 11,  1,  1],
+           [10, 11, 12,  2]])
+
+    >>> a = np.array([[0, 1, 2],
+    ...               [0, 2, 4],
+    ...               [0, 3, 6]])
+    >>> np.where(a < 4, a, -1)  # -1 is broadcast
+    array([[ 0,  1,  2],
+           [ 0,  2, -1],
+           [ 0,  3, -1]])
 
     """
 
@@ -284,34 +358,17 @@ def where(condition, x=None, y=None, /):
     if missing == 2:
         return dpnp.nonzero(condition)
 
-    if missing == 0:
-        if dpnp.is_supported_array_type(condition):
-            if numpy.isscalar(x) or numpy.isscalar(y):
-                # get USM type and queue to copy scalar from the host memory
-                # into a USM allocation
-                usm_type, queue = get_usm_allocations([condition, x, y])
-                x = (
-                    dpt.asarray(x, usm_type=usm_type, sycl_queue=queue)
-                    if numpy.isscalar(x)
-                    else x
-                )
-                y = (
-                    dpt.asarray(y, usm_type=usm_type, sycl_queue=queue)
-                    if numpy.isscalar(y)
-                    else y
-                )
-            if dpnp.is_supported_array_type(x) and dpnp.is_supported_array_type(
-                y
-            ):
-                dpt_condition = (
-                    condition.get_array()
-                    if isinstance(condition, dpnp_array)
-                    else condition
-                )
-                dpt_x = x.get_array() if isinstance(x, dpnp_array) else x
-                dpt_y = y.get_array() if isinstance(y, dpnp_array) else y
-                return dpnp_array._create_from_usm_ndarray(
-                    dpt.where(dpt_condition, dpt_x, dpt_y)
-                )
+    usm_x = dpnp.get_usm_ndarray_or_scalar(x)
+    usm_y = dpnp.get_usm_ndarray_or_scalar(y)
+    usm_condition = dpnp.get_usm_ndarray(condition)
 
-    return call_origin(numpy.where, condition, x, y)
+    usm_type, queue = get_usm_allocations([condition, x, y])
+    if dpnp.isscalar(usm_x):
+        usm_x = dpt.asarray(usm_x, usm_type=usm_type, sycl_queue=queue)
+
+    if dpnp.isscalar(usm_y):
+        usm_y = dpt.asarray(usm_y, usm_type=usm_type, sycl_queue=queue)
+
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.where(usm_condition, usm_x, usm_y)
+    )
