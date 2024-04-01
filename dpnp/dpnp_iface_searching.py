@@ -299,7 +299,7 @@ def where(condition, x=None, y=None, /):
     Parameters
     ----------
     condition : {dpnp.ndarray, usm_ndarray}
-        Where True, yield `x`, otherwise yield `y`.
+        When ``True``, yield `x`, otherwise yield `y`.
     x, y : {dpnp.ndarray, usm_ndarray, scalar}, optional
         Values from which to choose. `x`, `y` and `condition` need to be
         broadcastable to some shape.
@@ -307,8 +307,8 @@ def where(condition, x=None, y=None, /):
     Returns
     -------
     y : dpnp.ndarray
-        An array with elements from `x` where `condition` is True, and elements
-        from `y` elsewhere.
+        An array with elements from `x` when `condition` is ``True``, and
+        elements from `y` elsewhere.
 
     See Also
     --------
