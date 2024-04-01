@@ -789,6 +789,14 @@ def test_indices_sparse(usm_type, sparse):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_nonzero(usm_type):
+    a = dp.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], usm_type=usm_type)
+    x = dp.nonzero(a)
+    for x_el in x:
+        assert x_el.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_clip(usm_type):
     x = dp.arange(10, usm_type=usm_type)
     y = dp.clip(x, 2, 7)
