@@ -855,42 +855,101 @@ def cumprod(x1, **kwargs):
     return call_origin(numpy.cumprod, x1, **kwargs)
 
 
-def cumsum(x1, **kwargs):
+def cumsum(a, axis=None, dtype=None, out=None):
     """
     Return the cumulative sum of the elements along a given axis.
 
     For full documentation refer to :obj:`numpy.cumsum`.
 
-    Limitations
-    -----------
-    Parameter `x` is supported as :obj:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : int, optional
+        Axis along which the cumulative sum is computed. The default (``None``)
+        is to compute the cumsum over the flattened array.
+    dtype : dtype, optional
+        Type of the returned array and of the accumulator in which the elements
+        are summed. If `dtype` is not specified, it defaults to the dtype of
+        `a`, unless `a` has an integer dtype with a precision less than that of
+        the default platform integer. In that case, the default platform
+        integer is used.
+    out : {dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have the
+        same shape and buffer length as the expected output but the type will
+        be cast if necessary.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A new array holding the result is returned unless `out` is specified,
+        in which case a reference to `out` is returned. The result has the same
+        size as `a`, and the same shape as `a` if `axis` is not ``None`` or `a`
+        is a 1-d array.
 
     See Also
     --------
-    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.
+    :obj:`dpnp.sum` : Sum array elements.
+    :obj:`dpnp.diff` : Calculate the n-th discrete difference along given axis.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([1, 2, 4])
-    >>> result = np.cumsum(a)
-    >>> [x for x in result]
-    [1, 2, 7]
-    >>> b = np.array([[1, 2, 3], [4, 5, 6]])
-    >>> result = np.cumsum(b)
-    >>> [x for x in result]
-    [1, 2, 6, 10, 15, 21]
+    >>> a = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> a
+    array([[1, 2, 3],
+           [4, 5, 6]])
+    >>> np.cumsum(a)
+    array([ 1,  3,  6, 10, 15, 21])
+    >>> np.cumsum(a, dtype=float)     # specifies type of output value(s)
+    array([ 1.,  3.,  6., 10., 15., 21.])
+
+    >>> np.cumsum(a, axis=0)     # sum over rows for each of the 3 columns
+    array([[1, 2, 3],
+           [5, 7, 9]])
+    >>> np.cumsum(a, axis=1)     # sum over columns for each of the 2 rows
+    array([[ 1,  3,  6],
+           [ 4,  9, 15]])
+
+    ``cumsum(b)[-1]`` may not be equal to ``sum(b)``
+
+    >>> b = np.array([1, 2e-9, 3e-9] * 10000)
+    >>> b.cumsum().dtype == b.sum().dtype == np.float64
+    True
+    >>> b.cumsum()[-1] == b.sum()
+    array(False)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_cumsum(x1_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(a)
+    if a.ndim > 1 and axis is None:
+        usm_a = dpnp.ravel(a).get_array()
+    else:
+        usm_a = dpnp.get_usm_ndarray(a)
 
-    return call_origin(numpy.cumsum, x1, **kwargs)
+    input_out = out
+    if out is None:
+        usm_out = None
+    else:
+        dpnp.check_supported_arrays_type(out)
+        if dpnp.issubdtype(out.dtype, dpnp.integer):
+            int_dt = da._default_accumulation_dtype(out.dtype, out.sycl_queue)
+
+            # create a copy if dtype mismatches default integer type
+            out = dpnp.astype(out, dtype=int_dt, copy=False)
+
+        usm_out = dpnp.get_usm_ndarray(out)
+
+    res_usm = dpt.cumulative_sum(usm_a, axis=axis, dtype=dtype, out=usm_out)
+    if out is None:
+        return dpnp_array._create_from_usm_ndarray(res_usm)
+    elif input_out is not out:
+        dpnp.copyto(input_out, out, casting="unsafe")
+
+    if not isinstance(input_out, dpnp_array):
+        return dpnp_array._create_from_usm_ndarray(input_out)
+    else:
+        return out
 
 
 def diff(a, n=1, axis=-1, prepend=None, append=None):
