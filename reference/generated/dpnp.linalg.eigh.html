@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.eigh &mdash; Data Parallel Extension for NumPy 0.15.0dev1+45.g9ebbeefb13 documentation</title>
+  <title>dpnp.linalg.eigh &mdash; Data Parallel Extension for NumPy 0.15.0dev1+29.g9ec3f6b3e7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=73c97221"></script>
+        <script src="../../_static/documentation_options.js?v=a511c14f"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+45.g9ebbeefb13
+                0.15.0dev1+29.g9ec3f6b3e7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -135,20 +135,8 @@ a 2-D square array or matrix (depending on the input type) of the
 corresponding eigenvectors (in columns).</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigh.html#numpy.linalg.eigh" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.eigh</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – A complex- or real-valued array whose eigenvalues and eigenvectors are to be computed.</p></li>
-<li><p><strong>UPLO</strong> (<em>{&quot;L&quot;</em><em>, </em><em>&quot;U&quot;}</em><em>, </em><em>optional</em>) – Specifies the calculation uses either the lower (“L”) or upper (“U”)
-triangular part of the matrix.
-Regardless of this choice, only the real parts of the diagonal are
-considered to preserve the Hermite matrix property.
-It therefore follows that the imaginary part of the diagonal
-will always be treated as zero.
-Default: “L”.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
 <li><p><strong>w</strong> (<em>(…, M) dpnp.ndarray</em>) – The eigenvalues in ascending order, each repeated according to
 its multiplicity.</p></li>
 <li><p><strong>v</strong> (<em>(…, M, M) dpnp.ndarray</em>) – The column <code class="docutils literal notranslate"><span class="pre">v[:,</span> <span class="pre">i]</span></code> is the normalized eigenvector corresponding
@@ -157,14 +145,15 @@ to the eigenvalue <code class="docutils literal notranslate"><span class="pre">w
 </p>
 </dd>
 </dl>
+<p class="rubric">Limitations</p>
+<p>Parameter <cite>a</cite> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
+Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.linalg.eigvalsh.html#dpnp.linalg.eigvalsh" title="dpnp.linalg.eigvalsh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.eigvalsh</span></code></a></dt><dd><p>Compute the eigenvalues of a complex Hermitian or real symmetric matrix.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.eig</span></code></dt><dd><p>eigenvalues and right eigenvectors for non-symmetric arrays.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.linalg.eig.html#dpnp.linalg.eig" title="dpnp.linalg.eig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.eig</span></code></a></dt><dd><p>Compute the eigenvalues and right eigenvectors of a square array.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.linalg.eigvals.html#dpnp.linalg.eigvals" title="dpnp.linalg.eigvals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.eigvals</span></code></a></dt><dd><p>Compute the eigenvalues of a general matrix.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.eigvals</span></code></dt><dd><p>eigenvalues of non-symmetric arrays.</p>
 </dd>
 </dl>
 </div>
