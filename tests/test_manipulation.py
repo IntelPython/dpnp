@@ -115,7 +115,7 @@ def test_unique(array):
 
 
 class TestTranspose:
-    @pytest.mark.parametrize("axes", [(0, 1), (1, 0)])
+    @pytest.mark.parametrize("axes", [(0, 1), (1, 0), [0, 1]])
     def test_2d_with_axes(self, axes):
         na = numpy.array([[1, 2], [3, 4]])
         da = dpnp.array(na)
@@ -124,11 +124,31 @@ class TestTranspose:
         result = dpnp.transpose(da, axes)
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("axes", [(1, 0, 2), ((1, 0, 2),)])
+        # ndarray
+        expected = na.transpose(axes)
+        result = da.transpose(axes)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "axes",
+        [
+            (1, 0, 2),
+            [1, 0, 2],
+            ((1, 0, 2),),
+            ([1, 0, 2],),
+            [(1, 0, 2)],
+            [[1, 0, 2]],
+        ],
+    )
     def test_3d_with_packed_axes(self, axes):
         na = numpy.ones((1, 2, 3))
         da = dpnp.array(na)
 
+        expected = na.transpose(*axes)
+        result = da.transpose(*axes)
+        assert_array_equal(expected, result)
+
+        # ndarray
         expected = na.transpose(*axes)
         result = da.transpose(*axes)
         assert_array_equal(expected, result)

@@ -1355,7 +1355,7 @@ class dpnp_array:
             return self
 
         axes_len = len(axes)
-        if axes_len == 1 and isinstance(axes[0], tuple):
+        if axes_len == 1 and isinstance(axes[0], (tuple, list)):
             axes = axes[0]
 
         res = self.__new__(dpnp_array)
