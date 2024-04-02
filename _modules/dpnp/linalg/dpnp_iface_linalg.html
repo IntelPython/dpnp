@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev1+21.gc07bcf99b0 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev1+45.g9ebbeefb13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=8b759892"></script>
+        <script src="../../../_static/documentation_options.js?v=73c97221"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+21.gc07bcf99b0
+                0.15.0dev1+45.g9ebbeefb13
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -144,7 +144,6 @@
     <span class="n">dpnp_matrix_power</span><span class="p">,</span>
     <span class="n">dpnp_matrix_rank</span><span class="p">,</span>
     <span class="n">dpnp_multi_dot</span><span class="p">,</span>
-    <span class="n">dpnp_norm</span><span class="p">,</span>
     <span class="n">dpnp_pinv</span><span class="p">,</span>
     <span class="n">dpnp_qr</span><span class="p">,</span>
     <span class="n">dpnp_slogdet</span><span class="p">,</span>
@@ -159,6 +158,7 @@
     <span class="s2">&quot;eig&quot;</span><span class="p">,</span>
     <span class="s2">&quot;eigh&quot;</span><span class="p">,</span>
     <span class="s2">&quot;eigvals&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;eigvalsh&quot;</span><span class="p">,</span>
     <span class="s2">&quot;inv&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matrix_power&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matrix_rank&quot;</span><span class="p">,</span>
@@ -351,6 +351,19 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.linalg.eigh`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : (..., M, M) {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        A complex- or real-valued array whose eigenvalues and eigenvectors are to be computed.</span>
+<span class="sd">    UPLO : {&quot;L&quot;, &quot;U&quot;}, optional</span>
+<span class="sd">        Specifies the calculation uses either the lower (&quot;L&quot;) or upper (&quot;U&quot;)</span>
+<span class="sd">        triangular part of the matrix.</span>
+<span class="sd">        Regardless of this choice, only the real parts of the diagonal are</span>
+<span class="sd">        considered to preserve the Hermite matrix property.</span>
+<span class="sd">        It therefore follows that the imaginary part of the diagonal</span>
+<span class="sd">        will always be treated as zero.</span>
+<span class="sd">        Default: &quot;L&quot;.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    w : (..., M) dpnp.ndarray</span>
@@ -360,15 +373,13 @@
 <span class="sd">        The column ``v[:, i]`` is the normalized eigenvector corresponding</span>
 <span class="sd">        to the eigenvalue ``w[i]``.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.eig` : eigenvalues and right eigenvectors for non-symmetric arrays.</span>
-<span class="sd">    :obj:`dpnp.eigvals` : eigenvalues of non-symmetric arrays.</span>
+<span class="sd">    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or</span>
+<span class="sd">                                  real symmetric matrix.</span>
+<span class="sd">    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of</span>
+<span class="sd">                             a square array.</span>
+<span class="sd">    :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -386,19 +397,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
+    <span class="n">UPLO</span> <span class="o">=</span> <span class="n">UPLO</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">UPLO</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;U&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;UPLO argument must be &#39;L&#39; or &#39;U&#39;&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-dimensional array given. Array must be &quot;</span>
-            <span class="s2">&quot;at least two-dimensional&quot;</span> <span class="o">%</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
-        <span class="p">)</span>
-
-    <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
-    <span class="k">if</span> <span class="n">m</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Last 2 dimensions of the array must be square&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_eigh</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">UPLO</span><span class="o">=</span><span class="n">UPLO</span><span class="p">)</span></div>
 
@@ -432,6 +436,67 @@
             <span class="k">return</span> <span class="n">dpnp_eigvals</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="eigvalsh">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eigvalsh.html#dpnp.linalg.eigvalsh">[docs]</a>
+<span class="k">def</span> <span class="nf">eigvalsh</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">UPLO</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    eigvalsh(a, UPLO=&quot;L&quot;)</span>
+
+<span class="sd">    Compute the eigenvalues of a complex Hermitian or real symmetric matrix.</span>
+
+<span class="sd">    Main difference from :obj:`dpnp.linalg.eigh`: the eigenvectors are not computed.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.linalg.eigvalsh`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : (..., M, M) {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        A complex- or real-valued array whose eigenvalues are to be computed.</span>
+<span class="sd">    UPLO : {&quot;L&quot;, &quot;U&quot;}, optional</span>
+<span class="sd">        Specifies the calculation uses either the lower (&quot;L&quot;) or upper (&quot;U&quot;)</span>
+<span class="sd">        triangular part of the matrix.</span>
+<span class="sd">        Regardless of this choice, only the real parts of the diagonal are</span>
+<span class="sd">        considered to preserve the Hermite matrix property.</span>
+<span class="sd">        It therefore follows that the imaginary part of the diagonal</span>
+<span class="sd">        will always be treated as zero.</span>
+<span class="sd">        Default: &quot;L&quot;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    w : (..., M) dpnp.ndarray</span>
+<span class="sd">        The eigenvalues in ascending order, each repeated according to</span>
+<span class="sd">        its multiplicity.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian</span>
+<span class="sd">                              (conjugate symmetric) or a real symmetric matrix.</span>
+<span class="sd">    :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.</span>
+<span class="sd">    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of</span>
+<span class="sd">                             a general matrix.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; from dpnp import linalg as LA</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, -2j], [2j, 5]])</span>
+<span class="sd">    &gt;&gt;&gt; LA.eigvalsh(a)</span>
+<span class="sd">    array([0.17157288, 5.82842712])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="n">UPLO</span> <span class="o">=</span> <span class="n">UPLO</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">UPLO</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;U&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;UPLO argument must be &#39;L&#39; or &#39;U&#39;&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_eigh</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">UPLO</span><span class="o">=</span><span class="n">UPLO</span><span class="p">,</span> <span class="n">eigen_mode</span><span class="o">=</span><span class="s2">&quot;N&quot;</span><span class="p">)</span></div>
 
 
 
@@ -611,7 +676,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the dot product of two or more arrays in a single function call.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.linalg.multi_dot`.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.multi_dot`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -728,109 +793,60 @@
 
 <div class="viewcode-block" id="norm">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.norm.html#dpnp.linalg.norm">[docs]</a>
-<span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matrix or vector norm.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.linalg.norm`.</span>
+<span class="sd">    This function is able to return one of eight different matrix norms,</span>
+<span class="sd">    or one of an infinite number of vector norms (described below), depending</span>
+<span class="sd">    on the value of the ``ord`` parameter.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input array.  If `axis` is ``None``, `x` must be 1-D or 2-D, unless</span>
-<span class="sd">        `ord` is ``None``. If both `axis` and `ord` are ``None``, the 2-norm</span>
-<span class="sd">        of ``x.ravel`` will be returned.</span>
-<span class="sd">    ord : {int, float, inf, -inf, &quot;fro&quot;, &quot;nuc&quot;}, optional</span>
-<span class="sd">        Norm type. inf means dpnp&#39;s `inf` object. The default is ``None``.</span>
-<span class="sd">    axis : {None, int, 2-tuple of ints}, optional</span>
+<span class="sd">    input : array_like</span>
+<span class="sd">        Input array.  If `axis` is None, `x` must be 1-D or 2-D, unless `ord`</span>
+<span class="sd">        is None. If both `axis` and `ord` are None, the 2-norm of</span>
+<span class="sd">        ``x.ravel`` will be returned.</span>
+<span class="sd">    ord : optional</span>
+<span class="sd">        Order of the norm (see table under ``Notes``). inf means numpy&#39;s</span>
+<span class="sd">        `inf` object. The default is None.</span>
+<span class="sd">    axis : optional.</span>
 <span class="sd">        If `axis` is an integer, it specifies the axis of `x` along which to</span>
 <span class="sd">        compute the vector norms.  If `axis` is a 2-tuple, it specifies the</span>
 <span class="sd">        axes that hold 2-D matrices, and the matrix norms of these matrices</span>
-<span class="sd">        are computed.  If `axis` is ``None`` then either a vector norm (when</span>
-<span class="sd">        `x` is 1-D) or a matrix norm (when `x` is 2-D) is returned.</span>
-<span class="sd">        The default is ``None``.</span>
+<span class="sd">        are computed.  If `axis` is None then either a vector norm (when `x`</span>
+<span class="sd">        is 1-D) or a matrix norm (when `x` is 2-D) is returned. The default</span>
+<span class="sd">        is None.</span>
 <span class="sd">    keepdims : bool, optional</span>
-<span class="sd">        If this is set to ``True``, the axes which are normed over are left in</span>
-<span class="sd">        the result as dimensions with size one.  With this option the result</span>
-<span class="sd">        will broadcast correctly against the original `x`.</span>
+<span class="sd">        If this is set to True, the axes which are normed over are left in the</span>
+<span class="sd">        result as dimensions with size one.  With this option the result will</span>
+<span class="sd">        broadcast correctly against the original `x`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">    n : float or ndarray</span>
 <span class="sd">        Norm of the matrix or vector(s).</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.arange(9) - 4</span>
-<span class="sd">    &gt;&gt;&gt; a</span>
-<span class="sd">    array([-4, -3, -2, -1,  0,  1,  2,  3,  4])</span>
-<span class="sd">    &gt;&gt;&gt; b = a.reshape((3, 3))</span>
-<span class="sd">    &gt;&gt;&gt; b</span>
-<span class="sd">    array([[-4, -3, -2],</span>
-<span class="sd">           [-1,  0,  1],</span>
-<span class="sd">           [ 2,  3,  4]])</span>
-
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(a)</span>
-<span class="sd">    array(7.745966692414834)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(b)</span>
-<span class="sd">    array(7.745966692414834)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(b, &#39;fro&#39;)</span>
-<span class="sd">    array(7.745966692414834)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(a, np.inf)</span>
-<span class="sd">    array(4.)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(b, np.inf)</span>
-<span class="sd">    array(9.)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(a, -np.inf)</span>
-<span class="sd">    array(0.)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(b, -np.inf)</span>
-<span class="sd">    array(2.)</span>
-
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(a, 1)</span>
-<span class="sd">    array(20.)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(b, 1)</span>
-<span class="sd">    array(7.)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(a, -1)</span>
-<span class="sd">    array(0.)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(b, -1)</span>
-<span class="sd">    array(6.)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(a, 2)</span>
-<span class="sd">    array(7.745966692414834)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(b, 2)</span>
-<span class="sd">    array(7.3484692283495345)</span>
-
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(a, -2)</span>
-<span class="sd">    array(0.)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(b, -2)</span>
-<span class="sd">    array(1.8570331885190563e-016) # may vary</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(a, 3)</span>
-<span class="sd">    array(5.8480354764257312) # may vary</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(a, -3)</span>
-<span class="sd">    array(0.)</span>
-
-<span class="sd">    Using the `axis` argument to compute vector norms:</span>
-
-<span class="sd">    &gt;&gt;&gt; c = np.array([[ 1, 2, 3],</span>
-<span class="sd">    ...               [-1, 1, 4]])</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(c, axis=0)</span>
-<span class="sd">    array([ 1.41421356,  2.23606798,  5.        ])</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(c, axis=1)</span>
-<span class="sd">    array([ 3.74165739,  4.24264069])</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(c, ord=1, axis=1)</span>
-<span class="sd">    array([ 6.,  6.])</span>
-
-<span class="sd">    Using the `axis` argument to compute matrix norms:</span>
-
-<span class="sd">    &gt;&gt;&gt; m = np.arange(8).reshape(2,2,2)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(m, axis=(1,2))</span>
-<span class="sd">    array([  3.74165739,  11.22497216])</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(m[0, :, :]), np.linalg.norm(m[1, :, :])</span>
-<span class="sd">    (array(3.7416573867739413), array(11.224972160321824))</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_norm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">ord</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span></div>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">keepdims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">ord</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;fro&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">]:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_norm</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="nb">ord</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="nb">ord</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span></div>
 
 
 
