@@ -752,7 +752,6 @@ def test_positive_boolean():
 
 
 class TestProd:
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("func", ["prod", "nanprod"])
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
     @pytest.mark.parametrize("keepdims", [False, True])
@@ -790,7 +789,6 @@ class TestProd:
         dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
         assert_dtype_allclose(dpnp_res, np_res)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
     @pytest.mark.parametrize("func", ["prod", "nanprod"])

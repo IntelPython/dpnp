@@ -229,9 +229,6 @@ def test_cond(arr, p):
 
 
 class TestDet:
-    # TODO: Remove the use of fixture for test_det
-    # when dpnp.prod() will support complex dtypes on Gen9
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "array",
         [
@@ -1054,9 +1051,6 @@ class TestSolve:
 
 
 class TestSlogdet:
-    # TODO: Remove the use of fixture for test_slogdet_2d and test_slogdet_3d
-    # when dpnp.prod() will support complex dtypes on Gen9
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_slogdet_2d(self, dtype):
         a_np = numpy.array([[1, 2], [3, 4]], dtype=dtype)
@@ -1068,7 +1062,6 @@ class TestSlogdet:
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_slogdet_3d(self, dtype):
         a_np = numpy.array(
