@@ -173,6 +173,7 @@ class dpnp_array:
         Used if :func:`copy.copy` is called on an array. Returns a copy of the array.
 
         Equivalent to ``a.copy(order="K")``.
+
         """
         return self.copy(order="K")
 
@@ -911,6 +912,7 @@ class dpnp_array:
         Return the maximum along an axis.
 
         Refer to :obj:`dpnp.max` for full documentation.
+
         """
 
         return dpnp.max(self, axis, out, keepdims, initial, where)
@@ -922,6 +924,7 @@ class dpnp_array:
         Returns the average of the array elements.
 
         Refer to :obj:`dpnp.mean` for full documentation.
+
         """
 
         return dpnp.mean(self, axis, dtype, out, keepdims, where=where)
@@ -938,6 +941,7 @@ class dpnp_array:
         Return the minimum along a given axis.
 
         Refer to :obj:`dpnp.min` for full documentation.
+
         """
 
         return dpnp.min(self, axis, out, keepdims, initial, where)
@@ -957,7 +961,12 @@ class dpnp_array:
     # 'newbyteorder',
 
     def nonzero(self):
-        """Return the indices of the elements that are non-zero."""
+        """
+        Return the indices of the elements that are non-zero.
+
+        Refer to :obj:`dpnp.nonzero` for full documentation.
+
+        """
 
         return dpnp.nonzero(self)
 
@@ -1015,6 +1024,7 @@ class dpnp_array:
         Puts values of an array into another array along a given axis.
 
         For full documentation refer to :obj:`numpy.put`.
+
         """
 
         return dpnp.put(self, indices, vals, axis=axis, mode=mode)
@@ -1226,6 +1236,7 @@ class dpnp_array:
         Returns the standard deviation of the array elements, along given axis.
 
         Refer to :obj:`dpnp.std` for full documentation.
+
         """
 
         return dpnp.std(self, axis, dtype, out, ddof, keepdims, where=where)
@@ -1261,6 +1272,7 @@ class dpnp_array:
         Returns the sum along a given axis.
 
         For full documentation refer to :obj:`dpnp.sum`.
+
         """
 
         return dpnp.sum(
@@ -1278,6 +1290,7 @@ class dpnp_array:
         Interchange two axes of an array.
 
         For full documentation refer to :obj:`numpy.swapaxes`.
+
         """
 
         return dpnp.swapaxes(self, axis1=axis1, axis2=axis2)
@@ -1371,6 +1384,7 @@ class dpnp_array:
         Returns the variance of the array elements, along given axis.
 
         Refer to :obj:`dpnp.var` for full documentation.
+
         """
         return dpnp.var(self, axis, dtype, out, ddof, keepdims, where=where)
 
