@@ -1861,12 +1861,13 @@ def transpose(a, axes=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axes : tuple or list of ints, optional
+    axes : None, tuple or list of ints, optional
         If specified, it must be a tuple or list which contains a permutation
         of [0, 1, ..., N-1] where N is the number of axes of `a`.
         The `i`'th axis of the returned array will correspond to the axis
-        numbered ``axes[i]`` of the input. If not specified, defaults to
-        ``range(a.ndim)[::-1]``, which reverses the order of the axes.
+        numbered ``axes[i]`` of the input. If not specified or ``None``,
+        defaults to ``range(a.ndim)[::-1]``, which reverses the order of
+        the axes.
 
     Returns
     -------
@@ -1881,27 +1882,27 @@ def transpose(a, axes=None):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> a = dp.array([[1, 2], [3, 4]])
+    >>> import dpnp as np
+    >>> a = np.array([[1, 2], [3, 4]])
     >>> a
     array([[1, 2],
            [3, 4]])
-    >>> dp.transpose(a)
+    >>> np.transpose(a)
     array([[1, 3],
            [2, 4]])
 
-    >>> a = dp.array([1, 2, 3, 4])
+    >>> a = np.array([1, 2, 3, 4])
     >>> a
     array([1, 2, 3, 4])
-    >>> dp.transpose(a)
+    >>> np.transpose(a)
     array([1, 2, 3, 4])
 
-    >>> a = dp.ones((1, 2, 3))
-    >>> dp.transpose(a, (1, 0, 2)).shape
+    >>> a = np.ones((1, 2, 3))
+    >>> np.transpose(a, (1, 0, 2)).shape
     (2, 1, 3)
 
-    >>> a = dp.ones((2, 3, 4, 5))
-    >>> dp.transpose(a).shape
+    >>> a = np.ones((2, 3, 4, 5))
+    >>> np.transpose(a).shape
     (5, 4, 3, 2)
 
     """

@@ -158,5 +158,17 @@ class TestTranspose:
         na = numpy.ones(shape)
         da = dpnp.ones(shape)
 
+        assert_array_equal(numpy.transpose(na), dpnp.transpose(da))
+        assert_array_equal(numpy.transpose(na, None), dpnp.transpose(da, None))
+
+        # ndarray
         assert_array_equal(na.transpose(), da.transpose())
         assert_array_equal(na.transpose(None), da.transpose(None))
+
+    def test_ndarray_axes_n_int(self):
+        na = numpy.ones((1, 2, 3))
+        da = dpnp.array(na)
+
+        expected = na.transpose(1, 0, 2)
+        result = da.transpose(1, 0, 2)
+        assert_array_equal(expected, result)
