@@ -44,15 +44,12 @@ from numpy.core.numeric import normalize_axis_tuple
 import dpnp
 
 # pylint: disable=no-name-in-module
-from .dpnp_algo import (
-    dpnp_inner,
-    dpnp_kron,
-)
 from .dpnp_utils import (
     call_origin,
 )
 from .dpnp_utils.dpnp_utils_linearalgebra import (
     dpnp_dot,
+    dpnp_kron,
     dpnp_matmul,
 )
 
@@ -83,7 +80,7 @@ def dot(a, b, out=None):
     b : {dpnp.ndarray, usm_ndarray, scalar}
         Second input array. Both inputs `a` and `b` can not be scalars
         at the same time.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape and data type as the expected output and should be
         C-contiguous. If these conditions are not met, an exception is
@@ -218,61 +215,160 @@ def einsum_path(*args, **kwargs):
     return call_origin(numpy.einsum_path, *args, **kwargs)
 
 
-def inner(x1, x2, **kwargs):
+def inner(a, b):
     """
     Returns the inner product of two arrays.
 
     For full documentation refer to :obj:`numpy.inner`.
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as :obj:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the functions will be executed sequentially on CPU.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray, scalar}
+        First input array. Both inputs `a` and `b` can not be scalars
+        at the same time.
+    b : {dpnp.ndarray, usm_ndarray, scalar}
+        Second input array. Both inputs `a` and `b` can not be scalars
+        at the same time.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        If either `a` or `b` is a scalar, the shape of the returned arrays
+        matches that of the array between `a` and `b`, whichever is an array.
+        If `a` and `b` are both 1-D arrays then a 0-d array is returned;
+        otherwise an array with a shape as
+        ``out.shape = (*a.shape[:-1], *b.shape[:-1])`` is returned.
+
 
     See Also
     --------
-    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention
-                         on the operands.
-    :obj:`dpnp.dot` : Returns the dot product of two arrays.
-    :obj:`dpnp.tensordot` : Compute tensor dot product along specified axes.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    :obj:`dpnp.einsum` : Einstein summation convention..
+    :obj:`dpnp.dot` : Generalised matrix product,
+                      using second last dimension of `b`.
+    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
 
     Examples
     --------
+    # Ordinary inner product for vectors
+
     >>> import dpnp as np
-    >>> a = np.array([1,2,3])
+    >>> a = np.array([1, 2, 3])
     >>> b = np.array([0, 1, 0])
-    >>> result = np.inner(a, b)
-    >>> [x for x in result]
-    [2]
+    >>> np.inner(a, b)
+    array(2)
+
+    # Some multidimensional examples
+
+    >>> a = np.arange(24).reshape((2,3,4))
+    >>> b = np.arange(4)
+    >>> c = np.inner(a, b)
+    >>> c.shape
+    (2, 3)
+    >>> c
+    array([[ 14,  38,  62],
+           [86, 110, 134]])
+
+    >>> a = np.arange(2).reshape((1,1,2))
+    >>> b = np.arange(6).reshape((3,2))
+    >>> c = np.inner(a, b)
+    >>> c.shape
+    (1, 1, 3)
+    >>> c
+    array([[[1, 3, 5]]])
+
+    An example where `b` is a scalar
+
+    >>> np.inner(np.eye(2), 7)
+    array([[7., 0.],
+           [0., 7.]])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-    if x1_desc and x2_desc and not kwargs:
-        return dpnp_inner(x1_desc, x2_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
-    return call_origin(numpy.inner, x1, x2, **kwargs)
+    if dpnp.isscalar(a) or dpnp.isscalar(b):
+        return dpnp.multiply(a, b)
+
+    if a.ndim == 0 or b.ndim == 0:
+        return dpnp.multiply(a, b)
+
+    if a.shape[-1] != b.shape[-1]:
+        raise ValueError(
+            "shape of input arrays is not similar at the last axis."
+        )
+
+    if a.ndim == 1 and b.ndim == 1:
+        return dpnp_dot(a, b)
+
+    return dpnp.tensordot(a, b, axes=(-1, -1))
 
 
-def kron(x1, x2):
+def kron(a, b):
     """
     Returns the kronecker product of two arrays.
 
     For full documentation refer to :obj:`numpy.kron`.
 
-    .. seealso:: :obj:`dpnp.outer` returns the outer product of two arrays.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray, scalar}
+        First input array. Both inputs `a` and `b` can not be scalars
+        at the same time.
+    b : {dpnp.ndarray, usm_ndarray, scalar}
+        Second input array. Both inputs `a` and `b` can not be scalars
+        at the same time.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Returns the Kronecker product.
+
+    See Also
+    --------
+    :obj:`dpnp.outer` : Returns the outer product of two arrays.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 10, 100])
+    >>> b = np.array([5, 6, 7])
+    >>> np.kron(a, b)
+    array([  5,   6,   7, ..., 500, 600, 700])
+    >>> np.kron(b, a)
+    array([  5,  50, 500, ...,   7,  70, 700])
+
+    >>> np.kron(np.eye(2), np.ones((2,2)))
+    array([[1.,  1.,  0.,  0.],
+           [1.,  1.,  0.,  0.],
+           [0.,  0.,  1.,  1.],
+           [0.,  0.,  1.,  1.]])
+
+    >>> a = np.arange(100).reshape((2,5,2,5))
+    >>> b = np.arange(24).reshape((2,3,4))
+    >>> c = np.kron(a,b)
+    >>> c.shape
+    (2, 10, 6, 20)
+    >>> I = (1,3,0,2)
+    >>> J = (0,2,1)
+    >>> J1 = (0,) + J             # extend to ndim=4
+    >>> S1 = (1,) + b.shape
+    >>> K = tuple(np.array(I) * np.array(S1) + np.array(J1))
+    >>> c[K] == a[I]*b[J]
+    array(True)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-    if x1_desc and x2_desc:
-        return dpnp_kron(x1_desc, x2_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
-    return call_origin(numpy.kron, x1, x2)
+    if dpnp.isscalar(a) or dpnp.isscalar(b):
+        return dpnp.multiply(a, b)
+
+    a_ndim = a.ndim
+    b_ndim = b.ndim
+    if a_ndim == 0 or b_ndim == 0:
+        return dpnp.multiply(a, b)
+
+    return dpnp_kron(a, b, a_ndim, b_ndim)
 
 
 def matmul(
@@ -297,11 +393,11 @@ def matmul(
 
     Parameters
     ----------
-    x1 : {dpnp_array, usm_ndarray}
+    x1 : {dpnp.ndarray, usm_ndarray}
         First input array.
-    x2 : {dpnp_array, usm_ndarray}
+    x2 : {dpnp.ndarray, usm_ndarray}
         Second input array.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         a shape that matches the signature `(n,k),(k,m)->(n,m)` but the type
         (of the calculated values) will be cast if necessary. Default: ``None``.
@@ -567,16 +663,20 @@ def tensordot(a, b, axes=2):
 
     dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
-    if dpnp.isscalar(a):
-        a = dpnp.array(a, sycl_queue=b.sycl_queue, usm_type=b.usm_type)
-    elif dpnp.isscalar(b):
-        b = dpnp.array(b, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
+    if dpnp.isscalar(a) or dpnp.isscalar(b):
+        if not isinstance(axes, int) or axes != 0:
+            raise ValueError(
+                "One of the inputs is scalar, axes should be zero."
+            )
+        return dpnp.multiply(a, b)
 
     try:
         iter(axes)
     except Exception as e:  # pylint: disable=broad-exception-caught
         if not isinstance(axes, int):
             raise TypeError("Axes must be an integer.") from e
+        if axes < 0:
+            raise ValueError("Axes must be a nonnegative integer.") from e
         axes_a = tuple(range(-axes, 0))
         axes_b = tuple(range(0, axes))
     else:
@@ -590,6 +690,15 @@ def tensordot(a, b, axes=2):
         if len(axes_a) != len(axes_b):
             raise ValueError("Axes length mismatch.")
 
+    # Make the axes non-negative
+    a_ndim = a.ndim
+    b_ndim = b.ndim
+    axes_a = normalize_axis_tuple(axes_a, a_ndim, "axis_a")
+    axes_b = normalize_axis_tuple(axes_b, b_ndim, "axis_b")
+
+    if a.ndim == 0 or b.ndim == 0:
+        return dpnp.multiply(a, b)
+
     a_shape = a.shape
     b_shape = b.shape
     for axis_a, axis_b in zip(axes_a, axes_b):
@@ -597,12 +706,6 @@ def tensordot(a, b, axes=2):
             raise ValueError(
                 "shape of input arrays is not similar at requested axes."
             )
-
-    # Make the axes non-negative
-    a_ndim = a.ndim
-    b_ndim = b.ndim
-    axes_a = normalize_axis_tuple(axes_a, a_ndim, "axis")
-    axes_b = normalize_axis_tuple(axes_b, b_ndim, "axis")
 
     # Move the axes to sum over, to the end of "a"
     notin = tuple(k for k in range(a_ndim) if k not in axes_a)

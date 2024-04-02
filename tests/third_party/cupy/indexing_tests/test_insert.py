@@ -15,7 +15,6 @@ from tests.third_party.cupy import testing
         }
     )
 )
-@testing.gpu
 class TestPlace(unittest.TestCase):
     # NumPy 1.9 don't wraps values.
     # https://github.com/numpy/numpy/pull/5821
@@ -39,7 +38,6 @@ class TestPlace(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestPlaceRaises(unittest.TestCase):
     # NumPy 1.9 performs illegal memory access.
     # https://github.com/numpy/numpy/pull/5821
@@ -77,7 +75,6 @@ class TestPlaceRaises(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestPut(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -105,7 +102,6 @@ class TestPut(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestPutScalars(unittest.TestCase):
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
@@ -136,7 +132,6 @@ class TestPutScalars(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestPutRaises(unittest.TestCase):
     @testing.for_all_dtypes()
     def test_put_inds_underflow_error(self, dtype):
@@ -170,7 +165,6 @@ class TestPutRaises(unittest.TestCase):
 @testing.parameterize(
     *testing.product({"shape": [(0,), (1,), (2, 3), (2, 3, 4)]})
 )
-@testing.gpu
 class TestPutmaskSameShape(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -191,7 +185,6 @@ class TestPutmaskSameShape(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestPutmaskDifferentShapes(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -207,7 +200,6 @@ class TestPutmaskDifferentShapes(unittest.TestCase):
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestPutmask(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_putmask_scalar_values(self, xp):
@@ -264,7 +256,6 @@ class TestPutmaskDifferentDtypes(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestFillDiagonal(unittest.TestCase):
     def _compute_val(self, xp):
         if type(self.val) is int:
@@ -309,7 +300,6 @@ class TestFillDiagonal(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestDiagIndices(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_diag_indices(self, xp):
@@ -324,7 +314,6 @@ class TestDiagIndices(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestDiagIndicesInvalidValues(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_diag_indices(self, xp):
@@ -338,7 +327,6 @@ class TestDiagIndicesInvalidValues(unittest.TestCase):
         }
     )
 )
-@testing.gpu
 class TestDiagIndicesFrom(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_diag_indices_from(self, xp):
@@ -354,7 +342,6 @@ class TestDiagIndicesFrom(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@testing.gpu
 class TestDiagIndicesFromRaises(unittest.TestCase):
     def test_non_equal_dims(self):
         for xp in (numpy, cupy):

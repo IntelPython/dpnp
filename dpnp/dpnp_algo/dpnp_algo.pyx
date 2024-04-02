@@ -60,7 +60,6 @@ __all__ = [
 
 include "dpnp_algo_arraycreation.pxi"
 include "dpnp_algo_indexing.pxi"
-include "dpnp_algo_linearalgebra.pxi"
 include "dpnp_algo_logic.pxi"
 include "dpnp_algo_mathematical.pxi"
 include "dpnp_algo_sorting.pxi"
@@ -84,12 +83,7 @@ cpdef dpnp_queue_initialize():
     It takes visible time and needs to be done in the module loading procedure.
     """
     cdef time_t seed_from_time
-    cdef QueueOptions queue_type = CPU_SELECTOR
 
-    if (config.__DPNP_QUEUE_GPU__):
-        queue_type = GPU_SELECTOR
-
-    dpnp_queue_initialize_c(queue_type)
     dpnp_python_constants_initialize_c(< void*> None,
                                         < void * > dpnp.nan)
 

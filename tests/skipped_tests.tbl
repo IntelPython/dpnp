@@ -332,10 +332,6 @@ tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_invalid_sub1
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_too_many_dims3
 
-tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_invlarge
-tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_large
-tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_of_two
-
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_broadcast_not_allowed
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_diff_dtypes_is_equal
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_diff_dtypes_not_equal
@@ -386,12 +382,12 @@ tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_inf_ar
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_broadcast[nan]
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_broadcast[posinf]
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_broadcast[neginf]
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid_param_0_{mode='valid'}::test_convolve_empty
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid_param_0_{mode='valid'}::test_convolve_ndim
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid_param_1_{mode='same'}::test_convolve_empty
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid_param_1_{mode='same'}::test_convolve_ndim
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid_param_2_{mode='full'}::test_convolve_empty
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid_param_2_{mode='full'}::test_convolve_ndim
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid::test_convolve_empty[_param_0_{mode='valid'}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid::test_convolve_empty[_param_1_{mode='same'}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid::test_convolve_empty[_param_2_{mode='full'}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid::test_convolve_ndim[_param_0_{mode='valid'}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid::test_convolve_ndim[_param_1_{mode='same'}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveInvalid::test_convolve_ndim[_param_2_{mode='full'}]
 
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fabs
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fabs_negative
@@ -419,81 +415,81 @@ tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_size1
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_inf_to_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_heaviside
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_heaviside_nan_inf
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_0_{mode='valid', shape1=(), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_1_{mode='valid', shape1=(), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_2_{mode='valid', shape1=(), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_3_{mode='valid', shape1=(), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_4_{mode='valid', shape1=(), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_5_{mode='valid', shape1=(5,), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_6_{mode='valid', shape1=(5,), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_7_{mode='valid', shape1=(5,), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_8_{mode='valid', shape1=(5,), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_9_{mode='valid', shape1=(5,), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_10_{mode='valid', shape1=(6,), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_11_{mode='valid', shape1=(6,), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_12_{mode='valid', shape1=(6,), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_13_{mode='valid', shape1=(6,), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_14_{mode='valid', shape1=(6,), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_15_{mode='valid', shape1=(20,), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_16_{mode='valid', shape1=(20,), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_17_{mode='valid', shape1=(20,), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_18_{mode='valid', shape1=(20,), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_19_{mode='valid', shape1=(20,), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_20_{mode='valid', shape1=(21,), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_21_{mode='valid', shape1=(21,), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_22_{mode='valid', shape1=(21,), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_23_{mode='valid', shape1=(21,), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_24_{mode='valid', shape1=(21,), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_25_{mode='same', shape1=(), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_26_{mode='same', shape1=(), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_27_{mode='same', shape1=(), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_28_{mode='same', shape1=(), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_29_{mode='same', shape1=(), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_30_{mode='same', shape1=(5,), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_31_{mode='same', shape1=(5,), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_32_{mode='same', shape1=(5,), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_33_{mode='same', shape1=(5,), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_34_{mode='same', shape1=(5,), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_35_{mode='same', shape1=(6,), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_36_{mode='same', shape1=(6,), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_37_{mode='same', shape1=(6,), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_38_{mode='same', shape1=(6,), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_39_{mode='same', shape1=(6,), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_40_{mode='same', shape1=(20,), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_41_{mode='same', shape1=(20,), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_42_{mode='same', shape1=(20,), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_43_{mode='same', shape1=(20,), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_44_{mode='same', shape1=(20,), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_45_{mode='same', shape1=(21,), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_46_{mode='same', shape1=(21,), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_47_{mode='same', shape1=(21,), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_48_{mode='same', shape1=(21,), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_49_{mode='same', shape1=(21,), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_50_{mode='full', shape1=(), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_51_{mode='full', shape1=(), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_52_{mode='full', shape1=(), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_53_{mode='full', shape1=(), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_54_{mode='full', shape1=(), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_55_{mode='full', shape1=(5,), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_56_{mode='full', shape1=(5,), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_57_{mode='full', shape1=(5,), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_58_{mode='full', shape1=(5,), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_59_{mode='full', shape1=(5,), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_60_{mode='full', shape1=(6,), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_61_{mode='full', shape1=(6,), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_62_{mode='full', shape1=(6,), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_63_{mode='full', shape1=(6,), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_64_{mode='full', shape1=(6,), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_65_{mode='full', shape1=(20,), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_66_{mode='full', shape1=(20,), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_67_{mode='full', shape1=(20,), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_68_{mode='full', shape1=(20,), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_69_{mode='full', shape1=(20,), shape2=(21,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_70_{mode='full', shape1=(21,), shape2=()}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_71_{mode='full', shape1=(21,), shape2=(5,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_72_{mode='full', shape1=(21,), shape2=(6,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_73_{mode='full', shape1=(21,), shape2=(20,)}::test_convolve
-tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination_param_74_{mode='full', shape1=(21,), shape2=(21,)}::test_convolve
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_0_{mode='valid', shape1=(), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_1_{mode='valid', shape1=(), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_2_{mode='valid', shape1=(), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_3_{mode='valid', shape1=(), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_4_{mode='valid', shape1=(), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_5_{mode='valid', shape1=(5,), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_6_{mode='valid', shape1=(5,), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_7_{mode='valid', shape1=(5,), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_8_{mode='valid', shape1=(5,), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_9_{mode='valid', shape1=(5,), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_10_{mode='valid', shape1=(6,), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_11_{mode='valid', shape1=(6,), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_12_{mode='valid', shape1=(6,), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_13_{mode='valid', shape1=(6,), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_14_{mode='valid', shape1=(6,), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_15_{mode='valid', shape1=(20,), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_16_{mode='valid', shape1=(20,), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_17_{mode='valid', shape1=(20,), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_18_{mode='valid', shape1=(20,), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_19_{mode='valid', shape1=(20,), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_20_{mode='valid', shape1=(21,), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_21_{mode='valid', shape1=(21,), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_22_{mode='valid', shape1=(21,), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_23_{mode='valid', shape1=(21,), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_24_{mode='valid', shape1=(21,), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_25_{mode='same', shape1=(), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_26_{mode='same', shape1=(), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_27_{mode='same', shape1=(), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_28_{mode='same', shape1=(), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_29_{mode='same', shape1=(), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_30_{mode='same', shape1=(5,), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_31_{mode='same', shape1=(5,), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_32_{mode='same', shape1=(5,), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_33_{mode='same', shape1=(5,), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_34_{mode='same', shape1=(5,), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_35_{mode='same', shape1=(6,), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_36_{mode='same', shape1=(6,), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_37_{mode='same', shape1=(6,), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_38_{mode='same', shape1=(6,), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_39_{mode='same', shape1=(6,), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_40_{mode='same', shape1=(20,), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_41_{mode='same', shape1=(20,), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_42_{mode='same', shape1=(20,), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_43_{mode='same', shape1=(20,), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_44_{mode='same', shape1=(20,), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_45_{mode='same', shape1=(21,), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_46_{mode='same', shape1=(21,), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_47_{mode='same', shape1=(21,), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_48_{mode='same', shape1=(21,), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_49_{mode='same', shape1=(21,), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_50_{mode='full', shape1=(), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_51_{mode='full', shape1=(), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_52_{mode='full', shape1=(), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_53_{mode='full', shape1=(), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_54_{mode='full', shape1=(), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_55_{mode='full', shape1=(5,), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_56_{mode='full', shape1=(5,), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_57_{mode='full', shape1=(5,), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_58_{mode='full', shape1=(5,), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_59_{mode='full', shape1=(5,), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_60_{mode='full', shape1=(6,), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_61_{mode='full', shape1=(6,), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_62_{mode='full', shape1=(6,), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_63_{mode='full', shape1=(6,), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_64_{mode='full', shape1=(6,), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_65_{mode='full', shape1=(20,), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_66_{mode='full', shape1=(20,), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_67_{mode='full', shape1=(20,), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_68_{mode='full', shape1=(20,), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_69_{mode='full', shape1=(20,), shape2=(21,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_70_{mode='full', shape1=(21,), shape2=()}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_71_{mode='full', shape1=(21,), shape2=(5,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_72_{mode='full', shape1=(21,), shape2=(6,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_73_{mode='full', shape1=(21,), shape2=(20,)}]
+tests/third_party/cupy/math_tests/test_misc.py::TestConvolveShapeCombination::test_convolve[_param_74_{mode='full', shape1=(21,), shape2=(21,)}]
 tests/third_party/cupy/math_tests/test_misc.py::TestConvolve::test_convolve_non_contiguous[valid]
 tests/third_party/cupy/math_tests/test_misc.py::TestConvolve::test_convolve_non_contiguous[same]
 tests/third_party/cupy/math_tests/test_misc.py::TestConvolve::test_convolve_non_contiguous[full]
@@ -514,12 +510,12 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_out
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_1dim
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_2dim_without_axis
 
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_arraylike
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_numpy_array
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum_arraylike
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum_numpy_array
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_arraylike
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_numpy_array
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_arraylike[_param_0_{axis=0}]
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_arraylike[_param_1_{axis=1}]
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_arraylike[_param_2_{axis=2}]
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_numpy_array[_param_0_{axis=0}]
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_numpy_array[_param_1_{axis=1}]
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_numpy_array[_param_2_{axis=2}]
 
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont
@@ -704,25 +700,6 @@ tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_bo
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_bound_2
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_goodness_of_fit
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_goodness_of_fit_2
-
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_0_{func='argmin', is_module=True, shape=(3, 4)}::test_argminmax_dtype
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_1_{func='argmin', is_module=True, shape=()}::test_argminmax_dtype
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_2_{func='argmin', is_module=False, shape=(3, 4)}::test_argminmax_dtype
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_3_{func='argmin', is_module=False, shape=()}::test_argminmax_dtype
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_4_{func='argmax', is_module=True, shape=(3, 4)}::test_argminmax_dtype
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_5_{func='argmax', is_module=True, shape=()}::test_argminmax_dtype
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_6_{func='argmax', is_module=False, shape=(3, 4)}::test_argminmax_dtype
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_7_{func='argmax', is_module=False, shape=()}::test_argminmax_dtype
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_0_{array=array([], dtype=float64)}::test_argwhere
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_1_{array=array([], shape=(0, 2), dtype=float64)}::test_argwhere
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_2_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_argwhere
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_0_{array=array(0)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_1_{array=array(1)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_2_{array=array([], dtype=float64)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_3_{array=array([], shape=(0, 2), dtype=float64)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_4_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_0_{array=array(0)}::test_nonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
 
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_invalid_axis1

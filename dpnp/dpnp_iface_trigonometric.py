@@ -558,12 +558,12 @@ def cbrt(
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a real-valued data type.
+        Input array, must have a real-valued data type.
     out : ({None, dpnp.ndarray, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
-    order : ({'C', 'F', 'A', 'K'}, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 
     Returns
@@ -573,11 +573,9 @@ def cbrt(
 
     Limitations
     -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by real-valued data types.
 
     See Also
     --------
@@ -849,12 +847,12 @@ def exp2(
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a floating-point data type.
+        Input array.
     out : ({None, dpnp.ndarray, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
-    order : ({'C', 'F', 'A', 'K'}, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
 
     Returns
@@ -864,11 +862,9 @@ def exp2(
 
     Limitations
     -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -1352,7 +1348,7 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
         of unique integers, values are computed over multiple axes.
         If ``None``, the result is computed over the entire array.
         Default: ``None``.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     dtype : data type, optional
@@ -1434,7 +1430,7 @@ def reciprocal(
     ----------
     x : {dpnp.ndarray, usm_ndarray}
         Input array.
-    out : {None, dpnp.ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Output array to populate.
         Array must have the correct shape and the expected data type.
     order : {"C", "F", "A", "K"}, optional
@@ -1498,7 +1494,7 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
         of unique integers, values are computed over multiple axes.
         If ``None``, the result is computed over the entire array.
         Default: ``None``.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     dtype : data type, optional
@@ -1575,13 +1571,13 @@ def rsqrt(
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a real floating-point data type.
+        Input array, must have a real-valued data type.
     out : ({None, dpnp.ndarray, usm_ndarray}, optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
-    order : ({'C', 'F', 'A', 'K'}, optional):
-        Memory layout of the newly output array, if parameter `out` is `None`.
-        Default: "K"
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, if parameter `out` is ``None``.
+        Default: "K".
 
     Returns
     -------
@@ -1590,11 +1586,9 @@ def rsqrt(
 
     Limitations
     -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
     Parameters `where`, `dtype` and `subok` are supported with their default values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by real-valued data types.
 
     See Also
     --------

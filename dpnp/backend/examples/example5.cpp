@@ -52,8 +52,6 @@ int main(int, char **)
 {
     const size_t size = 256;
 
-    dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);
-
     double *result = (double *)dpnp_memory_alloc_c(size * sizeof(double));
 
     size_t seed = 10;

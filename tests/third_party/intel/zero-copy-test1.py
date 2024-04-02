@@ -62,12 +62,7 @@ def test_dppy_array_pass():
     hb = np.arange(0, global_size, dtype="i4")
     da = DuckUSMArray(hb.shape, dtype=hb.dtype, host_buffer=hb)
 
-    if dpctl.has_gpu_queues(dpctl.backend_type.level_zero):
-        print("\nScheduling on OpenCL GPU\n")
-        with dpctl.device_context("opencl:gpu") as gpu_queue:
-            dppy_f[global_size, dppy.DEFAULT_LOCAL_SIZE](da)
-    else:
-        print("\nSkip scheduling on OpenCL GPU\n")
+    dppy_f[global_size, dppy.DEFAULT_LOCAL_SIZE](da)
 
     assert da[0] == 10
 

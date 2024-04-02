@@ -51,7 +51,9 @@ from .dpnp_utils_linalg import (
     dpnp_det,
     dpnp_eigh,
     dpnp_inv,
+    dpnp_matrix_power,
     dpnp_matrix_rank,
+    dpnp_multi_dot,
     dpnp_pinv,
     dpnp_qr,
     dpnp_slogdet,
@@ -76,6 +78,8 @@ __all__ = [
     "solve",
     "svd",
     "slogdet",
+    "tensorinv",
+    "tensorsolve",
 ]
 
 
@@ -369,33 +373,65 @@ def inv(a):
     return dpnp_inv(a)
 
 
-def matrix_power(input, count):
+def matrix_power(a, n):
     """
-    Raise a square matrix to the (integer) power `count`.
+    Raise a square matrix to the (integer) power `n`.
+
+    For full documentation refer to :obj:`numpy.linalg.matrix_power`.
 
     Parameters
     ----------
-    input : sequence of array_like
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Matrix to be "powered".
+    n : int
+        The exponent can be any integer or long integer, positive, negative, or zero.
 
     Returns
     -------
-    output : array
-        Returns the dot product of the supplied arrays.
+    a**n : (..., M, M) dpnp.ndarray
+        The return value is the same shape and type as `M`;
+        if the exponent is positive or zero then the type of the
+        elements is the same as those of `M`. If the exponent is
+        negative the elements are floating-point.
 
-    See Also
-    --------
-    :obj:`numpy.linalg.matrix_power`
+    >>> import dpnp as np
+    >>> i = np.array([[0, 1], [-1, 0]]) # matrix equiv. of the imaginary unit
+    >>> np.linalg.matrix_power(i, 3) # should = -i
+    array([[ 0, -1],
+           [ 1,  0]])
+    >>> np.linalg.matrix_power(i, 0)
+    array([[1, 0],
+           [0, 1]])
+    >>> np.linalg.matrix_power(i, -3) # should = 1/(-i) = i, but w/ f.p. elements
+    array([[ 0.,  1.],
+           [-1.,  0.]])
+
+    Somewhat more sophisticated example
+
+    >>> q = np.zeros((4, 4))
+    >>> q[0:2, 0:2] = -i
+    >>> q[2:4, 2:4] = i
+    >>> q # one of the three quaternion units not equal to 1
+    array([[ 0., -1.,  0.,  0.],
+           [ 1.,  0.,  0.,  0.],
+           [ 0.,  0.,  0.,  1.],
+           [ 0.,  0., -1.,  0.]])
+    >>> np.linalg.matrix_power(q, 2) # = -np.eye(4)
+    array([[-1.,  0.,  0.,  0.],
+           [ 0., -1.,  0.,  0.],
+           [ 0.,  0., -1.,  0.],
+           [ 0.,  0.,  0., -1.]])
 
     """
 
-    if not use_origin_backend() and count > 0:
-        result = input
-        for _ in range(count - 1):
-            result = dpnp.matmul(result, input)
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-        return result
+    if not isinstance(n, int):
+        raise TypeError("exponent must be an integer")
 
-    return call_origin(numpy.linalg.matrix_power, input, count)
+    return dpnp_matrix_power(a, n)
 
 
 def matrix_rank(A, tol=None, hermitian=False):
@@ -451,40 +487,69 @@ def matrix_rank(A, tol=None, hermitian=False):
     return dpnp_matrix_rank(A, tol=tol, hermitian=hermitian)
 
 
-def multi_dot(arrays, out=None):
+def multi_dot(arrays, *, out=None):
     """
-    Compute the dot product of two or more arrays in a single function call
+    Compute the dot product of two or more arrays in a single function call.
+
+    For full documentation refer to :obj:`numpy.multi_dot`.
 
     Parameters
     ----------
-    arrays : sequence of array_like
+    arrays : sequence of dpnp.ndarray or usm_ndarray
         If the first argument is 1-D it is treated as row vector.
         If the last argument is 1-D it is treated as column vector.
         The other arguments must be 2-D.
-    out : ndarray, optional
-        unsupported
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Output argument. This must have the exact kind that would be returned
+        if it was not used. In particular, it must have the right type, must be
+        C-contiguous, and its dtype must be the dtype that would be returned
+        for `dot(a, b)`. If these conditions are not met, an exception is
+        raised, instead of attempting to be flexible.
 
     Returns
     -------
-    output : ndarray
+    out : dpnp.ndarray
         Returns the dot product of the supplied arrays.
 
     See Also
     --------
-    :obj:`numpy.multi_dot`
+    :obj:`dpnp.dot` : Returns the dot product of two arrays.
+    :obj:`dpnp.inner` : Returns the inner product of two arrays.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> from dpnp.linalg import multi_dot
+    >>> A = np.random.random((10000, 100))
+    >>> B = np.random.random((100, 1000))
+    >>> C = np.random.random((1000, 5))
+    >>> D = np.random.random((5, 333))
+
+    the actual dot multiplication
+
+    >>> multi_dot([A, B, C, D]).shape
+    (10000, 333)
+
+    instead of
+
+    >>> np.dot(np.dot(np.dot(A, B), C), D).shape
+    (10000, 333)
+
+    or
+
+    >>> A.dot(B).dot(C).dot(D).shape
+    (10000, 333)
 
     """
 
+    dpnp.check_supported_arrays_type(*arrays)
     n = len(arrays)
-
     if n < 2:
-        checker_throw_value_error("multi_dot", "arrays", n, ">1")
+        raise ValueError("Expecting at least two arrays.")
+    if n == 2:
+        return dpnp.dot(arrays[0], arrays[1], out=out)
 
-    result = arrays[0]
-    for id in range(1, n):
-        result = dpnp.dot(result, arrays[id])
-
-    return result
+    return dpnp_multi_dot(n, arrays, out)
 
 
 def pinv(a, rcond=1e-15, hermitian=False):
@@ -867,3 +932,132 @@ def slogdet(a):
     check_stacked_square(a)
 
     return dpnp_slogdet(a)
+
+
+def tensorinv(a, ind=2):
+    """
+    Compute the 'inverse' of an N-dimensional array.
+
+    For full documentation refer to :obj:`numpy.linalg.tensorinv`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Tensor to `invert`. Its shape must be 'square', i. e.,
+        ``prod(a.shape[:ind]) == prod(a.shape[ind:])``.
+    ind : int, optional
+        Number of first indices that are involved in the inverse sum.
+        Must be a positive integer.
+        Default: 2.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The inverse of a tensor whose shape is equivalent to
+        ``a.shape[ind:] + a.shape[:ind]``.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.
+    :obj:`dpnp.linalg.tensorsolve` : Solve the tensor equation ``a x = b`` for x.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.eye(4*6)
+    >>> a.shape = (4, 6, 8, 3)
+    >>> ainv = np.linalg.tensorinv(a, ind=2)
+    >>> ainv.shape
+    (8, 3, 4, 6)
+
+    >>> a = np.eye(4*6)
+    >>> a.shape = (24, 8, 3)
+    >>> ainv = np.linalg.tensorinv(a, ind=1)
+    >>> ainv.shape
+    (8, 3, 24)
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+
+    if ind <= 0:
+        raise ValueError("Invalid ind argument")
+
+    old_shape = a.shape
+    inv_shape = old_shape[ind:] + old_shape[:ind]
+    prod = numpy.prod(old_shape[ind:])
+    a = a.reshape(prod, -1)
+    a_inv = inv(a)
+
+    return a_inv.reshape(*inv_shape)
+
+
+def tensorsolve(a, b, axes=None):
+    """
+    Solve the tensor equation ``a x = b`` for x.
+
+    For full documentation refer to :obj:`numpy.linalg.tensorsolve`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Coefficient tensor, of shape ``b.shape + Q``. `Q`, a tuple, equals
+        the shape of that sub-tensor of `a` consisting of the appropriate
+        number of its rightmost indices, and must be such that
+        ``prod(Q) == prod(b.shape)`` (in which sense `a` is said to be
+        'square').
+    b : {dpnp.ndarray, usm_ndarray}
+        Right-hand tensor, which can be of any shape.
+    axes : tuple of ints, optional
+        Axes in `a` to reorder to the right, before inversion.
+        If ``None`` , no reordering is done.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The tensor with shape ``Q`` such that ``b.shape + Q == a.shape``.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.
+    :obj:`dpnp.linalg.tensorinv` : Compute the 'inverse' of an N-dimensional array.
+    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.eye(2*3*4)
+    >>> a.shape = (2*3, 4, 2, 3, 4)
+    >>> b = np.random.randn(2*3, 4)
+    >>> x = np.linalg.tensorsolve(a, b)
+    >>> x.shape
+    (2, 3, 4)
+    >>> np.allclose(np.tensordot(a, x, axes=3), b)
+    array([ True])
+
+    """
+
+    dpnp.check_supported_arrays_type(a, b)
+    a_ndim = a.ndim
+
+    if axes is not None:
+        all_axes = list(range(a_ndim))
+        for k in axes:
+            all_axes.remove(k)
+            all_axes.insert(a_ndim, k)
+        a = a.transpose(tuple(all_axes))
+
+    old_shape = a.shape[-(a_ndim - b.ndim) :]
+    prod = numpy.prod(old_shape)
+
+    if a.size != prod**2:
+        raise dpnp.linalg.LinAlgError(
+            "Input arrays must satisfy the requirement \
+            prod(a.shape[b.ndim:]) == prod(a.shape[:b.ndim])"
+        )
+
+    a = a.reshape(-1, prod)
+    b = b.ravel()
+    res = solve(a, b)
+    return res.reshape(old_shape)
