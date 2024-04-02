@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+9.g5f7518807b documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+7.g7a8a3bdd39 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=987dead5"></script>
+        <script src="../../_static/documentation_options.js?v=adf387e6"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+9.g5f7518807b
+                0.15.0dev1+7.g7a8a3bdd39
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -2037,13 +2037,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    axes : None, tuple or list of ints, optional</span>
+<span class="sd">    axes : tuple or list of ints, optional</span>
 <span class="sd">        If specified, it must be a tuple or list which contains a permutation</span>
 <span class="sd">        of [0, 1, ..., N-1] where N is the number of axes of `a`.</span>
 <span class="sd">        The `i`&#39;th axis of the returned array will correspond to the axis</span>
-<span class="sd">        numbered ``axes[i]`` of the input. If not specified or ``None``,</span>
-<span class="sd">        defaults to ``range(a.ndim)[::-1]``, which reverses the order of</span>
-<span class="sd">        the axes.</span>
+<span class="sd">        numbered ``axes[i]`` of the input. If not specified, defaults to</span>
+<span class="sd">        ``range(a.ndim)[::-1]``, which reverses the order of the axes.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2058,27 +2057,27 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as dp</span>
+<span class="sd">    &gt;&gt;&gt; a = dp.array([[1, 2], [3, 4]])</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array([[1, 2],</span>
 <span class="sd">           [3, 4]])</span>
-<span class="sd">    &gt;&gt;&gt; np.transpose(a)</span>
+<span class="sd">    &gt;&gt;&gt; dp.transpose(a)</span>
 <span class="sd">    array([[1, 3],</span>
 <span class="sd">           [2, 4]])</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3, 4])</span>
+<span class="sd">    &gt;&gt;&gt; a = dp.array([1, 2, 3, 4])</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array([1, 2, 3, 4])</span>
-<span class="sd">    &gt;&gt;&gt; np.transpose(a)</span>
+<span class="sd">    &gt;&gt;&gt; dp.transpose(a)</span>
 <span class="sd">    array([1, 2, 3, 4])</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.ones((1, 2, 3))</span>
-<span class="sd">    &gt;&gt;&gt; np.transpose(a, (1, 0, 2)).shape</span>
+<span class="sd">    &gt;&gt;&gt; a = dp.ones((1, 2, 3))</span>
+<span class="sd">    &gt;&gt;&gt; dp.transpose(a, (1, 0, 2)).shape</span>
 <span class="sd">    (2, 1, 3)</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.ones((2, 3, 4, 5))</span>
-<span class="sd">    &gt;&gt;&gt; np.transpose(a).shape</span>
+<span class="sd">    &gt;&gt;&gt; a = dp.ones((2, 3, 4, 5))</span>
+<span class="sd">    &gt;&gt;&gt; dp.transpose(a).shape</span>
 <span class="sd">    (5, 4, 3, 2)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2086,7 +2085,7 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
         <span class="n">array</span> <span class="o">=</span> <span class="n">a</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-        <span class="n">array</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">get_array</span><span class="p">())</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;An array must be any of supported type, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
