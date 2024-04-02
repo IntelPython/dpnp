@@ -1909,7 +1909,7 @@ def transpose(a, axes=None):
     if isinstance(a, dpnp_array):
         array = a
     elif isinstance(a, dpt.usm_ndarray):
-        array = dpnp_array._create_from_usm_ndarray(a.get_array())
+        array = dpnp_array._create_from_usm_ndarray(a)
     else:
         raise TypeError(
             f"An array must be any of supported type, but got {type(a)}"
