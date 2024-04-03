@@ -5,8 +5,26 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from tests.helper import has_support_aspect64, is_win_platform
+from tests.helper import (
+    has_support_aspect16,
+    has_support_aspect64,
+    is_win_platform,
+)
 from tests.third_party.cupy import testing
+
+
+# Note: numpy.sum() always upcasts integers to (u)int64 and float32 to
+# float64 for dtype=None. dpnp.sum() does that too for integers, but not for
+# float32, so we need to special-case it for these tests
+def _get_dtype_kwargs(xp, dtype):
+    if xp is numpy:
+        dtype = numpy.dtype(dtype)
+        # numpy.sum() doesn't upcast float16, but dpnp.sum() does that
+        # to default floating type, so needs to cover this use case also
+        if dtype == numpy.float16:
+            dt = numpy.float64 if has_support_aspect64() else numpy.float32
+            return {"dtype": dt}
+    return {}
 
 
 class TestSumprod:
@@ -80,15 +98,15 @@ class TestSumprod:
         a = testing.shaped_arange((20, 30, 40), xp, dtype)
         return a.sum(axis=1)
 
-    @pytest.mark.skip("TODO: check with dpctl")
-    def test_sum_axis2_float16(self):
+    # test is updated to have exactly the same calls between cupy and numpy,
+    # otherwise it is unclear what is verified here
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
+    @testing.numpy_cupy_allclose()
+    def test_sum_axis2_float16(self, xp):
         # Note that the above test example overflows in float16. We use a
         # smaller array instead.
-        a = testing.shaped_arange((2, 30, 4), dtype="e")
-        sa = a.sum(axis=1)
-        b = testing.shaped_arange((2, 30, 4), numpy, dtype="f")
-        sb = b.sum(axis=1)
-        testing.assert_allclose(sa, sb.astype("e"))
+        a = testing.shaped_arange((2, 30, 4), xp, dtype="e")
+        return a.sum(**_get_dtype_kwargs(xp, "e"), axis=1)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(contiguous_check=False)
