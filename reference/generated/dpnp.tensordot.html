@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.tensordot &mdash; Data Parallel Extension for NumPy 0.15.0dev1+8.ga8bcdaf464 documentation</title>
+  <title>dpnp.tensordot &mdash; Data Parallel Extension for NumPy 0.15.0dev1+15.g4ce7f6dcdf documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=e881c291"></script>
+        <script src="../../_static/documentation_options.js?v=9e00abde"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -47,7 +47,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+8.ga8bcdaf464
+                0.15.0dev1+15.g4ce7f6dcdf
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -139,12 +139,12 @@ at the same time.</p></li>
 <li><p><strong>b</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) – Second input array. Both inputs <cite>a</cite> and <cite>b</cite> can not be scalars
 at the same time.</p></li>
 <li><p><strong>axes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><em>(</em><em>2</em><em>,</em><em>) </em><em>array_like</em>) – <ul>
-<li><p>integer_like
-If an int <cite>N</cite>, sum over the last <cite>N</cite> axes of <cite>a</cite> and the first <cite>N</cite>
-axes of <cite>b</cite> in order. The sizes of the corresponding axes must match.</p></li>
-<li><p>(2,) array_like
-Or, a list of axes to be summed over, first sequence applying to <cite>a</cite>,
-second to <cite>b</cite>. Both elements array_like must be of the same length.</p></li>
+<li><p>integer_like: If an int <cite>N</cite>, sum over the last <cite>N</cite> axes of <cite>a</cite> and
+the first <cite>N</cite> axes of <cite>b</cite> in order. The sizes of the corresponding
+axes must match.</p></li>
+<li><p>(2,) array_like: A list of axes to be summed over, first sequence
+applying to <cite>a</cite>, second to <cite>b</cite>. Both elements array_like must be of
+the same length.</p></li>
 </ul>
 </p></li>
 </ul>
