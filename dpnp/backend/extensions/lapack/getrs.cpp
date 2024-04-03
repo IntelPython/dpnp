@@ -214,19 +214,22 @@ std::pair<sycl::event, sycl::event>
     }
 
     bool is_a_array_c_contig = a_array.is_c_contiguous();
+    bool is_a_array_f_contig = a_array.is_f_contiguous();
     bool is_b_array_f_contig = b_array.is_f_contiguous();
     bool is_ipiv_array_c_contig = ipiv_array.is_c_contiguous();
-    if (!is_a_array_c_contig) {
+    bool is_ipiv_array_f_contig = ipiv_array.is_f_contiguous();
+    if (!is_a_array_c_contig && !is_a_array_f_contig) {
         throw py::value_error("The LU-factorized array "
-                              "must be C-contiguous");
+                              "must be either C-contiguous "
+                              "or F-contiguous");
     }
     if (!is_b_array_f_contig) {
         throw py::value_error("The right-hand sides array "
                               "must be F-contiguous");
     }
-    if (!is_ipiv_array_c_contig) {
+    if (!is_ipiv_array_c_contig || !is_ipiv_array_f_contig) {
         throw py::value_error("The array of pivot indices "
-                              "must be C-contiguous");
+                              "must be contiguous");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
@@ -255,15 +258,17 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("The type of 'ipiv_array' must be int64.");
     }
 
-    const std::int64_t n = b_array_shape[0];
+    const std::int64_t n = a_array_shape[0];
     const std::int64_t nrhs = (b_array_nd > 1) ? b_array_shape[1] : 1;
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, n);
 
-    // Use transpose::T since the LU-factorized array is passed as C-contiguous.
-    // For F-contiguous we would use transpose::N.
-    oneapi::mkl::transpose trans = oneapi::mkl::transpose::T;
+    // Use transpose::T if the LU-factorized array is passed as C-contiguous.
+    // For F-contiguous we use transpose::N.
+    oneapi::mkl::transpose trans = is_a_array_c_contig
+                                       ? oneapi::mkl::transpose::T
+                                       : oneapi::mkl::transpose::N;
 
     char *a_array_data = a_array.get_data();
     char *b_array_data = b_array.get_data();
