@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev1+15.g4ce7f6dcdf documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev1+10.g656c9d81f6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9e00abde"></script>
+        <script src="../../_static/documentation_options.js?v=46b5eef0"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+15.g4ce7f6dcdf
+                0.15.0dev1+10.g656c9d81f6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -700,12 +700,12 @@
 <span class="sd">        Second input array. Both inputs `a` and `b` can not be scalars</span>
 <span class="sd">        at the same time.</span>
 <span class="sd">    axes : int or (2,) array_like</span>
-<span class="sd">        * integer_like: If an int `N`, sum over the last `N` axes of `a` and</span>
-<span class="sd">          the first `N` axes of `b` in order. The sizes of the corresponding</span>
-<span class="sd">          axes must match.</span>
-<span class="sd">        * (2,) array_like: A list of axes to be summed over, first sequence</span>
-<span class="sd">          applying to `a`, second to `b`. Both elements array_like must be of</span>
-<span class="sd">          the same length.</span>
+<span class="sd">        * integer_like</span>
+<span class="sd">          If an int `N`, sum over the last `N` axes of `a` and the first `N`</span>
+<span class="sd">          axes of `b` in order. The sizes of the corresponding axes must match.</span>
+<span class="sd">        * (2,) array_like</span>
+<span class="sd">          Or, a list of axes to be summed over, first sequence applying to `a`,</span>
+<span class="sd">          second to `b`. Both elements array_like must be of the same length.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.nansum &mdash; Data Parallel Extension for NumPy 0.15.0dev1+15.g4ce7f6dcdf documentation</title>
+  <title>dpnp.nansum &mdash; Data Parallel Extension for NumPy 0.15.0dev1+10.g656c9d81f6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9e00abde"></script>
+        <script src="../../_static/documentation_options.js?v=46b5eef0"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+15.g4ce7f6dcdf
+                0.15.0dev1+10.g656c9d81f6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -150,23 +150,38 @@ Default: <code class="docutils literal notranslate"><span class="pre">None</span
 type is inferred from the “kind” of the input array data type.</p>
 <blockquote>
 <div><ul>
-<li><p>If <cite>a</cite> has a real-valued floating-point data type,
-the returned array will have the default real-valued
+<li><dl class="simple">
+<dt>If <cite>a</cite> has a real-valued floating-point data type,</dt><dd><p>the returned array will have the default real-valued
 floating-point data type for the device where input
-array <cite>a</cite> is allocated.</p></li>
-<li><p>If <cite>a</cite> has signed integral data type, the returned array
-will have the default signed integral type for the device
-where input array <cite>a</cite> is allocated.</p></li>
-<li><p>If <cite>a</cite> has unsigned integral data type, the returned array
-will have the default unsigned integral type for the device
-where input array <cite>a</cite> is allocated.</p></li>
-<li><p>If <cite>a</cite> has a complex-valued floating-point data type,
-the returned array will have the default complex-valued
+array <cite>a</cite> is allocated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>If <cite>a</cite> has signed integral data type, the returned array</dt><dd><p>will have the default signed integral type for the device
+where input array <cite>a</cite> is allocated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>If <cite>a</cite> has unsigned integral data type, the returned array</dt><dd><p>will have the default unsigned integral type for the device
+where input array <cite>a</cite> is allocated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>If <cite>a</cite> has a complex-valued floating-point data type,</dt><dd><p>the returned array will have the default complex-valued
 floating-pointer data type for the device where input
-array <cite>a</cite> is allocated.</p></li>
-<li><p>If <cite>a</cite> has a boolean data type, the returned array will
-have the default signed integral type for the device
-where input array <cite>a</cite> is allocated.</p></li>
+array <cite>a</cite> is allocated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>If <cite>a</cite> has a boolean data type, the returned array will</dt><dd><p>have the default signed integral type for the device
+where input array <cite>a</cite> is allocated.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </div></blockquote>
 <p>If the data type (either specified or resolved) differs from the
