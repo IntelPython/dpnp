@@ -1317,21 +1317,31 @@ class dpnp_array:
 
         For full documentation refer to :obj:`numpy.ndarray.transpose`.
 
+        Parameters
+        ----------
+        axes : None, tuple or list of ints, n ints, optional
+            * ``None`` or no argument: reverses the order of the axes.
+            * tuple or list of ints: `i` in the `j`-th place in the tuple/list
+              means that the array’s `i`-th axis becomes the transposed
+              array’s `j`-th axis.
+            * n ints: same as an n-tuple/n-list of the same ints (this form is
+              intended simply as a “convenience” alternative to the tuple form).
+
         Returns
         -------
-        y : dpnp.ndarray
+        out : dpnp.ndarray
             View of the array with its axes suitably permuted.
 
         See Also
         --------
-            :obj:`dpnp.transpose` : Equivalent function.
-            :obj:`dpnp.ndarray.ndarray.T` : Array property returning the array transposed.
-            :obj:`dpnp.ndarray.reshape` : Give a new shape to an array without changing its data.
+        :obj:`dpnp.transpose` : Equivalent function.
+        :obj:`dpnp.ndarray.ndarray.T` : Array property returning the array transposed.
+        :obj:`dpnp.ndarray.reshape` : Give a new shape to an array without changing its data.
 
         Examples
         --------
-        >>> import dpnp as dp
-        >>> a = dp.array([[1, 2], [3, 4]])
+        >>> import dpnp as np
+        >>> a = np.array([[1, 2], [3, 4]])
         >>> a
         array([[1, 2],
                [3, 4]])
@@ -1342,7 +1352,7 @@ class dpnp_array:
         array([[1, 3],
                [2, 4]])
 
-        >>> a = dp.array([1, 2, 3, 4])
+        >>> a = np.array([1, 2, 3, 4])
         >>> a
         array([1, 2, 3, 4])
         >>> a.transpose()
@@ -1355,7 +1365,7 @@ class dpnp_array:
             return self
 
         axes_len = len(axes)
-        if axes_len == 1 and isinstance(axes[0], tuple):
+        if axes_len == 1 and isinstance(axes[0], (tuple, list)):
             axes = axes[0]
 
         res = self.__new__(dpnp_array)

@@ -70,6 +70,7 @@ __all__ = [
     "eig",
     "eigh",
     "eigvals",
+    "eigvalsh",
     "inv",
     "matrix_power",
     "matrix_rank",
@@ -277,6 +278,19 @@ def eigh(a, UPLO="L"):
 
     For full documentation refer to :obj:`numpy.linalg.eigh`.
 
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        A complex- or real-valued array whose eigenvalues and eigenvectors are to be computed.
+    UPLO : {"L", "U"}, optional
+        Specifies the calculation uses either the lower ("L") or upper ("U")
+        triangular part of the matrix.
+        Regardless of this choice, only the real parts of the diagonal are
+        considered to preserve the Hermite matrix property.
+        It therefore follows that the imaginary part of the diagonal
+        will always be treated as zero.
+        Default: "L".
+
     Returns
     -------
     w : (..., M) dpnp.ndarray
@@ -286,15 +300,13 @@ def eigh(a, UPLO="L"):
         The column ``v[:, i]`` is the normalized eigenvector corresponding
         to the eigenvalue ``w[i]``.
 
-    Limitations
-    -----------
-    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
     See Also
     --------
-    :obj:`dpnp.eig` : eigenvalues and right eigenvectors for non-symmetric arrays.
-    :obj:`dpnp.eigvals` : eigenvalues of non-symmetric arrays.
+    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or
+                                  real symmetric matrix.
+    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of
+                             a square array.
+    :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.
 
     Examples
     --------
@@ -312,19 +324,12 @@ def eigh(a, UPLO="L"):
     """
 
     dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
+    UPLO = UPLO.upper()
     if UPLO not in ("L", "U"):
         raise ValueError("UPLO argument must be 'L' or 'U'")
-
-    if a.ndim < 2:
-        raise ValueError(
-            "%d-dimensional array given. Array must be "
-            "at least two-dimensional" % a.ndim
-        )
-
-    m, n = a.shape[-2:]
-    if m != n:
-        raise ValueError("Last 2 dimensions of the array must be square")
 
     return dpnp_eigh(a, UPLO=UPLO)
 
@@ -355,6 +360,64 @@ def eigvals(input):
             return dpnp_eigvals(x1_desc).get_pyobj()
 
     return call_origin(numpy.linalg.eigvals, input)
+
+
+def eigvalsh(a, UPLO="L"):
+    """
+    eigvalsh(a, UPLO="L")
+
+    Compute the eigenvalues of a complex Hermitian or real symmetric matrix.
+
+    Main difference from :obj:`dpnp.linalg.eigh`: the eigenvectors are not computed.
+
+    For full documentation refer to :obj:`numpy.linalg.eigvalsh`.
+
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        A complex- or real-valued array whose eigenvalues are to be computed.
+    UPLO : {"L", "U"}, optional
+        Specifies the calculation uses either the lower ("L") or upper ("U")
+        triangular part of the matrix.
+        Regardless of this choice, only the real parts of the diagonal are
+        considered to preserve the Hermite matrix property.
+        It therefore follows that the imaginary part of the diagonal
+        will always be treated as zero.
+        Default: "L".
+
+    Returns
+    -------
+    w : (..., M) dpnp.ndarray
+        The eigenvalues in ascending order, each repeated according to
+        its multiplicity.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian
+                              (conjugate symmetric) or a real symmetric matrix.
+    :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.
+    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of
+                             a general matrix.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> from dpnp import linalg as LA
+    >>> a = np.array([[1, -2j], [2j, 5]])
+    >>> LA.eigvalsh(a)
+    array([0.17157288, 5.82842712])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
+
+    UPLO = UPLO.upper()
+    if UPLO not in ("L", "U"):
+        raise ValueError("UPLO argument must be 'L' or 'U'")
+
+    return dpnp_eigh(a, UPLO=UPLO, eigen_mode="N")
 
 
 def inv(a):
