@@ -463,6 +463,42 @@ def test_meshgrid(usm_type_x, usm_type_y):
     assert z[1].usm_type == usm_type_y
 
 
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "ord",
+    [None, -dp.Inf, -2, -1, 1, 2, 3, dp.Inf, "fro", "nuc"],
+    ids=[
+        "None",
+        "-dpnp.Inf",
+        "-2",
+        "-1",
+        "1",
+        "2",
+        "3",
+        "dpnp.Inf",
+        '"fro"',
+        '"nuc"',
+    ],
+)
+@pytest.mark.parametrize(
+    "axis",
+    [-1, 0, 1, (0, 1), (-2, -1), None],
+    ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
+)
+def test_norm(usm_type, ord, axis):
+    ia = dp.arange(120, usm_type=usm_type).reshape(2, 3, 4, 5)
+    if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
+        isinstance(axis, tuple) and ord == 3
+    ):
+        pytest.skip("Invalid norm order for vectors.")
+    elif axis is None and ord is not None:
+        pytest.skip("Improper number of dimensions to norm")
+    else:
+        result = dp.linalg.norm(ia, ord=ord, axis=axis)
+        assert ia.usm_type == usm_type
+        assert result.usm_type == usm_type
+
+
 @pytest.mark.parametrize(
     "func,data",
     [

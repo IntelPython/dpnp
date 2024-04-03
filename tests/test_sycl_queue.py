@@ -1377,6 +1377,52 @@ def test_matrix_rank(data, tol, device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
+@pytest.mark.usefixtures("suppress_divide_numpy_warnings")
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "ord",
+    [None, -dpnp.Inf, -2, -1, 1, 2, 3, dpnp.Inf, "fro", "nuc"],
+    ids=[
+        "None",
+        "-dpnp.Inf",
+        "-2",
+        "-1",
+        "1",
+        "2",
+        "3",
+        "dpnp.Inf",
+        '"fro"',
+        '"nuc"',
+    ],
+)
+@pytest.mark.parametrize(
+    "axis",
+    [-1, 0, 1, (0, 1), (-2, -1), None],
+    ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
+)
+def test_norm(device, ord, axis):
+    a = numpy.arange(120).reshape(2, 3, 4, 5)
+    ia = dpnp.array(a, device=device)
+    if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
+        isinstance(axis, tuple) and ord == 3
+    ):
+        pytest.skip("Invalid norm order for vectors.")
+    elif axis is None and ord is not None:
+        pytest.skip("Improper number of dimensions to norm")
+    else:
+        result = dpnp.linalg.norm(ia, ord=ord, axis=axis)
+        expected = numpy.linalg.norm(a, ord=ord, axis=axis)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+        expected_queue = ia.get_array().sycl_queue
+        result_queue = result.get_array().sycl_queue
+        assert_sycl_queue_equal(result_queue, expected_queue)
+
+
 @pytest.mark.parametrize(
     "shape",
     [

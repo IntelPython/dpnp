@@ -11,6 +11,55 @@ from tests.third_party.cupy import testing
 @testing.parameterize(
     *testing.product(
         {
+            "shape": [(1,), (2,)],
+            "ord": [-numpy.inf, -2, -1, 0, 1, 2, 3, numpy.inf],
+            "axis": [0, None],
+            "keepdims": [True, False],
+        }
+    )
+    + testing.product(
+        {
+            "shape": [(1, 2), (2, 2)],
+            "ord": [-numpy.inf, -2, -1, 1, 2, numpy.inf, "fro", "nuc"],
+            "axis": [(0, 1), None],
+            "keepdims": [True, False],
+        }
+    )
+    + testing.product(
+        {
+            "shape": [(2, 2, 2)],
+            "ord": [-numpy.inf, -2, -1, 0, 1, 2, 3, numpy.inf],
+            "axis": [0, 1, 2],
+            "keepdims": [True, False],
+        }
+    )
+    + testing.product(
+        {
+            "shape": [(2, 2, 2)],
+            "ord": [-numpy.inf, -1, 1, numpy.inf, "fro"],
+            "axis": [(0, 1), (0, 2), (1, 2)],
+            "keepdims": [True, False],
+        }
+    )
+)
+class TestNorm(unittest.TestCase):
+    @testing.for_all_dtypes(no_float16=True)
+    @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4, type_check=False)
+    # since dtype of sum is different in dpnp and NumPy, type_check=False
+    def test_norm(self, xp, dtype):
+        a = testing.shaped_arange(self.shape, xp, dtype)
+        res = xp.linalg.norm(a, self.ord, self.axis, self.keepdims)
+        if xp == numpy and not isinstance(res, numpy.ndarray):
+            real_dtype = a.real.dtype
+            if issubclass(real_dtype.type, numpy.inexact):
+                # Avoid numpy bug. See numpy/numpy#10667
+                res = res.astype(a.real.dtype)
+        return res
+
+
+@testing.parameterize(
+    *testing.product(
+        {
             "array": [
                 [[1, 2], [3, 4]],
                 [[1, 2], [1, 2]],
