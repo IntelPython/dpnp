@@ -202,7 +202,7 @@ def _common_inexact_type(default_dtype, *dtypes):
 
 def _is_empty_2d(arr):
     # check size first for efficiency
-    return arr.size == 0 and prod(arr.shape[-2:]) == 0
+    return arr.size == 0 and numpy.prod(arr.shape[-2:]) == 0
 
 
 def _lu_factor(a, res_type):
@@ -854,22 +854,18 @@ def dpnp_cond(x, p=None):
         raise dpnp.linalg.LinAlgError("cond is not defined on empty arrays")
     if p is None or p == 2 or p == -2:
         s = dpnp.linalg.svd(x, compute_uv=False)
-        with numpy.errstate(all="ignore"):
-            if p == -2:
-                r = s[..., -1] / s[..., 0]
-            else:
-                r = s[..., 0] / s[..., -1]
+        if p == -2:
+            r = s[..., -1] / s[..., 0]
+        else:
+            r = s[..., 0] / s[..., -1]
     else:
-        # Call inv(x) ignoring errors. The result array will
-        # contain nans in the entries where inversion failed.
-        check_stacked_2d(x)
-        check_stacked_square(x)
         result_t = _common_type(x)
-        with numpy.errstate(all="ignore"):
-            invx = dpnp.linalg.inv(x)
-            r = dpnp.linalg.norm(x, p, axis=(-2, -1)) * dpnp.linalg.norm(
-                invx, p, axis=(-2, -1)
-            )
+        # The result array will contain nans in the entries
+        # where inversion failed
+        invx = dpnp.linalg.inv(x)
+        r = dpnp.linalg.norm(x, p, axis=(-2, -1)) * dpnp.linalg.norm(
+            invx, p, axis=(-2, -1)
+        )
         r = r.astype(result_t, copy=False)
 
     # Convert nans to infs unless the original array had nan entries

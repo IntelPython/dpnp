@@ -211,7 +211,7 @@ class TestCholesky:
 
 class TestCond:
     def setup_method(self):
-        numpy.random.seed(42)
+        numpy.random.seed(70)
 
     @pytest.mark.parametrize(
         "shape", [(0, 4, 4), (4, 0, 3, 3)], ids=["(0, 5, 3)", "(4, 0, 2, 3)"]
