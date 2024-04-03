@@ -1691,10 +1691,12 @@ def dpnp_solve(a, b):
             out_v = out_v.reshape(orig_shape_b)
         return out_v
     else:
-        # Due to MKLD-17226 we can not use _gesv directly.
+        # Due to MKLD-17226 (bug with incorrect checking ldb parameter
+        # in oneapi::mkl::lapack::gesv_scratchad_size that raises an error
+        # `invalid argument` when nrhs > n) we can not use _gesv directly.
         # This w/a uses _getrf and _getrs instead
         # to handle cases where nrhs > n for a.shape = (n x n)
-        # and b.shape=(n x nrhs).
+        # and b.shape = (n x nrhs).
 
         # oneMKL LAPACK getrf overwrites `a`.
         a_h = dpnp.empty_like(
