@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.15.0dev1+10.g656c9d81f6 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.15.0dev1+10.g4de1640001 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=46b5eef0"></script>
+        <script src="../../_static/documentation_options.js?v=4f42692f"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+10.g656c9d81f6
+                0.15.0dev1+10.g4de1640001
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -678,7 +678,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Copy the array with data type casting.</span>
 
-<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.astype`.</span>
+<span class="sd">        Refer to :obj:`dpnp.astype` for full documentation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -741,7 +741,12 @@
 <div class="viewcode-block" id="dpnp_array.choose">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.choose">[docs]</a>
     <span class="k">def</span> <span class="nf">choose</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct an array from an index array and a set of arrays to choose from.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct an array from an index array and a set of arrays to choose from.</span>
+
+<span class="sd">        Refer to :obj:`dpnp.choose` for full documentation.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
 
@@ -767,7 +772,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Complex-conjugate all elements.</span>
 
-<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.conj`.</span>
+<span class="sd">        Refer to :obj:`dpnp.conjugate` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -783,7 +788,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the complex conjugate, element-wise.</span>
 
-<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.conjugate`.</span>
+<span class="sd">        Refer to :obj:`dpnp.conjugate` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -846,9 +851,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the cumulative sum of the elements along the given axis.</span>
 
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        :obj:`dpnp.cumsum`</span>
+<span class="sd">        Refer to :obj:`dpnp.cumsum` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -863,9 +866,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return specified diagonals.</span>
 
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        :obj:`dpnp.diagonal`</span>
+<span class="sd">        Refer to :obj:`dpnp.diagonal` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -878,7 +879,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dot product of two arrays.</span>
 
-<span class="sd">        For full documentation refer to :obj:`dpnp.dot`.</span>
+<span class="sd">        Refer to :obj:`dpnp.dot` for full documentation.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -1209,7 +1210,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the prod along a given axis.</span>
 
-<span class="sd">        For full documentation refer to :obj:`dpnp.prod`.</span>
+<span class="sd">        Refer to :obj:`dpnp.prod` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1222,7 +1223,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Puts values of an array into another array along a given axis.</span>
 
-<span class="sd">        For full documentation refer to :obj:`numpy.put`.</span>
+<span class="sd">        Refer to :obj:`dpnp.put` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1235,7 +1236,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a contiguous flattened array.</span>
 
-<span class="sd">        For full documentation refer to :obj:`dpnp.ravel`.</span>
+<span class="sd">        Refer to :obj:`dpnp.ravel` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1288,7 +1289,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Repeat elements of an array.</span>
 
-<span class="sd">        For full documentation refer to :obj:`dpnp.repeat`.</span>
+<span class="sd">        Refer to :obj:`dpnp.repeat` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1301,7 +1302,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an array containing the same data with a new shape.</span>
 
-<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.reshape`.</span>
+<span class="sd">        Refer to :obj:`dpnp.reshape` for full documentation.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1335,8 +1336,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return array with each element rounded to the given number of decimals.</span>
 
-<span class="sd">        .. seealso::</span>
-<span class="sd">           :obj:`dpnp.around` for full documentation.</span>
+<span class="sd">        Refer to :obj:`dpnp.round` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1497,7 +1497,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the sum along a given axis.</span>
 
-<span class="sd">        For full documentation refer to :obj:`dpnp.sum`.</span>
+<span class="sd">        Refer to :obj:`dpnp.sum` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1518,7 +1518,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Interchange two axes of an array.</span>
 
-<span class="sd">        For full documentation refer to :obj:`numpy.swapaxes`.</span>
+<span class="sd">        Refer to :obj:`dpnp.swapaxes` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1531,7 +1531,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Take elements from an array along an axis.</span>
 
-<span class="sd">        For full documentation refer to :obj:`numpy.take`.</span>
+<span class="sd">        Refer to :obj:`dpnp.take` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 

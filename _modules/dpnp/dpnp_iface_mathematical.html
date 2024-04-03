@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev1+10.g656c9d81f6 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev1+10.g4de1640001 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=46b5eef0"></script>
+        <script src="../../_static/documentation_options.js?v=4f42692f"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+10.g656c9d81f6
+                0.15.0dev1+10.g4de1640001
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -129,6 +129,8 @@
 
 
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+<span class="kn">import</span> <span class="nn">dpctl.tensor._accumulation</span> <span class="k">as</span> <span class="nn">da</span>
+<span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">du</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">normalize_axis_index</span><span class="p">,</span>
@@ -979,42 +981,101 @@
 
 <div class="viewcode-block" id="cumsum">
 <a class="viewcode-back" href="../../reference/generated/dpnp.cumsum.html#dpnp.cumsum">[docs]</a>
-<span class="k">def</span> <span class="nf">cumsum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cumsum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the cumulative sum of the elements along a given axis.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.cumsum`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        Axis along which the cumulative sum is computed. The default (``None``)</span>
+<span class="sd">        is to compute the cumsum over the flattened array.</span>
+<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">        Type of the returned array and of the accumulator in which the elements</span>
+<span class="sd">        are summed. If `dtype` is not specified, it defaults to the dtype of</span>
+<span class="sd">        `a`, unless `a` has an integer dtype with a precision less than that of</span>
+<span class="sd">        the default platform integer. In that case, the default platform</span>
+<span class="sd">        integer is used.</span>
+<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have the</span>
+<span class="sd">        same shape and buffer length as the expected output but the type will</span>
+<span class="sd">        be cast if necessary.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        A new array holding the result is returned unless `out` is specified,</span>
+<span class="sd">        in which case a reference to `out` is returned. The result has the same</span>
+<span class="sd">        size as `a`, and the same shape as `a` if `axis` is not ``None`` or `a`</span>
+<span class="sd">        is a 1-d array.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.</span>
+<span class="sd">    :obj:`dpnp.sum` : Sum array elements.</span>
+<span class="sd">    :obj:`dpnp.diff` : Calculate the n-th discrete difference along given axis.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 4])</span>
-<span class="sd">    &gt;&gt;&gt; result = np.cumsum(a)</span>
-<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
-<span class="sd">    [1, 2, 7]</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([[1, 2, 3], [4, 5, 6]])</span>
-<span class="sd">    &gt;&gt;&gt; result = np.cumsum(b)</span>
-<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
-<span class="sd">    [1, 2, 6, 10, 15, 21]</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2, 3], [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[1, 2, 3],</span>
+<span class="sd">           [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; np.cumsum(a)</span>
+<span class="sd">    array([ 1,  3,  6, 10, 15, 21])</span>
+<span class="sd">    &gt;&gt;&gt; np.cumsum(a, dtype=float)     # specifies type of output value(s)</span>
+<span class="sd">    array([ 1.,  3.,  6., 10., 15., 21.])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.cumsum(a, axis=0)     # sum over rows for each of the 3 columns</span>
+<span class="sd">    array([[1, 2, 3],</span>
+<span class="sd">           [5, 7, 9]])</span>
+<span class="sd">    &gt;&gt;&gt; np.cumsum(a, axis=1)     # sum over columns for each of the 2 rows</span>
+<span class="sd">    array([[ 1,  3,  6],</span>
+<span class="sd">           [ 4,  9, 15]])</span>
+
+<span class="sd">    ``cumsum(b)[-1]`` may not be equal to ``sum(b)``</span>
+
+<span class="sd">    &gt;&gt;&gt; b = np.array([1, 2e-9, 3e-9] * 10000)</span>
+<span class="sd">    &gt;&gt;&gt; b.cumsum().dtype == b.sum().dtype == np.float64</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; b.cumsum()[-1] == b.sum()</span>
+<span class="sd">    array(False)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_cumsum</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cumsum</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="n">input_out</span> <span class="o">=</span> <span class="n">out</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">usm_out</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+            <span class="n">int_dt</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">_default_accumulation_dtype</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+
+            <span class="c1"># create a copy if dtype mismatches default integer type</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int_dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">usm_out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="n">res_usm</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">cumulative_sum</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">usm_out</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">res_usm</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">input_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">out</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">input_out</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_out</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">input_out</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">out</span></div>
 
 
 
@@ -2450,7 +2511,32 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># Product reduction for complex output are known to fail for Gen9 with 2024.0 compiler</span>
+    <span class="c1"># TODO: get rid of this temporary work around when OneAPI 2024.1 is released</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">_dtypes</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+    <span class="n">_any_complex</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">)</span> <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">_dtypes</span>
+    <span class="p">)</span>
+    <span class="n">device_mask</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">du</span><span class="o">.</span><span class="n">intel_device_info</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;device_id&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF00</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">_any_complex</span> <span class="ow">and</span> <span class="n">device_mask</span> <span class="ow">in</span> <span class="p">[</span><span class="mh">0x3E00</span><span class="p">,</span> <span class="mh">0x9B00</span><span class="p">]:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">call_origin</span><span class="p">(</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">,</span>
+            <span class="n">a</span><span class="p">,</span>
+            <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+            <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+            <span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span>
+            <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+            <span class="c1"># numpy may return a scalar, convert it back to dpnp array</span>
+            <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+    <span class="k">elif</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;initial keyword argument is only supported with its default value.&quot;</span>
         <span class="p">)</span>

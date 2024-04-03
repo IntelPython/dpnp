@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.cond &mdash; Data Parallel Extension for NumPy 0.15.0dev1+10.g656c9d81f6 documentation</title>
+  <title>dpnp.linalg.cond &mdash; Data Parallel Extension for NumPy 0.15.0dev1+10.g4de1640001 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=46b5eef0"></script>
+        <script src="../../_static/documentation_options.js?v=4f42692f"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+10.g656c9d81f6
+                0.15.0dev1+10.g4de1640001
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -127,57 +127,18 @@
 <h1>dpnp.linalg.cond<a class="headerlink" href="#dpnp-linalg-cond" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.linalg.cond">
-<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">cond</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#cond"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.cond" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">cond</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#cond"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.cond" title="Link to this definition"></a></dt>
 <dd><p>Compute the condition number of a matrix.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.cond.html#numpy.linalg.cond" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.cond</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – The matrix whose condition number is sought.</p></li>
-<li><p><strong>p</strong> (<em>{None</em><em>, </em><em>1</em><em>, </em><em>-1</em><em>, </em><em>2</em><em>, </em><em>-2</em><em>, </em><em>inf</em><em>, </em><em>-inf</em><em>, </em><em>&quot;fro&quot;}</em><em>, </em><em>optional</em>) – Order of the norm used in the condition number computation.
-inf means dpnp’s <cite>inf</cite> object. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – The condition number of the matrix. May be infinite.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
-</dd>
-</dl>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Parameter p=[None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, ‘fro’] is supported.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.norm</span></code></dt><dd><p>Matrix or vector norm.</p>
 </dd>
 </dl>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
-<span class="go">array([[ 1,  0, -1],</span>
-<span class="go">       [ 0,  1,  0],</span>
-<span class="go">       [ 1,  0,  1]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="go">array(1.4142135623730951)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s1">&#39;fro&#39;</span><span class="p">)</span>
-<span class="go">array(3.1622776601683795)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-<span class="go">array(2.)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-<span class="go">array(1.)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="go">array(2.)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">array(1.)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="go">array(1.4142135623730951)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
-<span class="go">array(0.70710678118654746) # may vary</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span><span class="o">*</span><span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-<span class="go">array(0.70710678118654746) # may vary</span>
-</pre></div>
 </div>
 </dd></dl>
 
