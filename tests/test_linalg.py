@@ -15,6 +15,7 @@ from tests.third_party.cupy import testing
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
     get_all_dtypes,
     get_complex_dtypes,
     get_float_complex_dtypes,
@@ -383,47 +384,93 @@ def test_eig_arange(type, size):
     assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_none=True))
-@pytest.mark.parametrize("size", [2, 4, 8])
-def test_eigh_arange(type, size):
-    if dpctl.SyclDevice().device_type != dpctl.device_type.gpu:
-        pytest.skip(
-            "eig function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
-        )
-    a = numpy.arange(size * size, dtype=type).reshape((size, size))
-    symm_orig = (
-        numpy.tril(a)
-        + numpy.tril(a, -1).T
-        + numpy.diag(numpy.full((size,), size * size, dtype=type))
+class TestEigenvalue:
+    # Eigenvalue decomposition of a matrix or a batch of matrices
+    # by checking if the eigen equation A*v=w*v holds for given eigenvalues(w)
+    # and eigenvectors(v).
+    def assert_eigen_decomposition(self, a, w, v, rtol=1e-5, atol=1e-5):
+        a_ndim = a.ndim
+        if a_ndim == 2:
+            assert_allclose(a @ v, v @ inp.diag(w), rtol=rtol, atol=atol)
+        else:  # a_ndim > 2
+            if a_ndim > 3:
+                a = a.reshape(-1, *a.shape[-2:])
+                w = w.reshape(-1, w.shape[-1])
+                v = v.reshape(-1, *v.shape[-2:])
+            for i in range(a.shape[0]):
+                assert_allclose(
+                    a[i].dot(v[i]), w[i] * v[i], rtol=rtol, atol=atol
+                )
+
+    @pytest.mark.parametrize(
+        "func",
+        [
+            "eigh",
+            "eigvalsh",
+        ],
     )
-    symm = symm_orig
-    dpnp_symm_orig = inp.array(symm)
-    dpnp_symm = dpnp_symm_orig
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (2, 3, 3), (2, 2, 3, 3)],
+        ids=["(2,2)", "(2,3,3)", "(2,2,3,3)"],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "order",
+        [
+            "C",
+            "F",
+        ],
+    )
+    def test_eigenvalues(self, func, shape, dtype, order):
+        a = generate_random_numpy_array(
+            shape, dtype, hermitian=True, seed_value=81
+        )
+        a_order = numpy.array(a, order=order)
+        a_dp = inp.array(a, order=order)
 
-    dpnp_val, dpnp_vec = inp.linalg.eigh(dpnp_symm)
-    np_val, np_vec = numpy.linalg.eigh(symm)
+        # NumPy with OneMKL and with rocSOLVER sorts in ascending order,
+        # so w's should be directly comparable.
+        # However, both OneMKL and rocSOLVER pick a different convention for
+        # constructing eigenvectors, so v's are not directly comparible and
+        # we verify them through the eigen equation A*v=w*v.
+        if func == "eigh":
+            w, _ = numpy.linalg.eigh(a_order)
+            w_dp, v_dp = inp.linalg.eigh(a_dp)
 
-    # DPNP sort val/vec by abs value
-    vvsort(dpnp_val, dpnp_vec, size, inp)
+            self.assert_eigen_decomposition(a_dp, w_dp, v_dp)
 
-    # NP sort val/vec by abs value
-    vvsort(np_val, np_vec, size, numpy)
+        else:  # eighvalsh
+            w = numpy.linalg.eigvalsh(a_order)
+            w_dp = inp.linalg.eigvalsh(a_dp)
 
-    # NP change sign of vectors
-    for i in range(np_vec.shape[1]):
-        if (np_vec[0, i] * dpnp_vec[0, i]).asnumpy() < 0:
-            np_vec[:, i] = -np_vec[:, i]
+        assert_dtype_allclose(w_dp, w)
 
-    assert_array_equal(symm_orig, symm)
-    assert_array_equal(dpnp_symm_orig, dpnp_symm)
+    @pytest.mark.parametrize(
+        "func",
+        [
+            "eigh",
+            "eigvalsh",
+        ],
+    )
+    def test_eigenvalue_errors(self, func):
+        a_dp = inp.array([[1, 3], [3, 2]], dtype="float32")
 
-    assert dpnp_val.shape == np_val.shape
-    assert dpnp_vec.shape == np_vec.shape
-    assert dpnp_val.usm_type == dpnp_symm.usm_type
-    assert dpnp_vec.usm_type == dpnp_symm.usm_type
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        dpnp_func = getattr(inp.linalg, func)
+        assert_raises(TypeError, dpnp_func, a_np)
 
-    assert_allclose(dpnp_val, np_val, rtol=1e-05, atol=1e-04)
-    assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-04)
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, dpnp_func, a_dp_ndim_1)
+
+        # a is not square
+        a_dp_not_scquare = inp.ones((2, 3))
+        assert_raises(inp.linalg.LinAlgError, dpnp_func, a_dp_not_scquare)
+
+        # invalid UPLO
+        assert_raises(ValueError, dpnp_func, a_dp, UPLO="N")
 
 
 @pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
@@ -1127,11 +1174,6 @@ class TestNorm:
 
 
 class TestQr:
-    # Set numpy.random.seed for test methods to prevent
-    # random generation of the input singular matrix
-    def setup_method(self):
-        numpy.random.seed(81)
-
     # TODO: New packages that fix issue CMPLRLLVM-53771 are only available in internal CI.
     # Skip the tests on cpu until these packages are available for the external CI.
     # Specifically dpcpp_linux-64>=2024.1.0
@@ -1156,9 +1198,9 @@ class TestQr:
         ids=["r", "raw", "complete", "reduced"],
     )
     def test_qr(self, dtype, shape, mode):
-        a = numpy.random.randn(*shape).astype(dtype)
-        if numpy.issubdtype(dtype, numpy.complexfloating):
-            a += 1j * numpy.random.randn(*shape)
+        # Set seed_value=81 to prevent
+        # random generation of the input singular matrix
+        a = generate_random_numpy_array(shape, dtype, seed_value=81)
         ia = inp.array(a)
 
         if mode == "r":
@@ -1228,7 +1270,7 @@ class TestQr:
         ids=["r", "raw", "complete", "reduced"],
     )
     def test_qr_strides(self, mode):
-        a = numpy.random.randn(5, 5)
+        a = generate_random_numpy_array((5, 5))
         ia = inp.array(a)
 
         # positive strides
@@ -1484,11 +1526,6 @@ class TestSlogdet:
 
 
 class TestSvd:
-    # Set numpy.random.seed for test methods to prevent
-    # random generation of the input singular matrix
-    def setup_method(self):
-        numpy.random.seed(81)
-
     def get_tol(self, dtype):
         tol = 1e-06
         if dtype in (inp.float32, inp.complex64):
@@ -1586,11 +1623,11 @@ class TestSvd:
         ids=["(2, 2)", "(16, 16)"],
     )
     def test_svd_hermitian(self, dtype, compute_vt, shape):
-        a = numpy.random.randn(*shape).astype(dtype)
-        if numpy.issubdtype(dtype, numpy.complexfloating):
-            a += 1j * numpy.random.randn(*shape)
-        a = (a + a.conj().T) / 2
-
+        # Set seed_value=81 to prevent
+        # random generation of the input singular matrix
+        a = generate_random_numpy_array(
+            shape, dtype, hermitian=True, seed_value=81
+        )
         dp_a = inp.array(a)
 
         if compute_vt:
@@ -1628,11 +1665,6 @@ class TestSvd:
 
 
 class TestPinv:
-    # Set numpy.random.seed for test methods to prevent
-    # random generation of the input singular matrix
-    def setup_method(self):
-        numpy.random.seed(81)
-
     def get_tol(self, dtype):
         tol = 1e-06
         if dtype in (inp.float32, inp.complex64):
@@ -1668,9 +1700,9 @@ class TestPinv:
         ],
     )
     def test_pinv(self, dtype, shape):
-        a = numpy.random.randn(*shape).astype(dtype)
-        if numpy.issubdtype(dtype, numpy.complexfloating):
-            a += 1j * numpy.random.randn(*shape)
+        # Set seed_value=81 to prevent
+        # random generation of the input singular matrix
+        a = generate_random_numpy_array(shape, dtype, seed_value=81)
         a_dp = inp.array(a)
 
         B = numpy.linalg.pinv(a)
@@ -1695,11 +1727,11 @@ class TestPinv:
         ids=["(2, 2)", "(16, 16)"],
     )
     def test_pinv_hermitian(self, dtype, shape):
-        a = numpy.random.randn(*shape).astype(dtype)
-        if numpy.issubdtype(dtype, numpy.complexfloating):
-            a += 1j * numpy.random.randn(*shape)
-        a = (a + a.conj().T) / 2
-
+        # Set seed_value=81 to prevent
+        # random generation of the input singular matrix
+        a = generate_random_numpy_array(
+            shape, dtype, hermitian=True, seed_value=81
+        )
         a_dp = inp.array(a)
 
         B = numpy.linalg.pinv(a, hermitian=True)
@@ -1735,7 +1767,7 @@ class TestPinv:
         assert_dtype_allclose(B_dp, B)
 
     def test_pinv_strides(self):
-        a = numpy.random.randn(5, 5)
+        a = generate_random_numpy_array((5, 5))
         a_dp = inp.array(a)
 
         self.get_tol(a_dp.dtype)

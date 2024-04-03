@@ -9,7 +9,7 @@ import pytest
 import dpnp as dp
 from dpnp.dpnp_utils import get_usm_allocations
 
-from .helper import assert_dtype_allclose
+from .helper import assert_dtype_allclose, generate_random_numpy_array
 
 list_of_usm_types = ["device", "shared", "host"]
 
@@ -811,6 +811,45 @@ def test_where(usm_type):
 
 
 @pytest.mark.parametrize(
+    "func",
+    [
+        "eigh",
+        "eigvalsh",
+    ],
+)
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (4, 4),
+        (0, 0),
+        (2, 3, 3),
+        (0, 2, 2),
+        (1, 0, 0),
+    ],
+    ids=[
+        "(4, 4)",
+        "(0, 0)",
+        "(2, 3, 3)",
+        "(0, 2, 2)",
+        "(1, 0, 0)",
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_eigenvalue(func, shape, usm_type):
+    a_np = generate_random_numpy_array(shape, hermitian=True)
+    a = dp.array(a_np, usm_type=usm_type)
+
+    if func == "eigh":
+        dp_val, dp_vec = dp.linalg.eigh(a)
+        assert a.usm_type == dp_vec.usm_type
+
+    else:  # eighvalsh
+        dp_val = dp.linalg.eigvalsh(a)
+
+    assert a.usm_type == dp_val.usm_type
+
+
+@pytest.mark.parametrize(
     "usm_type_matrix", list_of_usm_types, ids=list_of_usm_types
 )
 @pytest.mark.parametrize(
@@ -1047,14 +1086,9 @@ def test_matrix_rank(data, tol, usm_type):
     ],
 )
 def test_pinv(shape, hermitian, usm_type):
-    numpy.random.seed(81)
-    if hermitian:
-        a = dp.random.randn(*shape) + 1j * dp.random.randn(*shape)
-        a = dp.conj(a.T) @ a
-    else:
-        a = dp.random.randn(*shape)
+    a_np = generate_random_numpy_array(shape, hermitian=hermitian)
+    a = dp.array(a_np, usm_type=usm_type)
 
-    a = dp.array(a, usm_type=usm_type)
     B = dp.linalg.pinv(a, hermitian=hermitian)
 
     assert a.usm_type == B.usm_type
