@@ -14,7 +14,7 @@ requirements:
     host:
       - python
       - setuptools
-      - numpy <1.27a0
+      - numpy
       - cython
       - cmake >=3.21
       - ninja
