@@ -587,12 +587,12 @@ def tensordot(a, b, axes=2):
         Second input array. Both inputs `a` and `b` can not be scalars
         at the same time.
     axes : int or (2,) array_like
-        * integer_like
-          If an int `N`, sum over the last `N` axes of `a` and the first `N`
-          axes of `b` in order. The sizes of the corresponding axes must match.
-        * (2,) array_like
-          Or, a list of axes to be summed over, first sequence applying to `a`,
-          second to `b`. Both elements array_like must be of the same length.
+        * integer_like: If an int `N`, sum over the last `N` axes of `a` and
+          the first `N` axes of `b` in order. The sizes of the corresponding
+          axes must match.
+        * (2,) array_like: A list of axes to be summed over, first sequence
+          applying to `a`, second to `b`. Both elements array_like must be of
+          the same length.
 
     Returns
     -------

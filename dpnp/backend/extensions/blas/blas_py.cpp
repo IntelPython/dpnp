@@ -52,7 +52,7 @@ PYBIND11_MODULE(_blas_impl, m)
 
     {
         m.def("_dot", &blas_ext::dot,
-              "Call `dot` from OneMKL LAPACK library to return "
+              "Call `dot` from OneMKL BLAS library to return "
               "the dot product of two real-valued vectors.",
               py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
               py::arg("result"), py::arg("depends") = py::list());
@@ -60,7 +60,7 @@ PYBIND11_MODULE(_blas_impl, m)
 
     {
         m.def("_dotc", &blas_ext::dotc,
-              "Call `dotc` from OneMKL LAPACK library to return "
+              "Call `dotc` from OneMKL BLAS library to return "
               "the dot product of two complex vectors, "
               "conjugating the first vector.",
               py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
@@ -69,7 +69,7 @@ PYBIND11_MODULE(_blas_impl, m)
 
     {
         m.def("_dotu", &blas_ext::dotu,
-              "Call `dotu` from OneMKL LAPACK library to return "
+              "Call `dotu` from OneMKL BLAS library to return "
               "the dot product of two complex vectors.",
               py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
               py::arg("result"), py::arg("depends") = py::list());
@@ -77,7 +77,7 @@ PYBIND11_MODULE(_blas_impl, m)
 
     {
         m.def("_gemm", &blas_ext::gemm,
-              "Call `gemm` from OneMKL LAPACK library to return "
+              "Call `gemm` from OneMKL BLAS library to return "
               "the matrix-matrix product with 2-D matrices.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
               py::arg("result"), py::arg("depends") = py::list());
@@ -85,7 +85,7 @@ PYBIND11_MODULE(_blas_impl, m)
 
     {
         m.def("_gemm_batch", &blas_ext::gemm_batch,
-              "Call `gemm_batch` from OneMKL LAPACK library to return "
+              "Call `gemm_batch` from OneMKL BLAS library to return "
               "the matrix-matrix product for a batch of 2-D matrices.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
               py::arg("result"), py::arg("batch_size"), py::arg("stridea"),

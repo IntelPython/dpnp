@@ -1355,14 +1355,14 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
         Data type of the returned array. If ``None``, the default data
         type is inferred from the "kind" of the input array data type.
             * If `x` has a real-valued floating-point data type,
-                the returned array will have the default real-valued
-                floating-point data type for the device where input
-                array `x` is allocated.
+              the returned array will have the default real-valued
+              floating-point data type for the device where input
+              array `x` is allocated.
             * If `x` has a boolean or integral data type, the returned array
-                will have the default floating point data type for the device
-                where input array `x` is allocated.
+              will have the default floating point data type for the device
+              where input array `x` is allocated.
             * If `x` has a complex-valued floating-point data type,
-                an error is raised.
+              an error is raised.
         If the data type (either specified or resolved) differs from the
         data type of `x`, the input array elements are cast to the
         specified data type before computing the result. Default: ``None``.

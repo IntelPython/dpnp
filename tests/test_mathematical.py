@@ -752,7 +752,6 @@ def test_positive_boolean():
 
 
 class TestProd:
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("func", ["prod", "nanprod"])
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
     @pytest.mark.parametrize("keepdims", [False, True])
@@ -790,7 +789,6 @@ class TestProd:
         dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
         assert_dtype_allclose(dpnp_res, np_res)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
     @pytest.mark.parametrize("func", ["prod", "nanprod"])
@@ -2884,21 +2882,16 @@ class TestMatmul:
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
-    def test_matmul_strided(self):
+    @pytest.mark.parametrize(
+        "stride",
+        [(-2, -2, -2, -2), (2, 2, 2, 2), (-2, 2, -2, 2), (2, -2, 2, -2)],
+        ids=["-2", "2", "(-2, 2)", "(2, -2)"],
+    )
+    def test_matmul_strided(self, stride):
         for dim in [1, 2, 3, 4]:
             A = numpy.random.rand(*([20] * dim))
             B = dpnp.asarray(A)
-            # positive stride
-            slices = tuple(slice(None, None, 2) for _ in range(dim))
-            a = A[slices]
-            b = B[slices]
-
-            result = dpnp.matmul(b, b)
-            expected = numpy.matmul(a, a)
-            assert_dtype_allclose(result, expected)
-
-            # negative stride
-            slices = tuple(slice(None, None, -2) for _ in range(dim))
+            slices = tuple(slice(None, None, stride[i]) for i in range(dim))
             a = A[slices]
             b = B[slices]
 
