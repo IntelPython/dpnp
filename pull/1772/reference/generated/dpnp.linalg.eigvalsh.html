@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.correlate &mdash; Data Parallel Extension for NumPy 0.15.0dev1+17.g2d191e19b4 documentation</title>
+  <title>dpnp.linalg.eigvalsh &mdash; Data Parallel Extension for NumPy 0.15.0dev1+17.g2d191e19b4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -30,8 +30,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Special Functions" href="../special.html" />
-    <link rel="prev" title="dpnp.cov" href="dpnp.cov.html" /> 
+    <link rel="next" title="dpnp.linalg.norm" href="dpnp.linalg.norm.html" />
+    <link rel="prev" title="dpnp.linalg.eigvals" href="dpnp.linalg.eigvals.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -69,18 +69,19 @@
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../linalg.html">Linear Algebra</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-and-vector-products">Matrix and vector products</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#decompositions">Decompositions</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../linalg.html#matrix-eigenvalues">Matrix eigenvalues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#norms-and-other-numbers">Norms and other numbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#solving-linear-equations">Solving linear equations</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../statistics.html">Statistical Functions</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../statistics.html#order-statistics">Order statistics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../statistics.html#averages-and-variances">Averages and variances</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../statistics.html#histograms">Histograms</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../statistics.html#correlations">Correlations</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
@@ -111,10 +112,10 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
-          <li class="breadcrumb-item"><a href="../statistics.html">Statistical Functions</a></li>
-      <li class="breadcrumb-item active">dpnp.correlate</li>
+          <li class="breadcrumb-item"><a href="../linalg.html">Linear Algebra</a></li>
+      <li class="breadcrumb-item active">dpnp.linalg.eigvalsh</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/reference/generated/dpnp.correlate.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.linalg.eigvalsh.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -122,31 +123,52 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dpnp-correlate">
-<h1>dpnp.correlate<a class="headerlink" href="#dpnp-correlate" title="Link to this heading"></a></h1>
+  <section id="dpnp-linalg-eigvalsh">
+<h1>dpnp.linalg.eigvalsh<a class="headerlink" href="#dpnp-linalg-eigvalsh" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="dpnp.correlate">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">correlate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'valid'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#correlate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.correlate" title="Link to this definition"></a></dt>
-<dd><p>Cross-correlation of two 1-dimensional sequences.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.correlate.html#numpy.correlate" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.correlate</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>Input arrays are supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Size and shape of input arrays are supported to be equal.
-Parameter <cite>mode</cite> is supported only with default value <code class="docutils literal notranslate"><span class="pre">&quot;valid</span></code>.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP <span class="xref std std-ref">Data types</span>.</p>
+<dt class="sig sig-object py" id="dpnp.linalg.eigvalsh">
+<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">eigvalsh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UPLO</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'L'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#eigvalsh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.eigvalsh" title="Link to this definition"></a></dt>
+<dd><p>Compute the eigenvalues of a complex Hermitian or real symmetric matrix.</p>
+<p>Main difference from <a class="reference internal" href="dpnp.linalg.eigh.html#dpnp.linalg.eigh" title="dpnp.linalg.eigh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.eigh</span></code></a>: the eigenvectors are not computed.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvalsh.html#numpy.linalg.eigvalsh" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.eigvalsh</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – A complex- or real-valued array whose eigenvalues are to be computed.</p></li>
+<li><p><strong>UPLO</strong> (<em>{&quot;L&quot;</em><em>, </em><em>&quot;U&quot;}</em><em>, </em><em>optional</em>) – Specifies the calculation uses either the lower (“L”) or upper (“U”)
+triangular part of the matrix.
+Regardless of this choice, only the real parts of the diagonal are
+considered to preserve the Hermite matrix property.
+It therefore follows that the imaginary part of the diagonal
+will always be treated as zero.
+Default: “L”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>w</strong> – The eigenvalues in ascending order, each repeated according to
+its multiplicity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(…, M) dpnp.ndarray</p>
+</dd>
+</dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.convolve.html#dpnp.convolve" title="dpnp.convolve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.convolve</span></code></a></dt><dd><p>Discrete, linear convolution of two one-dimensional sequences.</p>
+<dt><a class="reference internal" href="dpnp.linalg.eigh.html#dpnp.linalg.eigh" title="dpnp.linalg.eigh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.eigh</span></code></a></dt><dd><p>Return the eigenvalues and eigenvectors of a complex Hermitian (conjugate symmetric) or a real symmetric matrix.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.linalg.eigvals.html#dpnp.linalg.eigvals" title="dpnp.linalg.eigvals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.eigvals</span></code></a></dt><dd><p>Compute the eigenvalues of a general matrix.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.linalg.eig.html#dpnp.linalg.eig" title="dpnp.linalg.eig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.eig</span></code></a></dt><dd><p>Compute the eigenvalues and right eigenvectors of a general matrix.</p>
 </dd>
 </dl>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">correlate</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
-<span class="go">[3.5]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dpnp</span> <span class="kn">import</span> <span class="n">linalg</span> <span class="k">as</span> <span class="n">LA</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="n">j</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="n">j</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">LA</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">array([0.17157288, 5.82842712])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -157,8 +179,8 @@ Input array data types are limited by supported DPNP <span class="xref std std-r
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.cov.html" class="btn btn-neutral float-left" title="dpnp.cov" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../special.html" class="btn btn-neutral float-right" title="Special Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.linalg.eigvals.html" class="btn btn-neutral float-left" title="dpnp.linalg.eigvals" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.linalg.norm.html" class="btn btn-neutral float-right" title="dpnp.linalg.norm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
