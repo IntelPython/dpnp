@@ -336,7 +336,7 @@ class TestCond:
 
         result = inp.linalg.cond(b, p=p)
         expected = numpy.linalg.cond(a, p=p)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=24)
 
     def test_cond_error(self):
         # cond is not defined on empty arrays

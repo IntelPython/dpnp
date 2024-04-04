@@ -1437,13 +1437,9 @@ def dpnp_pinv(a, rcond=1e-15, hermitian=False):
 
     """
 
-    if a.size == 0:
+    if _is_empty_2d(a):
         m, n = a.shape[-2:]
-        if m == 0 or n == 0:
-            res_type = a.dtype
-        else:
-            res_type = _common_type(a)
-        return dpnp.empty_like(a, shape=(a.shape[:-2] + (n, m)), dtype=res_type)
+        return dpnp.empty_like(a, shape=(a.shape[:-2] + (n, m)), dtype=a.dtype)
 
     if dpnp.is_supported_array_type(rcond):
         # Check that `a` and `rcond` are allocated on the same device
@@ -1453,7 +1449,7 @@ def dpnp_pinv(a, rcond=1e-15, hermitian=False):
         # Allocate dpnp.ndarray if rcond is a scalar
         rcond = dpnp.array(rcond, usm_type=a.usm_type, sycl_queue=a.sycl_queue)
 
-    u, s, vt = dpnp_svd(a.conj(), full_matrices=False, hermitian=hermitian)
+    u, s, vt = dpnp_svd(dpnp.conj(a), full_matrices=False, hermitian=hermitian)
 
     # discard small singular values
     cutoff = rcond * dpnp.max(s, axis=-1)
