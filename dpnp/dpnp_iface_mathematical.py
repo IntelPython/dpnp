@@ -1983,92 +1983,6 @@ multiply = DPNPBinaryFunc(
 )
 
 
-def mod(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Compute element-wise remainder of division.
-
-    For full documentation refer to :obj:`numpy.mod`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The element-wise remainder of the quotient `floor_divide(x1, x2)`.
-
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division
-    :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
-    :obj:`dpnp.divide` : Standard division.
-
-    Notes
-    -----
-    This function works the same as :obj:`dpnp.remainder`.
-
-    """
-
-    return dpnp.remainder(
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def modf(x1, **kwargs):
-    """
-    Return the fractional and integral parts of an array, element-wise.
-
-    For full documentation refer to :obj:`numpy.modf`.
-
-    Limitations
-    -----------
-    Parameter `x` is supported as :obj:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([1, 2])
-    >>> result = np.modf(a)
-    >>> [[x for x in y] for y in result ]
-    [[1.0, 2.0], [0.0, 0.0]]
-
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_modf(x1_desc)
-
-    return call_origin(numpy.modf, x1, **kwargs)
-
-
 _NEGATIVE_DOCSTRING = """
 Computes the numerical negative for each element `x_i` of input array `x`.
 
@@ -2285,18 +2199,22 @@ def prod(
     Returns
     -------
     out : dpnp.ndarray
-        A new array holding the result is returned unless `out` is specified, in which case it is returned.
+        A new array holding the result is returned unless `out` is specified,
+        in which case it is returned.
 
     Limitations
     -----------
-    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `initial`, and `where` are only supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
+    Input array is only supported as either :class:`dpnp.ndarray` or
+    :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `initial`, and `where` are only supported with their default
+    values.
+    Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.nanprod` : Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
+    :obj:`dpnp.nanprod` : Return the product of array elements over a given
+        axis treating Not a Numbers (NaNs) as ones.
 
     Examples
     --------
@@ -2323,17 +2241,16 @@ def prod(
         raise NotImplementedError(
             "initial keyword argument is only supported with its default value."
         )
-    elif where is not True:
+    if where is not True:
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
-    else:
-        dpt_array = dpnp.get_usm_ndarray(a)
-        result = dpnp_array._create_from_usm_ndarray(
-            dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
-        )
+    dpt_array = dpnp.get_usm_ndarray(a)
+    result = dpnp_array._create_from_usm_ndarray(
+        dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
+    )
 
-        return dpnp.get_result_array(result, out)
+    return dpnp.get_result_array(result, out)
 
 
 _PROJ_DOCSTRING = """
