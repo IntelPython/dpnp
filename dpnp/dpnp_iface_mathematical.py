@@ -39,6 +39,7 @@ it contains:
 
 
 import dpctl.tensor as dpt
+import dpctl.tensor._type_utils as dtu
 import numpy
 from numpy.core.numeric import (
     normalize_axis_index,
@@ -2905,8 +2906,6 @@ def sum(
                 )
             )
         ):
-            from dpctl.tensor._reduction import _default_reduction_dtype
-
             from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
 
             input = a
@@ -2916,7 +2915,7 @@ def sum(
 
             queue = input.sycl_queue
             out_dtype = (
-                _default_reduction_dtype(input.dtype, queue)
+                dtu._default_accumulation_dtype(input.dtype, queue)
                 if dtype is None
                 else dtype
             )
