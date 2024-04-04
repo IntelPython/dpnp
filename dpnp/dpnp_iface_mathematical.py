@@ -932,24 +932,32 @@ def cumsum(a, axis=None, dtype=None, out=None):
         usm_out = None
     else:
         dpnp.check_supported_arrays_type(out)
-        if dpnp.issubdtype(out.dtype, dpnp.integer):
-            int_dt = da._default_accumulation_dtype(out.dtype, out.sycl_queue)
 
-            # create a copy if dtype mismatches default integer type
-            out = dpnp.astype(out, dtype=int_dt, copy=False)
+        # get dtype used by dpctl for result array in cumulative_sum
+        if dtype is None:
+            res_dt = dtu._default_accumulation_dtype(a.dtype, a.sycl_queue)
+        else:
+            res_dt = dpnp.dtype(dtype)
+            res_dt = dtu._to_device_supported_dtype(res_dt, a.sycl_device)
+
+        # dpctl requires strict data type matching of out array with the result
+        if out.dtype != res_dt:
+            out = dpnp.astype(out, dtype=res_dt, copy=False)
 
         usm_out = dpnp.get_usm_ndarray(out)
 
     res_usm = dpt.cumulative_sum(usm_a, axis=axis, dtype=dtype, out=usm_out)
     if out is None:
         return dpnp_array._create_from_usm_ndarray(res_usm)
-    elif input_out is not out:
+
+    if input_out is not out:
+        # need to copy back from temporary memory to input `out`
         dpnp.copyto(input_out, out, casting="unsafe")
 
     if not isinstance(input_out, dpnp_array):
         return dpnp_array._create_from_usm_ndarray(input_out)
     else:
-        return out
+        return input_out
 
 
 def diff(a, n=1, axis=-1, prepend=None, append=None):

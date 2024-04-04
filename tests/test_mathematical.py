@@ -161,6 +161,69 @@ class TestClip:
             dpnp.clip(a, 1, 5, **kwargs)
 
 
+class TestCumSum:
+    @pytest.mark.parametrize(
+        "arr, axis",
+        [
+            pytest.param([1, 2, 10, 11, 6, 5, 4], 0),
+            pytest.param([[1, 2, 3, 4], [5, 6, 7, 9], [10, 3, 4, 5]], 0),
+            pytest.param([[1, 2, 3, 4], [5, 6, 7, 9], [10, 3, 4, 5]], 1),
+            pytest.param([[0, 1, 2], [3, 4, 5]], 0),
+            pytest.param([[0, 1, 2], [3, 4, 5]], -1),
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_axis(self, arr, axis, dtype):
+        a = numpy.array(arr, dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.cumsum(ia, axis=axis)
+        expected = numpy.cumsum(a, axis=axis)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_ndarray_method(self, dtype):
+        a = numpy.arange(10).astype(dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = ia.cumsum()
+        expected = a.cumsum()
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("sh", [(10,), (2, 5)])
+    def test_usm_ndarray(self, sh):
+        a = numpy.arange(10).reshape(sh)
+        ia = dpt.asarray(a)
+
+        result = dpnp.cumsum(ia)
+        expected = numpy.cumsum(a)
+        assert_array_equal(expected, result)
+
+        out = numpy.empty((10,))
+        iout = dpt.asarray(out)
+
+        result = dpnp.cumsum(ia, out=iout)
+        expected = numpy.cumsum(a, out=out)
+        assert_array_equal(expected, result)
+        assert result is not iout
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_out_dtype(self, arr_dt, out_dt, dtype):
+        a = numpy.arange(10, 20).astype(dtype=arr_dt)
+        out = numpy.zeros_like(a, dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = ia.cumsum(out=iout, dtype=dtype)
+        expected = a.cumsum(out=out, dtype=dtype)
+        assert_array_equal(expected, result)
+        assert result is iout
+
+
 class TestDiff:
     @pytest.mark.parametrize("n", list(range(0, 3)))
     @pytest.mark.parametrize("dt", get_integer_dtypes())
