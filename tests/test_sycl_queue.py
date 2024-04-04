@@ -11,7 +11,12 @@ import dpnp
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 
-from .helper import assert_dtype_allclose, get_all_dtypes, is_win_platform
+from .helper import (
+    assert_dtype_allclose,
+    generate_random_numpy_array,
+    get_all_dtypes,
+    is_win_platform,
+)
 
 list_of_backend_str = [
     "host",
@@ -1217,43 +1222,79 @@ def test_eig(device):
     assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.parametrize(
+    "func",
+    [
+        "eigh",
+        "eigvalsh",
+    ],
+)
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (4, 4),
+        (0, 0),
+        (2, 3, 3),
+        (0, 2, 2),
+        (1, 0, 0),
+    ],
+    ids=[
+        "(4, 4)",
+        "(0, 0)",
+        "(2, 3, 3)",
+        "(0, 2, 2)",
+        "(1, 0, 0)",
+    ],
+)
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_eigh(device):
-    size = 4
+def test_eigenvalue(func, shape, device):
     dtype = dpnp.default_float_type(device)
-    a = numpy.arange(size * size, dtype=dtype).reshape((size, size))
-    symm_orig = (
-        numpy.tril(a)
-        + numpy.tril(a, -1).T
-        + numpy.diag(numpy.full((size,), size * size, dtype=dtype))
-    )
-    numpy_data = symm_orig
-    dpnp_symm_orig = dpnp.array(numpy_data, device=device)
-    dpnp_data = dpnp_symm_orig
+    # Set seed_value=81 to prevent
+    # random generation of the input singular matrix
+    a = generate_random_numpy_array(shape, dtype, hermitian=True, seed_value=81)
+    dp_a = dpnp.array(a, device=device)
 
-    dpnp_val, dpnp_vec = dpnp.linalg.eigh(dpnp_data)
-    numpy_val, numpy_vec = numpy.linalg.eigh(numpy_data)
+    expected_queue = dp_a.get_array().sycl_queue
 
-    assert_allclose(dpnp_val, numpy_val, rtol=1e-05, atol=1e-05)
-    assert_allclose(dpnp_vec, numpy_vec, rtol=1e-05, atol=1e-05)
+    if func == "eigh":
+        dp_val, dp_vec = dpnp.linalg.eigh(dp_a)
+        np_val, np_vec = numpy.linalg.eigh(a)
 
-    assert dpnp_val.dtype == numpy_val.dtype
-    assert dpnp_vec.dtype == numpy_vec.dtype
-    assert dpnp_val.shape == numpy_val.shape
-    assert dpnp_vec.shape == numpy_vec.shape
+        # Check the eigenvalue decomposition
+        if a.ndim == 2:
+            assert_allclose(
+                dp_a @ dp_vec, dp_vec @ dpnp.diag(dp_val), rtol=1e-5, atol=1e-5
+            )
+        else:  # a.ndim == 3
+            for i in range(a.shape[0]):
+                assert_allclose(
+                    dp_a[i].dot(dp_vec[i]),
+                    dp_val[i] * dp_vec[i],
+                    rtol=1e-5,
+                    atol=1e-5,
+                )
+        assert dp_vec.shape == np_vec.shape
+        assert dp_vec.dtype == np_vec.dtype
 
-    expected_queue = dpnp_data.get_array().sycl_queue
-    dpnp_val_queue = dpnp_val.get_array().sycl_queue
-    dpnp_vec_queue = dpnp_vec.get_array().sycl_queue
+        dpnp_vec_queue = dp_vec.get_array().sycl_queue
+        # compare queue and device
+        assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
 
+    else:  # eighvalsh
+        dp_val = dpnp.linalg.eigvalsh(dp_a)
+        np_val = numpy.linalg.eigvalsh(a)
+
+    assert_allclose(dp_val, np_val, rtol=1e-05, atol=1e-05)
+    assert dp_val.shape == np_val.shape
+    assert dp_val.dtype == np_val.dtype
+
+    dpnp_val_queue = dp_val.get_array().sycl_queue
     # compare queue and device
     assert_sycl_queue_equal(dpnp_val_queue, expected_queue)
-    assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
 
 
 @pytest.mark.parametrize(
@@ -1375,6 +1416,52 @@ def test_matrix_rank(data, tol, device):
     result_queue = result.get_array().sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.usefixtures("suppress_divide_numpy_warnings")
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "ord",
+    [None, -dpnp.Inf, -2, -1, 1, 2, 3, dpnp.Inf, "fro", "nuc"],
+    ids=[
+        "None",
+        "-dpnp.Inf",
+        "-2",
+        "-1",
+        "1",
+        "2",
+        "3",
+        "dpnp.Inf",
+        '"fro"',
+        '"nuc"',
+    ],
+)
+@pytest.mark.parametrize(
+    "axis",
+    [-1, 0, 1, (0, 1), (-2, -1), None],
+    ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
+)
+def test_norm(device, ord, axis):
+    a = numpy.arange(120).reshape(2, 3, 4, 5)
+    ia = dpnp.array(a, device=device)
+    if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
+        isinstance(axis, tuple) and ord == 3
+    ):
+        pytest.skip("Invalid norm order for vectors.")
+    elif axis is None and ord is not None:
+        pytest.skip("Improper number of dimensions to norm")
+    else:
+        result = dpnp.linalg.norm(ia, ord=ord, axis=axis)
+        expected = numpy.linalg.norm(a, ord=ord, axis=axis)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+        expected_queue = ia.get_array().sycl_queue
+        result_queue = result.get_array().sycl_queue
+        assert_sycl_queue_equal(result_queue, expected_queue)
 
 
 @pytest.mark.parametrize(
@@ -1898,13 +1985,12 @@ def test_slogdet(shape, is_empty, device):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_pinv(shape, hermitian, rcond_as_array, device):
-    numpy.random.seed(81)
-    if hermitian:
-        a_np = numpy.random.randn(*shape) + 1j * numpy.random.randn(*shape)
-        a_np = numpy.conj(a_np.T) @ a_np
-    else:
-        a_np = numpy.random.randn(*shape)
-
+    dtype = dpnp.default_float_type(device)
+    # Set seed_value=81 to prevent
+    # random generation of the input singular matrix
+    a_np = generate_random_numpy_array(
+        shape, dtype, hermitian=hermitian, seed_value=81
+    )
     a_dp = dpnp.array(a_np, device=device)
 
     if rcond_as_array:

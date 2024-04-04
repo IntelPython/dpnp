@@ -45,7 +45,6 @@ it contains:
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
-import dpctl.utils as du
 import numpy
 from dpctl.tensor._reduction import _default_reduction_dtype
 from dpctl.tensor._type_utils import _acceptance_fn_divide
@@ -1984,6 +1983,92 @@ multiply = DPNPBinaryFunc(
 )
 
 
+def mod(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    where=True,
+    order="K",
+    dtype=None,
+    subok=True,
+    **kwargs,
+):
+    """
+    Compute element-wise remainder of division.
+
+    For full documentation refer to :obj:`numpy.mod`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The element-wise remainder of the quotient `floor_divide(x1, x2)`.
+
+    Limitations
+    -----------
+    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
+    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division
+    :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
+    :obj:`dpnp.divide` : Standard division.
+
+    Notes
+    -----
+    This function works the same as :obj:`dpnp.remainder`.
+
+    """
+
+    return dpnp.remainder(
+        x1,
+        x2,
+        out=out,
+        where=where,
+        order=order,
+        dtype=dtype,
+        subok=subok,
+        **kwargs,
+    )
+
+
+def modf(x1, **kwargs):
+    """
+    Return the fractional and integral parts of an array, element-wise.
+
+    For full documentation refer to :obj:`numpy.modf`.
+
+    Limitations
+    -----------
+    Parameter `x` is supported as :obj:`dpnp.ndarray`.
+    Keyword argument `kwargs` is currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2])
+    >>> result = np.modf(a)
+    >>> [[x for x in y] for y in result ]
+    [[1.0, 2.0], [0.0, 0.0]]
+
+
+    """
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    if x1_desc and not kwargs:
+        return dpnp_modf(x1_desc)
+
+    return call_origin(numpy.modf, x1, **kwargs)
+
+
 _NEGATIVE_DOCSTRING = """
 Computes the numerical negative for each element `x_i` of input array `x`.
 
@@ -2200,22 +2285,18 @@ def prod(
     Returns
     -------
     out : dpnp.ndarray
-        A new array holding the result is returned unless `out` is specified,
-        in which case it is returned.
+        A new array holding the result is returned unless `out` is specified, in which case it is returned.
 
     Limitations
     -----------
-    Input array is only supported as either :class:`dpnp.ndarray` or
-    :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `initial`, and `where` are only supported with their default
-    values.
+    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `initial`, and `where` are only supported with their default values.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.nanprod` : Return the product of array elements over a given
-                          axis treating Not a Numbers (NaNs) as ones.
+    :obj:`dpnp.nanprod` : Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
 
     Examples
     --------
@@ -2238,47 +2319,21 @@ def prod(
 
     """
 
-    # Product reduction for complex output are known to fail for Gen9 with
-    # 2024.0 compiler
-    # TODO: get rid of this temporary work around when OneAPI 2024.1 is
-    # released
-    dpnp.check_supported_arrays_type(a)
-    _dtypes = (a.dtype, dtype)
-    _any_complex = any(
-        dpnp.issubdtype(dt, dpnp.complexfloating) for dt in _dtypes
-    )
-    device_mask = (
-        du.intel_device_info(a.sycl_device).get("device_id", 0) & 0xFF00
-    )
-    if _any_complex and device_mask in [0x3E00, 0x9B00]:
-        res = call_origin(
-            numpy.prod,
-            a,
-            axis=axis,
-            dtype=dtype,
-            out=out,
-            keepdims=keepdims,
-            initial=initial,
-            where=where,
-        )
-        if dpnp.isscalar(res):
-            # numpy may return a scalar, convert it back to dpnp array
-            return dpnp.array(res, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
-        return res
     if initial is not None:
         raise NotImplementedError(
             "initial keyword argument is only supported with its default value."
         )
-    if where is not True:
+    elif where is not True:
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
-    )
+    else:
+        dpt_array = dpnp.get_usm_ndarray(a)
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
+        )
 
-    return dpnp.get_result_array(result, out)
+        return dpnp.get_result_array(result, out)
 
 
 _PROJ_DOCSTRING = """
@@ -2734,22 +2789,22 @@ def sum(
         Data type of the returned array. If ``None``, the default data
         type is inferred from the "kind" of the input array data type.
             * If `a` has a real-valued floating-point data type,
-                the returned array will have the default real-valued
-                floating-point data type for the device where input
-                array `a` is allocated.
+              the returned array will have the default real-valued
+              floating-point data type for the device where input
+              array `a` is allocated.
             * If `a` has signed integral data type, the returned array
-                will have the default signed integral type for the device
-                where input array `a` is allocated.
+              will have the default signed integral type for the device
+              where input array `a` is allocated.
             * If `a` has unsigned integral data type, the returned array
-                will have the default unsigned integral type for the device
-                where input array `a` is allocated.
+              will have the default unsigned integral type for the device
+              where input array `a` is allocated.
             * If `a` has a complex-valued floating-point data type,
-                the returned array will have the default complex-valued
-                floating-pointer data type for the device where input
-                array `a` is allocated.
+              the returned array will have the default complex-valued
+              floating-pointer data type for the device where input
+              array `a` is allocated.
             * If `a` has a boolean data type, the returned array will
-                have the default signed integral type for the device
-                where input array `a` is allocated.
+              have the default signed integral type for the device
+              where input array `a` is allocated.
         If the data type (either specified or resolved) differs from the
         data type of `a`, the input array elements are cast to the
         specified data type before computing the sum.

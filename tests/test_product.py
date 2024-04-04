@@ -1,7 +1,6 @@
 import dpctl
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
 
@@ -162,30 +161,15 @@ class TestCross:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_cross_strided(self, dtype):
+    @pytest.mark.parametrize("stride", [3, -3], ids=["3", "-3"])
+    def test_cross_strided(self, dtype, stride):
         a = numpy.arange(1, 10, dtype=dtype)
         b = numpy.arange(1, 10, dtype=dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
-        result = dpnp.cross(ia[::3], ib[::3])
-        expected = numpy.cross(a[::3], b[::3])
-        assert_dtype_allclose(result, expected)
-
-        a = numpy.arange(1, 4, dtype=dtype)
-        b = numpy.arange(1, 4, dtype=dtype)
-        ia = dpnp.array(a)
-        ib = dpnp.array(b)
-        result = dpnp.cross(ia, ib[::-1])
-        expected = numpy.cross(a, b[::-1])
-        assert_dtype_allclose(result, expected)
-
-        a = numpy.arange(1, 7, dtype=dtype)
-        b = numpy.arange(1, 7, dtype=dtype)
-        ia = dpnp.array(a)
-        ib = dpnp.array(b)
-        result = dpnp.cross(ia[::-2], ib[::-2])
-        expected = numpy.cross(a[::-2], b[::-2])
+        result = dpnp.cross(ia[::stride], ib[::stride])
+        expected = numpy.cross(a[::stride], b[::stride])
         assert_dtype_allclose(result, expected)
 
     def test_cross_error(self):
@@ -380,26 +364,17 @@ class TestDot:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_dot_strided(self, dtype):
+    @pytest.mark.parametrize(
+        "stride", [3, -1, -2, -5], ids=["3", "-1", "-2", "-5"]
+    )
+    def test_dot_strided(self, dtype, stride):
         a = numpy.arange(25, dtype=dtype)
         b = numpy.arange(25, dtype=dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
-        result = dpnp.dot(ia[::3], ib[::3])
-        expected = numpy.dot(a[::3], b[::3])
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.dot(ia, ib[::-1])
-        expected = numpy.dot(a, b[::-1])
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.dot(ia[::-2], ib[::-2])
-        expected = numpy.dot(a[::-2], b[::-2])
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.dot(ia[::-5], ib[::-5])
-        expected = numpy.dot(a[::-5], b[::-5])
+        result = dpnp.dot(ia[::stride], ib[::stride])
+        expected = numpy.dot(a[::stride], b[::stride])
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
@@ -635,22 +610,17 @@ class TestInner:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_inner_strided(self, dtype):
+    @pytest.mark.parametrize(
+        "stride", [3, -1, -2, -4], ids=["3", "-1", "-2", "-4"]
+    )
+    def test_inner_strided(self, dtype, stride):
         a = numpy.arange(20, dtype=dtype)
         b = numpy.arange(20, dtype=dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
-        result = dpnp.inner(ia[::3], ib[::3])
-        expected = numpy.inner(a[::3], b[::3])
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.inner(ia, ib[::-1])
-        expected = numpy.inner(a, b[::-1])
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.inner(ia[::-4], ib[::-4])
-        expected = numpy.inner(a[::-4], b[::-4])
+        result = dpnp.inner(ia[::stride], ib[::stride])
+        expected = numpy.inner(a[::stride], b[::stride])
         assert_dtype_allclose(result, expected)
 
     def test_inner_error(self):
@@ -749,22 +719,17 @@ class TestKron:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_kron_strided(self, dtype):
+    @pytest.mark.parametrize(
+        "stride", [3, -1, -2, -4], ids=["3", "-1", "-2", "-4"]
+    )
+    def test_kron_strided(self, dtype, stride):
         a = numpy.arange(20, dtype=dtype)
         b = numpy.arange(20, dtype=dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
-        result = dpnp.kron(ia[::3], ib[::3])
-        expected = numpy.kron(a[::3], b[::3])
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.kron(ia, ib[::-1])
-        expected = numpy.kron(a, b[::-1])
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.kron(ia[::-4], ib[::-4])
-        expected = numpy.kron(a[::-4], b[::-4])
+        result = dpnp.kron(ia[::stride], ib[::stride])
+        expected = numpy.kron(a[::stride], b[::stride])
         assert_dtype_allclose(result, expected)
 
 
@@ -929,7 +894,12 @@ class TestMultiDot:
         expected = numpy.linalg.multi_dot(numpy_array_list)
         assert_dtype_allclose(result, expected)
 
-    def test_multi_dot_strides(self):
+    @pytest.mark.parametrize(
+        "stride",
+        [(-2, -2), (2, 2), (-2, 2), (2, -2)],
+        ids=["(-2, -2)", "(2, 2)", "(-2, 2)", "(2, -2)"],
+    )
+    def test_multi_dot_strided(self, stride):
         numpy_array_list = []
         dpnp_array_list = []
         for num_array in [2, 3, 4, 5]:  # number of arrays in multi_dot
@@ -937,7 +907,10 @@ class TestMultiDot:
                 A = numpy.random.rand(20, 20)
                 B = dpnp.array(A)
 
-                slices = (slice(None, None, 2), slice(None, None, 2))
+                slices = (
+                    slice(None, None, stride[0]),
+                    slice(None, None, stride[1]),
+                )
                 a = A[slices]
                 b = B[slices]
 
@@ -1075,22 +1048,17 @@ class TestTensordot:
         expected = numpy.tensordot(a, b)
         assert_dtype_allclose(result, expected)
 
-    def test_tensordot_strided(self):
+    @pytest.mark.parametrize(
+        "stride",
+        [(-2, -2, -2, -2), (2, 2, 2, 2), (-2, 2, -2, 2), (2, -2, 2, -2)],
+        ids=["-2", "2", "(-2, 2)", "(2, -2)"],
+    )
+    def test_tensordot_strided(self, stride):
         for dim in [1, 2, 3, 4]:
             axes = 1 if dim == 1 else 2
-            A = numpy.random.rand(*([10] * dim))
+            A = numpy.random.rand(*([20] * dim))
             B = dpnp.asarray(A)
-            # positive stride
-            slices = tuple(slice(None, None, 2) for _ in range(dim))
-            a = A[slices]
-            b = B[slices]
-
-            result = dpnp.tensordot(b, b, axes=axes)
-            expected = numpy.tensordot(a, a, axes=axes)
-            assert_dtype_allclose(result, expected)
-
-            # negative stride
-            slices = tuple(slice(None, None, -2) for _ in range(dim))
+            slices = tuple(slice(None, None, stride[i]) for i in range(A.ndim))
             a = A[slices]
             b = B[slices]
 
@@ -1233,26 +1201,17 @@ class TestVdot:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_vdot_strided(self, dtype):
+    @pytest.mark.parametrize(
+        "stride", [3, -1, -2, -4], ids=["3", "-1", "-2", "-4"]
+    )
+    def test_vdot_strided(self, dtype, stride):
         a = numpy.arange(25, dtype=dtype)
         b = numpy.arange(25, dtype=dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
-        result = dpnp.vdot(ia[::3], ib[::3])
-        expected = numpy.vdot(a[::3], b[::3])
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.vdot(ia, ib[::-1])
-        expected = numpy.vdot(a, b[::-1])
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.vdot(ia[::-2], ib[::-2])
-        expected = numpy.vdot(a[::-2], b[::-2])
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.vdot(ia[::-5], ib[::-5])
-        expected = numpy.vdot(a[::-5], b[::-5])
+        result = dpnp.vdot(ia[::stride], ib[::stride])
+        expected = numpy.vdot(a[::stride], b[::stride])
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
