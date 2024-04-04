@@ -408,7 +408,7 @@ class DPNPRound(DPNPUnaryFunc):
 
     def __call__(self, x, decimals=0, out=None, dtype=None):
         if decimals != 0:
-            if numpy.issubdtype(x.dtype, numpy.integer) and dtype is None:
+            if dpnp.issubdtype(x.dtype, dpnp.integer) and dtype is None:
                 dtype = x.dtype
             res = dpnp.true_divide(
                 dpnp.rint(x * 10**decimals, out=out), 10**decimals, out=out
