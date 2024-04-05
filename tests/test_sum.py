@@ -61,10 +61,7 @@ def test_sum_axis():
     ia = dpnp.array(a)
 
     result = dpnp.sum(ia, axis=1)
-    if has_support_aspect64():
-        expected = numpy.sum(a, axis=1, dtype=numpy.float64)
-    else:
-        expected = numpy.sum(a, axis=1)
+    expected = numpy.sum(a, axis=1)
     assert_array_equal(expected, result)
 
 
