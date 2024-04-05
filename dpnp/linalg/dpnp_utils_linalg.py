@@ -1792,6 +1792,7 @@ def dpnp_solve(a, b):
         return dpnp.empty_like(b, dtype=res_type, usm_type=res_usm_type)
 
     if a.ndim > 2:
+        is_cpu_device = exec_q.sycl_device.has_aspect_cpu
         reshape = False
         orig_shape_b = b_shape
         if a.ndim > 3:
@@ -1849,6 +1850,14 @@ def dpnp_solve(a, b):
                 val_vecs[i].get_array(),
                 depends=[a_copy_ev, b_copy_ev],
             )
+
+            # TODO: Remove this w/a when MKLD-17201 is solved.
+            # Waiting for a host task executing an OneMKL LAPACK gesv call
+            # on CPU causes deadlock due to serialization of all host tasks
+            # in the queue.
+            # We need to wait for each host tasks before calling _gesv to avoid deadlock.
+            if is_cpu_device:
+                ht_lapack_ev[i].wait()
 
         for i in range(batch_size):
             ht_lapack_ev[i].wait()
