@@ -1205,50 +1205,121 @@ def dpnp_lstsq(a, b, rcond=None):
 
     """
 
-    # fix 0-dim
-    if b.ndim > 2:
-        raise dpnp.linalg.LinAlgError(
-            f"{b.ndim}-dimensional array given. The input "
-            "array must be exactly two-dimensional"
+    new_version = True
+
+    if not new_version:
+        # fix 0-dim
+        if b.ndim > 2:
+            raise dpnp.linalg.LinAlgError(
+                f"{b.ndim}-dimensional array given. The input "
+                "array must be exactly two-dimensional"
+            )
+
+        m, n = a.shape[-2:]
+        m2 = b.shape[0]
+        if m != m2:
+            raise dpnp.linalg.LinAlgError("Incompatible dimensions")
+
+        u, s, vh = dpnp_svd(a, full_matrices=False)
+
+        if rcond is None:
+            rcond = dpnp.finfo(s.dtype).eps * max(m, n)
+        elif rcond <= 0 or rcond >= 1:
+            # some doc of gelss/gelsd says "rcond < 0", but it's not true!
+            rcond = dpnp.finfo(s.dtype).eps
+
+        # number of singular values and matrix rank
+        s1 = 1 / s
+        rank = dpnp.array(
+            s.size, dtype="int32", sycl_queue=a.sycl_queue, usm_type=a.usm_type
+        )
+        if s.size > 0:
+            cutoff = rcond * s.max()
+            sing_vals = s <= cutoff
+            s1[sing_vals] = 0
+            rank -= sing_vals.sum(dtype="int32")
+
+        # Solve the least-squares solution
+        # x = vh.T.conj() @ diag(s1) @ u.T.conj() @ b
+        z = (dpnp.dot(b.T, u.conj()) * s1).T
+        x = dpnp.dot(vh.T.conj(), z)
+        # Calculate squared Euclidean 2-norm for each column in b - a*x
+        if m <= n or rank != n:
+            resids = dpnp.empty(
+                (0,), dtype=s.dtype, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+            )
+        else:
+            e = b - a.dot(x)
+            resids = dpnp.atleast_1d(_nrm2_last_axis(e.T))
+        return x, resids, rank, s
+
+    else: # mkl call
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+        a_sycl_queue = a.sycl_queue
+        a_usm_type = a.usm_type
+
+        res_type = _common_type(a)
+
+        m, n = a.shape
+        nrhs = b.shape[-1]
+        k = min(m, n)
+        # Transpose the input matrix to convert from row-major to column-major order.
+        # This adjustment is necessary for compatibility with OneMKL LAPACK routines,
+        # which expect matrices in column-major format.
+        # This allows data to be handled efficiently without the need for additional conversion.
+        a = a.T
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+        a_t = dpnp.empty_like(a, order="C", dtype=res_type)
+
+        # use DPCTL tensor function to fill the matrix array
+        # with content from the input array `a`
+        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr, dst=a_t.get_array(), sycl_queue=a_sycl_queue
         )
 
-    m, n = a.shape[-2:]
-    m2 = b.shape[0]
-    if m != m2:
-        raise dpnp.linalg.LinAlgError("Incompatible dimensions")
-
-    u, s, vh = dpnp_svd(a, full_matrices=False)
-
-    if rcond is None:
-        rcond = dpnp.finfo(s.dtype).eps * max(m, n)
-    elif rcond <= 0 or rcond >= 1:
-        # some doc of gelss/gelsd says "rcond < 0", but it's not true!
-        rcond = dpnp.finfo(s.dtype).eps
-
-    # number of singular values and matrix rank
-    s1 = 1 / s
-    rank = dpnp.array(
-        s.size, dtype="int32", sycl_queue=a.sycl_queue, usm_type=a.usm_type
-    )
-    if s.size > 0:
-        cutoff = rcond * s.max()
-        sing_vals = s <= cutoff
-        s1[sing_vals] = 0
-        rank -= sing_vals.sum(dtype="int32")
-
-    # Solve the least-squares solution
-    # x = vh.T.conj() @ diag(s1) @ u.T.conj() @ b
-    z = (dpnp.dot(b.T, u.conj()) * s1).T
-    x = dpnp.dot(vh.T.conj(), z)
-    # Calculate squared Euclidean 2-norm for each column in b - a*x
-    if m <= n or rank != n:
-        resids = dpnp.empty(
-            (0,), dtype=s.dtype, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+        tau_h = dpnp.empty_like(
+            a,
+            shape=(k,),
+            dtype=res_type,
         )
-    else:
-        e = b - a.dot(x)
-        resids = dpnp.atleast_1d(_nrm2_last_axis(e.T))
-    return x, resids, rank, s
+
+        b_usm_arr = dpnp.get_usm_ndarray(b)
+        b_t = dpnp.empty_like(b, order="C", dtype=res_type)
+
+        # use DPCTL tensor function to fill the matrix array
+        # with content from the input array `a`
+        b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=b_usm_arr, dst=b_t.get_array(), sycl_queue=a_sycl_queue
+        )
+
+        # Call the LAPACK extension function _geqrf to compute the QR factorization
+        # of a general m x n matrix.
+        ht_geqrf_ev, geqrf_ev = li._geqrf(
+            a_sycl_queue, a_t.get_array(), tau_h.get_array(), [a_copy_ev]
+        )
+
+        ht_list_ev = [ht_geqrf_ev, a_ht_copy_ev]
+
+        # Call the LAPACK extension function _ormqr to multiply the QR factorization
+        # of a general m x n matrix.
+        ht_ormqr_ev, ormqr_ev = li._ormqr(
+            a_sycl_queue, m, n, k, a_t.get_array(), tau_h.get_array(),
+            b_t.get_array(), [b_copy_ev, geqrf_ev]
+        )
+
+        ht_list_ev.append(ht_ormqr_ev)
+
+        # Call the LAPACK extension function _trtrs to solve a system
+        # of linear equations with a triangular coefficient matrix
+        ht_trtrs_ev, _ = li._trtrs(
+            a_sycl_queue, n, nrhs, a_t.get_array(), b_t.get_array(),
+            [ormqr_ev]
+        )
+
+        ht_list_ev.append(ht_trtrs_ev)
+        dpctl.SyclEvent.wait_for(ht_list_ev)
+
+        return a_t, b_t
 
 
 def dpnp_matrix_power(a, n):

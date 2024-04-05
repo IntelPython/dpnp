@@ -37,9 +37,11 @@ set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/heevd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/orgqr.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/orgqr_batch.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ormqr.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/potrf.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/potrf_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/syevd.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/trtrs.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ungqr.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ungqr_batch.cpp
 )

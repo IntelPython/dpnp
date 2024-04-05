@@ -38,8 +38,10 @@
 #include "heevd.hpp"
 #include "linalg_exceptions.hpp"
 #include "orgqr.hpp"
+#include "ormqr.hpp"
 #include "potrf.hpp"
 #include "syevd.hpp"
+#include "trtrs.hpp"
 #include "ungqr.hpp"
 
 namespace lapack_ext = dpnp::backend::ext::lapack;
@@ -56,9 +58,11 @@ void init_dispatch_vectors(void)
     lapack_ext::init_getri_batch_dispatch_vector();
     lapack_ext::init_orgqr_batch_dispatch_vector();
     lapack_ext::init_orgqr_dispatch_vector();
+    lapack_ext::init_ormqr_dispatch_vector();
     lapack_ext::init_potrf_batch_dispatch_vector();
     lapack_ext::init_potrf_dispatch_vector();
     lapack_ext::init_syevd_dispatch_vector();
+    lapack_ext::init_trtrs_dispatch_vector();
     lapack_ext::init_ungqr_batch_dispatch_vector();
     lapack_ext::init_ungqr_dispatch_vector();
 }
@@ -153,6 +157,13 @@ PYBIND11_MODULE(_lapack_impl, m)
           py::arg("a_array"), py::arg("tau_array"),
           py::arg("depends") = py::list());
 
+    m.def("_ormqr", &lapack_ext::ormqr,
+          "Call `ormqr` from OneMKL LAPACK library to multiply "
+          "the real orthogonal matrix Q of the QR factorization",
+          py::arg("sycl_queue"), py::arg("m"), py::arg("n"), py::arg("k"),
+          py::arg("a_array"), py::arg("tau_array"), py::arg("c_array"),
+          py::arg("depends") = py::list());
+
     m.def("_potrf", &lapack_ext::potrf,
           "Call `potrf` from OneMKL LAPACK library to return "
           "the Cholesky factorization of a symmetric positive-definite matrix",
@@ -172,6 +183,13 @@ PYBIND11_MODULE(_lapack_impl, m)
           "the eigenvalues and eigenvectors of a real symmetric matrix",
           py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
           py::arg("eig_vecs"), py::arg("eig_vals"),
+          py::arg("depends") = py::list());
+
+    m.def("_trtrs", &lapack_ext::trtrs,
+          "Call `trtrs` from OneMKL LAPACK library to solve "
+          "a system of linear equations with a triangular coefficient matrix,",
+          py::arg("sycl_queue"), py::arg("n"), py::arg("nrhs"),
+          py::arg("a_array"), py::arg("b_array"),
           py::arg("depends") = py::list());
 
     m.def("_ungqr_batch", &lapack_ext::ungqr_batch,
