@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.matrix_power &mdash; Data Parallel Extension for NumPy 0.15.0dev1+11.g5a3e078236 documentation</title>
+  <title>dpnp.linalg.eigvalsh &mdash; Data Parallel Extension for NumPy 0.15.0dev1+11.g5a3e078236 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -30,8 +30,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.kron" href="dpnp.kron.html" />
-    <link rel="prev" title="dpnp.einsum_path" href="dpnp.einsum_path.html" /> 
+    <link rel="next" title="dpnp.linalg.norm" href="dpnp.linalg.norm.html" />
+    <link rel="prev" title="dpnp.linalg.eigvals" href="dpnp.linalg.eigvals.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -70,9 +70,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../linalg.html">Linear Algebra</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="../linalg.html#matrix-and-vector-products">Matrix and vector products</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-and-vector-products">Matrix and vector products</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#decompositions">Decompositions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-eigenvalues">Matrix eigenvalues</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../linalg.html#matrix-eigenvalues">Matrix eigenvalues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#norms-and-other-numbers">Norms and other numbers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#solving-linear-equations">Solving linear equations</a></li>
 </ul>
@@ -113,9 +113,9 @@
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
           <li class="breadcrumb-item"><a href="../linalg.html">Linear Algebra</a></li>
-      <li class="breadcrumb-item active">dpnp.linalg.matrix_power</li>
+      <li class="breadcrumb-item active">dpnp.linalg.eigvalsh</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/reference/generated/dpnp.linalg.matrix_power.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.linalg.eigvalsh.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -123,50 +123,54 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dpnp-linalg-matrix-power">
-<h1>dpnp.linalg.matrix_power<a class="headerlink" href="#dpnp-linalg-matrix-power" title="Link to this heading"></a></h1>
+  <section id="dpnp-linalg-eigvalsh">
+<h1>dpnp.linalg.eigvalsh<a class="headerlink" href="#dpnp-linalg-eigvalsh" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="dpnp.linalg.matrix_power">
-<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">matrix_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#matrix_power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.matrix_power" title="Link to this definition"></a></dt>
-<dd><p>Raise a square matrix to the (integer) power <cite>n</cite>.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.matrix_power.html#numpy.linalg.matrix_power" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.matrix_power</span></code></a>.</p>
+<dt class="sig sig-object py" id="dpnp.linalg.eigvalsh">
+<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">eigvalsh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UPLO</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'L'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#eigvalsh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.eigvalsh" title="Link to this definition"></a></dt>
+<dd><p>Compute the eigenvalues of a complex Hermitian or real symmetric matrix.</p>
+<p>Main difference from <a class="reference internal" href="dpnp.linalg.eigh.html#dpnp.linalg.eigh" title="dpnp.linalg.eigh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.eigh</span></code></a>: the eigenvectors are not computed.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvalsh.html#numpy.linalg.eigvalsh" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.eigvalsh</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Matrix to be “powered”.</p></li>
-<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The exponent can be any integer or long integer, positive, negative, or zero.</p></li>
+<li><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – A complex- or real-valued array whose eigenvalues are to be computed.</p></li>
+<li><p><strong>UPLO</strong> (<em>{&quot;L&quot;</em><em>, </em><em>&quot;U&quot;}</em><em>, </em><em>optional</em>) – Specifies the calculation uses either the lower (“L”) or upper (“U”)
+triangular part of the matrix.
+Regardless of this choice, only the real parts of the diagonal are
+considered to preserve the Hermite matrix property.
+It therefore follows that the imaginary part of the diagonal
+will always be treated as zero.
+Default: “L”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>a**n</strong> (<em>(…, M, M) dpnp.ndarray</em>) – The return value is the same shape and type as <cite>M</cite>;
-if the exponent is positive or zero then the type of the
-elements is the same as those of <cite>M</cite>. If the exponent is
-negative the elements are floating-point.</p></li>
-<li><p><em>&gt;&gt;&gt; import dpnp as np</em></p></li>
-<li><p><em>&gt;&gt;&gt; i = np.array([[0, 1], [-1, 0]]) # matrix equiv. of the imaginary unit</em></p></li>
-<li><p><em>&gt;&gt;&gt; np.linalg.matrix_power(i, 3) # should = -i</em></p></li>
-<li><p><em>array([[ 0, -1],</em> – [ 1,  0]])</p></li>
-<li><p><em>&gt;&gt;&gt; np.linalg.matrix_power(i, 0)</em></p></li>
-<li><p><em>array([[1, 0],</em> – [0, 1]])</p></li>
-<li><p><em>&gt;&gt;&gt; np.linalg.matrix_power(i, -3) # should = 1/(-i) = i, but w/ f.p. elements</em></p></li>
-<li><p><em>array([[ 0.,  1.],</em> – [-1.,  0.]])</p></li>
-<li><p><em>Somewhat more sophisticated example</em></p></li>
-<li><p><em>&gt;&gt;&gt; q = np.zeros((4, 4))</em></p></li>
-<li><p><strong>&gt;&gt;&gt; q[0</strong> (<em>2, 0:2] = -i</em>)</p></li>
-<li><p><strong>&gt;&gt;&gt; q[2</strong> (<em>4, 2:4] = i</em>)</p></li>
-<li><p><em>&gt;&gt;&gt; q # one of the three quaternion units not equal to 1</em></p></li>
-<li><p><em>array([[ 0., -1.,  0.,  0.],</em> – [ 1.,  0.,  0.,  0.],
-[ 0.,  0.,  0.,  1.],
-[ 0.,  0., -1.,  0.]])</p></li>
-<li><p><em>&gt;&gt;&gt; np.linalg.matrix_power(q, 2) # = -np.eye(4)</em></p></li>
-<li><p><em>array([[-1.,  0.,  0.,  0.],</em> – [ 0., -1.,  0.,  0.],
-[ 0.,  0., -1.,  0.],
-[ 0.,  0.,  0., -1.]])</p></li>
-</ul>
-</p>
+<dd class="field-even"><p><strong>w</strong> – The eigenvalues in ascending order, each repeated according to
+its multiplicity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(…, M) dpnp.ndarray</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.linalg.eigh.html#dpnp.linalg.eigh" title="dpnp.linalg.eigh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.eigh</span></code></a></dt><dd><p>Return the eigenvalues and eigenvectors of a complex Hermitian (conjugate symmetric) or a real symmetric matrix.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.linalg.eigvals.html#dpnp.linalg.eigvals" title="dpnp.linalg.eigvals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.eigvals</span></code></a></dt><dd><p>Compute the eigenvalues of a general matrix.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.linalg.eig.html#dpnp.linalg.eig" title="dpnp.linalg.eig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.eig</span></code></a></dt><dd><p>Compute the eigenvalues and right eigenvectors of a general matrix.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dpnp</span> <span class="kn">import</span> <span class="n">linalg</span> <span class="k">as</span> <span class="n">LA</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="n">j</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="n">j</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">LA</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">array([0.17157288, 5.82842712])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
@@ -175,8 +179,8 @@ negative the elements are floating-point.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.einsum_path.html" class="btn btn-neutral float-left" title="dpnp.einsum_path" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.kron.html" class="btn btn-neutral float-right" title="dpnp.kron" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.linalg.eigvals.html" class="btn btn-neutral float-left" title="dpnp.linalg.eigvals" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.linalg.norm.html" class="btn btn-neutral float-right" title="dpnp.linalg.norm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
