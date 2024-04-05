@@ -1,0 +1,92 @@
+﻿dpnp.dtype
+==========
+
+.. currentmodule:: dpnp
+
+.. autoclass:: dtype
+
+   ..
+      Methods
+
+
+
+   .. rubric:: Methods
+
+   ..
+      Special methods
+
+
+
+   .. automethod:: __getitem__
+
+
+
+   .. automethod:: __len__
+
+
+
+
+   ..
+      Ordinary methods
+
+
+
+
+   .. automethod:: newbyteorder
+
+
+   ..
+      Special methods
+
+
+
+   .. automethod:: __eq__
+
+
+   .. automethod:: __ne__
+
+
+   .. automethod:: __lt__
+
+
+   .. automethod:: __le__
+
+
+   .. automethod:: __gt__
+
+
+   .. automethod:: __ge__
+
+
+
+   ..
+      Atributes
+
+ 
+
+   .. rubric:: Attributes
+
+
+   .. autoattribute:: alignment
+   .. autoattribute:: base
+   .. autoattribute:: byteorder
+   .. autoattribute:: char
+   .. autoattribute:: descr
+   .. autoattribute:: fields
+   .. autoattribute:: flags
+   .. autoattribute:: hasobject
+   .. autoattribute:: isalignedstruct
+   .. autoattribute:: isbuiltin
+   .. autoattribute:: isnative
+   .. autoattribute:: itemsize
+   .. autoattribute:: kind
+   .. autoattribute:: metadata
+   .. autoattribute:: name
+   .. autoattribute:: names
+   .. autoattribute:: ndim
+   .. autoattribute:: num
+   .. autoattribute:: shape
+   .. autoattribute:: str
+   .. autoattribute:: subdtype
+   .. autoattribute:: type
+ 
