@@ -1884,7 +1884,9 @@ class TestLogSumExp:
     def test_logsumexp(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
         res = dpnp.logsumexp(a, axis=axis, keepdims=keepdims)
-        exp_dtype = dpnp.default_float_type(a.device)
+        exp_dtype = (
+            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
+        )
         exp = numpy.logaddexp.reduce(
             dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
         )
@@ -1896,11 +1898,17 @@ class TestLogSumExp:
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_logsumexp_out(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
-        exp_dtype = dpnp.default_float_type(a.device)
+        exp_dtype = (
+            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
+        )
         exp = numpy.logaddexp.reduce(
             dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
         )
-        dpnp_out = dpnp.empty(exp.shape, dtype=exp_dtype)
+
+        exp_dtype = exp.dtype
+        if exp_dtype == numpy.float64 and not has_support_aspect64():
+            exp_dtype = numpy.float32
+        dpnp_out = dpnp.empty_like(a, shape=exp.shape, dtype=exp_dtype)
         res = dpnp.logsumexp(a, axis=axis, out=dpnp_out, keepdims=keepdims)
 
         assert res is dpnp_out
@@ -1926,7 +1934,9 @@ class TestReduceHypot:
     def test_reduce_hypot(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
         res = dpnp.reduce_hypot(a, axis=axis, keepdims=keepdims)
-        exp_dtype = dpnp.default_float_type(a.device)
+        exp_dtype = (
+            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
+        )
         exp = numpy.hypot.reduce(
             dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
         )
@@ -1938,11 +1948,17 @@ class TestReduceHypot:
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_reduce_hypot_out(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
-        exp_dtype = dpnp.default_float_type(a.device)
+        exp_dtype = (
+            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
+        )
         exp = numpy.hypot.reduce(
             dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
         )
-        dpnp_out = dpnp.empty(exp.shape, dtype=exp_dtype)
+
+        exp_dtype = exp.dtype
+        if exp_dtype == numpy.float64 and not has_support_aspect64():
+            exp_dtype = numpy.float32
+        dpnp_out = dpnp.empty_like(a, shape=exp.shape, dtype=exp_dtype)
         res = dpnp.reduce_hypot(a, axis=axis, out=dpnp_out, keepdims=keepdims)
 
         assert res is dpnp_out
