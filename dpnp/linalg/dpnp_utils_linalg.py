@@ -1439,7 +1439,7 @@ def dpnp_pinv(a, rcond=1e-15, hermitian=False):
 
     if _is_empty_2d(a):
         m, n = a.shape[-2:]
-        return dpnp.empty_like(a, shape=(a.shape[:-2] + (n, m)), dtype=a.dtype)
+        return dpnp.empty_like(a, shape=(a.shape[:-2] + (n, m)))
 
     if dpnp.is_supported_array_type(rcond):
         # Check that `a` and `rcond` are allocated on the same device
