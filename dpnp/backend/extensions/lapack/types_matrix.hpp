@@ -227,6 +227,34 @@ struct GetriBatchTypePairSupportFactory
 
 /**
  * @brief A factory to define pairs of supported types for which
+ * MKL LAPACK library provides support in oneapi::mkl::lapack::getrs<T>
+ * function.
+ *
+ * @tparam T Type of array containing input matrix (LU-factored form)
+ * and the array of multiple dependent variables,
+ * as well as the output array for storing the solutions to a system of linear
+ * equations.
+ */
+template <typename T>
+struct GetrsTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
+        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<float>,
+                                          T,
+                                          std::complex<float>>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<double>,
+                                          T,
+                                          std::complex<double>>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
  * MKL LAPACK library provides support in oneapi::mkl::lapack::heevd<T, RealT>
  * function.
  *
