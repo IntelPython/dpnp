@@ -219,20 +219,101 @@ def det(a):
     return dpnp_det(a)
 
 
-def eig(x1):
+def eig(a):
     """
     Compute the eigenvalues and right eigenvectors of a square array.
 
-    .. seealso:: :obj:`numpy.linalg.eig`
+    For full documentation refer to :obj:`numpy.linalg.eig`.
+
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Matrices for which the eigenvalues and right eigenvectors will
+        be computed.
+
+    Returns
+    -------
+    eigenvalues : (..., M) dpnp.ndarray
+        The eigenvalues, each repeated according to its multiplicity.
+        The eigenvalues are not necessarily ordered. The resulting
+        array will be of complex type, unless the imaginary part is
+        zero in which case it will be cast to a real type. When `a`
+        is real the resulting eigenvalues will be real (0 imaginary
+        part) or occur in conjugate pairs
+    eigenvectors : (..., M, M) dpnp.ndarray
+        The normalized (unit "length") eigenvectors, such that the
+        column ``v[:,i]`` is the eigenvector corresponding to the
+        eigenvalue ``w[i]``.
+
+    Limitations
+    -----------
+    The function is executed sequentially only on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.
+    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian
+                              (conjugate symmetric) or a real symmetric matrix.
+    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or
+                                  real symmetric matrix.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> from dpnp import linalg as LA
+
+    (Almost) trivial example with real e-values and e-vectors.
+
+    >>> w, v = LA.eig(np.diag((1, 2, 3)))
+    >>> w; v
+    array([1., 2., 3.])
+    array([[1., 0., 0.],
+           [0., 1., 0.],
+           [0., 0., 1.]])
+
+    Real matrix possessing complex e-values and e-vectors; note that the
+    e-values are complex conjugates of each other.
+
+    >>> w, v = LA.eig(np.array([[1, -1], [1, 1]]))
+    >>> w; v
+    array([1.+1.j, 1.-1.j])
+    array([[0.70710678+0.j        , 0.70710678-0.j        ],
+           [0.        -0.70710678j, 0.        +0.70710678j]])
+
+    Complex-valued matrix with real e-values (but complex-valued e-vectors);
+    note that ``a.conj().T == a``, i.e., `a` is Hermitian.
+
+    >>> a = np.array([[1, 1j], [-1j, 1]])
+    >>> w, v = LA.eig(a)
+    >>> w; v
+    array([2.+0.j, 0.+0.j])
+    array([[ 0.        +0.70710678j,  0.70710678+0.j        ], # may vary
+           [ 0.70710678+0.j        , -0.        +0.70710678j]])
+
+    Be careful about round-off error!
+
+    >>> a = np.array([[1 + 1e-9, 0], [0, 1 - 1e-9]])
+    >>> # Theor. e-values are 1 +/- 1e-9
+    >>> w, v = LA.eig(a)
+    >>> w; v
+    array([1., 1.])
+    array([[1., 0.],
+           [0., 1.]])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.size > 0:
-            return dpnp_eig(x1_desc)
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-    return call_origin(numpy.linalg.eig, x1)
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+
+    w_np, v_np = numpy.linalg.eig(dpnp.asnumpy(a))
+    return (
+        dpnp.array(w_np, sycl_queue=a_sycl_queue, usm_type=a_usm_type),
+        dpnp.array(v_np, sycl_queue=a_sycl_queue, usm_type=a_usm_type),
+    )
 
 
 def eigh(a, UPLO="L"):
