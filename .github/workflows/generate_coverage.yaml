@@ -21,7 +21,9 @@ jobs:
 
     env:
       python-ver: '3.10'
-      CHANNELS: '-c dppy/label/coverage -c intel -c conda-forge --override-channels'
+      CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+      # Install the latest oneAPI compiler to work around an issue
+      INSTALL_ONE_API: 'yes'
 
     steps:
       - name: Cancel Previous Runs
@@ -34,6 +36,26 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Add Intel repository
+        if: env.INSTALL_ONE_API == 'yes'
+        run: |
+          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+          sudo apt-get update
+
+      - name: Install latest Intel OneAPI
+        if: env.INSTALL_ONE_API == 'yes'
+        run: |
+          sudo apt-get install intel-oneapi-compiler-dpcpp-cpp
+          sudo apt-get install intel-oneapi-mkl-devel
+          sudo apt-get install intel-oneapi-tbb-devel
+
+      - name: Install Lcov
+        run: |
+          sudo apt-get install lcov
+
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
         with:
@@ -42,14 +64,17 @@ jobs:
           miniconda-version: 'latest'
           activate-environment: 'coverage'
 
-      - name: Install Lcov
-        run: |
-          sudo apt-get install lcov
-
       - name: Install dpnp dependencies
+        if: env.INSTALL_ONE_API == 'yes'
         run: |
           conda install cython llvm cmake">=3.21" scikit-build ninja pytest pytest-cov coverage[toml] \
-              dpctl">=0.17.0dev0" dpctl dpcpp_linux-64 mkl-devel-dpcpp tbb-devel onedpl-devel ${{ env.CHANNELS }}
+              dpctl">=0.17.0dev0" onedpl-devel ${{ env.CHANNELS }}
+
+      - name: Install dpnp dependencies
+        if: env.INSTALL_ONE_API != 'yes'
+        run: |
+          conda install cython llvm cmake">=3.21" scikit-build ninja pytest pytest-cov coverage[toml] \
+              dpctl">=0.17.0dev0" dpcpp_linux-64 mkl-devel-dpcpp tbb-devel onedpl-devel ${{ env.CHANNELS }}
 
       - name: Conda info
         run: |
@@ -67,6 +92,7 @@ jobs:
           command: |
             . $CONDA/etc/profile.d/conda.sh
             conda activate coverage
+            [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
             git clean -fxd
             python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py"
 
