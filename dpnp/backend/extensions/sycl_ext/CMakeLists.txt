@@ -63,7 +63,7 @@ endif()
 target_link_options(${python_module_name} PUBLIC -fsycl-device-code-split=per_kernel)
 if (UNIX)
     # this option is support on Linux only
-    target_link_options(${python_module_name} PUBLIC -fsycl-link-huge-device-code)
+    target_link_options(${python_module_name} PUBLIC -flink-huge-device-code)
 endif()
 
 if (DPNP_GENERATE_COVERAGE)
