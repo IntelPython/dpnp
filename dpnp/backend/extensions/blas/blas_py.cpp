@@ -35,17 +35,19 @@
 #include "dotc.hpp"
 #include "dotu.hpp"
 #include "gemm.hpp"
+#include "gemv.hpp"
 
 namespace blas_ext = dpnp::backend::ext::blas;
 namespace py = pybind11;
 namespace dot_ext = blas_ext::dot;
 using dot_ext::dot_impl_fn_ptr_t;
 
-// populate dispatch tables
-void init_dispatch_tables(void)
+// populate dispatch vectors and tables
+void init_dispatch_vectors_tables(void)
 {
     blas_ext::init_gemm_batch_dispatch_table();
     blas_ext::init_gemm_dispatch_table();
+    blas_ext::init_gemv_dispatch_vector();
 }
 
 static dot_impl_fn_ptr_t dot_dispatch_vector[dpctl_td_ns::num_types];
@@ -54,7 +56,7 @@ static dot_impl_fn_ptr_t dotu_dispatch_vector[dpctl_td_ns::num_types];
 
 PYBIND11_MODULE(_blas_impl, m)
 {
-    init_dispatch_tables();
+    init_dispatch_vectors_tables();
 
     using arrayT = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
@@ -128,5 +130,14 @@ PYBIND11_MODULE(_blas_impl, m)
               "the matrix-matrix product for a batch of 2-D matrices.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
               py::arg("resultC"), py::arg("depends") = py::list());
+    }
+
+    {
+        m.def("_gemv", &blas_ext::gemv,
+              "Call `gemv` from OneMKL BLAS library to return "
+              "the matrix-vector product using a general matrix.",
+              py::arg("sycl_queue"), py::arg("matrixA"), py::arg("vectorX"),
+              py::arg("vectorY"), py::arg("transpose"),
+              py::arg("depends") = py::list());
     }
 }
