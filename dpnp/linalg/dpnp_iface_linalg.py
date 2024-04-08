@@ -385,32 +385,70 @@ def eigh(a, UPLO="L"):
     return dpnp_eigh(a, UPLO=UPLO)
 
 
-def eigvals(input):
+def eigvals(a):
     """
     Compute the eigenvalues of a general matrix.
 
-    Main difference between `eigvals` and `eig`: the eigenvectors aren't
-    returned.
+    For full documentation refer to :obj:`numpy.linalg.eigvals`.
 
     Parameters
     ----------
-    input : (..., M, M) array_like
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         A complex- or real-valued matrix whose eigenvalues will be computed.
 
     Returns
     -------
-    w : (..., M,) ndarray
+    w : (..., M) dpnp.ndarray
         The eigenvalues, each repeated according to its multiplicity.
         They are not necessarily ordered, nor are they necessarily
         real for real matrices.
+
+    Limitations
+    -----------
+    The function is executed sequentially only on CPU.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of a square array.
+    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or
+                                  real symmetric matrix.
+    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian
+                              (conjugate symmetric) or a real symmetric matrix.
+
+    Examples
+    --------
+    Illustration, using the fact that the eigenvalues of a diagonal matrix
+    are its diagonal elements, that multiplying a matrix on the left
+    by an orthogonal matrix, `Q`, and on the right by `Q.T` (the transpose
+    of `Q`), preserves the eigenvalues of the "middle" matrix.  In other words,
+    if `Q` is orthogonal, then ``Q * A * Q.T`` has the same eigenvalues as
+    ``A``:
+
+    >>> import dpnp as np
+    >>> from dpnp import linalg as LA
+    >>> x = np.random.random()
+    >>> Q = np.array([[np.cos(x), -np.sin(x)], [np.sin(x), np.cos(x)]])
+    >>> LA.norm(Q[0, :]), LA.norm(Q[1, :]), np.dot(Q[0, :],Q[1, :])
+    (array(1.), array(1.), array(0.))
+
+    Now multiply a diagonal matrix by ``Q`` on one side and by ``Q.T`` on the other:
+
+    >>> D = np.diag((-1,1))
+    >>> LA.eigvals(D)
+    array([-1.,  1.])
+    >>> A = np.dot(Q, D)
+    >>> A = np.dot(A, Q.T)
+    >>> LA.eigvals(A)
+    array([-1.,  1.]) # random
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.size > 0:
-            return dpnp_eigvals(x1_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-    return call_origin(numpy.linalg.eigvals, input)
+    w_np = numpy.linalg.eigvals(dpnp.asnumpy(a))
+    return dpnp.array(w_np, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
 
 
 def eigvalsh(a, UPLO="L"):
