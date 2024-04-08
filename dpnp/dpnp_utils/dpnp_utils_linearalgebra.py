@@ -268,7 +268,9 @@ def _create_result_array(
         x1_usm = dpnp.get_usm_ndarray(x1)
         x2_usm = dpnp.get_usm_ndarray(x2)
         out_usm = dpnp.get_usm_ndarray(out)
-        contig_flag, _, _ = _define_contig_flag(out)
+        one_input_is_1D = x1.ndim == 1 or x2.ndim == 1
+        out_base_is_1D = out.ndim < 2 or one_input_is_1D
+        contig_flag, _, _ = _define_contig_flag(out, out_base_is_1D)
 
         if (
             out.dtype == dtype
@@ -289,7 +291,7 @@ def _create_result_array(
     )
 
 
-def _define_contig_flag(x):
+def _define_contig_flag(x, x_is_1D=False):
     """
     Determines if the data in last two dimensions of array `x` are
     c_contiguous or f_contiguous. For 2D arrays, it is the same as using
@@ -299,7 +301,7 @@ def _define_contig_flag(x):
     flag = False
     x_strides = x.strides
     x_shape = x.shape
-    if x.ndim < 2:
+    if x_is_1D:
         return True, True, True
 
     x_strides = _standardize_strides_to_nonzero(x_strides, x_shape)
@@ -771,6 +773,76 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
         res = res.reshape(orig_shape)
 
     return dpnp.ascontiguousarray(res)
+
+
+def _gemv_batch_matmul(exec_q, x1, x2, res, transpose, dev_tasks_list):
+    x1_ndim = x1.ndim
+    x2_ndim = x2.ndim
+    x1_shape = x1.shape
+    x2_shape = x2.shape
+    res[...] = 0.0  # TODO: remove once MKLD-17547 is resolved
+    if transpose:
+        x1 = dpnp.reshape(x1, (-1, x1_shape[-1]))
+        x2 = dpnp.reshape(x2, (-1, x2_shape[-2], x2_shape[-1]))
+    else:
+        x1 = dpnp.reshape(x1, (-1, x1_shape[-2], x1_shape[-1]))
+        index = -1 if x2_ndim == 1 else -2
+        x2 = dpnp.reshape(x2, (-1, x2_shape[index]))
+
+    orig_shape = res.shape
+    if x1_ndim == 1 or x2_ndim == 1:
+        res = res.reshape(-1, orig_shape[-1])
+    else:
+        res = res.reshape(-1, orig_shape[-2] * orig_shape[-1])
+    res_shape = res.shape
+
+    ht_tasks_list = []
+    # gemv_batch does not handle negative strides, make a copy if needed
+    x1 = _copy_array(
+        x1, dev_tasks_list, ht_tasks_list, copy_flag=x1.strides[0] < 0
+    )
+    x2 = _copy_array(
+        x2, dev_tasks_list, ht_tasks_list, copy_flag=x2.strides[0] < 0
+    )
+    res = _copy_array(
+        res, dev_tasks_list, ht_tasks_list, copy_flag=res.strides[0] < 0
+    )
+
+    if transpose:
+        a = dpnp.get_usm_ndarray(x2)
+        x = dpnp.get_usm_ndarray(x1)
+    else:
+        a = dpnp.get_usm_ndarray(x1)
+        x = dpnp.get_usm_ndarray(x2)
+
+    chunk = 2048 * 2048 - 1
+    batch_size = res_shape[0]
+    for i in range(0, batch_size, chunk):
+        if x.shape[0] == 1:
+            # x is repeatedly multiplied with each matrix in a
+            a_usm = a[i : i + chunk, ...]
+            x_usm = x
+        elif a.shape[0] == 1:
+            a_usm = a
+            x_usm = x[i : i + chunk, ...]
+        else:
+            a_usm = a[i : i + chunk, ...]
+            x_usm = x[i : i + chunk, ...]
+        res_usm = dpnp.get_usm_ndarray(res[i : i + chunk, ...])
+        ht_blas_ev, _ = bi._gemv_batch(
+            exec_q,
+            a_usm,
+            x_usm,
+            res_usm,
+            transpose,
+            dev_tasks_list,
+        )
+        ht_tasks_list.append(ht_blas_ev)
+    dpctl.SyclEvent.wait_for(ht_tasks_list)
+    if res_shape != orig_shape:
+        res = res.reshape(orig_shape)
+
+    return res
 
 
 def _gemm_matmul(exec_q, x1, x2, res, dev_tasks_list):
@@ -2167,21 +2239,12 @@ def dpnp_matmul(
         x2 = dpnp.reshape(x2, x2_shape[-2:])
         res_shape = (x1_shape[-2], x2_shape[-1])
     elif x1_base_is_1D:
-        # TODO: implement gemv_batch to use it here with transpose
-        call_flag = "gemm_batch"
-        if x1_ndim == 1:
-            x1 = dpnp.reshape(x1, (1, 1, x1.size))
-            res_shape = result_shape[:-1] + (1, result_shape[-1])
-        else:
-            res_shape = result_shape
+        call_flag = "gemv_batch"
+        transpose = True
+        res_shape = result_shape
     elif x2_base_is_1D:
-        # TODO: implement gemv_batch to use it here without transpose
-        call_flag = "gemm_batch"
-        if x2_ndim == 1:
-            x2 = dpnp.reshape(x2, (1, x2.size, 1))
-            res_shape = result_shape + (1,)
-        else:
-            res_shape = result_shape
+        call_flag = "gemv_batch"
+        res_shape = result_shape
     else:
         call_flag = "gemm_batch"
         res_shape = result_shape
@@ -2196,8 +2259,13 @@ def dpnp_matmul(
             res = dpnp_dot(x1, x2, out=out)
         res_shape = res.shape
     else:
-        x1_contig_flag, _, x1_f = _define_contig_flag(x1)
-        x2_contig_flag, _, x2_f = _define_contig_flag(x2)
+        # TODO: not call_flag == "gemm_batch" is a temporary solution until dot_batch is implemented
+        x1_contig_flag, _, x1_f = _define_contig_flag(
+            x1, x1_base_is_1D and not call_flag == "gemm_batch"
+        )
+        x2_contig_flag, _, x2_f = _define_contig_flag(
+            x2, x2_base_is_1D and not call_flag == "gemm_batch"
+        )
         res_order = "F" if (x1_f and x2_f and call_flag == "gemm") else "C"
         res = _create_result_array(
             x1,
@@ -2253,6 +2321,15 @@ def dpnp_matmul(
                     dep_events_list,
                 )
                 host_tasks_list.append(ht_blas_ev)
+            elif call_flag == "gemv_batch":
+                res = _gemv_batch_matmul(
+                    exec_q,
+                    x1,
+                    x2,
+                    res,
+                    transpose,
+                    dep_events_list,
+                )
             elif call_flag == "gemm":
                 res = _gemm_matmul(
                     exec_q,

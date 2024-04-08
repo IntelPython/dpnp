@@ -2957,7 +2957,40 @@ class TestMatmul:
         assert result is out
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("shape", [(8, 10)], ids=["2D"])
+    @pytest.mark.parametrize(
+        "shape", [(10, 3, 3), (12, 10, 3, 3)], ids=["3D", "4D"]
+    )
+    @pytest.mark.parametrize("stride", [-1, -2, 2], ids=["-1", "-2", "2"])
+    @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
+    def test_matmul_strided_mat_vec1(self, shape, stride, transpose):
+        # matrix is strided, dimension (-3) is strided
+        # if negative stride, copy is needed and the base becomes c-contiguous
+        # otherwise the base remains the same as input in gemm_batch
+        A = numpy.random.rand(*shape)
+        A_dp = dpnp.asarray(A)
+        if transpose:
+            A = numpy.moveaxis(A, (-2, -1), (-1, -2))
+            A_dp = dpnp.moveaxis(A_dp, (-2, -1), (-1, -2))
+        index = [slice(None)] * len(shape)
+        index[-3] = slice(None, None, stride)
+        index = tuple(index)
+        a = A[index]
+        a_dp = A_dp[index]
+        b = numpy.ones((3,))
+        b_dp = dpnp.array(b)
+        result = dpnp.matmul(a_dp, b_dp)
+        expected = numpy.matmul(a, b)
+        assert_dtype_allclose(result, expected)
+
+        OUT = dpnp.empty(shape[:-1], dtype=result.dtype)
+        out = OUT[index[:-1]]
+        result = dpnp.matmul(a_dp, b_dp, out=out)
+        assert result is out
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "shape", [(8, 10), (6, 8, 10), (6, 8, 10, 12)], ids=["2D", "3D", "4D"]
+    )
     @pytest.mark.parametrize("incx", [-2, 2], ids=["-2", "2"])
     @pytest.mark.parametrize("incy", [-2, 2], ids=["-2", "2"])
     @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
@@ -2989,7 +3022,9 @@ class TestMatmul:
         assert result is out
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("shape", [(8, 10)], ids=["2D"])
+    @pytest.mark.parametrize(
+        "shape", [(8, 10), (6, 8, 10), (6, 8, 10, 12)], ids=["2D", "3D", "4D"]
+    )
     @pytest.mark.parametrize("incx", [-2, 2], ids=["-2", "2"])
     @pytest.mark.parametrize("incy", [-2, 2], ids=["-2", "2"])
     @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
@@ -3142,9 +3177,12 @@ class TestMatmul:
     @pytest.mark.parametrize(
         "shape_pair",
         [
-            ((4096, 4096, 2, 2), (4096, 4096, 2, 2)),
-            ((2, 2), (4096, 4096, 2, 2)),
-            ((4096, 4096, 2, 2), (2, 2)),
+            ((5000, 5000, 2, 2), (5000, 5000, 2, 2)),
+            ((2, 2), (5000, 5000, 2, 2)),
+            ((5000, 5000, 2, 2), (2, 2)),
+            ((3000, 3000, 1, 2), (2, 2)),
+            ((2,), (3000, 3000, 2, 2)),
+            ((1, 1, 1, 2), (3000, 3000, 2, 2)),
         ],
     )
     def test_matmul_large(self, shape_pair):
