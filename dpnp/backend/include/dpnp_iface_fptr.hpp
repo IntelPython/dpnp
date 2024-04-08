@@ -128,11 +128,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_EDIFF1D_EXT, /**< Used in numpy.ediff1d() impl, requires extra
                             parameters */
     DPNP_FN_EIG,         /**< Used in numpy.linalg.eig() impl  */
-    DPNP_FN_EIG_EXT,     /**< Used in numpy.linalg.eig() impl, requires extra
-                            parameters */
     DPNP_FN_EIGVALS,     /**< Used in numpy.linalg.eigvals() impl  */
-    DPNP_FN_EIGVALS_EXT, /**< Used in numpy.linalg.eigvals() impl, requires
-                            extra parameters */
     DPNP_FN_ERF,         /**< Used in scipy.special.erf impl  */
     DPNP_FN_ERF_EXT,     /**< Used in scipy.special.erf impl, requires extra
                             parameters */
