@@ -47,6 +47,7 @@ void init_dispatch_vectors_tables(void)
 {
     blas_ns::init_gemm_batch_dispatch_table();
     blas_ns::init_gemm_dispatch_table();
+    blas_ns::init_gemv_batch_dispatch_vector();
     blas_ns::init_gemv_dispatch_vector();
 }
 
@@ -139,6 +140,15 @@ PYBIND11_MODULE(_blas_impl, m)
         m.def("_gemv", &blas_ns::gemv,
               "Call `gemv` from OneMKL BLAS library to compute "
               "the matrix-vector product with a general matrix.",
+              py::arg("sycl_queue"), py::arg("matrixA"), py::arg("vectorX"),
+              py::arg("vectorY"), py::arg("transpose"),
+              py::arg("depends") = py::list());
+    }
+
+    {
+        m.def("_gemv_batch", &blas_ns::gemv_batch,
+              "Call `gemv_batch` from OneMKL BLAS library to compute the "
+              "matrix-vector product for a batch of matrices and vectors.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("vectorX"),
               py::arg("vectorY"), py::arg("transpose"),
               py::arg("depends") = py::list());

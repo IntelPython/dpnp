@@ -33,6 +33,7 @@
 #include "gemm.hpp"
 #include "types_matrix.hpp"
 
+#include "blas_utils.hpp"
 #include "dpnp_utils.hpp"
 
 namespace dpnp::extensions::blas
@@ -160,46 +161,6 @@ static sycl::event gemm_batch_impl(sycl::queue &exec_q,
     }
 
     return gemm_batch_event;
-}
-
-void standardize_strides_to_nonzero(std::vector<py::ssize_t> &strides,
-                                    const py::ssize_t *shape)
-{
-    // When shape of an array along any particular dimension is 1, the stride
-    // along that dimension is undefined. This function standardize the strides
-    // by calculating the non-zero value of the strides.
-    const std::size_t ndim = strides.size();
-    const bool has_zero_stride =
-        std::accumulate(strides.begin(), strides.end(), 1,
-                        std::multiplies<py::ssize_t>{}) == 0;
-
-    if (has_zero_stride) {
-        for (std::size_t i = 0; i < ndim - 1; ++i) {
-            strides[i] = strides[i] == 0
-                             ? std::accumulate(shape + i + 1, shape + ndim, 1,
-                                               std::multiplies<py::ssize_t>{})
-                             : strides[i];
-        }
-        strides[ndim - 1] = strides[ndim - 1] == 0 ? 1 : strides[ndim - 1];
-    }
-}
-
-void standardize_strides_to_zero(std::vector<py::ssize_t> &strides,
-                                 const py::ssize_t *shape)
-{
-    // When shape of an array along any particular dimension is 1, the stride
-    // along that dimension is undefined. This function standardize the strides
-    // by defining such a stride as zero. This is because for these cases,
-    // instead of copying the array into the additional dimension for batch
-    // multiplication, we choose to use zero as the stride between different
-    // matrices.  Therefore, the same array is used repeatedly.
-    const std::size_t ndim = strides.size();
-
-    for (std::size_t i = 0; i < ndim; ++i) {
-        if (shape[i] <= 1) {
-            strides[i] = 0;
-        }
-    }
 }
 
 std::tuple<sycl::event, sycl::event, bool>
