@@ -87,9 +87,6 @@ class TestMatrixRank(unittest.TestCase):
         return y
 
 
-# TODO: Remove the use of fixture for all tests in this file
-# when dpnp.prod() will support complex dtypes on Gen9
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDet(unittest.TestCase):
     @testing.for_dtypes("fdFD")
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)

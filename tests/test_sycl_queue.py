@@ -1152,6 +1152,30 @@ def test_cholesky(data, is_empty, device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+@pytest.mark.parametrize(
+    "p",
+    [None, -dpnp.Inf, -2, -1, 1, 2, dpnp.Inf, "fro"],
+    ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+)
+def test_cond(device, p):
+    numpy.random.seed(42)
+    a = numpy.array(numpy.random.uniform(-5, 5, 16)).reshape(4, 4)
+    ia = dpnp.array(a, device=device)
+
+    result = dpnp.linalg.cond(ia, p=p)
+    expected = numpy.linalg.cond(a, p=p)
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = ia.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_det(device):
     data = [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]
     numpy_data = numpy.array(data)
@@ -1892,23 +1916,44 @@ def test_where(device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_solve(device):
-    x = [[1.0, 2.0], [3.0, 5.0]]
-    y = [1.0, 2.0]
+@pytest.mark.parametrize(
+    "matrix, vector",
+    [
+        ([[1, 2], [3, 5]], numpy.empty((2, 0))),
+        ([[1, 2], [3, 5]], [1, 2]),
+        (
+            [
+                [[1, 1, 1], [0, 2, 5], [2, 5, -1]],
+                [[3, -1, 1], [1, 2, 3], [2, 3, 1]],
+                [[1, 4, 1], [1, 2, -2], [4, 1, 2]],
+            ],
+            [[6, -4, 27], [9, -6, 15], [15, 1, 11]],
+        ),
+    ],
+    ids=[
+        "2D_Matrix_Empty_Vector",
+        "2D_Matrix_1D_Vector",
+        "3D_Matrix_and_Vectors",
+    ],
+)
+def test_solve(matrix, vector, device):
+    a_np = numpy.array(matrix)
+    b_np = numpy.array(vector)
 
-    numpy_x = numpy.array(x)
-    numpy_y = numpy.array(y)
-    dpnp_x = dpnp.array(x, device=device)
-    dpnp_y = dpnp.array(y, device=device)
+    a_dp = dpnp.array(a_np, device=device)
+    b_dp = dpnp.array(b_np, device=device)
 
-    result = dpnp.linalg.solve(dpnp_x, dpnp_y)
-    expected = numpy.linalg.solve(numpy_x, numpy_y)
+    if a_dp.ndim > 2 and a_dp.device.sycl_device.is_cpu:
+        pytest.skip("SAT-6842: reported hanging in public CI")
+
+    result = dpnp.linalg.solve(a_dp, b_dp)
+    expected = numpy.linalg.solve(a_np, b_np)
     assert_dtype_allclose(result, expected)
 
     result_queue = result.sycl_queue
 
-    assert_sycl_queue_equal(result_queue, dpnp_x.sycl_queue)
-    assert_sycl_queue_equal(result_queue, dpnp_y.sycl_queue)
+    assert_sycl_queue_equal(result_queue, a_dp.sycl_queue)
+    assert_sycl_queue_equal(result_queue, b_dp.sycl_queue)
 
 
 @pytest.mark.parametrize(
