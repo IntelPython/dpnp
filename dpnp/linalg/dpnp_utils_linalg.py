@@ -28,6 +28,7 @@ import dpctl
 import dpctl.tensor._tensor_impl as ti
 import numpy
 from numpy import prod
+from numpy.core.numeric import normalize_axis_index
 
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
@@ -37,12 +38,14 @@ __all__ = [
     "check_stacked_2d",
     "check_stacked_square",
     "dpnp_cholesky",
+    "dpnp_cond",
     "dpnp_det",
     "dpnp_eigh",
     "dpnp_inv",
     "dpnp_matrix_power",
     "dpnp_matrix_rank",
     "dpnp_multi_dot",
+    "dpnp_norm",
     "dpnp_pinv",
     "dpnp_qr",
     "dpnp_slogdet",
@@ -195,6 +198,11 @@ def _common_inexact_type(default_dtype, *dtypes):
         for dt in dtypes
     ]
     return dpnp.result_type(*inexact_dtypes)
+
+
+def _is_empty_2d(arr):
+    # check size first for efficiency
+    return arr.size == 0 and numpy.prod(arr.shape[-2:]) == 0
 
 
 def _lu_factor(a, res_type):
@@ -464,6 +472,35 @@ def _multi_dot_three(A, B, C, out=None):
         return dpnp.dot(dpnp.dot(A, B), C, out=out)
 
     return dpnp.dot(A, dpnp.dot(B, C), out=out)
+
+
+def _multi_svd_norm(x, row_axis, col_axis, op):
+    """
+    Compute a function of the singular values of the 2-D matrices in `x`.
+
+    This is a private utility function used by `dpnp.linalg.norm()`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+    row_axis, col_axis : int
+        The axes of `x` that hold the 2-D matrices.
+    op : callable
+        This should be either `dpnp.min` or `dpnp.max` or `dpnp.sum`.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        If `x` is 2-D, the return values is a 0-d array.
+        Otherwise, it is an array with ``x.ndim - 2`` dimensions.
+        The return values are either the minimum or maximum or sum of the
+        singular values of the matrices, depending on whether `op`
+        is `dpnp.min` or `dpnp.max` or `dpnp.sum`.
+
+    """
+    y = dpnp.moveaxis(x, (row_axis, col_axis), (-2, -1))
+    result = op(dpnp.linalg.svd(y, compute_uv=False), axis=-1)
+    return result
 
 
 def _real_type(dtype, device=None):
@@ -810,6 +847,36 @@ def dpnp_cholesky(a, upper):
     return a_h
 
 
+def dpnp_cond(x, p=None):
+    """Compute the condition number of a matrix."""
+
+    if _is_empty_2d(x):
+        raise dpnp.linalg.LinAlgError("cond is not defined on empty arrays")
+    if p is None or p == 2 or p == -2:
+        s = dpnp.linalg.svd(x, compute_uv=False)
+        if p == -2:
+            r = s[..., -1] / s[..., 0]
+        else:
+            r = s[..., 0] / s[..., -1]
+    else:
+        result_t = _common_type(x)
+        # The result array will contain nans in the entries
+        # where inversion failed
+        invx = dpnp.linalg.inv(x)
+        r = dpnp.linalg.norm(x, p, axis=(-2, -1)) * dpnp.linalg.norm(
+            invx, p, axis=(-2, -1)
+        )
+        r = r.astype(result_t, copy=False)
+
+    # Convert nans to infs unless the original array had nan entries
+    nan_mask = dpnp.isnan(r)
+    if nan_mask.any():
+        nan_mask &= ~dpnp.isnan(x).any(axis=(-2, -1))
+        r[nan_mask] = dpnp.inf
+
+    return r
+
+
 def dpnp_det(a):
     """
     dpnp_det(a)
@@ -857,12 +924,14 @@ def dpnp_det(a):
     return det.reshape(shape)
 
 
-def dpnp_eigh(a, UPLO):
+def dpnp_eigh(a, UPLO, eigen_mode="V"):
     """
-    dpnp_eigh(a, UPLO)
+    dpnp_eigh(a, UPLO, eigen_mode="V")
 
     Return the eigenvalues and eigenvectors of a complex Hermitian
     (conjugate symmetric) or a real symmetric matrix.
+    Can return both eigenvalues and eigenvectors (`eigen_mode="V"`) or
+    only eigenvalues (`eigen_mode="N"`).
 
     The main calculation is done by calling an extension function
     for LAPACK library of OneMKL. Depending on input type of `a` array,
@@ -870,59 +939,76 @@ def dpnp_eigh(a, UPLO):
 
     """
 
-    a_usm_type = a.usm_type
-    a_sycl_queue = a.sycl_queue
-    a_order = "C" if a.flags.c_contiguous else "F"
-    a_usm_arr = dpnp.get_usm_ndarray(a)
+    # get resulting type of arrays with eigenvalues and eigenvectors
+    v_type = _common_type(a)
+    w_type = _real_type(v_type)
 
-    # 'V' means both eigenvectors and eigenvalues will be calculated
-    jobz = _jobz["V"]
+    if a.size == 0:
+        w = dpnp.empty_like(a, shape=a.shape[:-1], dtype=w_type)
+        if eigen_mode == "V":
+            v = dpnp.empty_like(a, dtype=v_type)
+            return w, v
+        return w
+
+    # `eigen_mode` can be either "N" or "V", specifying the computation mode
+    # for OneMKL LAPACK `syevd` and `heevd` routines.
+    # "V" (default) means both eigenvectors and eigenvalues will be calculated
+    # "N" means only eigenvalues will be calculated
+    jobz = _jobz[eigen_mode]
     uplo = _upper_lower[UPLO]
 
-    # get resulting type of arrays with eigenvalues and eigenvectors
-    a_dtype = a.dtype
-    lapack_func = "_syevd"
-    if dpnp.issubdtype(a_dtype, dpnp.complexfloating):
-        lapack_func = "_heevd"
-        v_type = a_dtype
-        w_type = dpnp.float64 if a_dtype == dpnp.complex128 else dpnp.float32
-    elif dpnp.issubdtype(a_dtype, dpnp.floating):
-        v_type = w_type = a_dtype
-    elif a_sycl_queue.sycl_device.has_aspect_fp64:
-        v_type = w_type = dpnp.float64
-    else:
-        v_type = w_type = dpnp.float32
+    # Get LAPACK function (_syevd for real or _heevd for complex data types)
+    # to compute all eigenvalues and, optionally, all eigenvectors
+    lapack_func = (
+        "_heevd" if dpnp.issubdtype(v_type, dpnp.complexfloating) else "_syevd"
+    )
+
+    a_sycl_queue = a.sycl_queue
+    a_order = "C" if a.flags.c_contiguous else "F"
 
     if a.ndim > 2:
-        w = dpnp.empty(
-            a.shape[:-1],
+        is_cpu_device = a.sycl_device.has_aspect_cpu
+        orig_shape = a.shape
+        # get 3d input array by reshape
+        a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+
+        # allocate a memory for dpnp array of eigenvalues
+        w = dpnp.empty_like(
+            a,
+            shape=orig_shape[:-1],
             dtype=w_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
         )
+        w_orig_shape = w.shape
+        # get 2d dpnp array with eigenvalues by reshape
+        w = w.reshape(-1, w_orig_shape[-1])
 
         # need to loop over the 1st dimension to get eigenvalues and eigenvectors of 3d matrix A
-        op_count = a.shape[0]
-        if op_count == 0:
-            return w, dpnp.empty_like(a, dtype=v_type)
-
-        eig_vecs = [None] * op_count
-        ht_copy_ev = [None] * op_count
-        ht_lapack_ev = [None] * op_count
-        for i in range(op_count):
+        batch_size = a.shape[0]
+        eig_vecs = [None] * batch_size
+        ht_list_ev = [None] * batch_size * 2
+        for i in range(batch_size):
             # oneMKL LAPACK assumes fortran-like array as input, so
             # allocate a memory with 'F' order for dpnp array of eigenvectors
             eig_vecs[i] = dpnp.empty_like(a[i], order="F", dtype=v_type)
 
             # use DPCTL tensor function to fill the array of eigenvectors with content of input array
-            ht_copy_ev[i], copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_list_ev[2 * i], copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=a_usm_arr[i],
                 dst=eig_vecs[i].get_array(),
                 sycl_queue=a_sycl_queue,
             )
 
+            # TODO: Remove this w/a when MKLD-17201 is solved.
+            # Waiting for a host task executing an OneMKL LAPACK syevd call
+            # on CPU causes deadlock due to serialization of all host tasks
+            # in the queue.
+            # We need to wait for each host tasks before calling _seyvd to avoid deadlock.
+            if lapack_func == "_syevd" and is_cpu_device:
+                ht_list_ev[2 * i].wait()
+
             # call LAPACK extension function to get eigenvalues and eigenvectors of a portion of matrix A
-            ht_lapack_ev[i], _ = getattr(li, lapack_func)(
+            ht_list_ev[2 * i + 1], _ = getattr(li, lapack_func)(
                 a_sycl_queue,
                 jobz,
                 uplo,
@@ -931,29 +1017,43 @@ def dpnp_eigh(a, UPLO):
                 depends=[copy_ev],
             )
 
-        for i in range(op_count):
-            ht_lapack_ev[i].wait()
-            ht_copy_ev[i].wait()
+        dpctl.SyclEvent.wait_for(ht_list_ev)
 
-        # combine the list of eigenvectors into a single array
-        v = dpnp.array(eig_vecs, order=a_order)
-        return w, v
+        w = w.reshape(w_orig_shape)
+
+        if eigen_mode == "V":
+            # combine the list of eigenvectors into a single array
+            v = dpnp.array(eig_vecs, order=a_order).reshape(orig_shape)
+            return w, v
+        return w
+
     else:
-        # oneMKL LAPACK assumes fortran-like array as input, so
-        # allocate a memory with 'F' order for dpnp array of eigenvectors
-        v = dpnp.empty_like(a, order="F", dtype=v_type)
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+        ht_list_ev = []
+        copy_ev = dpctl.SyclEvent()
 
-        # use DPCTL tensor function to fill the array of eigenvectors with content of input array
-        ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr, dst=v.get_array(), sycl_queue=a_sycl_queue
-        )
+        # When `eigen_mode == "N"` (jobz == 0), OneMKL LAPACK does not overwrite the input array.
+        # If the input array 'a' is already F-contiguous and matches the target data type,
+        # we can avoid unnecessary memory allocation and data copying.
+        if eigen_mode == "N" and a_order == "F" and a.dtype == v_type:
+            v = a
+
+        else:
+            # oneMKL LAPACK assumes fortran-like array as input, so
+            # allocate a memory with 'F' order for dpnp array of eigenvectors
+            v = dpnp.empty_like(a, order="F", dtype=v_type)
+
+            # use DPCTL tensor function to fill the array of eigenvectors with content of input array
+            ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_usm_arr, dst=v.get_array(), sycl_queue=a_sycl_queue
+            )
+            ht_list_ev.append(ht_copy_ev)
 
         # allocate a memory for dpnp array of eigenvalues
-        w = dpnp.empty(
-            a.shape[:-1],
+        w = dpnp.empty_like(
+            a,
+            shape=a.shape[:-1],
             dtype=w_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
         )
 
         # call LAPACK extension function to get eigenvalues and eigenvectors of matrix A
@@ -965,8 +1065,9 @@ def dpnp_eigh(a, UPLO):
             w.get_array(),
             depends=[copy_ev],
         )
+        ht_list_ev.append(ht_lapack_ev)
 
-        if a_order != "F":
+        if eigen_mode == "V" and a_order != "F":
             # need to align order of eigenvectors with one of input matrix A
             out_v = dpnp.empty_like(v, order=a_order)
             ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -975,14 +1076,13 @@ def dpnp_eigh(a, UPLO):
                 sycl_queue=a_sycl_queue,
                 depends=[lapack_ev],
             )
-            ht_copy_out_ev.wait()
+            ht_list_ev.append(ht_copy_out_ev)
         else:
             out_v = v
 
-        ht_lapack_ev.wait()
-        ht_copy_ev.wait()
+        dpctl.SyclEvent.wait_for(ht_list_ev)
 
-        return w, out_v
+        return (w, out_v) if eigen_mode == "V" else w
 
 
 def dpnp_inv_batched(a, res_type):
@@ -1191,18 +1291,18 @@ def dpnp_multi_dot(n, arrays, out=None):
     """Compute the dot product of two or more arrays in a single function call."""
 
     if not arrays[0].ndim in [1, 2]:
-        raise numpy.linalg.LinAlgError(
+        raise dpnp.linalg.LinAlgError(
             f"{arrays[0].ndim}-dimensional array given. First array must be 1-D or 2-D."
         )
 
     if not arrays[-1].ndim in [1, 2]:
-        raise numpy.linalg.LinAlgError(
+        raise dpnp.linalg.LinAlgError(
             f"{arrays[-1].ndim}-dimensional array given. Last array must be 1-D or 2-D."
         )
 
     for arr in arrays[1:-1]:
         if arr.ndim != 2:
-            raise numpy.linalg.LinAlgError(
+            raise dpnp.linalg.LinAlgError(
                 f"{arr.ndim}-dimensional array given. Inner arrays must be 2-D."
             )
 
@@ -1216,6 +1316,116 @@ def dpnp_multi_dot(n, arrays, out=None):
     return result
 
 
+def dpnp_norm(x, ord=None, axis=None, keepdims=False):
+    """Compute matrix or vector norm."""
+
+    if not dpnp.issubdtype(x.dtype, dpnp.inexact):
+        x = dpnp.astype(x, dtype=dpnp.default_float_type(x.device))
+
+    ndim = x.ndim
+    # Immediately handle some default, simple, fast, and common cases.
+    if axis is None:
+        if (
+            (ord is None)
+            or (ord in ("f", "fro") and ndim == 2)
+            or (ord == 2 and ndim == 1)
+        ):
+            # TODO: use order="K" when it is supported in dpnp.ravel
+            x = dpnp.ravel(x)
+            if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
+                x_real = x.real
+                x_imag = x.imag
+                sqnorm = dpnp.dot(x_real, x_real) + dpnp.dot(x_imag, x_imag)
+            else:
+                sqnorm = dpnp.dot(x, x)
+            ret = dpnp.sqrt(sqnorm)
+            if keepdims:
+                ret = ret.reshape((1,) * ndim)
+            return ret
+
+    # Normalize the `axis` argument to a tuple.
+    if axis is None:
+        axis = tuple(range(ndim))
+    elif not isinstance(axis, tuple):
+        try:
+            axis = int(axis)
+        except Exception as e:
+            raise TypeError(
+                "'axis' must be None, an integer or a tuple of integers"
+            ) from e
+        axis = (axis,)
+
+    if len(axis) == 1:
+        axis = normalize_axis_index(axis[0], ndim)
+        if ord == dpnp.inf:
+            return dpnp.abs(x).max(axis=axis, keepdims=keepdims)
+        elif ord == -dpnp.inf:
+            return dpnp.abs(x).min(axis=axis, keepdims=keepdims)
+        elif ord == 0:
+            # Zero norm
+            # Convert to Python float in accordance with NumPy
+            return (
+                (x != 0).astype(x.real.dtype).sum(axis=axis, keepdims=keepdims)
+            )
+        elif ord == 1:
+            # special case for speedup
+            return dpnp.abs(x).sum(axis=axis, keepdims=keepdims)
+        elif ord is None or ord == 2:
+            # special case for speedup
+            s = (dpnp.conj(x) * x).real
+            return dpnp.sqrt(dpnp.sum(s, axis=axis, keepdims=keepdims))
+        elif isinstance(ord, (int, float)):
+            absx = dpnp.abs(x)
+            absx **= ord
+            ret = absx.sum(axis=axis, keepdims=keepdims)
+            ret **= numpy.reciprocal(ord, dtype=ret.dtype)
+            return ret
+        else:
+            # including str-type keywords for ord ("fro", "nuc") which
+            # are not valid for vectors
+            raise ValueError(f"Invalid norm order '{ord}' for vectors")
+    elif len(axis) == 2:
+        row_axis, col_axis = axis
+        row_axis = normalize_axis_index(row_axis, ndim)
+        col_axis = normalize_axis_index(col_axis, ndim)
+        if row_axis == col_axis:
+            raise ValueError("Duplicate axes given.")
+        if ord == 2:
+            ret = _multi_svd_norm(x, row_axis, col_axis, dpnp.max)
+        elif ord == -2:
+            ret = _multi_svd_norm(x, row_axis, col_axis, dpnp.min)
+        elif ord == 1:
+            if col_axis > row_axis:
+                col_axis -= 1
+            ret = dpnp.abs(x).sum(axis=row_axis).max(axis=col_axis)
+        elif ord == dpnp.inf:
+            if row_axis > col_axis:
+                row_axis -= 1
+            ret = dpnp.abs(x).sum(axis=col_axis).max(axis=row_axis)
+        elif ord == -1:
+            if col_axis > row_axis:
+                col_axis -= 1
+            ret = dpnp.abs(x).sum(axis=row_axis).min(axis=col_axis)
+        elif ord == -dpnp.inf:
+            if row_axis > col_axis:
+                row_axis -= 1
+            ret = dpnp.abs(x).sum(axis=col_axis).min(axis=row_axis)
+        elif ord in [None, "fro", "f"]:
+            ret = dpnp.sqrt(dpnp.sum((dpnp.conj(x) * x).real, axis=axis))
+        elif ord == "nuc":
+            ret = _multi_svd_norm(x, row_axis, col_axis, dpnp.sum)
+        else:
+            raise ValueError("Invalid norm order for matrices.")
+        if keepdims:
+            ret_shape = list(x.shape)
+            ret_shape[axis[0]] = 1
+            ret_shape[axis[1]] = 1
+            ret = ret.reshape(ret_shape)
+        return ret
+    else:
+        raise ValueError("Improper number of dimensions to norm.")
+
+
 def dpnp_pinv(a, rcond=1e-15, hermitian=False):
     """
     dpnp_pinv(a, rcond=1e-15, hermitian=False):
@@ -1227,13 +1437,9 @@ def dpnp_pinv(a, rcond=1e-15, hermitian=False):
 
     """
 
-    if a.size == 0:
+    if _is_empty_2d(a):
         m, n = a.shape[-2:]
-        if m == 0 or n == 0:
-            res_type = a.dtype
-        else:
-            res_type = _common_type(a)
-        return dpnp.empty_like(a, shape=(a.shape[:-2] + (n, m)), dtype=res_type)
+        return dpnp.empty_like(a, shape=(a.shape[:-2] + (n, m)))
 
     if dpnp.is_supported_array_type(rcond):
         # Check that `a` and `rcond` are allocated on the same device
@@ -1243,7 +1449,7 @@ def dpnp_pinv(a, rcond=1e-15, hermitian=False):
         # Allocate dpnp.ndarray if rcond is a scalar
         rcond = dpnp.array(rcond, usm_type=a.usm_type, sycl_queue=a.sycl_queue)
 
-    u, s, vt = dpnp_svd(a.conj(), full_matrices=False, hermitian=hermitian)
+    u, s, vt = dpnp_svd(dpnp.conj(a), full_matrices=False, hermitian=hermitian)
 
     # discard small singular values
     cutoff = rcond * dpnp.max(s, axis=-1)

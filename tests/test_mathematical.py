@@ -752,7 +752,6 @@ def test_positive_boolean():
 
 
 class TestProd:
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("func", ["prod", "nanprod"])
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
     @pytest.mark.parametrize("keepdims", [False, True])
@@ -790,7 +789,6 @@ class TestProd:
         dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
         assert_dtype_allclose(dpnp_res, np_res)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
     @pytest.mark.parametrize("func", ["prod", "nanprod"])
@@ -1886,7 +1884,9 @@ class TestLogSumExp:
     def test_logsumexp(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
         res = dpnp.logsumexp(a, axis=axis, keepdims=keepdims)
-        exp_dtype = dpnp.default_float_type(a.device)
+        exp_dtype = (
+            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
+        )
         exp = numpy.logaddexp.reduce(
             dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
         )
@@ -1898,11 +1898,17 @@ class TestLogSumExp:
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_logsumexp_out(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
-        exp_dtype = dpnp.default_float_type(a.device)
+        exp_dtype = (
+            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
+        )
         exp = numpy.logaddexp.reduce(
             dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
         )
-        dpnp_out = dpnp.empty(exp.shape, dtype=exp_dtype)
+
+        exp_dtype = exp.dtype
+        if exp_dtype == numpy.float64 and not has_support_aspect64():
+            exp_dtype = numpy.float32
+        dpnp_out = dpnp.empty_like(a, shape=exp.shape, dtype=exp_dtype)
         res = dpnp.logsumexp(a, axis=axis, out=dpnp_out, keepdims=keepdims)
 
         assert res is dpnp_out
@@ -1928,7 +1934,9 @@ class TestReduceHypot:
     def test_reduce_hypot(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
         res = dpnp.reduce_hypot(a, axis=axis, keepdims=keepdims)
-        exp_dtype = dpnp.default_float_type(a.device)
+        exp_dtype = (
+            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
+        )
         exp = numpy.hypot.reduce(
             dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
         )
@@ -1940,11 +1948,17 @@ class TestReduceHypot:
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_reduce_hypot_out(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
-        exp_dtype = dpnp.default_float_type(a.device)
+        exp_dtype = (
+            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
+        )
         exp = numpy.hypot.reduce(
             dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
         )
-        dpnp_out = dpnp.empty(exp.shape, dtype=exp_dtype)
+
+        exp_dtype = exp.dtype
+        if exp_dtype == numpy.float64 and not has_support_aspect64():
+            exp_dtype = numpy.float32
+        dpnp_out = dpnp.empty_like(a, shape=exp.shape, dtype=exp_dtype)
         res = dpnp.reduce_hypot(a, axis=axis, out=dpnp_out, keepdims=keepdims)
 
         assert res is dpnp_out
@@ -2884,21 +2898,16 @@ class TestMatmul:
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
-    def test_matmul_strided(self):
+    @pytest.mark.parametrize(
+        "stride",
+        [(-2, -2, -2, -2), (2, 2, 2, 2), (-2, 2, -2, 2), (2, -2, 2, -2)],
+        ids=["-2", "2", "(-2, 2)", "(2, -2)"],
+    )
+    def test_matmul_strided(self, stride):
         for dim in [1, 2, 3, 4]:
             A = numpy.random.rand(*([20] * dim))
             B = dpnp.asarray(A)
-            # positive stride
-            slices = tuple(slice(None, None, 2) for _ in range(dim))
-            a = A[slices]
-            b = B[slices]
-
-            result = dpnp.matmul(b, b)
-            expected = numpy.matmul(a, a)
-            assert_dtype_allclose(result, expected)
-
-            # negative stride
-            slices = tuple(slice(None, None, -2) for _ in range(dim))
+            slices = tuple(slice(None, None, stride[i]) for i in range(dim))
             a = A[slices]
             b = B[slices]
 

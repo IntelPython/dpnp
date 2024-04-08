@@ -45,10 +45,8 @@ cimport numpy
 cimport dpnp.dpnp_utils as utils
 
 __all__ = [
-    "dpnp_cond",
     "dpnp_eig",
     "dpnp_eigvals",
-    "dpnp_norm",
 ]
 
 
@@ -59,30 +57,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*custom_linalg_1in_1out_with_size_func_ptr_t_
 ctypedef c_dpctl.DPCTLSyclEventRef(*custom_linalg_2in_1out_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
                                                                        void *, void * , void * , size_t,
                                                                        const c_dpctl.DPCTLEventVectorRef)
-
-
-cpdef object dpnp_cond(object input, object p):
-    if p in ('f', 'fro'):
-        # TODO: change order='K' when support is implemented
-        input = dpnp.ravel(input, order='C')
-        sqnorm = dpnp.dot(input, input)
-        res = dpnp.sqrt(sqnorm)
-        ret = dpnp.array([res])
-    elif p == dpnp.inf:
-        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=1)
-        ret = dpnp.max(dpnp_sum_val)
-    elif p == -dpnp.inf:
-        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=1)
-        ret = dpnp.min(dpnp_sum_val)
-    elif p == 1:
-        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=0)
-        ret = dpnp.max(dpnp_sum_val)
-    elif p == -1:
-        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=0)
-        ret = dpnp.min(dpnp_sum_val)
-    else:
-        ret = dpnp.array([input.item(0)])
-    return ret
 
 
 cpdef tuple dpnp_eig(utils.dpnp_descriptor x1):
@@ -171,108 +145,3 @@ cpdef utils.dpnp_descriptor dpnp_eigvals(utils.dpnp_descriptor input):
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return res_val
-
-
-cpdef object dpnp_norm(object input, ord=None, axis=None):
-    cdef long size_input = input.size
-    cdef shape_type_c shape_input = input.shape
-
-    dev = input.get_array().sycl_device
-    if input.dtype == dpnp.float32 or not dev.has_aspect_fp64:
-        res_type = dpnp.float32
-    else:
-        res_type = dpnp.float64
-
-    if size_input == 0:
-        return dpnp.array([dpnp.nan], dtype=res_type)
-
-    if isinstance(axis, int):
-        axis_ = tuple([axis])
-    else:
-        axis_ = axis
-
-    ndim = input.ndim
-    if axis is None:
-        if ((ord is None) or
-            (ord in ('f', 'fro') and ndim == 2) or
-                (ord == 2 and ndim == 1)):
-
-            # TODO: change order='K' when support is implemented
-            input = dpnp.ravel(input, order='C')
-            sqnorm = dpnp.dot(input, input)
-            ret = dpnp.sqrt([sqnorm], dtype=res_type)
-            return dpnp.array(ret.reshape(1, *ret.shape), dtype=res_type)
-
-    len_axis = 1 if axis is None else len(axis_)
-    if len_axis == 1:
-        if ord == dpnp.inf:
-            return dpnp.array([dpnp.abs(input).max(axis=axis)])
-        elif ord == -dpnp.inf:
-            return dpnp.array([dpnp.abs(input).min(axis=axis)])
-        elif ord == 0:
-            return input.dtype.type(dpnp.count_nonzero(input, axis=axis))
-        elif ord is None or ord == 2:
-            s = input * input
-            return dpnp.sqrt(dpnp.sum(s, axis=axis), dtype=res_type)
-        elif isinstance(ord, str):
-            raise ValueError(f"Invalid norm order '{ord}' for vectors")
-        else:
-            absx = dpnp.abs(input)
-            absx_size = absx.size
-            absx_power = utils_py.create_output_descriptor_py((absx_size,), absx.dtype, None).get_pyobj()
-
-            absx_flatiter = absx.flat
-
-            for i in range(absx_size):
-                absx_elem = absx_flatiter[i]
-                absx_power[i] = absx_elem ** ord
-            absx_ = dpnp.reshape(absx_power, absx.shape)
-            ret = dpnp.sum(absx_, axis=axis)
-            ret_size = ret.size
-            ret_power = utils_py.create_output_descriptor_py((ret_size,), None, None).get_pyobj()
-
-            ret_flatiter = ret.flat
-
-            for i in range(ret_size):
-                ret_elem = ret_flatiter[i]
-                ret_power[i] = ret_elem ** (1 / ord)
-            ret_ = dpnp.reshape(ret_power, ret.shape)
-            return ret_
-    elif len_axis == 2:
-        row_axis, col_axis = axis_
-        if row_axis == col_axis:
-            raise ValueError('Duplicate axes given.')
-        # if ord == 2:
-        #     ret =  _multi_svd_norm(input, row_axis, col_axis, amax)
-        # elif ord == -2:
-        #     ret = _multi_svd_norm(input, row_axis, col_axis, amin)
-        elif ord == 1:
-            if col_axis > row_axis:
-                col_axis -= 1
-            dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=row_axis)
-            ret = dpnp_sum_val.min(axis=col_axis)
-        elif ord == dpnp.inf:
-            if row_axis > col_axis:
-                row_axis -= 1
-            dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=col_axis)
-            ret = dpnp_sum_val.max(axis=row_axis)
-        elif ord == -1:
-            if col_axis > row_axis:
-                col_axis -= 1
-            dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=row_axis)
-            ret = dpnp_sum_val.min(axis=col_axis)
-        elif ord == -dpnp.inf:
-            if row_axis > col_axis:
-                row_axis -= 1
-            dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=col_axis)
-            ret = dpnp_sum_val.min(axis=row_axis)
-        elif ord in [None, 'fro', 'f']:
-            ret = dpnp.sqrt(dpnp.sum(input * input, axis=axis))
-        # elif ord == 'nuc':
-        #     ret = _multi_svd_norm(input, row_axis, col_axis, sum)
-        else:
-            raise ValueError("Invalid norm order for matrices.")
-
-        return ret
-    else:
-        raise ValueError("Improper number of dimensions to norm.")

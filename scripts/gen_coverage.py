@@ -4,10 +4,13 @@ import sys
 
 
 def run(
+    use_oneapi=True,
     c_compiler=None,
     cxx_compiler=None,
+    compiler_root=None,
     bin_llvm=None,
     pytest_opts="",
+    verbose=False,
 ):
     IS_LIN = False
 
@@ -29,11 +32,10 @@ def run(
         sys.executable,
         "setup.py",
         "develop",
-        "-G=Ninja",
+        "--generator=Ninja",
         "--",
         "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
         "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
-        "-DCMAKE_VERBOSE_MAKEFILE=ON",
         "-DDPNP_GENERATE_COVERAGE=ON",
     ]
 
@@ -46,6 +48,11 @@ def run(
 
     # extend with global enviroment variables
     env.update({k: v for k, v in os.environ.items() if k != "PATH"})
+
+    if verbose:
+        cmake_args += [
+            "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON",
+        ]
 
     subprocess.check_call(cmake_args, shell=False, cwd=setup_dir, env=env)
 
@@ -125,6 +132,22 @@ if __name__ == "__main__":
         description="Driver to build dpnp and generate coverage"
     )
     driver = parser.add_argument_group(title="Coverage driver arguments")
+    driver.add_argument("--c-compiler", help="Name of C compiler", default=None)
+    driver.add_argument(
+        "--cxx-compiler", help="Name of C++ compiler", default=None
+    )
+    driver.add_argument(
+        "--not-oneapi",
+        help="Is one-API installation",
+        dest="oneapi",
+        action="store_false",
+    )
+    driver.add_argument(
+        "--compiler-root", type=str, help="Path to compiler home directory"
+    )
+    driver.add_argument(
+        "--bin-llvm", help="Path to folder where llvm-cov can be found"
+    )
     driver.add_argument(
         "--pytest-opts",
         help="Channels through additional pytest options",
@@ -132,18 +155,51 @@ if __name__ == "__main__":
         default="",
         type=str,
     )
-
+    driver.add_argument(
+        "--verbose",
+        help="Build using vebose makefile mode",
+        dest="verbose",
+        action="store_true",
+    )
     args = parser.parse_args()
 
-    c_compiler = "icx"
-    cxx_compiler = "icpx"
-    icx_path = subprocess.check_output(["which", "icx"])
-    bin_dir = os.path.dirname(os.path.dirname(icx_path))
-    bin_llvm = os.path.join(bin_dir.decode("utf-8"), "bin-llvm")
+    if args.oneapi:
+        args.c_compiler = "icx"
+        args.cxx_compiler = "icpx"
+        args.compiler_root = None
+        icx_path = subprocess.check_output(["which", "icx"])
+        bin_dir = os.path.dirname(icx_path)
+        compiler_dir = os.path.join(bin_dir.decode("utf-8"), "compiler")
+        if os.path.exists(compiler_dir):
+            args.bin_llvm = os.path.join(bin_dir.decode("utf-8"), "compiler")
+        else:
+            bin_dir = os.path.dirname(bin_dir)
+            args.bin_llvm = os.path.join(bin_dir.decode("utf-8"), "bin-llvm")
+        assert os.path.exists(args.bin_llvm)
+    else:
+        args_to_validate = [
+            "c_compiler",
+            "cxx_compiler",
+            "compiler_root",
+            "bin_llvm",
+        ]
+        for p in args_to_validate:
+            arg = getattr(args, p, None)
+            if not isinstance(arg, str):
+                opt_name = p.replace("_", "-")
+                raise RuntimeError(
+                    f"Option {opt_name} must be provided is "
+                    "using non-default DPC++ layout"
+                )
+            if not os.path.exists(arg):
+                raise RuntimeError(f"Path {arg} must exist")
 
     run(
-        c_compiler=c_compiler,
-        cxx_compiler=cxx_compiler,
-        bin_llvm=bin_llvm,
+        use_oneapi=args.oneapi,
+        c_compiler=args.c_compiler,
+        cxx_compiler=args.cxx_compiler,
+        compiler_root=args.compiler_root,
+        bin_llvm=args.bin_llvm,
         pytest_opts=args.pytest_opts,
+        verbose=args.verbose,
     )

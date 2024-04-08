@@ -1352,20 +1352,14 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     dtype : data type, optional
-        Data type of the returned array. If ``None``, the default data
-        type is inferred from the "kind" of the input array data type.
-            * If `x` has a real-valued floating-point data type,
-                the returned array will have the default real-valued
-                floating-point data type for the device where input
-                array `x` is allocated.
-            * If `x` has a boolean or integral data type, the returned array
-                will have the default floating point data type for the device
-                where input array `x` is allocated.
-            * If `x` has a complex-valued floating-point data type,
-                an error is raised.
+        Data type of the returned array. If ``None``, it defaults to the dtype
+        of `a`, unless `a` has an integer dtype with a precision less than that
+        of the default platform integer. In that case, the default platform
+        integer is used.
         If the data type (either specified or resolved) differs from the
         data type of `x`, the input array elements are cast to the
-        specified data type before computing the result. Default: ``None``.
+        specified data type before computing the result.
+        Default: ``None``.
     keepdims : bool
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
@@ -1498,20 +1492,14 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
     dtype : data type, optional
-            Data type of the returned array. If ``None``, the default data
-            type is inferred from the "kind" of the input array data type.
-                * If `x` has a real-valued floating-point data type,
-                  the returned array will have the default real-valued
-                  floating-point data type for the device where input
-                  array `x` is allocated.
-                * If `x` has a boolean or integral data type, the returned array
-                  will have the default floating point data type for the device
-                  where input array `x` is allocated.
-                * If `x` has a complex-valued floating-point data type,
-                  an error is raised.
-            If the data type (either specified or resolved) differs from the
-            data type of `x`, the input array elements are cast to the
-            specified data type before computing the result. Default: ``None``.
+        Data type of the returned array. If ``None``, it defaults to the dtype
+        of `a`, unless `a` has an integer dtype with a precision less than that
+        of the default platform integer. In that case, the default platform
+        integer is used.
+        If the data type (either specified or resolved) differs from the
+        data type of `x`, the input array elements are cast to the
+        specified data type before computing the result.
+        Default: ``None``.
     keepdims : bool
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains

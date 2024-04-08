@@ -9,7 +9,7 @@ import pytest
 import dpnp as dp
 from dpnp.dpnp_utils import get_usm_allocations
 
-from .helper import assert_dtype_allclose
+from .helper import assert_dtype_allclose, generate_random_numpy_array
 
 list_of_usm_types = ["device", "shared", "host"]
 
@@ -463,6 +463,42 @@ def test_meshgrid(usm_type_x, usm_type_y):
     assert z[1].usm_type == usm_type_y
 
 
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "ord",
+    [None, -dp.Inf, -2, -1, 1, 2, 3, dp.Inf, "fro", "nuc"],
+    ids=[
+        "None",
+        "-dpnp.Inf",
+        "-2",
+        "-1",
+        "1",
+        "2",
+        "3",
+        "dpnp.Inf",
+        '"fro"',
+        '"nuc"',
+    ],
+)
+@pytest.mark.parametrize(
+    "axis",
+    [-1, 0, 1, (0, 1), (-2, -1), None],
+    ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
+)
+def test_norm(usm_type, ord, axis):
+    ia = dp.arange(120, usm_type=usm_type).reshape(2, 3, 4, 5)
+    if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
+        isinstance(axis, tuple) and ord == 3
+    ):
+        pytest.skip("Invalid norm order for vectors.")
+    elif axis is None and ord is not None:
+        pytest.skip("Improper number of dimensions to norm")
+    else:
+        result = dp.linalg.norm(ia, ord=ord, axis=axis)
+        assert ia.usm_type == usm_type
+        assert result.usm_type == usm_type
+
+
 @pytest.mark.parametrize(
     "func,data",
     [
@@ -645,6 +681,20 @@ def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "p",
+    [None, -dp.Inf, -2, -1, 1, 2, dp.Inf, "fro"],
+    ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+)
+def test_cond(usm_type, p):
+    ia = dp.arange(32, usm_type=usm_type).reshape(2, 4, 4)
+
+    result = dp.linalg.cond(ia, p=p)
+    assert ia.usm_type == usm_type
+    assert result.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_multi_dot(usm_type):
     numpy_array_list = []
     dpnp_array_list = []
@@ -753,10 +803,64 @@ def test_indices_sparse(usm_type, sparse):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_nonzero(usm_type):
+    a = dp.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], usm_type=usm_type)
+    x = dp.nonzero(a)
+    for x_el in x:
+        assert x_el.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_clip(usm_type):
     x = dp.arange(10, usm_type=usm_type)
     y = dp.clip(x, 2, 7)
     assert x.usm_type == y.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_where(usm_type):
+    a = dp.array([[0, 1, 2], [0, 2, 4], [0, 3, 6]], usm_type=usm_type)
+    result = dp.where(a < 4, a, -1)
+    assert result.usm_type == usm_type
+
+
+@pytest.mark.parametrize(
+    "func",
+    [
+        "eigh",
+        "eigvalsh",
+    ],
+)
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (4, 4),
+        (0, 0),
+        (2, 3, 3),
+        (0, 2, 2),
+        (1, 0, 0),
+    ],
+    ids=[
+        "(4, 4)",
+        "(0, 0)",
+        "(2, 3, 3)",
+        "(0, 2, 2)",
+        "(1, 0, 0)",
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_eigenvalue(func, shape, usm_type):
+    a_np = generate_random_numpy_array(shape, hermitian=True)
+    a = dp.array(a_np, usm_type=usm_type)
+
+    if func == "eigh":
+        dp_val, dp_vec = dp.linalg.eigh(a)
+        assert a.usm_type == dp_vec.usm_type
+
+    else:  # eighvalsh
+        dp_val = dp.linalg.eigvalsh(a)
+
+    assert a.usm_type == dp_val.usm_type
 
 
 @pytest.mark.parametrize(
@@ -996,14 +1100,9 @@ def test_matrix_rank(data, tol, usm_type):
     ],
 )
 def test_pinv(shape, hermitian, usm_type):
-    numpy.random.seed(81)
-    if hermitian:
-        a = dp.random.randn(*shape) + 1j * dp.random.randn(*shape)
-        a = dp.conj(a.T) @ a
-    else:
-        a = dp.random.randn(*shape)
+    a_np = generate_random_numpy_array(shape, hermitian=hermitian)
+    a = dp.array(a_np, usm_type=usm_type)
 
-    a = dp.array(a, usm_type=usm_type)
     B = dp.linalg.pinv(a, hermitian=hermitian)
 
     assert a.usm_type == B.usm_type

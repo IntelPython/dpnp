@@ -85,6 +85,69 @@ class TestIndexing:
         assert_array_equal(arr, 10.0)
 
 
+class TestNonzero:
+    @pytest.mark.parametrize("list_val", [[], [0], [1]])
+    def test_trivial(self, list_val):
+        np_res = numpy.nonzero(numpy.array(list_val))
+        dpnp_res = dpnp.nonzero(dpnp.array(list_val))
+        assert_array_equal(np_res, dpnp_res)
+
+    @pytest.mark.parametrize("val", [0, 1])
+    def test_0d(self, val):
+        assert_raises(ValueError, dpnp.nonzero, dpnp.array(val))
+        assert_raises(ValueError, dpnp.nonzero, dpnp.array(val))
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_1d(self, dtype):
+        a = numpy.array([1, 0, 2, -1, 0, 0, 8], dtype=dtype)
+        ia = dpnp.array(a)
+
+        np_res = numpy.nonzero(a)
+        dpnp_res = dpnp.nonzero(ia)
+        assert_array_equal(np_res, dpnp_res)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_2d(self, dtype):
+        a = numpy.array([[0, 1, 0], [2, 0, 3]], dtype=dtype)
+        ia = dpnp.array(a)
+
+        np_res = numpy.nonzero(a)
+        dpnp_res = dpnp.nonzero(ia)
+        assert_array_equal(np_res, dpnp_res)
+
+        a = numpy.eye(3, dtype=dtype)
+        ia = dpnp.eye(3, dtype=dtype)
+
+        np_res = numpy.nonzero(a)
+        dpnp_res = dpnp.nonzero(ia)
+        assert_array_equal(np_res, dpnp_res)
+
+    def test_sparse(self):
+        for i in range(20):
+            a = numpy.zeros(200, dtype=bool)
+            a[i::20] = True
+            ia = dpnp.array(a)
+
+            np_res = numpy.nonzero(a)
+            dpnp_res = dpnp.nonzero(ia)
+            assert_array_equal(np_res, dpnp_res)
+
+            a = numpy.zeros(400, dtype=bool)
+            a[10 + i : 20 + i] = True
+            a[20 + i * 2] = True
+            ia = dpnp.array(a)
+
+            np_res = numpy.nonzero(a)
+            dpnp_res = dpnp.nonzero(ia)
+            assert_array_equal(np_res, dpnp_res)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_array_method(self, dtype):
+        a = numpy.array([[1, 0, 0], [4, 0, 6]], dtype=dtype)
+        ia = dpnp.array(a)
+        assert_array_equal(a.nonzero(), ia.nonzero())
+
+
 class TestPutAlongAxis:
     @pytest.mark.parametrize(
         "arr_dt", get_all_dtypes(no_bool=True, no_none=True)
@@ -369,40 +432,6 @@ def test_indices(dimension, dtype, sparse):
     result = dpnp.indices(dimension, dtype=dtype, sparse=sparse)
     for Xnp, X in zip(expected, result):
         assert_array_equal(Xnp, X)
-
-
-@pytest.mark.parametrize(
-    "array",
-    [
-        [],
-        [[0, 0], [0, 0]],
-        [[1, 0], [1, 0]],
-        [[1, 2], [3, 4]],
-        [[0, 1, 2], [3, 0, 5], [6, 7, 0]],
-        [[0, 1, 0, 3, 0], [5, 0, 7, 0, 9]],
-        [[[1, 2], [0, 4]], [[0, 2], [0, 1]], [[0, 0], [3, 1]]],
-        [
-            [[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]],
-            [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]],
-        ],
-    ],
-    ids=[
-        "[]",
-        "[[0, 0], [0, 0]]",
-        "[[1, 0], [1, 0]]",
-        "[[1, 2], [3, 4]]",
-        "[[0, 1, 2], [3, 0, 5], [6, 7, 0]]",
-        "[[0, 1, 0, 3, 0], [5, 0, 7, 0, 9]]",
-        "[[[1, 2], [0, 4]], [[0, 2], [0, 1]], [[0, 0], [3, 1]]]",
-        "[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]",
-    ],
-)
-def test_nonzero(array):
-    a = numpy.array(array)
-    ia = dpnp.array(array)
-    expected = numpy.nonzero(a)
-    result = dpnp.nonzero(ia)
-    assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize(
@@ -905,23 +934,4 @@ def test_triu_indices_from(array, k):
     ia = dpnp.array(a)
     result = dpnp.triu_indices_from(ia, k)
     expected = numpy.triu_indices_from(a, k)
-    assert_array_equal(expected, result)
-
-
-@pytest.mark.parametrize("cond_dtype", get_all_dtypes())
-@pytest.mark.parametrize("scalar_dtype", get_all_dtypes(no_none=True))
-def test_where_with_scalars(cond_dtype, scalar_dtype):
-    a = numpy.array([-1, 0, 1, 0], dtype=cond_dtype)
-    ia = dpnp.array(a)
-
-    result = dpnp.where(ia, scalar_dtype(1), scalar_dtype(0))
-    expected = numpy.where(a, scalar_dtype(1), scalar_dtype(0))
-    assert_array_equal(expected, result)
-
-    result = dpnp.where(ia, ia * 2, scalar_dtype(0))
-    expected = numpy.where(a, a * 2, scalar_dtype(0))
-    assert_array_equal(expected, result)
-
-    result = dpnp.where(ia, scalar_dtype(1), dpnp.array(0))
-    expected = numpy.where(a, scalar_dtype(1), numpy.array(0))
     assert_array_equal(expected, result)

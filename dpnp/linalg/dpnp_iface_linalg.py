@@ -48,12 +48,14 @@ from .dpnp_utils_linalg import (
     check_stacked_2d,
     check_stacked_square,
     dpnp_cholesky,
+    dpnp_cond,
     dpnp_det,
     dpnp_eigh,
     dpnp_inv,
     dpnp_matrix_power,
     dpnp_matrix_rank,
     dpnp_multi_dot,
+    dpnp_norm,
     dpnp_pinv,
     dpnp_qr,
     dpnp_slogdet,
@@ -68,6 +70,7 @@ __all__ = [
     "eig",
     "eigh",
     "eigvals",
+    "eigvalsh",
     "inv",
     "matrix_power",
     "matrix_rank",
@@ -143,32 +146,61 @@ def cholesky(a, upper=False):
     return dpnp_cholesky(a, upper=upper)
 
 
-def cond(input, p=None):
+def cond(x, p=None):
     """
     Compute the condition number of a matrix.
 
     For full documentation refer to :obj:`numpy.linalg.cond`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter p=[None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, 'fro'] is supported.
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        The matrix whose condition number is sought.
+    p : {None, 1, -1, 2, -2, inf, -inf, "fro"}, optional
+        Order of the norm used in the condition number computation.
+        inf means the `dpnp.inf` object, and the Frobenius norm is
+        the root-of-sum-of-squares norm. The default is ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The condition number of the matrix. May be infinite.
 
     See Also
     --------
-    :obj:`dpnp.norm` : Matrix or vector norm.
+    :obj:`dpnp.linalg.norm` : Matrix or vector norm.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, 0, -1], [0, 1, 0], [1, 0, 1]])
+    >>> a
+    array([[ 1,  0, -1],
+           [ 0,  1,  0],
+           [ 1,  0,  1]])
+    >>> np.linalg.cond(a)
+    array(1.41421356)
+    >>> np.linalg.cond(a, 'fro')
+    array(3.16227766)
+    >>> np.linalg.cond(a, np.inf)
+    array(2.)
+    >>> np.linalg.cond(a, -np.inf)
+    array(1.)
+    >>> np.linalg.cond(a, 1)
+    array(2.)
+    >>> np.linalg.cond(a, -1)
+    array(1.)
+    >>> np.linalg.cond(a, 2)
+    array(1.41421356)
+    >>> np.linalg.cond(a, -2)
+    array(0.70710678) # may vary
+    >>> min(np.linalg.svd(a, compute_uv=False))*min(np.linalg.svd(np.linalg.inv(a), compute_uv=False))
+    array(0.70710678) # may vary
+
     """
 
-    if not use_origin_backend(input):
-        if p in [None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, "fro"]:
-            result_obj = dpnp_cond(input, p)
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
-
-            return result
-        else:
-            pass
-
-    return call_origin(numpy.linalg.cond, input, p)
+    dpnp.check_supported_arrays_type(x)
+    return dpnp_cond(x, p)
 
 
 def det(a):
@@ -246,6 +278,19 @@ def eigh(a, UPLO="L"):
 
     For full documentation refer to :obj:`numpy.linalg.eigh`.
 
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        A complex- or real-valued array whose eigenvalues and eigenvectors are to be computed.
+    UPLO : {"L", "U"}, optional
+        Specifies the calculation uses either the lower ("L") or upper ("U")
+        triangular part of the matrix.
+        Regardless of this choice, only the real parts of the diagonal are
+        considered to preserve the Hermite matrix property.
+        It therefore follows that the imaginary part of the diagonal
+        will always be treated as zero.
+        Default: "L".
+
     Returns
     -------
     w : (..., M) dpnp.ndarray
@@ -255,15 +300,13 @@ def eigh(a, UPLO="L"):
         The column ``v[:, i]`` is the normalized eigenvector corresponding
         to the eigenvalue ``w[i]``.
 
-    Limitations
-    -----------
-    Parameter `a` is supported as :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
     See Also
     --------
-    :obj:`dpnp.eig` : eigenvalues and right eigenvectors for non-symmetric arrays.
-    :obj:`dpnp.eigvals` : eigenvalues of non-symmetric arrays.
+    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or
+                                  real symmetric matrix.
+    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of
+                             a square array.
+    :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.
 
     Examples
     --------
@@ -281,19 +324,12 @@ def eigh(a, UPLO="L"):
     """
 
     dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
+    UPLO = UPLO.upper()
     if UPLO not in ("L", "U"):
         raise ValueError("UPLO argument must be 'L' or 'U'")
-
-    if a.ndim < 2:
-        raise ValueError(
-            "%d-dimensional array given. Array must be "
-            "at least two-dimensional" % a.ndim
-        )
-
-    m, n = a.shape[-2:]
-    if m != n:
-        raise ValueError("Last 2 dimensions of the array must be square")
 
     return dpnp_eigh(a, UPLO=UPLO)
 
@@ -326,6 +362,64 @@ def eigvals(input):
     return call_origin(numpy.linalg.eigvals, input)
 
 
+def eigvalsh(a, UPLO="L"):
+    """
+    eigvalsh(a, UPLO="L")
+
+    Compute the eigenvalues of a complex Hermitian or real symmetric matrix.
+
+    Main difference from :obj:`dpnp.linalg.eigh`: the eigenvectors are not computed.
+
+    For full documentation refer to :obj:`numpy.linalg.eigvalsh`.
+
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        A complex- or real-valued array whose eigenvalues are to be computed.
+    UPLO : {"L", "U"}, optional
+        Specifies the calculation uses either the lower ("L") or upper ("U")
+        triangular part of the matrix.
+        Regardless of this choice, only the real parts of the diagonal are
+        considered to preserve the Hermite matrix property.
+        It therefore follows that the imaginary part of the diagonal
+        will always be treated as zero.
+        Default: "L".
+
+    Returns
+    -------
+    w : (..., M) dpnp.ndarray
+        The eigenvalues in ascending order, each repeated according to
+        its multiplicity.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian
+                              (conjugate symmetric) or a real symmetric matrix.
+    :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.
+    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of
+                             a general matrix.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> from dpnp import linalg as LA
+    >>> a = np.array([[1, -2j], [2j, 5]])
+    >>> LA.eigvalsh(a)
+    array([0.17157288, 5.82842712])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
+
+    UPLO = UPLO.upper()
+    if UPLO not in ("L", "U"):
+        raise ValueError("UPLO argument must be 'L' or 'U'")
+
+    return dpnp_eigh(a, UPLO=UPLO, eigen_mode="N")
+
+
 def inv(a):
     """
     Compute the (multiplicative) inverse of a matrix.
@@ -344,6 +438,11 @@ def inv(a):
     -------
     out : (..., M, M) dpnp.ndarray
         (Multiplicative) inverse of the matrix a.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.cond` : Compute the condition number of a matrix.
+    :obj:`dpnp.linalg.svd` : Compute the singular value decomposition.
 
     Examples
     --------
@@ -491,7 +590,7 @@ def multi_dot(arrays, *, out=None):
     """
     Compute the dot product of two or more arrays in a single function call.
 
-    For full documentation refer to :obj:`numpy.multi_dot`.
+    For full documentation refer to :obj:`numpy.linalg.multi_dot`.
 
     Parameters
     ----------
@@ -602,60 +701,109 @@ def pinv(a, rcond=1e-15, hermitian=False):
     return dpnp_pinv(a, rcond=rcond, hermitian=hermitian)
 
 
-def norm(x1, ord=None, axis=None, keepdims=False):
+def norm(x, ord=None, axis=None, keepdims=False):
     """
     Matrix or vector norm.
 
-    This function is able to return one of eight different matrix norms,
-    or one of an infinite number of vector norms (described below), depending
-    on the value of the ``ord`` parameter.
+    For full documentation refer to :obj:`numpy.linalg.norm`.
 
     Parameters
     ----------
-    input : array_like
-        Input array.  If `axis` is None, `x` must be 1-D or 2-D, unless `ord`
-        is None. If both `axis` and `ord` are None, the 2-norm of
-        ``x.ravel`` will be returned.
-    ord : optional
-        Order of the norm (see table under ``Notes``). inf means numpy's
-        `inf` object. The default is None.
-    axis : optional.
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.  If `axis` is ``None``, `x` must be 1-D or 2-D, unless
+        `ord` is ``None``. If both `axis` and `ord` are ``None``, the 2-norm
+        of ``x.ravel`` will be returned.
+    ord : {int, float, inf, -inf, "fro", "nuc"}, optional
+        Norm type. inf means dpnp's `inf` object. The default is ``None``.
+    axis : {None, int, 2-tuple of ints}, optional
         If `axis` is an integer, it specifies the axis of `x` along which to
         compute the vector norms.  If `axis` is a 2-tuple, it specifies the
         axes that hold 2-D matrices, and the matrix norms of these matrices
-        are computed.  If `axis` is None then either a vector norm (when `x`
-        is 1-D) or a matrix norm (when `x` is 2-D) is returned. The default
-        is None.
+        are computed.  If `axis` is ``None`` then either a vector norm (when
+        `x` is 1-D) or a matrix norm (when `x` is 2-D) is returned.
+        The default is ``None``.
     keepdims : bool, optional
-        If this is set to True, the axes which are normed over are left in the
-        result as dimensions with size one.  With this option the result will
-        broadcast correctly against the original `x`.
+        If this is set to ``True``, the axes which are normed over are left in
+        the result as dimensions with size one.  With this option the result
+        will broadcast correctly against the original `x`.
 
     Returns
     -------
-    n : float or ndarray
+    out : dpnp.ndarray
         Norm of the matrix or vector(s).
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(9) - 4
+    >>> a
+    array([-4, -3, -2, -1,  0,  1,  2,  3,  4])
+    >>> b = a.reshape((3, 3))
+    >>> b
+    array([[-4, -3, -2],
+           [-1,  0,  1],
+           [ 2,  3,  4]])
+
+    >>> np.linalg.norm(a)
+    array(7.74596669)
+    >>> np.linalg.norm(b)
+    array(7.74596669)
+    >>> np.linalg.norm(b, 'fro')
+    array(7.74596669)
+    >>> np.linalg.norm(a, np.inf)
+    array(4.)
+    >>> np.linalg.norm(b, np.inf)
+    array(9.)
+    >>> np.linalg.norm(a, -np.inf)
+    array(0.)
+    >>> np.linalg.norm(b, -np.inf)
+    array(2.)
+
+    >>> np.linalg.norm(a, 1)
+    array(20.)
+    >>> np.linalg.norm(b, 1)
+    array(7.)
+    >>> np.linalg.norm(a, -1)
+    array(0.)
+    >>> np.linalg.norm(b, -1)
+    array(6.)
+    >>> np.linalg.norm(a, 2)
+    array(7.74596669)
+    >>> np.linalg.norm(b, 2)
+    array(7.34846923)
+
+    >>> np.linalg.norm(a, -2)
+    array(0.)
+    >>> np.linalg.norm(b, -2)
+    array(4.35106603e-18) # may vary
+    >>> np.linalg.norm(a, 3)
+    array(5.84803548) # may vary
+    >>> np.linalg.norm(a, -3)
+    array(0.)
+
+    Using the `axis` argument to compute vector norms:
+
+    >>> c = np.array([[ 1, 2, 3],
+    ...               [-1, 1, 4]])
+    >>> np.linalg.norm(c, axis=0)
+    array([ 1.41421356,  2.23606798,  5.        ])
+    >>> np.linalg.norm(c, axis=1)
+    array([ 3.74165739,  4.24264069])
+    >>> np.linalg.norm(c, ord=1, axis=1)
+    array([ 6.,  6.])
+
+    Using the `axis` argument to compute matrix norms:
+
+    >>> m = np.arange(8).reshape(2,2,2)
+    >>> np.linalg.norm(m, axis=(1,2))
+    array([  3.74165739,  11.22497216])
+    >>> np.linalg.norm(m[0, :, :]), np.linalg.norm(m[1, :, :])
+    (array(3.74165739), array(11.22497216))
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if (
-            not isinstance(axis, int)
-            and not isinstance(axis, tuple)
-            and axis is not None
-        ):
-            pass
-        elif keepdims is not False:
-            pass
-        elif ord not in [None, 0, 3, "fro", "f"]:
-            pass
-        else:
-            result_obj = dpnp_norm(x1, ord=ord, axis=axis)
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
-
-            return result
-
-    return call_origin(numpy.linalg.norm, x1, ord, axis, keepdims)
+    dpnp.check_supported_arrays_type(x)
+    return dpnp_norm(x, ord, axis, keepdims)
 
 
 def qr(a, mode="reduced"):
