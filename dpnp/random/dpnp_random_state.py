@@ -257,7 +257,7 @@ class RandomState:
                         f"scale={scale}, but must be non-negative."
                     )
 
-                dpu.validate_usm_type(usm_type=usm_type, allow_none=False)
+                dpu.validate_usm_type(usm_type, allow_none=False)
                 return self._random_state.normal(
                     loc=loc,
                     scale=scale,

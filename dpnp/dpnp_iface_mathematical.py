@@ -39,6 +39,7 @@ it contains:
 
 
 import dpctl.tensor as dpt
+import dpctl.tensor._type_utils as dtu
 import numpy
 from numpy.core.numeric import (
     normalize_axis_index,
@@ -2799,25 +2800,10 @@ def sum(
         If ``None``, the sum is computed over the entire array.
         Default: ``None``.
     dtype : dtype, optional
-        Data type of the returned array. If ``None``, the default data
-        type is inferred from the "kind" of the input array data type.
-            * If `a` has a real-valued floating-point data type,
-              the returned array will have the default real-valued
-              floating-point data type for the device where input
-              array `a` is allocated.
-            * If `a` has signed integral data type, the returned array
-              will have the default signed integral type for the device
-              where input array `a` is allocated.
-            * If `a` has unsigned integral data type, the returned array
-              will have the default unsigned integral type for the device
-              where input array `a` is allocated.
-            * If `a` has a complex-valued floating-point data type,
-              the returned array will have the default complex-valued
-              floating-pointer data type for the device where input
-              array `a` is allocated.
-            * If `a` has a boolean data type, the returned array will
-              have the default signed integral type for the device
-              where input array `a` is allocated.
+        Data type of the returned array. If ``None``, it defaults to the dtype
+        of `a`, unless `a` has an integer dtype with a precision less than that
+        of the default platform integer. In that case, the default platform
+        integer is used.
         If the data type (either specified or resolved) differs from the
         data type of `a`, the input array elements are cast to the
         specified data type before computing the sum.
@@ -2905,8 +2891,6 @@ def sum(
                 )
             )
         ):
-            from dpctl.tensor._reduction import _default_reduction_dtype
-
             from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
 
             input = a
@@ -2916,7 +2900,7 @@ def sum(
 
             queue = input.sycl_queue
             out_dtype = (
-                _default_reduction_dtype(input.dtype, queue)
+                dtu._default_accumulation_dtype(input.dtype, queue)
                 if dtype is None
                 else dtype
             )
