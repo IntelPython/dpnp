@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.cumsum
+===================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.cumsum
