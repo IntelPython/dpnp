@@ -929,23 +929,23 @@ class TestMultiDot:
 
         a = dpnp.ones((5, 8, 10))
         b = dpnp.ones((10, 5))
-        c = dpnp.ones((8, 15))
+        c = dpnp.ones((5, 15))
         # First array must be 1-D or 2-D
-        with pytest.raises(numpy.linalg.LinAlgError):
+        with pytest.raises(dpnp.linalg.LinAlgError):
             dpnp.linalg.multi_dot([a, b, c])
 
-        a = dpnp.ones((5, 8))
+        a = dpnp.ones((5, 10))
         b = dpnp.ones((10, 5))
-        c = dpnp.ones((8, 15, 6))
+        c = dpnp.ones((5, 15, 6))
         # Last array must be 1-D or 2-D
-        with pytest.raises(numpy.linalg.LinAlgError):
+        with pytest.raises(dpnp.linalg.LinAlgError):
             dpnp.linalg.multi_dot([a, b, c])
 
         a = dpnp.ones((5, 10))
         b = dpnp.ones((10, 5, 8))
         c = dpnp.ones((8, 15))
         # Inner array must be 2-D
-        with pytest.raises(numpy.linalg.LinAlgError):
+        with pytest.raises(dpnp.linalg.LinAlgError):
             dpnp.linalg.multi_dot([a, b, c])
 
         a = dpnp.ones((5, 10))
