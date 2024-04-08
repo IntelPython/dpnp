@@ -88,7 +88,6 @@ var hierarchy =
     [ "dpnp::backend::ext::lapack::types::GetrfBatchTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::lapack::types::GetrfTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::lapack::types::GetriBatchTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html", null ],
-    [ "dpnp::backend::ext::lapack::types::GetrsTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::lapack::types::HeevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::vm::HypotContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_hypot_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::HypotOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_hypot_output_type.html", null ],

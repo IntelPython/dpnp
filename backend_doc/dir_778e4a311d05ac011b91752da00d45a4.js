@@ -6,7 +6,6 @@ var dir_778e4a311d05ac011b91752da00d45a4 =
     [ "gesvd.hpp", "gesvd_8hpp_source.html", null ],
     [ "getrf.hpp", "getrf_8hpp_source.html", null ],
     [ "getri.hpp", "getri_8hpp_source.html", null ],
-    [ "getrs.hpp", "getrs_8hpp_source.html", null ],
     [ "heevd.hpp", "heevd_8hpp_source.html", null ],
     [ "linalg_exceptions.hpp", "linalg__exceptions_8hpp_source.html", null ],
     [ "orgqr.hpp", "orgqr_8hpp_source.html", null ],
