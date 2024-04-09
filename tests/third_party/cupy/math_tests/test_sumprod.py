@@ -507,9 +507,12 @@ class TestCumprod:
         self._cumprod(xp, a, out=out)
         return out
 
+    # TODO: remove skip once proper cumprod is implemented
+    @pytest.mark.skipif(
+        is_win_platform(), reason="numpy has another default integral dtype"
+    )
     @testing.for_all_dtypes()
-    # TODO: remove type_check once proper cumprod is implemented
-    @testing.numpy_cupy_allclose(rtol=1e-6, type_check=(not is_win_platform()))
+    @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_cumprod_2dim_without_axis(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return self._cumprod(xp, a)
