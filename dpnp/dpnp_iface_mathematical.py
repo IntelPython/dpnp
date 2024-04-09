@@ -2499,6 +2499,8 @@ rint = DPNPUnaryFunc(
     ti._round_result_type,
     ti._round,
     _RINT_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_round_to_call,
+    mkl_impl_fn=vmi._round,
 )
 
 
@@ -2554,6 +2556,8 @@ round = DPNPRound(
     ti._round_result_type,
     ti._round,
     _ROUND_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_round_to_call,
+    mkl_impl_fn=vmi._round,
 )
 
 
