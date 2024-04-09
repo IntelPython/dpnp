@@ -40,9 +40,6 @@ it contains:
 import numpy
 
 import dpnp
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
-from dpnp.linalg.dpnp_algo_linalg import *
 
 from .dpnp_utils_linalg import (
     check_stacked_2d,
