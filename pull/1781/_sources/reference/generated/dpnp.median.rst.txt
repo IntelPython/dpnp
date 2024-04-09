@@ -1,0 +1,6 @@
+﻿dpnp.median
+===========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: median
