@@ -158,19 +158,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMult
 
 tests/third_party/intel/test_zero_copy_test1.py::test_dpnp_interaction_with_dpctl_memory
 
-tests/test_linalg.py::test_cond[-1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond[1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond[-2-[[1, 0, -1], [0, 1, 0], [1, 0, 1]]]
-tests/test_linalg.py::test_cond[2-[[1, 0, -1], [0, 1, 0], [1, 0, 1]]]
-tests/test_linalg.py::test_cond[-2-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond[2-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond["fro"-[[1, 0, -1], [0, 1, 0], [1, 0, 1]]]
-tests/test_linalg.py::test_cond["fro"-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond[None-[[1, 0, -1], [0, 1, 0], [1, 0, 1]]]
-tests/test_linalg.py::test_cond[None-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond[-numpy.inf-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_cond[numpy.inf-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-
 tests/test_linalg.py::test_matrix_rank[None-[0, 1]-float64]
 tests/test_linalg.py::test_matrix_rank[None-[0, 1]-float32]
 tests/test_linalg.py::test_matrix_rank[None-[0, 1]-int64]
@@ -598,28 +585,6 @@ tests/third_party/cupy/math_tests/test_misc.py::TestConvolve::test_convolve_diff
 tests/third_party/cupy/math_tests/test_misc.py::TestConvolve::test_convolve_diff_types[full]
 
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
-
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_ndarray_cumprod_2dim_with_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_arraylike
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_huge_array
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_numpy_array
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_out_noncontiguous
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_1dim
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_2dim_without_axis
-
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum[_param_0_{axis=0}]
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum[_param_1_{axis=1}]
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum[_param_2_{axis=2}]
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_2dim[_param_0_{axis=0}]
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_2dim[_param_1_{axis=1}]
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_2dim[_param_2_{axis=2}]
-
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_arraylike[_param_0_{axis=0}]
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_arraylike[_param_1_{axis=1}]
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_arraylike[_param_2_{axis=2}]
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_numpy_array[_param_0_{axis=0}]
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_numpy_array[_param_1_{axis=1}]
-tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum::test_cumsum_numpy_array[_param_2_{axis=2}]
 
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont

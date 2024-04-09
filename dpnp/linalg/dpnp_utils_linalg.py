@@ -38,6 +38,7 @@ __all__ = [
     "check_stacked_2d",
     "check_stacked_square",
     "dpnp_cholesky",
+    "dpnp_cond",
     "dpnp_det",
     "dpnp_eigh",
     "dpnp_inv",
@@ -197,6 +198,11 @@ def _common_inexact_type(default_dtype, *dtypes):
         for dt in dtypes
     ]
     return dpnp.result_type(*inexact_dtypes)
+
+
+def _is_empty_2d(arr):
+    # check size first for efficiency
+    return arr.size == 0 and numpy.prod(arr.shape[-2:]) == 0
 
 
 def _lu_factor(a, res_type):
@@ -841,6 +847,36 @@ def dpnp_cholesky(a, upper):
     return a_h
 
 
+def dpnp_cond(x, p=None):
+    """Compute the condition number of a matrix."""
+
+    if _is_empty_2d(x):
+        raise dpnp.linalg.LinAlgError("cond is not defined on empty arrays")
+    if p is None or p == 2 or p == -2:
+        s = dpnp.linalg.svd(x, compute_uv=False)
+        if p == -2:
+            r = s[..., -1] / s[..., 0]
+        else:
+            r = s[..., 0] / s[..., -1]
+    else:
+        result_t = _common_type(x)
+        # The result array will contain nans in the entries
+        # where inversion failed
+        invx = dpnp.linalg.inv(x)
+        r = dpnp.linalg.norm(x, p, axis=(-2, -1)) * dpnp.linalg.norm(
+            invx, p, axis=(-2, -1)
+        )
+        r = r.astype(result_t, copy=False)
+
+    # Convert nans to infs unless the original array had nan entries
+    nan_mask = dpnp.isnan(r)
+    if nan_mask.any():
+        nan_mask &= ~dpnp.isnan(x).any(axis=(-2, -1))
+        r[nan_mask] = dpnp.inf
+
+    return r
+
+
 def dpnp_det(a):
     """
     dpnp_det(a)
@@ -1255,18 +1291,18 @@ def dpnp_multi_dot(n, arrays, out=None):
     """Compute the dot product of two or more arrays in a single function call."""
 
     if not arrays[0].ndim in [1, 2]:
-        raise numpy.linalg.LinAlgError(
+        raise dpnp.linalg.LinAlgError(
             f"{arrays[0].ndim}-dimensional array given. First array must be 1-D or 2-D."
         )
 
     if not arrays[-1].ndim in [1, 2]:
-        raise numpy.linalg.LinAlgError(
+        raise dpnp.linalg.LinAlgError(
             f"{arrays[-1].ndim}-dimensional array given. Last array must be 1-D or 2-D."
         )
 
     for arr in arrays[1:-1]:
         if arr.ndim != 2:
-            raise numpy.linalg.LinAlgError(
+            raise dpnp.linalg.LinAlgError(
                 f"{arr.ndim}-dimensional array given. Inner arrays must be 2-D."
             )
 
@@ -1401,13 +1437,9 @@ def dpnp_pinv(a, rcond=1e-15, hermitian=False):
 
     """
 
-    if a.size == 0:
+    if _is_empty_2d(a):
         m, n = a.shape[-2:]
-        if m == 0 or n == 0:
-            res_type = a.dtype
-        else:
-            res_type = _common_type(a)
-        return dpnp.empty_like(a, shape=(a.shape[:-2] + (n, m)), dtype=res_type)
+        return dpnp.empty_like(a, shape=(a.shape[:-2] + (n, m)))
 
     if dpnp.is_supported_array_type(rcond):
         # Check that `a` and `rcond` are allocated on the same device
@@ -1417,7 +1449,7 @@ def dpnp_pinv(a, rcond=1e-15, hermitian=False):
         # Allocate dpnp.ndarray if rcond is a scalar
         rcond = dpnp.array(rcond, usm_type=a.usm_type, sycl_queue=a.sycl_queue)
 
-    u, s, vt = dpnp_svd(a.conj(), full_matrices=False, hermitian=hermitian)
+    u, s, vt = dpnp_svd(dpnp.conj(a), full_matrices=False, hermitian=hermitian)
 
     # discard small singular values
     cutoff = rcond * dpnp.max(s, axis=-1)
@@ -1865,39 +1897,72 @@ def dpnp_solve(a, b):
             out_v = out_v.reshape(orig_shape_b)
         return out_v
     else:
-        # oneMKL LAPACK gesv overwrites `a` and `b` and assumes fortran-like array as input.
-        # Allocate 'F' order memory for dpnp arrays to comply with these requirements.
-        a_f = dpnp.empty_like(
-            a, order="F", dtype=res_type, usm_type=res_usm_type
+        # Due to MKLD-17226 (bug with incorrect checking ldb parameter
+        # in oneapi::mkl::lapack::gesv_scratchad_size that raises an error
+        # `invalid argument` when nrhs > n) we can not use _gesv directly.
+        # This w/a uses _getrf and _getrs instead
+        # to handle cases where nrhs > n for a.shape = (n x n)
+        # and b.shape = (n x nrhs).
+
+        # oneMKL LAPACK getrf overwrites `a`.
+        a_h = dpnp.empty_like(
+            a, order="C", dtype=res_type, usm_type=res_usm_type
         )
 
-        # use DPCTL tensor function to fill the coefficient matrix array
-        # with content from the input array `a`
+        # use DPCTL tensor function to fill the сopy of the input array
+        # from the input array
         a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a.sycl_queue
+            src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
         )
 
-        b_f = dpnp.empty_like(
+        # oneMKL LAPACK getrs overwrites `b` and assumes fortran-like array as input.
+        # Allocate 'F' order memory for dpnp arrays to comply with these requirements.
+        b_h = dpnp.empty_like(
             b, order="F", dtype=res_type, usm_type=res_usm_type
         )
 
         # use DPCTL tensor function to fill the array of multiple dependent variables
         # with content from the input array `b`
         b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=b_usm_arr, dst=b_f.get_array(), sycl_queue=b.sycl_queue
+            src=b_usm_arr, dst=b_h.get_array(), sycl_queue=b.sycl_queue
         )
 
-        # Call the LAPACK extension function _gesv to solve the system of linear
-        # equations with the coefficient square matrix and the dependent variables array.
-        ht_lapack_ev, _ = li._gesv(
-            exec_q, a_f.get_array(), b_f.get_array(), [a_copy_ev, b_copy_ev]
+        n = a.shape[0]
+
+        ipiv_h = dpnp.empty_like(
+            a,
+            shape=(n,),
+            dtype=dpnp.int64,
+        )
+        dev_info_h = [0]
+
+        # Call the LAPACK extension function _getrf
+        # to perform LU decomposition of the input matrix
+        ht_getrf_ev, getrf_ev = li._getrf(
+            exec_q,
+            a_h.get_array(),
+            ipiv_h.get_array(),
+            dev_info_h,
+            [a_copy_ev],
         )
 
-        ht_lapack_ev.wait()
-        b_ht_copy_ev.wait()
-        a_ht_copy_ev.wait()
+        _check_lapack_dev_info(dev_info_h)
 
-        return b_f
+        # Call the LAPACK extension function _getrs
+        # to solve the system of linear equations with an LU-factored
+        # coefficient square matrix, with multiple right-hand sides.
+        ht_getrs_ev, _ = li._getrs(
+            exec_q,
+            a_h.get_array(),
+            ipiv_h.get_array(),
+            b_h.get_array(),
+            [b_copy_ev, getrf_ev],
+        )
+
+        ht_list_ev = [a_ht_copy_ev, b_ht_copy_ev, ht_getrf_ev, ht_getrs_ev]
+        dpctl.SyclEvent.wait_for(ht_list_ev)
+
+        return b_h
 
 
 def dpnp_slogdet(a):

@@ -48,6 +48,7 @@ from .dpnp_utils_linalg import (
     check_stacked_2d,
     check_stacked_square,
     dpnp_cholesky,
+    dpnp_cond,
     dpnp_det,
     dpnp_eigh,
     dpnp_inv,
@@ -145,32 +146,61 @@ def cholesky(a, upper=False):
     return dpnp_cholesky(a, upper=upper)
 
 
-def cond(input, p=None):
+def cond(x, p=None):
     """
     Compute the condition number of a matrix.
 
     For full documentation refer to :obj:`numpy.linalg.cond`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter p=[None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, 'fro'] is supported.
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        The matrix whose condition number is sought.
+    p : {None, 1, -1, 2, -2, inf, -inf, "fro"}, optional
+        Order of the norm used in the condition number computation.
+        inf means the `dpnp.inf` object, and the Frobenius norm is
+        the root-of-sum-of-squares norm. The default is ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The condition number of the matrix. May be infinite.
 
     See Also
     --------
-    :obj:`dpnp.norm` : Matrix or vector norm.
+    :obj:`dpnp.linalg.norm` : Matrix or vector norm.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, 0, -1], [0, 1, 0], [1, 0, 1]])
+    >>> a
+    array([[ 1,  0, -1],
+           [ 0,  1,  0],
+           [ 1,  0,  1]])
+    >>> np.linalg.cond(a)
+    array(1.41421356)
+    >>> np.linalg.cond(a, 'fro')
+    array(3.16227766)
+    >>> np.linalg.cond(a, np.inf)
+    array(2.)
+    >>> np.linalg.cond(a, -np.inf)
+    array(1.)
+    >>> np.linalg.cond(a, 1)
+    array(2.)
+    >>> np.linalg.cond(a, -1)
+    array(1.)
+    >>> np.linalg.cond(a, 2)
+    array(1.41421356)
+    >>> np.linalg.cond(a, -2)
+    array(0.70710678) # may vary
+    >>> min(np.linalg.svd(a, compute_uv=False))*min(np.linalg.svd(np.linalg.inv(a), compute_uv=False))
+    array(0.70710678) # may vary
+
     """
 
-    if not use_origin_backend(input):
-        if p in [None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, "fro"]:
-            result_obj = dpnp_cond(input, p)
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
-
-            return result
-        else:
-            pass
-
-    return call_origin(numpy.linalg.cond, input, p)
+    dpnp.check_supported_arrays_type(x)
+    return dpnp_cond(x, p)
 
 
 def det(a):
@@ -408,6 +438,11 @@ def inv(a):
     -------
     out : (..., M, M) dpnp.ndarray
         (Multiplicative) inverse of the matrix a.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.cond` : Compute the condition number of a matrix.
+    :obj:`dpnp.linalg.svd` : Compute the singular value decomposition.
 
     Examples
     --------
@@ -710,11 +745,11 @@ def norm(x, ord=None, axis=None, keepdims=False):
            [ 2,  3,  4]])
 
     >>> np.linalg.norm(a)
-    array(7.745966692414834)
+    array(7.74596669)
     >>> np.linalg.norm(b)
-    array(7.745966692414834)
+    array(7.74596669)
     >>> np.linalg.norm(b, 'fro')
-    array(7.745966692414834)
+    array(7.74596669)
     >>> np.linalg.norm(a, np.inf)
     array(4.)
     >>> np.linalg.norm(b, np.inf)
@@ -733,16 +768,16 @@ def norm(x, ord=None, axis=None, keepdims=False):
     >>> np.linalg.norm(b, -1)
     array(6.)
     >>> np.linalg.norm(a, 2)
-    array(7.745966692414834)
+    array(7.74596669)
     >>> np.linalg.norm(b, 2)
-    array(7.3484692283495345)
+    array(7.34846923)
 
     >>> np.linalg.norm(a, -2)
     array(0.)
     >>> np.linalg.norm(b, -2)
-    array(1.8570331885190563e-016) # may vary
+    array(4.35106603e-18) # may vary
     >>> np.linalg.norm(a, 3)
-    array(5.8480354764257312) # may vary
+    array(5.84803548) # may vary
     >>> np.linalg.norm(a, -3)
     array(0.)
 
@@ -763,7 +798,7 @@ def norm(x, ord=None, axis=None, keepdims=False):
     >>> np.linalg.norm(m, axis=(1,2))
     array([  3.74165739,  11.22497216])
     >>> np.linalg.norm(m[0, :, :]), np.linalg.norm(m[1, :, :])
-    (array(3.7416573867739413), array(11.224972160321824))
+    (array(3.74165739), array(11.22497216))
 
     """
 

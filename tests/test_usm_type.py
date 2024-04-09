@@ -522,6 +522,7 @@ def test_norm(usm_type, ord, axis):
         ),
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("count_nonzero", [0, 1, 7, 0]),
+        pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("exp2", [0.0, 1.0, 2.0]),
@@ -678,6 +679,20 @@ def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "p",
+    [None, -dp.Inf, -2, -1, 1, 2, dp.Inf, "fro"],
+    ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+)
+def test_cond(usm_type, p):
+    ia = dp.arange(32, usm_type=usm_type).reshape(2, 4, 4)
+
+    result = dp.linalg.cond(ia, p=p)
+    assert ia.usm_type == usm_type
+    assert result.usm_type == usm_type
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)

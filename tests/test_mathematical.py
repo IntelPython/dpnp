@@ -161,6 +161,77 @@ class TestClip:
             dpnp.clip(a, 1, 5, **kwargs)
 
 
+class TestCumSum:
+    @pytest.mark.parametrize(
+        "arr, axis",
+        [
+            pytest.param([1, 2, 10, 11, 6, 5, 4], 0),
+            pytest.param([[1, 2, 3, 4], [5, 6, 7, 9], [10, 3, 4, 5]], 0),
+            pytest.param([[1, 2, 3, 4], [5, 6, 7, 9], [10, 3, 4, 5]], 1),
+            pytest.param([[0, 1, 2], [3, 4, 5]], 0),
+            pytest.param([[0, 1, 2], [3, 4, 5]], -1),
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_axis(self, arr, axis, dtype):
+        a = numpy.array(arr, dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.cumsum(ia, axis=axis)
+        expected = numpy.cumsum(a, axis=axis)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_ndarray_method(self, dtype):
+        a = numpy.arange(10).astype(dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = ia.cumsum()
+        expected = a.cumsum()
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("sh", [(10,), (2, 5)])
+    @pytest.mark.parametrize(
+        "xp_in, xp_out, check",
+        [
+            pytest.param(dpt, dpt, False),
+            pytest.param(dpt, dpnp, True),
+            pytest.param(dpnp, dpt, False),
+        ],
+    )
+    def test_usm_ndarray(self, sh, xp_in, xp_out, check):
+        a = numpy.arange(10).reshape(sh)
+        ia = xp_in.asarray(a)
+
+        result = dpnp.cumsum(ia)
+        expected = numpy.cumsum(a)
+        assert_array_equal(expected, result)
+
+        out = numpy.empty((10,))
+        iout = xp_out.asarray(out)
+
+        result = dpnp.cumsum(ia, out=iout)
+        expected = numpy.cumsum(a, out=out)
+        assert_array_equal(expected, result)
+        assert (result is iout) is check
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_out_dtype(self, arr_dt, out_dt, dtype):
+        a = numpy.arange(10, 20).astype(dtype=arr_dt)
+        out = numpy.zeros_like(a, dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = ia.cumsum(out=iout, dtype=dtype)
+        expected = a.cumsum(out=out, dtype=dtype)
+        assert_array_equal(expected, result)
+        assert result is iout
+
+
 class TestDiff:
     @pytest.mark.parametrize("n", list(range(0, 3)))
     @pytest.mark.parametrize("dt", get_integer_dtypes())
@@ -1883,7 +1954,9 @@ class TestLogSumExp:
     def test_logsumexp(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
         res = dpnp.logsumexp(a, axis=axis, keepdims=keepdims)
-        exp_dtype = dpnp.default_float_type(a.device)
+        exp_dtype = (
+            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
+        )
         exp = numpy.logaddexp.reduce(
             dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
         )
@@ -1895,11 +1968,17 @@ class TestLogSumExp:
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_logsumexp_out(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
-        exp_dtype = dpnp.default_float_type(a.device)
+        exp_dtype = (
+            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
+        )
         exp = numpy.logaddexp.reduce(
             dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
         )
-        dpnp_out = dpnp.empty(exp.shape, dtype=exp_dtype)
+
+        exp_dtype = exp.dtype
+        if exp_dtype == numpy.float64 and not has_support_aspect64():
+            exp_dtype = numpy.float32
+        dpnp_out = dpnp.empty_like(a, shape=exp.shape, dtype=exp_dtype)
         res = dpnp.logsumexp(a, axis=axis, out=dpnp_out, keepdims=keepdims)
 
         assert res is dpnp_out
@@ -1925,7 +2004,9 @@ class TestReduceHypot:
     def test_reduce_hypot(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
         res = dpnp.reduce_hypot(a, axis=axis, keepdims=keepdims)
-        exp_dtype = dpnp.default_float_type(a.device)
+        exp_dtype = (
+            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
+        )
         exp = numpy.hypot.reduce(
             dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
         )
@@ -1937,11 +2018,17 @@ class TestReduceHypot:
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_reduce_hypot_out(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
-        exp_dtype = dpnp.default_float_type(a.device)
+        exp_dtype = (
+            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
+        )
         exp = numpy.hypot.reduce(
             dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
         )
-        dpnp_out = dpnp.empty(exp.shape, dtype=exp_dtype)
+
+        exp_dtype = exp.dtype
+        if exp_dtype == numpy.float64 and not has_support_aspect64():
+            exp_dtype = numpy.float32
+        dpnp_out = dpnp.empty_like(a, shape=exp.shape, dtype=exp_dtype)
         res = dpnp.reduce_hypot(a, axis=axis, out=dpnp_out, keepdims=keepdims)
 
         assert res is dpnp_out
