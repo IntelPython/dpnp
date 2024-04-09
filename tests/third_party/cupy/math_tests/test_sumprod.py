@@ -1,12 +1,20 @@
+import math
+import warnings
+
 import numpy
 import pytest
 
 import dpnp as cupy
-from tests.helper import has_support_aspect64
+from tests.helper import (
+    has_support_aspect16,
+    has_support_aspect64,
+    is_win_platform,
+)
 from tests.third_party.cupy import testing
 
 
 class TestSumprod:
+    @pytest.fixture(autouse=True)
     def tearDown(self):
         # Free huge memory for slow test
         # cupy.get_default_memory_pool().free_all_blocks()
@@ -58,7 +66,8 @@ class TestSumprod:
     @testing.slow
     @testing.numpy_cupy_allclose()
     def test_sum_axis_huge(self, xp):
-        a = testing.shaped_random((204, 102, 102), xp, "i4")
+        a = testing.shaped_random((2048, 1, 1024), xp, "b")
+        a = xp.broadcast_to(a, (2048, 1024, 1024))
         return a.sum(axis=2)
 
     @testing.for_all_dtypes()
@@ -73,6 +82,16 @@ class TestSumprod:
     @testing.numpy_cupy_allclose()
     def test_sum_axis2(self, xp, dtype):
         a = testing.shaped_arange((20, 30, 40), xp, dtype)
+        return a.sum(axis=1)
+
+    # test is updated to have exactly the same calls between cupy and numpy,
+    # otherwise it is unclear what is verified here
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
+    @testing.numpy_cupy_allclose()
+    def test_sum_axis2_float16(self, xp):
+        # Note that the above test example overflows in float16. We use a
+        # smaller array instead.
+        a = testing.shaped_arange((2, 30, 4), xp, dtype="e")
         return a.sum(axis=1)
 
     @testing.for_all_dtypes()
@@ -120,12 +139,16 @@ class TestSumprod:
     @testing.for_all_dtypes_combination(names=["src_dtype", "dst_dtype"])
     @testing.numpy_cupy_allclose()
     def test_sum_dtype(self, xp, src_dtype, dst_dtype):
+        if not xp.can_cast(src_dtype, dst_dtype):
+            pytest.skip()
         a = testing.shaped_arange((2, 3, 4), xp, src_dtype)
         return a.sum(dtype=dst_dtype)
 
     @testing.for_all_dtypes_combination(names=["src_dtype", "dst_dtype"])
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-2, "default": 1e-7})
     def test_sum_keepdims_and_dtype(self, xp, src_dtype, dst_dtype):
+        if not xp.can_cast(src_dtype, dst_dtype):
+            pytest.skip()
         a = testing.shaped_arange((2, 3, 4), xp, src_dtype)
         return a.sum(axis=2, dtype=dst_dtype, keepdims=True)
 
@@ -176,8 +199,18 @@ class TestSumprod:
     @testing.for_all_dtypes_combination(names=["src_dtype", "dst_dtype"])
     @testing.numpy_cupy_allclose()
     def test_prod_dtype(self, xp, src_dtype, dst_dtype):
+        if not xp.can_cast(src_dtype, dst_dtype):
+            pytest.skip()
         a = testing.shaped_arange((2, 3), xp, src_dtype)
         return a.prod(dtype=dst_dtype)
+
+    @pytest.mark.skip("product() is deprecated")
+    @testing.numpy_cupy_allclose()
+    def test_product_alias(self, xp):
+        a = testing.shaped_arange((2, 3), xp, xp.float32)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            return xp.product(a)
 
 
 @testing.parameterize(
@@ -252,6 +285,19 @@ class TestNansumNanprodLong:
     )
 )
 class TestNansumNanprodExtra:
+    def test_nansum_axis_float16(self):
+        # Note that the above test example overflows in float16. We use a
+        # smaller array instead, just return if array is too large.
+        if numpy.prod(self.shape) > 24:
+            return
+        a = testing.shaped_arange(self.shape, dtype="e")
+        a[:, 1] = cupy.nan
+        sa = cupy.nansum(a, axis=1)
+        b = testing.shaped_arange(self.shape, numpy, dtype="f")
+        b[:, 1] = numpy.nan
+        sb = numpy.nansum(b, axis=1)
+        testing.assert_allclose(sa, sb.astype("e"))
+
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
     @testing.numpy_cupy_allclose()
     def test_nansum_out(self, xp, dtype):
@@ -314,21 +360,25 @@ axes = [0, 1, 2]
 
 
 @testing.parameterize(*testing.product({"axis": axes}))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-# TODO: remove "type_check=False" once leveraged on dpctl call
 class TestCumsum:
+    def _cumsum(self, xp, a, *args, **kwargs):
+        b = a.copy()
+        res = xp.cumsum(a, *args, **kwargs)
+        testing.assert_array_equal(a, b)  # Check if input array is overwritten
+        return res
+
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(type_check=False)
+    @testing.numpy_cupy_allclose()
     def test_cumsum(self, xp, dtype):
         a = testing.shaped_arange((5,), xp, dtype)
-        return xp.cumsum(a)
+        return self._cumsum(xp, a)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_cumsum_out(self, xp, dtype):
         a = testing.shaped_arange((5,), xp, dtype)
         out = xp.zeros((5,), dtype=dtype)
-        xp.cumsum(a, out=out)
+        self._cumsum(xp, a, out=out)
         return out
 
     @testing.for_all_dtypes()
@@ -336,21 +386,21 @@ class TestCumsum:
     def test_cumsum_out_noncontiguous(self, xp, dtype):
         a = testing.shaped_arange((5,), xp, dtype)
         out = xp.zeros((10,), dtype=dtype)[::2]  # Non contiguous view
-        xp.cumsum(a, out=out)
+        self._cumsum(xp, a, out=out)
         return out
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(type_check=False)
+    @testing.numpy_cupy_allclose()
     def test_cumsum_2dim(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
-        return xp.cumsum(a)
+        return self._cumsum(xp, a)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(contiguous_check=False)
     def test_cumsum_axis(self, xp, dtype):
         n = len(axes)
         a = testing.shaped_arange(tuple(range(4, 4 + n)), xp, dtype)
-        return xp.cumsum(a, axis=self.axis)
+        return self._cumsum(xp, a, axis=self.axis)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
@@ -359,7 +409,7 @@ class TestCumsum:
         shape = tuple(range(4, 4 + n))
         a = testing.shaped_arange(shape, xp, dtype)
         out = xp.zeros(shape, dtype=dtype)
-        xp.cumsum(a, axis=self.axis, out=out)
+        self._cumsum(xp, a, axis=self.axis, out=out)
         return out
 
     @testing.for_all_dtypes()
@@ -371,7 +421,7 @@ class TestCumsum:
         out = xp.zeros((8,) + shape[1:], dtype=dtype)[
             ::2
         ]  # Non contiguous view
-        xp.cumsum(a, axis=self.axis, out=out)
+        self._cumsum(xp, a, axis=self.axis, out=out)
         return out
 
     @testing.for_all_dtypes()
@@ -386,7 +436,7 @@ class TestCumsum:
     def test_cumsum_axis_empty(self, xp, dtype):
         n = len(axes)
         a = testing.shaped_arange(tuple(range(0, n)), xp, dtype)
-        return xp.cumsum(a, axis=self.axis)
+        return self._cumsum(xp, a, axis=self.axis)
 
     @testing.for_all_dtypes()
     def test_invalid_axis_lower1(self, dtype):
@@ -426,11 +476,18 @@ class TestCumsum:
 
 
 class TestCumprod:
+    def _cumprod(self, xp, a, *args, **kwargs):
+        b = a.copy()
+        res = xp.cumprod(a, *args, **kwargs)
+        testing.assert_array_equal(a, b)  # Check if input array is overwritten
+        return res
+
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    # TODO: remove type_check once proper cumprod is implemented
+    @testing.numpy_cupy_allclose(type_check=(not is_win_platform()))
     def test_cumprod_1dim(self, xp, dtype):
         a = testing.shaped_arange((5,), xp, dtype)
-        return xp.cumprod(a)
+        return self._cumprod(xp, a)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
@@ -438,36 +495,43 @@ class TestCumprod:
     def test_cumprod_out(self, xp, dtype):
         a = testing.shaped_arange((5,), xp, dtype)
         out = xp.zeros((5,), dtype=dtype)
-        xp.cumprod(a, out=out)
+        self._cumprod(xp, a, out=out)
         return out
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_cumprod_out_noncontiguous(self, xp, dtype):
         a = testing.shaped_arange((5,), xp, dtype)
         out = xp.zeros((10,), dtype=dtype)[::2]  # Non contiguous view
-        xp.cumprod(a, out=out)
+        self._cumprod(xp, a, out=out)
         return out
 
+    # TODO: remove skip once proper cumprod is implemented
+    @pytest.mark.skipif(
+        is_win_platform(), reason="numpy has another default integral dtype"
+    )
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_cumprod_2dim_without_axis(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
-        return xp.cumprod(a)
+        return self._cumprod(xp, a)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_cumprod_2dim_with_axis(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
-        return xp.cumprod(a, axis=1)
+        return self._cumprod(xp, a, axis=1)
 
+    @pytest.mark.skip("ndarray.cumprod() is not implemented yet")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_ndarray_cumprod_2dim_with_axis(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return a.cumprod(axis=1)
 
+    @pytest.mark.skip("buffer overflow")
     @testing.slow
     def test_cumprod_huge_array(self):
         size = 2**32
@@ -476,7 +540,7 @@ class TestCumprod:
         a = cupy.ones(size, "b")
         result = cupy.cumprod(a, dtype="b")
         del a
-        self.assertTrue((result == 1).all())
+        assert (result == 1).all()
         # Free huge memory for slow test
         del result
         cupy.get_default_memory_pool().free_all_blocks()
@@ -512,15 +576,82 @@ class TestCumprod:
         with pytest.raises(numpy.AxisError):
             return cupy.cumprod(a, axis=a.ndim)
 
+    @pytest.mark.skip("no exception is raised by numpy")
     def test_cumprod_arraylike(self):
         with pytest.raises(TypeError):
             return cupy.cumprod((1, 2, 3))
 
+    @pytest.mark.skip("no exception is raised by numpy")
     @testing.for_float_dtypes()
     def test_cumprod_numpy_array(self, dtype):
         a_numpy = numpy.arange(1, 6, dtype=dtype)
         with pytest.raises(TypeError):
             return cupy.cumprod(a_numpy)
+
+    @pytest.mark.skip("cumproduct() is deprecated")
+    @testing.numpy_cupy_allclose()
+    def test_cumproduct_alias(self, xp):
+        a = testing.shaped_arange((2, 3), xp, xp.float32)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            return xp.cumproduct(a)
+
+
+@testing.parameterize(
+    *testing.product(
+        {
+            "shape": [(20,), (7, 6), (3, 4, 5)],
+            "axis": [None, 0, 1, 2],
+            "func": ("nancumsum", "nancumprod"),
+        }
+    )
+)
+@pytest.mark.skip("nancumsum() and nancumprod() are not implemented yet")
+class TestNanCumSumProd:
+    zero_density = 0.25
+
+    def _make_array(self, dtype):
+        dtype = numpy.dtype(dtype)
+        if dtype.char in "efdFD":
+            r_dtype = dtype.char.lower()
+            a = testing.shaped_random(self.shape, numpy, dtype=r_dtype, scale=1)
+            if dtype.char in "FD":
+                ai = a
+                aj = testing.shaped_random(
+                    self.shape, numpy, dtype=r_dtype, scale=1
+                )
+                ai[ai < math.sqrt(self.zero_density)] = 0
+                aj[aj < math.sqrt(self.zero_density)] = 0
+                a = ai + 1j * aj
+            else:
+                a[a < self.zero_density] = 0
+            a = a / a
+        else:
+            a = testing.shaped_random(self.shape, numpy, dtype=dtype)
+        return a
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose()
+    def test_nancumsumprod(self, xp, dtype):
+        if self.axis is not None and self.axis >= len(self.shape):
+            pytest.skip()
+        a = xp.array(self._make_array(dtype))
+        out = getattr(xp, self.func)(a, axis=self.axis)
+        return xp.ascontiguousarray(out)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose()
+    def test_nancumsumprod_out(self, xp, dtype):
+        dtype = numpy.dtype(dtype)
+        if self.axis is not None and self.axis >= len(self.shape):
+            pytest.skip()
+        if len(self.shape) > 1 and self.axis is None:
+            # Skip the cases where np.nancum{sum|prod} raise AssertionError.
+            pytest.skip()
+        a = xp.array(self._make_array(dtype))
+        out = xp.empty(self.shape, dtype=dtype)
+        getattr(xp, self.func)(a, axis=self.axis, out=out)
+        return xp.ascontiguousarray(out)
 
 
 class TestDiff:
@@ -585,3 +716,278 @@ class TestDiff:
                 xp.diff(a, axis=3)
             with pytest.raises(numpy.AxisError):
                 xp.diff(a, axis=-4)
+
+
+# This class compares CUB results against NumPy's
+@testing.parameterize(
+    *testing.product_dict(
+        testing.product(
+            {
+                "shape": [()],
+                "axis": [None, ()],
+                "spacing": [(), (1.2,)],
+            }
+        )
+        + testing.product(
+            {
+                "shape": [(33,)],
+                "axis": [None, 0, -1, (0,)],
+                "spacing": [(), (1.2,), "sequence of int", "arrays"],
+            }
+        )
+        + testing.product(
+            {
+                "shape": [(10, 20), (10, 20, 30)],
+                "axis": [None, 0, -1, (0, -1), (1, 0)],
+                "spacing": [(), (1.2,), "sequence of int", "arrays", "mixed"],
+            }
+        ),
+        testing.product(
+            {
+                "edge_order": [1, 2],
+            }
+        ),
+    )
+)
+@pytest.mark.skip("gradient() is not implemented yet")
+class TestGradient:
+    def _gradient(self, xp, dtype, shape, spacing, axis, edge_order):
+        x = testing.shaped_random(shape, xp, dtype=dtype)
+        if axis is None:
+            normalized_axes = tuple(range(x.ndim))
+        else:
+            normalized_axes = axis
+            if not isinstance(normalized_axes, tuple):
+                normalized_axes = (normalized_axes,)
+            normalized_axes = tuple(ax % x.ndim for ax in normalized_axes)
+        if spacing == "sequence of int":
+            # one scalar per axis
+            spacing = tuple((ax + 1) / x.ndim for ax in normalized_axes)
+        elif spacing == "arrays":
+            # one array per axis
+            spacing = tuple(
+                xp.arange(x.shape[ax]) * (ax + 0.5) for ax in normalized_axes
+            )
+            # make at one of the arrays have non-constant spacing
+            spacing[-1][5:] *= 2.0
+        elif spacing == "mixed":
+            # mixture of arrays and scalars
+            spacing = [xp.arange(x.shape[normalized_axes[0]])]
+            spacing = spacing + [0.5] * (len(normalized_axes) - 1)
+        return xp.gradient(x, *spacing, axis=axis, edge_order=edge_order)
+
+    @testing.for_dtypes("fFdD")
+    @testing.numpy_cupy_allclose(atol=1e-6, rtol=1e-5)
+    def test_gradient_floating(self, xp, dtype):
+        return self._gradient(
+            xp, dtype, self.shape, self.spacing, self.axis, self.edge_order
+        )
+
+    # unsigned int behavior fixed in 1.18.1
+    # https://github.com/numpy/numpy/issues/15207
+    @testing.with_requires("numpy>=1.18.1")
+    @testing.for_int_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose(atol=1e-6, rtol=1e-5)
+    def test_gradient_int(self, xp, dtype):
+        return self._gradient(
+            xp, dtype, self.shape, self.spacing, self.axis, self.edge_order
+        )
+
+    @testing.numpy_cupy_allclose(atol=2e-2, rtol=1e-3)
+    def test_gradient_float16(self, xp):
+        return self._gradient(
+            xp,
+            numpy.float16,
+            self.shape,
+            self.spacing,
+            self.axis,
+            self.edge_order,
+        )
+
+
+@pytest.mark.skip("gradient() is not implemented yet")
+class TestGradientErrors:
+    def test_gradient_invalid_spacings1(self):
+        # more spacings than axes
+        spacing = (1.0, 2.0, 3.0)
+        for xp in [numpy, cupy]:
+            x = testing.shaped_random((32, 16), xp)
+            with pytest.raises(TypeError):
+                xp.gradient(x, *spacing)
+
+    def test_gradient_invalid_spacings2(self):
+        # wrong length array in spacing
+        shape = (32, 16)
+        spacing = (15, cupy.arange(shape[1] + 1))
+        for xp in [numpy, cupy]:
+            x = testing.shaped_random(shape, xp)
+            with pytest.raises(ValueError):
+                xp.gradient(x, *spacing)
+
+    def test_gradient_invalid_spacings3(self):
+        # spacing array with ndim != 1
+        shape = (32, 16)
+        spacing = (15, cupy.arange(shape[0]).reshape(4, -1))
+        for xp in [numpy, cupy]:
+            x = testing.shaped_random(shape, xp)
+            with pytest.raises(ValueError):
+                xp.gradient(x, *spacing)
+
+    def test_gradient_invalid_edge_order1(self):
+        # unsupported edge order
+        shape = (32, 16)
+        for xp in [numpy, cupy]:
+            x = testing.shaped_random(shape, xp)
+            with pytest.raises(ValueError):
+                xp.gradient(x, edge_order=3)
+
+    def test_gradient_invalid_edge_order2(self):
+        # shape cannot be < edge_order
+        shape = (1, 16)
+        for xp in [numpy, cupy]:
+            x = testing.shaped_random(shape, xp)
+            with pytest.raises(ValueError):
+                xp.gradient(x, axis=0, edge_order=2)
+
+    @testing.with_requires("numpy>=1.16")
+    def test_gradient_invalid_axis(self):
+        # axis out of range
+        shape = (4, 16)
+        for xp in [numpy, cupy]:
+            x = testing.shaped_random(shape, xp)
+            for axis in [-3, 2]:
+                with pytest.raises(numpy.AxisError):
+                    xp.gradient(x, axis=axis)
+
+    def test_gradient_bool_input(self):
+        # axis out of range
+        shape = (4, 16)
+        for xp in [numpy, cupy]:
+            x = testing.shaped_random(shape, xp, dtype=numpy.bool_)
+            with pytest.raises(TypeError):
+                xp.gradient(x)
+
+
+@pytest.mark.skip("ediff1d() is not implemented yet")
+class TestEdiff1d:
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose()
+    def test_ediff1d_1dim(self, xp, dtype):
+        a = testing.shaped_arange((5,), xp, dtype)
+        return xp.ediff1d(a)
+
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose()
+    def test_ediff1d_2dim(self, xp, dtype):
+        a = testing.shaped_arange((4, 5), xp, dtype)
+        return xp.ediff1d(a)
+
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose()
+    def test_ediff1d_3dim(self, xp, dtype):
+        a = testing.shaped_arange((2, 3, 4), xp, dtype)
+        return xp.ediff1d(a)
+
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose()
+    def test_ediff1d_to_begin1(self, xp, dtype):
+        a = testing.shaped_arange((5,), xp, dtype)
+        return xp.ediff1d(a, to_begin=xp.array([0], dtype=dtype))
+
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose()
+    def test_ediff1d_to_begin2(self, xp, dtype):
+        a = testing.shaped_arange((5,), xp, dtype)
+        return xp.ediff1d(a, to_begin=xp.array([4, 4], dtype=dtype))
+
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose()
+    def test_ediff1d_to_begin3(self, xp, dtype):
+        a = testing.shaped_arange((4, 5), xp, dtype)
+        return xp.ediff1d(a, to_begin=xp.array([1, 1], dtype=dtype))
+
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose()
+    def test_ediff1d_to_end1(self, xp, dtype):
+        a = testing.shaped_arange((5,), xp, dtype)
+        return xp.ediff1d(a, to_end=xp.array([0], dtype=dtype))
+
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose()
+    def test_ediff1d_to_end2(self, xp, dtype):
+        a = testing.shaped_arange((4, 1), xp, dtype)
+        return xp.ediff1d(a, to_end=xp.array([1, 2], dtype=dtype))
+
+    @testing.for_dtypes("bhilqefdFD")
+    @testing.numpy_cupy_allclose()
+    def test_ediff1d_ed1(self, xp, dtype):
+        a = testing.shaped_arange((2, 3, 4, 5), xp, dtype)
+        return xp.ediff1d(
+            a,
+            to_begin=xp.array([-1], dtype=dtype),
+            to_end=xp.array([0], dtype=dtype),
+        )
+
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose()
+    def test_ediff1d_ed2(self, xp, dtype):
+        a = testing.shaped_arange((2, 3), xp, dtype)
+        return xp.ediff1d(
+            a,
+            to_begin=xp.array([0, 4], dtype=dtype),
+            to_end=xp.array([1, 1], dtype=dtype),
+        )
+
+
+@pytest.mark.skip("trapz() is not implemented yet")
+class TestTrapz:
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-1, "default": 1e-7})
+    def test_trapz_1dim(self, xp, dtype):
+        a = testing.shaped_arange((5,), xp, dtype)
+        return xp.trapz(a)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-1, "default": 1e-7})
+    def test_trapz_1dim_with_x(self, xp, dtype):
+        a = testing.shaped_arange((5,), xp, dtype)
+        x = testing.shaped_arange((5,), xp, dtype)
+        return xp.trapz(a, x=x)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-1, "default": 1e-7})
+    def test_trapz_1dim_with_dx(self, xp, dtype):
+        a = testing.shaped_arange((5,), xp, dtype)
+        return xp.trapz(a, dx=0.1)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-1, "default": 1e-7})
+    def test_trapz_2dim_without_axis(self, xp, dtype):
+        a = testing.shaped_arange((4, 5), xp, dtype)
+        return xp.trapz(a)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-1, "default": 1e-7})
+    def test_trapz_2dim_with_axis(self, xp, dtype):
+        a = testing.shaped_arange((4, 5), xp, dtype)
+        return xp.trapz(a, axis=-2)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-1, "default": 1e-7})
+    def test_trapz_2dim_with_x_and_axis(self, xp, dtype):
+        a = testing.shaped_arange((4, 5), xp, dtype)
+        x = testing.shaped_arange((5,), xp, dtype)
+        return xp.trapz(a, x=x, axis=1)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-1, "default": 1e-7})
+    def test_trapz_2dim_with_dx_and_axis(self, xp, dtype):
+        a = testing.shaped_arange((4, 5), xp, dtype)
+        return xp.trapz(a, dx=0.1, axis=1)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-1, "default": 1e-7})
+    def test_trapz_1dim_with_x_and_dx(self, xp, dtype):
+        a = testing.shaped_arange((5,), xp, dtype)
+        x = testing.shaped_arange((5,), xp, dtype)
+        return xp.trapz(a, x=x, dx=0.1)
