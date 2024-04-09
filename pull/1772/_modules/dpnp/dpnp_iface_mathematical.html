@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev1+18.g21c582dc56 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev1+24.g96465b7a6b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=169bd9e5"></script>
+        <script src="../../_static/documentation_options.js?v=d0107597"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+18.g21c582dc56
+                0.15.0dev1+24.g96465b7a6b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1007,10 +1007,10 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        A new array holding the result is returned unless `out` is specified,</span>
-<span class="sd">        in which case a reference to `out` is returned. The result has the same</span>
-<span class="sd">        size as `a`, and the same shape as `a` if `axis` is not ``None`` or `a`</span>
-<span class="sd">        is a 1-d array.</span>
+<span class="sd">        A new array holding the result is returned unless `out` is specified as</span>
+<span class="sd">        :class:`dpnp.ndarray`, in which case a reference to `out` is returned.</span>
+<span class="sd">        The result has the same size as `a`, and the same shape as `a` if `axis`</span>
+<span class="sd">        is not ``None`` or `a` is a 1-d array.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1072,17 +1072,8 @@
         <span class="n">usm_out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
     <span class="n">res_usm</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">cumulative_sum</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">usm_out</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">res_usm</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">input_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">out</span><span class="p">:</span>
-        <span class="c1"># need to copy back from temporary memory to input `out`</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">input_out</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_out</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">input_out</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">input_out</span></div>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">res_usm</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">input_out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">)</span></div>
 
 
 
@@ -3079,25 +3070,10 @@
 <span class="sd">        If ``None``, the sum is computed over the entire array.</span>
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    dtype : dtype, optional</span>
-<span class="sd">        Data type of the returned array. If ``None``, the default data</span>
-<span class="sd">        type is inferred from the &quot;kind&quot; of the input array data type.</span>
-<span class="sd">            * If `a` has a real-valued floating-point data type,</span>
-<span class="sd">              the returned array will have the default real-valued</span>
-<span class="sd">              floating-point data type for the device where input</span>
-<span class="sd">              array `a` is allocated.</span>
-<span class="sd">            * If `a` has signed integral data type, the returned array</span>
-<span class="sd">              will have the default signed integral type for the device</span>
-<span class="sd">              where input array `a` is allocated.</span>
-<span class="sd">            * If `a` has unsigned integral data type, the returned array</span>
-<span class="sd">              will have the default unsigned integral type for the device</span>
-<span class="sd">              where input array `a` is allocated.</span>
-<span class="sd">            * If `a` has a complex-valued floating-point data type,</span>
-<span class="sd">              the returned array will have the default complex-valued</span>
-<span class="sd">              floating-pointer data type for the device where input</span>
-<span class="sd">              array `a` is allocated.</span>
-<span class="sd">            * If `a` has a boolean data type, the returned array will</span>
-<span class="sd">              have the default signed integral type for the device</span>
-<span class="sd">              where input array `a` is allocated.</span>
+<span class="sd">        Data type of the returned array. If ``None``, it defaults to the dtype</span>
+<span class="sd">        of `a`, unless `a` has an integer dtype with a precision less than that</span>
+<span class="sd">        of the default platform integer. In that case, the default platform</span>
+<span class="sd">        integer is used.</span>
 <span class="sd">        If the data type (either specified or resolved) differs from the</span>
 <span class="sd">        data type of `a`, the input array elements are cast to the</span>
 <span class="sd">        specified data type before computing the sum.</span>
@@ -3194,7 +3170,7 @@
 
             <span class="n">queue</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">sycl_queue</span>
             <span class="n">out_dtype</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">dtu</span><span class="o">.</span><span class="n">_default_reduction_dtype</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">queue</span><span class="p">)</span>
+                <span class="n">dtu</span><span class="o">.</span><span class="n">_default_accumulation_dtype</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">queue</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span>
                 <span class="k">else</span> <span class="n">dtype</span>
             <span class="p">)</span>

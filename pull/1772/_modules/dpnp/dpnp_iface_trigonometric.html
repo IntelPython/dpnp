@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.15.0dev1+18.g21c582dc56 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.15.0dev1+24.g96465b7a6b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=169bd9e5"></script>
+        <script src="../../_static/documentation_options.js?v=d0107597"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+18.g21c582dc56
+                0.15.0dev1+24.g96465b7a6b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1507,20 +1507,14 @@
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    dtype : data type, optional</span>
-<span class="sd">        Data type of the returned array. If ``None``, the default data</span>
-<span class="sd">        type is inferred from the &quot;kind&quot; of the input array data type.</span>
-<span class="sd">            * If `x` has a real-valued floating-point data type,</span>
-<span class="sd">              the returned array will have the default real-valued</span>
-<span class="sd">              floating-point data type for the device where input</span>
-<span class="sd">              array `x` is allocated.</span>
-<span class="sd">            * If `x` has a boolean or integral data type, the returned array</span>
-<span class="sd">              will have the default floating point data type for the device</span>
-<span class="sd">              where input array `x` is allocated.</span>
-<span class="sd">            * If `x` has a complex-valued floating-point data type,</span>
-<span class="sd">              an error is raised.</span>
+<span class="sd">        Data type of the returned array. If ``None``, it defaults to the dtype</span>
+<span class="sd">        of `a`, unless `a` has an integer dtype with a precision less than that</span>
+<span class="sd">        of the default platform integer. In that case, the default platform</span>
+<span class="sd">        integer is used.</span>
 <span class="sd">        If the data type (either specified or resolved) differs from the</span>
 <span class="sd">        data type of `x`, the input array elements are cast to the</span>
-<span class="sd">        specified data type before computing the result. Default: ``None``.</span>
+<span class="sd">        specified data type before computing the result.</span>
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    keepdims : bool</span>
 <span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
 <span class="sd">        as singleton dimensions, so that the returned array remains</span>
@@ -1659,20 +1653,14 @@
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    dtype : data type, optional</span>
-<span class="sd">            Data type of the returned array. If ``None``, the default data</span>
-<span class="sd">            type is inferred from the &quot;kind&quot; of the input array data type.</span>
-<span class="sd">                * If `x` has a real-valued floating-point data type,</span>
-<span class="sd">                  the returned array will have the default real-valued</span>
-<span class="sd">                  floating-point data type for the device where input</span>
-<span class="sd">                  array `x` is allocated.</span>
-<span class="sd">                * If `x` has a boolean or integral data type, the returned array</span>
-<span class="sd">                  will have the default floating point data type for the device</span>
-<span class="sd">                  where input array `x` is allocated.</span>
-<span class="sd">                * If `x` has a complex-valued floating-point data type,</span>
-<span class="sd">                  an error is raised.</span>
-<span class="sd">            If the data type (either specified or resolved) differs from the</span>
-<span class="sd">            data type of `x`, the input array elements are cast to the</span>
-<span class="sd">            specified data type before computing the result. Default: ``None``.</span>
+<span class="sd">        Data type of the returned array. If ``None``, it defaults to the dtype</span>
+<span class="sd">        of `a`, unless `a` has an integer dtype with a precision less than that</span>
+<span class="sd">        of the default platform integer. In that case, the default platform</span>
+<span class="sd">        integer is used.</span>
+<span class="sd">        If the data type (either specified or resolved) differs from the</span>
+<span class="sd">        data type of `x`, the input array elements are cast to the</span>
+<span class="sd">        specified data type before computing the result.</span>
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    keepdims : bool</span>
 <span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
 <span class="sd">        as singleton dimensions, so that the returned array remains</span>
