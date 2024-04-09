@@ -93,15 +93,18 @@ static sycl::event gesv_impl(sycl::queue exec_q,
 
         gesv_event = mkl_lapack::gesv(
             exec_q,
-            n,    // The order of the matrix A (0 ≤ n).
-            nrhs, // The number of right-hand sides B (0 ≤ nrhs).
+            n,    // The order of the square matrix A
+                  // and the number of rows in matrix B (0 ≤ n).
+            nrhs, // The number of right-hand sides,
+                  // i.e., the number of columns in matrix B (0 ≤ nrhs).
             a,    // Pointer to the square coefficient matrix A (n x n).
             lda,  // The leading dimension of a, must be at least max(1, n).
             ipiv, // The pivot indices that define the permutation matrix P;
                   // row i of the matrix was interchanged with row ipiv(i),
                   // must be at least max(1, n).
             b,    // Pointer to the right hand side matrix B (n x nrhs).
-            ldb,  // The leading dimension of b, must be at least max(1, n).
+            ldb,  // The leading dimension of matrix B,
+                  // must be at least max(1, n).
             scratchpad, // Pointer to scratchpad memory to be used by MKL
                         // routine for storing intermediate results.
             scratchpad_size, depends);
@@ -252,13 +255,12 @@ std::pair<sycl::event, sycl::event>
     char *coeff_matrix_data = coeff_matrix.get_data();
     char *dependent_vals_data = dependent_vals.get_data();
 
-    const std::int64_t n = coeff_matrix_shape[0];
-    const std::int64_t m = dependent_vals_shape[0];
+    const std::int64_t n = dependent_vals_shape[0];
     const std::int64_t nrhs =
         (dependent_vals_nd > 1) ? dependent_vals_shape[1] : 1;
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
-    const std::int64_t ldb = std::max<size_t>(1UL, m);
+    const std::int64_t ldb = std::max<size_t>(1UL, n);
 
     std::vector<sycl::event> host_task_events;
     sycl::event gesv_ev =
