@@ -191,21 +191,29 @@ class TestCumSum:
         assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("sh", [(10,), (2, 5)])
-    def test_usm_ndarray(self, sh):
+    @pytest.mark.parametrize(
+        "xp_in, xp_out, check",
+        [
+            pytest.param(dpt, dpt, False),
+            pytest.param(dpt, dpnp, True),
+            pytest.param(dpnp, dpt, False),
+        ],
+    )
+    def test_usm_ndarray(self, sh, xp_in, xp_out, check):
         a = numpy.arange(10).reshape(sh)
-        ia = dpt.asarray(a)
+        ia = xp_in.asarray(a)
 
         result = dpnp.cumsum(ia)
         expected = numpy.cumsum(a)
         assert_array_equal(expected, result)
 
         out = numpy.empty((10,))
-        iout = dpt.asarray(out)
+        iout = xp_out.asarray(out)
 
         result = dpnp.cumsum(ia, out=iout)
         expected = numpy.cumsum(a, out=out)
         assert_array_equal(expected, result)
-        assert result is not iout
+        assert (result is iout) is check
 
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))

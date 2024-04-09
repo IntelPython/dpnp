@@ -882,10 +882,10 @@ def cumsum(a, axis=None, dtype=None, out=None):
     Returns
     -------
     out : dpnp.ndarray
-        A new array holding the result is returned unless `out` is specified,
-        in which case a reference to `out` is returned. The result has the same
-        size as `a`, and the same shape as `a` if `axis` is not ``None`` or `a`
-        is a 1-d array.
+        A new array holding the result is returned unless `out` is specified as
+        :class:`dpnp.ndarray`, in which case a reference to `out` is returned.
+        The result has the same size as `a`, and the same shape as `a` if `axis`
+        is not ``None`` or `a` is a 1-d array.
 
     See Also
     --------
@@ -947,17 +947,8 @@ def cumsum(a, axis=None, dtype=None, out=None):
         usm_out = dpnp.get_usm_ndarray(out)
 
     res_usm = dpt.cumulative_sum(usm_a, axis=axis, dtype=dtype, out=usm_out)
-    if out is None:
-        return dpnp_array._create_from_usm_ndarray(res_usm)
-
-    if input_out is not out:
-        # need to copy back from temporary memory to input `out`
-        dpnp.copyto(input_out, out, casting="unsafe")
-
-    if not isinstance(input_out, dpnp_array):
-        return dpnp_array._create_from_usm_ndarray(input_out)
-    else:
-        return input_out
+    res = dpnp_array._create_from_usm_ndarray(res_usm)
+    return dpnp.get_result_array(res, input_out, casting="unsafe")
 
 
 def diff(a, n=1, axis=-1, prepend=None, append=None):
