@@ -37,7 +37,10 @@ def assert_dtype_allclose(
     """
 
     list_64bit_types = [numpy.float64, numpy.complex128]
-    is_inexact = lambda x: dpnp.issubdtype(x.dtype, dpnp.inexact)
+    is_inexact = lambda x: hasattr(x, "dtype") and dpnp.issubdtype(
+        x.dtype, dpnp.inexact
+    )
+
     if is_inexact(dpnp_arr) or is_inexact(numpy_arr):
         tol_dpnp = (
             dpnp.finfo(dpnp_arr).resolution
@@ -73,7 +76,7 @@ def assert_dtype_allclose(
                     assert dpnp_arr_dtype.kind == numpy_arr_dtype.kind
     else:
         assert_array_equal(dpnp_arr.asnumpy(), numpy_arr)
-        if check_type:
+        if check_type and hasattr(numpy_arr, "dtype"):
             if check_only_type_kind:
                 assert dpnp_arr.dtype.kind == numpy_arr.dtype.kind
             else:

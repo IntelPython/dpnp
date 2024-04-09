@@ -487,9 +487,7 @@ def test_1in_1out(func, data, device):
 
     x_orig = dpnp.asnumpy(x)
     expected = getattr(numpy, func)(x_orig)
-
-    tol = numpy.finfo(x.dtype).resolution
-    assert_allclose(result, expected, rtol=tol)
+    assert_dtype_allclose(result, expected)
 
     expected_queue = x.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
