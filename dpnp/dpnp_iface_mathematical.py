@@ -47,7 +47,6 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.tensor._type_utils as dtu
 import numpy
-from dpctl.tensor._reduction import _default_reduction_dtype
 from dpctl.tensor._type_utils import _acceptance_fn_divide
 from numpy.core.numeric import (
     normalize_axis_index,
@@ -62,7 +61,6 @@ from dpnp.dpnp_utils import call_origin, get_usm_allocations
 
 from .dpnp_algo import (
     dpnp_cumprod,
-    dpnp_cumsum,
     dpnp_ediff1d,
     dpnp_fabs,
     dpnp_fmax,
@@ -2860,27 +2858,27 @@ def sum(
 
         queue = input.sycl_queue
         out_dtype = (
-            _default_reduction_dtype(input.dtype, queue)
+            dtu._default_accumulation_dtype(input.dtype, queue)
             if dtype is None
             else dtype
         )
         output = dpt.empty(input.shape[1], dtype=out_dtype, sycl_queue=queue)
 
-    get_sum = _sycl_ext_impl._get_sum_over_axis_0
-    sycl_sum = get_sum(input, output)
+        get_sum = _sycl_ext_impl._get_sum_over_axis_0
+        sycl_sum = get_sum(input, output)
 
-    if sycl_sum:
-        sycl_sum(input, output, []).wait()
-        result = dpnp_array._create_from_usm_ndarray(output)
+        if sycl_sum:
+            sycl_sum(input, output, []).wait()
+            result = dpnp_array._create_from_usm_ndarray(output)
 
-        if keepdims:
-            if axis == (0,):
-                res_sh = (1,) + output.shape
-            else:
-                res_sh = output.shape + (1,)
-            result = result.reshape(res_sh)
+            if keepdims:
+                if axis == (0,):
+                    res_sh = (1,) + output.shape
+                else:
+                    res_sh = output.shape + (1,)
+                result = result.reshape(res_sh)
 
-        return result
+            return result
 
     y = dpt.sum(
         dpnp.get_usm_ndarray(a), axis=axis, dtype=dtype, keepdims=keepdims
