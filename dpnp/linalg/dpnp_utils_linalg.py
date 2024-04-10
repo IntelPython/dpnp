@@ -1206,6 +1206,7 @@ def dpnp_lstsq(a, b, rcond=None):
     """
 
     new_version = True
+    gels_batch = True
 
     if not new_version:
         # fix 0-dim
@@ -1253,7 +1254,7 @@ def dpnp_lstsq(a, b, rcond=None):
             resids = dpnp.atleast_1d(_nrm2_last_axis(e.T))
         return x, resids, rank, s
 
-    else: # mkl call
+    elif not gels_batch: # mkl call
         a_usm_arr = dpnp.get_usm_ndarray(a)
         a_sycl_queue = a.sycl_queue
         a_usm_type = a.usm_type
@@ -1320,6 +1321,9 @@ def dpnp_lstsq(a, b, rcond=None):
         dpctl.SyclEvent.wait_for(ht_list_ev)
 
         return a_t, b_t
+
+    else:
+        pass
 
 
 def dpnp_matrix_power(a, n):
