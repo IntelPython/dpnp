@@ -45,7 +45,6 @@ __all__ += [
     "dpnp_fmin",
     "dpnp_modf",
     "dpnp_nancumprod",
-    "dpnp_nancumsum",
     "dpnp_trapz",
 ]
 
@@ -68,18 +67,6 @@ cpdef utils.dpnp_descriptor dpnp_cumprod(utils.dpnp_descriptor x1):
     # (4,)
 
     return call_fptr_1in_1out(DPNP_FN_CUMPROD_EXT, x1, (x1.size,))
-
-
-cpdef utils.dpnp_descriptor dpnp_cumsum(utils.dpnp_descriptor x1):
-    # instead of x1.shape, (x1.size, ) is passed to the function
-    # due to the following:
-    # >>> import numpy
-    # >>> a = numpy.array([[1, 2], [2, 3]])
-    # >>> res = numpy.cumsum(a)
-    # >>> res.shape
-    # (4,)
-
-    return call_fptr_1in_1out(DPNP_FN_CUMSUM_EXT, x1, (x1.size,))
 
 
 cpdef utils.dpnp_descriptor dpnp_ediff1d(utils.dpnp_descriptor x1):
@@ -251,19 +238,6 @@ cpdef utils.dpnp_descriptor dpnp_nancumprod(utils.dpnp_descriptor x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(cur_x1, copy_when_nondefault_queue=False)
     return dpnp_cumprod(x1_desc)
-
-
-cpdef utils.dpnp_descriptor dpnp_nancumsum(utils.dpnp_descriptor x1):
-    cur_x1 = x1.get_pyobj().copy()
-
-    cur_x1_flatiter = cur_x1.flat
-
-    for i in range(cur_x1.size):
-        if dpnp.isnan(cur_x1_flatiter[i]):
-            cur_x1_flatiter[i] = 0
-
-    x1_desc = dpnp.get_dpnp_descriptor(cur_x1, copy_when_nondefault_queue=False)
-    return dpnp_cumsum(x1_desc)
 
 
 cpdef utils.dpnp_descriptor dpnp_trapz(utils.dpnp_descriptor y1, utils.dpnp_descriptor x1, double dx):

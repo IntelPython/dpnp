@@ -1407,7 +1407,7 @@ def test_norm(device, ord, axis):
     else:
         result = dpnp.linalg.norm(ia, ord=ord, axis=axis)
         expected = numpy.linalg.norm(a, ord=ord, axis=axis)
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        assert_dtype_allclose(result, expected)
 
         expected_queue = ia.get_array().sycl_queue
         result_queue = result.get_array().sycl_queue

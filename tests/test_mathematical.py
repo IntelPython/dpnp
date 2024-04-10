@@ -720,42 +720,6 @@ def test_power_scalar(shape, dtype):
     assert_allclose(result, expected, rtol=1e-6)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize(
-    "array",
-    [
-        [1, 2, 3, 4, 5],
-        [1, 2, numpy.nan, 4, 5],
-        [[1, 2, numpy.nan], [3, -4, -5]],
-    ],
-)
-def test_nancumprod(array):
-    np_a = numpy.array(array)
-    dpnp_a = dpnp.array(np_a)
-
-    result = dpnp.nancumprod(dpnp_a)
-    expected = numpy.nancumprod(np_a)
-    assert_array_equal(expected, result)
-
-
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize(
-    "array",
-    [
-        [1, 2, 3, 4, 5],
-        [1, 2, numpy.nan, 4, 5],
-        [[1, 2, numpy.nan], [3, -4, -5]],
-    ],
-)
-def test_nancumsum(array):
-    np_a = numpy.array(array)
-    dpnp_a = dpnp.array(np_a)
-
-    result = dpnp.nancumsum(dpnp_a)
-    expected = numpy.nancumsum(np_a)
-    assert_array_equal(expected, result)
-
-
 @pytest.mark.parametrize(
     "data",
     [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]],
@@ -2517,71 +2481,6 @@ def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
         numpy_res = a_np.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
         dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
         assert_array_equal(numpy_res, dpnp_res.asnumpy())
-
-
-class TestNanSum:
-    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
-    @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
-    @pytest.mark.parametrize("keepdims", [True, False])
-    def test_nansum(self, dtype, axis, keepdims):
-        dp_array = dpnp.array([[dpnp.nan, 1, 2], [3, dpnp.nan, 0]], dtype=dtype)
-        np_array = dpnp.asnumpy(dp_array)
-
-        expected = numpy.nansum(np_array, axis=axis, keepdims=keepdims)
-        result = dpnp.nansum(dp_array, axis=axis, keepdims=keepdims)
-        assert_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_nansum_complex(self, dtype):
-        x1 = numpy.random.rand(10)
-        x2 = numpy.random.rand(10)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype)
-        a[::3] = numpy.nan
-        ia = dpnp.array(a)
-
-        expected = numpy.nansum(a)
-        result = dpnp.nansum(ia)
-
-        # use only type kinds check when dpnp handles complex64 arrays
-        # since `dpnp.sum()` and `numpy.sum()` return different dtypes
-        assert_dtype_allclose(
-            result, expected, check_only_type_kind=(dtype == dpnp.complex64)
-        )
-
-    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
-    @pytest.mark.parametrize("axis", [0, 1])
-    def test_nansum_out(self, dtype, axis):
-        dp_array = dpnp.array([[dpnp.nan, 1, 2], [3, dpnp.nan, 0]], dtype=dtype)
-        np_array = dpnp.asnumpy(dp_array)
-
-        expected = numpy.nansum(np_array, axis=axis)
-        out = dpnp.empty_like(dpnp.asarray(expected))
-        result = dpnp.nansum(dp_array, axis=axis, out=out)
-        assert out is result
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
-    def test_nansum_dtype(self, dtype):
-        dp_array = dpnp.array([[dpnp.nan, 1, 2], [3, dpnp.nan, 0]])
-        np_array = dpnp.asnumpy(dp_array)
-
-        expected = numpy.nansum(np_array, dtype=dtype)
-        result = dpnp.nansum(dp_array, dtype=dtype)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
-    def test_nansum_strided(self, dtype):
-        dp_array = dpnp.arange(20, dtype=dtype)
-        dp_array[::3] = dpnp.nan
-        np_array = dpnp.asnumpy(dp_array)
-
-        result = dpnp.nansum(dp_array[::-1])
-        expected = numpy.nansum(np_array[::-1])
-        assert_allclose(result, expected)
-
-        result = dpnp.nansum(dp_array[::2])
-        expected = numpy.nansum(np_array[::2])
-        assert_allclose(result, expected)
 
 
 @pytest.mark.parametrize(
