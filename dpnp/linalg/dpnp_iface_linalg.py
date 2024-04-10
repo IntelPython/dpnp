@@ -609,6 +609,8 @@ def matrix_power(a, n):
         elements is the same as those of `M`. If the exponent is
         negative the elements are floating-point.
 
+    Examples
+    --------
     >>> import dpnp as np
     >>> i = np.array([[0, 1], [-1, 0]]) # matrix equiv. of the imaginary unit
     >>> np.linalg.matrix_power(i, 3) # should = -i
@@ -997,16 +999,17 @@ def solve(a, b):
 
     For full documentation refer to :obj:`numpy.linalg.solve`.
 
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Coefficient matrix.
+    b : {(…, M,), (…, M, K)} {dpnp.ndarray, usm_ndarray}
+        Ordinate or "dependent variable" values.
+
     Returns
     -------
     out : {(…, M,), (…, M, K)} dpnp.ndarray
-        Solution to the system ax = b. Returned shape is identical to b.
-
-    Limitations
-    -----------
-    Parameters `a` and `b` are supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+        Solution to the system `ax = b`. Returned shape is identical to `b`.
 
     See Also
     --------
