@@ -93,9 +93,8 @@ class TestHistogram(unittest.TestCase):
         testing.assert_allclose(float((h * xp.diff(b)).sum()), 1)
         return h
 
-    @pytest.mark.skip("cumsum() is not supported with complex dtypes")
     @testing.for_float_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(atol=1e-6, type_check=False)
     def test_histogram_range_with_weights_and_density(self, xp, dtype):
         a = xp.arange(10, dtype=dtype) + 0.5
         w = xp.arange(10, dtype=dtype) + 0.5
@@ -122,7 +121,6 @@ class TestHistogram(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.histogram(a, range=[1, 9], weights=w, density=True)
 
-    @pytest.mark.skip("cumsum() is not supported with complex dtypes")
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_histogram_int_weights_dtype(self, xp, dtype):
@@ -132,17 +130,15 @@ class TestHistogram(unittest.TestCase):
         assert xp.issubdtype(h.dtype, xp.integer)
         return h
 
-    @pytest.mark.skip("cumsum() is not supported with complex dtypes")
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_histogram_float_weights_dtype(self, xp, dtype):
         # Check the type of the returned histogram
         a = xp.arange(10, dtype=dtype)
-        h, b = xp.histogram(a, weights=xp.ones(10, float))
+        h, b = xp.histogram(a, weights=xp.ones(10, dtype=xp.float32))
         assert xp.issubdtype(h.dtype, xp.floating)
         return h
 
-    @pytest.mark.skip("cumsum() is not supported with complex dtypes")
     def test_histogram_weights_basic(self):
         v = cupy.random.rand(100)
         w = cupy.ones(100) * 5
@@ -153,7 +149,6 @@ class TestHistogram(unittest.TestCase):
         testing.assert_array_almost_equal(a * 5, wa)
         testing.assert_array_almost_equal(na, nwa)
 
-    @pytest.mark.skip("cumsum() is not supported with complex dtypes")
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
     def test_histogram_float_weights(self, xp, dtype):
@@ -164,9 +159,8 @@ class TestHistogram(unittest.TestCase):
         testing.assert_array_almost_equal(wa, w)
         return wb
 
-    @pytest.mark.skip("cumsum() is not supported with complex dtypes")
     @testing.for_int_dtypes(no_bool=True)
-    @testing.numpy_cupy_array_equal(type_check=False)
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_histogram_int_weights(self, xp, dtype):
         # Check with integer weights
         v = xp.asarray([1, 2, 2, 4], dtype=dtype)
@@ -175,9 +169,8 @@ class TestHistogram(unittest.TestCase):
         testing.assert_array_equal(wa, [4, 5, 0, 1])
         return wa, wb
 
-    @pytest.mark.skip("cumsum() is not supported with complex dtypes")
     @testing.for_int_dtypes(no_bool=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_histogram_int_weights_normalized(self, xp, dtype):
         v = xp.asarray([1, 2, 2, 4], dtype=dtype)
         w = xp.asarray([4, 3, 2, 1], dtype=dtype)
@@ -187,9 +180,8 @@ class TestHistogram(unittest.TestCase):
         )
         return wb
 
-    @pytest.mark.skip("cumsum() is not supported with complex dtypes")
     @testing.for_int_dtypes(no_bool=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_histogram_int_weights_nonuniform_bins(self, xp, dtype):
         # Check weights with non-uniform bin widths
         a, b = xp.histogram(
@@ -201,9 +193,8 @@ class TestHistogram(unittest.TestCase):
         testing.assert_array_almost_equal(a, [0.2, 0.1, 0.1, 0.075])
         return a, b
 
-    @pytest.mark.skip("cumsum() is not supported with complex dtypes")
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_array_equal(type_check=False)
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_histogram_complex_weights(self, xp, dtype):
         values = xp.asarray([1.3, 2.5, 2.3])
         weights = xp.asarray([1, -1, 2]) + 1j * xp.asarray([2, 1, 2])
@@ -211,9 +202,8 @@ class TestHistogram(unittest.TestCase):
         a, b = xp.histogram(values, bins=2, weights=weights)
         return a, b
 
-    @pytest.mark.skip("cumsum() is not supported with complex dtypes")
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_array_equal(type_check=False)
+    @testing.numpy_cupy_array_equal()
     def test_histogram_complex_weights_uneven_bins(self, xp, dtype):
         values = xp.asarray([1.3, 2.5, 2.3])
         weights = xp.asarray([1, -1, 2]) + 1j * xp.asarray([2, 1, 2])

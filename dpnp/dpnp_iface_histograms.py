@@ -220,11 +220,15 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     See Also
     --------
-    :obj:`dpnp.histogramdd` : TODO
-    :obj:`dpnp.bincount` : TODO
-    :obj:`dpnp.searchsorted` : TODO
-    :obj:`dpnp.digitize` : TODO
-    :obj:`dpnp.histogram_bin_edges` : TODO
+    :obj:`dpnp.histogramdd` : Compute the multidimensional histogram.
+    :obj:`dpnp.bincount` : Count number of occurrences of each value in array
+                           of non-negative integers.
+    :obj:`dpnp.searchsorted` : Find indices where elements should be inserted
+                               to maintain order.
+    :obj:`dpnp.digitize` : Return the indices of the bins to which each value
+                           in input array belongs.
+    :obj:`dpnp.histogram_bin_edges` : Return only the edges of the bins used
+                                      by the obj:`dpnp.histogram` function.
 
     Examples
     --------
@@ -289,7 +293,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
                 sorting_index = dpnp.argsort(tmp_a)
                 sa = tmp_a[sorting_index]
                 sw = tmp_w[sorting_index]
-                cw = dpnp.concatenate((zero, sw.cumsum()))
+                cw = dpnp.concatenate((zero, sw.cumsum(dtype=ntype)))
                 bin_index = _search_sorted_inclusive(sa, bin_edges)
                 cum_n += cw[bin_index]
 
