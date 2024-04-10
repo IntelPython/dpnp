@@ -418,7 +418,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("count_nonzero", [3, 0, 2, -1.2]),
         pytest.param("cumprod", [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
-        pytest.param("cumsum", [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
+        pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
@@ -487,9 +487,7 @@ def test_1in_1out(func, data, device):
 
     x_orig = dpnp.asnumpy(x)
     expected = getattr(numpy, func)(x_orig)
-
-    tol = numpy.finfo(x.dtype).resolution
-    assert_allclose(result, expected, rtol=tol)
+    assert_dtype_allclose(result, expected)
 
     expected_queue = x.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue

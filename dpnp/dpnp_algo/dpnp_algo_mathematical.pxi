@@ -37,7 +37,6 @@ and the rest of the library
 
 __all__ += [
     "dpnp_cumprod",
-    "dpnp_cumsum",
     "dpnp_ediff1d",
     "dpnp_fabs",
     "dpnp_fmod",

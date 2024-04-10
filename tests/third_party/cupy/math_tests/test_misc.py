@@ -26,11 +26,15 @@ class TestMisc:
 
     @testing.for_dtypes(["?", "b", "h", "i", "q", "e", "f", "d", "F", "D"])
     @testing.numpy_cupy_allclose(atol=1e-5)
-    def check_unary_negative(self, name, xp, dtype, no_bool=False):
+    def check_unary_negative(
+        self, name, xp, dtype, no_bool=False, no_complex=False
+    ):
         if no_bool and numpy.dtype(dtype).char == "?":
             return numpy.int_(0)
         a = xp.array([-3, -2, -1, 1, 2, 3], dtype=dtype)
         if numpy.dtype(dtype).kind == "c":
+            if no_complex:
+                return numpy.int_(0)
             a += (a * 1j).astype(dtype)
         return getattr(xp, name)(a)
 
@@ -194,9 +198,9 @@ class TestMisc:
     def test_sign(self):
         self.check_unary("sign", no_bool=True)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    # TODO: remove no_comlex=True, when numpy 2.0.0 will release
     def test_sign_negative(self):
-        self.check_unary_negative("sign", no_bool=True)
+        self.check_unary_negative("sign", no_bool=True, no_complex=True)
 
     def test_maximum(self):
         self.check_binary("maximum")

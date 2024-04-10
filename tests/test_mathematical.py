@@ -161,6 +161,77 @@ class TestClip:
             dpnp.clip(a, 1, 5, **kwargs)
 
 
+class TestCumSum:
+    @pytest.mark.parametrize(
+        "arr, axis",
+        [
+            pytest.param([1, 2, 10, 11, 6, 5, 4], 0),
+            pytest.param([[1, 2, 3, 4], [5, 6, 7, 9], [10, 3, 4, 5]], 0),
+            pytest.param([[1, 2, 3, 4], [5, 6, 7, 9], [10, 3, 4, 5]], 1),
+            pytest.param([[0, 1, 2], [3, 4, 5]], 0),
+            pytest.param([[0, 1, 2], [3, 4, 5]], -1),
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_axis(self, arr, axis, dtype):
+        a = numpy.array(arr, dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.cumsum(ia, axis=axis)
+        expected = numpy.cumsum(a, axis=axis)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_ndarray_method(self, dtype):
+        a = numpy.arange(10).astype(dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = ia.cumsum()
+        expected = a.cumsum()
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("sh", [(10,), (2, 5)])
+    @pytest.mark.parametrize(
+        "xp_in, xp_out, check",
+        [
+            pytest.param(dpt, dpt, False),
+            pytest.param(dpt, dpnp, True),
+            pytest.param(dpnp, dpt, False),
+        ],
+    )
+    def test_usm_ndarray(self, sh, xp_in, xp_out, check):
+        a = numpy.arange(10).reshape(sh)
+        ia = xp_in.asarray(a)
+
+        result = dpnp.cumsum(ia)
+        expected = numpy.cumsum(a)
+        assert_array_equal(expected, result)
+
+        out = numpy.empty((10,))
+        iout = xp_out.asarray(out)
+
+        result = dpnp.cumsum(ia, out=iout)
+        expected = numpy.cumsum(a, out=out)
+        assert_array_equal(expected, result)
+        assert (result is iout) is check
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_out_dtype(self, arr_dt, out_dt, dtype):
+        a = numpy.arange(10, 20).astype(dtype=arr_dt)
+        out = numpy.zeros_like(a, dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = ia.cumsum(out=iout, dtype=dtype)
+        expected = a.cumsum(out=out, dtype=dtype)
+        assert_array_equal(expected, result)
+        assert result is iout
+
+
 class TestDiff:
     @pytest.mark.parametrize("n", list(range(0, 3)))
     @pytest.mark.parametrize("dt", get_integer_dtypes())
@@ -514,7 +585,7 @@ class TestMathematical:
     def test_power(self, dtype, lhs, rhs):
         self._test_mathematical("power", dtype, lhs, rhs, check_type=False)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_subtract(self, dtype, lhs, rhs):
         self._test_mathematical("subtract", dtype, lhs, rhs, check_type=False)
 
@@ -859,7 +930,6 @@ class TestProd:
     ids=["[2, 0, -2]", "[1.1, -1.1]"],
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_sign(data, dtype):
     np_a = numpy.array(data, dtype=dtype)
     dpnp_a = dpnp.array(data, dtype=dtype)
@@ -3100,3 +3170,76 @@ class TestMatmulInvalidCases:
         axes = [(1, 0), (0), (0, 1)]
         with pytest.raises(ValueError):
             dpnp.matmul(a, b, axes=axes)
+
+
+def test_elemenwise_nin_nout():
+    assert dpnp.abs.nin == 1
+    assert dpnp.add.nin == 2
+
+    assert dpnp.abs.nout == 1
+    assert dpnp.add.nout == 1
+
+
+def test_elemenwise_error():
+    x = dpnp.array([1, 2, 3])
+    out = dpnp.array([1, 2, 3])
+
+    with pytest.raises(NotImplementedError):
+        dpnp.abs(x, unknown_kwarg=1)
+    with pytest.raises(NotImplementedError):
+        dpnp.abs(x, where=False)
+    with pytest.raises(NotImplementedError):
+        dpnp.abs(x, subok=False)
+    with pytest.raises(TypeError):
+        dpnp.abs(1)
+    with pytest.raises(TypeError):
+        dpnp.abs([1, 2])
+    with pytest.raises(TypeError):
+        dpnp.abs(x, out=out, dtype="f4")
+    with pytest.raises(ValueError):
+        dpnp.abs(x, order="H")
+
+    with pytest.raises(NotImplementedError):
+        dpnp.add(x, x, unknown_kwarg=1)
+    with pytest.raises(NotImplementedError):
+        dpnp.add(x, x, where=False)
+    with pytest.raises(NotImplementedError):
+        dpnp.add(x, x, subok=False)
+    with pytest.raises(TypeError):
+        dpnp.add(1, 2)
+    with pytest.raises(TypeError):
+        dpnp.add([1, 2], [1, 2])
+    with pytest.raises(TypeError):
+        dpnp.add(x, [1, 2])
+    with pytest.raises(TypeError):
+        dpnp.add([1, 2], x)
+    with pytest.raises(TypeError):
+        dpnp.add(x, x, out=out, dtype="f4")
+    with pytest.raises(ValueError):
+        dpnp.add(x, x, order="H")
+
+
+def test_elemenwise_order_none():
+    x_np = numpy.array([1, 2, 3])
+    x = dpnp.array([1, 2, 3])
+
+    result = dpnp.abs(x, order=None)
+    expected = numpy.abs(x_np, order=None)
+    assert_dtype_allclose(result, expected)
+
+    result = dpnp.add(x, x, order=None)
+    expected = numpy.add(x_np, x_np, order=None)
+    assert_dtype_allclose(result, expected)
+
+
+def test_bitwise_1array_input():
+    x = dpnp.array([1, 2, 3])
+    x_np = numpy.array([1, 2, 3])
+
+    result = dpnp.add(x, 1, dtype="f4")
+    expected = numpy.add(x_np, 1, dtype="f4")
+    assert_dtype_allclose(result, expected)
+
+    result = dpnp.add(1, x, dtype="f4")
+    expected = numpy.add(1, x_np, dtype="f4")
+    assert_dtype_allclose(result, expected)
