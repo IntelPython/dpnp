@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.matrix_power &mdash; Data Parallel Extension for NumPy 0.15.0dev1+26.g3c61a65275 documentation</title>
+  <title>dpnp.linalg.matrix_power &mdash; Data Parallel Extension for NumPy 0.15.0dev1+31.g724b9e0fa5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=699e7756"></script>
+        <script src="../../_static/documentation_options.js?v=6b121069"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+26.g3c61a65275
+                0.15.0dev1+31.g724b9e0fa5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -138,35 +138,45 @@
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>a**n</strong> (<em>(…, M, M) dpnp.ndarray</em>) – The return value is the same shape and type as <cite>M</cite>;
+<dd class="field-even"><p><strong>a**n</strong> – The return value is the same shape and type as <cite>M</cite>;
 if the exponent is positive or zero then the type of the
 elements is the same as those of <cite>M</cite>. If the exponent is
-negative the elements are floating-point.</p></li>
-<li><p><em>&gt;&gt;&gt; import dpnp as np</em></p></li>
-<li><p><em>&gt;&gt;&gt; i = np.array([[0, 1], [-1, 0]]) # matrix equiv. of the imaginary unit</em></p></li>
-<li><p><em>&gt;&gt;&gt; np.linalg.matrix_power(i, 3) # should = -i</em></p></li>
-<li><p><em>array([[ 0, -1],</em> – [ 1,  0]])</p></li>
-<li><p><em>&gt;&gt;&gt; np.linalg.matrix_power(i, 0)</em></p></li>
-<li><p><em>array([[1, 0],</em> – [0, 1]])</p></li>
-<li><p><em>&gt;&gt;&gt; np.linalg.matrix_power(i, -3) # should = 1/(-i) = i, but w/ f.p. elements</em></p></li>
-<li><p><em>array([[ 0.,  1.],</em> – [-1.,  0.]])</p></li>
-<li><p><em>Somewhat more sophisticated example</em></p></li>
-<li><p><em>&gt;&gt;&gt; q = np.zeros((4, 4))</em></p></li>
-<li><p><strong>&gt;&gt;&gt; q[0</strong> (<em>2, 0:2] = -i</em>)</p></li>
-<li><p><strong>&gt;&gt;&gt; q[2</strong> (<em>4, 2:4] = i</em>)</p></li>
-<li><p><em>&gt;&gt;&gt; q # one of the three quaternion units not equal to 1</em></p></li>
-<li><p><em>array([[ 0., -1.,  0.,  0.],</em> – [ 1.,  0.,  0.,  0.],
-[ 0.,  0.,  0.,  1.],
-[ 0.,  0., -1.,  0.]])</p></li>
-<li><p><em>&gt;&gt;&gt; np.linalg.matrix_power(q, 2) # = -np.eye(4)</em></p></li>
-<li><p><em>array([[-1.,  0.,  0.,  0.],</em> – [ 0., -1.,  0.,  0.],
-[ 0.,  0., -1.,  0.],
-[ 0.,  0.,  0., -1.]])</p></li>
-</ul>
-</p>
+negative the elements are floating-point.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(…, M, M) dpnp.ndarray</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span> <span class="c1"># matrix equiv. of the imaginary unit</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_power</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="c1"># should = -i</span>
+<span class="go">array([[ 0, -1],</span>
+<span class="go">       [ 1,  0]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_power</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="go">array([[1, 0],</span>
+<span class="go">       [0, 1]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_power</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="c1"># should = 1/(-i) = i, but w/ f.p. elements</span>
+<span class="go">array([[ 0.,  1.],</span>
+<span class="go">       [-1.,  0.]])</span>
+</pre></div>
+</div>
+<p>Somewhat more sophisticated example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">i</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="c1"># one of the three quaternion units not equal to 1</span>
+<span class="go">array([[ 0., -1.,  0.,  0.],</span>
+<span class="go">       [ 1.,  0.,  0.,  0.],</span>
+<span class="go">       [ 0.,  0.,  0.,  1.],</span>
+<span class="go">       [ 0.,  0., -1.,  0.]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_power</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># = -np.eye(4)</span>
+<span class="go">array([[-1.,  0.,  0.,  0.],</span>
+<span class="go">       [ 0., -1.,  0.,  0.],</span>
+<span class="go">       [ 0.,  0., -1.,  0.],</span>
+<span class="go">       [ 0.,  0.,  0., -1.]])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>

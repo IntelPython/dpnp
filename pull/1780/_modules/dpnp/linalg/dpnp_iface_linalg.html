@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev1+26.g3c61a65275 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev1+31.g724b9e0fa5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=699e7756"></script>
+        <script src="../../../_static/documentation_options.js?v=6b121069"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+26.g3c61a65275
+                0.15.0dev1+31.g724b9e0fa5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -373,9 +373,10 @@
 <span class="sd">        column ``v[:,i]`` is the eigenvector corresponding to the</span>
 <span class="sd">        eigenvalue ``w[i]``.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    The function is executed sequentially only on CPU.</span>
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    Since there is no proper OneMKL LAPACK function, DPNP will calculate</span>
+<span class="sd">    through a fallback on NumPy call.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -390,43 +391,43 @@
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; from dpnp import linalg as LA</span>
 
-<span class="sd">    (Almost) trivial example with real e-values and e-vectors.</span>
+<span class="sd">    (Almost) trivial example with real eigenvalues and eigenvectors.</span>
 
 <span class="sd">    &gt;&gt;&gt; w, v = LA.eig(np.diag((1, 2, 3)))</span>
-<span class="sd">    &gt;&gt;&gt; w; v</span>
-<span class="sd">    array([1., 2., 3.])</span>
-<span class="sd">    array([[1., 0., 0.],</span>
-<span class="sd">           [0., 1., 0.],</span>
-<span class="sd">           [0., 0., 1.]])</span>
+<span class="sd">    &gt;&gt;&gt; w, v</span>
+<span class="sd">    (array([1., 2., 3.]),</span>
+<span class="sd">     array([[1., 0., 0.],</span>
+<span class="sd">            [0., 1., 0.],</span>
+<span class="sd">            [0., 0., 1.]]))</span>
 
-<span class="sd">    Real matrix possessing complex e-values and e-vectors; note that the</span>
-<span class="sd">    e-values are complex conjugates of each other.</span>
+<span class="sd">    Real matrix possessing complex eigenvalues and eigenvectors;</span>
+<span class="sd">    note that the eigenvalues are complex conjugates of each other.</span>
 
 <span class="sd">    &gt;&gt;&gt; w, v = LA.eig(np.array([[1, -1], [1, 1]]))</span>
-<span class="sd">    &gt;&gt;&gt; w; v</span>
-<span class="sd">    array([1.+1.j, 1.-1.j])</span>
-<span class="sd">    array([[0.70710678+0.j        , 0.70710678-0.j        ],</span>
-<span class="sd">           [0.        -0.70710678j, 0.        +0.70710678j]])</span>
+<span class="sd">    &gt;&gt;&gt; w, v</span>
+<span class="sd">    (array([1.+1.j, 1.-1.j]),</span>
+<span class="sd">     array([[0.70710678+0.j        , 0.70710678-0.j        ],</span>
+<span class="sd">            [0.        -0.70710678j, 0.        +0.70710678j]]))</span>
 
-<span class="sd">    Complex-valued matrix with real e-values (but complex-valued e-vectors);</span>
-<span class="sd">    note that ``a.conj().T == a``, i.e., `a` is Hermitian.</span>
+<span class="sd">    Complex-valued matrix with real eigenvalues (but complex-valued</span>
+<span class="sd">    eigenvectors); note that ``a.conj().T == a``, i.e., `a` is Hermitian.</span>
 
 <span class="sd">    &gt;&gt;&gt; a = np.array([[1, 1j], [-1j, 1]])</span>
 <span class="sd">    &gt;&gt;&gt; w, v = LA.eig(a)</span>
-<span class="sd">    &gt;&gt;&gt; w; v</span>
-<span class="sd">    array([2.+0.j, 0.+0.j])</span>
-<span class="sd">    array([[ 0.        +0.70710678j,  0.70710678+0.j        ], # may vary</span>
-<span class="sd">           [ 0.70710678+0.j        , -0.        +0.70710678j]])</span>
+<span class="sd">    &gt;&gt;&gt; w, v</span>
+<span class="sd">    (array([2.+0.j, 0.+0.j]),</span>
+<span class="sd">     array([[ 0.        +0.70710678j,  0.70710678+0.j        ], # may vary</span>
+<span class="sd">            [ 0.70710678+0.j        , -0.        +0.70710678j]])</span>
 
 <span class="sd">    Be careful about round-off error!</span>
 
 <span class="sd">    &gt;&gt;&gt; a = np.array([[1 + 1e-9, 0], [0, 1 - 1e-9]])</span>
-<span class="sd">    &gt;&gt;&gt; # Theor. e-values are 1 +/- 1e-9</span>
+<span class="sd">    &gt;&gt;&gt; # Theor. eigenvalues are 1 +/- 1e-9</span>
 <span class="sd">    &gt;&gt;&gt; w, v = LA.eig(a)</span>
-<span class="sd">    &gt;&gt;&gt; w; v</span>
-<span class="sd">    array([1., 1.])</span>
-<span class="sd">    array([[1., 0.],</span>
-<span class="sd">           [0., 1.]])</span>
+<span class="sd">    &gt;&gt;&gt; w, v</span>
+<span class="sd">    (array([1., 1.]),</span>
+<span class="sd">     array([[1., 0.],</span>
+<span class="sd">            [0., 1.]]))</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -437,6 +438,8 @@
     <span class="n">a_sycl_queue</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="n">a_usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
 
+    <span class="c1"># Since geev function from OneMKL LAPACK is not implemented yet,</span>
+    <span class="c1"># use NumPy for this calculation.</span>
     <span class="n">w_np</span><span class="p">,</span> <span class="n">v_np</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">w_np</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a_sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a_usm_type</span><span class="p">),</span>
@@ -537,9 +540,10 @@
 <span class="sd">        They are not necessarily ordered, nor are they necessarily</span>
 <span class="sd">        real for real matrices.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    The function is executed sequentially only on CPU.</span>
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    Since there is no proper OneMKL LAPACK function, DPNP will calculate</span>
+<span class="sd">    through a fallback on NumPy call.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -581,6 +585,8 @@
     <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
+    <span class="c1"># Since geev function from OneMKL LAPACK is not implemented yet,</span>
+    <span class="c1"># use NumPy for this calculation.</span>
     <span class="n">w_np</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">w_np</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span></div>
 
@@ -725,6 +731,8 @@
 <span class="sd">        elements is the same as those of `M`. If the exponent is</span>
 <span class="sd">        negative the elements are floating-point.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; i = np.array([[0, 1], [-1, 0]]) # matrix equiv. of the imaginary unit</span>
 <span class="sd">    &gt;&gt;&gt; np.linalg.matrix_power(i, 3) # should = -i</span>
@@ -1131,16 +1139,17 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.linalg.solve`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : (..., M, M) {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Coefficient matrix.</span>
+<span class="sd">    b : {(…, M,), (…, M, K)} {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Ordinate or &quot;dependent variable&quot; values.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : {(…, M,), (…, M, K)} dpnp.ndarray</span>
-<span class="sd">        Solution to the system ax = b. Returned shape is identical to b.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `a` and `b` are supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">        Solution to the system `ax = b`. Returned shape is identical to `b`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>

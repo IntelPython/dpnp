@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.eig &mdash; Data Parallel Extension for NumPy 0.15.0dev1+26.g3c61a65275 documentation</title>
+  <title>dpnp.linalg.eig &mdash; Data Parallel Extension for NumPy 0.15.0dev1+31.g724b9e0fa5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=699e7756"></script>
+        <script src="../../_static/documentation_options.js?v=6b121069"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+26.g3c61a65275
+                0.15.0dev1+31.g724b9e0fa5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -150,8 +150,11 @@ eigenvalue <code class="docutils literal notranslate"><span class="pre">w[i]</sp
 </p>
 </dd>
 </dl>
-<p class="rubric">Limitations</p>
-<p>The function is executed sequentially only on CPU.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since there is no proper OneMKL LAPACK function, DPNP will calculate
+through a fallback on NumPy call.</p>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -168,42 +171,42 @@ eigenvalue <code class="docutils literal notranslate"><span class="pre">w[i]</sp
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dpnp</span> <span class="kn">import</span> <span class="n">linalg</span> <span class="k">as</span> <span class="n">LA</span>
 </pre></div>
 </div>
-<p>(Almost) trivial example with real e-values and e-vectors.</p>
+<p>(Almost) trivial example with real eigenvalues and eigenvectors.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">;</span> <span class="n">v</span>
-<span class="go">array([1., 2., 3.])</span>
-<span class="go">array([[1., 0., 0.],</span>
-<span class="go">       [0., 1., 0.],</span>
-<span class="go">       [0., 0., 1.]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span>
+<span class="go">(array([1., 2., 3.]),</span>
+<span class="go"> array([[1., 0., 0.],</span>
+<span class="go">        [0., 1., 0.],</span>
+<span class="go">        [0., 0., 1.]]))</span>
 </pre></div>
 </div>
-<p>Real matrix possessing complex e-values and e-vectors; note that the
-e-values are complex conjugates of each other.</p>
+<p>Real matrix possessing complex eigenvalues and eigenvectors;
+note that the eigenvalues are complex conjugates of each other.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">;</span> <span class="n">v</span>
-<span class="go">array([1.+1.j, 1.-1.j])</span>
-<span class="go">array([[0.70710678+0.j        , 0.70710678-0.j        ],</span>
-<span class="go">       [0.        -0.70710678j, 0.        +0.70710678j]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span>
+<span class="go">(array([1.+1.j, 1.-1.j]),</span>
+<span class="go"> array([[0.70710678+0.j        , 0.70710678-0.j        ],</span>
+<span class="go">        [0.        -0.70710678j, 0.        +0.70710678j]]))</span>
 </pre></div>
 </div>
-<p>Complex-valued matrix with real e-values (but complex-valued e-vectors);
-note that <code class="docutils literal notranslate"><span class="pre">a.conj().T</span> <span class="pre">==</span> <span class="pre">a</span></code>, i.e., <cite>a</cite> is Hermitian.</p>
+<p>Complex-valued matrix with real eigenvalues (but complex-valued
+eigenvectors); note that <code class="docutils literal notranslate"><span class="pre">a.conj().T</span> <span class="pre">==</span> <span class="pre">a</span></code>, i.e., <cite>a</cite> is Hermitian.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="n">j</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">;</span> <span class="n">v</span>
-<span class="go">array([2.+0.j, 0.+0.j])</span>
-<span class="go">array([[ 0.        +0.70710678j,  0.70710678+0.j        ], # may vary</span>
-<span class="go">       [ 0.70710678+0.j        , -0.        +0.70710678j]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span>
+<span class="go">(array([2.+0.j, 0.+0.j]),</span>
+<span class="go"> array([[ 0.        +0.70710678j,  0.70710678+0.j        ], # may vary</span>
+<span class="go">        [ 0.70710678+0.j        , -0.        +0.70710678j]])</span>
 </pre></div>
 </div>
 <p>Be careful about round-off error!</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-9</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Theor. e-values are 1 +/- 1e-9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Theor. eigenvalues are 1 +/- 1e-9</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">;</span> <span class="n">v</span>
-<span class="go">array([1., 1.])</span>
-<span class="go">array([[1., 0.],</span>
-<span class="go">       [0., 1.]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span>
+<span class="go">(array([1., 1.]),</span>
+<span class="go"> array([[1., 0.],</span>
+<span class="go">        [0., 1.]]))</span>
 </pre></div>
 </div>
 </dd></dl>
