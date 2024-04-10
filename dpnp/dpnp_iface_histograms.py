@@ -1,3 +1,42 @@
+# -*- coding: utf-8 -*-
+# *****************************************************************************
+# Copyright (c) 2024, Intel Corporation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# - Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
+# - Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+# THE POSSIBILITY OF SUCH DAMAGE.
+# *****************************************************************************
+
+"""
+Interface of histogram-related DPNP functions
+
+Notes
+-----
+This module is a face or public interface file for the library
+it contains:
+ - Interface functions
+ - documentation for the functions
+ - The functions parameters check
+
+"""
+
 import operator
 import warnings
 
@@ -24,13 +63,12 @@ def _ravel_check_a_and_weights(a, weights):
     # ensure that the array is a "subtractable" dtype
     if a.dtype == dpnp.bool:
         warnings.warn(
-            "Converting input from {} to {} for compatibility.".format(
-                a.dtype, dpnp.uint8
-            ),
+            f"Converting input from {a.dtype} to {numpy.uint8} "
+            "for compatibility.",
             RuntimeWarning,
             stacklevel=3,
         )
-        a = a.astype(dpnp.uint8)
+        a = a.astype(numpy.uint8)
 
     if weights is not None:
         # check that `weights` array has supported type
@@ -63,9 +101,7 @@ def _get_outer_edges(a, range):
 
         if not (numpy.isfinite(first_edge) and numpy.isfinite(last_edge)):
             raise ValueError(
-                "supplied range of [{}, {}] is not finite".format(
-                    first_edge, last_edge
-                )
+                f"supplied range of [{first_edge}, {last_edge}] is not finite"
             )
 
     elif a.size == 0:
@@ -76,9 +112,8 @@ def _get_outer_edges(a, range):
         first_edge, last_edge = a.min(), a.max()
         if not (dpnp.isfinite(first_edge) and dpnp.isfinite(last_edge)):
             raise ValueError(
-                "autodetected range of [{}, {}] is not finite".format(
-                    first_edge, last_edge
-                )
+                "autodetected range of [{first_edge}, {last_edge}] "
+                "is not finite"
             )
 
     # expand empty range to avoid divide by zero
@@ -99,7 +134,7 @@ def _get_bin_edges(a, bins, range):
     if isinstance(bins, str):
         raise NotImplementedError("only integer and array bins are implemented")
 
-    elif numpy.ndim(bins) == 0:
+    if numpy.ndim(bins) == 0:
         try:
             n_equal_bins = operator.index(bins)
         except TypeError as e:
@@ -151,8 +186,7 @@ def _get_bin_edges(a, bins, range):
             usm_type=a.usm_type,
         )
         return bin_edges, (first_edge, last_edge, n_equal_bins)
-    else:
-        return bin_edges, None
+    return bin_edges, None
 
 
 def _search_sorted_inclusive(a, v):
@@ -263,7 +297,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     # We set a block size, as this allows us to iterate over chunks when
     # computing histograms, to minimize memory usage.
-    BLOCK = 65536
+    block_size = 65536
 
     # The fast path uses bincount, but that only works for certain types
     # of weight
@@ -282,14 +316,14 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         # Compute via cumulative histogram
         cum_n = dpnp.zeros_like(bin_edges, dtype=ntype)
         if weights is None:
-            for i in _range(0, len(a), BLOCK):
-                sa = dpnp.sort(a[i : i + BLOCK])
+            for i in _range(0, len(a), block_size):
+                sa = dpnp.sort(a[i : i + block_size])
                 cum_n += _search_sorted_inclusive(sa, bin_edges)
         else:
             zero = dpnp.zeros(1, dtype=ntype)
-            for i in _range(0, len(a), BLOCK):
-                tmp_a = a[i : i + BLOCK]
-                tmp_w = weights[i : i + BLOCK]
+            for i in _range(0, len(a), block_size):
+                tmp_a = a[i : i + block_size]
+                tmp_w = weights[i : i + block_size]
                 sorting_index = dpnp.argsort(tmp_a)
                 sa = tmp_a[sorting_index]
                 sw = tmp_w[sorting_index]
