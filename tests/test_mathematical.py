@@ -585,7 +585,7 @@ class TestMathematical:
     def test_power(self, dtype, lhs, rhs):
         self._test_mathematical("power", dtype, lhs, rhs, check_type=False)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_subtract(self, dtype, lhs, rhs):
         self._test_mathematical("subtract", dtype, lhs, rhs, check_type=False)
 
@@ -930,7 +930,6 @@ class TestProd:
     ids=["[2, 0, -2]", "[1.1, -1.1]"],
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_sign(data, dtype):
     np_a = numpy.array(data, dtype=dtype)
     dpnp_a = dpnp.array(data, dtype=dtype)
@@ -3171,3 +3170,76 @@ class TestMatmulInvalidCases:
         axes = [(1, 0), (0), (0, 1)]
         with pytest.raises(ValueError):
             dpnp.matmul(a, b, axes=axes)
+
+
+def test_elemenwise_nin_nout():
+    assert dpnp.abs.nin == 1
+    assert dpnp.add.nin == 2
+
+    assert dpnp.abs.nout == 1
+    assert dpnp.add.nout == 1
+
+
+def test_elemenwise_error():
+    x = dpnp.array([1, 2, 3])
+    out = dpnp.array([1, 2, 3])
+
+    with pytest.raises(NotImplementedError):
+        dpnp.abs(x, unknown_kwarg=1)
+    with pytest.raises(NotImplementedError):
+        dpnp.abs(x, where=False)
+    with pytest.raises(NotImplementedError):
+        dpnp.abs(x, subok=False)
+    with pytest.raises(TypeError):
+        dpnp.abs(1)
+    with pytest.raises(TypeError):
+        dpnp.abs([1, 2])
+    with pytest.raises(TypeError):
+        dpnp.abs(x, out=out, dtype="f4")
+    with pytest.raises(ValueError):
+        dpnp.abs(x, order="H")
+
+    with pytest.raises(NotImplementedError):
+        dpnp.add(x, x, unknown_kwarg=1)
+    with pytest.raises(NotImplementedError):
+        dpnp.add(x, x, where=False)
+    with pytest.raises(NotImplementedError):
+        dpnp.add(x, x, subok=False)
+    with pytest.raises(TypeError):
+        dpnp.add(1, 2)
+    with pytest.raises(TypeError):
+        dpnp.add([1, 2], [1, 2])
+    with pytest.raises(TypeError):
+        dpnp.add(x, [1, 2])
+    with pytest.raises(TypeError):
+        dpnp.add([1, 2], x)
+    with pytest.raises(TypeError):
+        dpnp.add(x, x, out=out, dtype="f4")
+    with pytest.raises(ValueError):
+        dpnp.add(x, x, order="H")
+
+
+def test_elemenwise_order_none():
+    x_np = numpy.array([1, 2, 3])
+    x = dpnp.array([1, 2, 3])
+
+    result = dpnp.abs(x, order=None)
+    expected = numpy.abs(x_np, order=None)
+    assert_dtype_allclose(result, expected)
+
+    result = dpnp.add(x, x, order=None)
+    expected = numpy.add(x_np, x_np, order=None)
+    assert_dtype_allclose(result, expected)
+
+
+def test_bitwise_1array_input():
+    x = dpnp.array([1, 2, 3])
+    x_np = numpy.array([1, 2, 3])
+
+    result = dpnp.add(x, 1, dtype="f4")
+    expected = numpy.add(x_np, 1, dtype="f4")
+    assert_dtype_allclose(result, expected)
+
+    result = dpnp.add(1, x, dtype="f4")
+    expected = numpy.add(1, x_np, dtype="f4")
+    assert_dtype_allclose(result, expected)
