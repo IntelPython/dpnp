@@ -533,7 +533,7 @@ class dpnp_array:
         """
         Copy the array with data type casting.
 
-        For full documentation refer to :obj:`numpy.ndarray.astype`.
+        Refer to :obj:`dpnp.astype` for full documentation.
 
         Parameters
         ----------
@@ -593,7 +593,12 @@ class dpnp_array:
     # 'byteswap',
 
     def choose(input, choices, out=None, mode="raise"):
-        """Construct an array from an index array and a set of arrays to choose from."""
+        """
+        Construct an array from an index array and a set of arrays to choose from.
+
+        Refer to :obj:`dpnp.choose` for full documentation.
+
+        """
 
         return dpnp.choose(input, choices, out, mode)
 
@@ -613,7 +618,7 @@ class dpnp_array:
         """
         Complex-conjugate all elements.
 
-        For full documentation refer to :obj:`numpy.ndarray.conj`.
+        Refer to :obj:`dpnp.conjugate` for full documentation.
 
         """
 
@@ -626,7 +631,7 @@ class dpnp_array:
         """
         Return the complex conjugate, element-wise.
 
-        For full documentation refer to :obj:`numpy.ndarray.conjugate`.
+        Refer to :obj:`dpnp.conjugate` for full documentation.
 
         """
 
@@ -683,9 +688,7 @@ class dpnp_array:
         """
         Return the cumulative sum of the elements along the given axis.
 
-        See Also
-        --------
-        :obj:`dpnp.cumsum`
+        Refer to :obj:`dpnp.cumsum` for full documentation.
 
         """
 
@@ -697,9 +700,7 @@ class dpnp_array:
         """
         Return specified diagonals.
 
-        See Also
-        --------
-        :obj:`dpnp.diagonal`
+        Refer to :obj:`dpnp.diagonal` for full documentation.
 
         """
 
@@ -709,7 +710,7 @@ class dpnp_array:
         """
         Dot product of two arrays.
 
-        For full documentation refer to :obj:`dpnp.dot`.
+        Refer to :obj:`dpnp.dot` for full documentation.
 
         Examples
         --------
@@ -1013,7 +1014,7 @@ class dpnp_array:
         """
         Returns the prod along a given axis.
 
-        For full documentation refer to :obj:`dpnp.prod`.
+        Refer to :obj:`dpnp.prod` for full documentation.
 
         """
 
@@ -1023,7 +1024,7 @@ class dpnp_array:
         """
         Puts values of an array into another array along a given axis.
 
-        For full documentation refer to :obj:`numpy.put`.
+        Refer to :obj:`dpnp.put` for full documentation.
 
         """
 
@@ -1033,7 +1034,7 @@ class dpnp_array:
         """
         Return a contiguous flattened array.
 
-        For full documentation refer to :obj:`dpnp.ravel`.
+        Refer to :obj:`dpnp.ravel` for full documentation.
 
         """
 
@@ -1083,7 +1084,7 @@ class dpnp_array:
         """
         Repeat elements of an array.
 
-        For full documentation refer to :obj:`dpnp.repeat`.
+        Refer to :obj:`dpnp.repeat` for full documentation.
 
         """
 
@@ -1093,7 +1094,7 @@ class dpnp_array:
         """
         Returns an array containing the same data with a new shape.
 
-        For full documentation refer to :obj:`numpy.ndarray.reshape`.
+        Refer to :obj:`dpnp.reshape` for full documentation.
 
         Returns
         -------
@@ -1124,8 +1125,7 @@ class dpnp_array:
         """
         Return array with each element rounded to the given number of decimals.
 
-        .. seealso::
-           :obj:`dpnp.around` for full documentation.
+        Refer to :obj:`dpnp.round` for full documentation.
 
         """
 
@@ -1271,7 +1271,7 @@ class dpnp_array:
         """
         Returns the sum along a given axis.
 
-        For full documentation refer to :obj:`dpnp.sum`.
+        Refer to :obj:`dpnp.sum` for full documentation.
 
         """
 
@@ -1289,7 +1289,7 @@ class dpnp_array:
         """
         Interchange two axes of an array.
 
-        For full documentation refer to :obj:`numpy.swapaxes`.
+        Refer to :obj:`dpnp.swapaxes` for full documentation.
 
         """
 
@@ -1299,7 +1299,7 @@ class dpnp_array:
         """
         Take elements from an array along an axis.
 
-        For full documentation refer to :obj:`numpy.take`.
+        Refer to :obj:`dpnp.take` for full documentation.
 
         """
 

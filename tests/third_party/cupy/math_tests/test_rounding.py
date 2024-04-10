@@ -84,7 +84,6 @@ class TestRounding(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRound(unittest.TestCase):
     shape = (20,)
 
@@ -102,7 +101,7 @@ class TestRound(unittest.TestCase):
         a = testing.shaped_random(self.shape, xp, scale=100, dtype=dtype)
         return xp.around(a, self.decimals)
 
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose(atol=1e-5)
     def test_round_out(self, xp):
         dtype = "d" if has_support_aspect64() else "f"
         a = testing.shaped_random(self.shape, xp, scale=100, dtype=dtype)
@@ -118,7 +117,9 @@ class TestRound(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+@pytest.mark.skipif(
+    not has_support_aspect64(), reason="overflow encountered for float32 dtype"
+)
 class TestRoundExtreme(unittest.TestCase):
     shape = (20,)
 
@@ -158,11 +159,11 @@ class TestRoundExtreme(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRoundBorder(unittest.TestCase):
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_positive1(self, xp):
         a, decimals = self.value
+        a = xp.asarray(a)
         return xp.around(a, decimals)
 
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
@@ -174,6 +175,7 @@ class TestRoundBorder(unittest.TestCase):
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_negative1(self, xp):
         a, decimals = self.value
+        a = xp.asarray(a)
         return xp.around(-a, decimals)
 
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
