@@ -37,48 +37,50 @@ it contains:
 
 """
 
+# pylint: disable=protected-access
+# pylint: disable=c-extension-no-member
+# pylint: disable=duplicate-code
+# pylint: disable=no-name-in-module
+
 
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.tensor._type_utils as dtu
 import numpy
+from dpctl.tensor._type_utils import _acceptance_fn_divide
 from numpy.core.numeric import (
     normalize_axis_index,
     normalize_axis_tuple,
 )
 
 import dpnp
+import dpnp.backend.extensions.vm._vm_impl as vmi
+from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
 from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import get_usm_allocations
+from dpnp.dpnp_utils import call_origin, get_usm_allocations
 
-from .dpnp_algo import *
-from .dpnp_algo.dpnp_elementwise_common import (
-    check_nd_call_func,
-    dpnp_abs,
-    dpnp_add,
-    dpnp_angle,
-    dpnp_ceil,
-    dpnp_conj,
-    dpnp_copysign,
-    dpnp_divide,
-    dpnp_floor,
-    dpnp_floor_divide,
-    dpnp_imag,
-    dpnp_maximum,
-    dpnp_minimum,
-    dpnp_multiply,
-    dpnp_negative,
-    dpnp_positive,
-    dpnp_power,
-    dpnp_proj,
-    dpnp_real,
-    dpnp_remainder,
-    dpnp_round,
-    dpnp_sign,
-    dpnp_signbit,
-    dpnp_subtract,
-    dpnp_trunc,
+from .dpnp_algo import (
+    dpnp_cumprod,
+    dpnp_ediff1d,
+    dpnp_fabs,
+    dpnp_fmax,
+    dpnp_fmin,
+    dpnp_fmod,
+    dpnp_gradient,
+    dpnp_modf,
+    dpnp_trapz,
 )
-from .dpnp_utils import *
+from .dpnp_algo.dpnp_elementwise_common import (
+    DPNPAngle,
+    DPNPBinaryFunc,
+    DPNPReal,
+    DPNPRound,
+    DPNPUnaryFunc,
+    acceptance_fn_negative,
+    acceptance_fn_positive,
+    acceptance_fn_sign,
+    acceptance_fn_subtract,
+)
 from .dpnp_utils.dpnp_utils_linearalgebra import dpnp_cross
 
 __all__ = [
@@ -156,193 +158,193 @@ def _append_to_diff_array(a, axis, combined, values):
     combined.append(values)
 
 
-def absolute(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Calculate the absolute value element-wise.
+_ABS_DOCSTRING = """
+Calculate the absolute value element-wise.
 
-    For full documentation refer to :obj:`numpy.absolute`.
+For full documentation refer to :obj:`numpy.absolute`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        An array containing the absolute value of each element in `x`.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `out`, `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise absolute values.
+    For complex input, the absolute value is its magnitude.
+    If `x` has a real-valued data type, the returned array has the
+    same data type as `x`. If `x` has a complex floating-point data type,
+    the returned array has a real-valued floating-point data type whose
+    precision matches the precision of `x`.
 
-    See Also
-    --------
-    :obj:`dpnp.fabs` : Calculate the absolute value element-wise excluding complex types.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    Notes
-    -----
-    ``dpnp.abs`` is a shorthand for this function.
+See Also
+--------
+:obj:`dpnp.fabs` : Calculate the absolute value element-wise excluding complex types.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([-1.2, 1.2])
-    >>> np.absolute(a)
-    array([1.2, 1.2])
+Notes
+-----
+``dpnp.abs`` is a shorthand for this function.
 
-    >>> a = np.array(1.2 + 1j)
-    >>> np.absolute(a)
-    array(1.5620499351813308)
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([-1.2, 1.2])
+>>> np.absolute(a)
+array([1.2, 1.2])
 
-    """
+>>> a = np.array(1.2 + 1j)
+>>> np.absolute(a)
+array(1.5620499351813308)
+"""
 
-    return check_nd_call_func(
-        numpy.absolute,
-        dpnp_abs,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+absolute = DPNPUnaryFunc(
+    "abs",
+    ti._abs_result_type,
+    ti._abs,
+    _ABS_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_abs_to_call,
+    mkl_impl_fn=vmi._abs,
+)
 
 
 abs = absolute
 
 
-def add(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Add arguments element-wise.
+_ADD_DOCSTRING = """
+Calculates the sum for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
 
-    For full documentation refer to :obj:`numpy.add`.
+For full documentation refer to :obj:`numpy.add`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The sum of `x1` and `x2`, element-wise.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Returns
+-------
+out : dpnp.ndarray
+    an array containing the result of element-wise addition. The data type
+    of the returned array is determined by the Type Promotion Rules.
 
-    Notes
-    -----
-    Equivalent to `x1` + `x2` in terms of array broadcasting.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([1, 2, 3])
-    >>> b = np.array([1, 2, 3])
-    >>> np.add(a, b)
-    array([2, 4, 6])
+Notes
+-----
+Equivalent to `x1` + `x2` in terms of array broadcasting.
 
-    >>> x1 = np.arange(9.0).reshape((3, 3))
-    >>> x2 = np.arange(3.0)
-    >>> np.add(x1, x2)
-    array([[  0.,   2.,   4.],
-        [  3.,   5.,   7.],
-        [  6.,   8.,  10.]])
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([1, 2, 3])
+>>> b = np.array([1, 2, 3])
+>>> np.add(a, b)
+array([2, 4, 6])
 
-    The ``+`` operator can be used as a shorthand for ``add`` on
-    :class:`dpnp.ndarray`.
+>>> x1 = np.arange(9.0).reshape((3, 3))
+>>> x2 = np.arange(3.0)
+>>> np.add(x1, x2)
+array([[  0.,   2.,   4.],
+       [  3.,   5.,   7.],
+       [  6.,   8.,  10.]])
 
-    >>> x1 + x2
-    array([[  0.,   2.,   4.],
-        [  3.,   5.,   7.],
-        [  6.,   8.,  10.]])
-    """
+The ``+`` operator can be used as a shorthand for ``add`` on
+:class:`dpnp.ndarray`.
 
-    return check_nd_call_func(
-        numpy.add,
-        dpnp_add,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+>>> x1 + x2
+array([[  0.,   2.,   4.],
+       [  3.,   5.,   7.],
+       [  6.,   8.,  10.]])
+"""
 
 
-def angle(z, deg=False):
-    """
-    Return the angle of the complex argument.
+add = DPNPBinaryFunc(
+    "add",
+    ti._add_result_type,
+    ti._add,
+    _ADD_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_add_to_call,
+    mkl_impl_fn=vmi._add,
+    binary_inplace_fn=ti._add_inplace,
+)
 
-    For full documentation refer to :obj:`numpy.angle`.
 
-    Parameters
-    ----------
-    x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a complex-valued floating-point data type.
-    deg : bool, optional
-        Return angle in degrees if True, radians if False (default).
+_ANGLE_DOCSTRING = """
+Computes the phase angle (also called the argument) of each element `x_i` for
+input array `x`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The counterclockwise angle from the positive real axis on
-        the complex plane in the range `(-pi, pi]`.
-        The returned array has a floating-point data type determined
-        by the Type Promotion Rules.
+For full documentation refer to :obj:`numpy.angle`.
 
-    Notes
-    -----
-    Although the angle of the complex number 0 is undefined, `dpnp.angle(0)` returns the value 0.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have a complex-valued floating-point data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    See Also
-    --------
-    :obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
-    :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
-    :obj:`dpnp.absolute` : Calculate the absolute value element-wise.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise phase angles.
+    The returned array has a floating-point data type determined
+    by the Type Promotion Rules.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([1.0, 1.0j, 1+1j])
-    >>> np.angle(a) # in radians
-    array([0.        , 1.57079633, 0.78539816]) # may vary
+Notes
+-----
+Although the angle of the complex number 0 is undefined, `dpnp.angle(0)` returns the value 0.
 
-    >>> np.angle(a, deg=True) # in degrees
-    array([ 0., 90., 45.])
+See Also
+--------
+:obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
+:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+:obj:`dpnp.absolute` : Calculate the absolute value element-wise.
 
-    """
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([1.0, 1.0j, 1+1j])
+>>> np.angle(a) # in radians
+array([0.        , 1.57079633, 0.78539816]) # may vary
 
-    dpnp.check_supported_arrays_type(z)
-    res = dpnp_angle(z)
-    if deg is True:
-        res = res * (180 / dpnp.pi)
-    return res
+>>> np.angle(a, deg=True) # in degrees
+array([ 0., 90., 45.])
+"""
+
+angle = DPNPAngle(
+    "angle",
+    ti._angle_result_type,
+    ti._angle,
+    _ANGLE_DOCSTRING,
+)
 
 
 def around(x, /, decimals=0, out=None):
@@ -351,17 +353,23 @@ def around(x, /, decimals=0, out=None):
 
     For full documentation refer to :obj:`numpy.around`.
 
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array, expected to have numeric data type.
+    decimals : int, optional
+        Number of decimal places to round to (default: 0). If decimals is
+        negative, it specifies the number of positions to the left of the
+        decimal point.
+    out : {None, dpnp.ndarray}, optional
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+
+
     Returns
     -------
     out : dpnp.ndarray
         The rounded value of elements of the array.
-
-    Limitations
-    -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `decimals` is supported with its default value.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -380,60 +388,56 @@ def around(x, /, decimals=0, out=None):
     return round(x, decimals, out)
 
 
-def ceil(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Compute the ceiling of the input, element-wise.
+_CEIL_DOCSTRING = """
+Returns the ceiling for each element `x_i` for input array `x`.
+The ceil of the scalar `x` is the smallest integer `i`, such that `i >= x`.
 
-    For full documentation refer to :obj:`numpy.ceil`.
+For full documentation refer to :obj:`numpy.ceil`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The ceiling of each element of `x`.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have a real-valued data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype`, and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by real-value data types.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise ceiling of input array.
+    The returned array has the same data type as `x`.
 
-    See Also
-    --------
-    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
-    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
-    >>> np.ceil(a)
-    array([-1.0, -1.0, -0.0, 1.0, 2.0, 2.0, 2.0])
+See Also
+--------
+:obj:`dpnp.floor` : Return the floor of the input, element-wise.
+:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
 
-    """
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
+>>> np.ceil(a)
+array([-1.0, -1.0, -0.0, 1.0, 2.0, 2.0, 2.0])
+"""
 
-    return check_nd_call_func(
-        numpy.ceil,
-        dpnp_ceil,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+ceil = DPNPUnaryFunc(
+    "ceil",
+    ti._ceil_result_type,
+    ti._ceil,
+    _CEIL_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_ceil_to_call,
+    mkl_impl_fn=vmi._ceil,
+)
 
 
 def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
@@ -447,11 +451,13 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     a : {dpnp.ndarray, usm_ndarray}
         Array containing elements to clip.
     a_min, a_max : {dpnp.ndarray, usm_ndarray, None}
-        Minimum and maximum value. If ``None``, clipping is not performed on the corresponding edge.
-        Only one of `a_min` and `a_max` may be ``None``. Both are broadcast against `a`.
+        Minimum and maximum value. If ``None``, clipping is not performed on
+        the corresponding edge. Only one of `a_min` and `a_max` may be
+        ``None``. Both are broadcast against `a`.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        The results will be placed in this array. It may be the input array for in-place clipping.
-        `out` must be of the right shape to hold the output. Its type is preserved.
+        The results will be placed in this array. It may be the input array
+        for in-place clipping. `out` must be of the right shape to hold the
+        output. Its type is preserved.
     order : {"C", "F", "A", "K", None}, optional
         Memory layout of the newly output array, if parameter `out` is `None`.
         If `order` is ``None``, the default value "K" will be used.
@@ -459,8 +465,8 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     Returns
     -------
     out : dpnp.ndarray
-        An array with the elements of `a`, but where values < `a_min` are replaced with `a_min`,
-        and those > `a_max` with `a_max`.
+        An array with the elements of `a`, but where values < `a_min` are
+        replaced with `a_min`, and those > `a_max` with `a_max`.
 
     Limitations
     -----------
@@ -493,7 +499,7 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
     if kwargs:
         raise NotImplementedError(f"kwargs={kwargs} is currently not supported")
-    elif a_min is None and a_max is None:
+    if a_min is None and a_max is None:
         raise ValueError("One of max or min must be given")
 
     if order is None:
@@ -510,62 +516,53 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
-def conjugate(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Return the complex conjugate, element-wise.
+_CONJ_DOCSTRING = """
+Computes conjugate for each element `x_i` for input array `x`.
 
-    The complex conjugate of a complex number is obtained by changing the
-    sign of its imaginary part.
+For full documentation refer to :obj:`numpy.conj`.
 
-    For full documentation refer to :obj:`numpy.conjugate`.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The conjugate of each element of `x`.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise conjugate.
+    The returned array has the same data type as `x`.
 
-    Limitations
-    -----------
-    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.conjugate(np.array(1+2j))
-    (1-2j)
+Examples
+--------
+>>> import dpnp as np
+>>> np.conjugate(np.array(1+2j))
+(1-2j)
 
-    >>> x = np.eye(2) + 1j * np.eye(2)
-    >>> np.conjugate(x)
-    array([[ 1.-1.j,  0.-0.j],
-           [ 0.-0.j,  1.-1.j]])
+>>> x = np.eye(2) + 1j * np.eye(2)
+>>> np.conjugate(x)
+array([[ 1.-1.j,  0.-0.j],
+       [ 0.-0.j,  1.-1.j]])
+"""
 
-    """
-
-    return check_nd_call_func(
-        numpy.conjugate,
-        dpnp_conj,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
+conjugate = DPNPUnaryFunc(
+    "conj",
+    ti._conj_result_type,
+    ti._conj,
+    _CONJ_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_conj_to_call,
+    mkl_impl_fn=vmi._conj,
+)
 
 conj = conjugate
 
@@ -587,86 +584,66 @@ def convolve(a, v, mode="full"):
     return call_origin(numpy.convolve, a=a, v=v, mode=mode)
 
 
-def copysign(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Change the sign of `x1` to that of `x2`, element-wise.
+_COPYSING_DOCSTRING = """
+Composes a floating-point value with the magnitude of `x1_i` and the sign of
+`x2_i` for each element of input arrays `x1` and `x2`.
 
-    For full documentation refer to :obj:`numpy.copysign`.
+For full documentation refer to :obj:`numpy.copysign`.
 
-    Parameters
-    ----------
-    x1 : {dpnp.ndarray, usm_ndarray}
-        First input array, expected to have a real floating-point data type.
-    x2 : {dpnp.ndarray, usm_ndarray}
-        Second input array, also expected to have a real floating-point data
-        type.
-    out : ({None, dpnp.ndarray, usm_ndarray}, optional):
-        Output array to populate.
-        Array must have the correct shape and the expected data type.
-    order : {"C", "F", "A", "K"}, optional
-        Memory layout of the newly output array, if parameter `out` is ``None``.
-        Default: "K".
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have a real floating-point data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have a real floating-point data
+    type.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The values of `x1` with the sign of `x2`.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise results. The data type
+    of the returned array is determined by the Type Promotion Rules.
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported real-valued data types.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    See Also
-    --------
-    :obj:`dpnp.negative` : Return the numerical negative of each element of `x`.
-    :obj:`dpnp.positive` : Return the numerical positive of each element of `x`.
+See Also
+--------
+:obj:`dpnp.negative` : Return the numerical negative of each element of `x`.
+:obj:`dpnp.positive` : Return the numerical positive of each element of `x`.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.copysign(np.array(1.3), np.array(-1))
-    array(-1.3)
-    >>> 1 / np.copysign(np.array(0), 1)
-    array(inf)
-    >>> 1 / np.copysign(np.array(0), -1)
-    array(-inf)
+Examples
+--------
+>>> import dpnp as np
+>>> np.copysign(np.array(1.3), np.array(-1))
+array(-1.3)
+>>> 1 / np.copysign(np.array(0), 1)
+array(inf)
+>>> 1 / np.copysign(np.array(0), -1)
+array(-inf)
 
-    >>> x = np.array([-1, 0, 1])
-    >>> np.copysign(x, -1.1)
-    array([-1., -0., -1.])
-    >>> np.copysign(x, np.arange(3) - 1)
-    array([-1., 0., 1.])
+>>> x = np.array([-1, 0, 1])
+>>> np.copysign(x, -1.1)
+array([-1., -0., -1.])
+>>> np.copysign(x, np.arange(3) - 1)
+array([-1., 0., 1.])
+"""
 
-    """
-
-    return check_nd_call_func(
-        numpy.copysign,
-        dpnp_copysign,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+copysign = DPNPBinaryFunc(
+    "copysign",
+    ti._copysign_result_type,
+    ti._copysign,
+    _COPYSING_DOCSTRING,
+)
 
 
 def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
@@ -817,8 +794,8 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     cp = dpnp_cross(a, b, cp, exec_q)
     if a_shape[-1] == 2 and b_shape[-1] == 2:
         return cp
-    else:
-        return dpnp.moveaxis(cp, -1, axisc)
+
+    return dpnp.moveaxis(cp, -1, axisc)
 
 
 def cumprod(x1, **kwargs):
@@ -986,8 +963,10 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
     See Also
     --------
     :obj:`dpnp.gradient` : Return the gradient of an N-dimensional array.
-    :obj:`dpnp.ediff1d` : Compute the differences between consecutive elements of an array.
-    :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along a given axis.
+    :obj:`dpnp.ediff1d` : Compute the differences between consecutive elements
+                          of an array.
+    :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along
+                         a given axis.
 
     Examples
     --------
@@ -1042,80 +1021,78 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
     return a
 
 
-def divide(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Divide arguments element-wise.
+_DIVIDE_DOCSTRING = """
+Calculates the ratio for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
 
-    For full documentation refer to :obj:`numpy.divide`.
+For full documentation refer to :obj:`numpy.divide`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The quotient `x1/x2`, element-wise.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the result of element-wise division. The data type
+    of the returned array is determined by the Type Promotion Rules.
 
-    Notes
-    -----
-    Equivalent to `x1` / `x2` in terms of array-broadcasting.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    The ``true_divide(x1, x2)`` function is an alias for
-    ``divide(x1, x2)``.
+Notes
+-----
+Equivalent to `x1` / `x2` in terms of array-broadcasting.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.divide(dp.array([1, -2, 6, -9]), np.array([-2, -2, -2, -2]))
-    array([-0.5,  1. , -3. ,  4.5])
+The ``true_divide(x1, x2)`` function is an alias for
+``divide(x1, x2)``.
 
-    >>> x1 = np.arange(9.0).reshape((3, 3))
-    >>> x2 = np.arange(3.0)
-    >>> np.divide(x1, x2)
-    array([[nan, 1. , 1. ],
-        [inf, 4. , 2.5],
-        [inf, 7. , 4. ]])
+Examples
+--------
+>>> import dpnp as np
+>>> np.divide(dp.array([1, -2, 6, -9]), np.array([-2, -2, -2, -2]))
+array([-0.5,  1. , -3. ,  4.5])
 
-    The ``/`` operator can be used as a shorthand for ``divide`` on
-    :class:`dpnp.ndarray`.
+>>> x1 = np.arange(9.0).reshape((3, 3))
+>>> x2 = np.arange(3.0)
+>>> np.divide(x1, x2)
+array([[nan, 1. , 1. ],
+       [inf, 4. , 2.5],
+       [inf, 7. , 4. ]])
 
-    >>> x1 = np.arange(9.0).reshape((3, 3))
-    >>> x2 = 2 * np.ones(3)
-    >>> x1/x2
-    array([[0. , 0.5, 1. ],
-        [1.5, 2. , 2.5],
-        [3. , 3.5, 4. ]])
-    """
+The ``/`` operator can be used as a shorthand for ``divide`` on
+:class:`dpnp.ndarray`.
 
-    return check_nd_call_func(
-        numpy.divide,
-        dpnp_divide,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+>>> x1 = np.arange(9.0).reshape((3, 3))
+>>> x2 = 2 * np.ones(3)
+>>> x1/x2
+array([[0. , 0.5, 1. ],
+       [1.5, 2. , 2.5],
+       [3. , 3.5, 4. ]])
+"""
+
+divide = DPNPBinaryFunc(
+    "divide",
+    ti._divide_result_type,
+    ti._divide,
+    _DIVIDE_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_div_to_call,
+    mkl_impl_fn=vmi._div,
+    binary_inplace_fn=ti._divide_inplace,
+    acceptance_fn=_acceptance_fn_divide,
+)
 
 
 def ediff1d(x1, to_end=None, to_begin=None):
@@ -1127,13 +1104,15 @@ def ediff1d(x1, to_end=None, to_begin=None):
     Limitations
     -----------
     Parameter `x1`is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `to_end` and `to_begin` are currently supported only with default values `None`.
+    Keyword arguments `to_end` and `to_begin` are currently supported only
+    with default values `None`.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.
+    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given
+                       axis.
 
     Examples
     --------
@@ -1196,135 +1175,127 @@ def fabs(x1, **kwargs):
     return call_origin(numpy.fabs, x1, **kwargs)
 
 
-def floor(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Round a number to the nearest integer toward minus infinity.
+_FLOOR_DOCSTRING = """
+Returns the floor for each element `x_i` for input array `x`.
+The floor of the scalar `x` is the largest integer `i`, such that `i <= x`.
 
-    For full documentation refer to :obj:`numpy.floor`.
+For full documentation refer to :obj:`numpy.floor`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The floor of each element of `x`.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have a real-valued data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype`, and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by real-value data types.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise floor of input array.
+    The returned array has the same data type as `x`.
 
-    See Also
-    --------
-    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
-    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    Notes
-    -----
-    Some spreadsheet programs calculate the "floor-towards-zero", in other words floor(-2.5) == -2.
-    DPNP instead uses the definition of floor where floor(-2.5) == -3.
+See Also
+--------
+:obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
-    >>> np.floor(a)
-    array([-2.0, -2.0, -1.0, 0.0, 1.0, 1.0, 2.0])
+Notes
+-----
+Some spreadsheet programs calculate the "floor-towards-zero", in other words floor(-2.5) == -2.
+DPNP instead uses the definition of floor where floor(-2.5) == -3.
 
-    """
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
+>>> np.floor(a)
+array([-2.0, -2.0, -1.0, 0.0, 1.0, 1.0, 2.0])
+"""
 
-    return check_nd_call_func(
-        numpy.floor,
-        dpnp_floor,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+floor = DPNPUnaryFunc(
+    "floor",
+    ti._floor_result_type,
+    ti._floor,
+    _FLOOR_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_floor_to_call,
+    mkl_impl_fn=vmi._floor,
+)
 
 
-def floor_divide(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Compute the largest integer smaller or equal to the division of the inputs.
+_FLOOR_DIVIDE_DOCSTRING = """
+Calculates the ratio for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2` to the greatest
+integer-value number that is not greater than the division result.
 
-    For full documentation refer to :obj:`numpy.floor_divide`.
+For full documentation refer to :obj:`numpy.floor_divide`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The floordivide of each element of `x`.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Returns
+-------
+out : dpnp.ndarray
+    an array containing the result of element-wise floor division.
+    The data type of the returned array is determined by the Type
+    Promotion Rules
 
-    See Also
-    --------
-    :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
-    :obj:`dpnp.divide` : Standard division.
-    :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
-    :obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.floor_divide(np.array([1, -1, -2, -9]), -2)
-    array([-1,  0,  1,  4])
+See Also
+--------
+:obj:`dpnp.remainder` : Remainder complementary to floor_divide.
+:obj:`dpnp.divide` : Standard division.
+:obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
+:obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
 
-    >>> np.floor_divide(np.array([1., 2., 3., 4.]), 2.5)
-    array([ 0.,  0.,  1.,  1.])
+Examples
+--------
+>>> import dpnp as np
+>>> np.floor_divide(np.array([1, -1, -2, -9]), -2)
+array([-1,  0,  1,  4])
 
-    The ``//`` operator can be used as a shorthand for ``floor_divide`` on
-    :class:`dpnp.ndarray`.
+>>> np.floor_divide(np.array([1., 2., 3., 4.]), 2.5)
+array([ 0.,  0.,  1.,  1.])
 
-    >>> x1 = np.array([1., 2., 3., 4.])
-    >>> x1 // 2.5
-    array([0., 0., 1., 1.])
+The ``//`` operator can be used as a shorthand for ``floor_divide`` on
+:class:`dpnp.ndarray`.
 
-    """
+>>> x1 = np.array([1., 2., 3., 4.])
+>>> x1 // 2.5
+array([0., 0., 1., 1.])
+"""
 
-    return check_nd_call_func(
-        numpy.floor_divide,
-        dpnp_floor_divide,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+floor_divide = DPNPBinaryFunc(
+    "floor_divide",
+    ti._floor_divide_result_type,
+    ti._floor_divide,
+    _FLOOR_DIVIDE_DOCSTRING,
+    binary_inplace_fn=ti._floor_divide_inplace,
+)
 
 
 def fmax(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
@@ -1340,20 +1311,26 @@ def fmax(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `x1` and `x2` are supported as either scalar,
+    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`
+    and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default
+    values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by real-valued data types.
 
     See Also
     --------
-    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.
+    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates
+                          NaNs.
     :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignores NaNs.
-    :obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs..
-    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
-    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.
+    :obj:`dpnp.max` : The maximum value of an array along a given axis,
+                      propagates NaNs..
+    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,
+                         ignores NaNs.
+    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates
+                          NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
     Examples
@@ -1389,7 +1366,8 @@ def fmax(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
         # at least either x1 or x2 has to be an array
         pass
     else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        # get USM type and queue to copy scalar from the host memory
+        # into a USM allocation
         usm_type, queue = (
             get_usm_allocations([x1, x2])
             if dpnp.isscalar(x1) or dpnp.isscalar(x2)
@@ -1447,20 +1425,26 @@ def fmin(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `x1` and `x2` are supported as either scalar,
+    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`
+    and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default
+    values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by real-valued data types.
 
     See Also
     --------
-    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates NaNs.
+    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates
+                          NaNs.
     :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignores NaNs.
-    :obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
-    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
-    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates NaNs.
+    :obj:`dpnp.min` : The minimum value of an array along a given axis,
+                      propagates NaNs.
+    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis,
+                         ignores NaNs.
+    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates
+                          NaNs.
     :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
     Examples
@@ -1496,7 +1480,8 @@ def fmin(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
         # at least either x1 or x2 has to be an array
         pass
     else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        # get USM type and queue to copy scalar from the host memory into
+        # a USM allocation
         usm_type, queue = (
             get_usm_allocations([x1, x2])
             if dpnp.isscalar(x1) or dpnp.isscalar(x2)
@@ -1554,9 +1539,11 @@ def fmod(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `x1` and `x2` are supported as either scalar,
+    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`
+    and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default
+    values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -1605,7 +1592,8 @@ def fmod(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
         # at least either x1 or x2 has to be an array
         pass
     else:
-        # get USM type and queue to copy scalar from the host memory into a USM allocation
+        # get USM type and queue to copy scalar from the host memory into
+        # a USM allocation
         usm_type, queue = (
             get_usm_allocations([x1, x2])
             if dpnp.isscalar(x1) or dpnp.isscalar(x2)
@@ -1666,7 +1654,8 @@ def gradient(x1, *varargs, **kwargs):
 
     See Also
     --------
-    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.
+    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given
+                       axis.
 
     Examples
     --------
@@ -1696,206 +1685,202 @@ def gradient(x1, *varargs, **kwargs):
     return call_origin(numpy.gradient, x1, *varargs, **kwargs)
 
 
-def imag(val):
-    """
-    Return the imaginary part of the complex argument.
+_IMAG_DOCSTRING = """
+Computes imaginary part of each element `x_i` for input array `x`.
 
-    For full documentation refer to :obj:`numpy.imag`.
+For full documentation refer to :obj:`numpy.imag`.
 
-    Parameters
-    ----------
-    x : {dpnp.ndarray, usm_ndarray}
-        Input array.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The imaginary component of the complex argument. If `val` is real,
-        the type of `val` is used for the output. If `val` has complex
-        elements, the returned type is float.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise imaginary component of input.
+    If the input is a real-valued data type, the returned array has
+    the same data type. If the input is a complex floating-point
+    data type, the returned array has a floating-point data type
+    with the same floating-point precision as complex input.
 
-    See Also
-    --------
-    :obj:`dpnp.real` : Return the real part of the complex argument.
-    :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
-    :obj:`dpnp.conjugate` : Return the complex conjugate, element-wise.
+See Also
+--------
+:obj:`dpnp.real` : Return the real part of the complex argument.
+:obj:`dpnp.conj` : Return the complex conjugate, element-wise.
+:obj:`dpnp.conjugate` : Return the complex conjugate, element-wise.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([1+2j, 3+4j, 5+6j])
-    >>> a.imag
-    array([2., 4., 6.])
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([1+2j, 3+4j, 5+6j])
+>>> a.imag
+array([2., 4., 6.])
 
-    >>> a.imag = np.array([8, 10, 12])
-    >>> a
-    array([1. +8.j, 3.+10.j, 5.+12.j])
+>>> a.imag = np.array([8, 10, 12])
+>>> a
+array([1. +8.j, 3.+10.j, 5.+12.j])
 
-    >>> np.imag(np.array(1 + 1j))
-    array(1.)
+>>> np.imag(np.array(1 + 1j))
+array(1.)
+"""
 
-    """
-
-    dpnp.check_supported_arrays_type(val)
-    return dpnp_imag(val)
-
-
-def maximum(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Element-wise maximum of array elements.
-
-    For full documentation refer to :obj:`numpy.maximum`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The maximum of `x1` and `x2`, element-wise, propagating NaNs.
-
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.minimum` : Element-wise minimum of two arrays, propagates NaNs.
-    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
-    :obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs.
-    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
-    :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.
-    :obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
-    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([2, 3, 4])
-    >>> x2 = np.array([1, 5, 2])
-    >>> np.maximum(x1, x2)
-    array([2, 5, 4])
-
-    >>> x1 = np.eye(2)
-    >>> x2 = np.array([0.5, 2])
-    >>> np.maximum(x1, x2) # broadcasting
-    array([[1. , 2. ],
-           [0.5, 2. ]])
-
-    >>> x1 = np.array([np.nan, 0, np.nan])
-    >>> x2 = np.array([0, np.nan, np.nan])
-    >>> np.maximum(x1, x2)
-    array([nan, nan, nan])
-
-    >>> np.maximum(np.array(np.Inf), 1)
-    array(inf)
-
-    """
-
-    return check_nd_call_func(
-        numpy.maximum,
-        dpnp_maximum,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+imag = DPNPUnaryFunc(
+    "imag",
+    ti._imag_result_type,
+    ti._imag,
+    _IMAG_DOCSTRING,
+)
 
 
-def minimum(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Element-wise minimum of array elements.
+_MAXIMUM_DOCSTRING = """
+Compares two input arrays `x1` and `x2` and returns
+a new array containing the element-wise maxima.
 
-    For full documentation refer to :obj:`numpy.minimum`.
+For full documentation refer to :obj:`numpy.maximum`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The minimum of `x1` and `x2`, element-wise, propagating NaNs.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise maxima. The data type of
+    the returned array is determined by the Type Promotion Rules.
 
-    See Also
-    --------
-    :obj:`dpnp.maximum` : Element-wise maximum of two arrays, propagates NaNs.
-    :obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.
-    :obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
-    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
-    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
-    :obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs.
-    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([2, 3, 4])
-    >>> x2 = np.array([1, 5, 2])
-    >>> np.minimum(x1, x2)
-    array([1, 3, 2])
+See Also
+--------
+:obj:`dpnp.minimum` : Element-wise minimum of two arrays, propagates NaNs.
+:obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
+:obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs.
+:obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
+:obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.
+:obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
+:obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
 
-    >>> x1 = np.eye(2)
-    >>> x2 = np.array([0.5, 2])
-    >>> np.minimum(x1, x2) # broadcasting
-    array([[0.5, 0. ],
-           [0. , 1. ]]
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([2, 3, 4])
+>>> x2 = np.array([1, 5, 2])
+>>> np.maximum(x1, x2)
+array([2, 5, 4])
 
-    >>> x1 = np.array([np.nan, 0, np.nan])
-    >>> x2 = np.array([0, np.nan, np.nan])
-    >>> np.minimum(x1, x2)
-    array([nan, nan, nan])
+>>> x1 = np.eye(2)
+>>> x2 = np.array([0.5, 2])
+>>> np.maximum(x1, x2) # broadcasting
+array([[1. , 2. ],
+       [0.5, 2. ]])
 
-    >>> np.minimum(np.array(-np.Inf), 1)
-    array(-inf)
+>>> x1 = np.array([np.nan, 0, np.nan])
+>>> x2 = np.array([0, np.nan, np.nan])
+>>> np.maximum(x1, x2)
+array([nan, nan, nan])
 
-    """
+>>> np.maximum(np.array(np.Inf), 1)
+array(inf)
+"""
 
-    return check_nd_call_func(
-        numpy.minimum,
-        dpnp_minimum,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+maximum = DPNPBinaryFunc(
+    "maximum",
+    ti._maximum_result_type,
+    ti._maximum,
+    _MAXIMUM_DOCSTRING,
+)
+
+
+_MINIMUM_DOCSTRING = """
+Compares two input arrays `x1` and `x2` and returns
+a new array containing the element-wise minima.
+
+For full documentation refer to :obj:`numpy.minimum`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise minima. The data type of
+    the returned array is determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.maximum` : Element-wise maximum of two arrays, propagates NaNs.
+:obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.
+:obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
+:obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
+:obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
+:obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs.
+:obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([2, 3, 4])
+>>> x2 = np.array([1, 5, 2])
+>>> np.minimum(x1, x2)
+array([1, 3, 2])
+
+>>> x1 = np.eye(2)
+>>> x2 = np.array([0.5, 2])
+>>> np.minimum(x1, x2) # broadcasting
+array([[0.5, 0. ],
+       [0. , 1. ]]
+
+>>> x1 = np.array([np.nan, 0, np.nan])
+>>> x2 = np.array([0, np.nan, np.nan])
+>>> np.minimum(x1, x2)
+array([nan, nan, nan])
+
+>>> np.minimum(np.array(-np.Inf), 1)
+array(-inf)
+"""
+
+minimum = DPNPBinaryFunc(
+    "minimum",
+    ti._minimum_result_type,
+    ti._minimum,
+    _MINIMUM_DOCSTRING,
+)
 
 
 def mod(
@@ -1922,9 +1907,11 @@ def mod(
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
+    Parameters `x1` and `x2` are supported as either scalar,
+    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`
+    and `x2` can not be scalars at the same time.
+    Parameters `where`, `dtype` and `subok` are supported with their default
+    values.
     Keyword argument `kwargs` is currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -1974,7 +1961,6 @@ def modf(x1, **kwargs):
     >>> [[x for x in y] for y in result ]
     [[1.0, 2.0], [0.0, 0.0]]
 
-
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
@@ -1984,293 +1970,272 @@ def modf(x1, **kwargs):
     return call_origin(numpy.modf, x1, **kwargs)
 
 
-def multiply(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Multiply arguments element-wise.
+_MULTIPLY_DOCSTRING = """
+Calculates the product for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
 
-    For full documentation refer to :obj:`numpy.multiply`.
+For full documentation refer to :obj:`numpy.multiply`.
 
-    Returns
-    -------
-    out : {dpnp.ndarray, scalar}
-        The product of `x1` and `x2`, element-wise.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Returns
+-------
+out : dpnp.ndarray
+    an array containing the result of element-wise multiplication. The data type
+    of the returned array is determined by the Type Promotion Rules.
 
-    Notes
-    -----
-    Equivalent to `x1` * `x2` in terms of array broadcasting.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([1, 2, 3, 4, 5])
-    >>> np.multiply(a, a)
-    array([ 1,  4,  9, 16, 25])]
+Notes
+-----
+Equivalent to `x1` * `x2` in terms of array broadcasting.
 
-    >>> x1 = np.arange(9.0).reshape((3, 3))
-    >>> x2 = np.arange(3.0)
-    >>> np.multiply(x1, x2)
-    array([[  0.,   1.,   4.],
-        [  0.,   4.,  10.],
-        [  0.,   7.,  16.]])
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([1, 2, 3, 4, 5])
+>>> np.multiply(a, a)
+array([ 1,  4,  9, 16, 25])]
 
-    The ``*`` operator can be used as a shorthand for ``multiply`` on
-    :class:`dpnp.ndarray`.
+>>> x1 = np.arange(9.0).reshape((3, 3))
+>>> x2 = np.arange(3.0)
+>>> np.multiply(x1, x2)
+array([[  0.,   1.,   4.],
+       [  0.,   4.,  10.],
+       [  0.,   7.,  16.]])
 
-    >>> x1 * x2
-    array([[  0.,   1.,   4.],
-        [  0.,   4.,  10.],
-        [  0.,   7.,  16.]])
-    """
+The ``*`` operator can be used as a shorthand for ``multiply`` on
+:class:`dpnp.ndarray`.
 
-    return check_nd_call_func(
-        numpy.multiply,
-        dpnp_multiply,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+>>> x1 * x2
+array([[  0.,   1.,   4.],
+       [  0.,   4.,  10.],
+       [  0.,   7.,  16.]])
+"""
+
+multiply = DPNPBinaryFunc(
+    "multiply",
+    ti._multiply_result_type,
+    ti._multiply,
+    _MULTIPLY_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_mul_to_call,
+    mkl_impl_fn=vmi._mul,
+    binary_inplace_fn=ti._multiply_inplace,
+)
 
 
-def negative(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Numerical negative, element-wise.
+_NEGATIVE_DOCSTRING = """
+Computes the numerical negative for each element `x_i` of input array `x`.
 
-    For full documentation refer to :obj:`numpy.negative`.
+For full documentation refer to :obj:`numpy.negative`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The numerical negative of each element of `x`.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the negative of `x`.
 
-    See Also
-    --------
-    :obj:`dpnp.positive` : Return the numerical positive of each element of `x`.
-    :obj:`dpnp.copysign` : Change the sign of `x1` to that of `x2`, element-wise.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.negative(np.array([1, -1]))
-    array([-1, 1])
+See Also
+--------
+:obj:`dpnp.positive` : Return the numerical positive of each element of `x`.
+:obj:`dpnp.copysign` : Change the sign of `x1` to that of `x2`, element-wise.
 
-    The ``-`` operator can be used as a shorthand for ``negative`` on
-    :class:`dpnp.ndarray`.
+Examples
+--------
+>>> import dpnp as np
+>>> np.negative(np.array([1, -1]))
+array([-1, 1])
 
-    >>> x = np.array([1., -1.])
-    >>> -x
-    array([-1.,  1.])
-    """
+The ``-`` operator can be used as a shorthand for ``negative`` on
+:class:`dpnp.ndarray`.
 
-    return check_nd_call_func(
-        numpy.negative,
-        dpnp_negative,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+>>> x = np.array([1., -1.])
+>>> -x
+array([-1.,  1.])
+"""
+
+negative = DPNPUnaryFunc(
+    "negative",
+    ti._negative_result_type,
+    ti._negative,
+    _NEGATIVE_DOCSTRING,
+    acceptance_fn=acceptance_fn_negative,
+)
 
 
-def positive(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Numerical positive, element-wise.
+_POSITIVE_DOCSTRING = """
+Computes the numerical positive for each element `x_i` of input array `x`.
 
-    For full documentation refer to :obj:`numpy.positive`.
+For full documentation refer to :obj:`numpy.positive`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The numerical positive of each element of `x`.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the positive of `x`.
 
-    See Also
-    --------
-    :obj:`dpnp.negative` : Return the numerical negative of each element of `x`.
-    :obj:`dpnp.copysign` : Change the sign of `x1` to that of `x2`, element-wise.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    Note
-    ----
-    Equivalent to `x.copy()`, but only defined for types that support arithmetic.
+See Also
+--------
+:obj:`dpnp.negative` : Return the numerical negative of each element of `x`.
+:obj:`dpnp.copysign` : Change the sign of `x1` to that of `x2`, element-wise.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.positive(np.array([1., -1.]))
-    array([ 1., -1.])
+Note
+----
+Equivalent to `x.copy()`, but only defined for types that support arithmetic.
 
-    The ``+`` operator can be used as a shorthand for ``positive`` on
-    :class:`dpnp.ndarray`.
+Examples
+--------
+>>> import dpnp as np
+>>> np.positive(np.array([1., -1.]))
+array([ 1., -1.])
 
-    >>> x = np.array([1., -1.])
-    >>> +x
-    array([ 1., -1.])
-    """
+The ``+`` operator can be used as a shorthand for ``positive`` on
+:class:`dpnp.ndarray`.
 
-    return check_nd_call_func(
-        numpy.positive,
-        dpnp_positive,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+>>> x = np.array([1., -1.])
+>>> +x
+array([ 1., -1.])
+"""
+
+positive = DPNPUnaryFunc(
+    "positive",
+    ti._positive_result_type,
+    ti._positive,
+    _POSITIVE_DOCSTRING,
+    acceptance_fn=acceptance_fn_positive,
+)
 
 
-def power(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    First array elements raised to powers from second array, element-wise.
+_POWER_DOCSTRING = """
+Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
 
-    An integer type (of either negative or positive value, but not zero)
-    raised to a negative integer power will return an array of zeroes.
+For full documentation refer to :obj:`numpy.power`.
 
-    For full documentation refer to :obj:`numpy.power`.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate. Array must have the correct
+    shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The bases in `x1` raised to the exponents in `x2`.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the result of element-wise of raising each element
+    to a specified power.
+    The data type of the returned array is determined by the Type Promotion Rules.
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    See Also
-    --------
-    :obj:`dpnp.fmax` : Element-wise maximum of array elements.
-    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
-    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+See Also
+--------
+:obj:`dpnp.fmax` : Element-wise maximum of array elements.
+:obj:`dpnp.fmin` : Element-wise minimum of array elements.
+:obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
 
-    Examples
-    --------
-    >>> import dpnp as dp
-    >>> a = dp.arange(6)
-    >>> dp.power(a, 3)
-    array([  0,   1,   8,  27,  64, 125])
+Examples
+--------
+>>> import dpnp as dp
+>>> a = dp.arange(6)
+>>> dp.power(a, 3)
+array([  0,   1,   8,  27,  64, 125])
 
-    Raise the bases to different exponents.
+Raise the bases to different exponents.
 
-    >>> b = dp.array([1.0, 2.0, 3.0, 3.0, 2.0, 1.0])
-    >>> dp.power(a, b)
-    array([ 0.,  1.,  8., 27., 16.,  5.])
+>>> b = dp.array([1.0, 2.0, 3.0, 3.0, 2.0, 1.0])
+>>> dp.power(a, b)
+array([ 0.,  1.,  8., 27., 16.,  5.])
 
-    The effect of broadcasting.
+The effect of broadcasting.
 
-    >>> c = dp.array([[1, 2, 3, 3, 2, 1], [1, 2, 3, 3, 2, 1]])
-    >>> dp.power(a, c)
-    array([[ 0,  1,  8, 27, 16,  5],
-           [ 0,  1,  8, 27, 16,  5]])
+>>> c = dp.array([[1, 2, 3, 3, 2, 1], [1, 2, 3, 3, 2, 1]])
+>>> dp.power(a, c)
+array([[ 0,  1,  8, 27, 16,  5],
+        [ 0,  1,  8, 27, 16,  5]])
 
-    The ``**`` operator can be used as a shorthand for ``power`` on
-    :class:`dpnp.ndarray`.
+The ``**`` operator can be used as a shorthand for ``power`` on
+:class:`dpnp.ndarray`.
 
-    >>> b = dp.array([1, 2, 3, 3, 2, 1])
-    >>> a = dp.arange(6)
-    >>> a ** b
-    array([ 0,  1,  8, 27, 16,  5])
+>>> b = dp.array([1, 2, 3, 3, 2, 1])
+>>> a = dp.arange(6)
+>>> a ** b
+array([ 0,  1,  8, 27, 16,  5])
 
-    Negative values raised to a non-integral value will result in ``nan``.
+Negative values raised to a non-integral value will result in ``nan``.
 
-    >>> d = dp.array([-1.0, -4.0])
-    >>> dp.power(d, 1.5)
-    array([nan, nan])
+>>> d = dp.array([-1.0, -4.0])
+>>> dp.power(d, 1.5)
+array([nan, nan])
+"""
 
-    """
-
-    return check_nd_call_func(
-        numpy.power,
-        dpnp_power,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+power = DPNPBinaryFunc(
+    "power",
+    ti._pow_result_type,
+    ti._pow,
+    _POWER_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_pow_to_call,
+    mkl_impl_fn=vmi._pow,
+    binary_inplace_fn=ti._pow_inplace,
+)
 
 
 def prod(
@@ -2290,18 +2255,22 @@ def prod(
     Returns
     -------
     out : dpnp.ndarray
-        A new array holding the result is returned unless `out` is specified, in which case it is returned.
+        A new array holding the result is returned unless `out` is specified,
+        in which case it is returned.
 
     Limitations
     -----------
-    Input array is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `initial`, and `where` are only supported with their default values.
-    Otherwise the function will be executed sequentially on CPU.
+    Input array is only supported as either :class:`dpnp.ndarray` or
+    :class:`dpctl.tensor.usm_ndarray`.
+    Parameters `initial`, and `where` are only supported with their default
+    values.
+    Otherwise ``NotImplementedError`` exception will be raised.
     Input array data types are limited by DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.nanprod` : Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.
+    :obj:`dpnp.nanprod` : Return the product of array elements over a given
+        axis treating Not a Numbers (NaNs) as ones.
 
     Examples
     --------
@@ -2328,508 +2297,444 @@ def prod(
         raise NotImplementedError(
             "initial keyword argument is only supported with its default value."
         )
-    elif where is not True:
+    if where is not True:
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
-    else:
-        dpt_array = dpnp.get_usm_ndarray(a)
-        result = dpnp_array._create_from_usm_ndarray(
-            dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
-        )
-
-        return dpnp.get_result_array(result, out)
-
-
-def proj(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Returns the projection of a number onto the Riemann sphere.
-
-    For all infinite complex numbers (including the cases where one component is infinite and the other is `NaN`),
-    the function returns `(inf, 0.0)` or `(inf, -0.0)`.
-    For finite complex numbers, the input is returned.
-    All real-valued numbers are treated as complex numbers with positive zero imaginary part.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The projection of each element of `x`.
-
-    Limitations
-    -----------
-    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.absolute` : Returns the magnitude of a complex number, element-wise.
-    :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.proj(np.array([1, -2.3, 2.1-1.7j]))
-    array([ 1. +0.j, -2.3+0.j,  2.1-1.7.j])
-
-    >>> np.proj(np.array([complex(1,np.inf), complex(1,-np.inf), complex(np.inf,-1),]))
-    array([inf+0.j, inf-0.j, inf-0.j])
-
-    """
-
-    return check_nd_call_func(
-        None,
-        dpnp_proj,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
+    dpt_array = dpnp.get_usm_ndarray(a)
+    result = dpnp_array._create_from_usm_ndarray(
+        dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
     )
 
-
-def real(val):
-    """
-    Return the real part of the complex argument.
-
-    For full documentation refer to :obj:`numpy.real`.
-
-    Parameters
-    ----------
-    x : {dpnp.ndarray, usm_ndarray}
-        Input array.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The real component of the complex argument.  If `val` is real,
-        the type of `val` is used for the output. If `val` has complex
-        elements, the returned type is float.
-
-    See Also
-    --------
-    :obj:`dpnp.imag` : Return the imaginary part of the complex argument.
-    :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
-    :obj:`dpnp.conjugate` : Return the complex conjugate, element-wise.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([1+2j, 3+4j, 5+6j])
-    >>> a.real
-    array([1., 3., 5.])
-
-    >>> a.real = 9
-    >>> a
-    array([9.+2.j, 9.+4.j, 9.+6.j])
-
-    >>> a.real = np.array([9, 8, 7])
-    >>> a
-    array([9.+2.j, 8.+4.j, 7.+6.j])
-
-    >>> np.real(np.array(1 + 1j))
-    array(1.)
-
-    """
-
-    dpnp.check_supported_arrays_type(val)
-    if dpnp.issubsctype(val.dtype, dpnp.complexfloating):
-        return dpnp_real(val)
-    else:
-        return val
-
-
-def remainder(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Return element-wise remainder of division.
-
-    For full documentation refer to :obj:`numpy.remainder`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The element-wise remainder of the quotient `floor_divide(x1, x2)`.
-
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
-    :obj:`dpnp.divide` : Standard division.
-    :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
-    :obj:`dpnp.floor_divide` : Compute the largest integer smaller or equal to the division of the inputs.
-    :obj:`dpnp.mod` : Calculate the element-wise remainder of division.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.remainder(np.array([4, 7]), np.array([2, 3]))
-    array([0, 1])
-
-    >>> np.remainder(np.arange(7), 5)
-    array([0, 1, 2, 3, 4, 0, 1])
-
-    The ``%`` operator can be used as a shorthand for ``remainder`` on
-    :class:`dpnp.ndarray`.
-
-    >>> x1 = np.arange(7)
-    >>> x1 % 5
-    array([0, 1, 2, 3, 4, 0, 1])
-    """
-
-    return check_nd_call_func(
-        numpy.remainder,
-        dpnp_remainder,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def rint(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Round elements of the array to the nearest integer.
-
-    For full documentation refer to :obj:`numpy.rint`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The rounded value of elements of the array to the nearest integer.
-
-    Limitations
-    -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.round` : Evenly round to the given number of decimals.
-    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
-    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
-    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
-    >>> np.rint(a)
-    array([-2., -2., -0.,  0.,  2.,  2.,  2.])
-
-    """
-
-    return check_nd_call_func(
-        numpy.rint,
-        dpnp_round,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def round(x, decimals=0, out=None):
-    """
-    Evenly round to the given number of decimals.
-
-    For full documentation refer to :obj:`numpy.round`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The rounded value of elements of the array.
-
-    Limitations
-    -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `decimals` is supported with its default value.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.around` : Equivalent function; see for details.
-    :obj:`dpnp.ndarray.round` : Equivalent function.
-    :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
-    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
-    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
-    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.round(np.array([0.37, 1.64]))
-    array([0.,  2.])
-    >>> np.round(np.array([0.37, 1.64]), decimals=1)
-    array([0.4,  1.6])
-    >>> np.round(np.array([.5, 1.5, 2.5, 3.5, 4.5])) # rounds to nearest even value
-    array([0.,  2.,  2.,  4.,  4.])
-    >>> np.round(np.array([1,2,3,11]), decimals=1) # ndarray of ints is returned
-    array([ 1,  2,  3, 11])
-    >>> np.round(np.array([1,2,3,11]), decimals=-1)
-    array([ 0,  0,  0, 10])
-
-    """
-
-    if decimals != 0:
-        pass
-    elif dpnp.isscalar(x):
-        # input has to be an array
-        pass
-    else:
-        return dpnp_round(x, out=out)
-    return call_origin(numpy.round, x, decimals=decimals, out=out)
-
-
-def sign(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Returns an element-wise indication of the sign of a number.
-
-    For full documentation refer to :obj:`numpy.sign`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The indication of the sign of each element of `x`.
-
-    Limitations
-    -----------
-    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    However, if the input array data type is complex, the function will be executed sequentially on CPU.
-
-    See Also
-    --------
-    :obj:`dpnp.signbit` : Returns element-wise `True` where signbit is set (less than zero).
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.sign(np.array([-5., 4.5]))
-    array([-1.0, 1.0])
-    >>> np.sign(np.array(0))
-    array(0)
-    >>> np.sign(np.array(5-2j))
-    array([1+0j])
-
-    """
-
-    if numpy.iscomplexobj(x):
-        return call_origin(
-            numpy.sign,
-            x,
-            out=out,
-            where=where,
-            order=order,
-            dtype=dtype,
-            subok=subok,
-            **kwargs,
-        )
-    else:
-        return check_nd_call_func(
-            numpy.sign,
-            dpnp_sign,
-            x,
-            out=out,
-            where=where,
-            order=order,
-            dtype=dtype,
-            subok=subok,
-            **kwargs,
-        )
-
-
-def signbit(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Returns element-wise `True` where signbit is set (less than zero).
-
-    For full documentation refer to :obj:`numpy.signbit`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        A boolean array with indication of the sign of each element of `x`.
-
-    Limitations
-    -----------
-    Parameters `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported real-valued data types.
-
-    See Also
-    --------
-    :obj:`dpnp.sign` : Returns an element-wise indication of the sign of a number.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.signbit(np.array([-1.2]))
-    array([True])
-
-    >>> np.signbit(np.array([1, -2.3, 2.1]))
-    array([False,  True, False])
-
-    """
-
-    return check_nd_call_func(
-        numpy.signbit,
-        dpnp_signbit,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
-def subtract(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Subtract arguments, element-wise.
-
-    For full documentation refer to :obj:`numpy.subtract`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The difference of `x1` and `x2`, element-wise.
-
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    Notes
-    -----
-    Equivalent to `x1` - `x2` in terms of array broadcasting.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.subtract(dp.array([4, 3]), np.array([2, 7]))
-    array([ 2, -4])
-
-    >>> x1 = np.arange(9.0).reshape((3, 3))
-    >>> x2 = np.arange(3.0)
-    >>> np.subtract(x1, x2)
-    array([[ 0.,  0.,  0.],
-        [ 3.,  3.,  3.],
-        [ 6.,  6.,  6.]])
-
-    The ``-`` operator can be used as a shorthand for ``subtract`` on
-    :class:`dpnp.ndarray`.
-
-    >>> x1 - x2
-    array([[ 0.,  0.,  0.],
-        [ 3.,  3.,  3.],
-        [ 6.,  6.,  6.]])
-    """
-
-    return check_nd_call_func(
-        numpy.subtract,
-        dpnp_subtract,
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+    return dpnp.get_result_array(result, out)
+
+
+_PROJ_DOCSTRING = """
+Computes projection of each element `x_i` for input array `x`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise projection.
+    The returned array has the same data type as `x`.
+
+Limitations
+-----------
+Parameters `where' and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.absolute` : Returns the magnitude of a complex number, element-wise.
+:obj:`dpnp.conj` : Return the complex conjugate, element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.proj(np.array([1, -2.3, 2.1-1.7j]))
+array([ 1. +0.j, -2.3+0.j,  2.1-1.7.j])
+
+>>> np.proj(np.array([complex(1,np.inf), complex(1,-np.inf), complex(np.inf,-1),]))
+array([inf+0.j, inf-0.j, inf-0.j])
+"""
+
+proj = DPNPUnaryFunc(
+    "proj",
+    ti._proj_result_type,
+    ti._proj,
+    _PROJ_DOCSTRING,
+)
+
+
+_REAL_DOCSTRING = """
+Computes real part of each element `x_i` for input array `x`.
+
+For full documentation refer to :obj:`numpy.real`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise real component of input.
+    If the input is a real-valued data type, the returned array has
+    the same data type. If the input is a complex floating-point
+    data type, the returned array has a floating-point data type
+    with the same floating-point precision as complex input.
+"""
+
+real = DPNPReal(
+    "real",
+    ti._real_result_type,
+    ti._real,
+    _REAL_DOCSTRING,
+)
+
+
+_REMAINDER_DOCSTRING = """
+Calculates the remainder of division for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+This function is equivalent to the Python modulus operator.
+
+For full documentation refer to :obj:`numpy.remainder`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have a real-valued data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have a real-valued data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    an array containing the element-wise remainders. The data type of
+    the returned array is determined by the Type Promotion Rules.
+
+Limitations
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+:obj:`dpnp.divide` : Standard division.
+:obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
+:obj:`dpnp.floor_divide` : Compute the largest integer smaller or equal to the division of the inputs.
+:obj:`dpnp.mod` : Calculate the element-wise remainder of division.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.remainder(np.array([4, 7]), np.array([2, 3]))
+array([0, 1])
+
+>>> np.remainder(np.arange(7), 5)
+array([0, 1, 2, 3, 4, 0, 1])
+
+The ``%`` operator can be used as a shorthand for ``remainder`` on
+:class:`dpnp.ndarray`.
+
+>>> x1 = np.arange(7)
+>>> x1 % 5
+array([0, 1, 2, 3, 4, 0, 1])
+"""
+
+remainder = DPNPBinaryFunc(
+    "remainder",
+    ti._remainder_result_type,
+    ti._remainder,
+    _REMAINDER_DOCSTRING,
+    binary_inplace_fn=ti._remainder_inplace,
+)
+
+
+_RINT_DOCSTRING = """
+Round elements of the array to the nearest integer.
+
+For full documentation refer to :obj:`numpy.rint`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise rounded value. The data type
+    of the returned array is determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.round` : Evenly round to the given number of decimals.
+:obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+:obj:`dpnp.floor` : Return the floor of the input, element-wise.
+:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
+>>> np.rint(a)
+array([-2., -2., -0.,  0.,  2.,  2.,  2.])
+"""
+
+
+rint = DPNPUnaryFunc(
+    "rint",
+    ti._round_result_type,
+    ti._round,
+    _RINT_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_round_to_call,
+    mkl_impl_fn=vmi._round,
+)
+
+
+_ROUND_DOCSTRING = """
+Rounds each element `x_i` of the input array `x` to
+the nearest integer-valued number.
+
+For full documentation refer to :obj:`numpy.round`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+decimals : int, optional
+    Number of decimal places to round to (default: 0). If decimals is negative,
+    it specifies the number of positions to the left of the decimal point.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise rounded value. The data type
+    of the returned array is determined by the Type Promotion Rules.
+
+See Also
+--------
+:obj:`dpnp.around` : Equivalent function; see for details.
+:obj:`dpnp.ndarray.round` : Equivalent function.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+:obj:`dpnp.floor` : Return the floor of the input, element-wise.
+:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.round(np.array([0.37, 1.64]))
+array([0.,  2.])
+>>> np.round(np.array([0.37, 1.64]), decimals=1)
+array([0.4,  1.6])
+>>> np.round(np.array([.5, 1.5, 2.5, 3.5, 4.5])) # rounds to nearest even value
+array([0.,  2.,  2.,  4.,  4.])
+>>> np.round(np.array([1, 2, 3, 11]), decimals=1) # ndarray of ints is returned
+array([ 1,  2,  3, 11])
+>>> np.round(np.array([1, 2, 3, 11]), decimals=-1)
+array([ 0,  0,  0, 10])
+"""
+
+round = DPNPRound(
+    "round",
+    ti._round_result_type,
+    ti._round,
+    _ROUND_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_round_to_call,
+    mkl_impl_fn=vmi._round,
+)
+
+
+_SIGN_DOCSTRING = """
+Computes an indication of the sign of each element `x_i` of input array `x`
+using the signum function.
+
+The signum function returns `-1` if `x_i` is less than `0`,
+`0` if `x_i` is equal to `0`, and `1` if `x_i` is greater than `0`.
+
+For full documentation refer to :obj:`numpy.sign`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise results. The data type of the
+    returned array is determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.signbit` : Returns element-wise `True` where signbit is set (less than zero).
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.sign(np.array([-5., 4.5]))
+array([-1.0, 1.0])
+>>> np.sign(np.array(0))
+array(0)
+>>> np.sign(np.array(5-2j))
+array([1+0j])
+"""
+
+sign = DPNPUnaryFunc(
+    "sign",
+    ti._sign_result_type,
+    ti._sign,
+    _SIGN_DOCSTRING,
+    acceptance_fn=acceptance_fn_sign,
+)
+
+
+_SIGNBIT_DOCSTRING = """
+Computes an indication of whether the sign bit of each element `x_i` of
+input array `x` is set.
+
+For full documentation refer to :obj:`numpy.signbit`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise results. The returned array
+    must have a data type of `bool`.
+
+Limitations
+-----------
+Parameters `where` nd `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.sign` : Returns an element-wise indication of the sign of a number.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.signbit(np.array([-1.2]))
+array([True])
+
+>>> np.signbit(np.array([1, -2.3, 2.1]))
+array([False,  True, False])
+"""
+
+signbit = DPNPUnaryFunc(
+    "signbit",
+    ti._signbit_result_type,
+    ti._signbit,
+    _SIGNBIT_DOCSTRING,
+)
+
+
+_SUBTRACT_DOCSTRING = """
+Calculates the difference between each element `x1_i` of the input
+array `x1` and the respective element `x2_i` of the input array `x2`.
+
+For full documentation refer to :obj:`numpy.subtract`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    First input array, expected to have numeric data type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Second input array, also expected to have numeric data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
+
+Returns
+-------
+out : dpnp.ndarray
+    an array containing the result of element-wise subtraction. The data type
+    of the returned array is determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+Notes
+-----
+Equivalent to `x1` - `x2` in terms of array broadcasting.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.subtract(dp.array([4, 3]), np.array([2, 7]))
+array([ 2, -4])
+
+>>> x1 = np.arange(9.0).reshape((3, 3))
+>>> x2 = np.arange(3.0)
+>>> np.subtract(x1, x2)
+array([[ 0.,  0.,  0.],
+       [ 3.,  3.,  3.],
+       [ 6.,  6.,  6.]])
+
+The ``-`` operator can be used as a shorthand for ``subtract`` on
+:class:`dpnp.ndarray`.
+
+>>> x1 - x2
+array([[ 0.,  0.,  0.],
+       [ 3.,  3.,  3.],
+       [ 6.,  6.,  6.]])
+"""
+
+subtract = DPNPBinaryFunc(
+    "subtract",
+    ti._subtract_result_type,
+    ti._subtract,
+    _SUBTRACT_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_sub_to_call,
+    mkl_impl_fn=vmi._sub,
+    binary_inplace_fn=ti._subtract_inplace,
+    acceptance_fn=acceptance_fn_subtract,
+)
 
 
 def sum(
@@ -2888,14 +2793,16 @@ def sum(
 
     Limitations
     -----------
-    Parameters `initial` and `where` are only supported with their default values.
+    Parameters `initial` and `where` are only supported with their default
+    values.
     Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
     :obj:`dpnp.ndarray.sum` : Equivalent method.
     :obj:`dpnp.cumsum` : Cumulative sum of array elements.
-    :obj:`dpnp.trapz` : Integration of array values using the composite trapezoidal rule.
+    :obj:`dpnp.trapz` : Integration of array values using the composite
+                        trapezoidal rule.
     :obj:`dpnp.mean` : Compute the arithmetic mean.
     :obj:`dpnp.average` : Compute the weighted average.
 
@@ -2926,67 +2833,62 @@ def sum(
         raise NotImplementedError(
             "initial keyword argument is only supported with its default value."
         )
-    elif where is not True:
+    if where is not True:
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
-    else:
-        if (
-            len(a.shape) == 2
-            and a.itemsize == 4
-            and (
-                (
-                    axis == (0,)
-                    and a.flags.c_contiguous
-                    and 32 <= a.shape[1] <= 1024
-                    and a.shape[0] > a.shape[1]
-                )
-                or (
-                    axis == (1,)
-                    and a.flags.f_contiguous
-                    and 32 <= a.shape[0] <= 1024
-                    and a.shape[1] > a.shape[0]
-                )
-            )
-        ):
-            from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
 
-            input = a
-            if axis == (1,):
-                input = input.T
-            input = dpnp.get_usm_ndarray(input)
-
-            queue = input.sycl_queue
-            out_dtype = (
-                dtu._default_accumulation_dtype(input.dtype, queue)
-                if dtype is None
-                else dtype
-            )
-            output = dpt.empty(
-                input.shape[1], dtype=out_dtype, sycl_queue=queue
-            )
-
-            get_sum = _sycl_ext_impl._get_sum_over_axis_0
-            sum = get_sum(input, output)
-
-            if sum:
-                sum(input, output, []).wait()
-                result = dpnp_array._create_from_usm_ndarray(output)
-
-                if keepdims:
-                    if axis == (0,):
-                        res_sh = (1,) + output.shape
-                    else:
-                        res_sh = output.shape + (1,)
-                    result = result.reshape(res_sh)
-
-                return result
-
-        y = dpt.sum(
-            dpnp.get_usm_ndarray(a), axis=axis, dtype=dtype, keepdims=keepdims
+    sycl_sum_call = False
+    if len(a.shape) == 2 and a.itemsize == 4:
+        c_contiguous_rules = (
+            axis == (0,)
+            and a.flags.c_contiguous
+            and 32 <= a.shape[1] <= 1024
+            and a.shape[0] > a.shape[1]
         )
-        result = dpnp_array._create_from_usm_ndarray(y)
-        return dpnp.get_result_array(result, out, casting="same_kind")
+        f_contiguous_rules = (
+            axis == (1,)
+            and a.flags.f_contiguous
+            and 32 <= a.shape[0] <= 1024
+            and a.shape[1] > a.shape[0]
+        )
+        sycl_sum_call = c_contiguous_rules or f_contiguous_rules
+
+    if sycl_sum_call:
+        input = a
+        if axis == (1,):
+            input = input.T
+        input = dpnp.get_usm_ndarray(input)
+
+        queue = input.sycl_queue
+        out_dtype = (
+            dtu._default_accumulation_dtype(input.dtype, queue)
+            if dtype is None
+            else dtype
+        )
+        output = dpt.empty(input.shape[1], dtype=out_dtype, sycl_queue=queue)
+
+        get_sum = _sycl_ext_impl._get_sum_over_axis_0
+        sycl_sum = get_sum(input, output)
+
+        if sycl_sum:
+            sycl_sum(input, output, []).wait()
+            result = dpnp_array._create_from_usm_ndarray(output)
+
+            if keepdims:
+                if axis == (0,):
+                    res_sh = (1,) + output.shape
+                else:
+                    res_sh = output.shape + (1,)
+                result = result.reshape(res_sh)
+
+            return result
+
+    y = dpt.sum(
+        dpnp.get_usm_ndarray(a), axis=axis, dtype=dtype, keepdims=keepdims
+    )
+    result = dpnp_array._create_from_usm_ndarray(y)
+    return dpnp.get_result_array(result, out, casting="same_kind")
 
 
 def trapz(y1, x1=None, dx=1.0, axis=-1):
@@ -3052,57 +2954,55 @@ def trapz(y1, x1=None, dx=1.0, axis=-1):
 true_divide = divide
 
 
-def trunc(
-    x,
-    /,
-    out=None,
-    *,
-    order="K",
-    where=True,
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Compute the truncated value of the input, element-wise.
+_TRUNC_DOCSTRING = """
+trunc(x, out=None, order='K')
 
-    For full documentation refer to :obj:`numpy.trunc`.
+Returns the truncated value for each element `x_i` for input array `x`.
+The truncated value of the scalar `x` is the nearest integer `i` which is
+closer to zero than `x` is. In short, the fractional part of the
+signed number `x` is discarded.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The truncated value of each element of `x`.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have a real-valued data type.
+out : {None, dpnp.ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: "K".
 
-    Limitations
-    -----------
-    Parameter `x` is only supported as either :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `where`, `dtype`, and `subok` are supported with their default values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by real-value data types.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the truncated value of each element in `x`. The data type
+    of the returned array is determined by the Type Promotion Rules.
 
-    See Also
-    --------
-    :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
-    :obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
-    >>> np.trunc(a)
-    array([-1.0, -1.0, -0.0, 0.0, 1.0, 1.0, 2.0])
+See Also
+--------
+:obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
+:obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
 
-    """
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
+>>> np.trunc(a)
+array([-1.0, -1.0, -0.0, 0.0, 1.0, 1.0, 2.0])
+"""
 
-    return check_nd_call_func(
-        numpy.trunc,
-        dpnp_trunc,
-        x,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
+trunc = DPNPUnaryFunc(
+    "trunc",
+    ti._trunc_result_type,
+    ti._trunc,
+    _TRUNC_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_trunc_to_call,
+    mkl_impl_fn=vmi._trunc,
+)
