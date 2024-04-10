@@ -9,13 +9,9 @@ from tests.helper import (
     assert_dtype_allclose,
     get_all_dtypes,
     get_float_dtypes,
-    has_support_aspect64,
 )
 
 
-# Note: dpnp.sum() always upcast integers to (u)int64 and float32 to
-# float64 for dtype=None. `numpy.sum()` does that too for integers, but not for
-# float32, so we need to special-case it for these tests
 @pytest.mark.parametrize("dtype", get_float_dtypes())
 def test_sum_float(dtype):
     a = numpy.array(
@@ -28,16 +24,10 @@ def test_sum_float(dtype):
     )
     ia = dpnp.array(a)
 
-    # Flag for type check in special cases
-    # Use only type kinds checks when dpnp handles float32 arrays
-    # as `dpnp.sum()` and `numpy.sum()` return different dtypes
-    check_type_kind = dtype == dpnp.float32
     for axis in range(len(a)):
         result = dpnp.sum(ia, axis=axis)
         expected = numpy.sum(a, axis=axis)
-        assert_dtype_allclose(
-            result, expected, check_only_type_kind=check_type_kind
-        )
+        assert_dtype_allclose(result, expected)
 
 
 def test_sum_int():

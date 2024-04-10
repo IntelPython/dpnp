@@ -606,9 +606,14 @@ class TestCumprod:
         }
     )
 )
-@pytest.mark.skip("nancumsum() and nancumprod() are not implemented yet")
 class TestNanCumSumProd:
     zero_density = 0.25
+
+    @pytest.fixture(autouse=True)
+    def setUp(self):
+        if self.func == "nancumprod":
+            pytest.skip("nancumprod() is not implemented yet")
+        pass
 
     def _make_array(self, dtype):
         dtype = numpy.dtype(dtype)
