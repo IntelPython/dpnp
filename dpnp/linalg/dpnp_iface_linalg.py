@@ -272,9 +272,10 @@ def eig(a):
         column ``v[:,i]`` is the eigenvector corresponding to the
         eigenvalue ``w[i]``.
 
-    Limitations
-    -----------
-    The function is executed sequentially only on CPU.
+    Note
+    ----
+    Since there is no proper OneMKL LAPACK function, DPNP will calculate
+    through a fallback on NumPy call.
 
     See Also
     --------
@@ -289,43 +290,43 @@ def eig(a):
     >>> import dpnp as np
     >>> from dpnp import linalg as LA
 
-    (Almost) trivial example with real e-values and e-vectors.
+    (Almost) trivial example with real eigenvalues and eigenvectors.
 
     >>> w, v = LA.eig(np.diag((1, 2, 3)))
-    >>> w; v
-    array([1., 2., 3.])
-    array([[1., 0., 0.],
-           [0., 1., 0.],
-           [0., 0., 1.]])
+    >>> w, v
+    (array([1., 2., 3.]),
+     array([[1., 0., 0.],
+            [0., 1., 0.],
+            [0., 0., 1.]]))
 
-    Real matrix possessing complex e-values and e-vectors; note that the
-    e-values are complex conjugates of each other.
+    Real matrix possessing complex eigenvalues and eigenvectors;
+    note that the eigenvalues are complex conjugates of each other.
 
     >>> w, v = LA.eig(np.array([[1, -1], [1, 1]]))
-    >>> w; v
-    array([1.+1.j, 1.-1.j])
-    array([[0.70710678+0.j        , 0.70710678-0.j        ],
-           [0.        -0.70710678j, 0.        +0.70710678j]])
+    >>> w, v
+    (array([1.+1.j, 1.-1.j]),
+     array([[0.70710678+0.j        , 0.70710678-0.j        ],
+            [0.        -0.70710678j, 0.        +0.70710678j]]))
 
-    Complex-valued matrix with real e-values (but complex-valued e-vectors);
-    note that ``a.conj().T == a``, i.e., `a` is Hermitian.
+    Complex-valued matrix with real eigenvalues (but complex-valued
+    eigenvectors); note that ``a.conj().T == a``, i.e., `a` is Hermitian.
 
     >>> a = np.array([[1, 1j], [-1j, 1]])
     >>> w, v = LA.eig(a)
-    >>> w; v
-    array([2.+0.j, 0.+0.j])
-    array([[ 0.        +0.70710678j,  0.70710678+0.j        ], # may vary
-           [ 0.70710678+0.j        , -0.        +0.70710678j]])
+    >>> w, v
+    (array([2.+0.j, 0.+0.j]),
+     array([[ 0.        +0.70710678j,  0.70710678+0.j        ], # may vary
+            [ 0.70710678+0.j        , -0.        +0.70710678j]])
 
     Be careful about round-off error!
 
     >>> a = np.array([[1 + 1e-9, 0], [0, 1 - 1e-9]])
-    >>> # Theor. e-values are 1 +/- 1e-9
+    >>> # Theor. eigenvalues are 1 +/- 1e-9
     >>> w, v = LA.eig(a)
-    >>> w; v
-    array([1., 1.])
-    array([[1., 0.],
-           [0., 1.]])
+    >>> w, v
+    (array([1., 1.]),
+     array([[1., 0.],
+            [0., 1.]]))
 
     """
 
@@ -336,6 +337,8 @@ def eig(a):
     a_sycl_queue = a.sycl_queue
     a_usm_type = a.usm_type
 
+    # Since geev function from OneMKL LAPACK is not implemented yet,
+    # use NumPy for this calculation.
     w_np, v_np = numpy.linalg.eig(dpnp.asnumpy(a))
     return (
         dpnp.array(w_np, sycl_queue=a_sycl_queue, usm_type=a_usm_type),
@@ -430,9 +433,10 @@ def eigvals(a):
         They are not necessarily ordered, nor are they necessarily
         real for real matrices.
 
-    Limitations
-    -----------
-    The function is executed sequentially only on CPU.
+    Note
+    ----
+    Since there is no proper OneMKL LAPACK function, DPNP will calculate
+    through a fallback on NumPy call.
 
     See Also
     --------
@@ -474,6 +478,8 @@ def eigvals(a):
     check_stacked_2d(a)
     check_stacked_square(a)
 
+    # Since geev function from OneMKL LAPACK is not implemented yet,
+    # use NumPy for this calculation.
     w_np = numpy.linalg.eigvals(dpnp.asnumpy(a))
     return dpnp.array(w_np, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
 
