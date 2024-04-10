@@ -3,12 +3,10 @@ import pytest
 from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
-    assert_array_equal,
     assert_equal,
 )
 
 import dpnp
-from dpnp.dpnp_array import dpnp_array
 from tests.third_party.cupy import testing
 
 from .helper import (
@@ -150,12 +148,7 @@ class TestNanSum:
 
         expected = numpy.nansum(a)
         result = dpnp.nansum(ia)
-
-        # use only type kinds check when dpnp handles complex64 arrays
-        # since `dpnp.sum()` and `numpy.sum()` return different dtypes
-        assert_dtype_allclose(
-            result, expected, check_only_type_kind=(dtype == dpnp.complex64)
-        )
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("axis", [0, 1])

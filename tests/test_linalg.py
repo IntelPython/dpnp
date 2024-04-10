@@ -961,13 +961,10 @@ class TestNorm:
     def test_norm_1D(self, dtype, ord, axis, keepdims):
         a = numpy.array(numpy.random.uniform(-5, 5, 10), dtype=dtype)
         ia = inp.array(a)
+
         result = inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         expected = numpy.linalg.norm(a, ord=ord, axis=axis, keepdims=keepdims)
-        # use only type kinds check when dpnp handles complex64 arrays
-        # since `dpnp.sum()` and `numpy.sum()` return different dtypes
-        assert_dtype_allclose(
-            result, expected, check_only_type_kind=(dtype == inp.float32)
-        )
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
@@ -983,11 +980,10 @@ class TestNorm:
         x2 = numpy.random.uniform(-5, 5, 10)
         a = numpy.array(x1 + 1j * x2, dtype=dtype)
         ia = inp.array(a)
+
         result = inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         expected = numpy.linalg.norm(a, ord=ord, axis=axis, keepdims=keepdims)
-        assert_dtype_allclose(
-            result, expected, check_only_type_kind=(dtype == inp.complex64)
-        )
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
@@ -1027,9 +1023,7 @@ class TestNorm:
             expected = numpy.linalg.norm(
                 a, ord=ord, axis=axis, keepdims=keepdims
             )
-            assert_dtype_allclose(
-                result, expected, check_only_type_kind=(dtype == inp.float32)
-            )
+            assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
@@ -1069,9 +1063,7 @@ class TestNorm:
             expected = numpy.linalg.norm(
                 a, ord=ord, axis=axis, keepdims=keepdims
             )
-            assert_dtype_allclose(
-                result, expected, check_only_type_kind=(dtype == inp.complex64)
-            )
+            assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
@@ -1117,9 +1109,7 @@ class TestNorm:
             expected = numpy.linalg.norm(
                 a, ord=ord, axis=axis, keepdims=keepdims
             )
-            assert_dtype_allclose(
-                result, expected, check_only_type_kind=(dtype == inp.float32)
-            )
+            assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
@@ -1165,9 +1155,7 @@ class TestNorm:
             expected = numpy.linalg.norm(
                 a, ord=ord, axis=axis, keepdims=keepdims
             )
-            assert_dtype_allclose(
-                result, expected, check_only_type_kind=(dtype == inp.complex64)
-            )
+            assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes())
@@ -1213,11 +1201,7 @@ class TestNorm:
             expected = numpy.linalg.norm(
                 a, ord=ord, axis=axis, keepdims=keepdims
             )
-            assert_dtype_allclose(
-                result,
-                expected,
-                check_only_type_kind=(dtype in [inp.float32, inp.complex64]),
-            )
+            assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("stride", [3, -1, -5], ids=["3", "-1", "-5"])
     def test_norm_strided_1D(self, stride):
