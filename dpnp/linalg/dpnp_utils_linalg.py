@@ -1894,8 +1894,8 @@ def dpnp_solve(a, b):
             # in the queue.
             # We need to wait for each host tasks before calling _gesv to avoid deadlock.
             if is_cpu_device:
-                b_ht_copy_ev[i].wait()
                 ht_lapack_ev[i].wait()
+                b_ht_copy_ev[i].wait()
 
         for i in range(batch_size):
             ht_lapack_ev[i].wait()
