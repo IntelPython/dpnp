@@ -1189,64 +1189,11 @@ def test_det(device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_eig(device):
-    if device.device_type != dpctl.device_type.gpu:
-        pytest.skip(
-            "eig function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
-        )
-
-    size = 4
-    dtype = dpnp.default_float_type(device)
-    a = numpy.arange(size * size, dtype=dtype).reshape((size, size))
-    symm_orig = (
-        numpy.tril(a)
-        + numpy.tril(a, -1).T
-        + numpy.diag(numpy.full((size,), size * size, dtype=dtype))
-    )
-    numpy_data = symm_orig
-    dpnp_symm_orig = dpnp.array(numpy_data, device=device)
-    dpnp_data = dpnp_symm_orig
-
-    dpnp_val, dpnp_vec = dpnp.linalg.eig(dpnp_data)
-    numpy_val, numpy_vec = numpy.linalg.eig(numpy_data)
-
-    # DPNP sort val/vec by abs value
-    vvsort(dpnp_val, dpnp_vec, size, dpnp)
-
-    # NP sort val/vec by abs value
-    vvsort(numpy_val, numpy_vec, size, numpy)
-
-    # NP change sign of vectors
-    for i in range(numpy_vec.shape[1]):
-        if numpy_vec[0, i] * dpnp_vec[0, i] < 0:
-            numpy_vec[:, i] = -numpy_vec[:, i]
-
-    assert_allclose(dpnp_val, numpy_val, rtol=1e-05, atol=1e-05)
-    assert_allclose(dpnp_vec, numpy_vec, rtol=1e-05, atol=1e-05)
-
-    assert dpnp_val.dtype == numpy_val.dtype
-    assert dpnp_vec.dtype == numpy_vec.dtype
-    assert dpnp_val.shape == numpy_val.shape
-    assert dpnp_vec.shape == numpy_vec.shape
-
-    expected_queue = dpnp_data.get_array().sycl_queue
-    dpnp_val_queue = dpnp_val.get_array().sycl_queue
-    dpnp_vec_queue = dpnp_vec.get_array().sycl_queue
-
-    # compare queue and device
-    assert_sycl_queue_equal(dpnp_val_queue, expected_queue)
-    assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
-
-
 @pytest.mark.parametrize(
     "func",
     [
+        "eig",
+        "eigvals",
         "eigh",
         "eigvalsh",
     ],
@@ -1275,16 +1222,22 @@ def test_eig(device):
 )
 def test_eigenvalue(func, shape, device):
     dtype = dpnp.default_float_type(device)
+    # Set a `hermitian` flag for generate_random_numpy_array() to
+    # get a symmetric array for eigh() and eigvalsh() or
+    # non-symmetric for eig() and eigvals()
+    is_hermitian = func in ("eigh, eigvalsh")
     # Set seed_value=81 to prevent
     # random generation of the input singular matrix
-    a = generate_random_numpy_array(shape, dtype, hermitian=True, seed_value=81)
+    a = generate_random_numpy_array(
+        shape, dtype, hermitian=is_hermitian, seed_value=81
+    )
     dp_a = dpnp.array(a, device=device)
 
     expected_queue = dp_a.get_array().sycl_queue
 
-    if func == "eigh":
-        dp_val, dp_vec = dpnp.linalg.eigh(dp_a)
-        np_val, np_vec = numpy.linalg.eigh(a)
+    if func in ("eig", "eigh"):
+        dp_val, dp_vec = getattr(dpnp.linalg, func)(dp_a)
+        np_val, np_vec = getattr(numpy.linalg, func)(a)
 
         # Check the eigenvalue decomposition
         if a.ndim == 2:
@@ -1306,9 +1259,9 @@ def test_eigenvalue(func, shape, device):
         # compare queue and device
         assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
 
-    else:  # eighvalsh
-        dp_val = dpnp.linalg.eigvalsh(dp_a)
-        np_val = numpy.linalg.eigvalsh(a)
+    else:  # eighvals or eigvalsh
+        dp_val = getattr(dpnp.linalg, func)(dp_a)
+        np_val = getattr(numpy.linalg, func)(a)
 
     assert_allclose(dp_val, np_val, rtol=1e-05, atol=1e-05)
     assert dp_val.shape == np_val.shape
@@ -1317,31 +1270,6 @@ def test_eigenvalue(func, shape, device):
     dpnp_val_queue = dp_val.get_array().sycl_queue
     # compare queue and device
     assert_sycl_queue_equal(dpnp_val_queue, expected_queue)
-
-
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_eigvals(device):
-    if device.device_type != dpctl.device_type.gpu:
-        pytest.skip(
-            "eigvals function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
-        )
-
-    data = [[0, 0], [0, 0]]
-    numpy_data = numpy.array(data)
-    dpnp_data = dpnp.array(data, device=device)
-
-    result = dpnp.linalg.eigvals(dpnp_data)
-    expected = numpy.linalg.eigvals(numpy_data)
-    assert_allclose(expected, result, atol=0.5)
-
-    expected_queue = dpnp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
-
-    assert_sycl_queue_equal(result_queue, expected_queue)
 
 
 @pytest.mark.parametrize(
@@ -1479,7 +1407,7 @@ def test_norm(device, ord, axis):
     else:
         result = dpnp.linalg.norm(ia, ord=ord, axis=axis)
         expected = numpy.linalg.norm(a, ord=ord, axis=axis)
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        assert_dtype_allclose(result, expected)
 
         expected_queue = ia.get_array().sycl_queue
         result_queue = result.get_array().sycl_queue

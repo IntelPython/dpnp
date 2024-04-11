@@ -425,14 +425,6 @@ template <typename _DataType_input, typename _DataType_output>
 void (*dpnp_cumsum_default_c)(void *, void *, size_t) =
     dpnp_cumsum_c<_DataType_input, _DataType_output>;
 
-template <typename _DataType_input, typename _DataType_output>
-DPCTLSyclEventRef (*dpnp_cumsum_ext_c)(DPCTLSyclQueueRef,
-                                       void *,
-                                       void *,
-                                       size_t,
-                                       const DPCTLEventVectorRef) =
-    dpnp_cumsum_c<_DataType_input, _DataType_output>;
-
 template <typename _KernelNameSpecialization1,
           typename _KernelNameSpecialization2>
 class dpnp_ediff1d_c_kernel;
@@ -1178,15 +1170,6 @@ void func_map_init_mathematical(func_map_t &fmap)
         eft_FLT, (void *)dpnp_cumsum_default_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_CUMSUM][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_cumsum_default_c<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_CUMSUM_EXT][eft_INT][eft_INT] = {
-        eft_LNG, (void *)dpnp_cumsum_ext_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_CUMSUM_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_cumsum_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_CUMSUM_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_cumsum_ext_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_CUMSUM_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_cumsum_ext_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_INT][eft_INT] = {
         eft_LNG, (void *)dpnp_ediff1d_default_c<int32_t, int64_t>};
