@@ -40,9 +40,6 @@ it contains:
 import numpy
 
 import dpnp
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
-from dpnp.linalg.dpnp_algo_linalg import *
 
 from .dpnp_utils_linalg import (
     check_stacked_2d,
@@ -249,20 +246,104 @@ def det(a):
     return dpnp_det(a)
 
 
-def eig(x1):
+def eig(a):
     """
     Compute the eigenvalues and right eigenvectors of a square array.
 
-    .. seealso:: :obj:`numpy.linalg.eig`
+    For full documentation refer to :obj:`numpy.linalg.eig`.
+
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Matrices for which the eigenvalues and right eigenvectors will
+        be computed.
+
+    Returns
+    -------
+    eigenvalues : (..., M) dpnp.ndarray
+        The eigenvalues, each repeated according to its multiplicity.
+        The eigenvalues are not necessarily ordered. The resulting
+        array will be of complex type, unless the imaginary part is
+        zero in which case it will be cast to a real type. When `a`
+        is real the resulting eigenvalues will be real (0 imaginary
+        part) or occur in conjugate pairs
+    eigenvectors : (..., M, M) dpnp.ndarray
+        The normalized (unit "length") eigenvectors, such that the
+        column ``v[:,i]`` is the eigenvector corresponding to the
+        eigenvalue ``w[i]``.
+
+    Note
+    ----
+    Since there is no proper OneMKL LAPACK function, DPNP will calculate
+    through a fallback on NumPy call.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.
+    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian
+                              (conjugate symmetric) or a real symmetric matrix.
+    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or
+                                  real symmetric matrix.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> from dpnp import linalg as LA
+
+    (Almost) trivial example with real eigenvalues and eigenvectors.
+
+    >>> w, v = LA.eig(np.diag((1, 2, 3)))
+    >>> w, v
+    (array([1., 2., 3.]),
+     array([[1., 0., 0.],
+            [0., 1., 0.],
+            [0., 0., 1.]]))
+
+    Real matrix possessing complex eigenvalues and eigenvectors;
+    note that the eigenvalues are complex conjugates of each other.
+
+    >>> w, v = LA.eig(np.array([[1, -1], [1, 1]]))
+    >>> w, v
+    (array([1.+1.j, 1.-1.j]),
+     array([[0.70710678+0.j        , 0.70710678-0.j        ],
+            [0.        -0.70710678j, 0.        +0.70710678j]]))
+
+    Complex-valued matrix with real eigenvalues (but complex-valued
+    eigenvectors); note that ``a.conj().T == a``, i.e., `a` is Hermitian.
+
+    >>> a = np.array([[1, 1j], [-1j, 1]])
+    >>> w, v = LA.eig(a)
+    >>> w, v
+    (array([2.+0.j, 0.+0.j]),
+     array([[ 0.        +0.70710678j,  0.70710678+0.j        ], # may vary
+            [ 0.70710678+0.j        , -0.        +0.70710678j]])
+
+    Be careful about round-off error!
+
+    >>> a = np.array([[1 + 1e-9, 0], [0, 1 - 1e-9]])
+    >>> # Theor. eigenvalues are 1 +/- 1e-9
+    >>> w, v = LA.eig(a)
+    >>> w, v
+    (array([1., 1.]),
+     array([[1., 0.],
+            [0., 1.]]))
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.size > 0:
-            return dpnp_eig(x1_desc)
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-    return call_origin(numpy.linalg.eig, x1)
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+
+    # Since geev function from OneMKL LAPACK is not implemented yet,
+    # use NumPy for this calculation.
+    w_np, v_np = numpy.linalg.eig(dpnp.asnumpy(a))
+    return (
+        dpnp.array(w_np, sycl_queue=a_sycl_queue, usm_type=a_usm_type),
+        dpnp.array(v_np, sycl_queue=a_sycl_queue, usm_type=a_usm_type),
+    )
 
 
 def eigh(a, UPLO="L"):
@@ -334,32 +415,73 @@ def eigh(a, UPLO="L"):
     return dpnp_eigh(a, UPLO=UPLO)
 
 
-def eigvals(input):
+def eigvals(a):
     """
     Compute the eigenvalues of a general matrix.
 
-    Main difference between `eigvals` and `eig`: the eigenvectors aren't
-    returned.
+    For full documentation refer to :obj:`numpy.linalg.eigvals`.
 
     Parameters
     ----------
-    input : (..., M, M) array_like
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         A complex- or real-valued matrix whose eigenvalues will be computed.
 
     Returns
     -------
-    w : (..., M,) ndarray
+    w : (..., M) dpnp.ndarray
         The eigenvalues, each repeated according to its multiplicity.
         They are not necessarily ordered, nor are they necessarily
         real for real matrices.
+
+    Note
+    ----
+    Since there is no proper OneMKL LAPACK function, DPNP will calculate
+    through a fallback on NumPy call.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of a square array.
+    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or
+                                  real symmetric matrix.
+    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian
+                              (conjugate symmetric) or a real symmetric matrix.
+
+    Examples
+    --------
+    Illustration, using the fact that the eigenvalues of a diagonal matrix
+    are its diagonal elements, that multiplying a matrix on the left
+    by an orthogonal matrix, `Q`, and on the right by `Q.T` (the transpose
+    of `Q`), preserves the eigenvalues of the "middle" matrix.  In other words,
+    if `Q` is orthogonal, then ``Q * A * Q.T`` has the same eigenvalues as
+    ``A``:
+
+    >>> import dpnp as np
+    >>> from dpnp import linalg as LA
+    >>> x = np.random.random()
+    >>> Q = np.array([[np.cos(x), -np.sin(x)], [np.sin(x), np.cos(x)]])
+    >>> LA.norm(Q[0, :]), LA.norm(Q[1, :]), np.dot(Q[0, :],Q[1, :])
+    (array(1.), array(1.), array(0.))
+
+    Now multiply a diagonal matrix by ``Q`` on one side and by ``Q.T`` on the other:
+
+    >>> D = np.diag((-1,1))
+    >>> LA.eigvals(D)
+    array([-1.,  1.])
+    >>> A = np.dot(Q, D)
+    >>> A = np.dot(A, Q.T)
+    >>> LA.eigvals(A)
+    array([-1.,  1.]) # random
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(input, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.size > 0:
-            return dpnp_eigvals(x1_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(a)
+    check_stacked_2d(a)
+    check_stacked_square(a)
 
-    return call_origin(numpy.linalg.eigvals, input)
+    # Since geev function from OneMKL LAPACK is not implemented yet,
+    # use NumPy for this calculation.
+    w_np = numpy.linalg.eigvals(dpnp.asnumpy(a))
+    return dpnp.array(w_np, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
 
 
 def eigvalsh(a, UPLO="L"):
@@ -493,6 +615,8 @@ def matrix_power(a, n):
         elements is the same as those of `M`. If the exponent is
         negative the elements are floating-point.
 
+    Examples
+    --------
     >>> import dpnp as np
     >>> i = np.array([[0, 1], [-1, 0]]) # matrix equiv. of the imaginary unit
     >>> np.linalg.matrix_power(i, 3) # should = -i
@@ -881,16 +1005,17 @@ def solve(a, b):
 
     For full documentation refer to :obj:`numpy.linalg.solve`.
 
+    Parameters
+    ----------
+    a : (..., M, M) {dpnp.ndarray, usm_ndarray}
+        Coefficient matrix.
+    b : {(…, M,), (…, M, K)} {dpnp.ndarray, usm_ndarray}
+        Ordinate or "dependent variable" values.
+
     Returns
     -------
     out : {(…, M,), (…, M, K)} dpnp.ndarray
-        Solution to the system ax = b. Returned shape is identical to b.
-
-    Limitations
-    -----------
-    Parameters `a` and `b` are supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+        Solution to the system `ax = b`. Returned shape is identical to `b`.
 
     See Also
     --------

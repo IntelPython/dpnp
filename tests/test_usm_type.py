@@ -829,6 +829,8 @@ def test_where(usm_type):
 @pytest.mark.parametrize(
     "func",
     [
+        "eig",
+        "eigvals",
         "eigh",
         "eigvalsh",
     ],
@@ -852,15 +854,19 @@ def test_where(usm_type):
 )
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_eigenvalue(func, shape, usm_type):
-    a_np = generate_random_numpy_array(shape, hermitian=True)
+    # Set a `hermitian` flag for generate_random_numpy_array() to
+    # get a symmetric array for eigh() and eigvalsh() or
+    # non-symmetric for eig() and eigvals()
+    is_hermitian = func in ("eigh, eigvalsh")
+    a_np = generate_random_numpy_array(shape, hermitian=is_hermitian)
     a = dp.array(a_np, usm_type=usm_type)
 
-    if func == "eigh":
-        dp_val, dp_vec = dp.linalg.eigh(a)
+    if func in ("eig", "eigh"):
+        dp_val, dp_vec = getattr(dp.linalg, func)(a)
         assert a.usm_type == dp_vec.usm_type
 
-    else:  # eighvalsh
-        dp_val = dp.linalg.eigvalsh(a)
+    else:  # eighvals or eigvalsh
+        dp_val = getattr(dp.linalg, func)(a)
 
     assert a.usm_type == dp_val.usm_type
 

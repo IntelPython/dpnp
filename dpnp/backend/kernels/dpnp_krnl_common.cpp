@@ -631,15 +631,6 @@ void (*dpnp_eig_default_c)(const void *, void *, void *, size_t) =
     dpnp_eig_c<_DataType, _ResultType>;
 
 template <typename _DataType, typename _ResultType>
-DPCTLSyclEventRef (*dpnp_eig_ext_c)(DPCTLSyclQueueRef,
-                                    const void *,
-                                    void *,
-                                    void *,
-                                    size_t,
-                                    const DPCTLEventVectorRef) =
-    dpnp_eig_c<_DataType, _ResultType>;
-
-template <typename _DataType, typename _ResultType>
 DPCTLSyclEventRef dpnp_eigvals_c(DPCTLSyclQueueRef q_ref,
                                  const void *array_in,
                                  void *result1,
@@ -723,14 +714,6 @@ template <typename _DataType, typename _ResultType>
 void (*dpnp_eigvals_default_c)(const void *,
                                void *,
                                size_t) = dpnp_eigvals_c<_DataType, _ResultType>;
-
-template <typename _DataType, typename _ResultType>
-DPCTLSyclEventRef (*dpnp_eigvals_ext_c)(DPCTLSyclQueueRef,
-                                        const void *,
-                                        void *,
-                                        size_t,
-                                        const DPCTLEventVectorRef) =
-    dpnp_eigvals_c<_DataType, _ResultType>;
 
 template <typename _DataType>
 class dpnp_initval_c_kernel;
@@ -1083,27 +1066,6 @@ void func_map_init_linalg(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_EIG][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_eig_default_c<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_INT][eft_INT] = {
-        get_default_floating_type(),
-        (void *)dpnp_eig_ext_c<
-            int32_t, func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)dpnp_eig_ext_c<
-            int32_t, func_type_map_t::find_type<
-                         get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_LNG][eft_LNG] = {
-        get_default_floating_type(),
-        (void *)dpnp_eig_ext_c<
-            int64_t, func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)dpnp_eig_ext_c<
-            int64_t, func_type_map_t::find_type<
-                         get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_eig_ext_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_EIG_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_eig_ext_c<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_eigvals_default_c<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_LNG][eft_LNG] = {
@@ -1112,27 +1074,6 @@ void func_map_init_linalg(func_map_t &fmap)
         eft_FLT, (void *)dpnp_eigvals_default_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_eigvals_default_c<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_EIGVALS_EXT][eft_INT][eft_INT] = {
-        get_default_floating_type(),
-        (void *)dpnp_eigvals_ext_c<
-            int32_t, func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)dpnp_eigvals_ext_c<
-            int32_t, func_type_map_t::find_type<
-                         get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_EIGVALS_EXT][eft_LNG][eft_LNG] = {
-        get_default_floating_type(),
-        (void *)dpnp_eigvals_ext_c<
-            int64_t, func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)dpnp_eigvals_ext_c<
-            int64_t, func_type_map_t::find_type<
-                         get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_EIGVALS_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_eigvals_ext_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_EIGVALS_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_eigvals_ext_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_BLN][eft_BLN] = {
         eft_BLN, (void *)dpnp_initval_default_c<bool>};

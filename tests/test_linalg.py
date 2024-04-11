@@ -456,48 +456,6 @@ class TestDet:
         assert_raises(TypeError, inp.linalg.det, a_np)
 
 
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("size", [2, 4, 8, 16, 300])
-def test_eig_arange(type, size):
-    a = numpy.arange(size * size, dtype=type).reshape((size, size))
-    symm_orig = (
-        numpy.tril(a)
-        + numpy.tril(a, -1).T
-        + numpy.diag(numpy.full((size,), size * size, dtype=type))
-    )
-    symm = symm_orig
-    dpnp_symm_orig = inp.array(symm)
-    dpnp_symm = dpnp_symm_orig
-
-    dpnp_val, dpnp_vec = inp.linalg.eig(dpnp_symm)
-    np_val, np_vec = numpy.linalg.eig(symm)
-
-    # DPNP sort val/vec by abs value
-    vvsort(dpnp_val, dpnp_vec, size, inp)
-
-    # NP sort val/vec by abs value
-    vvsort(np_val, np_vec, size, numpy)
-
-    # NP change sign of vectors
-    for i in range(np_vec.shape[1]):
-        if np_vec[0, i] * dpnp_vec[0, i] < 0:
-            np_vec[:, i] = -np_vec[:, i]
-
-    assert_array_equal(symm_orig, symm)
-    assert_array_equal(dpnp_symm_orig, dpnp_symm)
-
-    if has_support_aspect64():
-        assert dpnp_val.dtype == np_val.dtype
-        assert dpnp_vec.dtype == np_vec.dtype
-    assert dpnp_val.shape == np_val.shape
-    assert dpnp_vec.shape == np_vec.shape
-    assert dpnp_val.usm_type == dpnp_symm.usm_type
-    assert dpnp_vec.usm_type == dpnp_symm.usm_type
-
-    assert_allclose(dpnp_val, np_val, rtol=1e-05, atol=1e-05)
-    assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
-
-
 class TestEigenvalue:
     # Eigenvalue decomposition of a matrix or a batch of matrices
     # by checking if the eigen equation A*v=w*v holds for given eigenvalues(w)
@@ -519,6 +477,8 @@ class TestEigenvalue:
     @pytest.mark.parametrize(
         "func",
         [
+            "eig",
+            "eigvals",
             "eigh",
             "eigvalsh",
         ],
@@ -537,8 +497,12 @@ class TestEigenvalue:
         ],
     )
     def test_eigenvalues(self, func, shape, dtype, order):
+        # Set a `hermitian` flag for generate_random_numpy_array() to
+        # get a symmetric array for eigh() and eigvalsh() or
+        # non-symmetric for eig() and eigvals()
+        is_hermitian = func in ("eigh, eigvalsh")
         a = generate_random_numpy_array(
-            shape, dtype, hermitian=True, seed_value=81
+            shape, dtype, hermitian=is_hermitian, seed_value=81
         )
         a_order = numpy.array(a, order=order)
         a_dp = inp.array(a, order=order)
@@ -548,21 +512,53 @@ class TestEigenvalue:
         # However, both OneMKL and rocSOLVER pick a different convention for
         # constructing eigenvectors, so v's are not directly comparible and
         # we verify them through the eigen equation A*v=w*v.
-        if func == "eigh":
-            w, _ = numpy.linalg.eigh(a_order)
-            w_dp, v_dp = inp.linalg.eigh(a_dp)
+        if func in ("eig", "eigh"):
+            w, _ = getattr(numpy.linalg, func)(a_order)
+            w_dp, v_dp = getattr(inp.linalg, func)(a_dp)
 
             self.assert_eigen_decomposition(a_dp, w_dp, v_dp)
 
-        else:  # eighvalsh
-            w = numpy.linalg.eigvalsh(a_order)
-            w_dp = inp.linalg.eigvalsh(a_dp)
+        else:  # eighvals or eigvalsh
+            w = getattr(numpy.linalg, func)(a_order)
+            w_dp = getattr(inp.linalg, func)(a_dp)
+
+        assert_dtype_allclose(w_dp, w)
+
+    # eigh() and eigvalsh() are tested in cupy tests
+    @pytest.mark.parametrize(
+        "func",
+        [
+            "eig",
+            "eigvals",
+        ],
+    )
+    @pytest.mark.parametrize(
+        "shape",
+        [(0, 0), (2, 0, 0), (0, 3, 3)],
+        ids=["(0,0)", "(2,0,0)", "(0,3,3)"],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_eigenvalue_empty(self, func, shape, dtype):
+        a_np = numpy.empty(shape, dtype=dtype)
+        a_dp = inp.array(a_np)
+
+        if func == "eig":
+            w, v = getattr(numpy.linalg, func)(a_np)
+            w_dp, v_dp = getattr(inp.linalg, func)(a_dp)
+
+            assert_dtype_allclose(v_dp, v)
+
+        else:  # eigvals
+            w = getattr(numpy.linalg, func)(a_np)
+            w_dp = getattr(inp.linalg, func)(a_dp)
 
         assert_dtype_allclose(w_dp, w)
 
     @pytest.mark.parametrize(
         "func",
         [
+            "eig",
+            "eigvals",
             "eigh",
             "eigvalsh",
         ],
@@ -584,22 +580,8 @@ class TestEigenvalue:
         assert_raises(inp.linalg.LinAlgError, dpnp_func, a_dp_not_scquare)
 
         # invalid UPLO
-        assert_raises(ValueError, dpnp_func, a_dp, UPLO="N")
-
-
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-def test_eigvals(type):
-    if dpctl.SyclDevice().device_type != dpctl.device_type.gpu:
-        pytest.skip(
-            "eigvals function doesn't work on CPU: https://github.com/IntelPython/dpnp/issues/1005"
-        )
-    arrays = [[[0, 0], [0, 0]], [[1, 2], [1, 2]], [[1, 2], [3, 4]]]
-    for array in arrays:
-        a = numpy.array(array, dtype=type)
-        ia = inp.array(a)
-        result = inp.linalg.eigvals(ia)
-        expected = numpy.linalg.eigvals(a)
-        assert_allclose(expected, result, atol=0.5)
+        if func in ("eigh", "eigvalsh"):
+            assert_raises(ValueError, dpnp_func, a_dp, UPLO="N")
 
 
 class TestInv:
