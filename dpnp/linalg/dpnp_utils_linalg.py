@@ -1824,6 +1824,7 @@ def dpnp_solve(a, b):
         return dpnp.empty_like(b, dtype=res_type, usm_type=res_usm_type)
 
     if a.ndim > 2:
+        is_cpu_device = exec_q.sycl_device.has_aspect_cpu
         reshape = False
         orig_shape_b = b_shape
         if a.ndim > 3:
@@ -1850,22 +1851,27 @@ def dpnp_solve(a, b):
         for i in range(batch_size):
             # oneMKL LAPACK assumes fortran-like array as input, so
             # allocate a memory with 'F' order for dpnp array of coefficient matrix
-            # and multiple dependent variables array
             coeff_vecs[i] = dpnp.empty_like(
                 a[i], order="F", dtype=res_type, usm_type=res_usm_type
             )
-            val_vecs[i] = dpnp.empty_like(
-                b[i], order="F", dtype=res_type, usm_type=res_usm_type
-            )
 
             # use DPCTL tensor function to fill the coefficient matrix array
-            # and the array of multiple dependent variables with content
-            # from the input arrays
+            # with content from the input array
             a_ht_copy_ev[i], a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=a_usm_arr[i],
                 dst=coeff_vecs[i].get_array(),
                 sycl_queue=a.sycl_queue,
             )
+
+            # oneMKL LAPACK assumes fortran-like array as input, so
+            # allocate a memory with 'F' order for dpnp array of multiple
+            # dependent variables array
+            val_vecs[i] = dpnp.empty_like(
+                b[i], order="F", dtype=res_type, usm_type=res_usm_type
+            )
+
+            # use DPCTL tensor function to fill the array of multiple dependent
+            # variables with content from the input arrays
             b_ht_copy_ev[i], b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=b_usm_arr[i],
                 dst=val_vecs[i].get_array(),
@@ -1881,6 +1887,15 @@ def dpnp_solve(a, b):
                 val_vecs[i].get_array(),
                 depends=[a_copy_ev, b_copy_ev],
             )
+
+            # TODO: Remove this w/a when MKLD-17201 is solved.
+            # Waiting for a host task executing an OneMKL LAPACK gesv call
+            # on CPU causes deadlock due to serialization of all host tasks
+            # in the queue.
+            # We need to wait for each host tasks before calling _gesv to avoid deadlock.
+            if is_cpu_device:
+                ht_lapack_ev[i].wait()
+                b_ht_copy_ev[i].wait()
 
         for i in range(batch_size):
             ht_lapack_ev[i].wait()
