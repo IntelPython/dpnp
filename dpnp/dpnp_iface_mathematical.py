@@ -145,7 +145,7 @@ def _append_to_diff_array(a, axis, combined, values):
 
     """
 
-    dpnp.check_supported_arrays_type(values, scalar_type=True)
+    dpnp.check_supported_arrays_type(values, scalar_type=True, all_scalars=True)
     if dpnp.isscalar(values):
         values = dpnp.asarray(
             values, sycl_queue=a.sycl_queue, usm_type=a.usm_type
