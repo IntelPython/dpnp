@@ -66,17 +66,17 @@ Sums, products, differences
 
    dpnp.prod
    dpnp.sum
+   dpnp.nanprod
+   dpnp.nansum
    dpnp.cumprod
    dpnp.cumsum
    dpnp.nancumprod
    dpnp.nancumsum
-   dpnp.nansum
-   dpnp.nanprod
-   dpnp.cross
    dpnp.diff
    dpnp.ediff1d
    dpnp.gradient
    dpnp.trapz
+   dpnp.cross
 
 
 Exponents and logarithms
