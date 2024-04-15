@@ -169,8 +169,8 @@ def dot(a, b, out=None):
 
 def einsum(*operands, out=None, optimize=False, **kwargs):
     """
-    einsum(subscripts, *operands, out=None, dtype=None, order="K",
-           casting="safe", optimize=False)
+    einsum(subscripts, *operands, out=None, dtype=None, order="K", \
+        casting="safe", optimize=False)
 
     Evaluates the Einstein summation convention on the operands.
 
@@ -191,27 +191,28 @@ def einsum(*operands, out=None, optimize=False, **kwargs):
         If provided, forces the calculation to use the data type specified.
         Default is ``None``.
     order : {"C", "F", "A", "K"}, optional
-        Controls the memory layout of the output. "C" means it should
-        be C-contiguous. "F" means it should be F-contiguous,
-        "A" means it should be "F" if the inputs are all "F", "C" otherwise.
-        "K" means it should be as close to the layout as the inputs as
+        Controls the memory layout of the output. ``"C"`` means it should be
+        C-contiguous. ``"F"`` means it should be F-contiguous, ``"A"`` means
+        it should be ``"F"`` if the inputs are all ``"F"``, ``"C"`` otherwise.
+        ``"K"`` means it should be as close to the layout as the inputs as
         is possible, including arbitrarily permuted axes.
         Default is ``"K"``.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur. Setting this to
-        "unsafe" is not recommended, as it can adversely affect accumulations.
+        ``"unsafe"`` is not recommended, as it can adversely affect
+        accumulations.
 
-          * "no" means the data types should not be cast at all.
-          * "equiv" means only byte-order changes are allowed.
-          * "safe" means only casts which can preserve values are allowed.
-          * "same_kind" means only safe casts or casts within a kind,
+          * ``"no"`` means the data types should not be cast at all.
+          * ``"equiv"`` means only byte-order changes are allowed.
+          * ``"safe"`` means only casts which can preserve values are allowed.
+          * ``"same_kind"`` means only safe casts or casts within a kind,
             like float64 to float32, are allowed.
-          * "unsafe" means any data conversions may be done.
+          * ``"unsafe"`` means any data conversions may be done.
 
         Default is ``"safe"``.
     optimize : {False, True, "greedy", "optimal"}, optional
         Controls if intermediate optimization should occur. No optimization
-        will occur if ``False`` and ``True`` will default to the "greedy"
+        will occur if ``False`` and ``True`` will default to the ``"greedy"``
         algorithm. Also accepts an explicit contraction list from the
         :obj:`dpnp.einsum_path` function. Default is ``False``.
 
@@ -383,8 +384,8 @@ def einsum(*operands, out=None, optimize=False, **kwargs):
 
     >>> a = np.ones(64000).reshape(20, 40, 80)
 
-    (benchmarked on 12th Gen Intel(R) Core(TM) i7-1265U.)
-    Basic `einsum`: 146 ms ± 23.5 ms per loop
+    Basic `einsum`: 146 ms ± 23.5 ms per loop (benchmarked on 12th
+    Gen Intel® Core™ i7-1265U)
 
     >>> %timeit -r 10 -n 50 np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a)
 
@@ -462,17 +463,17 @@ def einsum_path(*operands, optimize="greedy", einsum_call=False):
           contraction path
         * if ``False`` or ``None`` no optimization is taken
         * if ``True`` defaults to the "greedy" algorithm
-        * "optimal" is an algorithm that combinatorially explores all possible
-          ways of contracting the listed tensors and chooses the least costly
-          path. Scales exponentially with the number of terms in the
-          contraction.
-        * "greedy" is an algorithm that chooses the best pair contraction
+        * ``"optimal"`` is an algorithm that combinatorially explores all
+          possible ways of contracting the listed tensors and chooses the
+          least costly path. Scales exponentially with the number of terms
+          in the contraction.
+        * ``"greedy"`` is an algorithm that chooses the best pair contraction
           at each step. Effectively, this algorithm searches the largest inner,
           Hadamard, and then outer products at each step. Scales cubically with
-          the number of terms in the contraction. Equivalent to the "optimal"
-          path for most contractions.
+          the number of terms in the contraction. Equivalent to the
+          ``"optimal"`` path for most contractions.
 
-        Default is "greedy".
+        Default is ``"greedy"``.
 
     Returns
     -------
