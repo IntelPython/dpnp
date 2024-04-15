@@ -1206,7 +1206,6 @@ def dpnp_lstsq(a, b, rcond=None):
     """
 
     new_version = True
-    gels_batch = True
 
     if not new_version:
         # fix 0-dim
@@ -1254,7 +1253,7 @@ def dpnp_lstsq(a, b, rcond=None):
             resids = dpnp.atleast_1d(_nrm2_last_axis(e.T))
         return x, resids, rank, s
 
-    elif not gels_batch: # mkl call
+    else : # mkl call
         a_usm_arr = dpnp.get_usm_ndarray(a)
         a_sycl_queue = a.sycl_queue
         a_usm_type = a.usm_type
@@ -1299,7 +1298,10 @@ def dpnp_lstsq(a, b, rcond=None):
             a_sycl_queue, a_t.get_array(), tau_h.get_array(), [a_copy_ev]
         )
 
-        ht_list_ev = [ht_geqrf_ev, a_ht_copy_ev]
+        ht_geqrf_ev.wait()
+        # return a_t, tau_h
+
+        ht_list_ev = [ht_geqrf_ev, a_ht_copy_ev, b_ht_copy_ev]
 
         # Call the LAPACK extension function _ormqr to multiply the QR factorization
         # of a general m x n matrix.
@@ -1307,6 +1309,11 @@ def dpnp_lstsq(a, b, rcond=None):
             a_sycl_queue, m, n, k, a_t.get_array(), tau_h.get_array(),
             b_t.get_array(), [b_copy_ev, geqrf_ev]
         )
+
+        ht_ormqr_ev.wait()
+        b_ht_copy_ev.wait()
+
+        return a_t, b_t
 
         ht_list_ev.append(ht_ormqr_ev)
 
@@ -1321,9 +1328,6 @@ def dpnp_lstsq(a, b, rcond=None):
         dpctl.SyclEvent.wait_for(ht_list_ev)
 
         return a_t, b_t
-
-    else:
-        pass
 
 
 def dpnp_matrix_power(a, n):

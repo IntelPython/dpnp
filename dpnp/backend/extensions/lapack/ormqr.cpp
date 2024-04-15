@@ -257,7 +257,8 @@ std::pair<sycl::event, sycl::event>
     const std::int64_t lda = std::max<size_t>(1UL, m);
     const std::int64_t ldc = std::max<size_t>(1UL, n);
 
-    oneapi::mkl::transpose trans = oneapi::mkl::transpose::T;
+    //should be T according to mkl
+    oneapi::mkl::transpose trans = oneapi::mkl::transpose::N;
     oneapi::mkl::side side = oneapi::mkl::side::left;
 
     std::vector<sycl::event> host_task_events;

@@ -307,7 +307,7 @@ def tril(x1, /, *, k=0):
 
 def triu(x1, /, *, k=0):
     """Creates `dpnp_array` as upper triangular part of an input array."""
-    array_obj = dpt.triu(dpnp.get_usm_ndarray(x1), k)
+    array_obj = dpt.triu(dpnp.get_usm_ndarray(x1), k=k)
     return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
 
 
