@@ -64,23 +64,22 @@ struct DotTypePairSupportFactory
 
 /**
  * @brief A factory to define pairs of supported types for which
- * MKL BLAS library provides support in oneapi::mkl::blas::dotc<Tab, Tc>
+ * MKL BLAS library provides support in oneapi::mkl::blas::dotc<T>
  * function.
  *
- * @tparam Tab Type of arrays containing input vectors A and B.
- * @tparam Tc Type of array containing output.
+ * @tparam T Type of input and output arrays.
  */
-template <typename Tab, typename Tc>
+template <typename T>
 struct DotcTypePairSupportFactory
 {
     static constexpr bool is_defined = std::disjunction<
-        dpctl_td_ns::TypePairDefinedEntry<Tab,
+        dpctl_td_ns::TypePairDefinedEntry<T,
                                           std::complex<float>,
-                                          Tc,
+                                          T,
                                           std::complex<float>>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab,
+        dpctl_td_ns::TypePairDefinedEntry<T,
                                           std::complex<double>,
-                                          Tc,
+                                          T,
                                           std::complex<double>>,
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
@@ -88,23 +87,22 @@ struct DotcTypePairSupportFactory
 
 /**
  * @brief A factory to define pairs of supported types for which
- * MKL BLAS library provides support in oneapi::mkl::blas::dotu<Tab, Tc>
+ * MKL BLAS library provides support in oneapi::mkl::blas::dotu<T>
  * function.
  *
- * @tparam Tab Type of arrays containing input vectors A and B.
- * @tparam Tc Type of array containing output.
+ * @tparam T Type of input and output arrays.
  */
-template <typename Tab, typename Tc>
+template <typename T>
 struct DotuTypePairSupportFactory
 {
     static constexpr bool is_defined = std::disjunction<
-        dpctl_td_ns::TypePairDefinedEntry<Tab,
+        dpctl_td_ns::TypePairDefinedEntry<T,
                                           std::complex<float>,
-                                          Tc,
+                                          T,
                                           std::complex<float>>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab,
+        dpctl_td_ns::TypePairDefinedEntry<T,
                                           std::complex<double>,
-                                          Tc,
+                                          T,
                                           std::complex<double>>,
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;

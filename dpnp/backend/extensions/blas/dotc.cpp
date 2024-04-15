@@ -58,7 +58,7 @@ typedef sycl::event (*dotc_impl_fn_ptr_t)(sycl::queue &,
 static dotc_impl_fn_ptr_t dotc_dispatch_table[dpctl_td_ns::num_types]
                                              [dpctl_td_ns::num_types];
 
-template <typename Tab, typename Tc>
+template <typename T>
 static sycl::event dotc_impl(sycl::queue &exec_q,
                              const std::int64_t n,
                              char *vectorX,
@@ -68,8 +68,7 @@ static sycl::event dotc_impl(sycl::queue &exec_q,
                              char *result,
                              const std::vector<sycl::event> &depends)
 {
-    type_utils::validate_type_for_device<Tab>(exec_q);
-    type_utils::validate_type_for_device<Tc>(exec_q);
+    type_utils::validate_type_for_device<T>(exec_q);
 
     T *x = reinterpret_cast<T *>(vectorX);
     T *y = reinterpret_cast<T *>(vectorY);
@@ -168,17 +167,15 @@ std::pair<sycl::event, sycl::event>
     int vectorY_typenum = vectorY.get_typenum();
     int result_typenum = result.get_typenum();
 
-    if (vectorX_typenum != vectorY_typenum) {
-        throw py::value_error(
-            "Input arrays must be of must be of the same type.");
+    if (result_typenum != vectorY_typenum || result_typenum != vectorX_typenum)
+    {
+        throw py::value_error("Given arrays must be of the same type.");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int vectorXB_type_id = array_types.typenum_to_lookup_id(vectorX_typenum);
-    int result_type_id = array_types.typenum_to_lookup_id(result_typenum);
+    int type_id = array_types.typenum_to_lookup_id(result_typenum);
 
-    dotc_impl_fn_ptr_t dotc_fn =
-        dotc_dispatch_table[vectorXB_type_id][result_type_id];
+    dotc_impl_fn_ptr_t dotc_fn = dotc_dispatch_table[type_id][type_id];
     if (dotc_fn == nullptr) {
         throw py::value_error(
             "Types of input vectors and result array are mismatched.");
@@ -212,13 +209,13 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(args_ev, dotc_ev);
 }
 
-template <typename fnT, typename Tab, typename Tc>
+template <typename fnT, typename varT, typename none>
 struct DotcContigFactory
 {
     fnT get()
     {
-        if constexpr (types::DotcTypePairSupportFactory<Tab, Tc>::is_defined) {
-            return dotc_impl<Tab, Tc>;
+        if constexpr (types::DotcTypePairSupportFactory<varT>::is_defined) {
+            return dotc_impl<varT>;
         }
         else {
             return nullptr;
