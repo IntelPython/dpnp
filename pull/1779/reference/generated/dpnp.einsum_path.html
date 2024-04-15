@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.einsum_path &mdash; Data Parallel Extension for NumPy 0.15.0dev1+27.g91e697987 documentation</title>
+  <title>dpnp.einsum_path &mdash; Data Parallel Extension for NumPy 0.15.0dev1+27.geb2cfc4016 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=a76874aa"></script>
+        <script src="../../_static/documentation_options.js?v=6ccf44e6"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+27.g91e697987
+                0.15.0dev1+27.geb2cfc4016
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -147,17 +147,17 @@ as a maximum intermediate size.</p>
 contraction path</p></li>
 <li><p>if <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> no optimization is taken</p></li>
 <li><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code> defaults to the “greedy” algorithm</p></li>
-<li><p>”optimal” is an algorithm that combinatorially explores all possible
-ways of contracting the listed tensors and chooses the least costly
-path. Scales exponentially with the number of terms in the
-contraction.</p></li>
-<li><p>”greedy” is an algorithm that chooses the best pair contraction
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;optimal&quot;</span></code> is an algorithm that combinatorially explores all
+possible ways of contracting the listed tensors and chooses the
+least costly path. Scales exponentially with the number of terms
+in the contraction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;greedy&quot;</span></code> is an algorithm that chooses the best pair contraction
 at each step. Effectively, this algorithm searches the largest inner,
 Hadamard, and then outer products at each step. Scales cubically with
-the number of terms in the contraction. Equivalent to the “optimal”
-path for most contractions.</p></li>
+the number of terms in the contraction. Equivalent to the
+<code class="docutils literal notranslate"><span class="pre">&quot;optimal&quot;</span></code> path for most contractions.</p></li>
 </ul>
-<p>Default is “greedy”.</p>
+<p>Default is <code class="docutils literal notranslate"><span class="pre">&quot;greedy&quot;</span></code>.</p>
 </p></li>
 </ul>
 </dd>

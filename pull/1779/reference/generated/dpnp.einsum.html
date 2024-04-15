@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.einsum &mdash; Data Parallel Extension for NumPy 0.15.0dev1+27.g91e697987 documentation</title>
+  <title>dpnp.einsum &mdash; Data Parallel Extension for NumPy 0.15.0dev1+27.geb2cfc4016 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=a76874aa"></script>
+        <script src="../../_static/documentation_options.js?v=6ccf44e6"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+27.g91e697987
+                0.15.0dev1+27.geb2cfc4016
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -127,12 +127,8 @@
 <h1>dpnp.einsum<a class="headerlink" href="#dpnp-einsum" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.einsum">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">einsum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">operands</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_linearalgebra.html#einsum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.einsum" title="Link to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>einsum(subscripts, <a href="#id1"><span class="problematic" id="id2">*</span></a>operands, out=None, dtype=None, order=”K”,</dt><dd><p>casting=”safe”, optimize=False)</p>
-</dd>
-</dl>
-<p>Evaluates the Einstein summation convention on the operands.</p>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">einsum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subscripts</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">operands</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'safe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_linearalgebra.html#einsum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.einsum" title="Link to this definition"></a></dt>
+<dd><p>Evaluates the Einstein summation convention on the operands.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.einsum.html#numpy.einsum" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.einsum</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -145,28 +141,29 @@ included as well as subscript labels of the precise output form.</p></li>
 <li><p><strong>out</strong> (<em>{dpnp.ndarrays</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) – If provided, the calculation is done into this array.</p></li>
 <li><p><strong>dtype</strong> (<em>{dtype</em><em>, </em><em>None}</em><em>, </em><em>optional</em>) – If provided, forces the calculation to use the data type specified.
 Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) – Controls the memory layout of the output. “C” means it should
-be C-contiguous. “F” means it should be F-contiguous,
-“A” means it should be “F” if the inputs are all “F”, “C” otherwise.
-“K” means it should be as close to the layout as the inputs as
+<li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) – Controls the memory layout of the output. <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> means it should be
+C-contiguous. <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> means it should be F-contiguous, <code class="docutils literal notranslate"><span class="pre">&quot;A&quot;</span></code> means
+it should be <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> if the inputs are all <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> otherwise.
+<code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code> means it should be as close to the layout as the inputs as
 is possible, including arbitrarily permuted axes.
 Default is <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>.</p></li>
 <li><p><strong>casting</strong> (<em>{&quot;no&quot;</em><em>, </em><em>&quot;equiv&quot;</em><em>, </em><em>&quot;safe&quot;</em><em>, </em><em>&quot;same_kind&quot;</em><em>, </em><em>&quot;unsafe&quot;}</em><em>, </em><em>optional</em>) – <p>Controls what kind of data casting may occur. Setting this to
-“unsafe” is not recommended, as it can adversely affect accumulations.</p>
+<code class="docutils literal notranslate"><span class="pre">&quot;unsafe&quot;</span></code> is not recommended, as it can adversely affect
+accumulations.</p>
 <blockquote>
 <div><ul>
-<li><p>”no” means the data types should not be cast at all.</p></li>
-<li><p>”equiv” means only byte-order changes are allowed.</p></li>
-<li><p>”safe” means only casts which can preserve values are allowed.</p></li>
-<li><p>”same_kind” means only safe casts or casts within a kind,
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;no&quot;</span></code> means the data types should not be cast at all.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;equiv&quot;</span></code> means only byte-order changes are allowed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;safe&quot;</span></code> means only casts which can preserve values are allowed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;same_kind&quot;</span></code> means only safe casts or casts within a kind,
 like float64 to float32, are allowed.</p></li>
-<li><p>”unsafe” means any data conversions may be done.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;unsafe&quot;</span></code> means any data conversions may be done.</p></li>
 </ul>
 </div></blockquote>
 <p>Default is <code class="docutils literal notranslate"><span class="pre">&quot;safe&quot;</span></code>.</p>
 </p></li>
 <li><p><strong>optimize</strong> (<em>{False</em><em>, </em><em>True</em><em>, </em><em>&quot;greedy&quot;</em><em>, </em><em>&quot;optimal&quot;}</em><em>, </em><em>optional</em>) – Controls if intermediate optimization should occur. No optimization
-will occur if <code class="docutils literal notranslate"><span class="pre">False</span></code> and <code class="docutils literal notranslate"><span class="pre">True</span></code> will default to the “greedy”
+will occur if <code class="docutils literal notranslate"><span class="pre">False</span></code> and <code class="docutils literal notranslate"><span class="pre">True</span></code> will default to the <code class="docutils literal notranslate"><span class="pre">&quot;greedy&quot;</span></code>
 algorithm. Also accepts an explicit contraction list from the
 <a class="reference internal" href="dpnp.einsum_path.html#dpnp.einsum_path" title="dpnp.einsum_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.einsum_path</span></code></a> function. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 </ul>
@@ -348,8 +345,8 @@ larger arrays:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">64000</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>(benchmarked on 12th Gen Intel(R) Core(TM) i7-1265U.)
-Basic <cite>einsum</cite>: 146 ms ± 23.5 ms per loop</p>
+<p>Basic <cite>einsum</cite>: 146 ms ± 23.5 ms per loop (benchmarked on 12th
+Gen Intel® Core™ i7-1265U)</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="o">-</span><span class="n">r</span> <span class="mi">10</span> <span class="o">-</span><span class="n">n</span> <span class="mi">50</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
 </pre></div>
 </div>
