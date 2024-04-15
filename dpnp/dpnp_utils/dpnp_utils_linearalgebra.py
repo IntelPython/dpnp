@@ -53,13 +53,14 @@ def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
         x1_usm = dpnp.get_usm_ndarray(x1)
         x2_usm = dpnp.get_usm_ndarray(x2)
         out_usm = dpnp.get_usm_ndarray(out)
+        contig_flag = _define_contig_flag(out)
 
         if (
             out.dtype == dtype
             and out.shape == shape
             and out.usm_type == usm_type
             and out.sycl_queue == sycl_queue
-            and out.flags.c_contiguous
+            and contig_flag
             and not ti._array_overlap(x1_usm, out_usm)
             and not ti._array_overlap(x2_usm, out_usm)
         ):
@@ -73,20 +74,20 @@ def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
     )
 
 
-def _copy_array(x, dep_events, host_events, contig_copy=False, dtype=None):
+def _copy_array(x, dep_events, host_events, copy_flag=False, dtype=None):
     """
     Creating a copy of input array if needed.
 
-    If `contig_copy` is ``True``, a C-contiguous copy of input array is returned.
+    If `copy_flag` is ``True``, a C-contiguous copy of input array is returned.
     In this case, the copy array has the input array data type unless `dtype` is
     determined.
-    If `contig_copy` is ``False`` and input array data type is different than `dtype`,
+    If `copy_flag` is ``False`` and input array data type is different than `dtype`,
     a C-contiguous copy of input array with specified `dtype` is returned.
 
     """
 
-    if contig_copy:
-        copy = contig_copy
+    if copy_flag:
+        copy = copy_flag
     else:
         copy = x.dtype != dtype if dtype is not None else False
 
@@ -103,60 +104,59 @@ def _copy_array(x, dep_events, host_events, contig_copy=False, dtype=None):
     return x
 
 
-def _gemm_batch_matmul(exec_q, x1, x2, res, x1_is_2D, x2_is_2D, dev_tasks_list):
-    # If input array is F-contiguous, we need to change the order to C-contiguous.
-    # because mkl::gemm_bacth needs each 2D array to be F-contiguous but
-    # when the input array is F-contiguous, the data of 2D array
-    # that needs to be called in mkl::gemm_batch are not contiguous.
+def _define_contig_flag(x):
+    """
+    Determines if the data in last two dimensions of array `x` are
+    c_contiguous or f_contiguous. For 2D arrays, it is the same as using
+    x.flags.c_contiguous or x.flags.f_contiguous.
+    """
+
+    flag = False
+    x_strides = x.strides
+    x_shape = x.shape
+    if x.ndim == 1:
+        return True
+    else:
+        x_is_c_contiguous = x_strides[-1] == 1 and x_strides[-2] == x_shape[-1]
+        x_is_f_contiguous = x_strides[-2] == 1 and x_strides[-1] == x_shape[-2]
+        if x_is_c_contiguous or x_is_f_contiguous:
+            flag = True
+        return flag
+
+
+def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
+    # arrays here are already at least 3D, make them 3D
+    x1 = x1.reshape(-1, x1.shape[-2], x1.shape[-1])
+    x2 = x2.reshape(-1, x2.shape[-2], x2.shape[-1])
+    orig_shape = res.shape
+    res = res.reshape(-1, res.shape[-2], res.shape[-1])
+
     ht_tasks_list = []
-    contig_copy = not x1.flags.c_contiguous
-    x1 = _copy_array(x1, dev_tasks_list, ht_tasks_list, contig_copy=contig_copy)
-    contig_copy = not x2.flags.c_contiguous
-    x2 = _copy_array(x2, dev_tasks_list, ht_tasks_list, contig_copy=contig_copy)
-
-    x1_strides = x1.strides
-    x2_strides = x2.strides
-    res_strides = res.strides
-
-    # need to standardize to use in ti._contract_iter2
-    x1_strides = _standardize_strides(x1_strides, x1_is_2D, x1.shape, x1.ndim)
-    x2_strides = _standardize_strides(x2_strides, x2_is_2D, x2.shape, x2.ndim)
-
-    batch_size = res.shape[:-2][0]
-    stridea = x1_strides[0]
-    strideb = x2_strides[0]
-    stridec = res_strides[-3]
-
-    if x1.ndim > 3:
-        iter = ti._contract_iter2(
-            res.shape[:-2], x1_strides[:-2], x2_strides[:-2]
-        )
-
-        if len(iter[0]) != 1:
-            raise ValueError("Input arrays cannot be used in gemm_batch")
-        batch_size = iter[0][0]
-        stridea = iter[1][0]
-        strideb = iter[3][0]
+    # gemm_batch does not handle negative strides, make a copy if needed
+    x1 = _copy_array(
+        x1, dev_tasks_list, ht_tasks_list, copy_flag=x1.strides[0] < 0
+    )
+    x2 = _copy_array(
+        x2, dev_tasks_list, ht_tasks_list, copy_flag=x2.strides[0] < 0
+    )
+    res = _copy_array(
+        res, dev_tasks_list, ht_tasks_list, copy_flag=res.strides[0] < 0
+    )
 
     ht_blas_ev, _ = bi._gemm_batch(
         exec_q,
         dpnp.get_usm_ndarray(x1),
         dpnp.get_usm_ndarray(x2),
         dpnp.get_usm_ndarray(res),
-        batch_size,
-        stridea,
-        strideb,
-        stridec,
         dev_tasks_list,
     )
+    res = res.reshape(orig_shape)
 
     return ht_blas_ev, ht_tasks_list, res
 
 
-def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
+def _compute_res_dtype(*arrays, dtype, casting, sycl_queue):
     """
-    _op_res_dtype(*arrays, dtype, casting, sycl_queue)
-
     Determines the output array data type and an intermediate data type
     used in performing calculations related to a specific math function.
     If dtype is ``None``, the output array data type of the operation is
@@ -183,9 +183,9 @@ def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
 
     Returns
     -------
-    op_dtype, res_dtype :
-        `op_dtype` is the data type used in performing math function calculations.
-        The input arrays of the math function are cast to `op_dtype` and then
+    compute_dtype, res_dtype :
+        `compute_dtype` is the data type used in performing math function calculations.
+        The input arrays of the math function are cast to `compute_dtype` and then
         the calculations are performed.
         `res_dtype` is the output data type. When the result is obtained, it is cast
         to `res_dtype`.
@@ -203,11 +203,11 @@ def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
                 f"Cannot cast from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
             )
 
-    op_dtype = (
+    compute_dtype = (
         res_dtype if dpnp.issubdtype(res_dtype, dpnp.inexact) else default_dtype
     )
 
-    return op_dtype, res_dtype
+    return compute_dtype, res_dtype
 
 
 def _shape_error(a, b, core_dim, err_msg):
@@ -233,37 +233,6 @@ def _shape_error(a, b, core_dim, err_msg):
             "Output array could not be broadcast to input arrays with remapped shapes, "
             f"{a} is different from {b}."
         )
-
-
-def _standardize_strides(strides, inherently_2D, shape, ndim):
-    """
-    Standardizing the strides.
-
-    When shape of an array along any particular dimension is 1, the stride
-    along that dimension is undefined. This functions standardize the strides
-    in the following way:
-    For N-D arrays that are inherently 2D (all dimesnsion are one except for two of them),
-    we use zero as the stride for dimensions equal one.
-    For other N-D arrays, the non-zero value of strides is calculated and used.
-
-    """
-
-    if inherently_2D:
-        stndrd_strides = tuple(
-            str_i if sh_i > 1 else 0 for sh_i, str_i in zip(shape, strides)
-        )
-    else:
-        stndrd_strides = [
-            numpy.prod(shape[i + 1 :]) if strides[i] == 0 else strides[i]
-            for i in range(ndim - 1)
-        ]
-        # last dimension
-        stndrd_strides.append(
-            1 if strides[ndim - 1] == 0 else strides[ndim - 1]
-        )
-        stndrd_strides = tuple(stndrd_strides)
-
-    return stndrd_strides
 
 
 def _validate_axes(x1, x2, axes):
@@ -529,7 +498,7 @@ def dpnp_dot(a, b, /, out=None, *, conjugate=False):
 
     # Determine the appropriate data types
     # casting is irrelevant here since dtype is `None`
-    dot_dtype, res_dtype = _op_res_dtype(
+    dot_dtype, res_dtype = _compute_res_dtype(
         a, b, dtype=None, casting="no", sycl_queue=exec_q
     )
 
@@ -663,7 +632,7 @@ def dpnp_matmul(
                     _shape_error(out_shape[-1], x2_shape[-1], 0, 1)
 
     # Determine the appropriate data types
-    gemm_dtype, res_dtype = _op_res_dtype(
+    gemm_dtype, res_dtype = _compute_res_dtype(
         x1, x2, dtype=dtype, casting=casting, sycl_queue=exec_q
     )
 
@@ -734,24 +703,24 @@ def dpnp_matmul(
     elif x1.size == 0 or x2.size == 0:
         result.fill(0)
     else:
-        # input arrays should have the proper data type
-        # and be C_CONTIGUOUS or F_CONTIGUOUS
+        # input arrays should have the proper data type and
+        # their base (last 2-dimensions) to be c-contiguous or f-contiguous
         dep_events_list = []
         host_tasks_list = []
-        contig_copy = not (x1.flags.c_contiguous or x1.flags.f_contiguous)
+        contig_flag = _define_contig_flag(x1)
         x1 = _copy_array(
             x1,
             dep_events_list,
             host_tasks_list,
-            contig_copy=contig_copy,
+            copy_flag=not contig_flag,
             dtype=gemm_dtype,
         )
-        contig_copy = not (x2.flags.c_contiguous or x2.flags.f_contiguous)
+        contig_flag = _define_contig_flag(x2)
         x2 = _copy_array(
             x2,
             dep_events_list,
             host_tasks_list,
-            contig_copy=contig_copy,
+            copy_flag=not contig_flag,
             dtype=gemm_dtype,
         )
 
@@ -778,8 +747,6 @@ def dpnp_matmul(
                 x1,
                 x2,
                 result,
-                x1_is_2D,
-                x2_is_2D,
                 dep_events_list,
             )
             host_tasks_list += ht_copy_ev

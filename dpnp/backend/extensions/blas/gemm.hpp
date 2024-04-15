@@ -50,10 +50,6 @@ extern std::pair<sycl::event, sycl::event>
                dpctl::tensor::usm_ndarray matrixA,
                dpctl::tensor::usm_ndarray matrixB,
                dpctl::tensor::usm_ndarray resultC,
-               const std::int64_t batch_size,
-               size_t stridea,
-               size_t strideb,
-               size_t stridec,
                const std::vector<sycl::event> &depends);
 
 extern void init_gemm_dispatch_table(void);

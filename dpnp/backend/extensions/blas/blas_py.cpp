@@ -64,13 +64,13 @@ PYBIND11_MODULE(_blas_impl, m)
                                           blas_ext::DotContigFactory>(
             dot_dispatch_vector);
 
-        auto dot_pypi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
-                            arrayT dst, const event_vecT &depends = {}) {
+        auto dot_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                             arrayT dst, const event_vecT &depends = {}) {
             return dot_ext::dot_func(exec_q, src1, src2, dst, depends,
                                      dot_dispatch_vector);
         };
 
-        m.def("_dot", dot_pypi,
+        m.def("_dot", dot_pyapi,
               "Call `dot` from OneMKL BLAS library to return "
               "the dot product of two real-valued vectors.",
               py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
@@ -82,13 +82,13 @@ PYBIND11_MODULE(_blas_impl, m)
                                           blas_ext::DotcContigFactory>(
             dotc_dispatch_vector);
 
-        auto dotc_pypi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
-                             arrayT dst, const event_vecT &depends = {}) {
+        auto dotc_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                              arrayT dst, const event_vecT &depends = {}) {
             return dot_ext::dot_func(exec_q, src1, src2, dst, depends,
                                      dotc_dispatch_vector);
         };
 
-        m.def("_dotc", dotc_pypi,
+        m.def("_dotc", dotc_pyapi,
               "Call `dotc` from OneMKL BLAS library to return "
               "the dot product of two complex vectors, "
               "conjugating the first vector.",
@@ -101,13 +101,13 @@ PYBIND11_MODULE(_blas_impl, m)
                                           blas_ext::DotuContigFactory>(
             dotu_dispatch_vector);
 
-        auto dotu_pypi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
-                             arrayT dst, const event_vecT &depends = {}) {
+        auto dotu_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                              arrayT dst, const event_vecT &depends = {}) {
             return dot_ext::dot_func(exec_q, src1, src2, dst, depends,
                                      dotu_dispatch_vector);
         };
 
-        m.def("_dotu", dotu_pypi,
+        m.def("_dotu", dotu_pyapi,
               "Call `dotu` from OneMKL BLAS library to return "
               "the dot product of two complex vectors.",
               py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
@@ -119,7 +119,7 @@ PYBIND11_MODULE(_blas_impl, m)
               "Call `gemm` from OneMKL BLAS library to return "
               "the matrix-matrix product with 2-D matrices.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
-              py::arg("result"), py::arg("depends") = py::list());
+              py::arg("resultC"), py::arg("depends") = py::list());
     }
 
     {
@@ -127,8 +127,6 @@ PYBIND11_MODULE(_blas_impl, m)
               "Call `gemm_batch` from OneMKL BLAS library to return "
               "the matrix-matrix product for a batch of 2-D matrices.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
-              py::arg("result"), py::arg("batch_size"), py::arg("stridea"),
-              py::arg("strideb"), py::arg("stridec"),
-              py::arg("depends") = py::list());
+              py::arg("resultC"), py::arg("depends") = py::list());
     }
 }
