@@ -1170,3 +1170,16 @@ def test_tensorsolve(usm_type_a, usm_type_b):
     assert a.usm_type == usm_type_a
     assert b.usm_type == usm_type_b
     assert result.usm_type == du.get_coerced_usm_type([usm_type_a, usm_type_b])
+
+
+@pytest.mark.parametrize("usm_type_v", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_w", list_of_usm_types, ids=list_of_usm_types)
+def test_histogram(usm_type_v, usm_type_w):
+    v = dp.arange(5, usm_type=usm_type_v)
+    w = dp.arange(7, 12, usm_type=usm_type_w)
+
+    hist, edges = dp.histogram(v, weights=w)
+    assert v.usm_type == usm_type_v
+    assert w.usm_type == usm_type_w
+    assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+    assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])

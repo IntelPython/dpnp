@@ -59,6 +59,7 @@ def _ravel_check_a_and_weights(a, weights):
 
     # ensure that `a` array has supported type
     dpnp.check_supported_arrays_type(a)
+    usm_type = a.usm_type
 
     # ensure that the array is a "subtractable" dtype
     if a.dtype == dpnp.bool:
@@ -73,6 +74,7 @@ def _ravel_check_a_and_weights(a, weights):
     if weights is not None:
         # check that `weights` array has supported type
         dpnp.check_supported_arrays_type(weights)
+        usm_type = dpu.get_coerced_usm_type([usm_type, weights.usm_type])
 
         # check that arrays have the same allocation queue
         if dpu.get_execution_queue([a.sycl_queue, weights.sycl_queue]) is None:
@@ -84,7 +86,7 @@ def _ravel_check_a_and_weights(a, weights):
             raise ValueError("weights should have the same shape as a.")
         weights = weights.ravel()
     a = a.ravel()
-    return a, weights
+    return a, weights, usm_type
 
 
 def _get_outer_edges(a, range):
@@ -124,12 +126,13 @@ def _get_outer_edges(a, range):
     return first_edge, last_edge
 
 
-def _get_bin_edges(a, bins, range):
+def _get_bin_edges(a, bins, range, usm_type):
     """Computes the bins used internally by `histogram`."""
 
     # parse the overloaded bins argument
     n_equal_bins = None
     bin_edges = None
+    sycl_queue = a.sycl_queue
 
     if isinstance(bins, str):
         raise NotImplementedError("only integer and array bins are implemented")
@@ -154,7 +157,7 @@ def _get_bin_edges(a, bins, range):
             bin_edges = bins
         else:
             bin_edges = dpnp.asarray(
-                bins, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+                bins, sycl_queue=sycl_queue, usm_type=usm_type
             )
 
         if dpnp.any(bin_edges[:-1] > bin_edges[1:]):
@@ -172,7 +175,7 @@ def _get_bin_edges(a, bins, range):
         bin_type = dpnp.result_type(first_edge, last_edge, a)
         if dpnp.issubdtype(bin_type, dpnp.integer):
             bin_type = dpnp.result_type(
-                bin_type, dpnp.default_float_type(sycl_queue=a.sycl_queue), a
+                bin_type, dpnp.default_float_type(sycl_queue=sycl_queue), a
             )
 
         # bin edges must be computed
@@ -182,8 +185,8 @@ def _get_bin_edges(a, bins, range):
             n_equal_bins + 1,
             endpoint=True,
             dtype=bin_type,
-            sycl_queue=a.sycl_queue,
-            usm_type=a.usm_type,
+            sycl_queue=sycl_queue,
+            usm_type=usm_type,
         )
         return bin_edges, (first_edge, last_edge, n_equal_bins)
     return bin_edges, None
@@ -285,9 +288,9 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     """
 
-    a, weights = _ravel_check_a_and_weights(a, weights)
+    a, weights, usm_type = _ravel_check_a_and_weights(a, weights)
 
-    bin_edges, uniform_bins = _get_bin_edges(a, bins, range)
+    bin_edges, uniform_bins = _get_bin_edges(a, bins, range, usm_type)
 
     # Histogram is an integer or a float array depending on the weights.
     if weights is None:
@@ -320,7 +323,9 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
                 sa = dpnp.sort(a[i : i + block_size])
                 cum_n += _search_sorted_inclusive(sa, bin_edges)
         else:
-            zero = dpnp.zeros(1, dtype=ntype)
+            zero = dpnp.zeros(
+                1, dtype=ntype, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+            )
             for i in _range(0, len(a), block_size):
                 tmp_a = a[i : i + block_size]
                 tmp_w = weights[i : i + block_size]
