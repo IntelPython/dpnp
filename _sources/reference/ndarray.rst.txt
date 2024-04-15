@@ -115,7 +115,7 @@ For the following methods there are also corresponding functions in
 :func:`diagonal <dpnp.diagonal>`, :func:`imag <dpnp.imag>`,
 :func:`max <dpnp.max>`, :func:`mean <dpnp.mean>`, :func:`min <dpnp.min>`,
 :func:`nonzero <dpnp.nonzero>`, :func:`partition <dpnp.partition>`,
-:func:`prod <dpnp.prod>`, :func:`ptp <dpnp.ptp>`, :func:`put <dpnp.put>`,
+:func:`prod <dpnp.prod>`, :func:`put <dpnp.put>`,
 :func:`ravel <dpnp.ravel>`, :func:`real <dpnp.real>`, :func:`repeat <dpnp.repeat>`,
 :func:`reshape <dpnp.reshape>`, :func:`round <dpnp.around>`,
 :func:`searchsorted <dpnp.searchsorted>`, :func:`sort <dpnp.sort>`,
@@ -204,7 +204,6 @@ Calculation
    dpnp.ndarray.argmax
    dpnp.ndarray.min
    dpnp.ndarray.argmin
-   dpnp.ndarray.ptp
    dpnp.ndarray.clip
    dpnp.ndarray.conj
    dpnp.ndarray.conjugate
