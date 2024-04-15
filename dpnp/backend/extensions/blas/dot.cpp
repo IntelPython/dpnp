@@ -58,7 +58,7 @@ typedef sycl::event (*dot_impl_fn_ptr_t)(sycl::queue &,
 static dot_impl_fn_ptr_t dot_dispatch_table[dpctl_td_ns::num_types]
                                            [dpctl_td_ns::num_types];
 
-template <typename Tab, typename Tc>
+template <typename T>
 static sycl::event dot_impl(sycl::queue &exec_q,
                             const std::int64_t n,
                             char *vectorX,
@@ -68,12 +68,11 @@ static sycl::event dot_impl(sycl::queue &exec_q,
                             char *result,
                             const std::vector<sycl::event> &depends)
 {
-    type_utils::validate_type_for_device<Tab>(exec_q);
-    type_utils::validate_type_for_device<Tc>(exec_q);
+    type_utils::validate_type_for_device<T>(exec_q);
 
-    Tab *x = reinterpret_cast<Tab *>(vectorX);
-    Tab *y = reinterpret_cast<Tab *>(vectorY);
-    Tc *res = reinterpret_cast<Tc *>(result);
+    T *x = reinterpret_cast<T *>(vectorX);
+    T *y = reinterpret_cast<T *>(vectorY);
+    T *res = reinterpret_cast<T *>(result);
 
     std::stringstream error_msg;
     bool is_exception_caught = false;
@@ -167,16 +166,15 @@ std::pair<sycl::event, sycl::event> dot(sycl::queue &exec_q,
     int vectorY_typenum = vectorY.get_typenum();
     int result_typenum = result.get_typenum();
 
-    if (vectorX_typenum != vectorY_typenum) {
-        throw py::value_error("vectorX and vectorY must be of the same type.");
+    if (result_typenum != vectorX_typenum || result_typenum != vectorY_typenum)
+    {
+        throw py::value_error("Given arrays must be of the same type.");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int vectorXB_type_id = array_types.typenum_to_lookup_id(vectorX_typenum);
-    int result_type_id = array_types.typenum_to_lookup_id(result_typenum);
+    int type_id = array_types.typenum_to_lookup_id(vectorX_typenum);
 
-    dot_impl_fn_ptr_t dot_fn =
-        dot_dispatch_table[vectorXB_type_id][result_type_id];
+    dot_impl_fn_ptr_t dot_fn = dot_dispatch_table[type_id][type_id];
     if (dot_fn == nullptr) {
         throw py::value_error(
             "Types of input vectors and result array are mismatched.");
@@ -190,6 +188,7 @@ std::pair<sycl::event, sycl::event> dot(sycl::queue &exec_q,
     std::vector<py::ssize_t> y_stride = vectorY.get_strides_vector();
     const int x_elemsize = vectorX.get_elemsize();
     const int y_elemsize = vectorY.get_elemsize();
+
     const std::int64_t incx = x_stride[0];
     const std::int64_t incy = y_stride[0];
     if (incx < 0) {
@@ -208,13 +207,13 @@ std::pair<sycl::event, sycl::event> dot(sycl::queue &exec_q,
     return std::make_pair(args_ev, dot_ev);
 }
 
-template <typename fnT, typename Tab, typename Tc>
+template <typename fnT, typename varT, typename none>
 struct DotContigFactory
 {
     fnT get()
     {
-        if constexpr (types::DotTypePairSupportFactory<Tab, Tc>::is_defined) {
-            return dot_impl<Tab, Tc>;
+        if constexpr (types::DotTypePairSupportFactory<varT>::is_defined) {
+            return dot_impl<varT>;
         }
         else {
             return nullptr;
