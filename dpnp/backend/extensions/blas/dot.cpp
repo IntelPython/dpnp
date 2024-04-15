@@ -61,18 +61,18 @@ static dot_impl_fn_ptr_t dot_dispatch_table[dpctl_td_ns::num_types]
 template <typename Tab, typename Tc>
 static sycl::event dot_impl(sycl::queue &exec_q,
                             const std::int64_t n,
-                            char *vectorA,
-                            const std::int64_t stride_a,
-                            char *vectorB,
-                            const std::int64_t stride_b,
+                            char *vectorX,
+                            const std::int64_t incx,
+                            char *vectorY,
+                            const std::int64_t incy,
                             char *result,
                             const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<Tab>(exec_q);
     type_utils::validate_type_for_device<Tc>(exec_q);
 
-    Tab *a = reinterpret_cast<Tab *>(vectorA);
-    Tab *b = reinterpret_cast<Tab *>(vectorB);
+    Tab *x = reinterpret_cast<Tab *>(vectorX);
+    Tab *y = reinterpret_cast<Tab *>(vectorY);
     Tc *res = reinterpret_cast<Tc *>(result);
 
     std::stringstream error_msg;
@@ -81,12 +81,12 @@ static sycl::event dot_impl(sycl::queue &exec_q,
     sycl::event dot_event;
     try {
         dot_event = mkl_blas::row_major::dot(exec_q,
-                                             n, // size of the input vectors
-                                             a, // Pointer to vector a.
-                                             stride_a, // Stride of vector a.
-                                             b,        // Pointer to vector b.
-                                             stride_b, // Stride of vector b.
-                                             res,      // Pointer to result.
+                                             n,    // size of the input vectors
+                                             x,    // Pointer to vector x.
+                                             incx, // Stride of vector x.
+                                             y,    // Pointer to vector y.
+                                             incy, // Stride of vector y.
+                                             res,  // Pointer to result.
                                              depends);
     } catch (oneapi::mkl::exception const &e) {
         error_msg
@@ -108,24 +108,24 @@ static sycl::event dot_impl(sycl::queue &exec_q,
 }
 
 std::pair<sycl::event, sycl::event> dot(sycl::queue &exec_q,
-                                        dpctl::tensor::usm_ndarray vectorA,
-                                        dpctl::tensor::usm_ndarray vectorB,
+                                        dpctl::tensor::usm_ndarray vectorX,
+                                        dpctl::tensor::usm_ndarray vectorY,
                                         dpctl::tensor::usm_ndarray result,
                                         const std::vector<sycl::event> &depends)
 {
-    const int vectorA_nd = vectorA.get_ndim();
-    const int vectorB_nd = vectorB.get_ndim();
+    const int vectorX_nd = vectorX.get_ndim();
+    const int vectorY_nd = vectorY.get_ndim();
     const int result_nd = result.get_ndim();
 
-    if ((vectorA_nd != 1)) {
+    if ((vectorX_nd != 1)) {
         throw py::value_error(
-            "The first input array has ndim=" + std::to_string(vectorA_nd) +
+            "The first input array has ndim=" + std::to_string(vectorX_nd) +
             ", but a 1-dimensional array is expected.");
     }
 
-    if ((vectorB_nd != 1)) {
+    if ((vectorY_nd != 1)) {
         throw py::value_error(
-            "The second input array has ndim=" + std::to_string(vectorB_nd) +
+            "The second input array has ndim=" + std::to_string(vectorY_nd) +
             ", but a 1-dimensional array is expected.");
     }
 
@@ -136,77 +136,74 @@ std::pair<sycl::event, sycl::event> dot(sycl::queue &exec_q,
     }
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(vectorA, result)) {
+    if (overlap(vectorX, result)) {
         throw py::value_error(
             "The first input array and output array are overlapping "
             "segments of memory");
     }
-    if (overlap(vectorB, result)) {
+    if (overlap(vectorY, result)) {
         throw py::value_error(
             "The second input array and output array are overlapping "
             "segments of memory");
     }
 
-    // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(
             exec_q,
-            {vectorA.get_queue(), vectorB.get_queue(), result.get_queue()}))
+            {vectorX.get_queue(), vectorY.get_queue(), result.get_queue()}))
     {
         throw py::value_error(
             "USM allocations are not compatible with the execution queue.");
     }
 
-    py::ssize_t a_size = vectorA.get_size();
-    py::ssize_t b_size = vectorB.get_size();
-    if (a_size != b_size) {
+    py::ssize_t x_size = vectorX.get_size();
+    py::ssize_t y_size = vectorY.get_size();
+    const std::int64_t n = x_size;
+    if (x_size != y_size) {
         throw py::value_error("The size of the first input array must be "
                               "equal to the size of the second input array.");
     }
 
-    std::vector<py::ssize_t> a_stride = vectorA.get_strides_vector();
-    std::vector<py::ssize_t> b_stride = vectorB.get_strides_vector();
-
-    const std::int64_t n = a_size;
-    const std::int64_t str_a = a_stride[0];
-    const std::int64_t str_b = b_stride[0];
-
-    int vectorA_typenum = vectorA.get_typenum();
-    int vectorB_typenum = vectorB.get_typenum();
+    int vectorX_typenum = vectorX.get_typenum();
+    int vectorY_typenum = vectorY.get_typenum();
     int result_typenum = result.get_typenum();
 
-    if (vectorA_typenum != vectorB_typenum) {
-        throw py::value_error("vectorA and vectorB must be of the same type.");
+    if (vectorX_typenum != vectorY_typenum) {
+        throw py::value_error("vectorX and vectorY must be of the same type.");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int vectorAB_type_id = array_types.typenum_to_lookup_id(vectorA_typenum);
+    int vectorXB_type_id = array_types.typenum_to_lookup_id(vectorX_typenum);
     int result_type_id = array_types.typenum_to_lookup_id(result_typenum);
 
     dot_impl_fn_ptr_t dot_fn =
-        dot_dispatch_table[vectorAB_type_id][result_type_id];
+        dot_dispatch_table[vectorXB_type_id][result_type_id];
     if (dot_fn == nullptr) {
         throw py::value_error(
             "Types of input vectors and result array are mismatched.");
     }
 
-    char *a_typeless_ptr = vectorA.get_data();
-    char *b_typeless_ptr = vectorB.get_data();
+    char *x_typeless_ptr = vectorX.get_data();
+    char *y_typeless_ptr = vectorY.get_data();
     char *r_typeless_ptr = result.get_data();
 
-    const int a_elemsize = vectorA.get_elemsize();
-    const int b_elemsize = vectorB.get_elemsize();
-    if (str_a < 0) {
-        a_typeless_ptr -= (n - 1) * std::abs(str_a) * a_elemsize;
+    std::vector<py::ssize_t> x_stride = vectorX.get_strides_vector();
+    std::vector<py::ssize_t> y_stride = vectorY.get_strides_vector();
+    const int x_elemsize = vectorX.get_elemsize();
+    const int y_elemsize = vectorY.get_elemsize();
+    const std::int64_t incx = x_stride[0];
+    const std::int64_t incy = y_stride[0];
+    if (incx < 0) {
+        x_typeless_ptr -= (n - 1) * std::abs(incx) * x_elemsize;
     }
-    if (str_b < 0) {
-        b_typeless_ptr -= (n - 1) * std::abs(str_b) * b_elemsize;
+    if (incy < 0) {
+        y_typeless_ptr -= (n - 1) * std::abs(incy) * y_elemsize;
     }
 
-    sycl::event dot_ev = dot_fn(exec_q, n, a_typeless_ptr, str_a,
-                                b_typeless_ptr, str_b, r_typeless_ptr, depends);
+    sycl::event dot_ev = dot_fn(exec_q, n, x_typeless_ptr, incx, y_typeless_ptr,
+                                incy, r_typeless_ptr, depends);
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
-        exec_q, {vectorA, vectorB, result}, {dot_ev});
+        exec_q, {vectorX, vectorY, result}, {dot_ev});
 
     return std::make_pair(args_ev, dot_ev);
 }
