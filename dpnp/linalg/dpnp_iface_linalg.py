@@ -577,12 +577,12 @@ def inv(a):
     array([ True])
 
     Inverses of several matrices can be computed at once:
+
     >>> a = np.array([[[1., 2.], [3., 4.]], [[1, 3], [3, 5]]])
     >>> np.linalg.inv(a)
     array([[[-2.  ,  1.  ],
             [ 1.5 , -0.5 ]],
-
-          [[-1.25,  0.75],
+           [[-1.25,  0.75],
             [ 0.75, -0.25]]])
 
     """

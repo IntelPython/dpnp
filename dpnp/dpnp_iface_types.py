@@ -163,6 +163,7 @@ def finfo(dtype):
     -------
     out : finfo_object
         An object have the following attributes
+
         * bits: int
             number of bits occupied by dtype.
         * dtype: dtype
@@ -212,6 +213,7 @@ def iinfo(dtype):
     -------
     out : iinfo_object
         An object with the following attributes
+
         * bits: int
             number of bits occupied by the data type
         * dtype: dtype
