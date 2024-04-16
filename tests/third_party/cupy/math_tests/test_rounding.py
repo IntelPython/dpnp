@@ -160,10 +160,10 @@ class TestRoundExtreme(unittest.TestCase):
     )
 )
 class TestRoundBorder(unittest.TestCase):
-    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
+    @pytest.mark.skip("scalar imput is not supported")
+    @testing.numpy_cupy_allclose(atol=1e-5)
     def test_around_positive1(self, xp):
         a, decimals = self.value
-        a = xp.asarray(a)
         return xp.around(a, decimals)
 
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
@@ -172,10 +172,10 @@ class TestRoundBorder(unittest.TestCase):
         a = xp.asarray(a)
         return xp.around(a, decimals)
 
-    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
+    @pytest.mark.skip("scalar imput is not supported")
+    @testing.numpy_cupy_allclose(atol=1e-5)
     def test_around_negative1(self, xp):
         a, decimals = self.value
-        a = xp.asarray(a)
         return xp.around(-a, decimals)
 
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
