@@ -186,7 +186,7 @@ class TestHistogram:
             iv, weights=iw, density=density
         )
         assert_dtype_allclose(result_hist, expected_hist)
-        assert_allclose(result_edges, expected_edges)
+        assert_dtype_allclose(result_edges, expected_edges)
 
     def test_integer_weights(self):
         v = numpy.array([1, 2, 2, 4])
