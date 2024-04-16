@@ -46,7 +46,7 @@ Matrix eigenvalues
    dpnp.linalg.eigvalsh
 
 Norms and other numbers
-----------
+-----------------------
 
 .. autosummary::
    :toctree: generated/
