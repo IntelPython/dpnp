@@ -31,11 +31,6 @@ from dpnp.dpnp_algo cimport shape_type_c
 from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncData, DPNPFuncName, DPNPFuncType
 
 
-cpdef checker_throw_runtime_error(function_name, message)
-""" Throw exception RuntimeError with 'message'
-
-"""
-
 cpdef checker_throw_value_error(function_name, param_name, param, expected)
 """ Throw exception ValueError if 'param' is not 'expected'
 
@@ -81,23 +76,9 @@ cpdef shape_type_c normalize_axis(object axis, size_t shape_size)
 Conversion of the transformation shape axis [-1, 0, 1] into [2, 0, 1] where numbers are `id`s of array shape axis
 """
 
-cdef tuple get_shape_dtype(object input_obj)
-"""
-input_obj: Complex object with lists, scalars and numpy-like arrays
-
-Returns a tuple of:
-1. concatenated shape, empty `shape_type_c` if unsuccessful.
-2. dtype
-"""
-
 cpdef long _get_linear_index(key, tuple shape, int ndim)
 """
 Compute linear index of an element in memory from array indices
-"""
-
-cpdef tuple get_axis_indeces(idx, shape)
-"""
-Compute axis indices of an element in array from array linear index
 """
 
 cpdef tuple get_axis_offsets(shape)
@@ -122,19 +103,6 @@ cdef class dpnp_descriptor:
 cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input2_shape) except *
 """
 Calculate common shape from input shapes
-"""
-
-cdef shape_type_c get_reduction_output_shape(shape_type_c input_shape, object axis, cpp_bool keepdims)
-"""
-Calculate output array shape in reduction functions
-"""
-
-cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
-                                    DPNPFuncType input_array_c_type,
-                                    object requested_out,
-                                    object requested_dtype)
-"""
-Calculate output array type by 'out' and 'dtype' cast parameters
 """
 
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
