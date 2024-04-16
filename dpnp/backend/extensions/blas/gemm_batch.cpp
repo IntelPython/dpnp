@@ -155,12 +155,12 @@ std::pair<sycl::event, sycl::event>
                size_t stridec,
                const std::vector<sycl::event> &depends = {})
 {
-    if (!dpctl::utils::queues_are_compatible(
-            exec_q,
-            {matrixA.get_queue(), matrixB.get_queue(), resultC.get_queue()}))
-    {
-        throw py::value_error(
-            "USM allocations are not compatible with the execution queue.");
+    const int matrixA_nd = matrixA.get_ndim();
+    const int matrixB_nd = matrixB.get_ndim();
+    const int resultC_nd = resultC.get_ndim();
+
+    if (matrixA_nd != resultC_nd || matrixB_nd != resultC_nd) {
+        throw py::value_error("The given arrays have incorrect dimensions.");
     }
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
@@ -173,21 +173,34 @@ std::pair<sycl::event, sycl::event>
                               "segments of memory");
     }
 
-    const int matrixA_nd = matrixA.get_ndim();
-    const int matrixB_nd = matrixB.get_ndim();
+    if (!dpctl::utils::queues_are_compatible(
+            exec_q,
+            {matrixA.get_queue(), matrixB.get_queue(), resultC.get_queue()}))
+    {
+        throw py::value_error(
+            "USM allocations are not compatible with the execution queue.");
+    }
+
     const py::ssize_t *a_shape = matrixA.get_shape_raw();
     const py::ssize_t *b_shape = matrixB.get_shape_raw();
-
+    const py::ssize_t *c_shape = resultC.get_shape_raw();
+    const std::int64_t m = a_shape[matrixA_nd - 2];
+    const std::int64_t n = b_shape[matrixB_nd - 1];
+    const std::int64_t k = a_shape[matrixA_nd - 1];
     if (a_shape[matrixA_nd - 1] != b_shape[matrixB_nd - 2]) {
         throw py::value_error("The number of columns in A must be equal to "
                               "the number of rows in B.");
     }
+    if (a_shape[matrixA_nd - 2] != c_shape[resultC_nd - 2]) {
+        throw py::value_error("The number of rows in A must be equal to "
+                              "the number of rows in result array.");
+    }
+    if (b_shape[matrixB_nd - 1] != c_shape[resultC_nd - 1]) {
+        throw py::value_error("The number of columns in B must be equal to "
+                              "the number of coulmns in result array.");
+    }
 
-    const std::int64_t m = a_shape[matrixA_nd - 2];
-    const std::int64_t n = b_shape[matrixB_nd - 1];
-    const std::int64_t k = a_shape[matrixA_nd - 1];
-
-    // transA and transB are always True
+    // transA and transB are always False
     oneapi::mkl::transpose transA = oneapi::mkl::transpose::N;
     oneapi::mkl::transpose transB = oneapi::mkl::transpose::N;
 
@@ -198,6 +211,7 @@ std::pair<sycl::event, sycl::event>
     if (matrixA_typenum != matrixB_typenum) {
         throw py::value_error("matrixA and matrixB must be of the same type.");
     }
+
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int matrixAB_type_id = array_types.typenum_to_lookup_id(matrixA_typenum);
     int resultC_type_id = array_types.typenum_to_lookup_id(resultC_typenum);
