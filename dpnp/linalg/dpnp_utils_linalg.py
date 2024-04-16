@@ -1205,9 +1205,11 @@ def dpnp_lstsq(a, b, rcond=None):
 
     """
 
-    new_version = True
+    new_version = False
+    gels_version = False
 
     if not new_version:
+        # print("svd")
         # fix 0-dim
         if b.ndim > 2:
             raise dpnp.linalg.LinAlgError(
@@ -1253,7 +1255,8 @@ def dpnp_lstsq(a, b, rcond=None):
             resids = dpnp.atleast_1d(_nrm2_last_axis(e.T))
         return x, resids, rank, s
 
-    else : # mkl call
+    elif not gels_version : # mkl call
+        print("W/A mkl")
         a_usm_arr = dpnp.get_usm_ndarray(a)
         a_sycl_queue = a.sycl_queue
         a_usm_type = a.usm_type
@@ -1328,6 +1331,56 @@ def dpnp_lstsq(a, b, rcond=None):
         dpctl.SyclEvent.wait_for(ht_list_ev)
 
         return a_t, b_t
+
+    else: # gels
+        print("GELS")
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+        a_sycl_queue = a.sycl_queue
+        a_usm_type = a.usm_type
+
+        res_type = _common_type(a)
+
+        m, n = a.shape
+        nrhs = b.shape[-1]
+        # Transpose the input matrix to convert from row-major to column-major order.
+        # This adjustment is necessary for compatibility with OneMKL LAPACK routines,
+        # which expect matrices in column-major format.
+        # This allows data to be handled efficiently without the need for additional conversion.
+        # a = a.T
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+        a_t = dpnp.empty_like(a, order="F", dtype=res_type)
+
+        # use DPCTL tensor function to fill the matrix array
+        # with content from the input array `a`
+        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr, dst=a_t.get_array(), sycl_queue=a_sycl_queue
+        )
+
+        b_usm_arr = dpnp.get_usm_ndarray(b)
+        b_t = dpnp.empty_like(b, order="F", dtype=res_type)
+
+        # use DPCTL tensor function to fill the matrix array
+        # with content from the input array `a`
+        b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=b_usm_arr, dst=b_t.get_array(), sycl_queue=a_sycl_queue
+        )
+
+        # Call the LAPACK extension function _geqrf to compute the QR factorization
+        # of a general m x n matrix.
+        ht_gels_ev, _ = li._gels(
+            a_sycl_queue, m, n, nrhs, a_t.get_array(), b_t.get_array(), [a_copy_ev, b_copy_ev]
+        )
+
+        # ht_gels_ev.wait()
+
+        ht_list_ev = [ht_gels_ev, a_ht_copy_ev, b_ht_copy_ev]
+
+        dpctl.SyclEvent.wait_for(ht_list_ev)
+
+        e = b - a.dot(b_t)
+        resids = dpnp.atleast_1d(_nrm2_last_axis(e.T))
+
+        return b_t, resids, a_t
 
 
 def dpnp_matrix_power(a, n):

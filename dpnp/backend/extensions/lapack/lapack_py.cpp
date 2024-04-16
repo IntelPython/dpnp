@@ -30,6 +30,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "gels.hpp"
 #include "geqrf.hpp"
 #include "gesv.hpp"
 #include "gesvd.hpp"
@@ -50,6 +51,7 @@ namespace py = pybind11;
 // populate dispatch vectors
 void init_dispatch_vectors(void)
 {
+    lapack_ext::init_gels_dispatch_vector();
     lapack_ext::init_geqrf_batch_dispatch_vector();
     lapack_ext::init_geqrf_dispatch_vector();
     lapack_ext::init_gesv_dispatch_vector();
@@ -83,6 +85,13 @@ PYBIND11_MODULE(_lapack_impl, m)
 
     init_dispatch_vectors();
     init_dispatch_tables();
+
+    m.def("_gels", &lapack_ext::gels,
+          "Call `gels` from OneMKL LAPACK library to return "
+          "the QR factorization of a general m x n matrix ",
+          py::arg("sycl_queue"),  py::arg("m"), py::arg("n"), py::arg("nrhs"),
+          py::arg("a_array"), py::arg("b_array"),
+          py::arg("depends") = py::list());
 
     m.def("_geqrf_batch", &lapack_ext::geqrf_batch,
           "Call `geqrf_batch` from OneMKL LAPACK library to return "
