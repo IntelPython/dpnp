@@ -167,7 +167,9 @@ def dot(a, b, out=None):
     return dpnp.get_result_array(result, out, casting="no")
 
 
-def einsum(*operands, out=None, optimize=False, **kwargs):
+def einsum(
+    *operands, out=None, dtype=None, order="K", casting="safe", optimize=False
+):
     """
     einsum(subscripts, *operands, out=None, dtype=None, order="K", \
         casting="safe", optimize=False)
@@ -185,7 +187,7 @@ def einsum(*operands, out=None, optimize=False, **kwargs):
         included as well as subscript labels of the precise output form.
     *operands : sequence of {dpnp.ndarrays, usm_ndarray}
         These are the arrays for the operation.
-    out : {dpnp.ndarrays, usm_ndarray}, optional
+    out : {dpnp.ndarrays, usm_ndarray, None}, optional
         If provided, the calculation is done into this array.
     dtype : {dtype, None}, optional
         If provided, forces the calculation to use the data type specified.
@@ -384,47 +386,30 @@ def einsum(*operands, out=None, optimize=False, **kwargs):
 
     >>> a = np.ones(64000).reshape(20, 40, 80)
 
-    Basic `einsum`: 146 ms ± 23.5 ms per loop (benchmarked on 12th
-    Gen Intel® Core™ i7-1265U)
+    Basic `einsum`: 119 ms ± 26 ms per loop (benchmarked on 12th
+    Gen Intel\u00AE Core\u2122 i7 processor)
 
-    >>> %timeit -r 10 -n 50 np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a)
+    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a)
 
-    Sub-optimal `einsum` (due to repeated path calculation time):
-    51.9 ms ± 17.1 ms per loop
+    Sub-optimal `einsum`: 32.9 ms ± 5.1 ms per loop
 
-    >>> %timeit -r 10 -n 50 np.einsum(
-        "ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="optimal"
-    )
+    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="optimal")
 
-    Greedy `einsum` (faster optimal path approximation):
-    51.9 ms ± 17.1 ms per loop
+    Greedy `einsum`: 28.6 ms ± 4.8 ms per loop
 
-    >>> %timeit -r 10 -n 50  np.einsum(
-        "ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="greedy"
-    )
+    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="greedy")
 
-    Optimal `einsum` (best usage pattern in some use cases):
-    69 ms ± 17.8 ms per loop
+    Optimal `einsum`: 26.9 ms ± 6.3 ms per loop
 
     >>> path = np.einsum_path(
         "ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="optimal"
     )[0]
-    >>> %timeit -r 10 -n 50 np.einsum(
-        "ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize=path
-    )
+    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize=path)
 
     """
 
     if optimize is True:
         optimize = "greedy"
-
-    dtype = kwargs.pop("dtype", None)
-    casting = kwargs.pop("casting", "safe")
-    order = kwargs.pop("order", "k")
-    if kwargs:
-        raise TypeError(
-            f" {list(kwargs.keys())} is an invalid keyword for einsum"
-        )
 
     return dpnp_einsum(
         *operands,

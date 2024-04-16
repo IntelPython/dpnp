@@ -2562,7 +2562,6 @@ class TestMatmul:
 
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
-        print(a1.dtype)
         result = dpnp.matmul(b1, b2)
         expected = numpy.matmul(a1, a2)
         assert_dtype_allclose(result, expected)

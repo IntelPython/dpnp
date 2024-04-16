@@ -40,13 +40,7 @@ import dpnp.backend.extensions.blas._blas_impl as bi
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 
-einsum_symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-
-# options = {
-#    "sum_ellipsis": False,
-#    "broadcast_diagonal": False,
-# }
+_einsum_symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
 __all__ = ["dpnp_cross", "dpnp_dot", "dpnp_einsum", "dpnp_kron", "dpnp_matmul"]
@@ -865,10 +859,6 @@ def _optimal_path(input_sets, output_set, idx_dict, memory_limit):
             path += [tuple(range(len(input_sets) - iteration))]
             return path
 
-    # If we have not found anything return single einsum contraction
-    if len(full_results) == 0:
-        return [tuple(range(len(input_sets)))]
-
     path = min(full_results, key=lambda x: x[0])[1]
     return path
 
@@ -924,7 +914,7 @@ def _parse_einsum_input(args):
         for s in subscripts:
             if s in ".,->":
                 continue
-            if s not in einsum_symbols:
+            if s not in _einsum_symbols:
                 raise ValueError(
                     f"invalid subscript '{s}' in einstein sum subscripts "
                     "string, subscripts must be letters"
@@ -1054,7 +1044,7 @@ def _parse_int_subscript(list_subscript):
                     "For this input type lists must contain "
                     "either int or Ellipsis"
                 ) from e
-            str_subscript += einsum_symbols[s]
+            str_subscript += _einsum_symbols[s]
     return str_subscript
 
 
@@ -1122,7 +1112,7 @@ def _parse_possible_contraction(
     sort = (-removed_size, cost)
 
     # Sieve based on total cost as well
-    if (path_cost + cost) > naive_cost:
+    if (path_cost + cost) >= naive_cost:
         return None
 
     # Add contraction to possible choices
@@ -1189,8 +1179,6 @@ def _reduced_binary_einsum(arr0, sub0, arr1, sub1, sub_others):
         arr0 = _expand_dims_transpose(arr0, sub0, sub_out)
         arr1 = _expand_dims_transpose(arr1, sub1, sub_out)
         return arr0 * arr1, sub_out
-
-    # for accelerator in _accelerator.get_routine_accelerators():
 
     tmp0, shapes0 = _flatten_transpose(arr0, [bs0, ts0, cs0])
     tmp1, shapes1 = _flatten_transpose(arr1, [bs1, cs1, ts1])
@@ -1263,9 +1251,8 @@ def _transpose_ex(a, axeses):
         stride = sum(a.strides[axis] for axis in axes)
         strides.append(stride)
 
+    # TODO: replace with a.view() when it is implemented in dpnp
     a = _view_work_around(a, shape, strides)
-    # a = a.view()
-    # a._set_shape_and_strides(shape, strides, True, True)
     return a
 
 
@@ -1287,7 +1274,7 @@ def _update_other_results(results, best):
     Returns
     -------
     mod_results : list
-        The list of modifed results, updated with outcome of ``best`` contraction.
+        The list of modified results, updated with outcome of ``best`` contraction.
     """
 
     best_con = best[1]
@@ -1566,7 +1553,7 @@ def dpnp_einsum(
     dpnp.check_supported_arrays_type(*operands, scalar_type=True)
     arrays = []
     for a in operands:
-        if isinstance(a, (dpnp_array, dpt.usm_ndarray)):
+        if dpnp.is_supported_array_type(a):
             arrays.append(a)
 
     res_usm_type, exec_q = get_usm_allocations(arrays)
@@ -1646,6 +1633,8 @@ def dpnp_einsum(
             return dpnp.zeros(
                 tuple(dimension_dict[label] for label in output_subscript),
                 dtype=result_dtype,
+                usm_type=res_usm_type,
+                sycl_queue=exec_q,
             )
 
         # Don't squeeze if unary, because this affects later (in trivial sum)
@@ -1687,7 +1676,7 @@ def dpnp_einsum(
             operands[idx] = operands[idx].sum(axis=sum_axes, dtype=result_dtype)
 
     if returns_view:
-        # operands = [a.view() for a in operands]
+        # TODO: replace with a.view() when it is implemented in dpnp
         operands = [a for a in operands]
     else:
         operands = [
