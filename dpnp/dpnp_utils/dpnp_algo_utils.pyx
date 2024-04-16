@@ -62,13 +62,11 @@ __all__ = [
     "call_origin",
     "checker_throw_axis_error",
     "checker_throw_index_error",
-    "checker_throw_runtime_error",
     "checker_throw_type_error",
     "checker_throw_value_error",
     "create_output_descriptor_py",
     "convert_item",
     "dpnp_descriptor",
-    "get_axis_indeces",
     "get_axis_offsets",
     "get_usm_allocations",
     "_get_linear_index",
@@ -322,10 +320,6 @@ cpdef checker_throw_index_error(function_name, index, size):
         f"{ERROR_PREFIX} in function {function_name}() index {index} is out of bounds. dimension size `{size}`")
 
 
-cpdef checker_throw_runtime_error(function_name, message):
-    raise RuntimeError(f"{ERROR_PREFIX} in function {function_name}(): '{message}'")
-
-
 cpdef checker_throw_type_error(function_name, given_type):
     raise TypeError(f"{ERROR_PREFIX} in function {function_name}() type '{given_type}' is not supported")
 
@@ -354,21 +348,6 @@ cpdef dpnp_descriptor create_output_descriptor_py(shape_type_c output_shape,
                                     device=device,
                                     usm_type=usm_type,
                                     sycl_queue=sycl_queue)
-
-
-cpdef tuple get_axis_indeces(idx, shape):
-    """
-    Compute axis indices of an element in array from array linear index
-    """
-
-    ids = []
-    remainder = idx
-    offsets = get_axis_offsets(shape)
-    for i in offsets:
-        quotient, remainder = divmod(remainder, i)
-        ids.append(quotient)
-
-    return _object_to_tuple(ids)
 
 
 cpdef tuple get_axis_offsets(shape):
@@ -402,36 +381,6 @@ cpdef long _get_linear_index(key, tuple shape, int ndim):
     return li
 
 
-cdef tuple get_shape_dtype(object input_obj):
-    cdef shape_type_c return_shape  # empty shape means scalar
-    return_dtype = None
-
-    # TODO replace with checking "shape" and "dtype" attributes
-    if hasattr(input_obj, "shape") and hasattr(input_obj, "dtype"):
-        return (input_obj.shape, input_obj.dtype)
-
-    cdef shape_type_c elem_shape
-    cdef shape_type_c list_shape
-    if isinstance(input_obj, (list, tuple)):
-        for elem in input_obj:
-            elem_shape, elem_dtype = get_shape_dtype(elem)
-
-            if return_shape.empty():
-                return_shape = elem_shape
-                return_dtype = elem_dtype
-
-            # shape and dtype does not match with siblings.
-            if ((return_shape != elem_shape) or (return_dtype != elem_dtype)):
-                return (elem_shape, dpnp.dtype(numpy.object_))
-
-        list_shape.push_back(len(input_obj))
-        list_shape.insert(list_shape.end(), return_shape.begin(), return_shape.end())
-        return (list_shape, return_dtype)
-
-    # assume scalar or object
-    return (return_shape, dpnp.dtype(type(input_obj)))
-
-
 cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input2_shape) except *:
     cdef shape_type_c input1_shape_orig = input1_shape
     cdef shape_type_c input2_shape_orig = input2_shape
@@ -456,44 +405,6 @@ cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input
             raise ValueError(err_msg)
 
     return result_shape
-
-
-cdef shape_type_c get_reduction_output_shape(shape_type_c input_shape, object axis, cpp_bool keepdims):
-    cdef shape_type_c result_shape
-    cdef tuple axis_tuple = _object_to_tuple(axis)
-
-    if axis is not None:
-        for it in range(input_shape.size()):
-            if it not in axis_tuple:
-                result_shape.push_back(input_shape[it])
-            elif keepdims is True:
-                result_shape.push_back(1)
-    elif keepdims is True:
-        for it in range(input_shape.size()):
-            result_shape.push_back(1)
-
-    return result_shape
-
-
-cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
-                                    DPNPFuncType input_array_c_type,
-                                    object requested_out,
-                                    object requested_dtype):
-
-    if requested_out is None:
-        if requested_dtype is None:
-            """ get recommended result type by function ID """
-            kernel_data = get_dpnp_function_ptr(funcID, input_array_c_type, input_array_c_type)
-            return kernel_data.return_type
-        else:
-            """ return type by request """
-            return dpnp_dtype_to_DPNPFuncType(requested_dtype)
-    else:
-        if requested_dtype is None:
-            """ determined by 'out' parameter """
-            return dpnp_dtype_to_DPNPFuncType(requested_out.dtype)
-
-    checker_throw_value_error("get_output_c_type", "dtype and out", requested_dtype, requested_out)
 
 
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
