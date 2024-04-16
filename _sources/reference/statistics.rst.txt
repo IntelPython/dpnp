@@ -27,11 +27,23 @@ Averages and variances
    dpnp.median
    dpnp.average
    dpnp.mean
-   dpnp.var
    dpnp.std
+   dpnp.var
    dpnp.nanmean
    dpnp.nanvar
    dpnp.nanstd
+
+
+Correlations
+------------
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   dpnp.corrcoef
+   dpnp.cov
+   dpnp.correlate
 
 
 Histograms
@@ -47,15 +59,3 @@ Histograms
    dpnp.bincount
    dpnp.histogram_bin_edges
    dpnp.digitize
-
-
-Correlations
-------------
-
-.. autosummary::
-   :toctree: generated/
-   :nosignatures:
-
-   dpnp.corrcoef
-   dpnp.cov
-   dpnp.correlate
