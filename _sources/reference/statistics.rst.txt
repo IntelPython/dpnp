@@ -18,7 +18,7 @@ Order statistics
 
 
 Averages and variances
-----------------------
+-------------------
 
 .. autosummary::
    :toctree: generated/

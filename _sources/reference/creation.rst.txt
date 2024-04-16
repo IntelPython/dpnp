@@ -63,7 +63,7 @@ Numerical ranges
 
 
 Building matrices
------------------
+---------------
 
 .. autosummary::
    :toctree: generated/

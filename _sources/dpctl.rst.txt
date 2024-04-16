@@ -2,7 +2,7 @@
 .. include:: ./ext_links.txt
 
 Interplay with the Data Parallel Control Library
-================================================
+===============================================
 
 `Data Parallel Control Library`_ provides API to manage specific
 `SYCL*`_ resources for SYCL-based Python packages.

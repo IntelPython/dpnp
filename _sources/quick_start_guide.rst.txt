@@ -22,7 +22,7 @@ Follow device driver installation instructions to complete the step.
 
 
 Python Interpreter
-==================
+=================
 
 You will need Python 3.8, 3.9, or 3.10 installed on your system. If you
 do not have one yet the easiest way to do that is to install
@@ -38,7 +38,7 @@ Installation
 ============
 
 Install Package from Anaconda
------------------------------
+---------------------
 
 It is recommended to use conda packages from the ``anaconda.org/intel``
 channel. You will need one of the commands below:
