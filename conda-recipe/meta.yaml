@@ -54,7 +54,7 @@ test:
     commands:
       - python -c "import dpnp; print(dpnp.__version__)"
       - python -m dpctl -f
-      - pytest -s
+      - pytest -sv
 
 about:
     home: https://github.com/IntelPython/dpnp
