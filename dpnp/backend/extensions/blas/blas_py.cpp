@@ -39,9 +39,9 @@ namespace py = pybind11;
 // populate dispatch tables
 void init_dispatch_tables(void)
 {
-    blas_ext::init_dot_dispatch_table();
-    blas_ext::init_dotc_dispatch_table();
-    blas_ext::init_dotu_dispatch_table();
+    blas_ext::init_dot_dispatch_vector();
+    blas_ext::init_dotc_dispatch_vector();
+    blas_ext::init_dotu_dispatch_vector();
     blas_ext::init_gemm_batch_dispatch_table();
     blas_ext::init_gemm_dispatch_table();
 }

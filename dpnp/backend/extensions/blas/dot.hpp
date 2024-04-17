@@ -59,9 +59,9 @@ extern std::pair<sycl::event, sycl::event>
          dpctl::tensor::usm_ndarray result,
          const std::vector<sycl::event> &depends);
 
-extern void init_dot_dispatch_table(void);
-extern void init_dotc_dispatch_table(void);
-extern void init_dotu_dispatch_table(void);
+extern void init_dot_dispatch_vector(void);
+extern void init_dotc_dispatch_vector(void);
+extern void init_dotu_dispatch_vector(void);
 } // namespace blas
 } // namespace ext
 } // namespace backend

@@ -56,8 +56,7 @@ typedef sycl::event (*dotu_impl_fn_ptr_t)(sycl::queue &,
                                           char *,
                                           const std::vector<sycl::event> &);
 
-static dotu_impl_fn_ptr_t dotu_dispatch_table[dpctl_td_ns::num_types]
-                                             [dpctl_td_ns::num_types];
+static dotu_impl_fn_ptr_t dotu_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
 static sycl::event dotu_impl(sycl::queue &exec_q,
@@ -181,7 +180,7 @@ std::pair<sycl::event, sycl::event>
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int type_id = array_types.typenum_to_lookup_id(result_typenum);
 
-    dotu_impl_fn_ptr_t dotu_fn = dotu_dispatch_table[type_id][type_id];
+    dotu_impl_fn_ptr_t dotu_fn = dotu_dispatch_vector[type_id];
     if (dotu_fn == nullptr) {
         throw py::value_error(
             "Types of input vectors and result array are mismatched.");
@@ -215,7 +214,7 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(args_ev, dotu_ev);
 }
 
-template <typename fnT, typename varT, typename none>
+template <typename fnT, typename varT>
 struct DotuContigFactory
 {
     fnT get()
@@ -229,12 +228,12 @@ struct DotuContigFactory
     }
 };
 
-void init_dotu_dispatch_table(void)
+void init_dotu_dispatch_vector(void)
 {
-    dpctl_td_ns::DispatchTableBuilder<dotu_impl_fn_ptr_t, DotuContigFactory,
-                                      dpctl_td_ns::num_types>
+    dpctl_td_ns::DispatchVectorBuilder<dotu_impl_fn_ptr_t, DotuContigFactory,
+                                       dpctl_td_ns::num_types>
         contig;
-    contig.populate_dispatch_table(dotu_dispatch_table);
+    contig.populate_dispatch_vector(dotu_dispatch_vector);
 }
 } // namespace blas
 } // namespace ext
