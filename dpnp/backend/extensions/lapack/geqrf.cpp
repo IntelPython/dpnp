@@ -74,7 +74,10 @@ static sycl::event geqrf_impl(sycl::queue exec_q,
 
     const std::int64_t scratchpad_size =
         mkl_lapack::geqrf_scratchpad_size<T>(exec_q, m, n, lda);
+    // const std::int64_t scratchpad_size = 4;
     T *scratchpad = nullptr;
+
+    std::cout << "geqrf: " <<  scratchpad_size << std::endl;
 
     std::stringstream error_msg;
     std::int64_t info = 0;
@@ -172,11 +175,11 @@ std::pair<sycl::event, sycl::event>
             "are overlapping segments of memory");
     }
 
-    bool is_a_array_c_contig = a_array.is_c_contiguous();
-    if (!is_a_array_c_contig) {
-        throw py::value_error("The input array "
-                              "must be C-contiguous");
-    }
+    // bool is_a_array_c_contig = a_array.is_c_contiguous();
+    // if (!is_a_array_c_contig) {
+    //     throw py::value_error("The input array "
+    //                           "must be C-contiguous");
+    // }
 
     bool is_tau_array_c_contig = tau_array.is_c_contiguous();
     bool is_tau_array_f_contig = tau_array.is_f_contiguous();

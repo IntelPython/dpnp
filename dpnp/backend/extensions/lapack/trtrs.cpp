@@ -84,6 +84,8 @@ static sycl::event trtrs_impl(sycl::queue exec_q,
         mkl_lapack::trtrs_scratchpad_size<T>(exec_q, upper_lower, trans, unit_diag, n, nrhs, lda, ldb);
     T *scratchpad = nullptr;
 
+    std::cout << "trtrs: " <<  scratchpad_size << std::endl;
+
     std::stringstream error_msg;
     std::int64_t info = 0;
     bool is_exception_caught = false;
@@ -185,17 +187,17 @@ std::pair<sycl::event, sycl::event>
             "are overlapping segments of memory");
     }
 
-    bool is_a_array_c_contig = a_array.is_c_contiguous();
-    if (!is_a_array_c_contig) {
-        throw py::value_error("The input array "
-                              "must be C-contiguous");
-    }
+    // bool is_a_array_c_contig = a_array.is_c_contiguous();
+    // if (!is_a_array_c_contig) {
+    //     throw py::value_error("The input array "
+    //                           "must be C-contiguous");
+    // }
 
-    bool is_b_array_c_contig = b_array.is_c_contiguous();
-    if (!is_b_array_c_contig) {
-        throw py::value_error("The input array "
-                              "must be C-contiguous");
-    }
+    // bool is_b_array_c_contig = b_array.is_c_contiguous();
+    // if (!is_b_array_c_contig) {
+    //     throw py::value_error("The input array "
+    //                           "must be C-contiguous");
+    // }
 
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();

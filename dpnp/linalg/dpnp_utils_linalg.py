@@ -1205,7 +1205,7 @@ def dpnp_lstsq(a, b, rcond=None):
 
     """
 
-    new_version = False
+    new_version = True
     gels_version = False
 
     if not new_version:
@@ -1286,6 +1286,7 @@ def dpnp_lstsq(a, b, rcond=None):
             dtype=res_type,
         )
 
+        b = b.T
         b_usm_arr = dpnp.get_usm_ndarray(b)
         b_t = dpnp.empty_like(b, order="C", dtype=res_type)
 
@@ -1316,7 +1317,7 @@ def dpnp_lstsq(a, b, rcond=None):
         ht_ormqr_ev.wait()
         b_ht_copy_ev.wait()
 
-        return a_t, b_t
+        # return a_t, b_t
 
         ht_list_ev.append(ht_ormqr_ev)
 
@@ -1330,7 +1331,9 @@ def dpnp_lstsq(a, b, rcond=None):
         ht_list_ev.append(ht_trtrs_ev)
         dpctl.SyclEvent.wait_for(ht_list_ev)
 
-        return a_t, b_t
+        # x = b_t.astype('f8', copy=True)
+
+        return b_t
 
     else: # gels
         print("GELS")

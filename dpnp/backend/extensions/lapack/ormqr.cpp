@@ -87,6 +87,8 @@ static sycl::event ormqr_impl(sycl::queue exec_q,
         mkl_lapack::ormqr_scratchpad_size<T>(exec_q, side, trans, m, n, k, lda, ldc);
     T *scratchpad = nullptr;
 
+    std::cout << "ormqr: " <<  scratchpad_size << std::endl;
+
     std::stringstream error_msg;
     std::int64_t info = 0;
     bool is_exception_caught = false;
@@ -200,17 +202,17 @@ std::pair<sycl::event, sycl::event>
             "are overlapping segments of memory");
     }
 
-    bool is_a_array_c_contig = a_array.is_c_contiguous();
-    if (!is_a_array_c_contig) {
-        throw py::value_error("The input array "
-                              "must be C-contiguous");
-    }
+    // bool is_a_array_c_contig = a_array.is_c_contiguous();
+    // if (!is_a_array_c_contig) {
+    //     throw py::value_error("The input array "
+    //                           "must be C-contiguous");
+    // }
 
-    bool is_c_array_c_contig = c_array.is_c_contiguous();
-    if (!is_c_array_c_contig) {
-        throw py::value_error("The input array "
-                              "must be C-contiguous");
-    }
+    // bool is_c_array_c_contig = c_array.is_c_contiguous();
+    // if (!is_c_array_c_contig) {
+    //     throw py::value_error("The input array "
+    //                           "must be C-contiguous");
+    // }
 
     bool is_tau_array_c_contig = tau_array.is_c_contiguous();
     bool is_tau_array_f_contig = tau_array.is_f_contiguous();
@@ -258,7 +260,7 @@ std::pair<sycl::event, sycl::event>
     const std::int64_t ldc = std::max<size_t>(1UL, n);
 
     //should be T according to mkl
-    oneapi::mkl::transpose trans = oneapi::mkl::transpose::N;
+    oneapi::mkl::transpose trans = oneapi::mkl::transpose::T;
     oneapi::mkl::side side = oneapi::mkl::side::left;
 
     std::vector<sycl::event> host_task_events;
