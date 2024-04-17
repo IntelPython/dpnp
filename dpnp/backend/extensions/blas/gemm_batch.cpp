@@ -27,6 +27,7 @@
 
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
 
 #include "gemm.hpp"
@@ -181,6 +182,8 @@ std::pair<sycl::event, sycl::event>
             "USM allocations are not compatible with the execution queue.");
     }
 
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(resultC);
+
     const py::ssize_t *a_shape = matrixA.get_shape_raw();
     const py::ssize_t *b_shape = matrixB.get_shape_raw();
     const py::ssize_t *c_shape = resultC.get_shape_raw();
@@ -199,6 +202,30 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("The number of columns in B must be equal to "
                               "the number of coulmns in result array.");
     }
+
+    bool shapes_equal = true;
+    size_t src_nelems = 1;
+    py::ssize_t lead_dim;
+    for (int i = 0; i < matrixA_nd - 2; ++i) {
+        if (a_shape[i] == b_shape[i]) {
+            lead_dim = a_shape[i];
+        }
+        else if (a_shape[i] == 1 || b_shape[i] == 1) {
+            lead_dim = std::max(a_shape[i], b_shape[i]);
+        }
+        else {
+            throw py::value_error("Array shapes do not match.");
+        }
+        src_nelems *= static_cast<size_t>(lead_dim);
+        shapes_equal = shapes_equal && (lead_dim == c_shape[i]);
+    }
+    src_nelems *= (m * n);
+    if (!shapes_equal) {
+        throw py::value_error("Array shapes do not match.");
+    }
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(resultC);
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(resultC,
+                                                               src_nelems);
 
     // transA and transB are always False
     oneapi::mkl::transpose transA = oneapi::mkl::transpose::N;

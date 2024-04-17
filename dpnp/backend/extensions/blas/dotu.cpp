@@ -27,6 +27,7 @@
 
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
 
 #include "dot.hpp"
@@ -154,6 +155,11 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error(
             "USM allocations are not compatible with the execution queue.");
     }
+
+    size_t src_nelems = 1;
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(result);
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(result,
+                                                               src_nelems);
 
     py::ssize_t x_size = vectorX.get_size();
     py::ssize_t y_size = vectorY.get_size();

@@ -27,6 +27,7 @@
 
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
 
 #include "dot.hpp"
@@ -154,6 +155,11 @@ std::pair<sycl::event, sycl::event> dot(sycl::queue &exec_q,
             "USM allocations are not compatible with the execution queue.");
     }
 
+    size_t src_nelems = 1;
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(result);
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(result,
+                                                               src_nelems);
+
     py::ssize_t x_size = vectorX.get_size();
     py::ssize_t y_size = vectorY.get_size();
     const std::int64_t n = x_size;
@@ -191,6 +197,12 @@ std::pair<sycl::event, sycl::event> dot(sycl::queue &exec_q,
 
     const std::int64_t incx = x_stride[0];
     const std::int64_t incy = y_stride[0];
+    // In OneMKL, the pointer should always point out to the first element of
+    // the array and OneMKL handle the rest depending on the sign of stride.
+    // When the stride is positive, the data is read in order and when it is
+    // negative, the data is read in reverse.
+    // When the stride is negative, the pointer of the array coming from dpnp
+    // points to the last element. So, we need to adjust the pointer
     if (incx < 0) {
         x_typeless_ptr -= (n - 1) * std::abs(incx) * x_elemsize;
     }

@@ -27,6 +27,7 @@
 
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
 
 #include "gemm.hpp"
@@ -182,6 +183,11 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("The number of columns in B must be equal to "
                               "the number of coulmns in result array.");
     }
+
+    size_t src_nelems = m * n;
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(resultC);
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(resultC,
+                                                               src_nelems);
 
     bool is_matrixA_f_contig = matrixA.is_f_contiguous();
     bool is_matrixB_f_contig = matrixB.is_f_contiguous();
