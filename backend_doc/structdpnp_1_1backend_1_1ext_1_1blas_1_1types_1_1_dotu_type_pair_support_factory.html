@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DPNP C++ backend kernel library: dpnp::backend::ext::blas::types::DotuTypePairSupportFactory&lt; T &gt; Struct Template Reference</title>
+<title>DPNP C++ backend kernel library: dpnp::backend::ext::blas::types::DotuTypePairSupportFactory&lt; Tab, Tc &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -93,45 +93,46 @@ $(document).ready(function(){initNavTree('structdpnp_1_1backend_1_1ext_1_1blas_1
   <div class="summary">
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">dpnp::backend::ext::blas::types::DotuTypePairSupportFactory&lt; T &gt; Struct Template Reference</div></div>
+  <div class="headertitle"><div class="title">dpnp::backend::ext::blas::types::DotuTypePairSupportFactory&lt; Tab, Tc &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>A factory to define pairs of supported types for which MKL BLAS library provides support in oneapi::mkl::blas::dotu&lt;T&gt; function.  
+<p>A factory to define pairs of supported types for which MKL BLAS library provides support in oneapi::mkl::blas::dotu&lt;Tab, Tc&gt; function.  
  <a href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="blas_2types__matrix_8hpp_source.html">types_matrix.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a218d0c43d8f6ebdbe831d69d8309b1fa" id="r_a218d0c43d8f6ebdbe831d69d8309b1fa"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html#a218d0c43d8f6ebdbe831d69d8309b1fa">is_defined</a></td></tr>
-<tr class="separator:a218d0c43d8f6ebdbe831d69d8309b1fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17d0666da839674f0e56bba620bdda73" id="r_a17d0666da839674f0e56bba620bdda73"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html#a17d0666da839674f0e56bba620bdda73">is_defined</a></td></tr>
+<tr class="separator:a17d0666da839674f0e56bba620bdda73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename T&gt;<br />
-struct dpnp::backend::ext::blas::types::DotuTypePairSupportFactory&lt; T &gt;</div><p>A factory to define pairs of supported types for which MKL BLAS library provides support in oneapi::mkl::blas::dotu&lt;T&gt; function. </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Tab, typename Tc&gt;<br />
+struct dpnp::backend::ext::blas::types::DotuTypePairSupportFactory&lt; Tab, Tc &gt;</div><p>A factory to define pairs of supported types for which MKL BLAS library provides support in oneapi::mkl::blas::dotu&lt;Tab, Tc&gt; function. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">T</td><td>Type of input and output arrays. </td></tr>
+    <tr><td class="paramname">Tab</td><td>Type of arrays containing input vectors A and B. </td></tr>
+    <tr><td class="paramname">Tc</td><td>Type of array containing output. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="blas_2types__matrix_8hpp_source.html#l00094">94</a> of file <a class="el" href="blas_2types__matrix_8hpp_source.html">types_matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blas_2types__matrix_8hpp_source.html#l00098">98</a> of file <a class="el" href="blas_2types__matrix_8hpp_source.html">types_matrix.hpp</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="a218d0c43d8f6ebdbe831d69d8309b1fa" name="a218d0c43d8f6ebdbe831d69d8309b1fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a218d0c43d8f6ebdbe831d69d8309b1fa">&#9670;&#160;</a></span>is_defined</h2>
+<a id="a17d0666da839674f0e56bba620bdda73" name="a17d0666da839674f0e56bba620bdda73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17d0666da839674f0e56bba620bdda73">&#9670;&#160;</a></span>is_defined</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T &gt; </div>
+template&lt;typename Tab , typename Tc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool <a class="el" href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html">dpnp::backend::ext::blas::types::DotuTypePairSupportFactory</a>&lt; T &gt;::is_defined</td>
+          <td class="memname">constexpr bool <a class="el" href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html">dpnp::backend::ext::blas::types::DotuTypePairSupportFactory</a>&lt; Tab, Tc &gt;::is_defined</td>
         </tr>
       </table>
   </td>
@@ -141,18 +142,18 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= std::disjunction&lt;</div>
-<div class="line">        dpctl_td_ns::TypePairDefinedEntry&lt;T,</div>
+<div class="line">        dpctl_td_ns::TypePairDefinedEntry&lt;Tab,</div>
 <div class="line">                                          std::complex&lt;float&gt;,</div>
-<div class="line">                                          T,</div>
+<div class="line">                                          Tc,</div>
 <div class="line">                                          std::complex&lt;float&gt;&gt;,</div>
-<div class="line">        dpctl_td_ns::TypePairDefinedEntry&lt;T,</div>
+<div class="line">        dpctl_td_ns::TypePairDefinedEntry&lt;Tab,</div>
 <div class="line">                                          std::complex&lt;double&gt;,</div>
-<div class="line">                                          T,</div>
+<div class="line">                                          Tc,</div>
 <div class="line">                                          std::complex&lt;double&gt;&gt;,</div>
 <div class="line">        </div>
 <div class="line">        dpctl_td_ns::NotDefinedEntry&gt;::is_defined</div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="blas_2types__matrix_8hpp_source.html#l00096">96</a> of file <a class="el" href="blas_2types__matrix_8hpp_source.html">types_matrix.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="blas_2types__matrix_8hpp_source.html#l00100">100</a> of file <a class="el" href="blas_2types__matrix_8hpp_source.html">types_matrix.hpp</a>.</p>
 
 </div>
 </div>
