@@ -172,9 +172,9 @@ class TestInvInvalid(unittest.TestCase):
             ):
                 xp.linalg.inv(a)
 
-    # TODO: remove skipif when MKLD-16626 is resolved
+    # TODO: remove skip when MKLD-13852 is resolved
     # _getrf_batch does not raise an error with singular matrices.
-    @pytest.mark.skip("MKLD-16626")
+    @pytest.mark.skip("MKLD-13852")
     @testing.for_dtypes("ifdFD")
     def test_batched_inv(self, dtype):
         for xp in (numpy, cupy):
