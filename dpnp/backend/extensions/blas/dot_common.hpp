@@ -23,17 +23,17 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
+
+#include <oneapi/mkl.hpp>
 
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
-#include "dot.hpp"
 #include "types_matrix.hpp"
-
-#include "dpnp_utils.hpp"
 
 namespace dpnp
 {
@@ -41,12 +41,8 @@ namespace backend
 {
 namespace ext
 {
-namespace blas
+namespace dot
 {
-namespace mkl_blas = oneapi::mkl::blas;
-namespace py = pybind11;
-namespace type_utils = dpctl::tensor::type_utils;
-
 typedef sycl::event (*dot_impl_fn_ptr_t)(sycl::queue &,
                                          const std::int64_t,
                                          char *,
@@ -56,61 +52,17 @@ typedef sycl::event (*dot_impl_fn_ptr_t)(sycl::queue &,
                                          char *,
                                          const std::vector<sycl::event> &);
 
-static dot_impl_fn_ptr_t dot_dispatch_vector[dpctl_td_ns::num_types];
+namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+namespace py = pybind11;
 
-template <typename T>
-static sycl::event dot_impl(sycl::queue &exec_q,
-                            const std::int64_t n,
-                            char *vectorX,
-                            const std::int64_t incx,
-                            char *vectorY,
-                            const std::int64_t incy,
-                            char *result,
-                            const std::vector<sycl::event> &depends)
-{
-    type_utils::validate_type_for_device<T>(exec_q);
-
-    T *x = reinterpret_cast<T *>(vectorX);
-    T *y = reinterpret_cast<T *>(vectorY);
-    T *res = reinterpret_cast<T *>(result);
-
-    std::stringstream error_msg;
-    bool is_exception_caught = false;
-
-    sycl::event dot_event;
-    try {
-        dot_event = mkl_blas::row_major::dot(exec_q,
-                                             n,    // size of the input vectors
-                                             x,    // Pointer to vector x.
-                                             incx, // Stride of vector x.
-                                             y,    // Pointer to vector y.
-                                             incy, // Stride of vector y.
-                                             res,  // Pointer to result.
-                                             depends);
-    } catch (oneapi::mkl::exception const &e) {
-        error_msg
-            << "Unexpected MKL exception caught during dot() call:\nreason: "
-            << e.what();
-        is_exception_caught = true;
-    } catch (sycl::exception const &e) {
-        error_msg << "Unexpected SYCL exception caught during dot() call:\n"
-                  << e.what();
-        is_exception_caught = true;
-    }
-
-    if (is_exception_caught) // an unexpected error occurs
-    {
-        throw std::runtime_error(error_msg.str());
-    }
-
-    return dot_event;
-}
-
-std::pair<sycl::event, sycl::event> dot(sycl::queue &exec_q,
-                                        dpctl::tensor::usm_ndarray vectorX,
-                                        dpctl::tensor::usm_ndarray vectorY,
-                                        dpctl::tensor::usm_ndarray result,
-                                        const std::vector<sycl::event> &depends)
+template <typename dispatchT>
+std::pair<sycl::event, sycl::event>
+    dot_func(sycl::queue &exec_q,
+             dpctl::tensor::usm_ndarray vectorX,
+             dpctl::tensor::usm_ndarray vectorY,
+             dpctl::tensor::usm_ndarray result,
+             const std::vector<sycl::event> &depends,
+             const dispatchT &dot_dispatch_vector)
 {
     const int vectorX_nd = vectorX.get_ndim();
     const int vectorY_nd = vectorY.get_ndim();
@@ -219,28 +171,17 @@ std::pair<sycl::event, sycl::event> dot(sycl::queue &exec_q,
     return std::make_pair(args_ev, dot_ev);
 }
 
-template <typename fnT, typename varT>
-struct DotContigFactory
+template <typename dispatchT,
+          template <typename fnT, typename T>
+          typename factoryT>
+void init_dot_dispatch_vector(dispatchT dot_dispatch_vector[])
 {
-    fnT get()
-    {
-        if constexpr (types::DotTypePairSupportFactory<varT>::is_defined) {
-            return dot_impl<varT>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-void init_dot_dispatch_vector(void)
-{
-    dpctl_td_ns::DispatchVectorBuilder<dot_impl_fn_ptr_t, DotContigFactory,
+    dpctl_td_ns::DispatchVectorBuilder<dispatchT, factoryT,
                                        dpctl_td_ns::num_types>
         contig;
     contig.populate_dispatch_vector(dot_dispatch_vector);
 }
-} // namespace blas
+} // namespace dot
 } // namespace ext
 } // namespace backend
 } // namespace dpnp
