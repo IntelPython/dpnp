@@ -652,8 +652,6 @@ class TestInv:
         expected = numpy.linalg.inv(a)
         assert_dtype_allclose(result, expected)
 
-    # TODO: remove skipif when MKLD-16626 is resolved
-    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
     @pytest.mark.parametrize(
         "matrix",
         [
@@ -750,12 +748,10 @@ class TestMatrixPower:
         assert_raises(TypeError, inp.linalg.matrix_power, a_dp, [2])
 
         # not invertible
-        # TODO: remove it when mkl>=2024.0 is released (MKLD-16626)
-        if not is_cpu_device():
-            noninv = inp.array([[1, 0], [0, 0]])
-            assert_raises(
-                inp.linalg.LinAlgError, inp.linalg.matrix_power, noninv, -1
-            )
+        noninv = inp.array([[1, 0], [0, 0]])
+        assert_raises(
+            inp.linalg.LinAlgError, inp.linalg.matrix_power, noninv, -1
+        )
 
 
 class TestMatrixRank:
@@ -1456,8 +1452,6 @@ class TestSolve:
         result = inp.linalg.solve(a_dp[::-2, ::-2], b_dp[::-2])
         assert_allclose(expected, result, rtol=1e-05)
 
-    # TODO: remove skipif when MKLD-16626 is resolved
-    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
     @pytest.mark.parametrize(
         "matrix, vector",
         [
