@@ -182,8 +182,6 @@ std::pair<sycl::event, sycl::event>
             "USM allocations are not compatible with the execution queue.");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(resultC);
-
     const py::ssize_t *a_shape = matrixA.get_shape_raw();
     const py::ssize_t *b_shape = matrixB.get_shape_raw();
     const py::ssize_t *c_shape = resultC.get_shape_raw();
