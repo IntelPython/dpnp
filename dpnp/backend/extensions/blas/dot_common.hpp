@@ -26,6 +26,7 @@
 #pragma once
 
 #include <oneapi/mkl.hpp>
+#include <pybind11/pybind11.h>
 
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
@@ -40,6 +41,8 @@ namespace dpnp
 namespace backend
 {
 namespace ext
+{
+namespace blas
 {
 namespace dot
 {
@@ -182,6 +185,7 @@ void init_dot_dispatch_vector(dispatchT dot_dispatch_vector[])
     contig.populate_dispatch_vector(dot_dispatch_vector);
 }
 } // namespace dot
+} // namespace blas
 } // namespace ext
 } // namespace backend
 } // namespace dpnp

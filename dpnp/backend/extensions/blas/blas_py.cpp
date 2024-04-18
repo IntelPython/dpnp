@@ -38,6 +38,8 @@
 
 namespace blas_ext = dpnp::backend::ext::blas;
 namespace py = pybind11;
+namespace dot_ext = blas_ext::dot;
+using dot_ext::dot_impl_fn_ptr_t;
 
 // populate dispatch tables
 void init_dispatch_tables(void)
@@ -45,9 +47,6 @@ void init_dispatch_tables(void)
     blas_ext::init_gemm_batch_dispatch_table();
     blas_ext::init_gemm_dispatch_table();
 }
-
-namespace dot_ext = dpnp::backend::ext::dot;
-using dot_ext::dot_impl_fn_ptr_t;
 
 static dot_impl_fn_ptr_t dot_dispatch_vector[dpctl_td_ns::num_types];
 static dot_impl_fn_ptr_t dotc_dispatch_vector[dpctl_td_ns::num_types];
