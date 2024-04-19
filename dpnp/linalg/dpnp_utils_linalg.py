@@ -1274,7 +1274,6 @@ def dpnp_lstsq(a, b, rcond=None):
 
     """
 
-    # fix 0-dim
     if b.ndim > 2:
         raise dpnp.linalg.LinAlgError(
             f"{b.ndim}-dimensional array given. The input "
@@ -1294,10 +1293,12 @@ def dpnp_lstsq(a, b, rcond=None):
         # some doc of gelss/gelsd says "rcond < 0", but it's not true!
         rcond = dpnp.finfo(s.dtype).eps
 
+    res_usm_type, exec_q = get_usm_allocations([a, b])
+
     # number of singular values and matrix rank
     s1 = 1 / s
     rank = dpnp.array(
-        s.size, dtype="int32", sycl_queue=a.sycl_queue, usm_type=a.usm_type
+        s.size, dtype="int32", sycl_queue=exec_q, usm_type=res_usm_type
     )
     if s.size > 0:
         cutoff = rcond * s.max()
@@ -1312,11 +1313,17 @@ def dpnp_lstsq(a, b, rcond=None):
     # Calculate squared Euclidean 2-norm for each column in b - a*x
     if m <= n or rank != n:
         resids = dpnp.empty(
-            (0,), dtype=s.dtype, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+            (0,), dtype=s.dtype, sycl_queue=exec_q, usm_type=res_usm_type
         )
     else:
         e = b - a.dot(x)
         resids = dpnp.atleast_1d(_nrm2_last_axis(e.T))
+
+    # We need to copy singular values array to USM memory according
+    # to compute follows data if its type of SYCL USM allocation
+    # does not match with res_usm_type
+    if s.usm_type != res_usm_type:
+        s = dpnp.copy(a, sycl_queue=exec_q, usm_type=res_usm_type)
     return x, resids, rank, s
 
 
