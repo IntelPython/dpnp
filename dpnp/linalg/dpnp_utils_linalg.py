@@ -42,6 +42,7 @@ __all__ = [
     "dpnp_det",
     "dpnp_eigh",
     "dpnp_inv",
+    "dpnp_lstsq",
     "dpnp_matrix_power",
     "dpnp_matrix_rank",
     "dpnp_multi_dot",
@@ -653,6 +654,37 @@ def _triu_inplace(a, host_tasks, depends=None):
     return out
 
 
+def check_2d(*arrays):
+    """
+    Return ``True`` if each array in `arrays` is exactly two dimensions.
+
+    If any array is not two-dimensional, `dpnp.linalg.LinAlgError` will be raised.
+
+    Parameters
+    ----------
+    arrays : {dpnp.ndarray, usm_ndarray}
+        A sequence of input arrays to check for dimensionality.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if each array in `arrays` is exactly two-dimensional.
+
+    Raises
+    ------
+    dpnp.linalg.LinAlgError
+        If any array in `arrays` is not exactly two-dimensional.
+
+    """
+
+    for a in arrays:
+        if a.ndim != 2:
+            raise dpnp.linalg.LinAlgError(
+                f"{a.ndim}-dimensional array given. The input "
+                "array must be exactly two-dimensional"
+            )
+
+
 def check_stacked_2d(*arrays):
     """
     Return ``True`` if each array in `arrays` has at least two dimensions.
@@ -1222,6 +1254,70 @@ def dpnp_inv(a):
     a_ht_copy_ev.wait()
 
     return b_f
+
+
+def _nrm2_last_axis(x):
+    real_dtype = _real_type(x.dtype)
+    x = dpnp.ascontiguousarray(x)
+    if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
+        squared_abs = dpnp.sum(dpnp.abs(x) ** 2, axis=-1, dtype=real_dtype)
+        return squared_abs
+    else:
+        return dpnp.sum(dpnp.square(x), axis=-1, dtype=real_dtype)
+
+
+def dpnp_lstsq(a, b, rcond=None):
+    """
+    dpnp_lstsq(a, b, rcond=None)
+
+    Return the least-squares solution to a linear matrix equation.
+
+    """
+
+    # fix 0-dim
+    if b.ndim > 2:
+        raise dpnp.linalg.LinAlgError(
+            f"{b.ndim}-dimensional array given. The input "
+            "array must be exactly two-dimensional"
+        )
+
+    m, n = a.shape[-2:]
+    m2 = b.shape[0]
+    if m != m2:
+        raise dpnp.linalg.LinAlgError("Incompatible dimensions")
+
+    u, s, vh = dpnp_svd(a, full_matrices=False)
+
+    if rcond is None:
+        rcond = dpnp.finfo(s.dtype).eps * max(m, n)
+    elif rcond <= 0 or rcond >= 1:
+        # some doc of gelss/gelsd says "rcond < 0", but it's not true!
+        rcond = dpnp.finfo(s.dtype).eps
+
+    # number of singular values and matrix rank
+    s1 = 1 / s
+    rank = dpnp.array(
+        s.size, dtype="int32", sycl_queue=a.sycl_queue, usm_type=a.usm_type
+    )
+    if s.size > 0:
+        cutoff = rcond * s.max()
+        sing_vals = s <= cutoff
+        s1[sing_vals] = 0
+        rank -= sing_vals.sum(dtype="int32")
+
+    # Solve the least-squares solution
+    # x = vh.T.conj() @ diag(s1) @ u.T.conj() @ b
+    z = (dpnp.dot(b.T, u.conj()) * s1).T
+    x = dpnp.dot(vh.T.conj(), z)
+    # Calculate squared Euclidean 2-norm for each column in b - a*x
+    if m <= n or rank != n:
+        resids = dpnp.empty(
+            (0,), dtype=s.dtype, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+        )
+    else:
+        e = b - a.dot(x)
+        resids = dpnp.atleast_1d(_nrm2_last_axis(e.T))
+    return x, resids, rank, s
 
 
 def dpnp_matrix_power(a, n):
