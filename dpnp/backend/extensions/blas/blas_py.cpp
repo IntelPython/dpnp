@@ -31,27 +31,46 @@
 #include <pybind11/stl.h>
 
 #include "dot.hpp"
+#include "dot_common.hpp"
+#include "dotc.hpp"
+#include "dotu.hpp"
 #include "gemm.hpp"
 
 namespace blas_ext = dpnp::backend::ext::blas;
 namespace py = pybind11;
+namespace dot_ext = blas_ext::dot;
+using dot_ext::dot_impl_fn_ptr_t;
 
 // populate dispatch tables
 void init_dispatch_tables(void)
 {
-    blas_ext::init_dot_dispatch_table();
-    blas_ext::init_dotc_dispatch_table();
-    blas_ext::init_dotu_dispatch_table();
     blas_ext::init_gemm_batch_dispatch_table();
     blas_ext::init_gemm_dispatch_table();
 }
+
+static dot_impl_fn_ptr_t dot_dispatch_vector[dpctl_td_ns::num_types];
+static dot_impl_fn_ptr_t dotc_dispatch_vector[dpctl_td_ns::num_types];
+static dot_impl_fn_ptr_t dotu_dispatch_vector[dpctl_td_ns::num_types];
 
 PYBIND11_MODULE(_blas_impl, m)
 {
     init_dispatch_tables();
 
+    using arrayT = dpctl::tensor::usm_ndarray;
+    using event_vecT = std::vector<sycl::event>;
+
     {
-        m.def("_dot", &blas_ext::dot,
+        dot_ext::init_dot_dispatch_vector<dot_impl_fn_ptr_t,
+                                          blas_ext::DotContigFactory>(
+            dot_dispatch_vector);
+
+        auto dot_pypi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                            arrayT dst, const event_vecT &depends = {}) {
+            return dot_ext::dot_func(exec_q, src1, src2, dst, depends,
+                                     dot_dispatch_vector);
+        };
+
+        m.def("_dot", dot_pypi,
               "Call `dot` from OneMKL BLAS library to return "
               "the dot product of two real-valued vectors.",
               py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
@@ -59,7 +78,17 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
-        m.def("_dotc", &blas_ext::dotc,
+        dot_ext::init_dot_dispatch_vector<dot_impl_fn_ptr_t,
+                                          blas_ext::DotcContigFactory>(
+            dotc_dispatch_vector);
+
+        auto dotc_pypi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                             arrayT dst, const event_vecT &depends = {}) {
+            return dot_ext::dot_func(exec_q, src1, src2, dst, depends,
+                                     dotc_dispatch_vector);
+        };
+
+        m.def("_dotc", dotc_pypi,
               "Call `dotc` from OneMKL BLAS library to return "
               "the dot product of two complex vectors, "
               "conjugating the first vector.",
@@ -68,7 +97,17 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
-        m.def("_dotu", &blas_ext::dotu,
+        dot_ext::init_dot_dispatch_vector<dot_impl_fn_ptr_t,
+                                          blas_ext::DotuContigFactory>(
+            dotu_dispatch_vector);
+
+        auto dotu_pypi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                             arrayT dst, const event_vecT &depends = {}) {
+            return dot_ext::dot_func(exec_q, src1, src2, dst, depends,
+                                     dotu_dispatch_vector);
+        };
+
+        m.def("_dotu", dotu_pypi,
               "Call `dotu` from OneMKL BLAS library to return "
               "the dot product of two complex vectors.",
               py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),

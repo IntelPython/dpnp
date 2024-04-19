@@ -39,14 +39,14 @@ namespace mkl_blas = oneapi::mkl::blas;
 namespace type_utils = dpctl::tensor::type_utils;
 
 template <typename T>
-static sycl::event dot_impl(sycl::queue &exec_q,
-                            const std::int64_t n,
-                            char *vectorX,
-                            const std::int64_t incx,
-                            char *vectorY,
-                            const std::int64_t incy,
-                            char *result,
-                            const std::vector<sycl::event> &depends)
+static sycl::event dotc_impl(sycl::queue &exec_q,
+                             const std::int64_t n,
+                             char *vectorX,
+                             const std::int64_t incx,
+                             char *vectorY,
+                             const std::int64_t incy,
+                             char *result,
+                             const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
 
@@ -57,23 +57,23 @@ static sycl::event dot_impl(sycl::queue &exec_q,
     std::stringstream error_msg;
     bool is_exception_caught = false;
 
-    sycl::event dot_event;
+    sycl::event dotc_event;
     try {
-        dot_event = mkl_blas::row_major::dot(exec_q,
-                                             n,    // size of the input vectors
-                                             x,    // Pointer to vector x.
-                                             incx, // Stride of vector x.
-                                             y,    // Pointer to vector y.
-                                             incy, // Stride of vector y.
-                                             res,  // Pointer to result.
-                                             depends);
+        dotc_event = mkl_blas::row_major::dotc(exec_q,
+                                               n, // size of the input vectors
+                                               x, // Pointer to vector x.
+                                               incx, // Stride of vector x.
+                                               y,    // Pointer to vector y.
+                                               incy, // Stride of vector y.
+                                               res,  // Pointer to result.
+                                               depends);
     } catch (oneapi::mkl::exception const &e) {
         error_msg
-            << "Unexpected MKL exception caught during dot() call:\nreason: "
+            << "Unexpected MKL exception caught during dotc() call:\nreason: "
             << e.what();
         is_exception_caught = true;
     } catch (sycl::exception const &e) {
-        error_msg << "Unexpected SYCL exception caught during dot() call:\n"
+        error_msg << "Unexpected SYCL exception caught during dotc() call:\n"
                   << e.what();
         is_exception_caught = true;
     }
@@ -83,22 +83,23 @@ static sycl::event dot_impl(sycl::queue &exec_q,
         throw std::runtime_error(error_msg.str());
     }
 
-    return dot_event;
+    return dotc_event;
 }
 
 template <typename fnT, typename varT>
-struct DotContigFactory
+struct DotcContigFactory
 {
     fnT get()
     {
-        if constexpr (types::DotTypePairSupportFactory<varT>::is_defined) {
-            return dot_impl<varT>;
+        if constexpr (types::DotcTypePairSupportFactory<varT>::is_defined) {
+            return dotc_impl<varT>;
         }
         else {
             return nullptr;
         }
     }
 };
+
 } // namespace blas
 } // namespace ext
 } // namespace backend
