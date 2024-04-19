@@ -2022,3 +2022,35 @@ def test_tensorsolve(device):
     result_queue = result.sycl_queue
 
     assert_sycl_queue_equal(result_queue, a_dp.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    ["m", "n", "nrhs"],
+    [
+        (4, 2, 2),
+        (4, 0, 1),
+        (4, 2, 0),
+        (0, 0, 0),
+    ],
+)
+def test_lstsq(m, n, nrhs, device):
+    a_np = numpy.arange(m * n).reshape(m, n).astype(dpnp.default_float_type())
+    b_np = numpy.ones((m, nrhs)).astype(dpnp.default_float_type())
+
+    a_dp = dpnp.array(a_np, device=device)
+    b_dp = dpnp.array(b_np, device=device)
+
+    result_dp = dpnp.linalg.lstsq(a_dp, b_dp)
+    result = numpy.linalg.lstsq(a_np, b_np)
+
+    for param_dp, param_np in zip(result_dp, result):
+        assert_dtype_allclose(param_dp, param_np)
+
+    for param_dp in result_dp:
+        assert_sycl_queue_equal(param_dp.sycl_queue, a_dp.sycl_queue)
+        assert_sycl_queue_equal(param_dp.sycl_queue, b_dp.sycl_queue)
