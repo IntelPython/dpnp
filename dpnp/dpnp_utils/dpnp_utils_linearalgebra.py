@@ -53,7 +53,7 @@ def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
         x1_usm = dpnp.get_usm_ndarray(x1)
         x2_usm = dpnp.get_usm_ndarray(x2)
         out_usm = dpnp.get_usm_ndarray(out)
-        contig_flag = _define_contig_flag(out)
+        contig_flag = _define_contig_flag(out) if out.ndim > 1 else True
 
         if (
             out.dtype == dtype
