@@ -46,7 +46,7 @@ def run(
             "LLVM_TOOLS_HOME": bin_llvm,
         }
 
-    # extend with global enviroment variables
+    # extend with global environment variables
     env.update({k: v for k, v in os.environ.items() if k != "PATH"})
 
     if verbose:

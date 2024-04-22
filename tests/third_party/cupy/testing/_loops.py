@@ -349,7 +349,7 @@ numpy: {}""".format(
                             )
                         )
 
-            # Check contiguities
+            # Check contiguous
             if contiguous_check:
                 for cupy_r, numpy_r in zip(cupy_result, numpy_result):
                     if isinstance(numpy_r, numpy.ndarray):
@@ -1149,7 +1149,7 @@ def for_signed_dtypes(name="dtype"):
 
 
 def for_unsigned_dtypes(name="dtype"):
-    """Decorator that checks the fixture with unsinged dtypes.
+    """Decorator that checks the fixture with unsigned dtypes.
 
     Args:
          name(str): Argument name to which specified dtypes are passed.

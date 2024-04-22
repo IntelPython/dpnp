@@ -195,7 +195,7 @@ std::pair<sycl::event, sycl::event>
     }
     if (b_shape[2] != c_shape[2]) {
         throw py::value_error("The number of columns in B must be equal to "
-                              "the number of coulmns in result array.");
+                              "the number of columns in result array.");
     }
 
     std::int64_t first_dim;

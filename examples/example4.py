@@ -28,7 +28,7 @@
 """Example 1.
 
 This example shows input and output types of specified function
-This is usefull for development
+This is useful for development
 
 """
 

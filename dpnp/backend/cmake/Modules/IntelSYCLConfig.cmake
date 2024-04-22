@@ -188,7 +188,7 @@ function(SYCL_FEATURE_TEST_RUN TEST_EXE)
     set(IntelSYCL_FOUND False)
     set(SYCL_REASON_FAILURE "SYCL: feature test execution failed!!")
   endif()
-  # TODO: what iff the result is false.. error or ignore?
+  # TODO: what if the result is false.. error or ignore?
 
   set( test_result "${result}" PARENT_SCOPE)
   set( test_output "${output}" PARENT_SCOPE)
