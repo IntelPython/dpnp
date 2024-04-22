@@ -1285,7 +1285,7 @@ def dpnp_lstsq(a, b, rcond=None):
     if m != m2:
         raise dpnp.linalg.LinAlgError("Incompatible dimensions")
 
-    u, s, vh = dpnp_svd(a, full_matrices=False)
+    u, s, vh = dpnp_svd(a, full_matrices=False, related_arrays=[b])
 
     if rcond is None:
         rcond = dpnp.finfo(s.dtype).eps * max(m, n)
@@ -1293,12 +1293,10 @@ def dpnp_lstsq(a, b, rcond=None):
         # some doc of gelss/gelsd says "rcond < 0", but it's not true!
         rcond = dpnp.finfo(s.dtype).eps
 
-    res_usm_type, exec_q = get_usm_allocations([a, b])
-
     # number of singular values and matrix rank
     s1 = 1 / s
     rank = dpnp.array(
-        s.size, dtype="int32", sycl_queue=exec_q, usm_type=res_usm_type
+        s.size, dtype="int32", sycl_queue=s.sycl_queue, usm_type=s.usm_type
     )
     if s.size > 0:
         cutoff = rcond * s.max()
@@ -1313,17 +1311,12 @@ def dpnp_lstsq(a, b, rcond=None):
     # Calculate squared Euclidean 2-norm for each column in b - a*x
     if m <= n or rank != n:
         resids = dpnp.empty(
-            (0,), dtype=s.dtype, sycl_queue=exec_q, usm_type=res_usm_type
+            (0,), dtype=s.dtype, sycl_queue=s.sycl_queue, usm_type=s.usm_type
         )
     else:
         e = b - a.dot(x)
         resids = dpnp.atleast_1d(_nrm2_last_axis(e.T))
 
-    # We need to copy singular values array to USM memory according
-    # to compute follows data if its type of SYCL USM allocation
-    # does not match with res_usm_type
-    if s.usm_type != res_usm_type:
-        s = dpnp.copy(a, sycl_queue=exec_q, usm_type=res_usm_type)
     return x, resids, rank, s
 
 
@@ -2134,16 +2127,29 @@ def dpnp_slogdet(a):
     )
 
 
-def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
+def dpnp_svd_batch(
+    a, uv_type, s_type, full_matrices=True, compute_uv=True, related_arrays=None
+):
     """
-    dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True)
+    dpnp_svd_batch(
+        a, uv_type, s_type, full_matrices=True, compute_uv=True, related_arrays=None
+    )
 
     Return the batched singular value decomposition (SVD) of a stack of matrices.
 
     """
 
-    a_usm_type = a.usm_type
-    a_sycl_queue = a.sycl_queue
+    # Set USM type and SYCL queue to be used based on `a`
+    # and optionally provided `related_arrays`.
+    # If `related_arrays` is not provided, default to USM type and SYCL queue of `a`.
+    # Otherwise, determine USM type and SYCL queue using
+    # compute-follows-data execution model for `a` and `related arrays`.
+    if related_arrays is None:
+        usm_type = a.usm_type
+        exec_q = a.sycl_queue
+    else:
+        usm_type, exec_q = get_usm_allocations([a] + related_arrays)
+
     reshape = False
     batch_shape_orig = a.shape[:-2]
 
@@ -2160,8 +2166,8 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
         s = dpnp.empty(
             batch_shape_orig + (k,),
             dtype=s_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
+            usm_type=usm_type,
+            sycl_queue=exec_q,
         )
         if compute_uv:
             if full_matrices:
@@ -2174,14 +2180,14 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
             u = dpnp.empty(
                 u_shape,
                 dtype=uv_type,
-                usm_type=a_usm_type,
-                sycl_queue=a_sycl_queue,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
             )
             vt = dpnp.empty(
                 vt_shape,
                 dtype=uv_type,
-                usm_type=a_usm_type,
-                sycl_queue=a_sycl_queue,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
             )
             return u, s, vt
         else:
@@ -2190,8 +2196,8 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
         s = dpnp.empty(
             batch_shape_orig + (0,),
             dtype=s_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
+            usm_type=usm_type,
+            sycl_queue=exec_q,
         )
         if compute_uv:
             if full_matrices:
@@ -2199,28 +2205,28 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
                     batch_shape_orig,
                     m,
                     dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
+                    usm_type=usm_type,
+                    sycl_queue=exec_q,
                 )
                 vt = _stacked_identity(
                     batch_shape_orig,
                     n,
                     dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
+                    usm_type=usm_type,
+                    sycl_queue=exec_q,
                 )
             else:
                 u = dpnp.empty(
                     batch_shape_orig + (m, 0),
                     dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
+                    usm_type=usm_type,
+                    sycl_queue=exec_q,
                 )
                 vt = dpnp.empty(
                     batch_shape_orig + (0, n),
                     dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
+                    usm_type=usm_type,
+                    sycl_queue=exec_q,
                 )
             return u, s, vt
         else:
@@ -2268,10 +2274,22 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
 
 
 def dpnp_svd(
-    a, full_matrices=True, compute_uv=True, hermitian=False, batch_call=False
+    a,
+    full_matrices=True,
+    compute_uv=True,
+    hermitian=False,
+    batch_call=False,
+    related_arrays=None,
 ):
     """
-    dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False, batch_call=False)
+    dpnp_svd(
+        a,
+        full_matrices=True,
+        compute_uv=True,
+        hermitian=False,
+        batch_call=False,
+        related_arrays=None,
+    )
 
     Return the singular value decomposition (SVD).
 
@@ -2308,18 +2326,34 @@ def dpnp_svd(
     s_type = _real_type(uv_type)
 
     if a.ndim > 2:
-        return dpnp_svd_batch(a, uv_type, s_type, full_matrices, compute_uv)
+        return dpnp_svd_batch(
+            a,
+            uv_type,
+            s_type,
+            full_matrices,
+            compute_uv,
+            related_arrays=related_arrays,
+        )
 
-    a_usm_type = a.usm_type
-    a_sycl_queue = a.sycl_queue
+    # Set USM type and SYCL queue to be used based on `a`
+    # and optionally provided `related_arrays`.
+    # If `related_arrays` is not provided, default to USM type and SYCL queue of `a`.
+    # Otherwise, determine USM type and SYCL queue using
+    # compute-follows-data execution model for `a` and `related arrays`.
+    if related_arrays is None:
+        usm_type = a.usm_type
+        exec_q = a.sycl_queue
+    else:
+        usm_type, exec_q = get_usm_allocations([a] + related_arrays)
+
     m, n = a.shape
 
     if m == 0 or n == 0:
         s = dpnp.empty(
             (0,),
             dtype=s_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
+            usm_type=usm_type,
+            sycl_queue=exec_q,
         )
         if compute_uv:
             if full_matrices:
@@ -2332,14 +2366,14 @@ def dpnp_svd(
             u = dpnp.eye(
                 *u_shape,
                 dtype=uv_type,
-                usm_type=a_usm_type,
-                sycl_queue=a_sycl_queue,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
             )
             vt = dpnp.eye(
                 *vt_shape,
                 dtype=uv_type,
-                usm_type=a_usm_type,
-                sycl_queue=a_sycl_queue,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
             )
             return u, s, vt
         else:
@@ -2347,14 +2381,16 @@ def dpnp_svd(
 
     # oneMKL LAPACK gesvd destroys `a` and assumes fortran-like array as input.
     # Allocate 'F' order memory for dpnp arrays to comply with these requirements.
-    a_h = dpnp.empty_like(a, order="F", dtype=uv_type)
+    a_h = dpnp.empty_like(
+        a, order="F", dtype=uv_type, usm_type=usm_type, sycl_queue=exec_q
+    )
 
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
     # use DPCTL tensor function to fill the сopy of the input array
     # from the input array
     a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=exec_q
     )
 
     k = min(m, n)
@@ -2380,22 +2416,20 @@ def dpnp_svd(
         u_shape,
         dtype=uv_type,
         order="F",
-        usm_type=a_usm_type,
-        sycl_queue=a_sycl_queue,
+        usm_type=usm_type,
+        sycl_queue=exec_q,
     )
     vt_h = dpnp.empty(
         vt_shape,
         dtype=uv_type,
         order="F",
-        usm_type=a_usm_type,
-        sycl_queue=a_sycl_queue,
+        usm_type=usm_type,
+        sycl_queue=exec_q,
     )
-    s_h = dpnp.empty(
-        k, dtype=s_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
-    )
+    s_h = dpnp.empty(k, dtype=s_type, usm_type=usm_type, sycl_queue=exec_q)
 
     ht_lapack_ev, _ = li._gesvd(
-        a_sycl_queue,
+        exec_q,
         jobu,
         jobvt,
         a_h.get_array(),
