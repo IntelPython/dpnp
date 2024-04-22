@@ -27,9 +27,6 @@
 set(python_module_name _blas_impl)
 set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/blas_py.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/dot.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/dotc.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/dotu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm_batch.cpp
 )
@@ -66,10 +63,6 @@ else()
 endif()
 
 target_link_options(${python_module_name} PUBLIC -fsycl-device-code-split=per_kernel)
-if (UNIX)
-    # this option is support on Linux only
-    target_link_options(${python_module_name} PUBLIC -flink-huge-device-code)
-endif()
 
 if (DPNP_GENERATE_COVERAGE)
     target_link_options(${python_module_name} PRIVATE -fprofile-instr-generate -fcoverage-mapping)

@@ -129,8 +129,9 @@ class TestCholeskyInvalid(unittest.TestCase):
             with pytest.raises(xp.linalg.LinAlgError):
                 xp.linalg.cholesky(a)
 
-    # TODO: remove skipif when MKLD-16626 is resolved
-    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
+    # TODO: remove skipif when MKLD-17318 is resolved
+    # _potrf does not raise an error with singular matrices on CPU.
+    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-17318")
     @testing.for_dtypes(
         [
             numpy.int32,
