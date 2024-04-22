@@ -1,5 +1,8 @@
 var NAVTREEINDEX2 =
 {
+"index.html":[],
+"lapack_2types__matrix_8hpp_source.html":[2,0,0,1,12],
+"linalg__exceptions_8hpp_source.html":[2,0,0,1,8],
 "ln_8hpp_source.html":[2,0,0,3,21],
 "log10_8hpp_source.html":[2,0,0,3,22],
 "log1p_8hpp_source.html":[2,0,0,3,23],
@@ -21,6 +24,9 @@ var NAVTREEINDEX2 =
 "struct_d_p_n_p_func_data.html#aa88f90ce507ebffe7462bba4d2df6c76":[0,2,0,1],
 "struct_d_p_n_p_func_data.html#af40fd22f5954384788121f817fb02f0d":[0,2,0,0],
 "structare__same.html":[1,0,1],
+"structdpnp_1_1backend_1_1ext_1_1blas_1_1_dot_contig_factory.html":[1,0,0,0,0,0,2],
+"structdpnp_1_1backend_1_1ext_1_1blas_1_1_dotc_contig_factory.html":[1,0,0,0,0,0,1],
+"structdpnp_1_1backend_1_1ext_1_1blas_1_1_dotu_contig_factory.html":[1,0,0,0,0,0,3],
 "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html":[1,0,0,0,0,0,0,1],
 "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html":[1,0,0,0,0,0,0,0],
 "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html":[1,0,0,0,0,0,0,2],
