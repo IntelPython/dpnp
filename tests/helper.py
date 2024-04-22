@@ -235,7 +235,7 @@ def is_cpu_device(device=None):
 
 def is_win_platform():
     """
-    Return True if a test is runing on Windows OS, False otherwise.
+    Return True if a test is running on Windows OS, False otherwise.
     """
     return platform.startswith("win")
 

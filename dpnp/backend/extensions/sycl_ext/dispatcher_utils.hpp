@@ -300,11 +300,11 @@ struct coord_in_space<DispatchT, Matcher, std::tuple<CurrentAxis>>
     }
 };
 
-template <typename DispatchT, typename Matcher, typename... Axises>
-struct coord_in_space<DispatchT, Matcher, std::tuple<Axises...>>
+template <typename DispatchT, typename Matcher, typename... Axes>
+struct coord_in_space<DispatchT, Matcher, std::tuple<Axes...>>
 {
-    using CurrentAxis = typename pop_tuple_type<std::tuple<Axises...>>::element;
-    using OtherAxises = typename pop_tuple_type<std::tuple<Axises...>>::rest;
+    using CurrentAxis = typename pop_tuple_type<std::tuple<Axes...>>::element;
+    using OtherAxises = typename pop_tuple_type<std::tuple<Axes...>>::rest;
 
     static bool get(const DispatchT *data, int *result)
     {

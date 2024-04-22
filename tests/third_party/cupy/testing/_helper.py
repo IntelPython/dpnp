@@ -216,7 +216,7 @@ def generate_matrix(
             matrices. It must be broadcastable to shape :math:`(B..., K)`.
 
     Returns:
-        numpy.ndarray or cupy.ndarray: A random matrix that has specifiec
+        numpy.ndarray or cupy.ndarray: A random matrix that has specific
         singular values.
     """
 
@@ -264,7 +264,7 @@ def assert_warns(expected):
     except AttributeError:
         exc_name = str(expected)
 
-    raise AssertionError("%s not triggerred" % exc_name)
+    raise AssertionError("%s not triggered" % exc_name)
 
 
 class NumpyAliasTestBase(unittest.TestCase):

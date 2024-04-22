@@ -43,7 +43,7 @@ for device in available_devices:
     elif device.device_type.name not in list_of_device_type_str:
         pass
     elif device.backend.name in "opencl" and device.is_gpu:
-        # due to reproted crash on Windows: CMPLRLLVM-55640
+        # due to reported crash on Windows: CMPLRLLVM-55640
         pass
     else:
         valid_devices.append(device)
