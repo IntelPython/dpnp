@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.15.0dev1+39.g0ebd8ad84b documentation</title>
+  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.15.0dev1+43.gc056fbe73b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,8 +23,8 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3079290d"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/documentation_options.js?v=a54d8563"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+39.g0ebd8ad84b
+                0.15.0dev1+43.gc056fbe73b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -390,16 +390,12 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">ntype</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">dtype</span>
 
-    <span class="c1"># We set a block size, as this allows us to iterate over chunks when</span>
-    <span class="c1"># computing histograms, to minimize memory usage.</span>
-    <span class="n">block_size</span> <span class="o">=</span> <span class="mi">65536</span>
-
     <span class="c1"># The fast path uses bincount, but that only works for certain types</span>
     <span class="c1"># of weight</span>
     <span class="c1"># simple_weights = (</span>
     <span class="c1">#     weights is None or</span>
-    <span class="c1">#     np.can_cast(weights.dtype, np.double) or</span>
-    <span class="c1">#     np.can_cast(weights.dtype, complex)</span>
+    <span class="c1">#     dpnp.can_cast(weights.dtype, dpnp.double) or</span>
+    <span class="c1">#     dpnp.can_cast(weights.dtype, complex)</span>
     <span class="c1"># )</span>
     <span class="c1"># TODO: implement a fast path</span>
     <span class="n">simple_weights</span> <span class="o">=</span> <span class="kc">False</span>
@@ -409,24 +405,19 @@
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Compute via cumulative histogram</span>
-        <span class="n">cum_n</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ntype</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">block_size</span><span class="p">):</span>
-                <span class="n">sa</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">block_size</span><span class="p">])</span>
-                <span class="n">cum_n</span> <span class="o">+=</span> <span class="n">_search_sorted_inclusive</span><span class="p">(</span><span class="n">sa</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">)</span>
+            <span class="n">sa</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">cum_n</span> <span class="o">=</span> <span class="n">_search_sorted_inclusive</span><span class="p">(</span><span class="n">sa</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">zero</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
                 <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ntype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
             <span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">block_size</span><span class="p">):</span>
-                <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">block_size</span><span class="p">]</span>
-                <span class="n">tmp_w</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">block_size</span><span class="p">]</span>
-                <span class="n">sorting_index</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">tmp_a</span><span class="p">)</span>
-                <span class="n">sa</span> <span class="o">=</span> <span class="n">tmp_a</span><span class="p">[</span><span class="n">sorting_index</span><span class="p">]</span>
-                <span class="n">sw</span> <span class="o">=</span> <span class="n">tmp_w</span><span class="p">[</span><span class="n">sorting_index</span><span class="p">]</span>
-                <span class="n">cw</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">zero</span><span class="p">,</span> <span class="n">sw</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">ntype</span><span class="p">)))</span>
-                <span class="n">bin_index</span> <span class="o">=</span> <span class="n">_search_sorted_inclusive</span><span class="p">(</span><span class="n">sa</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">)</span>
-                <span class="n">cum_n</span> <span class="o">+=</span> <span class="n">cw</span><span class="p">[</span><span class="n">bin_index</span><span class="p">]</span>
+            <span class="n">sorting_index</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">sa</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">sorting_index</span><span class="p">]</span>
+            <span class="n">sw</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">sorting_index</span><span class="p">]</span>
+            <span class="n">cw</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">zero</span><span class="p">,</span> <span class="n">sw</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">ntype</span><span class="p">)))</span>
+            <span class="n">bin_index</span> <span class="o">=</span> <span class="n">_search_sorted_inclusive</span><span class="p">(</span><span class="n">sa</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">)</span>
+            <span class="n">cum_n</span> <span class="o">=</span> <span class="n">cw</span><span class="p">[</span><span class="n">bin_index</span><span class="p">]</span>
 
         <span class="n">n</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">cum_n</span><span class="p">)</span>
 
