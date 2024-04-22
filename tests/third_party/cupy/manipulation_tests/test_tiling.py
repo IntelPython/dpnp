@@ -44,7 +44,6 @@ class TestRepeatRepeatsNdarray(unittest.TestCase):
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRepeatListBroadcast(unittest.TestCase):
-
     """Test for `repeats` argument using single element list.
 
     This feature is only supported in NumPy 1.10 or later.
@@ -76,7 +75,6 @@ class TestRepeat1D(unittest.TestCase):
     {"repeats": [2], "axis": 0},
 )
 class TestRepeat1DListBroadcast(unittest.TestCase):
-
     """See comment in TestRepeatListBroadcast class."""
 
     @testing.numpy_cupy_array_equal()
