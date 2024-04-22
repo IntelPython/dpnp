@@ -15,7 +15,7 @@ version_mod = imm.SourceFileLoader(
 __version__ = version_mod.get_versions()["version"]
 
 """
-Set project auxilary data like readme and licence files
+Set project auxiliary data like readme and licence files
 """
 with open("README.md") as f:
     __readme_file__ = f.read()

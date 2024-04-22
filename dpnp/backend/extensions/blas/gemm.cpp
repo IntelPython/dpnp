@@ -181,7 +181,7 @@ std::pair<sycl::event, sycl::event>
     }
     if (b_shape[1] != c_shape[1]) {
         throw py::value_error("The number of columns in B must be equal to "
-                              "the number of coulmns in result array.");
+                              "the number of columns in result array.");
     }
 
     size_t src_nelems = m * n;

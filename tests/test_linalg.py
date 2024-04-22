@@ -510,7 +510,7 @@ class TestEigenvalue:
         # NumPy with OneMKL and with rocSOLVER sorts in ascending order,
         # so w's should be directly comparable.
         # However, both OneMKL and rocSOLVER pick a different convention for
-        # constructing eigenvectors, so v's are not directly comparible and
+        # constructing eigenvectors, so v's are not directly comparable and
         # we verify them through the eigen equation A*v=w*v.
         if func in ("eig", "eigh"):
             w, _ = getattr(numpy.linalg, func)(a_order)

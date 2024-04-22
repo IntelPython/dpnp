@@ -1139,7 +1139,7 @@ class TestPermutationsTestShuffle:
         ],
     )
     def test_shuffle1(self, conv):
-        # `conv` contans test lists, arrays (of various dtypes), and multidimensional
+        # `conv` contains test lists, arrays (of various dtypes), and multidimensional
         # versions of both, c-contiguous or not.
         #
         # This test is a modification of the original tests of `numpy.random` (both the same):
