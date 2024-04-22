@@ -59,7 +59,7 @@ var NAVTREEINDEX2 =
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_17b2e4d9f422d6a255a67e036ce4e46b3.html":[1,0,0,0,0,2,4],
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_1eacc8a58f076baec98f1eb11bc1030e3.html":[1,0,0,0,0,2,5],
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space.html":[1,0,0,0,0,2,7],
-"structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_02eb2bcf087b8888b023b145a4e539e4d.html":[1,0,0,0,0,2,8],
+"structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_05165243a6f8dde008b6a09f3e23101f7.html":[1,0,0,0,0,2,8],
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_09145d8edb59d4cea6805114cb85ebe7b.html":[1,0,0,0,0,2,9],
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1elements__count.html":[1,0,0,0,0,2,10],
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1elements__count_3_01std_1_1tuple_3_01_t_00_01_axis_8_8_8_01_4_01_4.html":[1,0,0,0,0,2,12],
