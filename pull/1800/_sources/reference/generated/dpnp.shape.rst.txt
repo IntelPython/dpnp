@@ -1,0 +1,6 @@
+﻿dpnp.shape
+==========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: shape
