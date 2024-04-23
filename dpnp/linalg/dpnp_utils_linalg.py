@@ -504,6 +504,35 @@ def _multi_svd_norm(x, row_axis, col_axis, op):
     return result
 
 
+def _nrm2_last_axis(x):
+    """
+    Calculate the sum of squares along the last axis of an array.
+
+    This function handles arrays containing real or complex numbers.
+    For complex data types, it computes the sum of squared magnitudes;
+    For real adata types, it sums the squares of the elements.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Sum of squares calculated along the last axis.
+
+    """
+
+    real_dtype = _real_type(x.dtype)
+    # TODO: use dpnp.sum(dpnp.square(dpnp.view(x)), axis=-1, dtype=real_dtype)
+    # w/a since dpnp.view() in not implemented yet
+    # Сalculate and sum the squares of both real and imaginary parts for compelex array.
+    if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
+        return dpnp.sum(dpnp.abs(x) ** 2, axis=-1, dtype=real_dtype)
+    else:
+        return dpnp.sum(dpnp.square(x), axis=-1, dtype=real_dtype)
+
+
 def _real_type(dtype, device=None):
     """
     Returns the real data type corresponding to a given dpnp data type.
@@ -1254,16 +1283,6 @@ def dpnp_inv(a):
     a_ht_copy_ev.wait()
 
     return b_f
-
-
-def _nrm2_last_axis(x):
-    real_dtype = _real_type(x.dtype)
-    x = dpnp.ascontiguousarray(x)
-    if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
-        squared_abs = dpnp.sum(dpnp.abs(x) ** 2, axis=-1, dtype=real_dtype)
-        return squared_abs
-    else:
-        return dpnp.sum(dpnp.square(x), axis=-1, dtype=real_dtype)
 
 
 def dpnp_lstsq(a, b, rcond=None):
