@@ -2341,7 +2341,11 @@ def dpnp_svd(
             s = dpnp.abs(s)
             return dpnp.sort(s)[..., ::-1]
 
-    uv_type = _common_type(a)
+    uv_type = (
+        _common_type(a)
+        if not related_arrays
+        else _common_type(a, *related_arrays)
+    )
     s_type = _real_type(uv_type)
 
     if a.ndim > 2:
