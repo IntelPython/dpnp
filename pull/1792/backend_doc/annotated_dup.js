@@ -10,7 +10,10 @@ var annotated_dup =
               [ "DotuTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
               [ "GemmBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
               [ "GemmTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ]
-            ] ]
+            ] ],
+            [ "DotcContigFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1_dotc_contig_factory.html", null ],
+            [ "DotContigFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1_dot_contig_factory.html", null ],
+            [ "DotuContigFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1_dotu_contig_factory.html", null ]
           ] ],
           [ "lapack", null, [
             [ "helper", null, [
@@ -46,7 +49,7 @@ var annotated_dup =
             [ "cartesian_product_impl< std::tuple< std::tuple< T >, FirstTupleArgs... >, std::tuple< SecondTupleArgs... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_1eacc8a58f076baec98f1eb11bc1030e3.html", null ],
             [ "CartesianDispatcher", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_cartesian_dispatcher.html", null ],
             [ "coord_in_space", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space.html", null ],
-            [ "coord_in_space< DispatchT, Matcher, std::tuple< Axises... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_02eb2bcf087b8888b023b145a4e539e4d.html", null ],
+            [ "coord_in_space< DispatchT, Matcher, std::tuple< Axes... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_05165243a6f8dde008b6a09f3e23101f7.html", null ],
             [ "coord_in_space< DispatchT, Matcher, std::tuple< CurrentAxis > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_09145d8edb59d4cea6805114cb85ebe7b.html", null ],
             [ "elements_count", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1elements__count.html", null ],
             [ "elements_count< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1elements__count_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
