@@ -137,7 +137,7 @@ def replace_kwarg_value(f, arg_name, in_values, out_value):
     return wrapper
 
 
-# setting some dummy attrubutes to dpnp
+# setting some dummy attributes to dpnp
 unsupported_classes = [
     "byte",
     "bytes_",
@@ -278,7 +278,7 @@ dpnp.zeros = replace_kwarg_value(
     None,
 )
 
-# setting some dummy attrubutes to dpnp
+# setting some dummy attributes to dpnp
 dpnp.add.reduce = dummy_func
 dpnp.allclose = dummy_func
 dpnp.csingle = dpnp.complex64
@@ -318,7 +318,7 @@ dpnp.linalg._umath_linalg = dummymodule
 dpnp.ufunc = types.FunctionType
 
 
-# setting some numpy attrubutes to dpnp
+# setting some numpy attributes to dpnp
 NUMPY_ONLY_ATTRS = [
     "BUFSIZE",
     "_NoValue",

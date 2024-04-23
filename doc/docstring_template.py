@@ -42,7 +42,7 @@ According to this template docstrings should consist of below sections:
 
 Recommendations:
 1. Short description
-   maybe partially taken/combinated from `numpy` and `cupy` docstrings.
+   maybe partially taken/combined from `numpy` and `cupy` docstrings.
 2. Limitations basically should be described according to the code,
    paying attention to raised exceptions and fallback to `numpy`.
 3. See Also may include links to similar functionality in `dpnp`

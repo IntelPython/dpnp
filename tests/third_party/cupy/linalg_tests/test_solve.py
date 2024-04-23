@@ -7,7 +7,6 @@ import dpnp as cupy
 from tests.helper import (
     assert_dtype_allclose,
     has_support_aspect64,
-    is_cpu_device,
 )
 from tests.third_party.cupy import testing
 from tests.third_party.cupy.testing import _condition
@@ -164,9 +163,6 @@ class TestInv(unittest.TestCase):
 
 
 class TestInvInvalid(unittest.TestCase):
-    # TODO: remove skipif when MKLD-16626 is resolved
-    # _gesv does not raise an error with singular matrices on CPU.
-    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-16626")
     @testing.for_dtypes("ifdFD")
     def test_inv(self, dtype):
         for xp in (numpy, cupy):
@@ -176,9 +172,9 @@ class TestInvInvalid(unittest.TestCase):
             ):
                 xp.linalg.inv(a)
 
-    # TODO: remove skipif when MKLD-16626 is resolved
+    # TODO: remove skip when MKLD-13852 is resolved
     # _getrf_batch does not raise an error with singular matrices.
-    @pytest.mark.skip("MKLD-16626")
+    @pytest.mark.skip("MKLD-13852")
     @testing.for_dtypes("ifdFD")
     def test_batched_inv(self, dtype):
         for xp in (numpy, cupy):

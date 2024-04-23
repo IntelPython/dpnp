@@ -297,8 +297,8 @@ def test_logical_not(dtype):
 @pytest.mark.parametrize("x2", [5, [1, 2, 5, 6]], ids=["5", "[1, 2, 5, 6]"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
 def test_elemwise_comparison(op, x1, x2, dtype):
-    create_func = (
-        lambda xp, a: xp.asarray(a, dtype=dtype)
+    create_func = lambda xp, a: (
+        xp.asarray(a, dtype=dtype)
         if not numpy.isscalar(a)
         else numpy.dtype(dtype=dtype).type(a)
     )
