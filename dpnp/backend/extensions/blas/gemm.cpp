@@ -27,6 +27,7 @@
 
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
 
 #include "gemm.hpp"
@@ -141,20 +142,21 @@ std::pair<sycl::event, sycl::event>
     const int resultC_nd = resultC.get_ndim();
 
     if ((matrixA_nd != 2) || (matrixB_nd != 2) || (resultC_nd != 2)) {
-        throw py::value_error("The input matrices must be of 2 dimensions.");
+        throw py::value_error("Input matrices must be two-dimensional.");
     }
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     if (overlap(matrixA, resultC)) {
-        throw py::value_error("Input array 1 and output array are overlapping "
-                              "segments of memory");
+        throw py::value_error(
+            "The first input array and output array are overlapping "
+            "segments of memory");
     }
     if (overlap(matrixB, resultC)) {
-        throw py::value_error("Input array 2 and output array are overlapping "
-                              "segments of memory");
+        throw py::value_error(
+            "The second input array and output array are overlapping "
+            "segments of memory");
     }
 
-    // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(
             exec_q,
             {matrixA.get_queue(), matrixB.get_queue(), resultC.get_queue()}))
@@ -163,29 +165,49 @@ std::pair<sycl::event, sycl::event>
             "USM allocations are not compatible with the execution queue.");
     }
 
-    bool is_matrixA_f_contig = matrixA.is_f_contiguous();
-    bool is_matrixB_f_contig = matrixB.is_f_contiguous();
-    bool is_matrixA_c_contig = matrixA.is_c_contiguous();
-    bool is_matrixB_c_contig = matrixB.is_c_contiguous();
-
-    if (!is_matrixA_f_contig and !is_matrixA_c_contig) {
-        throw py::value_error(
-            "Input array 1 is not c-contiguous nor f-contiguous.");
-    }
-    if (!is_matrixB_f_contig and !is_matrixB_c_contig) {
-        throw py::value_error(
-            "Input array 2 is not c-contiguous nor f-contiguous.");
-    }
-
     const py::ssize_t *a_shape = matrixA.get_shape_raw();
     const py::ssize_t *b_shape = matrixB.get_shape_raw();
-    const py::ssize_t *res_shape = resultC.get_shape_raw();
-
+    const py::ssize_t *c_shape = resultC.get_shape_raw();
+    const std::int64_t m = a_shape[0];
+    const std::int64_t n = b_shape[1];
+    const std::int64_t k = a_shape[1];
     if (a_shape[1] != b_shape[0]) {
         throw py::value_error("The number of columns in A must be equal to "
                               "the number of rows in B.");
     }
+    if (a_shape[0] != c_shape[0]) {
+        throw py::value_error("The number of rows in A must be equal to "
+                              "the number of rows in result array.");
+    }
+    if (b_shape[1] != c_shape[1]) {
+        throw py::value_error("The number of columns in B must be equal to "
+                              "the number of columns in result array.");
+    }
 
+    size_t src_nelems = m * n;
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(resultC);
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(resultC,
+                                                               src_nelems);
+
+    bool is_matrixA_f_contig = matrixA.is_f_contiguous();
+    bool is_matrixB_f_contig = matrixB.is_f_contiguous();
+    bool is_resultC_f_contig = resultC.is_f_contiguous();
+    bool is_matrixA_c_contig = matrixA.is_c_contiguous();
+    bool is_matrixB_c_contig = matrixB.is_c_contiguous();
+    bool is_resultC_c_contig = resultC.is_c_contiguous();
+
+    if (!is_matrixA_f_contig and !is_matrixA_c_contig) {
+        throw py::value_error(
+            "The first input array is not c-contiguous nor f-contiguous.");
+    }
+    if (!is_matrixB_f_contig and !is_matrixB_c_contig) {
+        throw py::value_error(
+            "The second input array is not c-contiguous nor f-contiguous.");
+    }
+    if (!is_resultC_f_contig and !is_resultC_c_contig) {
+        throw py::value_error(
+            "Result array is not c-contiguous nor f-contiguous.");
+    }
     oneapi::mkl::transpose transA = is_matrixA_f_contig
                                         ? oneapi::mkl::transpose::T
                                         : oneapi::mkl::transpose::N;
@@ -193,15 +215,9 @@ std::pair<sycl::event, sycl::event>
                                         ? oneapi::mkl::transpose::T
                                         : oneapi::mkl::transpose::N;
 
-    const std::int64_t m = a_shape[0];
-    const std::int64_t n = b_shape[1];
-    const std::int64_t k = a_shape[1];
-
-    const std::int64_t lda =
-        (transA == oneapi::mkl::transpose::N) ? a_shape[1] : a_shape[0];
-    const std::int64_t ldb =
-        (transB == oneapi::mkl::transpose::N) ? b_shape[1] : b_shape[0];
-    const std::int64_t ldc = res_shape[1];
+    const std::int64_t lda = (transA == oneapi::mkl::transpose::N) ? k : m;
+    const std::int64_t ldb = (transB == oneapi::mkl::transpose::N) ? n : k;
+    const std::int64_t ldc = n; // always n for row_major
 
     int matrixA_typenum = matrixA.get_typenum();
     int matrixB_typenum = matrixB.get_typenum();
