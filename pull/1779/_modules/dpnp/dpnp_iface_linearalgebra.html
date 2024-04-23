@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev1+27.geb2cfc4016 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev1+41.gfaf2ef2674 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,8 +23,8 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=6ccf44e6"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/documentation_options.js?v=bf79d1c3"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+27.geb2cfc4016
+                0.15.0dev1+41.gfaf2ef2674
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -262,7 +262,9 @@
 
 <div class="viewcode-block" id="einsum">
 <a class="viewcode-back" href="../../reference/generated/dpnp.einsum.html#dpnp.einsum">[docs]</a>
-<span class="k">def</span> <span class="nf">einsum</span><span class="p">(</span><span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">einsum</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    einsum(subscripts, *operands, out=None, dtype=None, order=&quot;K&quot;, \</span>
 <span class="sd">        casting=&quot;safe&quot;, optimize=False)</span>
@@ -280,7 +282,7 @@
 <span class="sd">        included as well as subscript labels of the precise output form.</span>
 <span class="sd">    *operands : sequence of {dpnp.ndarrays, usm_ndarray}</span>
 <span class="sd">        These are the arrays for the operation.</span>
-<span class="sd">    out : {dpnp.ndarrays, usm_ndarray}, optional</span>
+<span class="sd">    out : {dpnp.ndarrays, usm_ndarray, None}, optional</span>
 <span class="sd">        If provided, the calculation is done into this array.</span>
 <span class="sd">    dtype : {dtype, None}, optional</span>
 <span class="sd">        If provided, forces the calculation to use the data type specified.</span>
@@ -479,47 +481,30 @@
 
 <span class="sd">    &gt;&gt;&gt; a = np.ones(64000).reshape(20, 40, 80)</span>
 
-<span class="sd">    Basic `einsum`: 146 ms ± 23.5 ms per loop (benchmarked on 12th</span>
-<span class="sd">    Gen Intel® Core™ i7-1265U)</span>
+<span class="sd">    Basic `einsum`: 119 ms ± 26 ms per loop (benchmarked on 12th</span>
+<span class="sd">    Gen Intel\u00AE Core\u2122 i7 processor)</span>
 
-<span class="sd">    &gt;&gt;&gt; %timeit -r 10 -n 50 np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a)</span>
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a)</span>
 
-<span class="sd">    Sub-optimal `einsum` (due to repeated path calculation time):</span>
-<span class="sd">    51.9 ms ± 17.1 ms per loop</span>
+<span class="sd">    Sub-optimal `einsum`: 32.9 ms ± 5.1 ms per loop</span>
 
-<span class="sd">    &gt;&gt;&gt; %timeit -r 10 -n 50 np.einsum(</span>
-<span class="sd">        &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;optimal&quot;</span>
-<span class="sd">    )</span>
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;optimal&quot;)</span>
 
-<span class="sd">    Greedy `einsum` (faster optimal path approximation):</span>
-<span class="sd">    51.9 ms ± 17.1 ms per loop</span>
+<span class="sd">    Greedy `einsum`: 28.6 ms ± 4.8 ms per loop</span>
 
-<span class="sd">    &gt;&gt;&gt; %timeit -r 10 -n 50  np.einsum(</span>
-<span class="sd">        &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;greedy&quot;</span>
-<span class="sd">    )</span>
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;greedy&quot;)</span>
 
-<span class="sd">    Optimal `einsum` (best usage pattern in some use cases):</span>
-<span class="sd">    69 ms ± 17.8 ms per loop</span>
+<span class="sd">    Optimal `einsum`: 26.9 ms ± 6.3 ms per loop</span>
 
 <span class="sd">    &gt;&gt;&gt; path = np.einsum_path(</span>
 <span class="sd">        &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;optimal&quot;</span>
 <span class="sd">    )[0]</span>
-<span class="sd">    &gt;&gt;&gt; %timeit -r 10 -n 50 np.einsum(</span>
-<span class="sd">        &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=path</span>
-<span class="sd">    )</span>
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=path)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">optimize</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">optimize</span> <span class="o">=</span> <span class="s2">&quot;greedy&quot;</span>
-
-    <span class="n">dtype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">casting</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;casting&quot;</span><span class="p">,</span> <span class="s2">&quot;safe&quot;</span><span class="p">)</span>
-    <span class="n">order</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2"> is an invalid keyword for einsum&quot;</span>
-        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_einsum</span><span class="p">(</span>
         <span class="o">*</span><span class="n">operands</span><span class="p">,</span>

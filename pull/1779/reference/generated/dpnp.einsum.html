@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.einsum &mdash; Data Parallel Extension for NumPy 0.15.0dev1+27.geb2cfc4016 documentation</title>
+  <title>dpnp.einsum &mdash; Data Parallel Extension for NumPy 0.15.0dev1+41.gfaf2ef2674 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,8 +24,8 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=6ccf44e6"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/documentation_options.js?v=bf79d1c3"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+27.geb2cfc4016
+                0.15.0dev1+41.gfaf2ef2674
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -138,7 +138,7 @@ subscript labels. An implicit (classical Einstein summation)
 calculation is performed unless the explicit indicator ‘-&gt;’ is
 included as well as subscript labels of the precise output form.</p></li>
 <li><p><strong>*operands</strong> (<em>sequence</em><em> of </em><em>{dpnp.ndarrays</em><em>, </em><em>usm_ndarray}</em>) – These are the arrays for the operation.</p></li>
-<li><p><strong>out</strong> (<em>{dpnp.ndarrays</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) – If provided, the calculation is done into this array.</p></li>
+<li><p><strong>out</strong> (<em>{dpnp.ndarrays</em><em>, </em><em>usm_ndarray</em><em>, </em><em>None}</em><em>, </em><em>optional</em>) – If provided, the calculation is done into this array.</p></li>
 <li><p><strong>dtype</strong> (<em>{dtype</em><em>, </em><em>None}</em><em>, </em><em>optional</em>) – If provided, forces the calculation to use the data type specified.
 Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) – Controls the memory layout of the output. <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> means it should be
@@ -345,33 +345,24 @@ larger arrays:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">64000</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Basic <cite>einsum</cite>: 146 ms ± 23.5 ms per loop (benchmarked on 12th
-Gen Intel® Core™ i7-1265U)</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="o">-</span><span class="n">r</span> <span class="mi">10</span> <span class="o">-</span><span class="n">n</span> <span class="mi">50</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+<p>Basic <cite>einsum</cite>: 119 ms ± 26 ms per loop (benchmarked on 12th
+Gen Intel® Core™ i7 processor)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Sub-optimal <cite>einsum</cite> (due to repeated path calculation time):
-51.9 ms ± 17.1 ms per loop</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="o">-</span><span class="n">r</span> <span class="mi">10</span> <span class="o">-</span><span class="n">n</span> <span class="mi">50</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
-<span class="go">    &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;optimal&quot;</span>
-<span class="go">)</span>
+<p>Sub-optimal <cite>einsum</cite>: 32.9 ms ± 5.1 ms per loop</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="s2">&quot;optimal&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Greedy <cite>einsum</cite> (faster optimal path approximation):
-51.9 ms ± 17.1 ms per loop</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="o">-</span><span class="n">r</span> <span class="mi">10</span> <span class="o">-</span><span class="n">n</span> <span class="mi">50</span>  <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
-<span class="go">    &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;greedy&quot;</span>
-<span class="go">)</span>
+<p>Greedy <cite>einsum</cite>: 28.6 ms ± 4.8 ms per loop</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="s2">&quot;greedy&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Optimal <cite>einsum</cite> (best usage pattern in some use cases):
-69 ms ± 17.8 ms per loop</p>
+<p>Optimal <cite>einsum</cite>: 26.9 ms ± 6.3 ms per loop</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum_path</span><span class="p">(</span>
 <span class="go">    &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;optimal&quot;</span>
 <span class="go">)[0]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="o">-</span><span class="n">r</span> <span class="mi">10</span> <span class="o">-</span><span class="n">n</span> <span class="mi">50</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
-<span class="go">    &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=path</span>
-<span class="go">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

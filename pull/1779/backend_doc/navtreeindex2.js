@@ -1,5 +1,8 @@
 var NAVTREEINDEX2 =
 {
+"index.html":[],
+"lapack_2types__matrix_8hpp_source.html":[2,0,0,1,12],
+"linalg__exceptions_8hpp_source.html":[2,0,0,1,8],
 "ln_8hpp_source.html":[2,0,0,3,21],
 "log10_8hpp_source.html":[2,0,0,3,22],
 "log1p_8hpp_source.html":[2,0,0,3,23],
@@ -21,6 +24,9 @@ var NAVTREEINDEX2 =
 "struct_d_p_n_p_func_data.html#aa88f90ce507ebffe7462bba4d2df6c76":[0,2,0,1],
 "struct_d_p_n_p_func_data.html#af40fd22f5954384788121f817fb02f0d":[0,2,0,0],
 "structare__same.html":[1,0,1],
+"structdpnp_1_1backend_1_1ext_1_1blas_1_1_dot_contig_factory.html":[1,0,0,0,0,0,2],
+"structdpnp_1_1backend_1_1ext_1_1blas_1_1_dotc_contig_factory.html":[1,0,0,0,0,0,1],
+"structdpnp_1_1backend_1_1ext_1_1blas_1_1_dotu_contig_factory.html":[1,0,0,0,0,0,3],
 "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html":[1,0,0,0,0,0,0,1],
 "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html":[1,0,0,0,0,0,0,0],
 "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html":[1,0,0,0,0,0,0,2],
@@ -53,7 +59,7 @@ var NAVTREEINDEX2 =
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_17b2e4d9f422d6a255a67e036ce4e46b3.html":[1,0,0,0,0,2,4],
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_1eacc8a58f076baec98f1eb11bc1030e3.html":[1,0,0,0,0,2,5],
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space.html":[1,0,0,0,0,2,7],
-"structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_02eb2bcf087b8888b023b145a4e539e4d.html":[1,0,0,0,0,2,8],
+"structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_05165243a6f8dde008b6a09f3e23101f7.html":[1,0,0,0,0,2,8],
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_09145d8edb59d4cea6805114cb85ebe7b.html":[1,0,0,0,0,2,9],
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1elements__count.html":[1,0,0,0,0,2,10],
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1elements__count_3_01std_1_1tuple_3_01_t_00_01_axis_8_8_8_01_4_01_4.html":[1,0,0,0,0,2,12],
