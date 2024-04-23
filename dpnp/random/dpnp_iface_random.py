@@ -1820,7 +1820,7 @@ def vonmises(mu, kappa, size=None):
             pass
         elif not dpnp.isscalar(kappa):
             pass
-        elif dpnp.isnan(kappa):
+        elif numpy.isnan(kappa):
             return dpnp.nan
         elif kappa < 0:
             pass
