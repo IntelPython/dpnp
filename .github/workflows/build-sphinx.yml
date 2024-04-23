@@ -122,6 +122,10 @@ jobs:
       - name: Build library
         run: python scripts/build_locally.py
 
+      - name: Run a spelling checker for docs
+        run: make spelling
+        working-directory: doc
+
       - name: Build docs
         run: make html
         working-directory: doc
