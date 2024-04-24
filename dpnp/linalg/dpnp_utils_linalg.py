@@ -1329,9 +1329,7 @@ def dpnp_lstsq(a, b, rcond=None):
     x = dpnp.dot(vh.T.conj(), z)
     # Calculate squared Euclidean 2-norm for each column in b - a*x
     if m <= n or rank != n:
-        resids = dpnp.empty(
-            (0,), dtype=s.dtype, sycl_queue=s.sycl_queue, usm_type=s.usm_type
-        )
+        resids = dpnp.empty_like(s, shape=(0,))
     else:
         e = b - a.dot(x)
         resids = dpnp.atleast_1d(_nrm2_last_axis(e.T))

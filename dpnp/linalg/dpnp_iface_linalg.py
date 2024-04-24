@@ -638,6 +638,7 @@ def lstsq(a, b, rcond=None):
     Examples
     --------
     Fit a line, ``y = mx + c``, through some noisy data-points:
+
     >>> import dpnp as np
     >>> x = np.array([0, 1, 2, 3])
     >>> y = np.array([-1, 0.2, 0.9, 2.1])
@@ -650,14 +651,14 @@ def lstsq(a, b, rcond=None):
 
     >>> A = np.vstack([x, np.ones(len(x))]).T
     >>> A
-    array([[ 0.,  1.],
-           [ 1.,  1.],
-           [ 2.,  1.],
-           [ 3.,  1.]])
+    array([[0., 1.],
+           [1., 1.],
+           [2., 1.],
+           [3., 1.]])
 
     >>> m, c = np.linalg.lstsq(A, y, rcond=None)[0]
     >>> m, c
-    (1.0 -0.95) # may vary
+    (array(1.), array(-0.95)) # may vary
 
     """
 

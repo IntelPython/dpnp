@@ -19,6 +19,7 @@ from tests.third_party.cupy.testing import _condition
         }
     )
 )
+@testing.fix_random()
 class TestSolve(unittest.TestCase):
     # TODO: add get_batched_gesv_limit
     # def setUp(self):
@@ -137,9 +138,7 @@ class TestInv(unittest.TestCase):
 
     def check_shape(self, a_shape):
         a = cupy.random.rand(*a_shape)
-        with self.assertRaises(
-            (numpy.linalg.LinAlgError, cupy.linalg.LinAlgError)
-        ):
+        with self.assertRaises(cupy.linalg.LinAlgError):
             cupy.linalg.inv(a)
 
     def test_inv(self):
@@ -306,9 +305,9 @@ class TestLstsq:
         self.check_invalid_shapes((4, 3), (10, 3, 3))
 
     # dpnp.linalg.lstsq() does not raise a FutureWarning
-    # because the next version of numpy will not raise it
-    # and this test will be removed
-    @pytest.mark.skip("Not implemented")
+    # because dpnp did not have a previous implementation of dpnp.linalg.lstsq()
+    # and there is no need to get rid of old deprecated behavior as numpy did.
+    @pytest.mark.skip("No support of deprecated behavior")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(atol=1e-3)
     def test_warn_rcond(self, xp, dtype):
@@ -332,9 +331,7 @@ class TestTensorInv(unittest.TestCase):
 
     def check_shape(self, a_shape, ind):
         a = cupy.random.rand(*a_shape)
-        with self.assertRaises(
-            (numpy.linalg.LinAlgError, cupy.linalg.LinAlgError)
-        ):
+        with self.assertRaises(cupy.linalg.LinAlgError):
             cupy.linalg.tensorinv(a, ind=ind)
 
     def check_ind(self, a_shape, ind):
