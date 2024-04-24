@@ -53,7 +53,7 @@ def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
         x1_usm = dpnp.get_usm_ndarray(x1)
         x2_usm = dpnp.get_usm_ndarray(x2)
         out_usm = dpnp.get_usm_ndarray(out)
-        contig_flag = _define_contig_flag(out) if out.ndim > 1 else True
+        contig_flag = _define_contig_flag(out)
 
         if (
             out.dtype == dtype
@@ -114,14 +114,14 @@ def _define_contig_flag(x):
     flag = False
     x_strides = x.strides
     x_shape = x.shape
-    if x.ndim == 1:
+    if x.ndim < 2:
         return True
-    else:
-        x_is_c_contiguous = x_strides[-1] == 1 and x_strides[-2] == x_shape[-1]
-        x_is_f_contiguous = x_strides[-2] == 1 and x_strides[-1] == x_shape[-2]
-        if x_is_c_contiguous or x_is_f_contiguous:
-            flag = True
-        return flag
+
+    x_is_c_contiguous = x_strides[-1] == 1 and x_strides[-2] == x_shape[-1]
+    x_is_f_contiguous = x_strides[-2] == 1 and x_strides[-1] == x_shape[-2]
+    if x_is_c_contiguous or x_is_f_contiguous:
+        flag = True
+    return flag
 
 
 def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
