@@ -779,11 +779,14 @@ class TestLstsq:
         b_dp_q = inp.array(b_dp, sycl_queue=b_queue)
         assert_raises(ValueError, inp.linalg.lstsq, a_dp_q, b_dp_q)
 
-        # unsupported type
+        # unsupported type `a` and `b`
         a_np = inp.asnumpy(a_dp)
         b_np = inp.asnumpy(b_dp)
         assert_raises(TypeError, inp.linalg.lstsq, a_np, b_dp)
         assert_raises(TypeError, inp.linalg.lstsq, a_dp, b_np)
+
+        # unsupported type `rcond`
+        assert_raises(TypeError, inp.linalg.lstsq, a_dp, b_dp, [-1])
 
 
 class TestMatrixPower:
