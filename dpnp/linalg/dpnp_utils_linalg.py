@@ -2433,21 +2433,17 @@ def dpnp_svd(
 
     # oneMKL LAPACK assumes fortran-like array as input.
     # Allocate 'F' order memory for dpnp output arrays to comply with these requirements.
-    u_h = dpnp.empty(
-        u_shape,
-        dtype=uv_type,
+    u_h = dpnp.empty_like(
+        a_h,
+        shape=u_shape,
         order="F",
-        usm_type=usm_type,
-        sycl_queue=exec_q,
     )
-    vt_h = dpnp.empty(
-        vt_shape,
-        dtype=uv_type,
+    vt_h = dpnp.empty_like(
+        a_h,
+        shape=vt_shape,
         order="F",
-        usm_type=usm_type,
-        sycl_queue=exec_q,
     )
-    s_h = dpnp.empty(k, dtype=s_type, usm_type=usm_type, sycl_queue=exec_q)
+    s_h = dpnp.empty_like(a_h, shape=(k,), dtype=s_type)
 
     ht_lapack_ev, _ = li._gesvd(
         exec_q,
