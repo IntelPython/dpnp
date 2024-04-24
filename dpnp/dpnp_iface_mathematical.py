@@ -159,7 +159,7 @@ def _append_to_diff_array(a, axis, combined, values):
 
 
 _ABS_DOCSTRING = """
-Calculate the absolute value element-wise.
+Calculates the absolute value for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.absolute`.
 
@@ -390,7 +390,6 @@ def around(x, /, decimals=0, out=None):
 
 _CEIL_DOCSTRING = """
 Returns the ceiling for each element `x_i` for input array `x`.
-The ceil of the scalar `x` is the smallest integer `i`, such that `i >= x`.
 
 For full documentation refer to :obj:`numpy.ceil`.
 
@@ -517,7 +516,7 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
 
 _CONJ_DOCSTRING = """
-Computes conjugate for each element `x_i` for input array `x`.
+Computes conjugate of each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.conj`.
 
@@ -1177,7 +1176,8 @@ def fabs(x1, **kwargs):
 
 _FLOOR_DOCSTRING = """
 Returns the floor for each element `x_i` for input array `x`.
-The floor of the scalar `x` is the largest integer `i`, such that `i <= x`.
+
+The floor of `x_i` is the largest integer `n`, such that `n <= x_i`.
 
 For full documentation refer to :obj:`numpy.floor`.
 
@@ -1740,8 +1740,8 @@ imag = DPNPUnaryFunc(
 
 
 _MAXIMUM_DOCSTRING = """
-Compares two input arrays `x1` and `x2` and returns
-a new array containing the element-wise maxima.
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise maxima.
 
 For full documentation refer to :obj:`numpy.maximum`.
 
@@ -1812,8 +1812,8 @@ maximum = DPNPBinaryFunc(
 
 
 _MINIMUM_DOCSTRING = """
-Compares two input arrays `x1` and `x2` and returns
-a new array containing the element-wise minima.
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise minima.
 
 For full documentation refer to :obj:`numpy.minimum`.
 
@@ -1971,8 +1971,8 @@ def modf(x1, **kwargs):
 
 
 _MULTIPLY_DOCSTRING = """
-Calculates the product for each element `x1_i` of the input array `x1`
-with the respective element `x2_i` of the input array `x2`.
+Calculates the product for each element `x1_i` of the input array `x1` with the
+respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.multiply`.
 
@@ -2389,6 +2389,7 @@ real = DPNPReal(
 _REMAINDER_DOCSTRING = """
 Calculates the remainder of division for each element `x1_i` of the input array
 `x1` with the respective element `x2_i` of the input array `x2`.
+
 This function is equivalent to the Python modulus operator.
 
 For full documentation refer to :obj:`numpy.remainder`.
@@ -2452,7 +2453,11 @@ remainder = DPNPBinaryFunc(
 
 
 _RINT_DOCSTRING = """
-Round elements of the array to the nearest integer.
+Rounds each element `x_i` of the input array `x` to
+the nearest integer-valued number.
+
+When two integers are equally close to `x_i`, the result is the nearest even
+integer to `x_i`.
 
 For full documentation refer to :obj:`numpy.rint`.
 
@@ -2507,6 +2512,9 @@ rint = DPNPUnaryFunc(
 _ROUND_DOCSTRING = """
 Rounds each element `x_i` of the input array `x` to
 the nearest integer-valued number.
+
+When two integers are equally close to `x_i`, the result is the nearest even
+integer to `x_i`.
 
 For full documentation refer to :obj:`numpy.round`.
 
@@ -2955,10 +2963,9 @@ true_divide = divide
 
 
 _TRUNC_DOCSTRING = """
-trunc(x, out=None, order='K')
-
 Returns the truncated value for each element `x_i` for input array `x`.
-The truncated value of the scalar `x` is the nearest integer `i` which is
+
+The truncated value of the scalar `x` is the nearest integer i which is
 closer to zero than `x` is. In short, the fractional part of the
 signed number `x` is discarded.
 

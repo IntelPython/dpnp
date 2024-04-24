@@ -104,7 +104,7 @@ jobs:
         run: |
           conda install sphinx sphinx_rtd_theme
           pip install sphinxcontrib-googleanalytics==0.4 \
-            enchant pyenchant sphinxcontrib-spelling
+            pyenchant sphinxcontrib-spelling
 
       - name: Install dpnp dependencies
         run: |

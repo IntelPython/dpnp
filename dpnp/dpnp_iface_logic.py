@@ -297,8 +297,8 @@ def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
 
 
 _EQUAL_DOCSTRING = """
-Calculates equality results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+Calculates equality test results for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.equal`.
 
@@ -366,8 +366,8 @@ equal = DPNPBinaryFunc(
 
 
 _GREATER_DOCSTRING = """
-Calculates the greater-than results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+Computes the greater-than test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.greater`.
 
@@ -429,8 +429,8 @@ greater = DPNPBinaryFunc(
 
 
 _GREATER_EQUAL_DOCSTRING = """
-Calculates the greater-than or equal-to results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+Computes the greater-than or equal-to test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.greater_equal`.
 
@@ -535,7 +535,7 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
 
 
 _ISFINITE_DOCSTRING = """
-Checks if each element of input array is a finite number.
+Test if each element of input array is a finite number.
 
 For full documentation refer to :obj:`numpy.isfinite`.
 
@@ -594,7 +594,7 @@ isfinite = DPNPUnaryFunc(
 
 
 _ISINF_DOCSTRING = """
-Checks if each element of input array is an infinity.
+Test if each element of input array is an infinity.
 
 For full documentation refer to :obj:`numpy.isinf`.
 
@@ -647,7 +647,7 @@ isinf = DPNPUnaryFunc(
 
 
 _ISNAN_DOCSTRING = """
-Checks if each element of an input array is a NaN.
+Test if each element of an input array is a NaN.
 
 For full documentation refer to :obj:`numpy.isnan`.
 
@@ -701,8 +701,8 @@ isnan = DPNPUnaryFunc(
 
 
 _LESS_DOCSTRING = """
-Calculates the less-than results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+Computes the less-than test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.less`.
 
@@ -763,8 +763,8 @@ less = DPNPBinaryFunc(
 
 
 _LESS_EQUAL_DOCSTRING = """
-Calculates the less-than or equal-to results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+Computes the less-than or equal-to test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.less_equal`.
 
@@ -826,8 +826,8 @@ less_equal = DPNPBinaryFunc(
 
 
 _LOGICAL_AND_DOCSTRING = """
-Computes the logical AND for each element `x1_i` of the input array `x1`
-with the respective element `x2_i` of the input array `x2`.
+Computes the logical AND for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.logical_and`.
 
@@ -1069,8 +1069,8 @@ logical_xor = DPNPBinaryFunc(
 
 
 _NOT_EQUAL_DOCSTRING = """
-Calculates inequality results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+Calculates inequality test results for each element `x1_i` of the
+input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.not_equal`.
 

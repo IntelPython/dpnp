@@ -151,7 +151,7 @@ arccos = DPNPUnaryFunc(
 
 
 _ACOSH_DOCSTRING = """
-Computes hyperbolic inverse cosine for each element `x_i` for input array `x`.
+Computes inverse hyperbolic cosine for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.arccosh`.
 
@@ -496,7 +496,7 @@ arctanh = DPNPUnaryFunc(
 
 
 _CBRT_DOCSTRING = """
-Returns the cbrting for each element `x_i` for input array `x`.
+Returns positive cube-root for each element `x_i` for input array `x`.
 The cbrt of the scalar `x` is the smallest integer `i`, such that `i >= x`.
 
 For full documentation refer to :obj:`numpy.cbrt`.
@@ -937,7 +937,7 @@ hypot = DPNPBinaryFunc(
 
 
 _LOG_DOCSTRING = """
-Computes the natural logarithm element-wise.
+Computes the natural logarithm for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.log`.
 
@@ -1047,7 +1047,10 @@ log10 = DPNPUnaryFunc(
 
 
 _LOG1P_DOCSTRING = """
-Computes an approximation of `log(1+x)` element-wise.
+Computes the natural logarithm of (1 + `x`) for each element `x_i` of input
+array `x`.
+
+This function calculates `log(1 + x)` more accurately for small values of `x`.
 
 For full documentation refer to :obj:`numpy.log1p`.
 
@@ -1163,7 +1166,7 @@ log2 = DPNPUnaryFunc(
 
 
 _LOGADDEXP_DOCSTRING = """
-Calculates the natural logarithm of the sum of exponentiations for each element
+Calculates the natural logarithm of the sum of exponentials for each element
 `x1_i` of the input array `x1` with the respective element `x2_i` of the input
 array `x2`.
 
@@ -1297,7 +1300,7 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
 
 
 _RECIPROCAL_DOCSTRING = """
-Computes the reciprocal of each element `x_i` for input array `x`.
+Computes the reciprocal square-root for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.reciprocal`.
 
@@ -1620,7 +1623,7 @@ sinh = DPNPUnaryFunc(
 
 
 _SQRT_DOCSTRING = """
-Computes the non-negative square-root for each element `x_i` for input array `x`.
+Computes the positive square-root for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.sqrt`.
 
@@ -1673,7 +1676,7 @@ sqrt = DPNPUnaryFunc(
 
 
 _SQUARE_DOCSTRING = """
-Computes `x_i**2` (or `x_i*x_i`) for each element `x_i` of input array `x`.
+Squares each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.square`.
 

@@ -1,3 +1,5 @@
+bitwise
 conda
 dpctl
+NaN
 oneAPI
