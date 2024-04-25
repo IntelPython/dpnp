@@ -930,7 +930,8 @@ def take_along_axis(a, indices, axis):
     >>> import dpnp as np
     >>> a = np.array([[10, 30, 20], [60, 40, 50]])
 
-    We can sort either by using sort directly, or argsort and this function
+    We can sort either by using :obj:`dpnp.sort` directly, or
+    :obj:`dpnp.argsort` and this function:
 
     >>> np.sort(a, axis=1)
     array([[10, 20, 30],
@@ -958,7 +959,7 @@ def take_along_axis(a, indices, axis):
            [60]])
 
     If we want to get the max and min at the same time, we can stack the
-    indices first
+    indices first:
 
     >>> ai_min = np.argmin(a, axis=1, keepdims=True)
     >>> ai_max = np.argmax(a, axis=1, keepdims=True)

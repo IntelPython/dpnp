@@ -1626,7 +1626,7 @@ def standard_normal(size=None, device=None, usm_type="device", sycl_queue=None):
 def standard_t(df, size=None):
     """
     Draw samples from a standard Student’s t distribution with
-    df degrees of freedom.
+    `df` degrees of freedom.
 
     For full documentation refer to :obj:`numpy.random.standard_t`.
 

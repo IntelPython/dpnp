@@ -1064,7 +1064,7 @@ cdef class dparray:
         Limitations
         -----------
         Input array is supported as :obj:`dpnp.ndarray`.
-        Input kth is supported as :obj:`int`.
+        Input `kth` is supported as :obj:`int`.
         Parameters `axis`, `kind` and `order` are supported only with default values.
 
         """

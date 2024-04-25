@@ -305,7 +305,10 @@ def inner(a, b):
 
 def kron(a, b):
     """
-    Returns the kronecker product of two arrays.
+    Kronecker product of two arrays.
+
+    Computes the Kronecker product, a composite array made of blocks of the
+    second array scaled by the first.
 
     For full documentation refer to :obj:`numpy.kron`.
 
@@ -597,7 +600,7 @@ def tensordot(a, b, axes=2):
     Returns
     -------
     out : dpnp.ndarray
-        Returns the tensordot product of `a` and `b`.
+        Returns the tensor dot product of `a` and `b`.
 
     See Also
     --------

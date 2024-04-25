@@ -979,12 +979,13 @@ class dpnp_array:
         """
         Return a partitioned copy of an array.
 
-        Rearranges the elements in the array in such a way that the value of the
-        element in kth position is in the position it would be in a sorted array.
+        Rearranges the elements in the array in such a way that the value of
+        the element in `kth` position is in the position it would be in
+        a sorted array.
 
-        All elements smaller than the kth element are moved before this element and
-        all equal or greater are moved behind it. The ordering of the elements in
-        the two partitions is undefined.
+        All elements smaller than the `kth` element are moved before this
+        element and all equal or greater are moved behind it. The ordering
+        of the elements in the two partitions is undefined.
 
         Refer to `dpnp.partition` for full documentation.
 
