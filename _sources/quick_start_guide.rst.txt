@@ -71,7 +71,7 @@ And to build dpnp package from the sources:
 
     conda build conda-recipe -c intel -c conda-forge
 
-Finanly, to install the result package:
+Finally, to install the result package:
 
 .. code-block:: bash
 
