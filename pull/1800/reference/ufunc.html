@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Universal Functions (ufunc) &mdash; Data Parallel Extension for NumPy 0.15.0dev1+43.g279e63791 documentation</title>
+  <title>Universal Functions (ufunc) &mdash; Data Parallel Extension for NumPy 0.15.0dev1+44.g8f03849c48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=9436c792"></script>
+        <script src="../_static/documentation_options.js?v=033e88f5"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+43.g279e63791
+                0.15.0dev1+44.g8f03849c48
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -112,7 +112,7 @@
              
   <section id="universal-functions-ufunc">
 <span id="ufunc"></span><h1>Universal Functions (ufunc)<a class="headerlink" href="#universal-functions-ufunc" title="Link to this heading"></a></h1>
-<p>DPNP provides universal functions (a.k.a. ufuncs) to support various elementwise operations.</p>
+<p>DPNP provides universal functions (a.k.a. ufuncs) to support various element-wise operations.</p>
 <section id="available-ufuncs">
 <h2>Available ufuncs<a class="headerlink" href="#available-ufuncs" title="Link to this heading"></a></h2>
 <section id="math-operations">
@@ -132,7 +132,7 @@
 <td><p>Calculates the ratio for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.logaddexp.html#dpnp.logaddexp" title="dpnp.logaddexp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logaddexp</span></code></a></p></td>
-<td><p>Calculates the natural logarithm of the sum of exponentials for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Calculates the natural logarithm of the sum of exponents for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.true_divide.html#dpnp.true_divide" title="dpnp.true_divide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.true_divide</span></code></a></p></td>
 <td><p>Calculates the ratio for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
@@ -171,10 +171,10 @@
 <td><p>Computes an indication of the sign of each element <cite>x_i</cite> of input array <cite>x</cite> using the signum function.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.exp.html#dpnp.exp" title="dpnp.exp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.exp</span></code></a></p></td>
-<td><p>Computes the exponential for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
+<td><p>Computes the exponent for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.exp2.html#dpnp.exp2" title="dpnp.exp2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.exp2</span></code></a></p></td>
-<td><p>Computes the base-2 exponential for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
+<td><p>Computes the base-2 exponent for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.log.html#dpnp.log" title="dpnp.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.log</span></code></a></p></td>
 <td><p>Computes the natural logarithm for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
@@ -186,7 +186,7 @@
 <td><p>Computes the base-10 logarithm for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.expm1.html#dpnp.expm1" title="dpnp.expm1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.expm1</span></code></a></p></td>
-<td><p>Computes the exponential minus 1 for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
+<td><p>Computes the exponent minus 1 for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.log1p.html#dpnp.log1p" title="dpnp.log1p"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.log1p</span></code></a></p></td>
 <td><p>Computes the natural logarithm of (1 + <cite>x</cite>) for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
