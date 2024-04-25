@@ -145,15 +145,24 @@ def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
 
 def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     """
-    Returns True if two arrays are element-wise equal within a tolerance.
+    Returns ``True`` if two arrays are element-wise equal within a tolerance.
+
+    The tolerance values are positive, typically very small numbers. The
+    relative difference (`rtol` * abs(`b`)) and the absolute difference `atol`
+    are added together to compare against the absolute difference between `a`
+    and `b`.
+
+    If either array contains one or more ``NaNs``, ``False`` is returned.
+    ``Infs`` are treated as equal if they are in the same place and of the same
+    sign in both arrays.
 
     For full documentation refer to :obj:`numpy.allclose`.
 
     Returns
     -------
     out : dpnp.ndarray
-        A boolean 0-dim array. If its value is ``True``,
-        two arrays are element-wise equal within a tolerance.
+        A 0-dim array with ``True`` value if the two arrays are equal within
+        the given tolerance; with ``False`` otherwise.
 
     Limitations
     -----------

@@ -152,7 +152,7 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
     See Also
     --------
     :obj:`dpnp.nanargmin` : Returns the indices of the minimum values along an
-                            axis, igonring NaNs.
+                            axis, ignoring NaNs.
     :obj:`dpnp.argmax` : Returns the indices of the maximum values along
                          an axis.
 
@@ -224,7 +224,7 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
     See Also
     --------
     :obj:`dpnp.nanargmax` : Returns the indices of the maximum values along
-                            an axis, igonring NaNs.
+                            an axis, ignoring NaNs.
     :obj:`dpnp.argmin` : Returns the indices of the minimum values along
                          an axis.
 
@@ -874,7 +874,7 @@ def nanstd(
     Notes
     -----
     Note that, for complex numbers, the absolute value is taken before
-    squaring, so that the result is always real and nonnegative.
+    squaring, so that the result is always real and non-negative.
 
     See Also
     --------
@@ -973,7 +973,7 @@ def nanvar(
     Notes
     -----
     Note that, for complex numbers, the absolute value is taken before squaring,
-    so that the result is always real and nonnegative.
+    so that the result is always real and non-negative.
 
     See Also
     --------

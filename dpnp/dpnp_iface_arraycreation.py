@@ -530,7 +530,7 @@ def ascontiguousarray(
     a, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
 ):
     """
-    Return a contiguous array (ndim >= 1) in memory (C order).
+    Return a contiguous array in memory (C order).
 
     For full documentation refer to :obj:`numpy.ascontiguousarray`.
 

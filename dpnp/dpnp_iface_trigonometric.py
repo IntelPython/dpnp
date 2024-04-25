@@ -496,8 +496,7 @@ arctanh = DPNPUnaryFunc(
 
 
 _CBRT_DOCSTRING = """
-Returns positive cube-root for each element `x_i` for input array `x`.
-The cbrt of the scalar `x` is the smallest integer `i`, such that `i >= x`.
+Computes positive cube-root for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.cbrt`.
 

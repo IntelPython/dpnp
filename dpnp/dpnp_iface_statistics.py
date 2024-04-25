@@ -880,7 +880,7 @@ def std(
     Notes
     -----
     Note that, for complex numbers, the absolute value is taken before squaring,
-    so that the result is always real and nonnegative.
+    so that the result is always real and non-negative.
 
     See Also
     --------
@@ -992,7 +992,7 @@ def var(
     Notes
     -----
     Note that, for complex numbers, the absolute value is taken before squaring,
-    so that the result is always real and nonnegative.
+    so that the result is always real and non-negative.
 
     See Also
     --------

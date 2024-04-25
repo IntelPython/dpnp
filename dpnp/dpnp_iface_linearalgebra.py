@@ -676,7 +676,7 @@ def tensordot(a, b, axes=2):
         if not isinstance(axes, int):
             raise TypeError("Axes must be an integer.") from e
         if axes < 0:
-            raise ValueError("Axes must be a nonnegative integer.") from e
+            raise ValueError("Axes must be a non-negative integer.") from e
         axes_a = tuple(range(-axes, 0))
         axes_b = tuple(range(0, axes))
     else:
