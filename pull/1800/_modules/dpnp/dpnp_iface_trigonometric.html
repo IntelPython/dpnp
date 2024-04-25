@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.15.0dev1+38.g221513ddc7 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.15.0dev1+43.g279e63791 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=de223007"></script>
+        <script src="../../_static/documentation_options.js?v=9436c792"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+38.g221513ddc7
+                0.15.0dev1+43.g279e63791
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -241,7 +241,7 @@
 
 
 <span class="n">_ACOSH_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes hyperbolic inverse cosine for each element `x_i` for input array `x`.</span>
+<span class="s2">Computes inverse hyperbolic cosine for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arccosh`.</span>
 
@@ -259,9 +259,9 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise inverse hyperbolic cosine.</span>
-<span class="s2">    The data type of the returned array is determined by</span>
-<span class="s2">    the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise inverse hyperbolic cosine, in</span>
+<span class="s2">    radians and in the half-closed interval `[0, inf)`. The data type</span>
+<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -586,7 +586,7 @@
 
 
 <span class="n">_CBRT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Returns the cbrting for each element `x_i` for input array `x`.</span>
+<span class="s2">Returns positive cube-root for each element `x_i` for input array `x`.</span>
 <span class="s2">The cbrt of the scalar `x` is the smallest integer `i`, such that `i &gt;= x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.cbrt`.</span>
@@ -605,8 +605,9 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise cbrting of input array.</span>
-<span class="s2">    The returned array has the same data type as `x`.</span>
+<span class="s2">    An array containing the element-wise positive cube-root.</span>
+<span class="s2">    The data type of the returned array is determined by</span>
+<span class="s2">    the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -1033,7 +1034,7 @@
 
 
 <span class="n">_LOG_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the natural logarithm element-wise.</span>
+<span class="s2">Computes the natural logarithm for each element `x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.log`.</span>
 
@@ -1105,7 +1106,7 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the base-10 logarithm of `x`.</span>
+<span class="s2">    An array containing the element-wise base-10 logarithm of `x`.</span>
 <span class="s2">    The data type of the returned array is determined by the</span>
 <span class="s2">    Type Promotion Rules.</span>
 
@@ -1143,7 +1144,10 @@
 
 
 <span class="n">_LOG1P_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes an approximation of `log(1+x)` element-wise.</span>
+<span class="s2">Computes the natural logarithm of (1 + `x`) for each element `x_i` of input</span>
+<span class="s2">array `x`.</span>
+
+<span class="s2">This function calculates `log(1 + x)` more accurately for small values of `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.log1p`.</span>
 
@@ -1161,7 +1165,7 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise `log(1+x)` values. The data type</span>
+<span class="s2">    An array containing the element-wise `log(1 + x)` results. The data type</span>
 <span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
@@ -1220,7 +1224,7 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the base-2 logarithm of `x`.</span>
+<span class="s2">    An array containing the element-wise base-2 logarithm of `x`.</span>
 <span class="s2">    The data type of the returned array is determined by the</span>
 <span class="s2">    Type Promotion Rules.</span>
 
@@ -1259,7 +1263,7 @@
 
 
 <span class="n">_LOGADDEXP_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the natural logarithm of the sum of exponentiations for each element</span>
+<span class="s2">Calculates the natural logarithm of the sum of exponentials for each element</span>
 <span class="s2">`x1_i` of the input array `x1` with the respective element `x2_i` of the input</span>
 <span class="s2">array `x2`.</span>
 
@@ -1286,7 +1290,7 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the result of element-wise result. The data type</span>
+<span class="s2">    An array containing the element-wise results. The data type</span>
 <span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
@@ -1396,7 +1400,7 @@
 
 
 <span class="n">_RECIPROCAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the reciprocal of each element `x_i` for input array `x`.</span>
+<span class="s2">Computes the reciprocal square-root for each element `x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.reciprocal`.</span>
 
@@ -1533,7 +1537,9 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    The reciprocal square-root, element-wise.</span>
+<span class="s2">    An array containing the element-wise reciprocal square-root.</span>
+<span class="s2">    The returned array has a floating-point data type determined by</span>
+<span class="s2">    the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -1728,7 +1734,7 @@
 
 
 <span class="n">_SQRT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the non-negative square-root for each element `x_i` for input array `x`.</span>
+<span class="s2">Computes the positive square-root for each element `x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.sqrt`.</span>
 
@@ -1746,7 +1752,9 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise square-root results.</span>
+<span class="s2">    An array containing the element-wise positive square-roots of `x`. The</span>
+<span class="s2">    data type of the returned array is determined by the Type Promotion</span>
+<span class="s2">    Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -1781,7 +1789,7 @@
 
 
 <span class="n">_SQUARE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes `x_i**2` (or `x_i*x_i`) for each element `x_i` of input array `x`.</span>
+<span class="s2">Squares each element `x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.square`.</span>
 
@@ -1799,7 +1807,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise square results.</span>
+<span class="s2">    An array containing the element-wise squares of `x`. The data type of</span>
+<span class="s2">    the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
