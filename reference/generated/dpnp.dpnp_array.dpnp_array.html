@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.15.0dev1+47.g124689ee58 documentation</title>
+  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.15.0dev1+41.g1b8ebdd86e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9649595c"></script>
+        <script src="../../_static/documentation_options.js?v=e29473eb"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+47.g124689ee58
+                0.15.0dev1+41.g1b8ebdd86e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -128,24 +128,24 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.dpnp_array.</span></span><span class="sig-name descname"><span class="pre">dpnp_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strides</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array" title="Link to this definition"></a></dt>
 <dd><p>Multi-dimensional array object.</p>
 <p>This is a wrapper around dpctl.tensor.usm_ndarray that provides
-methods to be compliant with original NumPy.</p>
+methods to be compliant with original Numpy.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.__getitem__">
 <span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.__getitem__" title="Link to this definition"></a></dt>
-<dd><p>Return <code class="docutils literal notranslate"><span class="pre">self[key]</span></code>.</p>
+<dd><p>Return self[key].</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.__setitem__">
 <span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.__setitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.__setitem__" title="Link to this definition"></a></dt>
-<dd><p>Set <code class="docutils literal notranslate"><span class="pre">self[key]</span></code> to value.</p>
+<dd><p>Set self[key] to value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.__len__">
 <span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.__len__" title="Link to this definition"></a></dt>
-<dd><p>Return <code class="docutils literal notranslate"><span class="pre">len(self)</span></code>.</p>
+<dd><p>Return len(self).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -219,30 +219,28 @@ methods to be compliant with original NumPy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Array data type casting.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a>) -- Target data type.</p></li>
-<li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) -- Row-major (C-style) or column-major (Fortran-style) order.
-When <code class="docutils literal notranslate"><span class="pre">order</span></code> is 'A', it uses 'F' if <code class="docutils literal notranslate"><span class="pre">a</span></code> is column-major and uses 'C' otherwise.
-And when <code class="docutils literal notranslate"><span class="pre">order</span></code> is 'K', it keeps strides as closely as possible.</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) -- If it is False and no cast happens, then this method returns the array itself.
+<li><p><strong>x1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Array data type casting.</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a>) – Target data type.</p></li>
+<li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) – Row-major (C-style) or column-major (Fortran-style) order.
+When <code class="docutils literal notranslate"><span class="pre">order</span></code> is ‘A’, it uses ‘F’ if <code class="docutils literal notranslate"><span class="pre">a</span></code> is column-major and uses ‘C’ otherwise.
+And when <code class="docutils literal notranslate"><span class="pre">order</span></code> is ‘K’, it keeps strides as closely as possible.</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – If it is False and no cast happens, then this method returns the array itself.
 Otherwise, a copy is returned.</p></li>
-<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) -- <p>Controls what kind of data casting may occur. Defaults to 'unsafe' for backwards compatibility.</p>
+<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) – <p>Controls what kind of data casting may occur. Defaults to ‘unsafe’ for backwards compatibility.</p>
 <ul>
-<li><p>'no' means the data types should not be cast at all.</p></li>
-<li><p>'equiv' means only byte-order changes are allowed.</p></li>
-<li><p>'safe' means only casts which can preserve values are allowed.</p></li>
-<li><p>'same_kind' means only safe casts or casts within a kind, like float64 to float32, are allowed.</p></li>
-<li><p>'unsafe' means any data conversions may be done.</p></li>
+<li><p>’no’ means the data types should not be cast at all.</p></li>
+<li><p>’equiv’ means only byte-order changes are allowed.</p></li>
+<li><p>’safe’ means only casts which can preserve values are allowed.</p></li>
+<li><p>’same_kind’ means only safe casts or casts within a kind, like float64 to float32, are allowed.</p></li>
+<li><p>’unsafe’ means any data conversions may be done.</p></li>
 </ul>
 </p></li>
-<li><p><strong>copy</strong> -- By default, <code class="docutils literal notranslate"><span class="pre">astype</span></code> always returns a newly allocated array. If
-this is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, and the <cite>dtype</cite>, <cite>order</cite>, and <cite>subok</cite>
-requirements are satisfied, the input array is returned instead of
-a copy.</p></li>
+<li><p><strong>copy</strong> – By default, astype always returns a newly allocated array. If this is set to false, and the dtype,
+order, and subok requirements are satisfied, the input array is returned instead of a copy.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>arr_t</strong> -- Unless <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> and the other conditions for returning the input array
+<dd class="field-even"><p><strong>arr_t</strong> – Unless <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> and the other conditions for returning the input array
 are satisfied, <cite>arr_t</cite> is a new array of the same shape as the input array,
 with dtype, order given by dtype, order.</p>
 </dd>
@@ -298,7 +296,7 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 <dd><p>Return a copy of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>out</strong> -- A copy of the array.</p>
+<dd class="field-odd"><p><strong>out</strong> – A copy of the array.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dpnp.ndarray</p>
@@ -315,7 +313,7 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 </div>
 <p class="rubric">Notes</p>
 <p>This function is the preferred method for creating an array copy. The
-function <a class="reference internal" href="dpnp.copy.html#dpnp.copy" title="dpnp.copy"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpnp.copy()</span></code></a> is similar, but it defaults to using order 'K'.</p>
+function <a class="reference internal" href="dpnp.copy.html#dpnp.copy" title="dpnp.copy"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpnp.copy()</span></code></a> is similar, but it defaults to using order ‘K’.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]],</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
@@ -381,7 +379,7 @@ function <a class="reference internal" href="dpnp.copy.html#dpnp.copy" title="dp
 <dd><p>Fill the array with a scalar value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> (<em>scalar</em>) -- All elements of <cite>a</cite> will be assigned this value.</p>
+<dd class="field-odd"><p><strong>value</strong> (<em>scalar</em>) – All elements of <cite>a</cite> will be assigned this value.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -403,13 +401,13 @@ function <a class="reference internal" href="dpnp.copy.html#dpnp.copy" title="dp
 <dd><p>Return a copy of the array collapsed into one dimension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'</em><em>, </em><em>'A'</em><em>, </em><em>'K'}</em><em>, </em><em>optional</em>) -- 'C' means to flatten in row-major (C-style) order.
-'F' means to flatten in column-major (Fortran- style) order.
-'A' means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
-'K' means to flatten a in the order the elements occur in memory. The default is 'C'.</p>
+<dd class="field-odd"><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'</em><em>, </em><em>'A'</em><em>, </em><em>'K'}</em><em>, </em><em>optional</em>) – ‘C’ means to flatten in row-major (C-style) order.
+‘F’ means to flatten in column-major (Fortran- style) order.
+‘A’ means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
+‘K’ means to flatten a in the order the elements occur in memory. The default is ‘C’.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- A copy of the input array, flattened to one dimension.</p>
+<dd class="field-even"><p><strong>out</strong> – A copy of the input array, flattened to one dimension.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
@@ -483,12 +481,11 @@ function <a class="reference internal" href="dpnp.copy.html#dpnp.copy" title="dp
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.partition">
 <span class="sig-name descname"><span class="pre">partition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'introselect'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.partition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.partition" title="Link to this definition"></a></dt>
 <dd><p>Return a partitioned copy of an array.</p>
-<p>Rearranges the elements in the array in such a way that the value of
-the element in <cite>kth</cite> position is in the position it would be in
-a sorted array.</p>
-<p>All elements smaller than the <cite>kth</cite> element are moved before this
-element and all equal or greater are moved behind it. The ordering
-of the elements in the two partitions is undefined.</p>
+<p>Rearranges the elements in the array in such a way that the value of the
+element in kth position is in the position it would be in a sorted array.</p>
+<p>All elements smaller than the kth element are moved before this element and
+all equal or greater are moved behind it. The ordering of the elements in
+the two partitions is undefined.</p>
 <p>Refer to <cite>dpnp.partition</cite> for full documentation.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -542,7 +539,7 @@ of the elements in the two partitions is undefined.</p>
 <p>Refer to <a class="reference internal" href="dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a> for full documentation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>y</strong> -- This will be a new view object if possible;
+<dd class="field-odd"><p><strong>y</strong> – This will be a new view object if possible;
 otherwise, it will be a copy.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -652,18 +649,18 @@ can only be integer since it sorts an array in-place.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.transpose.html#numpy.ndarray.transpose" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.transpose</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>axes</strong> (<em>None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><em>ints</em><em>, </em><em>n ints</em><em>, </em><em>optional</em>) -- <ul class="simple">
+<dd class="field-odd"><p><strong>axes</strong> (<em>None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><em>ints</em><em>, </em><em>n ints</em><em>, </em><em>optional</em>) – <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> or no argument: reverses the order of the axes.</p></li>
-<li><p>tuple or list of integers: <cite>i</cite> in the <cite>j</cite>-th place in the
-tuple/list means that the array’s <cite>i</cite>-th axis becomes the
-transposed array’s <cite>j</cite>-th axis.</p></li>
+<li><p>tuple or list of ints: <cite>i</cite> in the <cite>j</cite>-th place in the tuple/list
+means that the array’s <cite>i</cite>-th axis becomes the transposed
+array’s <cite>j</cite>-th axis.</p></li>
 <li><p>n ints: same as an n-tuple/n-list of the same ints (this form is
 intended simply as a “convenience” alternative to the tuple form).</p></li>
 </ul>
 </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- View of the array with its axes suitably permuted.</p>
+<dd class="field-even"><p><strong>out</strong> – View of the array with its axes suitably permuted.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
@@ -761,7 +758,7 @@ intended simply as a “convenience” alternative to the tuple form).</p></li>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.dtype">
 <span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.dtype" title="Link to this definition"></a></dt>
-<dd><p>Returns NumPy's dtype corresponding to the type of the array elements.</p>
+<dd><p>Returns NumPy’s dtype corresponding to the type of the array elements.</p>
 </dd></dl>
 
 <dl class="py attribute">
