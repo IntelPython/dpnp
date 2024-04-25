@@ -8,6 +8,11 @@ tests/test_strides.py::test_strides_1arg[(10,)-None-fabs]
 
 tests/test_umath.py::test_umaths[('floor_divide', 'ff')]
 
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fabs
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fabs_negative
+
+tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
+
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_6_{a_shape=(3, 2), b_shape=(3, 2), shape=(4, 3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_7_{a_shape=(3, 2), b_shape=(3, 2), shape=(3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsChisquare_param_0_{df_shape=(), shape=(4, 3, 2)}::test_chisquare
