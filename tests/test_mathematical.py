@@ -2995,6 +2995,29 @@ class TestMatmul:
         assert result is dpnp_out
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            ((4096, 4096, 4, 4)),
+            ((2048, 2048, 8, 8)),
+        ],
+    )
+    def test_matmul_large(self, shape):
+        size = numpy.prod(shape, dtype=int)
+        a = numpy.array(numpy.random.uniform(-5, 5, size)).reshape(shape)
+        a_dp = dpnp.asarray(a)
+
+        result = dpnp.matmul(a_dp, a_dp)
+        expected = numpy.matmul(a, a)
+        assert_dtype_allclose(result, expected, factor=24)
+
+        # make the 2-d base f-contiguous
+        a = a.transpose(0, 1, 3, 2)
+        a_dp = a_dp.transpose(0, 1, 3, 2)
+        result = dpnp.matmul(a_dp, a_dp)
+        expected = numpy.matmul(a, a)
+        assert_dtype_allclose(result, expected, factor=24)
+
 
 class TestMatmulInvalidCases:
     @pytest.mark.parametrize(

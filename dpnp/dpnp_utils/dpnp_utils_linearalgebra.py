@@ -528,17 +528,34 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
     res = _copy_array(
         res, dev_tasks_list, ht_tasks_list, copy_flag=res.strides[0] < 0
     )
+    # onemkl::blas::gemm_bacth throws an exception (Provided range is out
+    # of integer limits) if the batch_size is too large (>=4096*4096), so
+    # we need to split the batch into smaller chunks
+    chunk = 2048 * 2048
+    batch_size = res.shape[0]
+    for i in range(0, batch_size, chunk):
+        x1_usm = dpnp.get_usm_ndarray(x1[i : i + chunk, ...])
+        x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
+        res_usm = dpnp.get_usm_ndarray(res[i : i + chunk, ...])
+        ht_blas_ev, _, row_major = bi._gemm_batch(
+            exec_q,
+            x1_usm,
+            x2_usm,
+            res_usm,
+            dev_tasks_list,
+        )
+        ht_tasks_list.append(ht_blas_ev)
+    dpctl.SyclEvent.wait_for(ht_tasks_list)
+    res_shape = res.shape
+    if not row_major:
+        res = dpnp.reshape(
+            res.ravel(), (batch_size, res_shape[2], res_shape[1])
+        ).transpose(0, 2, 1)
 
-    ht_blas_ev, _ = bi._gemm_batch(
-        exec_q,
-        dpnp.get_usm_ndarray(x1),
-        dpnp.get_usm_ndarray(x2),
-        dpnp.get_usm_ndarray(res),
-        dev_tasks_list,
-    )
-    res = res.reshape(orig_shape)
+    if res_shape != orig_shape:
+        res = res.reshape(orig_shape)
 
-    return ht_blas_ev, ht_tasks_list, res
+    return res
 
 
 def _greedy_path(input_sets, output_set, idx_dict, memory_limit):
@@ -2037,28 +2054,25 @@ def dpnp_matmul(
         # TODO: investigate usage of syrk function from BLAS in
         # case of a.T @ a and a @ a.T to gain performance.
         if x1_is_2D and x2_is_2D:
-            ht_blas_ev, _ = bi._gemm(
+            ht_blas_ev, _, row_major = bi._gemm(
                 exec_q,
                 dpnp.get_usm_ndarray(x1),
                 dpnp.get_usm_ndarray(x2),
                 dpnp.get_usm_ndarray(result),
                 dep_events_list,
             )
+            host_tasks_list.append(ht_blas_ev)
+            if not row_major:
+                result = dpnp.reshape(result.ravel(), result.shape, order="F")
         else:
-            (
-                ht_blas_ev,
-                ht_copy_ev,
-                result,
-            ) = _gemm_batch_matmul(
+            result = _gemm_batch_matmul(
                 exec_q,
                 x1,
                 x2,
                 result,
                 dep_events_list,
             )
-            host_tasks_list += ht_copy_ev
 
-        host_tasks_list.append(ht_blas_ev)
         dpctl.SyclEvent.wait_for(host_tasks_list)
 
     if appended_axes:
