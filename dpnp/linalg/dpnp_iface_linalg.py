@@ -611,7 +611,7 @@ def lstsq(a, b, rcond=None):
         Ordinate or "dependent variable" values.
         If `b` is two-dimensional, the least-squares solution
         is calculated for each of the `K` columns of `b`.
-    rcond : {scalar, None}, optional
+    rcond : {int, float, None}, optional
         Cut-off ratio for small singular values of `a`.
         For the purposes of rank determination, singular values are treated
         as zero if they are smaller than `rcond` times the largest singular
@@ -664,8 +664,8 @@ def lstsq(a, b, rcond=None):
 
     dpnp.check_supported_arrays_type(a, b)
     check_2d(a)
-    if rcond is not None and not dpnp.isscalar(rcond):
-        raise TypeError("rcond must be a scalar or None")
+    if rcond is not None and not isinstance(rcond, (int, float)):
+        raise TypeError("rcond must be integer, floating type, or None")
 
     return dpnp_lstsq(a, b, rcond=rcond)
 
