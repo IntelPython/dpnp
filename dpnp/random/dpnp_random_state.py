@@ -60,12 +60,13 @@ class RandomState:
     seed : {None, int, array_like}, optional
         A random seed to initialize the pseudo-random number generator.
         The `seed` can be ``None`` (the default), an integer scalar, or
-        an array_like of maximumum three integer scalars.
+        an array of at most three integer scalars.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector string,
-        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
-        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
@@ -498,7 +499,7 @@ class RandomState:
 
     def standard_normal(self, size=None, usm_type="device"):
         """
-        Draw samples from a standard Normal distribution (mean=0, stdev=1).
+        Draw samples from a standard Normal distribution ``(mean=0, stdev=1)``.
 
         For full documentation refer to :obj:`numpy.random.RandomState.standard_normal`.
 

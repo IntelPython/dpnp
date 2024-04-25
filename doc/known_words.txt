@@ -13,11 +13,13 @@ dpctl
 dpnp
 dtype
 dtypes
+einsum
 endian
 eps
 epsneg
 Extrema
 finfo
+finiteness
 Fortran
 Frobenius
 Hypergeometric
@@ -34,7 +36,9 @@ NaT
 ndarray
 ndarrays
 ndim
+normed
 oneAPI
+orthonormal
 Penrose
 Polyutils
 prepend
@@ -48,6 +52,8 @@ subarray
 subarrays
 subclasses
 subtype
+SyclDevice
+SyclQueue
 th
 ufunc
 ufuncs
@@ -55,6 +61,7 @@ Unary
 unicode
 usm
 Vandermonde
+vectorized
 von
 Weibull
 whitespace

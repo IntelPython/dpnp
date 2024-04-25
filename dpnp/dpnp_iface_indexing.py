@@ -424,7 +424,7 @@ def indices(
         If sparse is ``True``:
         Returns a tuple of arrays,
         with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
-        with dimensions[i] in the ith place.
+        with dimensions[i] in the i-th place.
 
     Examples
     --------

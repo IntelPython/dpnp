@@ -1474,17 +1474,19 @@ def seed(seed=None, device=None, sycl_queue=None):
     Parameters
     ----------
     device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API concept of device where an array with generated numbers will be created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector string,
-        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
-        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        An array API concept of device where an array with generated numbers
+        will be created. The `device` can be ``None`` (the default), an OneAPI
+        filter selector string, an instance of :class:`dpctl.SyclDevice`
+        corresponding to a non-partitioned SYCL device, an instance of
+        :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for an array with generated numbers.
 
     Limitations
     -----------
-    Parameter `seed` is supported as either a scalar or an array of maximumum three integer scalars.
+    The `seed` parameter is supported as a scalar or an array of at most three
+    integer scalars.
 
     """
 

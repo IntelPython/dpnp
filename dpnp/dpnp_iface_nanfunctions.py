@@ -305,7 +305,7 @@ def nancumsum(a, axis=None, dtype=None, out=None):
         Input array.
     axis : int, optional
         Axis along which the cumulative sum is computed. The default (``None``)
-        is to compute the cumsum over the flattened array.
+        is to compute the cumulative sum over the flattened array.
     dtype : dtype, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
@@ -862,7 +862,7 @@ def nanstd(
     out : dpnp.ndarray
         An array containing the standard deviations. If the standard
         deviation was computed over the entire array, a zero-dimensional
-        array is returned. If ddof is >= the number of non-NaN elements
+        array is returned. If `ddof` is >= the number of non-NaN elements
         in a slice or the slice contains only NaNs, then the result for
         that slice is NaN.
 
@@ -962,7 +962,7 @@ def nanvar(
     out : dpnp.ndarray
         An array containing the variances. If the variance was computed
         over the entire array, a zero-dimensional array is returned.
-        If ddof is >= the number of non-NaN elements in a slice or the
+        If `ddof` is >= the number of non-NaN elements in a slice or the
         slice contains only NaNs, then the result for that slice is NaN.
 
     Limitations
