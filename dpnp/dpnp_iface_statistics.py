@@ -315,7 +315,7 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
 
 def bincount(x1, weights=None, minlength=0):
     """
-    Count number of occurrences of each value in array of non-negative ints.
+    Count number of occurrences of each value in array of non-negative integers.
 
     For full documentation refer to :obj:`numpy.bincount`.
 

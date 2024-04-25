@@ -640,7 +640,7 @@ def asfortranarray(
     a, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
 ):
     """
-    Return an array (ndim >= 1) laid out in Fortran order in memory.
+    Return an array ``(ndim >= 1)`` laid out in Fortran order in memory.
 
     For full documentation refer to :obj:`numpy.asfortranarray`.
 

@@ -790,7 +790,7 @@ def dstack(tup):
     :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
     :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
     :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
-    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.block` : Assemble an ndarray from nested lists of blocks.
     :obj:`dpnp.dsplit` : Split array along third axis.
 
     Examples
@@ -1114,7 +1114,7 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     :obj:`dpnp.dstack` : Stack arrays in sequence depth wise
                          (along third dimension).
     :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
-    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.block` : Assemble an ndarray from nested lists of blocks.
     :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal
                         size.
 
@@ -1670,7 +1670,7 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
     :obj:`dpnp.dstack` : Stack arrays in sequence depth wise
                          (along third dimension).
     :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
-    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.block` : Assemble an ndarray from nested lists of blocks.
     :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal
                         size.
 
@@ -1973,7 +1973,7 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
     :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third axis).
     :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
-    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.block` : Assemble an ndarray from nested lists of blocks.
     :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal
                         size.
 

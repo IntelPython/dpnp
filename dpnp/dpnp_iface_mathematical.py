@@ -841,7 +841,7 @@ def cumsum(a, axis=None, dtype=None, out=None):
         Input array.
     axis : int, optional
         Axis along which the cumulative sum is computed. The default (``None``)
-        is to compute the cumsum over the flattened array.
+        is to compute the cumulative sum over the flattened array.
     dtype : dtype, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
@@ -936,7 +936,7 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
     a : {dpnp.ndarray, usm_ndarray}
         Input array
     n : int, optional
-        The number of times values are differenced. If zero, the input
+        The number of times the values differ. If ``zero``, the input
         is returned as-is.
     axis : int, optional
         The axis along which the difference is taken, default is the

@@ -66,7 +66,7 @@ class TestSolve(unittest.TestCase):
                 xp.linalg.solve(a, b)
 
     # Undefined behavior is implementation-dependent:
-    # Numpy with OpenBLAS returns an empty array
+    # NumPy with OpenBLAS returns an empty array
     # while numpy with OneMKL raises LinAlgError
     @pytest.mark.skip("Undefined behavior")
     def test_solve_singular_empty(self, xp):
