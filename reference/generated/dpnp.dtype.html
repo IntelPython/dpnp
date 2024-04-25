@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dtype &mdash; Data Parallel Extension for NumPy 0.15.0dev1+43.g279e63791 documentation</title>
+  <title>dpnp.dtype &mdash; Data Parallel Extension for NumPy 0.15.0dev1+52.gee9cab1e0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9436c792"></script>
+        <script src="../../_static/documentation_options.js?v=1ac7b26d"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+43.g279e63791
+                0.15.0dev1+52.gee9cab1e0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -136,12 +136,12 @@ combinations of fundamental numeric types.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dtype</strong> -- Object to be converted to a data type object.</p></li>
-<li><p><strong>align</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) -- Add padding to the fields to match what a C compiler would output
+<li><p><strong>dtype</strong> – Object to be converted to a data type object.</p></li>
+<li><p><strong>align</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Add padding to the fields to match what a C compiler would output
 for a similar C-struct. Can be <code class="docutils literal notranslate"><span class="pre">True</span></code> only if <cite>obj</cite> is a dictionary
 or a comma-separated string. If a struct dtype is being created,
 this also sets a sticky alignment flag <code class="docutils literal notranslate"><span class="pre">isalignedstruct</span></code>.</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) -- Make a new copy of the data-type object. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the result
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Make a new copy of the data-type object. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the result
 may just be a reference to a built-in data-type object.</p></li>
 </ul>
 </dd>
@@ -156,12 +156,12 @@ may just be a reference to a built-in data-type object.</p></li>
 <span class="go">dtype(&#39;int16&#39;)</span>
 </pre></div>
 </div>
-<p>Structured type, one field name 'f1', containing int16:</p>
+<p>Structured type, one field name ‘f1’, containing int16:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)])</span>
 <span class="go">dtype([(&#39;f1&#39;, &#39;&lt;i2&#39;)])</span>
 </pre></div>
 </div>
-<p>Structured type, one field named 'f1', in itself containing a structured
+<p>Structured type, one field named ‘f1’, in itself containing a structured
 type with one field:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)])])</span>
 <span class="go">dtype([(&#39;f1&#39;, [(&#39;f1&#39;, &#39;&lt;i2&#39;)])])</span>
@@ -183,19 +183,19 @@ second an int32:</p>
 <span class="go">dtype([(&#39;f0&#39;, &#39;&lt;i4&#39;), (&#39;f1&#39;, &#39;&lt;f8&#39;, (2, 3))])</span>
 </pre></div>
 </div>
-<p>Using tuples.  <code class="docutils literal notranslate"><span class="pre">int</span></code> is a fixed type, 3 the field's shape.  <code class="docutils literal notranslate"><span class="pre">void</span></code>
+<p>Using tuples.  <code class="docutils literal notranslate"><span class="pre">int</span></code> is a fixed type, 3 the field’s shape.  <code class="docutils literal notranslate"><span class="pre">void</span></code>
 is a flexible type, here of size 10:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;hello&#39;</span><span class="p">,(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span><span class="mi">3</span><span class="p">)),(</span><span class="s1">&#39;world&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">void</span><span class="p">,</span><span class="mi">10</span><span class="p">)])</span>
 <span class="go">dtype([(&#39;hello&#39;, &#39;&lt;i8&#39;, (3,)), (&#39;world&#39;, &#39;V10&#39;)])</span>
 </pre></div>
 </div>
-<p>Subdivide <code class="docutils literal notranslate"><span class="pre">int16</span></code> into 2 <code class="docutils literal notranslate"><span class="pre">int8</span></code>'s, called x and y.  0 and 1 are
+<p>Subdivide <code class="docutils literal notranslate"><span class="pre">int16</span></code> into 2 <code class="docutils literal notranslate"><span class="pre">int8</span></code>’s, called x and y.  0 and 1 are
 the offsets in bytes:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;y&#39;</span><span class="p">:(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span><span class="mi">1</span><span class="p">)}))</span>
 <span class="go">dtype((numpy.int16, [(&#39;x&#39;, &#39;i1&#39;), (&#39;y&#39;, &#39;i1&#39;)]))</span>
 </pre></div>
 </div>
-<p>Using dictionaries.  Two fields named 'gender' and 'age':</p>
+<p>Using dictionaries.  Two fields named ‘gender’ and ‘age’:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">({</span><span class="s1">&#39;names&#39;</span><span class="p">:[</span><span class="s1">&#39;gender&#39;</span><span class="p">,</span><span class="s1">&#39;age&#39;</span><span class="p">],</span> <span class="s1">&#39;formats&#39;</span><span class="p">:[</span><span class="s1">&#39;S1&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">]})</span>
 <span class="go">dtype([(&#39;gender&#39;, &#39;S1&#39;), (&#39;age&#39;, &#39;u1&#39;)])</span>
 </pre></div>
@@ -225,20 +225,20 @@ the offsets in bytes:</p>
 <p>Changes are also made in all fields and sub-arrays of the data type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>new_order</strong> (<em>string</em><em>, </em><em>optional</em>) -- <p>Byte order to force; a value from the byte order specifications
-below.  The default value ('S') results in swapping the current
+<dd class="field-odd"><p><strong>new_order</strong> (<em>string</em><em>, </em><em>optional</em>) – <p>Byte order to force; a value from the byte order specifications
+below.  The default value (‘S’) results in swapping the current
 byte order.  <cite>new_order</cite> codes can be any of:</p>
 <ul class="simple">
-<li><p>'S' - swap dtype from current to opposite endian</p></li>
-<li><p>{'&lt;', 'little'} - little endian</p></li>
-<li><p>{'&gt;', 'big'} - big endian</p></li>
-<li><p>{'=', 'native'} - native order</p></li>
-<li><p>{'|', 'I'} - ignore (no change to byte order)</p></li>
+<li><p>’S’ - swap dtype from current to opposite endian</p></li>
+<li><p>{‘&lt;’, ‘little’} - little endian</p></li>
+<li><p>{‘&gt;’, ‘big’} - big endian</p></li>
+<li><p>{‘=’, ‘native’} - native order</p></li>
+<li><p>{‘|’, ‘I’} - ignore (no change to byte order)</p></li>
 </ul>
 </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>new_dtype</strong> -- New dtype object with the given change to the byte order.</p>
+<dd class="field-even"><p><strong>new_dtype</strong> – New dtype object with the given change to the byte order.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#dpnp.dtype" title="dpnp.dtype">dtype</a></p>
@@ -361,21 +361,21 @@ regardless of their dimension or shape.</p>
 <p>One of:</p>
 <table class="docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p>'='</p></td>
+<tr class="row-odd"><td><p>‘=’</p></td>
 <td><p>native</p></td>
 </tr>
-<tr class="row-even"><td><p>'&lt;'</p></td>
+<tr class="row-even"><td><p>‘&lt;’</p></td>
 <td><p>little-endian</p></td>
 </tr>
-<tr class="row-odd"><td><p>'&gt;'</p></td>
+<tr class="row-odd"><td><p>‘&gt;’</p></td>
 <td><p>big-endian</p></td>
 </tr>
-<tr class="row-even"><td><p>'|'</p></td>
+<tr class="row-even"><td><p>‘|’</p></td>
 <td><p>not applicable</p></td>
 </tr>
 </tbody>
 </table>
-<p>All built-in data-type objects have byteorder either '=' or '|'.</p>
+<p>All built-in data-type objects have byteorder either ‘=’ or ‘|’.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;i2&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span><span class="o">.</span><span class="n">byteorder</span>
@@ -419,7 +419,7 @@ regardless of their dimension or shape.</p>
 <dt class="sig sig-object py" id="dpnp.dtype.descr">
 <span class="sig-name descname"><span class="pre">descr</span></span><a class="headerlink" href="#dpnp.dtype.descr" title="Link to this definition"></a></dt>
 <dd><p><cite>__array_interface__</cite> description of the data-type.</p>
-<p>The format is that required by the 'descr' key in the
+<p>The format is that required by the ‘descr’ key in the
 <cite>__array_interface__</cite> attribute.</p>
 <p>Warning: This attribute exists specifically for <cite>__array_interface__</cite>,
 and passing it directly to <cite>np.dtype</cite> will not accurately reconstruct
@@ -449,7 +449,7 @@ Each entry in the dictionary is a tuple fully describing the field:</p>
 <p>Offset is limited to C int, which is signed and usually 32 bits.
 If present, the optional title can be any object (if it is a string
 or unicode then it will also be a key in the fields dictionary,
-otherwise it's meta-data). Notice also that the first two elements
+otherwise it’s meta-data). Notice also that the first two elements
 of the tuple can be passed directly as arguments to the <code class="docutils literal notranslate"><span class="pre">ndarray.getfield</span></code>
 and <code class="docutils literal notranslate"><span class="pre">ndarray.setfield</span></code> methods.</p>
 <div class="admonition seealso">
@@ -494,7 +494,7 @@ objects in any fields or sub-dtypes.</p>
 the Python object is the memory address of that object (a pointer).
 Special handling may be required, and this attribute is useful for
 distinguishing data types that may contain arbitrary Python objects
-and data-types that won't.</p>
+and data-types that won’t.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -572,7 +572,7 @@ For the flexible data-types, this number can be anything.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpnp.dtype.kind">
 <span class="sig-name descname"><span class="pre">kind</span></span><a class="headerlink" href="#dpnp.dtype.kind" title="Link to this definition"></a></dt>
-<dd><p>A character code (one of 'biufcmMOSUV') identifying the general kind of data.</p>
+<dd><p>A character code (one of ‘biufcmMOSUV’) identifying the general kind of data.</p>
 <table class="docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p>b</p></td>
