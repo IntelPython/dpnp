@@ -2161,11 +2161,7 @@ def dpnp_svd_batch(
     # If `related_arrays` is not provided, default to USM type and SYCL queue of `a`.
     # Otherwise, determine USM type and SYCL queue using
     # compute-follows-data execution model for `a` and `related arrays`.
-    if related_arrays is None:
-        usm_type = a.usm_type
-        exec_q = a.sycl_queue
-    else:
-        usm_type, exec_q = get_usm_allocations([a] + related_arrays)
+    usm_type, exec_q = get_usm_allocations([a] + (related_arrays or []))
 
     reshape = False
     batch_shape_orig = a.shape[:-2]
@@ -2361,11 +2357,7 @@ def dpnp_svd(
     # If `related_arrays` is not provided, default to USM type and SYCL queue of `a`.
     # Otherwise, determine USM type and SYCL queue using
     # compute-follows-data execution model for `a` and `related arrays`.
-    if related_arrays is None:
-        usm_type = a.usm_type
-        exec_q = a.sycl_queue
-    else:
-        usm_type, exec_q = get_usm_allocations([a] + related_arrays)
+    usm_type, exec_q = get_usm_allocations([a] + (related_arrays or []))
 
     m, n = a.shape
 
