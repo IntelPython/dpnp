@@ -222,7 +222,7 @@ def det(a):
 
     Examples
     --------
-    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+    The determinant of a 2-D array ``[[a, b], [c, d]]`` is ``ad - bc``:
 
     >>> import dpnp as dp
     >>> a = dp.array([[1, 2], [3, 4]])
@@ -1177,7 +1177,7 @@ def slogdet(a):
 
     Examples
     --------
-    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+    The determinant of a 2-D array ``[[a, b], [c, d]]`` is ``ad - bc``:
 
     >>> import dpnp as dp
     >>> a = dp.array([[1, 2], [3, 4]])

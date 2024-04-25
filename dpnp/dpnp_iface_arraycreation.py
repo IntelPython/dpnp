@@ -2117,8 +2117,8 @@ def geomspace(
         The final value of the sequence, in any form that can be converted to
         an array. This includes scalars, lists, lists of tuples, tuples, tuples
         of tuples, tuples of lists, and ndarrays. If `endpoint` is ``False``
-        num + 1 values are spaced over the interval in log-space, of which all
-        but the last (a sequence of length num) are returned.
+        ``num + 1`` values are spaced over the interval in log-space, of which
+        all but the last (a sequence of length `num`) are returned.
     num : int, optional
         Number of samples to generate. Default is 50.
     dtype : dtype, optional
@@ -2152,12 +2152,12 @@ def geomspace(
 
     See Also
     --------
-    :obj:`dpnp.logspace` : Similar to geomspace, but with endpoints specified
-                           using log and base.
-    :obj:`dpnp.linspace` : Similar to geomspace, but with arithmetic instead of
-                           geometric progression.
-    :obj:`dpnp.arange` : Similar to linspace, with the step size specified
-                         instead of the number of samples.
+    :obj:`dpnp.logspace` : Similar to :obj:`dpnp.geomspace`, but with endpoints
+                           specified using log and base.
+    :obj:`dpnp.linspace` : Similar to :obj:`dpnp.geomspace`, but with
+                           arithmetic instead of geometric progression.
+    :obj:`dpnp.arange` : Similar to :obj:`dpnp.linspace`, with the step size
+                         specified instead of the number of samples.
 
     Examples
     --------
@@ -2776,7 +2776,7 @@ class MGridClass:
     -------
     out : one dpnp.ndarray or tuple of dpnp.ndarray
         Returns one array of grid indices,
-        grid.shape = (len(dimensions),) + tuple(dimensions).
+        ``grid.shape = (len(dimensions),) + tuple(dimensions)``.
 
     Examples
     --------

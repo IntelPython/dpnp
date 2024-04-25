@@ -243,7 +243,7 @@ def inner(a, b):
     See Also
     --------
     :obj:`dpnp.einsum` : Einstein summation convention..
-    :obj:`dpnp.dot` : Generalised matrix product,
+    :obj:`dpnp.dot` : Generalized matrix product,
                       using second last dimension of `b`.
     :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
 

@@ -1192,9 +1192,10 @@ class dpnp_array:
 
         Note
         ----
-        `axis` in :obj:`dpnp.sort` could be integr or ``None``. If ``None``,
-        the array is flattened before sorting. However, `axis` in :obj:`dpnp.ndarray.sort`
-        can only be integer since it sorts an array in-place.
+        `axis` in :obj:`dpnp.sort` could be integer or ``None``. If ``None``,
+        the array is flattened before sorting. However, `axis` in
+        :obj:`dpnp.ndarray.sort` can only be integer since it sorts an array
+        in-place.
 
         Examples
         --------
@@ -1326,11 +1327,12 @@ class dpnp_array:
         ----------
         axes : None, tuple or list of ints, n ints, optional
             * ``None`` or no argument: reverses the order of the axes.
-            * tuple or list of integers: `i` in the `j`-th place in the
+            * ``tuple or list of ints``: `i` in the `j`-th place in the
               tuple/list means that the array’s `i`-th axis becomes the
               transposed array’s `j`-th axis.
-            * n ints: same as an n-tuple/n-list of the same ints (this form is
-              intended simply as a “convenience” alternative to the tuple form).
+            * ``n ints``: same as an n-tuple/n-list of the same integers (this
+              form is intended simply as a “convenience” alternative to the
+              tuple form).
 
         Returns
         -------

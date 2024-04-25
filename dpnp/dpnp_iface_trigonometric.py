@@ -847,7 +847,7 @@ See Also
 --------
 :obj:`dpnp.exp` : Calculate exponents for all elements in the array.
 :obj:`dpnp.exp2` : Calculate `2**x` for all elements in the array.
-:obj:`dpnp.log1p` : Callculate ``log(1 + x)``, the inverse of expm1.
+:obj:`dpnp.log1p` : Calculate ``log(1 + x)``, the inverse of :obj:`dpnp.expm1`.
 
 Examples
 --------

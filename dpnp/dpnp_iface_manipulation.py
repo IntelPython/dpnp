@@ -851,7 +851,7 @@ def expand_dims(a, axis):
     Hence, if provided `-1`, the resolved axis position is `N` (i.e.,
     a singleton dimension must be appended to the input array `a`).
     If provided `-N-1`, the resolved axis position is `0` (i.e., a
-    singleton dimension is prepended to the input array `a`).
+    singleton dimension is added to the input array `a`).
 
     See Also
     --------
@@ -929,8 +929,8 @@ def flip(m, axis=None):
          Axis or axes along which to flip over. The default,
          ``axis=None``, will flip over all of the axes of the input array.
          If `axis` is negative it counts from the last to the first axis.
-         If `axis` is a tuple of ints, flipping is performed on all of the axes
-         specified in the tuple.
+         If `axis` is a tuple of integers, flipping is performed on all of
+         the axes specified in the tuple.
 
     Returns
     -------
@@ -1435,11 +1435,10 @@ def roll(x, shift, axis=None):
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
     shift : int or tuple of ints
-        The number of places by which elements are shifted. If a tuple,
-        then `axis` must be a tuple of the same size, and each of the
-        given axes is shifted by the corresponding number. If an int
-        while `axis` is a tuple of ints, then the same value is used for
-        all given axes.
+        The number of places by which elements are shifted. If a tuple, then
+        `axis` must be a tuple of the same size, and each of the given axes
+        is shifted by the corresponding number. If an integer while `axis` is
+        a tuple of integers, then the same value is used for all given axes.
     axis : int or tuple of ints, optional
         Axis or axes along which elements are shifted. By default, the
         array is flattened before shifting, after which the original

@@ -419,7 +419,7 @@ def indices(
     out : one dpnp.ndarray or tuple of dpnp.ndarray
         If sparse is ``False``:
         Returns one array of grid indices,
-        grid.shape = (len(dimensions),) + tuple(dimensions).
+        ``grid.shape = (len(dimensions),) + tuple(dimensions)``.
 
         If sparse is ``True``:
         Returns a tuple of arrays,
