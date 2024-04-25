@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linspace &mdash; Data Parallel Extension for NumPy 0.15.0dev1+49.ge9a5579cc4 documentation</title>
+  <title>dpnp.linspace &mdash; Data Parallel Extension for NumPy 0.15.0dev1+50.gaca4841dc7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=0ce1220a"></script>
+        <script src="../../_static/documentation_options.js?v=7185ca00"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+49.ge9a5579cc4
+                0.15.0dev1+50.gaca4841dc7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -139,8 +139,8 @@ tuples of tuples, tuples of lists, and ndarrays.</p></li>
 <li><p><strong>stop</strong> (<em>array_like</em>) -- The end value of the sequence, in any form that can be converted to
 an array. This includes scalars, lists, lists of tuples, tuples, tuples
 of tuples, tuples of lists, and ndarrays. If <cite>endpoint</cite> is set to
-<code class="docutils literal notranslate"><span class="pre">False</span></code> the sequence consists of all but the last of num + 1 evenly
-spaced samples, so that <cite>stop</cite> is excluded.</p></li>
+<code class="docutils literal notranslate"><span class="pre">False</span></code> the sequence consists of all but the last of <code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">+</span> <span class="pre">1</span></code>
+evenly spaced samples, so that <cite>stop</cite> is excluded.</p></li>
 <li><p><strong>dtype</strong> (<a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a><em>, </em><em>optional</em>) -- The desired dtype for the array. If not given, a default dtype will be
 used that can represent the values (by considering Promotion Type Rule
 and device capabilities when necessary).</p></li>
@@ -164,7 +164,7 @@ axis inserted at the beginning. Use -1 to get an axis at the end.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>out</strong> (<em>dpnp.ndarray</em>) -- There are num equally spaced samples in the closed interval
+<li><p><strong>out</strong> (<em>dpnp.ndarray</em>) -- There are <cite>num</cite> equally spaced samples in the closed interval
 [<cite>start</cite>, <cite>stop</cite>] or the half-open interval [<cite>start</cite>, <cite>stop</cite>)
 (depending on whether <cite>endpoint</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p></li>
 <li><p><strong>step</strong> (<em>float, optional</em>) -- Only returned if <cite>retstep</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.
@@ -176,11 +176,11 @@ Size of spacing between samples.</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.arange.html#dpnp.arange" title="dpnp.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arange</span></code></a></dt><dd><p>Similar to <cite>linspace</cite>, but uses a step size (instead of the number of samples).</p>
+<dt><a class="reference internal" href="dpnp.arange.html#dpnp.arange" title="dpnp.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arange</span></code></a></dt><dd><p>Similar to <a class="reference internal" href="#dpnp.linspace" title="dpnp.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linspace</span></code></a>, but uses a step size (instead of the number of samples).</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.geomspace.html#dpnp.geomspace" title="dpnp.geomspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.geomspace</span></code></a></dt><dd><p>Similar to <cite>linspace</cite>, but with numbers spaced evenly on a log scale (a geometric progression).</p>
+<dt><a class="reference internal" href="dpnp.geomspace.html#dpnp.geomspace" title="dpnp.geomspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.geomspace</span></code></a></dt><dd><p>Similar to <a class="reference internal" href="#dpnp.linspace" title="dpnp.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linspace</span></code></a>, but with numbers spaced evenly on a log scale (a geometric progression).</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.logspace.html#dpnp.logspace" title="dpnp.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logspace</span></code></a></dt><dd><p>Similar to <cite>geomspace</cite>, but with the end points specified as logarithms.</p>
+<dt><a class="reference internal" href="dpnp.logspace.html#dpnp.logspace" title="dpnp.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logspace</span></code></a></dt><dd><p>Similar to <a class="reference internal" href="dpnp.geomspace.html#dpnp.geomspace" title="dpnp.geomspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.geomspace</span></code></a>, but with the end points specified as logarithms.</p>
 </dd>
 </dl>
 </div>
