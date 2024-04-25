@@ -133,6 +133,7 @@ def beta(a, b, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> a, b = .4, .5  # alpha, beta
     >>> s = dpnp.random.beta(a, b, 1000)
 
@@ -170,6 +171,7 @@ def binomial(n, p, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> n, p = 10, .5  # number of trials, probability of each trial
     >>> s = dpnp.random.binomial(n, p, 1000)
     # result of flipping a coin 10 times, tested 1000 times.
@@ -297,6 +299,7 @@ def exponential(scale=1.0, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> scale = .5  # alpha
     >>> s = dpnp.random.exponential(scale, 1000)
 
@@ -366,6 +369,7 @@ def gamma(shape, scale=1.0, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> shape, scale = 0, 0.1  # shape and scale
     >>> s = dpnp.random.gamma(shape, scale, 1000)
 
@@ -404,6 +408,7 @@ def geometric(p, size=None):
     --------
     Draw ten thousand values from the geometric distribution,
     with the probability of an individual success equal to 0.35:
+
     >>> z = dpnp.random.geometric(p=0.35, size=10000)
 
     """
@@ -436,6 +441,7 @@ def gumbel(loc=0.0, scale=1.0, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> mu, beta = 0, 0.1 # location and scale
     >>> s = dpnp.random.gumbel(mu, beta, 1000)
 
@@ -472,6 +478,7 @@ def hypergeometric(ngood, nbad, nsample, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> ngood, nbad, nsamp = 100, 2, 10
     # number of good, number of bad, and number of samples
     >>> s = dpnp.random.hypergeometric(ngood, nbad, nsamp, 1000)
@@ -595,6 +602,7 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> mu, sigma = 3., 1. # mean and standard deviation
     >>> s = dpnp.random.lognormal(mu, sigma, 1000)
 
@@ -647,6 +655,7 @@ def multinomial(n, pvals, size=None):
     Examples
     --------
     Throw a dice 20 times:
+
     >>> s = dpnp.random.multinomial(20, [1/6.]*6, size=1)
     >>> s.shape
     (1, 6)
@@ -816,6 +825,7 @@ def normal(
     Examples
     --------
     Draw samples from the distribution:
+
     >>> mu, sigma = 0, 0.1 # mean and standard deviation
     >>> s = dpnp.random.normal(mu, sigma, 1000)
 
@@ -885,6 +895,7 @@ def pareto(a, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> a = .5  # alpha
     >>> s = dpnp.random.pareto(a, 1000)
 
@@ -953,6 +964,7 @@ def poisson(lam=1.0, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> import numpy as np
     >>> s = dpnp.random.poisson(5, 10000)
 
@@ -987,6 +999,7 @@ def power(a, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> a = .5  # alpha
     >>> s = dpnp.random.power(a, 1000)
 
@@ -1093,6 +1106,7 @@ def randint(
     Examples
     --------
     Draw samples from the distribution:
+
     >>> low, high = 3, 11 # low and high
     >>> s = dpnp.random.randint(low, high, 1000, dtype=dpnp.int32)
 
@@ -1364,6 +1378,7 @@ def rayleigh(scale=1.0, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> import numpy as np
     >>> s = dpnp.random.rayleigh(1.0, 10000)
 
@@ -1514,6 +1529,7 @@ def standard_cauchy(size=None):
     Examples
     --------
     Draw samples and plot the distribution:
+
     >>> import matplotlib.pyplot as plt
     >>> s = dpnp.random.standard_cauchy(1000000)
     >>> s = s[(s>-25) & (s<25)]  # truncate distribution so it plots well
@@ -1542,6 +1558,7 @@ def standard_exponential(size=None):
     Examples
     --------
     Output a 3x8000 array:
+
     >>> n = dpnp.random.standard_exponential((3, 8000))
 
     """
@@ -1568,6 +1585,7 @@ def standard_gamma(shape, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> shape = 2.
     >>> s = dpnp.random.standard_gamma(shape, 1000000)
 
@@ -1615,6 +1633,7 @@ def standard_normal(size=None, device=None, usm_type="device", sycl_queue=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> s = dpnp.random.standard_normal(1000)
 
     """
@@ -1640,6 +1659,7 @@ def standard_t(df, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> df = 2.
     >>> s = dpnp.random.standard_t(df, 1000000)
 
@@ -1675,6 +1695,7 @@ def triangular(left, mode, right, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> df = 2.
     >>> s = dpnp.random.triangular(-3, 0, 8, 1000000)
 
@@ -1746,6 +1767,7 @@ def uniform(
     Examples
     --------
     Draw samples from the distribution:
+
     >>> low, high = 0, 0.1 # low and high
     >>> s = dpnp.random.uniform(low, high, 10000)
 
@@ -1763,8 +1785,6 @@ def uniform(
 
 def vonmises(mu, kappa, size=None):
     """
-    Von Mises distribution.
-
     Draw samples from a von Mises distribution.
 
     For full documentation refer to :obj:`numpy.random.vonmises`.
@@ -1779,6 +1799,7 @@ def vonmises(mu, kappa, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> mu, kappa = 0.0, 4.0 # mean and dispersion
     >>> s = dpnp.random.vonmises(mu, kappa, 1000)
 

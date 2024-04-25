@@ -1507,7 +1507,7 @@ def rollaxis(x, axis, start=0):
     -------
     out : dpnp.ndarray
         An array with the same data type as `x` where the specified axis
-        has been repositioned to the desired position.
+        has been moved to the requested position.
 
     See Also
     --------

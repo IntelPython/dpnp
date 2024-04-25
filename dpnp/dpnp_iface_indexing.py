@@ -779,7 +779,8 @@ def putmask(x1, mask, values):
 
 def select(condlist, choicelist, default=0):
     """
-    Return an array drawn from elements in choicelist, depending on conditions.
+    Return an array drawn from elements in `choicelist`, depending on
+    conditions.
 
     For full documentation refer to :obj:`numpy.select`.
 

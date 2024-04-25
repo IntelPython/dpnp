@@ -245,7 +245,7 @@ def searchsorted(a, v, side="left", sorter=None):
         Default is ``'left'``.
     sorter : {dpnp.ndarray, usm_ndarray}, optional
         Optional 1-D array of integer indices that sort array a into ascending
-        order. They are typically the result of argsort.
+        order. They are typically the result of :obj:`dpnp.argsort`.
         Out of bound index values of `sorter` array are treated using `"wrap"`
         mode documented in :py:func:`dpnp.take`.
         Default is ``None``.
