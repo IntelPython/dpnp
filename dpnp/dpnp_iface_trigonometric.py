@@ -709,7 +709,7 @@ def degrees(x1, **kwargs):
 
 
 _EXP_DOCSTRING = """
-Computes the exponential for each element `x_i` of input array `x`.
+Computes the exponent for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.exp`.
 
@@ -727,7 +727,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise exponential of `x`.
+    An array containing the element-wise exponent of `x`.
     The data type of the returned array is determined by
     the Type Promotion Rules.
 
@@ -761,7 +761,7 @@ exp = DPNPUnaryFunc(
 
 
 _EXP2_DOCSTRING = """
-Computes the base-2 exponential for each element `x_i` for input array `x`.
+Computes the base-2 exponent for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.exp2`.
 
@@ -779,7 +779,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise base-2 exponentials.
+    An array containing the element-wise base-2 exponents.
     The data type of the returned array is determined by
     the Type Promotion Rules.
 
@@ -791,7 +791,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.exp` : Calculate exponential for all elements in the array.
+:obj:`dpnp.exp` : Calculate exponent for all elements in the array.
 :obj:`dpnp.expm1` : ``exp(x) - 1``, the inverse of :obj:`dpnp.log1p`.
 :obj:`dpnp.power` : First array elements raised to powers from second array, element-wise.
 
@@ -814,7 +814,7 @@ exp2 = DPNPUnaryFunc(
 
 
 _EXPM1_DOCSTRING = """
-Computes the exponential minus 1 for each element `x_i` of input array `x`.
+Computes the exponent minus 1 for each element `x_i` of input array `x`.
 
 This function calculates `exp(x) - 1.0` more accurately for small values of `x`.
 
@@ -846,7 +846,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.exp` : Calculate exponential for all elements in the array.
+:obj:`dpnp.exp` : Calculate exponents for all elements in the array.
 :obj:`dpnp.exp2` : Calculate `2**x` for all elements in the array.
 :obj:`dpnp.log1p` : Callculate ``log(1 + x)``, the inverse of expm1.
 
@@ -1167,8 +1167,8 @@ log2 = DPNPUnaryFunc(
 
 
 _LOGADDEXP_DOCSTRING = """
-Calculates the natural logarithm of the sum of exponentials for each element
-`x1_i` of the input array `x1` with the respective element `x2_i` of the input
+Calculates the natural logarithm of the sum of exponents for each element `x1_i`
+of the input array `x1` with the respective element `x2_i` of the input
 array `x2`.
 
 This function calculates `log(exp(x1) + exp(x2))` more accurately for small
@@ -1207,7 +1207,7 @@ See Also
 --------
 :obj:`dpnp.log` : Natural logarithm, element-wise.
 :obj:`dpnp.exp` : Exponential, element-wise.
-:obj:`dpnp.logsumdexp` : Logarithm of the sum of exponentials of elements in the input array.
+:obj:`dpnp.logsumdexp` : Logarithm of the sum of exponents of elements in the input array.
 
 Examples
 --------
@@ -1231,7 +1231,7 @@ logaddexp = DPNPBinaryFunc(
 
 def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
     """
-    Calculates the logarithm of the sum of exponentials of elements in
+    Calculates the logarithm of the sum of exponents of elements in
     the input array.
 
     Parameters
@@ -1278,7 +1278,7 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
     --------
     :obj:`dpnp.log` : Natural logarithm, element-wise.
     :obj:`dpnp.exp` : Exponential, element-wise.
-    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponentiations of
+    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponents of
                             the inputs, element-wise.
 
     Examples

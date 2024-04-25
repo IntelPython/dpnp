@@ -1,5 +1,10 @@
 bitwise
 conda
 dpctl
+dpnp
+dtype
 NaN
+ndarray
 oneAPI
+ufunc
+ufuncs

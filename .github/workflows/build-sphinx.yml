@@ -77,9 +77,10 @@ jobs:
                                intel-oneapi-mkl-devel          \
                                intel-oneapi-compiler-dpcpp-cpp
 
+      # required by sphinxcontrib-spelling extension
       - name: Install enchant package
         run: |
-          sudo apt-get install enchant
+          sudo apt-get install enchant-2
 
       # https://github.com/marketplace/actions/checkout
       - name: Install nvidia-cuda support drivers
