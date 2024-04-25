@@ -5,7 +5,7 @@ Universal Functions (ufunc)
 
 .. https://docs.scipy.org/doc/numpy/reference/ufuncs.html
 
-DPNP provides universal functions (a.k.a. ufuncs) to support various elementwise operations.
+DPNP provides universal functions (a.k.a. ufuncs) to support various element-wise operations.
 
 Available ufuncs
 ----------------

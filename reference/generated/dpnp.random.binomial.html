@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.random.binomial &mdash; Data Parallel Extension for NumPy 0.15.0dev1+52.gee9cab1e0 documentation</title>
+  <title>dpnp.random.binomial &mdash; Data Parallel Extension for NumPy 0.15.0dev1+44.g8f03849c48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=1ac7b26d"></script>
+        <script src="../../_static/documentation_options.js?v=033e88f5"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+52.gee9cab1e0
+                0.15.0dev1+44.g8f03849c48
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -142,7 +142,7 @@ Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class
 A real world example. A company drills 9 wild-cat oil exploration
 wells, each with an estimated probability of success of 0.1. All nine
 wells fail. What is the probability of that happening?
-Let’s do 20,000 trials of the model, and count the number that
+Let's do 20,000 trials of the model, and count the number that
 generate zero positive results.
 &gt;&gt;&gt; sum(dpnp.random.binomial(9, 0.1, 20000) == 0)/20000.
 # answer = 0.38885, or 38%.</p>

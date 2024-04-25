@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Universal Functions (ufunc) &mdash; Data Parallel Extension for NumPy 0.15.0dev1+52.gee9cab1e0 documentation</title>
+  <title>Universal Functions (ufunc) &mdash; Data Parallel Extension for NumPy 0.15.0dev1+44.g8f03849c48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=1ac7b26d"></script>
+        <script src="../_static/documentation_options.js?v=033e88f5"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+52.gee9cab1e0
+                0.15.0dev1+44.g8f03849c48
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -112,7 +112,7 @@
              
   <section id="universal-functions-ufunc">
 <span id="ufunc"></span><h1>Universal Functions (ufunc)<a class="headerlink" href="#universal-functions-ufunc" title="Link to this heading"></a></h1>
-<p>DPNP provides universal functions (a.k.a. ufuncs) to support various elementwise operations.</p>
+<p>DPNP provides universal functions (a.k.a. ufuncs) to support various element-wise operations.</p>
 <section id="available-ufuncs">
 <h2>Available ufuncs<a class="headerlink" href="#available-ufuncs" title="Link to this heading"></a></h2>
 <section id="math-operations">
@@ -132,7 +132,7 @@
 <td><p>Calculates the ratio for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.logaddexp.html#dpnp.logaddexp" title="dpnp.logaddexp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logaddexp</span></code></a></p></td>
-<td><p>Calculates the natural logarithm of the sum of exponentiations for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Calculates the natural logarithm of the sum of exponents for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.true_divide.html#dpnp.true_divide" title="dpnp.true_divide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.true_divide</span></code></a></p></td>
 <td><p>Calculates the ratio for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
@@ -156,28 +156,28 @@
 <td><p>Returns the element-wise remainder of division.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.abs.html#dpnp.abs" title="dpnp.abs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.abs</span></code></a></p></td>
-<td><p>Calculate the absolute value element-wise.</p></td>
+<td><p>Calculates the absolute value for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.absolute.html#dpnp.absolute" title="dpnp.absolute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.absolute</span></code></a></p></td>
-<td><p>Calculate the absolute value element-wise.</p></td>
+<td><p>Calculates the absolute value for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fabs.html#dpnp.fabs" title="dpnp.fabs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fabs</span></code></a></p></td>
 <td><p>Compute the absolute values element-wise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.rint.html#dpnp.rint" title="dpnp.rint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.rint</span></code></a></p></td>
-<td><p>Round elements of the array to the nearest integer.</p></td>
+<td><p>Rounds each element <cite>x_i</cite> of the input array <cite>x</cite> to the nearest integer-valued number.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.sign.html#dpnp.sign" title="dpnp.sign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sign</span></code></a></p></td>
 <td><p>Computes an indication of the sign of each element <cite>x_i</cite> of input array <cite>x</cite> using the signum function.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.exp.html#dpnp.exp" title="dpnp.exp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.exp</span></code></a></p></td>
-<td><p>Computes the exponential for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
+<td><p>Computes the exponent for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.exp2.html#dpnp.exp2" title="dpnp.exp2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.exp2</span></code></a></p></td>
-<td><p>Computes the base-2 exponential for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
+<td><p>Computes the base-2 exponent for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.log.html#dpnp.log" title="dpnp.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.log</span></code></a></p></td>
-<td><p>Computes the natural logarithm element-wise.</p></td>
+<td><p>Computes the natural logarithm for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.log2.html#dpnp.log2" title="dpnp.log2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.log2</span></code></a></p></td>
 <td><p>Computes the base-2 logarithm for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
@@ -186,25 +186,25 @@
 <td><p>Computes the base-10 logarithm for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.expm1.html#dpnp.expm1" title="dpnp.expm1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.expm1</span></code></a></p></td>
-<td><p>Computes the exponential minus 1 for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
+<td><p>Computes the exponent minus 1 for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.log1p.html#dpnp.log1p" title="dpnp.log1p"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.log1p</span></code></a></p></td>
-<td><p>Computes an approximation of <cite>log(1+x)</cite> element-wise.</p></td>
+<td><p>Computes the natural logarithm of (1 + <cite>x</cite>) for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.proj.html#dpnp.proj" title="dpnp.proj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.proj</span></code></a></p></td>
 <td><p>Computes projection of each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.sqrt.html#dpnp.sqrt" title="dpnp.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sqrt</span></code></a></p></td>
-<td><p>Computes the non-negative square-root for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
+<td><p>Computes the positive square-root for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.cbrt.html#dpnp.cbrt" title="dpnp.cbrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.cbrt</span></code></a></p></td>
-<td><p>Returns the cbrting for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
+<td><p>Returns positive cube-root for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.square.html#dpnp.square" title="dpnp.square"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.square</span></code></a></p></td>
-<td><p>Computes <cite>x_i**2</cite> (or <cite>x_i*x_i</cite>) for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
+<td><p>Squares each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.reciprocal.html#dpnp.reciprocal" title="dpnp.reciprocal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reciprocal</span></code></a></p></td>
-<td><p>Computes the reciprocal of each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
+<td><p>Computes the reciprocal square-root for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.rsqrt.html#dpnp.rsqrt" title="dpnp.rsqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.rsqrt</span></code></a></p></td>
 <td><p>Computes the reciprocal square-root for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
@@ -253,7 +253,7 @@
 <td><p>Computes inverse hyperbolic sine for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.arccosh.html#dpnp.arccosh" title="dpnp.arccosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arccosh</span></code></a></p></td>
-<td><p>Computes hyperbolic inverse cosine for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
+<td><p>Computes inverse hyperbolic cosine for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.arctanh.html#dpnp.arctanh" title="dpnp.arctanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arctanh</span></code></a></p></td>
 <td><p>Computes hyperbolic inverse tangent for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
@@ -297,22 +297,22 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.greater.html#dpnp.greater" title="dpnp.greater"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.greater</span></code></a></p></td>
-<td><p>Calculates the greater-than results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Computes the greater-than test results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.greater_equal.html#dpnp.greater_equal" title="dpnp.greater_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.greater_equal</span></code></a></p></td>
-<td><p>Calculates the greater-than or equal-to results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Computes the greater-than or equal-to test results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.less.html#dpnp.less" title="dpnp.less"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.less</span></code></a></p></td>
-<td><p>Calculates the less-than results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Computes the less-than test results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.less_equal.html#dpnp.less_equal" title="dpnp.less_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.less_equal</span></code></a></p></td>
-<td><p>Calculates the less-than or equal-to results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Computes the less-than or equal-to test results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.not_equal.html#dpnp.not_equal" title="dpnp.not_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.not_equal</span></code></a></p></td>
-<td><p>Calculates inequality results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Calculates inequality test results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.equal.html#dpnp.equal" title="dpnp.equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.equal</span></code></a></p></td>
-<td><p>Calculates equality results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
+<td><p>Calculates equality test results for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.logical_and.html#dpnp.logical_and" title="dpnp.logical_and"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_and</span></code></a></p></td>
 <td><p>Computes the logical AND for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
@@ -346,13 +346,13 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.isfinite.html#dpnp.isfinite" title="dpnp.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isfinite</span></code></a></p></td>
-<td><p>Checks if each element of input array is a finite number.</p></td>
+<td><p>Test if each element of input array is a finite number.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.isinf.html#dpnp.isinf" title="dpnp.isinf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isinf</span></code></a></p></td>
-<td><p>Checks if each element of input array is an infinity.</p></td>
+<td><p>Test if each element of input array is an infinity.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.isnan.html#dpnp.isnan" title="dpnp.isnan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isnan</span></code></a></p></td>
-<td><p>Checks if each element of an input array is a NaN.</p></td>
+<td><p>Test if each element of an input array is a NaN.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fabs.html#dpnp.fabs" title="dpnp.fabs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fabs</span></code></a></p></td>
 <td><p>Compute the absolute values element-wise.</p></td>
