@@ -1,22 +1,10 @@
-tests/test_mathematical.py::TestGradient::test_gradient_y1[array0]
-tests/test_mathematical.py::TestGradient::test_gradient_y1[array1]
-tests/test_mathematical.py::TestGradient::test_gradient_y1[array2]
-tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array0]
-tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array1]
-tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array2]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array0]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array1]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array2]
 
-tests/test_strides.py::test_strides_1arg[(10,)-int32-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-int32-fabs]
-tests/test_strides.py::test_strides_1arg[(10,)-int32-radians]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-fabs]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-radians]
-tests/test_strides.py::test_strides_1arg[(10,)-None-degrees]
 tests/test_strides.py::test_strides_1arg[(10,)-None-fabs]
-tests/test_strides.py::test_strides_1arg[(10,)-None-radians]
 
 tests/test_umath.py::test_umaths[('floor_divide', 'ff')]
 
