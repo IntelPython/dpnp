@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+47.g124689ee58 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+48.g6ba03d86d6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9649595c"></script>
+        <script src="../../_static/documentation_options.js?v=c9ddd19f"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+47.g124689ee58
+                0.15.0dev1+48.g6ba03d86d6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -976,7 +976,7 @@
 <span class="sd">    Hence, if provided `-1`, the resolved axis position is `N` (i.e.,</span>
 <span class="sd">    a singleton dimension must be appended to the input array `a`).</span>
 <span class="sd">    If provided `-N-1`, the resolved axis position is `0` (i.e., a</span>
-<span class="sd">    singleton dimension is prepended to the input array `a`).</span>
+<span class="sd">    singleton dimension is added to the input array `a`).</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1057,8 +1057,8 @@
 <span class="sd">         Axis or axes along which to flip over. The default,</span>
 <span class="sd">         ``axis=None``, will flip over all of the axes of the input array.</span>
 <span class="sd">         If `axis` is negative it counts from the last to the first axis.</span>
-<span class="sd">         If `axis` is a tuple of ints, flipping is performed on all of the axes</span>
-<span class="sd">         specified in the tuple.</span>
+<span class="sd">         If `axis` is a tuple of integers, flipping is performed on all of</span>
+<span class="sd">         the axes specified in the tuple.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1590,11 +1590,10 @@
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    shift : int or tuple of ints</span>
-<span class="sd">        The number of places by which elements are shifted. If a tuple,</span>
-<span class="sd">        then `axis` must be a tuple of the same size, and each of the</span>
-<span class="sd">        given axes is shifted by the corresponding number. If an int</span>
-<span class="sd">        while `axis` is a tuple of ints, then the same value is used for</span>
-<span class="sd">        all given axes.</span>
+<span class="sd">        The number of places by which elements are shifted. If a tuple, then</span>
+<span class="sd">        `axis` must be a tuple of the same size, and each of the given axes</span>
+<span class="sd">        is shifted by the corresponding number. If an integer while `axis` is</span>
+<span class="sd">        a tuple of integers, then the same value is used for all given axes.</span>
 <span class="sd">    axis : int or tuple of ints, optional</span>
 <span class="sd">        Axis or axes along which elements are shifted. By default, the</span>
 <span class="sd">        array is flattened before shifting, after which the original</span>

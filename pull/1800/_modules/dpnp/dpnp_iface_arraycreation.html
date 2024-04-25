@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+47.g124689ee58 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+48.g6ba03d86d6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9649595c"></script>
+        <script src="../../_static/documentation_options.js?v=c9ddd19f"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+47.g124689ee58
+                0.15.0dev1+48.g6ba03d86d6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -2266,8 +2266,8 @@
 <span class="sd">        The final value of the sequence, in any form that can be converted to</span>
 <span class="sd">        an array. This includes scalars, lists, lists of tuples, tuples, tuples</span>
 <span class="sd">        of tuples, tuples of lists, and ndarrays. If `endpoint` is ``False``</span>
-<span class="sd">        num + 1 values are spaced over the interval in log-space, of which all</span>
-<span class="sd">        but the last (a sequence of length num) are returned.</span>
+<span class="sd">        ``num + 1`` values are spaced over the interval in log-space, of which</span>
+<span class="sd">        all but the last (a sequence of length `num`) are returned.</span>
 <span class="sd">    num : int, optional</span>
 <span class="sd">        Number of samples to generate. Default is 50.</span>
 <span class="sd">    dtype : dtype, optional</span>
@@ -2301,12 +2301,12 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.logspace` : Similar to geomspace, but with endpoints specified</span>
-<span class="sd">                           using log and base.</span>
-<span class="sd">    :obj:`dpnp.linspace` : Similar to geomspace, but with arithmetic instead of</span>
-<span class="sd">                           geometric progression.</span>
-<span class="sd">    :obj:`dpnp.arange` : Similar to linspace, with the step size specified</span>
-<span class="sd">                         instead of the number of samples.</span>
+<span class="sd">    :obj:`dpnp.logspace` : Similar to :obj:`dpnp.geomspace`, but with endpoints</span>
+<span class="sd">                           specified using log and base.</span>
+<span class="sd">    :obj:`dpnp.linspace` : Similar to :obj:`dpnp.geomspace`, but with</span>
+<span class="sd">                           arithmetic instead of geometric progression.</span>
+<span class="sd">    :obj:`dpnp.arange` : Similar to :obj:`dpnp.linspace`, with the step size</span>
+<span class="sd">                         specified instead of the number of samples.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2941,7 +2941,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    out : one dpnp.ndarray or tuple of dpnp.ndarray</span>
 <span class="sd">        Returns one array of grid indices,</span>
-<span class="sd">        grid.shape = (len(dimensions),) + tuple(dimensions).</span>
+<span class="sd">        ``grid.shape = (len(dimensions),) + tuple(dimensions)``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>

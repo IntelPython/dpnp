@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.geomspace &mdash; Data Parallel Extension for NumPy 0.15.0dev1+47.g124689ee58 documentation</title>
+  <title>dpnp.geomspace &mdash; Data Parallel Extension for NumPy 0.15.0dev1+48.g6ba03d86d6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9649595c"></script>
+        <script src="../../_static/documentation_options.js?v=c9ddd19f"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+47.g124689ee58
+                0.15.0dev1+48.g6ba03d86d6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -139,8 +139,8 @@ tuples of tuples, tuples of lists, and ndarrays.</p></li>
 <li><p><strong>stop</strong> (<em>array_like</em>) -- The final value of the sequence, in any form that can be converted to
 an array. This includes scalars, lists, lists of tuples, tuples, tuples
 of tuples, tuples of lists, and ndarrays. If <cite>endpoint</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>
-num + 1 values are spaced over the interval in log-space, of which all
-but the last (a sequence of length num) are returned.</p></li>
+<code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">+</span> <span class="pre">1</span></code> values are spaced over the interval in log-space, of which
+all but the last (a sequence of length <cite>num</cite>) are returned.</p></li>
 <li><p><strong>num</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) -- Number of samples to generate. Default is 50.</p></li>
 <li><p><strong>dtype</strong> (<a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a><em>, </em><em>optional</em>) -- The desired dtype for the array. If not given, a default dtype will be
 used that can represent the values (by considering Promotion Type Rule
@@ -171,11 +171,11 @@ axis inserted at the beginning. Use -1 to get an axis at the end.</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.logspace.html#dpnp.logspace" title="dpnp.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logspace</span></code></a></dt><dd><p>Similar to geomspace, but with endpoints specified using log and base.</p>
+<dt><a class="reference internal" href="dpnp.logspace.html#dpnp.logspace" title="dpnp.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logspace</span></code></a></dt><dd><p>Similar to <a class="reference internal" href="#dpnp.geomspace" title="dpnp.geomspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.geomspace</span></code></a>, but with endpoints specified using log and base.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.linspace.html#dpnp.linspace" title="dpnp.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linspace</span></code></a></dt><dd><p>Similar to geomspace, but with arithmetic instead of geometric progression.</p>
+<dt><a class="reference internal" href="dpnp.linspace.html#dpnp.linspace" title="dpnp.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linspace</span></code></a></dt><dd><p>Similar to <a class="reference internal" href="#dpnp.geomspace" title="dpnp.geomspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.geomspace</span></code></a>, but with arithmetic instead of geometric progression.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.arange.html#dpnp.arange" title="dpnp.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arange</span></code></a></dt><dd><p>Similar to linspace, with the step size specified instead of the number of samples.</p>
+<dt><a class="reference internal" href="dpnp.arange.html#dpnp.arange" title="dpnp.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arange</span></code></a></dt><dd><p>Similar to <a class="reference internal" href="dpnp.linspace.html#dpnp.linspace" title="dpnp.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linspace</span></code></a>, with the step size specified instead of the number of samples.</p>
 </dd>
 </dl>
 </div>
