@@ -318,8 +318,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise equality comparison.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    An array containing the result of element-wise equality comparison.
+    The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -387,8 +387,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise greater-than comparison.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    An array containing the result of element-wise greater-than comparison.
+    The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -450,8 +450,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise greater-than or equal-to comparison.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    An array containing the result of element-wise greater-than or equal-to
+    comparison.
+    The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -554,7 +555,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array which is True where `x` is not positive infinity,
-    negative infinity, or NaN, False otherwise.
+    negative infinity, or ``NaN``, False otherwise.
     The data type of the returned array is `bool`.
 
 Limitations
@@ -665,7 +666,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array which is True where x is NaN, False otherwise.
+    An array which is True where `x` is ``NaN``, False otherwise.
     The data type of the returned array is `bool`.
 
 Limitations
@@ -723,7 +724,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the result of element-wise less-than comparison.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -784,8 +785,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the result of element-wise less-than or equal-to comparison.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    An array containing the result of element-wise less-than or equal-to
+    comparison. The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -1025,8 +1026,10 @@ out : {None, dpnp.ndarray}, optional
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: "K".
-Returns:
-dpnp.ndarray:
+
+Returns
+-------
+out : dpnp.ndarray
     An array containing the element-wise logical XOR results.
 
 Limitations
@@ -1090,8 +1093,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise inequality comparison.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    An array containing the result of element-wise inequality comparison.
+    The returned array has a data type of `bool`.
 
 Limitations
 -----------

@@ -169,9 +169,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise inverse hyperbolic cosine.
-    The data type of the returned array is determined by
-    the Type Promotion Rules.
+    An array containing the element-wise inverse hyperbolic cosine, in
+    radians and in the half-closed interval `[0, inf)`. The data type
+    of the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -515,8 +515,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise cbrting of input array.
-    The returned array has the same data type as `x`.
+    An array containing the element-wise positive cube-root.
+    The data type of the returned array is determined by
+    the Type Promotion Rules.
 
 Limitations
 -----------
@@ -1009,7 +1010,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the base-10 logarithm of `x`.
+    An array containing the element-wise base-10 logarithm of `x`.
     The data type of the returned array is determined by the
     Type Promotion Rules.
 
@@ -1068,7 +1069,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise `log(1+x)` values. The data type
+    An array containing the element-wise `log(1 + x)` results. The data type
     of the returned array is determined by the Type Promotion Rules.
 
 Limitations
@@ -1127,7 +1128,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the base-2 logarithm of `x`.
+    An array containing the element-wise base-2 logarithm of `x`.
     The data type of the returned array is determined by the
     Type Promotion Rules.
 
@@ -1193,7 +1194,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the result of element-wise result. The data type
+    An array containing the element-wise results. The data type
     of the returned array is determined by the Type Promotion Rules.
 
 Limitations
@@ -1434,7 +1435,9 @@ order : ({'C', 'F', 'A', 'K'}, optional):
 Returns
 -------
 out : dpnp.ndarray
-    The reciprocal square-root, element-wise.
+    An array containing the element-wise reciprocal square-root.
+    The returned array has a floating-point data type determined by
+    the Type Promotion Rules.
 
 Limitations
 -----------
@@ -1641,7 +1644,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise square-root results.
+    An array containing the element-wise positive square-roots of `x`. The
+    data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
@@ -1694,7 +1699,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise square results.
+    An array containing the element-wise squares of `x`. The data type of
+    the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------

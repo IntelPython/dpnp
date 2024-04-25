@@ -245,8 +245,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise addition. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise sums. The data type of the
+    returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -407,8 +407,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise ceiling of input array.
-    The returned array has the same data type as `x`.
+    An array containing the element-wise ceiling.
 
 Limitations
 -----------
@@ -534,8 +533,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise conjugate.
-    The returned array has the same data type as `x`.
+    An array containing the element-wise conjugate values.
 
 Limitations
 -----------
@@ -1195,8 +1193,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise floor of input array.
-    The returned array has the same data type as `x`.
+    An array containing the element-wise floor.
 
 Limitations
 -----------
@@ -1255,9 +1252,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise floor division.
+    An array containing the result of element-wise floor of division.
     The data type of the returned array is determined by the Type
-    Promotion Rules
+    Promotion Rules.
 
 Limitations
 -----------
@@ -1992,8 +1989,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise multiplication. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise products. The data type of
+    the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -2175,9 +2172,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the result of element-wise of raising each element
-    to a specified power.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    An array containing the bases in `x1` raised to the exponents in `x2`
+    element-wise. The data type of the returned array is determined by the
+    Type Promotion Rules.
 
 Limitations
 -----------
@@ -2327,7 +2324,6 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise projection.
-    The returned array has the same data type as `x`.
 
 Limitations
 -----------
@@ -2410,8 +2406,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the element-wise remainders. The data type of
-    the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise remainders. Each remainder has the
+    same sign as respective element `x2_i`. The data type of the returned
+    array is determined by the Type Promotion Rules.
 
 Limitations
 Parameters `where` and `subok` are supported with their default values.
@@ -2475,8 +2472,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise rounded value. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise rounded values.
 
 Limitations
 -----------
@@ -2532,8 +2528,7 @@ out : {None, dpnp.ndarray}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise rounded value. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise rounded values.
 
 See Also
 --------
@@ -2592,8 +2587,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise results. The data type of the
-    returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise result of the signum function. The
+    data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
@@ -2645,7 +2641,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise results. The returned array
+    An array containing the element-wise signbit results. The returned array
     must have a data type of `bool`.
 
 Limitations
@@ -2698,7 +2694,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise subtraction. The data type
+    An array containing the element-wise differences. The data type
     of the returned array is determined by the Type Promotion Rules.
 
 Limitations
@@ -2983,7 +2979,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the truncated value of each element in `x`. The data type
+    An array containing the result of element-wise division. The data type
     of the returned array is determined by the Type Promotion Rules.
 
 Limitations
