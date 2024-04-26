@@ -114,7 +114,7 @@ def _get_outer_edges(a, range):
         first_edge, last_edge = a.min(), a.max()
         if not (dpnp.isfinite(first_edge) and dpnp.isfinite(last_edge)):
             raise ValueError(
-                "autodetected range of [{first_edge}, {last_edge}] "
+                f"autodetected range of [{first_edge}, {last_edge}] "
                 "is not finite"
             )
 
@@ -135,6 +135,7 @@ def _get_bin_edges(a, bins, range, usm_type):
     sycl_queue = a.sycl_queue
 
     if isinstance(bins, str):
+        # TODO: implement support of string bins
         raise NotImplementedError("only integer and array bins are implemented")
 
     if numpy.ndim(bins) == 0:
@@ -318,7 +319,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
             cum_n = _search_sorted_inclusive(sa, bin_edges)
         else:
             zero = dpnp.zeros(
-                1, dtype=ntype, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+                1, dtype=ntype, sycl_queue=a.sycl_queue, usm_type=usm_type
             )
             sorting_index = dpnp.argsort(a)
             sa = a[sorting_index]

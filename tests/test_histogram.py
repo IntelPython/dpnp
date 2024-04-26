@@ -1,3 +1,4 @@
+import dpctl
 import numpy
 import pytest
 from numpy.testing import (
@@ -283,6 +284,18 @@ class TestHistogram:
         with assert_raises_regex(ValueError, "max must be larger than"):
             xp.histogram(vals, range=[0.1, 0.01])
 
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("inf_val", [-numpy.inf, numpy.inf])
+    def test_infinite_edge(self, xp, inf_val):
+        v = xp.array([0.5, 1.5, inf_val])
+        min, max = v.min(), v.max()
+
+        # both first and last ranges must be finite
+        with assert_raises_regex(
+            ValueError, f"autodetected range of \[{min}, {max}\] is not finite"
+        ):
+            xp.histogram(v)
+
     def test_bin_edge_cases(self):
         v = dpnp.array([337, 404, 739, 806, 1007, 1811, 2012])
 
@@ -322,7 +335,7 @@ class TestHistogram:
         arr = xp.array([2])
         bins = xp.array([1, 3, 1], dtype="uint64")
         with assert_raises(ValueError):
-            _, _ = xp.histogram(arr, bins=bins)
+            xp.histogram(arr, bins=bins)
 
     def test_nan_values(self):
         one_nan = numpy.array([0, 1, numpy.nan])
@@ -356,3 +369,23 @@ class TestHistogram:
         result_hist, result_edges = dpnp.histogram(iv, bins=2)
         assert_array_equal(result_hist, expected_hist)
         assert_allclose(result_edges, expected_edges)
+
+    def test_string_bins_not_implemented(self):
+        v = dpnp.arange(5)
+
+        # numpy support string bins, but not dpnp
+        _, _ = numpy.histogram(v.asnumpy(), bins="auto")
+        with assert_raises(NotImplementedError):
+            dpnp.histogram(v, bins="auto")
+
+    def test_bins_another_sycl_queue(self):
+        v = dpnp.arange(7, 12, sycl_queue=dpctl.SyclQueue())
+        bins = dpnp.arange(4, sycl_queue=dpctl.SyclQueue())
+        with assert_raises(ValueError):
+            dpnp.histogram(v, bins=bins)
+
+    def test_weights_another_sycl_queue(self):
+        v = dpnp.arange(5, sycl_queue=dpctl.SyclQueue())
+        w = dpnp.arange(7, 12, sycl_queue=dpctl.SyclQueue())
+        with assert_raises(ValueError):
+            dpnp.histogram(v, weights=w)
