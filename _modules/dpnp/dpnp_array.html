@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.15.0dev1+50.gaca4841dc7 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.15.0dev1+52.g58cc809a91 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7185ca00"></script>
+        <script src="../../_static/documentation_options.js?v=3a46c900"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+50.gaca4841dc7
+                0.15.0dev1+52.g58cc809a91
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -257,6 +257,7 @@
     <span class="c1"># &#39;__array_wrap__&#39;,</span>
 
     <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;``True`` if self else ``False``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__bool__</span><span class="p">()</span>
 
     <span class="c1"># &#39;__class__&#39;,</span>
@@ -283,14 +284,49 @@
     <span class="c1"># &#39;__doc__&#39;,</span>
 
     <span class="k">def</span> <span class="nf">__dlpack__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Produces DLPack capsule.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        stream : {:class:`dpctl.SyclQueue`, None}, optional</span>
+<span class="sd">            Execution queue to synchronize with. If ``None``,</span>
+<span class="sd">            synchronization is not performed.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        MemoryError</span>
+<span class="sd">            when host memory can not be allocated.</span>
+<span class="sd">        DLPackCreationError</span>
+<span class="sd">            when array is allocated on a partitioned</span>
+<span class="sd">            SYCL device, or with a non-default context.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__dlpack__</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__dlpack_device__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gives a tuple (``device_type``, ``device_id``) corresponding to</span>
+<span class="sd">        ``DLDevice`` entry in ``DLTensor`` in DLPack protocol.</span>
+
+<span class="sd">        The tuple describes the non-partitioned device where the array has been</span>
+<span class="sd">        allocated, or the non-partitioned parent device of the allocation</span>
+<span class="sd">        device.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DLPackCreationError:</span>
+<span class="sd">            when the ``device_id`` could not be determined.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__dlpack_device__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="dpnp_array.__eq__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__eq__">[docs]</a>
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self==value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
 
 
@@ -306,6 +342,7 @@
 <div class="viewcode-block" id="dpnp_array.__ge__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__ge__">[docs]</a>
     <span class="k">def</span> <span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&gt;=value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
 
 
@@ -333,6 +370,7 @@
 <div class="viewcode-block" id="dpnp_array.__gt__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__gt__">[docs]</a>
     <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&gt;value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
 
 
@@ -418,6 +456,7 @@
 <div class="viewcode-block" id="dpnp_array.__le__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__le__">[docs]</a>
     <span class="k">def</span> <span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&lt;=value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
 
 
@@ -425,7 +464,6 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__len__">[docs]</a>
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``len(self)``.&quot;&quot;&quot;</span>
-
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span></div>
 
 
@@ -436,10 +474,12 @@
 <div class="viewcode-block" id="dpnp_array.__lt__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__lt__">[docs]</a>
     <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&lt;value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="fm">__matmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self@value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__mod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -453,6 +493,7 @@
 <div class="viewcode-block" id="dpnp_array.__ne__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__ne__">[docs]</a>
     <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self!=value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">not_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
 
 
@@ -485,6 +526,7 @@
     <span class="c1"># &#39;__reduce_ex__&#39;,</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``repr(self)``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray_repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;array&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__rfloordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -542,18 +584,7 @@
     <span class="c1"># &#39;__sizeof__&#39;,</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Output values from the array to standard output.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; print(a)</span>
-<span class="sd">        [[ 136.  136.  136.]</span>
-<span class="sd">         [ 272.  272.  272.]</span>
-<span class="sd">         [ 408.  408.  408.]]</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``str(self)``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -1263,12 +1294,12 @@
 <span class="sd">        array([1.        , 0.70710677])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubsctype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
                 <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
             <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span>
 
     <span class="nd">@real</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">real</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -1286,6 +1317,7 @@
 <span class="sd">        array([9.+2.j, 9.+4.j, 9.+6.j])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="dpnp_array.repeat">
@@ -1367,7 +1399,8 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lengths of axes. A tuple of numbers represents size of each dimension.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lengths of axes. A tuple of numbers represents size of each dimension.</span>
 
 <span class="sd">        Setter of this property involves reshaping without copy. If the array</span>
 <span class="sd">        cannot be reshaped without copy, it raises an exception.</span>
@@ -1396,7 +1429,6 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of elements in the array.&quot;&quot;&quot;</span>
-
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">size</span>
 
 <div class="viewcode-block" id="dpnp_array.sort">
@@ -1474,14 +1506,12 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">strides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get strides of an array.</span>
-
 <span class="sd">        Returns memory displacement in array elements, upon unit</span>
 <span class="sd">        change of respective index.</span>
 
-<span class="sd">        E.g. for strides (s1, s2, s3) and multi-index (i1, i2, i3)</span>
-
-<span class="sd">           a[i1, i2, i3] == (&amp;a[0,0,0])[ s1*s1 + s2*i2 + s3*i3]</span>
+<span class="sd">        For example, for strides ``(s1, s2, s3)`` and multi-index</span>
+<span class="sd">        ``(i1, i2, i3)`` position of the respective element relative</span>
+<span class="sd">        to zero multi-index element is ``s1*s1 + s2*i2 + s3*i3``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1641,6 +1671,7 @@
 <span class="sd">        Refer to :obj:`dpnp.var` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">ddof</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span></div>
 </div>
 
