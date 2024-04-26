@@ -2561,7 +2561,7 @@ def logspace(
         tuples of lists, and ndarrays. `base` ** `stop` is the final value of
         the sequence, unless `endpoint` is ``False``. In that case, ``num + 1``
         values are spaced over the interval in log-space, of which all but
-        the last (a sequence of length num) are returned.
+        the last (a sequence of length `num`) are returned.
     num : int, optional
         Number of samples to generate. Default is 50.
     device : {None, string, SyclDevice, SyclQueue}, optional

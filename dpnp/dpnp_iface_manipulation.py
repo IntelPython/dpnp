@@ -1556,7 +1556,7 @@ def shape(a):
 
     Returns
     -------
-    shape : tuple of ints
+    shape : tuple of integers
         The elements of the shape tuple give the lengths of the
         corresponding array dimensions.
 

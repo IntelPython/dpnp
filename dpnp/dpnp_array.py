@@ -159,6 +159,7 @@ class dpnp_array:
     # '__array_wrap__',
 
     def __bool__(self):
+        """``True`` if self else ``False``."""
         return self._array_obj.__bool__()
 
     # '__class__',
@@ -185,12 +186,47 @@ class dpnp_array:
     # '__doc__',
 
     def __dlpack__(self, stream=None):
+        """
+        Produces DLPack capsule.
+
+        Parameters
+        ----------
+        stream : {:class:`dpctl.SyclQueue`, None}, optional
+            Execution queue to synchronize with. If ``None``,
+            synchronization is not performed.
+
+        Raises
+        ------
+        MemoryError
+            when host memory can not be allocated.
+        DLPackCreationError
+            when array is allocated on a partitioned
+            SYCL device, or with a non-default context.
+
+        """
+
         return self._array_obj.__dlpack__(stream=stream)
 
     def __dlpack_device__(self):
+        """
+        Gives a tuple (``device_type``, ``device_id``) corresponding to
+        ``DLDevice`` entry in ``DLTensor`` in DLPack protocol.
+
+        The tuple describes the non-partitioned device where the array has been
+        allocated, or the non-partitioned parent device of the allocation
+        device.
+
+        Raises
+        ------
+        DLPackCreationError:
+            when the ``device_id`` could not be determined.
+
+        """
+
         return self._array_obj.__dlpack_device__()
 
     def __eq__(self, other):
+        """Return ``self==value``."""
         return dpnp.equal(self, other)
 
     def __float__(self):
@@ -203,6 +239,7 @@ class dpnp_array:
     # '__format__',
 
     def __ge__(self, other):
+        """Return ``self>=value``."""
         return dpnp.greater_equal(self, other)
 
     # '__getattribute__',
@@ -224,6 +261,7 @@ class dpnp_array:
         return res
 
     def __gt__(self, other):
+        """Return ``self>value``."""
         return dpnp.greater(self, other)
 
     # '__hash__',
@@ -306,11 +344,11 @@ class dpnp_array:
         return self
 
     def __le__(self, other):
+        """Return ``self<=value``."""
         return dpnp.less_equal(self, other)
 
     def __len__(self):
         """Return ``len(self)``."""
-
         return self._array_obj.__len__()
 
     def __lshift__(self, other):
@@ -318,9 +356,11 @@ class dpnp_array:
         return dpnp.left_shift(self, other)
 
     def __lt__(self, other):
+        """Return ``self<value``."""
         return dpnp.less(self, other)
 
     def __matmul__(self, other):
+        """Return ``self@value``."""
         return dpnp.matmul(self, other)
 
     def __mod__(self, other):
@@ -332,6 +372,7 @@ class dpnp_array:
         return dpnp.multiply(self, other)
 
     def __ne__(self, other):
+        """Return ``self!=value``."""
         return dpnp.not_equal(self, other)
 
     def __neg__(self):
@@ -363,6 +404,7 @@ class dpnp_array:
     # '__reduce_ex__',
 
     def __repr__(self):
+        """Return ``repr(self)``."""
         return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
 
     def __rfloordiv__(self, other):
@@ -417,18 +459,7 @@ class dpnp_array:
     # '__sizeof__',
 
     def __str__(self):
-        """
-        Output values from the array to standard output.
-
-        Examples
-        --------
-        >>> print(a)
-        [[ 136.  136.  136.]
-         [ 272.  272.  272.]
-         [ 408.  408.  408.]]
-
-        """
-
+        """Return ``str(self)``."""
         return self._array_obj.__str__()
 
     def __sub__(self, other):
@@ -1060,12 +1091,12 @@ class dpnp_array:
         array([1.        , 0.70710677])
 
         """
+
         if dpnp.issubsctype(self.dtype, dpnp.complexfloating):
             return dpnp_array._create_from_usm_ndarray(
                 dpnp.get_usm_ndarray(self).real
             )
-        else:
-            return self
+        return self
 
     @real.setter
     def real(self, value):
@@ -1083,6 +1114,7 @@ class dpnp_array:
         array([9.+2.j, 9.+4.j, 9.+6.j])
 
         """
+
         dpnp.copyto(self._array_obj.real, value)
 
     def repeat(self, repeats, axis=None):
@@ -1152,7 +1184,8 @@ class dpnp_array:
 
     @property
     def shape(self):
-        """Lengths of axes. A tuple of numbers represents size of each dimension.
+        """
+        Lengths of axes. A tuple of numbers represents size of each dimension.
 
         Setter of this property involves reshaping without copy. If the array
         cannot be reshaped without copy, it raises an exception.
@@ -1181,7 +1214,6 @@ class dpnp_array:
     @property
     def size(self):
         """Number of elements in the array."""
-
         return self._array_obj.size
 
     def sort(self, axis=-1, kind=None, order=None):
@@ -1250,14 +1282,12 @@ class dpnp_array:
     @property
     def strides(self):
         """
-        Get strides of an array.
-
         Returns memory displacement in array elements, upon unit
         change of respective index.
 
-        E.g. for strides (s1, s2, s3) and multi-index (i1, i2, i3)
-
-           a[i1, i2, i3] == (&a[0,0,0])[ s1*s1 + s2*i2 + s3*i3]
+        For example, for strides ``(s1, s2, s3)`` and multi-index
+        ``(i1, i2, i3)`` position of the respective element relative
+        to zero multi-index element is ``s1*s1 + s2*i2 + s3*i3``.
 
         """
 
@@ -1403,6 +1433,7 @@ class dpnp_array:
         Refer to :obj:`dpnp.var` for full documentation.
 
         """
+
         return dpnp.var(self, axis, dtype, out, ddof, keepdims, where=where)
 
 
