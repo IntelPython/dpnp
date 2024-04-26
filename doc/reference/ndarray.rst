@@ -254,15 +254,15 @@ Truth value of an array (:func:`bool()`):
 .. autosummary::
    :toctree: generated/
 
-   ndarray.__bool__
+   dpnp.ndarray.__bool__
 
 .. note::
 
    Truth-value testing of an array invokes
-   :meth:`ndarray.__bool__`, which raises an error if the number of
+   :meth:`dpnp.ndarray.__bool__`, which raises an error if the number of
    elements in the array is larger than 1, because the truth value
-   of such arrays is ambiguous. Use :meth:`.any() <ndarray.any>` and
-   :meth:`.all() <ndarray.all>` instead to be clear about what is meant
+   of such arrays is ambiguous. Use :meth:`.any() <dpnp.ndarray.any>` and
+   :meth:`.all() <dpnp.ndarray.all>` instead to be clear about what is meant
    in such cases. (If the number of elements is 0, the array evaluates
    to ``False``.)
 
@@ -325,7 +325,7 @@ Matrix Multiplication:
 .. autosummary::
    :toctree: generated/
 
-   ndarray.__matmul__
+   dpnp.ndarray.__matmul__
 
 
 Special methods
