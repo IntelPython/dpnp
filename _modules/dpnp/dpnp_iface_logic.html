@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.15.0dev1+53.g673cf71bc8 documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.15.0dev1+46.gad27ec36fc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=6dfe8592"></script>
+        <script src="../../_static/documentation_options.js?v=cc8a712e"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+53.g673cf71bc8
+                0.15.0dev1+46.gad27ec36fc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -240,24 +240,15 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.allclose.html#dpnp.allclose">[docs]</a>
 <span class="k">def</span> <span class="nf">allclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-5</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns ``True`` if two arrays are element-wise equal within a tolerance.</span>
-
-<span class="sd">    The tolerance values are positive, typically very small numbers. The</span>
-<span class="sd">    relative difference (`rtol` * abs(`b`)) and the absolute difference `atol`</span>
-<span class="sd">    are added together to compare against the absolute difference between `a`</span>
-<span class="sd">    and `b`.</span>
-
-<span class="sd">    If either array contains one or more ``NaNs``, ``False`` is returned.</span>
-<span class="sd">    ``Infs`` are treated as equal if they are in the same place and of the same</span>
-<span class="sd">    sign in both arrays.</span>
+<span class="sd">    Returns True if two arrays are element-wise equal within a tolerance.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.allclose`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        A 0-dim array with ``True`` value if the two arrays are equal within</span>
-<span class="sd">        the given tolerance; with ``False`` otherwise.</span>
+<span class="sd">        A boolean 0-dim array. If its value is ``True``,</span>
+<span class="sd">        two arrays are element-wise equal within a tolerance.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -405,8 +396,8 @@
 
 
 <span class="n">_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates equality test results for each element `x1_i` of the input array `x1`</span>
-<span class="s2">with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates equality results for each element `x1_i` of</span>
+<span class="s2">the input array `x1` the respective element `x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.equal`.</span>
 
@@ -426,8 +417,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the result of element-wise equality comparison.</span>
-<span class="s2">    The returned array has a data type of `bool`.</span>
+<span class="s2">    an array containing the result of element-wise equality comparison.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -474,8 +465,8 @@
 
 
 <span class="n">_GREATER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the greater-than test results for each element `x1_i` of</span>
-<span class="s2">the input array `x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates the greater-than results for each element `x1_i` of</span>
+<span class="s2">the input array `x1` the respective element `x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.greater`.</span>
 
@@ -495,8 +486,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the result of element-wise greater-than comparison.</span>
-<span class="s2">    The returned array has a data type of `bool`.</span>
+<span class="s2">    an array containing the result of element-wise greater-than comparison.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -537,8 +528,8 @@
 
 
 <span class="n">_GREATER_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the greater-than or equal-to test results for each element `x1_i` of</span>
-<span class="s2">the input array `x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates the greater-than or equal-to results for each element `x1_i` of</span>
+<span class="s2">the input array `x1` the respective element `x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.greater_equal`.</span>
 
@@ -558,9 +549,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the result of element-wise greater-than or equal-to</span>
-<span class="s2">    comparison.</span>
-<span class="s2">    The returned array has a data type of `bool`.</span>
+<span class="s2">    an array containing the result of element-wise greater-than or equal-to comparison.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -647,7 +637,7 @@
 
 
 <span class="n">_ISFINITE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Test if each element of input array is a finite number.</span>
+<span class="s2">Checks if each element of input array is a finite number.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.isfinite`.</span>
 
@@ -666,7 +656,7 @@
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
 <span class="s2">    An array which is True where `x` is not positive infinity,</span>
-<span class="s2">    negative infinity, or ``NaN``, False otherwise.</span>
+<span class="s2">    negative infinity, or NaN, False otherwise.</span>
 <span class="s2">    The data type of the returned array is `bool`.</span>
 
 <span class="s2">Limitations</span>
@@ -706,7 +696,7 @@
 
 
 <span class="n">_ISINF_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Test if each element of input array is an infinity.</span>
+<span class="s2">Checks if each element of input array is an infinity.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.isinf`.</span>
 
@@ -759,7 +749,7 @@
 
 
 <span class="n">_ISNAN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Test if each element of an input array is a NaN.</span>
+<span class="s2">Checks if each element of an input array is a NaN.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.isnan`.</span>
 
@@ -777,7 +767,7 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array which is True where `x` is ``NaN``, False otherwise.</span>
+<span class="s2">    An array which is True where x is NaN, False otherwise.</span>
 <span class="s2">    The data type of the returned array is `bool`.</span>
 
 <span class="s2">Limitations</span>
@@ -813,8 +803,8 @@
 
 
 <span class="n">_LESS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the less-than test results for each element `x1_i` of</span>
-<span class="s2">the input array `x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates the less-than results for each element `x1_i` of</span>
+<span class="s2">the input array `x1` the respective element `x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.less`.</span>
 
@@ -835,7 +825,7 @@
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
 <span class="s2">    An array containing the result of element-wise less-than comparison.</span>
-<span class="s2">    The returned array has a data type of `bool`.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -875,8 +865,8 @@
 
 
 <span class="n">_LESS_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the less-than or equal-to test results for each element `x1_i` of</span>
-<span class="s2">the input array `x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates the less-than or equal-to results for each element `x1_i` of</span>
+<span class="s2">the input array `x1` the respective element `x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.less_equal`.</span>
 
@@ -896,8 +886,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the result of element-wise less-than or equal-to</span>
-<span class="s2">    comparison. The returned array has a data type of `bool`.</span>
+<span class="s2">    An array containing the result of element-wise less-than or equal-to comparison.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -938,8 +928,8 @@
 
 
 <span class="n">_LOGICAL_AND_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the logical AND for each element `x1_i` of the input array `x1` with</span>
-<span class="s2">the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Computes the logical AND for each element `x1_i` of the input array `x1`</span>
+<span class="s2">with the respective element `x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.logical_and`.</span>
 
@@ -1137,10 +1127,8 @@
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: &quot;K&quot;.</span>
-
-<span class="s2">Returns</span>
-<span class="s2">-------</span>
-<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">Returns:</span>
+<span class="s2">dpnp.ndarray:</span>
 <span class="s2">    An array containing the element-wise logical XOR results.</span>
 
 <span class="s2">Limitations</span>
@@ -1183,8 +1171,8 @@
 
 
 <span class="n">_NOT_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates inequality test results for each element `x1_i` of the</span>
-<span class="s2">input array `x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates inequality results for each element `x1_i` of</span>
+<span class="s2">the input array `x1` the respective element `x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.not_equal`.</span>
 
@@ -1204,8 +1192,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the result of element-wise inequality comparison.</span>
-<span class="s2">    The returned array has a data type of `bool`.</span>
+<span class="s2">    an array containing the result of element-wise inequality comparison.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>

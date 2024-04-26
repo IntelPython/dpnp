@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.15.0dev1+45.g65ef5f99cb documentation</title>
+  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.15.0dev1+46.gad27ec36fc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9a28c53a"></script>
+        <script src="../../_static/documentation_options.js?v=cc8a712e"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+45.g65ef5f99cb
+                0.15.0dev1+46.gad27ec36fc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -204,7 +204,7 @@
         <span class="n">first_edge</span><span class="p">,</span> <span class="n">last_edge</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">a</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">first_edge</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">last_edge</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;autodetected range of [</span><span class="si">{first_edge}</span><span class="s2">, </span><span class="si">{last_edge}</span><span class="s2">] &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;autodetected range of [</span><span class="si">{</span><span class="n">first_edge</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">last_edge</span><span class="si">}</span><span class="s2">] &quot;</span>
                 <span class="s2">&quot;is not finite&quot;</span>
             <span class="p">)</span>
 
@@ -225,6 +225,7 @@
     <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># TODO: implement support of string bins</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;only integer and array bins are implemented&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -410,7 +411,7 @@
             <span class="n">cum_n</span> <span class="o">=</span> <span class="n">_search_sorted_inclusive</span><span class="p">(</span><span class="n">sa</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">zero</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-                <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ntype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
+                <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ntype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
             <span class="p">)</span>
             <span class="n">sorting_index</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
             <span class="n">sa</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">sorting_index</span><span class="p">]</span>

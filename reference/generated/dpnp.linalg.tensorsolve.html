@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.tensorsolve &mdash; Data Parallel Extension for NumPy 0.15.0dev1+53.g673cf71bc8 documentation</title>
+  <title>dpnp.linalg.tensorsolve &mdash; Data Parallel Extension for NumPy 0.15.0dev1+46.gad27ec36fc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=6dfe8592"></script>
+        <script src="../../_static/documentation_options.js?v=cc8a712e"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+53.g673cf71bc8
+                0.15.0dev1+46.gad27ec36fc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -133,19 +133,19 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Coefficient tensor, of shape <code class="docutils literal notranslate"><span class="pre">b.shape</span> <span class="pre">+</span> <span class="pre">Q</span></code>. <cite>Q</cite>, a tuple, equals
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Coefficient tensor, of shape <code class="docutils literal notranslate"><span class="pre">b.shape</span> <span class="pre">+</span> <span class="pre">Q</span></code>. <cite>Q</cite>, a tuple, equals
 the shape of that sub-tensor of <cite>a</cite> consisting of the appropriate
 number of its rightmost indices, and must be such that
 <code class="docutils literal notranslate"><span class="pre">prod(Q)</span> <span class="pre">==</span> <span class="pre">prod(b.shape)</span></code> (in which sense <cite>a</cite> is said to be
-'square').</p></li>
-<li><p><strong>b</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Right-hand tensor, which can be of any shape.</p></li>
-<li><p><strong>axes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em><em>, </em><em>optional</em>) -- Axes in <cite>a</cite> to reorder to the right, before inversion.
+‘square’).</p></li>
+<li><p><strong>b</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Right-hand tensor, which can be of any shape.</p></li>
+<li><p><strong>axes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em><em>, </em><em>optional</em>) – Axes in <cite>a</cite> to reorder to the right, before inversion.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code> , no reordering is done.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- The tensor with shape <code class="docutils literal notranslate"><span class="pre">Q</span></code> such that <code class="docutils literal notranslate"><span class="pre">b.shape</span> <span class="pre">+</span> <span class="pre">Q</span> <span class="pre">==</span> <span class="pre">a.shape</span></code>.</p>
+<dd class="field-even"><p><strong>out</strong> – The tensor with shape <code class="docutils literal notranslate"><span class="pre">Q</span></code> such that <code class="docutils literal notranslate"><span class="pre">b.shape</span> <span class="pre">+</span> <span class="pre">Q</span> <span class="pre">==</span> <span class="pre">a.shape</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
@@ -156,7 +156,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">None</span
 <dl class="simple">
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.tensordot</span></code></dt><dd><p>Compute tensor dot product along specified axes.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.linalg.tensorinv.html#dpnp.linalg.tensorinv" title="dpnp.linalg.tensorinv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.tensorinv</span></code></a></dt><dd><p>Compute the 'inverse' of an N-dimensional array.</p>
+<dt><a class="reference internal" href="dpnp.linalg.tensorinv.html#dpnp.linalg.tensorinv" title="dpnp.linalg.tensorinv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.tensorinv</span></code></a></dt><dd><p>Compute the ‘inverse’ of an N-dimensional array.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.einsum.html#dpnp.einsum" title="dpnp.einsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.einsum</span></code></a></dt><dd><p>Evaluates the Einstein summation convention on the operands.</p>
 </dd>
