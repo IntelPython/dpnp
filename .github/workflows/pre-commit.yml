@@ -18,10 +18,11 @@ jobs:
           sudo ln -s /usr/bin/clang-format-12 /usr/bin/clang-format
           clang-format --version
 
-      - name: Set up pylint
+      - name: Set up pip packages
         uses: BSFishy/pip-action@8f2d471d809dc20b6ada98c91910b6ae6243f318 # v1
         with:
           packages: |
+            codespell
             pylint
 
       - name: Checkout DPNP repo

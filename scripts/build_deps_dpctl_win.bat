@@ -10,7 +10,7 @@ set DPCTL_DIST=%CD%\dist_dpctl
 
 call conda uninstall -y dpctl
 
-echo +++++++++++++++++++++++++ Downlowd DPCTL +++++++++++++++++++++++++++
+echo +++++++++++++++++++++++++ Download DPCTL +++++++++++++++++++++++++++
 call git clone https://github.com/IntelPython/dpctl.git
 cd dpctl
 

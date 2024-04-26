@@ -235,7 +235,7 @@ class TestChoose(unittest.TestCase):
             a = xp.array([0, 3, -1, 5])
             c = testing.shaped_arange((3, 4), xp, numpy.float32)
             with pytest.raises(ValueError):
-                a.choose(c, mode="unknow")
+                a.choose(c, mode="unknown")
 
     def test_raise(self):
         a = cupy.array([2])
