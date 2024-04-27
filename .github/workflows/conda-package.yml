@@ -87,7 +87,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
+        uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -167,7 +167,7 @@ jobs:
           tar -xvf ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.tar.bz2 -C ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
+        uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -291,7 +291,7 @@ jobs:
           dir ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
+        uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -422,7 +422,7 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
+        uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
           auto-update-conda: true
           python-version: ${{ matrix.python }}
@@ -445,7 +445,7 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
-      - uses: conda-incubator/setup-miniconda@030178870c779d9e5e1b4e563269f3aa69b04081 # v3.0.3
+      - uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
           run-post: false
           channel-priority: "disabled"
