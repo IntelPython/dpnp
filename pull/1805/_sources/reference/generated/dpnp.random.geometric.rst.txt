@@ -1,6 +1,0 @@
-﻿dpnp.random.geometric
-=====================
-
-.. currentmodule:: dpnp.random
-
-.. autofunction:: geometric
