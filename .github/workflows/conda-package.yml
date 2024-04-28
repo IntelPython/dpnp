@@ -123,7 +123,7 @@ jobs:
         run: conda build --no-test --python ${{ matrix.python }} --numpy 1.23 ${{ env.CHANNELS }} conda-recipe
 
       - name: Upload artifact
-        uses: actions/upload-artifact@1746f4ab65b179e0ea60a494b83293b640dd5bba # v4.3.2
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
