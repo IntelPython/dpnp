@@ -3,7 +3,7 @@ Binary Operations
 
 .. https://docs.scipy.org/doc/numpy/reference/routines.bitwise.html
 
-Elementwise bit operations
+Element-wise bit operations
 --------------------------
 
 .. autosummary::

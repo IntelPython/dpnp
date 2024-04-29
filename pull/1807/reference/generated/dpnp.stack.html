@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.stack &mdash; Data Parallel Extension for NumPy 0.15.0dev1+49.g5dd1c4c7be documentation</title>
+  <title>dpnp.stack &mdash; Data Parallel Extension for NumPy 0.15.0dev1+51.g9109581010 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=c3fade41"></script>
+        <script src="../../_static/documentation_options.js?v=22e321d1"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+49.g5dd1c4c7be
+                0.15.0dev1+51.g9109581010
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -138,18 +138,18 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Each array must have the same shape.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – The axis in the result array along which the input arrays are stacked.</p></li>
-<li><p><strong>out</strong> (<em>dpnp.ndarray</em><em>, </em><em>optional</em>) – If provided, the destination to place the result. The shape must be
+<li><p><strong>arrays</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Each array must have the same shape.</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) -- The axis in the result array along which the input arrays are stacked.</p></li>
+<li><p><strong>out</strong> (<em>dpnp.ndarray</em><em>, </em><em>optional</em>) -- If provided, the destination to place the result. The shape must be
 correct, matching that of what stack would have returned if no out
 argument were specified.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a>) – If provided, the destination array will have this dtype. Cannot be
+<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a>) -- If provided, the destination array will have this dtype. Cannot be
 provided together with <cite>out</cite>.</p></li>
-<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) – Controls what kind of data casting may occur. Defaults to ‘same_kind’.</p></li>
+<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) -- Controls what kind of data casting may occur. Defaults to 'same_kind'.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – The stacked array which has one more dimension than the input arrays.</p>
+<dd class="field-even"><p><strong>out</strong> -- The stacked array which has one more dimension than the input arrays.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
@@ -168,7 +168,7 @@ provided together with <cite>out</cite>.</p></li>
 </dd>
 <dt><a class="reference internal" href="dpnp.column_stack.html#dpnp.column_stack" title="dpnp.column_stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.column_stack</span></code></a></dt><dd><p>Stack 1-D arrays as columns into a 2-D array.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.block</span></code></dt><dd><p>Assemble an nd-array from nested lists of blocks.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.block</span></code></dt><dd><p>Assemble an ndarray from nested lists of blocks.</p>
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.split</span></code></dt><dd><p>Split array into a list of multiple sub-arrays of equal size.</p>
 </dd>
