@@ -210,8 +210,8 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True):
             - 'unsafe' means any data conversions may be done.
 
     copy : bool, optional
-        By default, astype always returns a newly allocated array. If this
-        is set to ``False``, and the dtype, order, and subok requirements
+        By default, ``astype`` always returns a newly allocated array. If this
+        is set to ``False``, and the `dtype`, `order`, and `subok` requirements
         are satisfied, the input array is returned instead of a copy.
 
     Returns

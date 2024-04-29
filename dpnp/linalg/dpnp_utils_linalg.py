@@ -1380,7 +1380,7 @@ def dpnp_matrix_rank(A, tol=None, hermitian=False):
         rtol = max(A.shape[-2:]) * dpnp.finfo(S.dtype).eps
         tol = S.max(axis=-1, keepdims=True) * rtol
     elif not dpnp.isscalar(tol):
-        # Add a new axis to match Numpy's output
+        # Add a new axis to match NumPy's output
         tol = tol[..., None]
 
     return dpnp.count_nonzero(S > tol, axis=-1)

@@ -530,7 +530,7 @@ def ascontiguousarray(
     a, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
 ):
     """
-    Return a contiguous array (ndim >= 1) in memory (C order).
+    Return a contiguous array in memory (C order).
 
     For full documentation refer to :obj:`numpy.ascontiguousarray`.
 
@@ -640,7 +640,7 @@ def asfortranarray(
     a, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
 ):
     """
-    Return an array (ndim >= 1) laid out in Fortran order in memory.
+    Return an array ``(ndim >= 1)`` laid out in Fortran order in memory.
 
     For full documentation refer to :obj:`numpy.asfortranarray`.
 
@@ -2117,8 +2117,8 @@ def geomspace(
         The final value of the sequence, in any form that can be converted to
         an array. This includes scalars, lists, lists of tuples, tuples, tuples
         of tuples, tuples of lists, and ndarrays. If `endpoint` is ``False``
-        num + 1 values are spaced over the interval in log-space, of which all
-        but the last (a sequence of length num) are returned.
+        ``num + 1`` values are spaced over the interval in log-space, of which
+        all but the last (a sequence of length `num`) are returned.
     num : int, optional
         Number of samples to generate. Default is 50.
     dtype : dtype, optional
@@ -2148,16 +2148,16 @@ def geomspace(
     Returns
     -------
     out : dpnp.ndarray
-        num samples, equally spaced on a log scale.
+        `num` samples, equally spaced on a log scale.
 
     See Also
     --------
-    :obj:`dpnp.logspace` : Similar to geomspace, but with endpoints specified
-                           using log and base.
-    :obj:`dpnp.linspace` : Similar to geomspace, but with arithmetic instead of
-                           geometric progression.
-    :obj:`dpnp.arange` : Similar to linspace, with the step size specified
-                         instead of the number of samples.
+    :obj:`dpnp.logspace` : Similar to :obj:`dpnp.geomspace`, but with endpoints
+                           specified using log and base.
+    :obj:`dpnp.linspace` : Similar to :obj:`dpnp.geomspace`, but with
+                           arithmetic instead of geometric progression.
+    :obj:`dpnp.arange` : Similar to :obj:`dpnp.linspace`, with the step size
+                         specified instead of the number of samples.
 
     Examples
     --------
@@ -2340,8 +2340,8 @@ def linspace(
         The end value of the sequence, in any form that can be converted to
         an array. This includes scalars, lists, lists of tuples, tuples, tuples
         of tuples, tuples of lists, and ndarrays. If `endpoint` is set to
-        ``False`` the sequence consists of all but the last of num + 1 evenly
-        spaced samples, so that `stop` is excluded.
+        ``False`` the sequence consists of all but the last of ``num + 1``
+        evenly spaced samples, so that `stop` is excluded.
     dtype : dtype, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
@@ -2372,7 +2372,7 @@ def linspace(
     Returns
     -------
     out : dpnp.ndarray
-        There are num equally spaced samples in the closed interval
+        There are `num` equally spaced samples in the closed interval
         [`start`, `stop`] or the half-open interval [`start`, `stop`)
         (depending on whether `endpoint` is ``True`` or ``False``).
     step : float, optional
@@ -2381,12 +2381,12 @@ def linspace(
 
     See Also
     --------
-    :obj:`dpnp.arange` : Similar to `linspace`, but uses a step size (instead
-                         of the number of samples).
-    :obj:`dpnp.geomspace` : Similar to `linspace`, but with numbers spaced
-                            evenly on a log scale (a geometric progression).
-    :obj:`dpnp.logspace` : Similar to `geomspace`, but with the end points
-                           specified as logarithms.
+    :obj:`dpnp.arange` : Similar to :obj:`dpnp.linspace`, but uses a step size
+                         (instead of the number of samples).
+    :obj:`dpnp.geomspace` : Similar to :obj:`dpnp.linspace`, but with numbers
+                        spaced evenly on a log scale (a geometric progression).
+    :obj:`dpnp.logspace` : Similar to :obj:`dpnp.geomspace`, but with the end
+                           points specified as logarithms.
 
     Examples
     --------
@@ -2559,9 +2559,9 @@ def logspace(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays. `base` ** `stop` is the final value of
-        the sequence, unless `endpoint` is ``False``. In that case, num + 1
+        the sequence, unless `endpoint` is ``False``. In that case, ``num + 1``
         values are spaced over the interval in log-space, of which all but
-        the last (a sequence of length num) are returned.
+        the last (a sequence of length `num`) are returned.
     num : int, optional
         Number of samples to generate. Default is 50.
     device : {None, string, SyclDevice, SyclQueue}, optional
@@ -2585,7 +2585,7 @@ def logspace(
         tuples of lists, and ndarrays. The base of the log space, in any form
         that can be converted to an array.This includes scalars, lists, lists
         of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.
-        The `step` size between the elements in ln(samples) / ln(base)
+        The `step` size between the elements in ``ln(samples) / ln(base)``
         (or log_base(samples)) is uniform. Default is 10.0.
     dtype : dtype, optional
         The desired dtype for the array. If not given, a default dtype will be
@@ -2599,18 +2599,17 @@ def logspace(
     Returns
     -------
     out: dpnp.ndarray
-        num samples, equally spaced on a log scale.
+        `num` samples, equally spaced on a log scale.
 
     See Also
     --------
-    :obj:`dpnp.arange` : Similar to linspace, with the step size specified
-                         instead of the number of samples. Note that, when used
-                         with a float endpoint, the endpoint may or may not be
-                         included.
-    :obj:`dpnp.linspace` : Similar to logspace, but with the samples uniformly
-                           distributed in linear space, instead of log space.
-    :obj:`dpnp.geomspace` : Similar to logspace, but with endpoints specified
-                            directly.
+    :obj:`dpnp.arange` : Similar to :obj:`dpnp.linspace`, with the step size
+        specified instead of the number of samples. Note that, when used with
+        a float endpoint, the endpoint may or may not be included.
+    :obj:`dpnp.linspace` : Similar to :obj:`dpnp.logspace`, but with the
+        samples uniformly distributed in linear space, instead of log space.
+    :obj:`dpnp.geomspace` : Similar to :obj:`dpnp.logspace`, but with endpoints
+                            specified directly.
 
     Examples
     --------
@@ -2665,7 +2664,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
 
     Make N-D coordinate arrays for vectorized evaluations of
     N-D scalar/vector fields over N-D grids, given
-    one-dimensional coordinate arrays x1, x2,..., xn.
+    one-dimensional coordinate arrays ``x1, x2,..., xn``.
 
     For full documentation refer to :obj:`numpy.meshgrid`.
 
@@ -2674,7 +2673,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     x1, x2,..., xn : {dpnp.ndarray, usm_ndarray}
         1-D arrays representing the coordinates of a grid.
     indexing : {'xy', 'ij'}, optional
-        Cartesian ('xy', default) or matrix ('ij') indexing of output.
+        Cartesian (``'xy'``, default) or matrix (``'ij'``) indexing of output.
     sparse : bool, optional
         If True the shape of the returned coordinate array for dimension `i`
         is reduced from ``(N1, ..., Ni, ... Nn)`` to
@@ -2686,11 +2685,11 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     Returns
     -------
     X1, X2,..., XN : tuple of dpnp.ndarrays
-        For vectors `x1`, `x2`,..., `xn` with lengths ``Ni=len(xi)``,
-        returns ``(N1, N2, N3,..., Nn)`` shaped arrays if indexing='ij'
-        or ``(N2, N1, N3,..., Nn)`` shaped arrays if indexing='xy'
-        with the elements of `xi` repeated to fill the matrix along
-        the first dimension for `x1`, the second for `x2` and so on.
+        For vectors `x1`, `x2`,..., `xn` with lengths ``Ni=len(xi)``, returns
+        ``(N1, N2, N3,..., Nn)`` shaped arrays if ``indexing='ij'`` or
+        ``(N2, N1, N3,..., Nn)`` shaped arrays if ``indexing='xy'`` with
+        the elements of `xi` repeated to fill the matrix along the first
+        dimension for `x1`, the second for `x2` and so on.
 
     Examples
     --------
@@ -2776,7 +2775,7 @@ class MGridClass:
     -------
     out : one dpnp.ndarray or tuple of dpnp.ndarray
         Returns one array of grid indices,
-        grid.shape = (len(dimensions),) + tuple(dimensions).
+        ``grid.shape = (len(dimensions),) + tuple(dimensions)``.
 
     Examples
     --------
@@ -2850,7 +2849,7 @@ class OGridClass:
     out : one dpnp.ndarray or tuple of dpnp.ndarray
         Returns a tuple of arrays,
         with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
-        with dimensions[i] in the ith place.
+        with dimensions[i] in the i-th place.
 
     Examples
     --------
@@ -3385,7 +3384,7 @@ def vander(
         tuples of lists, and ndarrays.
     N : int, optional
         Number of columns in the output. If `N` is not specified, a square
-        array is returned (N = len(x)).
+        array is returned ``(N = len(x))``.
     increasing : bool, optional
         Order of the powers of the columns. If ``True,`` the powers increase
         from left to right, if ``False`` (the default) they are reversed.

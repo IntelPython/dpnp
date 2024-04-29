@@ -100,8 +100,8 @@ def argsort(a, axis=-1, kind=None, order=None):
     :obj:`dpnp.sort` : Return a sorted copy of an array.
     :obj:`dpnp.lexsort` : Indirect stable sort with multiple keys.
     :obj:`dpnp.argpartition` : Indirect partial sort.
-    :obj:`dpnp.take_along_axis` : Apply ``index_array`` from argsort to
-                                  an array as if by calling sort.
+    :obj:`dpnp.take_along_axis` : Apply ``index_array`` from obj:`dpnp.argsort`
+                                  to an array as if by calling sort.
 
     Examples
     --------
@@ -162,7 +162,7 @@ def partition(x1, kth, axis=-1, kind="introselect", order=None):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Input kth is supported as :obj:`int`.
+    Input `kth` is supported as :obj:`int`.
     Parameters `axis`, `kind` and `order` are supported only with default
     values.
 

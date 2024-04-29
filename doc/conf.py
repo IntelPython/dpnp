@@ -59,10 +59,17 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinxcontrib.googleanalytics",
+    "sphinxcontrib.spelling",
 ]
 
 googleanalytics_id = "G-554F8VNE28"
 googleanalytics_enabled = True
+
+# Enable a misspelling as a sphinx warning
+spelling_warning = True
+
+# Define a list of words known to be spelled correctly
+spelling_word_list_filename = "known_words.txt"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

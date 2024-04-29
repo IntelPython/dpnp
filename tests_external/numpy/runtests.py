@@ -453,7 +453,7 @@ def get_tests(base_path):
 def run():
     numpy_path = find_pkg("numpy")
     if numpy_path is None:
-        print("Numpy not found in the environment.")
+        print("NumPy not found in the environment.")
         return NUMPY_NOT_FOUND
 
     if FAILED_TESTS_FILE.exists():
