@@ -117,18 +117,17 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int, optional
-        Axis along which to search. If ``None``, the function must return
-        the index of the maximum value of the flattened array.
+    axis : {None, int}, optional
+        Axis along which to operate. By default flattened input is used.
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
-    keepdims : bool
-        If ``True``, the reduced axes (dimensions) must be included in the
-        result as singleton dimensions, and, accordingly, the result must be
-        compatible with the input array. Otherwise, if ``False``, the reduced
-        axes (dimensions) must not be included in the result.
+        If provided, the result will be inserted into this array. It should be
+        of the appropriate shape and dtype.
+        Default: ``None``.
+    keepdims : bool, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the array.
         Default: ``False``.
 
     Returns
@@ -189,18 +188,17 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int, optional
-        Axis along which to search. If ``None``, the function must return
-        the index of the minimum value of the flattened array.
+    axis : {None, int}, optional
+        Axis along which to operate. By default flattened input is used.
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
-    keepdims : bool
-        If ``True``, the reduced axes (dimensions) must be included in the
-        result as singleton dimensions, and, accordingly, the result must be
-        compatible with the input array. Otherwise, if ``False``, the reduced
-        axes (dimensions) must not be included in the result.
+        If provided, the result will be inserted into this array. It should be
+        of the appropriate shape and dtype.
+        Default: ``None``.
+    keepdims : bool, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the array.
         Default: ``False``.
 
     Returns
@@ -661,6 +659,34 @@ def nanprod(
 
     For full documentation refer to :obj:`numpy.nanprod`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int or tuple of ints}, optional
+        Axis or axes along which the product is computed. The default is to
+        compute the product of the flattened array.
+        Default: ``None``.
+    dtype : dtype, optional
+        The type of the returned array and of the accumulator in which the
+        elements are multiplied. By default, the dtype of `a` is used. An
+        exception is when `a` has an integer type with less precision than
+        the platform (u)intp. In that case, the default will be either (u)int32
+        or (u)int64 depending on whether the platform is 32 or 64 bits. For
+        inexact inputs, dtype must be inexact.
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternate output array in which to place the result. If provided, it
+        must have the same shape as the expected output, but the type will be
+        cast if necessary. The casting of NaN to integer
+        can yield unexpected results.
+        Default: ``None``.
+    keepdims : bool, optional
+        If ``True``, the axes which are reduced are left in the result as
+        dimensions with size one. With this option, the result will broadcast
+        correctly against the original `a`.
+        Default: ``False``.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -713,13 +739,11 @@ def nanprod(
 
 def nansum(
     a,
-    /,
-    *,
     axis=None,
     dtype=None,
-    keepdims=False,
     out=None,
-    initial=0,
+    keepdims=False,
+    initial=None,
     where=True,
 ):
     """
@@ -732,39 +756,36 @@ def nansum(
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int or tuple of ints, optional
-        Axis or axes along which sums must be computed. If a tuple
-        of unique integers, sums are computed over multiple axes.
-        If ``None``, the sum is computed over the entire array.
+    axis : {None, int or tuple of ints}, optional
+        Axis or axes along which the sum is computed. The default is to compute
+        the sum of the flattened array.
         Default: ``None``.
     dtype : dtype, optional
-        Data type of the returned array. If ``None``, it defaults to the dtype
-        of `a`, unless `a` has an integer dtype with a precision less than that
-        of the default platform integer. In that case, the default platform
-        integer is used.
-        If the data type (either specified or resolved) differs from the
-        data type of `a`, the input array elements are cast to the
-        specified data type before computing the sum.
+        The type of the returned array and of the accumulator in which the
+        elements are summed. By default, the dtype of `a` is used. An exception
+        is when `a` has an integer type with less precision than the platform
+        (u)intp. In that case, the default will be either (u)int32 or (u)int64
+        depending on whether the platform is 32 or 64 bits. For inexact inputs,
+        dtype must be inexact.
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        Alternative output array in which to place the result. It must have
-        the same shape as the expected output but the type (of the calculated
-        values) will be cast if necessary. Default: ``None``.
+        Alternate output array in which to place the result. If provided, it
+        must have the same shape as the expected output, but the type will be
+        cast if necessary. The casting of NaN to integer can yield unexpected
+        results.
+        Default: ``None``.
     keepdims : bool, optional
-        If ``True``, the reduced axes (dimensions) are included in the result
-        as singleton dimensions, so that the returned array remains
-        compatible with the input array according to Array Broadcasting
-        rules. Otherwise, if ``False``, the reduced axes are not included in
-        the returned array. Default: ``False``.
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the original `a`.
+        Default: ``False``.
 
     Returns
     -------
     out : dpnp.ndarray
-        An array containing the sums. If the sum is computed over the
-        entire array, a zero-dimensional array is returned. The returned
-        array has the data type as described in the `dtype` parameter
-        description above. Zero is returned for slices that are all-NaN
-        or empty.
+        A new array holding the result is returned unless `out` is specified,
+        in which it is returned. The result has the same size as `a`, and the
+        same shape as `a` if `axis` is not ``None`` or `a` is a 1-d array.
 
     Limitations
     -----------

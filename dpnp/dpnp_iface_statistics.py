@@ -461,28 +461,28 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int or tuple of ints, optional
-        Axis or axes along which maximum values must be computed. By default,
-        the maximum value must be computed over the entire array. If a tuple of
-        integers, maximum values must be computed over multiple axes.
+    axis : {None, int or tuple of ints}, optional
+        Axis or axes along which to operate. By default, flattened input is
+        used. If this is a tuple of integers, the minimum is selected over
+        multiple axes, instead of a single axis or all the axes as before.
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
+        Alternative output array in which to place the result. Must be of the
+        same shape and buffer length as the expected output.
+        Default: ``None``.
     keepdims : bool
-        If ``True``, the reduced axes (dimensions) must be included in the
-        result as singleton dimensions, and, accordingly, the result must be
-        compatible with the input array. Otherwise, if ``False``, the reduced
-        axes (dimensions) must not be included in the result.
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the input array.
         Default: ``False``.
 
     Returns
     -------
     out : dpnp.ndarray
-        If the maximum value was computed over the entire array,
-        a zero-dimensional array containing the maximum value; otherwise,
-        a non-zero-dimensional array containing the maximum values.
-        The returned array must have the same data type as `a`.
+        Maximum of `a`. If `axis` is ``None``, the result is a zero-dimensional
+        array. If `axis` is an integer, the result is an array of dimension
+        ``a.ndim - 1``. If `axis` is a tuple, the result is an array of
+        dimension ``a.ndim - len(axis)``.
 
     Limitations
     -----------.
@@ -522,13 +522,26 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
 
     dpnp.check_limitations(initial=initial, where=where)
+    usm_a = dpnp.get_usm_ndarray(a)
 
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.max(dpt_array, axis=axis, keepdims=keepdims)
-    )
+    input_out = out
+    if out is None:
+        usm_out = None
+    else:
+        dpnp.check_supported_arrays_type(out)
 
-    return dpnp.get_result_array(result, out)
+        # get dtype used by dpctl for result array in max function
+        res_dt = a.dtype
+
+        # dpctl requires strict data type matching of out array with the result
+        if out.dtype != res_dt:
+            out = dpnp.astype(out, dtype=res_dt, copy=False)
+
+        usm_out = dpnp.get_usm_ndarray(out)
+
+    res_usm = dpt.max(usm_a, axis=axis, out=usm_out, keepdims=keepdims)
+    res = dpnp_array._create_from_usm_ndarray(res_usm)
+    return dpnp.get_result_array(res, input_out, casting="unsafe")
 
 
 def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
@@ -672,28 +685,28 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int or tuple of ints, optional
-        Axis or axes along which minimum values must be computed. By default,
-        the minimum value must be computed over the entire array. If a tuple
-        of integers, minimum values must be computed over multiple axes.
+    axis : {None, int or tuple of ints}, optional
+        Axis or axes along which to operate. By default, flattened input is
+        used. If this is a tuple of integers, the minimum is selected over
+        multiple axes, instead of a single axis or all the axes as before.
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
+        Alternative output array in which to place the result. Must be of the
+        same shape and buffer length as the expected output.
+        Default: ``None``.
     keepdims : bool, optional
-        If ``True``, the reduced axes (dimensions) must be included in the
-        result as singleton dimensions, and, accordingly, the result must be
-        compatible with the input array. Otherwise, if ``False``, the reduced
-        axes (dimensions) must not be included in the result.
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the input array.
         Default: ``False``.
 
     Returns
     -------
     out : dpnp.ndarray
-        If the minimum value was computed over the entire array,
-        a zero-dimensional array containing the minimum value; otherwise,
-        a non-zero-dimensional array containing the minimum values.
-        The returned array must have the same data type as `a`.
+        Minimum of `a`. If `axis` is ``None``, the result is a zero-dimensional
+        array. If `axis` is an integer, the result is an array of dimension
+        ``a.ndim - 1``. If `axis` is a tuple, the result is an array of
+        dimension ``a.ndim - len(axis)``.
 
     Limitations
     -----------
@@ -733,13 +746,26 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
 
     dpnp.check_limitations(initial=initial, where=where)
+    usm_a = dpnp.get_usm_ndarray(a)
 
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.min(dpt_array, axis=axis, keepdims=keepdims)
-    )
+    input_out = out
+    if out is None:
+        usm_out = None
+    else:
+        dpnp.check_supported_arrays_type(out)
 
-    return dpnp.get_result_array(result, out)
+        # get dtype used by dpctl for result array in min function
+        res_dt = a.dtype
+
+        # dpctl requires strict data type matching of out array with the result
+        if out.dtype != res_dt:
+            out = dpnp.astype(out, dtype=res_dt, copy=False)
+
+        usm_out = dpnp.get_usm_ndarray(out)
+
+    res_usm = dpt.min(usm_a, axis=axis, out=usm_out, keepdims=keepdims)
+    res = dpnp_array._create_from_usm_ndarray(res_usm)
+    return dpnp.get_result_array(res, input_out, casting="unsafe")
 
 
 def ptp(

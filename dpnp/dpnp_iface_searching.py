@@ -39,6 +39,7 @@ it contains:
 
 
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as dti
 
 import dpnp
 
@@ -62,27 +63,27 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int, optional
-        Axis along which to search. If ``None``, the function must return
-        the index of the maximum value of the flattened array.
+    axis : {None, int}, optional
+        By default, the index is into the flattened array, otherwise along
+        the specified axis.
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
-    keepdims : bool
-        If ``True``, the reduced axes (dimensions) must be included in the
-        result as singleton dimensions, and, accordingly, the result must be
-        compatible with the input array. Otherwise, if ``False``, the reduced
-        axes (dimensions) must not be included in the result.
+        If provided, the result will be inserted into this array. It should be
+        of the appropriate shape and dtype.
+        Default: ``None``.
+    keepdims : bool, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the array.
         Default: ``False``.
 
     Returns
     -------
     out : dpnp.ndarray
-        If `axis` is ``None``, a zero-dimensional array containing the index of
-        the first occurrence of the maximum value; otherwise,
-        a non-zero-dimensional array containing the indices of the minimum
-        values. The returned array must have the default array index data type.
+        Array of indices into the array. It has the same shape as ``a.shape``
+        with the dimension along `axis` removed. If `keepdims` is set to
+        ``True``, then the size of `axis` will be ``1`` with the resulting
+        array having same shape as ``a.shape``.
 
     See Also
     --------
@@ -130,12 +131,33 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.argmax(dpt_array, axis=axis, keepdims=keepdims)
-    )
+    usm_a = dpnp.get_usm_ndarray(a)
 
-    return dpnp.get_result_array(result, out)
+    input_out = out
+    if out is None:
+        usm_out = None
+    else:
+        dpnp.check_supported_arrays_type(out)
+
+        # get dtype used by dpctl for result array in argmax function
+        res_dt = dti.default_device_index_type(a.sycl_device)
+
+        # dpctl requires strict data type matching of out array with the result
+        if not dpnp.can_cast(out.dtype, res_dt, casting="safe"):
+            raise TypeError(
+                f"Cannot cast from {out.dtype} to {res_dt} "
+                "according to the rule safe."
+            )
+
+        # dpctl requires strict data type matching of out array with the result
+        if out.dtype != res_dt:
+            out = dpnp.astype(out, dtype=res_dt, copy=False)
+
+        usm_out = dpnp.get_usm_ndarray(out)
+
+    res_usm = dpt.argmax(usm_a, axis=axis, out=usm_out, keepdims=keepdims)
+    res = dpnp_array._create_from_usm_ndarray(res_usm)
+    return dpnp.get_result_array(res, input_out, casting="unsafe")
 
 
 def argmin(a, axis=None, out=None, *, keepdims=False):
@@ -148,27 +170,28 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int, optional
-        Axis along which to search. If ``None``, the function must return
-        the index of the minimum value of the flattened array.
+    axis : {None, int}, optional
+        By default, the index is into the flattened array, otherwise along
+        the specified axis.
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
+        If provided, the result will be inserted into this array. It should be
+        of the appropriate shape and dtype.
+        Default: ``None``.
     keepdims : bool, optional
-        If ``True``, the reduced axes (dimensions) must be included in the
-        result as singleton dimensions, and, accordingly, the result must be
-        compatible with the input array. Otherwise, if ``False``, the reduced
-        axes (dimensions) must not be included in the result.
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the array.
         Default: ``False``.
 
     Returns
     -------
     out : dpnp.ndarray
-        If `axis` is ``None``, a zero-dimensional array containing the index of
-        the first occurrence of the minimum value; otherwise,
-        a non-zero-dimensional array containing the indices of the minimum
-        values. The returned array must have the default array index data type.
+        Array of indices into the array. It has the same shape as `a.shape`
+        with the dimension along `axis` removed. If `keepdims` is set to
+        ``True``, then the size of `axis` will be ``1`` with the resulting
+        array having same shape as `a.shape`.
+
 
     See Also
     --------
@@ -216,12 +239,33 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.argmin(dpt_array, axis=axis, keepdims=keepdims)
-    )
+    usm_a = dpnp.get_usm_ndarray(a)
 
-    return dpnp.get_result_array(result, out)
+    input_out = out
+    if out is None:
+        usm_out = None
+    else:
+        dpnp.check_supported_arrays_type(out)
+
+        # get dtype used by dpctl for result array in argmin function
+        res_dt = dti.default_device_index_type(a.sycl_device)
+
+        # numpy raises TypeError if "out" data type mismatch default index type
+        if not dpnp.can_cast(out.dtype, res_dt, casting="safe"):
+            raise TypeError(
+                f"Cannot cast from {out.dtype} to {res_dt} "
+                "according to the rule safe."
+            )
+
+        # dpctl requires strict data type matching of out array with the result
+        if out.dtype != res_dt:
+            out = dpnp.astype(out, dtype=res_dt, copy=False)
+
+        usm_out = dpnp.get_usm_ndarray(out)
+
+    res_usm = dpt.argmin(usm_a, axis=axis, out=usm_out, keepdims=keepdims)
+    res = dpnp_array._create_from_usm_ndarray(res_usm)
+    return dpnp.get_result_array(res, input_out, casting="unsafe")
 
 
 def searchsorted(a, v, side="left", sorter=None):
