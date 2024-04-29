@@ -35,6 +35,7 @@ import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations
 
 __all__ = [
+    "check_2d",
     "check_stacked_2d",
     "check_stacked_square",
     "dpnp_cholesky",
