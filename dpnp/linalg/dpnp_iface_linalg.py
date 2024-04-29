@@ -42,7 +42,7 @@ import numpy
 import dpnp
 
 from .dpnp_utils_linalg import (
-    check_2d,
+    assert_2d,
     check_stacked_2d,
     check_stacked_square,
     dpnp_cholesky,
@@ -663,7 +663,7 @@ def lstsq(a, b, rcond=None):
     """
 
     dpnp.check_supported_arrays_type(a, b)
-    check_2d(a)
+    assert_2d(a)
     if rcond is not None and not isinstance(rcond, (int, float)):
         raise TypeError("rcond must be integer, floating type, or None")
 

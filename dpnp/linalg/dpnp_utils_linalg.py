@@ -35,7 +35,7 @@ import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations
 
 __all__ = [
-    "check_2d",
+    "assert_2d",
     "check_stacked_2d",
     "check_stacked_square",
     "dpnp_cholesky",
@@ -684,9 +684,9 @@ def _triu_inplace(a, host_tasks, depends=None):
     return out
 
 
-def check_2d(*arrays):
+def assert_2d(*arrays):
     """
-    Return ``True`` if each array in `arrays` is exactly two dimensions.
+    Check that each array in `arrays` is exactly two-dimensional.
 
     If any array is not two-dimensional, `dpnp.linalg.LinAlgError` will be raised.
 
@@ -694,11 +694,6 @@ def check_2d(*arrays):
     ----------
     arrays : {dpnp.ndarray, usm_ndarray}
         A sequence of input arrays to check for dimensionality.
-
-    Returns
-    -------
-    out : bool
-        ``True`` if each array in `arrays` is exactly two-dimensional.
 
     Raises
     ------
