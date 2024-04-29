@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+49.g5dd1c4c7be documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+44.gc348bf4590 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=c3fade41"></script>
+        <script src="../../_static/documentation_options.js?v=ff0417e1"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+49.g5dd1c4c7be
+                0.15.0dev1+44.gc348bf4590
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -634,7 +634,7 @@
     <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return a contiguous array (ndim &gt;= 1) in memory (C order).</span>
+<span class="sd">    Return a contiguous array in memory (C order).</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.ascontiguousarray`.</span>
 
@@ -747,7 +747,7 @@
     <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return an array (ndim &gt;= 1) laid out in Fortran order in memory.</span>
+<span class="sd">    Return an array ``(ndim &gt;= 1)`` laid out in Fortran order in memory.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.asfortranarray`.</span>
 
@@ -2266,8 +2266,8 @@
 <span class="sd">        The final value of the sequence, in any form that can be converted to</span>
 <span class="sd">        an array. This includes scalars, lists, lists of tuples, tuples, tuples</span>
 <span class="sd">        of tuples, tuples of lists, and ndarrays. If `endpoint` is ``False``</span>
-<span class="sd">        num + 1 values are spaced over the interval in log-space, of which all</span>
-<span class="sd">        but the last (a sequence of length num) are returned.</span>
+<span class="sd">        ``num + 1`` values are spaced over the interval in log-space, of which</span>
+<span class="sd">        all but the last (a sequence of length `num`) are returned.</span>
 <span class="sd">    num : int, optional</span>
 <span class="sd">        Number of samples to generate. Default is 50.</span>
 <span class="sd">    dtype : dtype, optional</span>
@@ -2297,16 +2297,16 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        num samples, equally spaced on a log scale.</span>
+<span class="sd">        `num` samples, equally spaced on a log scale.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.logspace` : Similar to geomspace, but with endpoints specified</span>
-<span class="sd">                           using log and base.</span>
-<span class="sd">    :obj:`dpnp.linspace` : Similar to geomspace, but with arithmetic instead of</span>
-<span class="sd">                           geometric progression.</span>
-<span class="sd">    :obj:`dpnp.arange` : Similar to linspace, with the step size specified</span>
-<span class="sd">                         instead of the number of samples.</span>
+<span class="sd">    :obj:`dpnp.logspace` : Similar to :obj:`dpnp.geomspace`, but with endpoints</span>
+<span class="sd">                           specified using log and base.</span>
+<span class="sd">    :obj:`dpnp.linspace` : Similar to :obj:`dpnp.geomspace`, but with</span>
+<span class="sd">                           arithmetic instead of geometric progression.</span>
+<span class="sd">    :obj:`dpnp.arange` : Similar to :obj:`dpnp.linspace`, with the step size</span>
+<span class="sd">                         specified instead of the number of samples.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2495,8 +2495,8 @@
 <span class="sd">        The end value of the sequence, in any form that can be converted to</span>
 <span class="sd">        an array. This includes scalars, lists, lists of tuples, tuples, tuples</span>
 <span class="sd">        of tuples, tuples of lists, and ndarrays. If `endpoint` is set to</span>
-<span class="sd">        ``False`` the sequence consists of all but the last of num + 1 evenly</span>
-<span class="sd">        spaced samples, so that `stop` is excluded.</span>
+<span class="sd">        ``False`` the sequence consists of all but the last of ``num + 1``</span>
+<span class="sd">        evenly spaced samples, so that `stop` is excluded.</span>
 <span class="sd">    dtype : dtype, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
@@ -2527,7 +2527,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        There are num equally spaced samples in the closed interval</span>
+<span class="sd">        There are `num` equally spaced samples in the closed interval</span>
 <span class="sd">        [`start`, `stop`] or the half-open interval [`start`, `stop`)</span>
 <span class="sd">        (depending on whether `endpoint` is ``True`` or ``False``).</span>
 <span class="sd">    step : float, optional</span>
@@ -2536,12 +2536,12 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.arange` : Similar to `linspace`, but uses a step size (instead</span>
-<span class="sd">                         of the number of samples).</span>
-<span class="sd">    :obj:`dpnp.geomspace` : Similar to `linspace`, but with numbers spaced</span>
-<span class="sd">                            evenly on a log scale (a geometric progression).</span>
-<span class="sd">    :obj:`dpnp.logspace` : Similar to `geomspace`, but with the end points</span>
-<span class="sd">                           specified as logarithms.</span>
+<span class="sd">    :obj:`dpnp.arange` : Similar to :obj:`dpnp.linspace`, but uses a step size</span>
+<span class="sd">                         (instead of the number of samples).</span>
+<span class="sd">    :obj:`dpnp.geomspace` : Similar to :obj:`dpnp.linspace`, but with numbers</span>
+<span class="sd">                        spaced evenly on a log scale (a geometric progression).</span>
+<span class="sd">    :obj:`dpnp.logspace` : Similar to :obj:`dpnp.geomspace`, but with the end</span>
+<span class="sd">                           points specified as logarithms.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2720,9 +2720,9 @@
 <span class="sd">        Input data, in any form that can be converted to an array. This</span>
 <span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
 <span class="sd">        tuples of lists, and ndarrays. `base` ** `stop` is the final value of</span>
-<span class="sd">        the sequence, unless `endpoint` is ``False``. In that case, num + 1</span>
+<span class="sd">        the sequence, unless `endpoint` is ``False``. In that case, ``num + 1``</span>
 <span class="sd">        values are spaced over the interval in log-space, of which all but</span>
-<span class="sd">        the last (a sequence of length num) are returned.</span>
+<span class="sd">        the last (a sequence of length `num`) are returned.</span>
 <span class="sd">    num : int, optional</span>
 <span class="sd">        Number of samples to generate. Default is 50.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -2746,7 +2746,7 @@
 <span class="sd">        tuples of lists, and ndarrays. The base of the log space, in any form</span>
 <span class="sd">        that can be converted to an array.This includes scalars, lists, lists</span>
 <span class="sd">        of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
-<span class="sd">        The `step` size between the elements in ln(samples) / ln(base)</span>
+<span class="sd">        The `step` size between the elements in ``ln(samples) / ln(base)``</span>
 <span class="sd">        (or log_base(samples)) is uniform. Default is 10.0.</span>
 <span class="sd">    dtype : dtype, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
@@ -2760,18 +2760,17 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out: dpnp.ndarray</span>
-<span class="sd">        num samples, equally spaced on a log scale.</span>
+<span class="sd">        `num` samples, equally spaced on a log scale.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.arange` : Similar to linspace, with the step size specified</span>
-<span class="sd">                         instead of the number of samples. Note that, when used</span>
-<span class="sd">                         with a float endpoint, the endpoint may or may not be</span>
-<span class="sd">                         included.</span>
-<span class="sd">    :obj:`dpnp.linspace` : Similar to logspace, but with the samples uniformly</span>
-<span class="sd">                           distributed in linear space, instead of log space.</span>
-<span class="sd">    :obj:`dpnp.geomspace` : Similar to logspace, but with endpoints specified</span>
-<span class="sd">                            directly.</span>
+<span class="sd">    :obj:`dpnp.arange` : Similar to :obj:`dpnp.linspace`, with the step size</span>
+<span class="sd">        specified instead of the number of samples. Note that, when used with</span>
+<span class="sd">        a float endpoint, the endpoint may or may not be included.</span>
+<span class="sd">    :obj:`dpnp.linspace` : Similar to :obj:`dpnp.logspace`, but with the</span>
+<span class="sd">        samples uniformly distributed in linear space, instead of log space.</span>
+<span class="sd">    :obj:`dpnp.geomspace` : Similar to :obj:`dpnp.logspace`, but with endpoints</span>
+<span class="sd">                            specified directly.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2829,7 +2828,7 @@
 
 <span class="sd">    Make N-D coordinate arrays for vectorized evaluations of</span>
 <span class="sd">    N-D scalar/vector fields over N-D grids, given</span>
-<span class="sd">    one-dimensional coordinate arrays x1, x2,..., xn.</span>
+<span class="sd">    one-dimensional coordinate arrays ``x1, x2,..., xn``.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.meshgrid`.</span>
 
@@ -2838,7 +2837,7 @@
 <span class="sd">    x1, x2,..., xn : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        1-D arrays representing the coordinates of a grid.</span>
 <span class="sd">    indexing : {&#39;xy&#39;, &#39;ij&#39;}, optional</span>
-<span class="sd">        Cartesian (&#39;xy&#39;, default) or matrix (&#39;ij&#39;) indexing of output.</span>
+<span class="sd">        Cartesian (``&#39;xy&#39;``, default) or matrix (``&#39;ij&#39;``) indexing of output.</span>
 <span class="sd">    sparse : bool, optional</span>
 <span class="sd">        If True the shape of the returned coordinate array for dimension `i`</span>
 <span class="sd">        is reduced from ``(N1, ..., Ni, ... Nn)`` to</span>
@@ -2850,11 +2849,11 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    X1, X2,..., XN : tuple of dpnp.ndarrays</span>
-<span class="sd">        For vectors `x1`, `x2`,..., `xn` with lengths ``Ni=len(xi)``,</span>
-<span class="sd">        returns ``(N1, N2, N3,..., Nn)`` shaped arrays if indexing=&#39;ij&#39;</span>
-<span class="sd">        or ``(N2, N1, N3,..., Nn)`` shaped arrays if indexing=&#39;xy&#39;</span>
-<span class="sd">        with the elements of `xi` repeated to fill the matrix along</span>
-<span class="sd">        the first dimension for `x1`, the second for `x2` and so on.</span>
+<span class="sd">        For vectors `x1`, `x2`,..., `xn` with lengths ``Ni=len(xi)``, returns</span>
+<span class="sd">        ``(N1, N2, N3,..., Nn)`` shaped arrays if ``indexing=&#39;ij&#39;`` or</span>
+<span class="sd">        ``(N2, N1, N3,..., Nn)`` shaped arrays if ``indexing=&#39;xy&#39;`` with</span>
+<span class="sd">        the elements of `xi` repeated to fill the matrix along the first</span>
+<span class="sd">        dimension for `x1`, the second for `x2` and so on.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2941,7 +2940,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    out : one dpnp.ndarray or tuple of dpnp.ndarray</span>
 <span class="sd">        Returns one array of grid indices,</span>
-<span class="sd">        grid.shape = (len(dimensions),) + tuple(dimensions).</span>
+<span class="sd">        ``grid.shape = (len(dimensions),) + tuple(dimensions)``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -3015,7 +3014,7 @@
 <span class="sd">    out : one dpnp.ndarray or tuple of dpnp.ndarray</span>
 <span class="sd">        Returns a tuple of arrays,</span>
 <span class="sd">        with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)</span>
-<span class="sd">        with dimensions[i] in the ith place.</span>
+<span class="sd">        with dimensions[i] in the i-th place.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -3570,7 +3569,7 @@
 <span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    N : int, optional</span>
 <span class="sd">        Number of columns in the output. If `N` is not specified, a square</span>
-<span class="sd">        array is returned (N = len(x)).</span>
+<span class="sd">        array is returned ``(N = len(x))``.</span>
 <span class="sd">    increasing : bool, optional</span>
 <span class="sd">        Order of the powers of the columns. If ``True,`` the powers increase</span>
 <span class="sd">        from left to right, if ``False`` (the default) they are reversed.</span>

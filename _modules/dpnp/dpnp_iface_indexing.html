@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+49.g5dd1c4c7be documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+44.gc348bf4590 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=c3fade41"></script>
+        <script src="../../_static/documentation_options.js?v=ff0417e1"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+49.g5dd1c4c7be
+                0.15.0dev1+44.gc348bf4590
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -529,12 +529,12 @@
 <span class="sd">    out : one dpnp.ndarray or tuple of dpnp.ndarray</span>
 <span class="sd">        If sparse is ``False``:</span>
 <span class="sd">        Returns one array of grid indices,</span>
-<span class="sd">        grid.shape = (len(dimensions),) + tuple(dimensions).</span>
+<span class="sd">        ``grid.shape = (len(dimensions),) + tuple(dimensions)``.</span>
 
 <span class="sd">        If sparse is ``True``:</span>
 <span class="sd">        Returns a tuple of arrays,</span>
 <span class="sd">        with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)</span>
-<span class="sd">        with dimensions[i] in the ith place.</span>
+<span class="sd">        with dimensions[i] in the i-th place.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -907,7 +907,8 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.select.html#dpnp.select">[docs]</a>
 <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return an array drawn from elements in choicelist, depending on conditions.</span>
+<span class="sd">    Return an array drawn from elements in `choicelist`, depending on</span>
+<span class="sd">    conditions.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.select`.</span>
 
@@ -1064,7 +1065,8 @@
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; a = np.array([[10, 30, 20], [60, 40, 50]])</span>
 
-<span class="sd">    We can sort either by using sort directly, or argsort and this function</span>
+<span class="sd">    We can sort either by using :obj:`dpnp.sort` directly, or</span>
+<span class="sd">    :obj:`dpnp.argsort` and this function:</span>
 
 <span class="sd">    &gt;&gt;&gt; np.sort(a, axis=1)</span>
 <span class="sd">    array([[10, 20, 30],</span>
@@ -1092,7 +1094,7 @@
 <span class="sd">           [60]])</span>
 
 <span class="sd">    If we want to get the max and min at the same time, we can stack the</span>
-<span class="sd">    indices first</span>
+<span class="sd">    indices first:</span>
 
 <span class="sd">    &gt;&gt;&gt; ai_min = np.argmin(a, axis=1, keepdims=True)</span>
 <span class="sd">    &gt;&gt;&gt; ai_max = np.argmax(a, axis=1, keepdims=True)</span>
