@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.allclose &mdash; Data Parallel Extension for NumPy 0.15.0dev1+43.g8d0459283 documentation</title>
+  <title>dpnp.allclose &mdash; Data Parallel Extension for NumPy 0.15.0dev1+44.gc348bf4590 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=96479cd5"></script>
+        <script src="../../_static/documentation_options.js?v=ff0417e1"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+43.g8d0459283
+                0.15.0dev1+44.gc348bf4590
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -128,12 +128,19 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.allclose">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">allclose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_logic.html#allclose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.allclose" title="Link to this definition"></a></dt>
-<dd><p>Returns True if two arrays are element-wise equal within a tolerance.</p>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if two arrays are element-wise equal within a tolerance.</p>
+<p>The tolerance values are positive, typically very small numbers. The
+relative difference (<cite>rtol</cite> * abs(<cite>b</cite>)) and the absolute difference <cite>atol</cite>
+are added together to compare against the absolute difference between <cite>a</cite>
+and <cite>b</cite>.</p>
+<p>If either array contains one or more <code class="docutils literal notranslate"><span class="pre">NaNs</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code> is returned.
+<code class="docutils literal notranslate"><span class="pre">Infs</span></code> are treated as equal if they are in the same place and of the same
+sign in both arrays.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.allclose.html#numpy.allclose" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.allclose</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>out</strong> – A boolean 0-dim array. If its value is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
-two arrays are element-wise equal within a tolerance.</p>
+<dd class="field-odd"><p><strong>out</strong> -- A 0-dim array with <code class="docutils literal notranslate"><span class="pre">True</span></code> value if the two arrays are equal within
+the given tolerance; with <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dpnp.ndarray</p>
