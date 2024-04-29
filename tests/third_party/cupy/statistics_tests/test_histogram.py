@@ -5,10 +5,8 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
-
-# from cupy.core import _accelerator
-
 
 # Note that numpy.bincount does not support uint64 on 64-bit environment
 # as it casts an input array to intp.
@@ -40,36 +38,36 @@ def for_signed_dtypes_bincount(name="dtype"):
 
 
 def for_all_dtypes_combination_bincount(names):
-    return testing._loops.for_dtypes_combination(_all_types, names=names)
+    return testing.for_dtypes_combination(_all_types, names=names)
 
 
 class TestHistogram(unittest.TestCase):
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose(atol=1e-6, type_check=has_support_aspect64())
     def test_histogram(self, xp, dtype):
         x = testing.shaped_arange((10,), xp, dtype)
         y, bin_edges = xp.histogram(x)
         return y, bin_edges
 
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose(atol=1e-7, type_check=has_support_aspect64())
     def test_histogram_same_value(self, xp, dtype):
-        x = xp.zeros(10, dtype)
+        x = xp.zeros(10, dtype=dtype)
         y, bin_edges = xp.histogram(x, 3)
         return y, bin_edges
 
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose(atol=1e-6, type_check=has_support_aspect64())
     def test_histogram_density(self, xp, dtype):
         x = testing.shaped_arange((10,), xp, dtype)
         y, bin_edges = xp.histogram(x, density=True)
         # check normalization
         area = xp.sum(y * xp.diff(bin_edges))
-        testing.assert_allclose(area, 1)
+        testing.assert_allclose(area, 1, rtol=1e-6)
         return y, bin_edges
 
     @testing.for_float_dtypes()
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose()
     def test_histogram_range_lower_outliers(self, xp, dtype):
         # Check that lower outliers are not tallied
         a = xp.arange(10, dtype=dtype) + 0.5
@@ -78,7 +76,7 @@ class TestHistogram(unittest.TestCase):
         return h, b
 
     @testing.for_float_dtypes()
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose()
     def test_histogram_range_upper_outliers(self, xp, dtype):
         # Check that upper outliers are not tallied
         a = xp.arange(10, dtype=dtype) + 0.5
@@ -87,7 +85,7 @@ class TestHistogram(unittest.TestCase):
         return h, b
 
     @testing.for_float_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(atol=1e-6, type_check=has_support_aspect64())
     def test_histogram_range_with_density(self, xp, dtype):
         a = xp.arange(10, dtype=dtype) + 0.5
         h, b = xp.histogram(a, range=[1, 9], density=True)
@@ -96,7 +94,7 @@ class TestHistogram(unittest.TestCase):
         return h
 
     @testing.for_float_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(atol=1e-6, type_check=False)
     def test_histogram_range_with_weights_and_density(self, xp, dtype):
         a = xp.arange(10, dtype=dtype) + 0.5
         w = xp.arange(10, dtype=dtype) + 0.5
@@ -128,7 +126,7 @@ class TestHistogram(unittest.TestCase):
     def test_histogram_int_weights_dtype(self, xp, dtype):
         # Check the type of the returned histogram
         a = xp.arange(10, dtype=dtype)
-        h, b = xp.histogram(a, weights=xp.ones(10, int))
+        h, b = xp.histogram(a, weights=xp.ones(10, dtype=int))
         assert xp.issubdtype(h.dtype, xp.integer)
         return h
 
@@ -137,11 +135,10 @@ class TestHistogram(unittest.TestCase):
     def test_histogram_float_weights_dtype(self, xp, dtype):
         # Check the type of the returned histogram
         a = xp.arange(10, dtype=dtype)
-        h, b = xp.histogram(a, weights=xp.ones(10, float))
+        h, b = xp.histogram(a, weights=xp.ones(10, dtype=xp.float32))
         assert xp.issubdtype(h.dtype, xp.floating)
         return h
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_histogram_weights_basic(self):
         v = cupy.random.rand(100)
         w = cupy.ones(100) * 5
@@ -163,7 +160,7 @@ class TestHistogram(unittest.TestCase):
         return wb
 
     @testing.for_int_dtypes(no_bool=True)
-    @testing.numpy_cupy_array_equal(type_check=False)
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_histogram_int_weights(self, xp, dtype):
         # Check with integer weights
         v = xp.asarray([1, 2, 2, 4], dtype=dtype)
@@ -173,7 +170,7 @@ class TestHistogram(unittest.TestCase):
         return wa, wb
 
     @testing.for_int_dtypes(no_bool=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_histogram_int_weights_normalized(self, xp, dtype):
         v = xp.asarray([1, 2, 2, 4], dtype=dtype)
         w = xp.asarray([4, 3, 2, 1], dtype=dtype)
@@ -184,7 +181,7 @@ class TestHistogram(unittest.TestCase):
         return wb
 
     @testing.for_int_dtypes(no_bool=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_histogram_int_weights_nonuniform_bins(self, xp, dtype):
         # Check weights with non-uniform bin widths
         a, b = xp.histogram(
@@ -197,7 +194,7 @@ class TestHistogram(unittest.TestCase):
         return a, b
 
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_array_equal(type_check=False)
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_histogram_complex_weights(self, xp, dtype):
         values = xp.asarray([1.3, 2.5, 2.3])
         weights = xp.asarray([1, -1, 2]) + 1j * xp.asarray([2, 1, 2])
@@ -206,7 +203,7 @@ class TestHistogram(unittest.TestCase):
         return a, b
 
     @testing.for_complex_dtypes()
-    @testing.numpy_cupy_array_equal(type_check=False)
+    @testing.numpy_cupy_array_equal()
     def test_histogram_complex_weights_uneven_bins(self, xp, dtype):
         values = xp.asarray([1.3, 2.5, 2.3])
         weights = xp.asarray([1, -1, 2]) + 1j * xp.asarray([2, 1, 2])
@@ -215,14 +212,14 @@ class TestHistogram(unittest.TestCase):
         return a, b
 
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_histogram_empty(self, xp, dtype):
         x = xp.array([], dtype)
         y, bin_edges = xp.histogram(x)
         return y, bin_edges
 
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_histogram_int_bins(self, xp, dtype):
         x = testing.shaped_arange((10,), xp, dtype)
         y, bin_edges = xp.histogram(x, 4)
@@ -261,18 +258,21 @@ class TestHistogram(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.histogram(x, bins)
 
+    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_bincount(self, xp, dtype):
         x = testing.shaped_arange((3,), xp, dtype)
         return xp.bincount(x)
 
+    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_bincount_duplicated_value(self, xp, dtype):
         x = xp.array([1, 2, 2, 1, 2, 4], dtype)
         return xp.bincount(x)
 
+    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_combination_bincount(names=["x_type", "w_type"])
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_bincount_with_weight(self, xp, x_type, w_type):
@@ -280,12 +280,14 @@ class TestHistogram(unittest.TestCase):
         w = testing.shaped_arange((3,), xp, w_type)
         return xp.bincount(x, weights=w)
 
+    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_bincount_with_minlength(self, xp, dtype):
         x = testing.shaped_arange((3,), xp, dtype)
         return xp.bincount(x, minlength=5)
 
+    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_combination_bincount(names=["x_type", "w_type"])
     def test_bincount_invalid_weight_length(self, x_type, w_type):
         for xp in (numpy, cupy):
@@ -296,6 +298,7 @@ class TestHistogram(unittest.TestCase):
             with pytest.raises((ValueError, TypeError)):
                 xp.bincount(x, weights=w)
 
+    @pytest.mark.skip("bincount() is not implemented yet")
     @for_signed_dtypes_bincount()
     def test_bincount_negative(self, dtype):
         for xp in (numpy, cupy):
@@ -303,6 +306,7 @@ class TestHistogram(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.bincount(x)
 
+    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     def test_bincount_too_deep(self, dtype):
         for xp in (numpy, cupy):
@@ -310,6 +314,7 @@ class TestHistogram(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.bincount(x)
 
+    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     def test_bincount_too_small(self, dtype):
         for xp in (numpy, cupy):
@@ -317,12 +322,14 @@ class TestHistogram(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.bincount(x)
 
+    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_bincount_zero(self, xp, dtype):
         x = testing.shaped_arange((3,), xp, dtype)
         return xp.bincount(x, minlength=0)
 
+    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     def test_bincount_too_small_minlength(self, dtype):
         for xp in (numpy, cupy):
@@ -333,42 +340,12 @@ class TestHistogram(unittest.TestCase):
                 xp.bincount(x, minlength=-1)
 
 
-# This class compares CUB results against NumPy's
-
-# @unittest.skipUnless(cupy.cuda.cub.available, 'The CUB routine is not enabled')
-# class TestCubHistogram(unittest.TestCase):
-
-# def setUp(self):
-# self.old_accelerators = _accelerator.get_routine_accelerators()
-# _accelerator.set_routine_accelerators(['cub'])
-
-# def tearDown(self):
-# _accelerator.set_routine_accelerators(self.old_accelerators)
-
-# @testing.for_all_dtypes(no_bool=True, no_complex=True)
-# @testing.numpy_cupy_array_equal()
-# def test_histogram(self, xp, dtype):
-# x = testing.shaped_arange((10,), xp, dtype)
-
-# if xp is numpy:
-# return xp.histogram(x)
-
-# # xp is cupy, first ensure we really use CUB
-# cub_func = 'cupy._statistics.histogram.cub.device_histogram'
-# with testing.AssertFunctionIsCalled(cub_func):
-# xp.histogram(x)
-# # ...then perform the actual computation
-# return xp.histogram(x)
-
-# @testing.for_all_dtypes(no_bool=True, no_complex=True)
-# @testing.numpy_cupy_array_equal()
-# def test_histogram_range_float(self, xp, dtype):
-# a = testing.shaped_arange((10,), xp, dtype)
-# h, b = xp.histogram(a, testing.shaped_arange((10,), xp, numpy.float64))
-# assert int(h.sum()) == 10
-# return h, b
+# TODO(leofang): we temporarily remove CUB histogram support for now,
+# see cupy/cupy#7698. When it's ready, revert the commit that checked
+# in this comment to restore the support.
 
 
+@pytest.mark.skip("digitize() is not implemented yet")
 @testing.parameterize(
     *testing.product(
         {
@@ -386,7 +363,7 @@ class TestHistogram(unittest.TestCase):
         }
     )
 )
-class TestDigitize(unittest.TestCase):
+class TestDigitize:
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_digitize(self, xp, dtype):
@@ -399,6 +376,7 @@ class TestDigitize(unittest.TestCase):
         return (y,)
 
 
+@pytest.mark.skip("digitize() is not implemented yet")
 @testing.parameterize({"right": True}, {"right": False})
 class TestDigitizeNanInf(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
@@ -469,11 +447,12 @@ class TestDigitizeNanInf(unittest.TestCase):
         return (y,)
 
 
+@pytest.mark.skip("digitize() is not implemented yet")
 class TestDigitizeInvalid(unittest.TestCase):
     def test_digitize_complex(self):
         for xp in (numpy, cupy):
-            x = testing.shaped_arange((14,), xp, xp.complex)
-            bins = xp.array([1.0, 3.0, 5.0, 8.0, 12.0], xp.complex)
+            x = testing.shaped_arange((14,), xp, complex)
+            bins = xp.array([1.0, 3.0, 5.0, 8.0, 12.0], complex)
             with pytest.raises(TypeError):
                 xp.digitize(x, bins)
 
@@ -483,3 +462,142 @@ class TestDigitizeInvalid(unittest.TestCase):
             bins = xp.array([[1], [2]])
             with pytest.raises(ValueError):
                 xp.digitize(x, bins)
+
+
+@pytest.mark.skip("histogramdd() is not implemented yet")
+@testing.parameterize(
+    *testing.product(
+        {
+            "weights": [None, 1, 2],
+            "weights_dtype": [numpy.int32, numpy.float64],
+            "density": [True, False],
+            "bins": [
+                10,
+                (8, 16, 12),
+                (16, 8, 12),
+                (16, 12, 8),
+                (12, 8, 16),
+                "array_list",
+            ],
+            "range": [None, ((20, 50), (10, 100), (0, 40))],
+        }
+    )
+)
+class TestHistogramdd:
+    @testing.for_all_dtypes(no_bool=True, no_complex=True)
+    @testing.numpy_cupy_allclose(atol=1e-7, rtol=1e-7)
+    def test_histogramdd(self, xp, dtype):
+        x = testing.shaped_random((100, 3), xp, dtype, scale=100)
+        if self.bins == "array_list":
+            bins = [xp.arange(0, 100, 4), xp.arange(0, 100, 10), xp.arange(25)]
+        else:
+            bins = self.bins
+        if self.weights is not None:
+            weights = xp.ones((x.shape[0],), dtype=self.weights_dtype)
+        else:
+            weights = None
+        y, bin_edges = xp.histogramdd(
+            x,
+            bins=bins,
+            range=self.range,
+            weights=weights,
+            density=self.density,
+        )
+        return [
+            y,
+        ] + [e for e in bin_edges]
+
+
+@pytest.mark.skip("histogramdd() is not implemented yet")
+class TestHistogramddErrors(unittest.TestCase):
+    def test_histogramdd_invalid_bins(self):
+        for xp in (numpy, cupy):
+            x = testing.shaped_random((16, 2), xp, scale=100)
+            bins = [
+                xp.arange(0, 100, 10),
+            ] * 3
+            with pytest.raises(ValueError):
+                y, bin_edges = xp.histogramdd(x, bins)
+
+    def test_histogramdd_invalid_bins2(self):
+        for xp in (numpy, cupy):
+            x = testing.shaped_random((16, 2), xp, scale=100)
+            with pytest.raises(ValueError):
+                y, bin_edges = xp.histogramdd(x, bins=0)
+
+    def test_histogramdd_invalid_bins3(self):
+        for xp in (numpy, cupy):
+            x = testing.shaped_random((16, 2), xp, scale=100)
+            bins = xp.arange(100)
+            bins[30] = 99  # non-ascending bins
+            with pytest.raises(ValueError):
+                y, bin_edges = xp.histogramdd(x, bins=bins)
+
+    def test_histogramdd_invalid_bins4(self):
+        for xp in (numpy, cupy):
+            x = testing.shaped_random((16, 2), xp, scale=100)
+            bins = xp.arange(64).reshape((8, 8))  # too many dimensions
+            with pytest.raises(ValueError):
+                y, bin_edges = xp.histogramdd(x, bins=bins)
+
+    def test_histogramdd_invalid_range(self):
+        for xp in (numpy, cupy):
+            x = testing.shaped_random((16, 2), xp, scale=100)
+            r = ((0, 100),) * 3
+            with pytest.raises(ValueError):
+                y, bin_edges = xp.histogramdd(x, range=r)
+
+    def test_histogramdd_disallow_arraylike_bins(self):
+        x = testing.shaped_random((16, 2), cupy, scale=100)
+        bins = [[0, 10, 20, 50, 90]] * 2  # too many dimensions
+        with pytest.raises(ValueError):
+            y, bin_edges = cupy.histogramdd(x, bins=bins)
+
+
+@pytest.mark.skip("histogram2d() is not implemented yet")
+@testing.parameterize(
+    *testing.product(
+        {
+            "weights": [None, 1, 2],
+            "weights_dtype": [numpy.int32, numpy.float64],
+            "density": [True, False],
+            "bins": [10, (8, 16), (16, 8), "array_list", "array"],
+            "range": [None, ((20, 50), (10, 100))],
+        }
+    )
+)
+class TestHistogram2d:
+    @testing.for_all_dtypes(no_bool=True, no_complex=True)
+    @testing.numpy_cupy_allclose(atol=1e-7, rtol=1e-7)
+    def test_histogram2d(self, xp, dtype):
+        x = testing.shaped_random((100,), xp, dtype, scale=100)
+        y = testing.shaped_random((100,), xp, dtype, scale=100)
+        if self.bins == "array_list":
+            bins = [xp.arange(0, 100, 4), xp.arange(0, 100, 10)]
+        elif self.bins == "array":
+            bins = xp.arange(0, 100, 4)
+        else:
+            bins = self.bins
+        if self.weights is not None:
+            weights = xp.ones((x.shape[0],), dtype=self.weights_dtype)
+        else:
+            weights = None
+        y, edges0, edges1 = xp.histogram2d(
+            x,
+            y,
+            bins=bins,
+            range=self.range,
+            weights=weights,
+            density=self.density,
+        )
+        return y, edges0, edges1
+
+
+@pytest.mark.skip("histogram2d() is not implemented yet")
+class TestHistogram2dErrors(unittest.TestCase):
+    def test_histogram2d_disallow_arraylike_bins(self):
+        x = testing.shaped_random((16,), cupy, scale=100)
+        y = testing.shaped_random((16,), cupy, scale=100)
+        bins = [0, 10, 20, 50, 90]
+        with pytest.raises(ValueError):
+            y, bin_edges = cupy.histogram2d(x, y, bins=bins)

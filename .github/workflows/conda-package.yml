@@ -22,6 +22,7 @@ env:
       test_dparray.py
       test_copy.py
       test_fft.py
+      test_histogram.py
       test_linalg.py
       test_logic.py
       test_manipulation.py
@@ -49,6 +50,7 @@ env:
       third_party/cupy/math_tests
       third_party/cupy/sorting_tests/test_sort.py
       third_party/cupy/sorting_tests/test_count.py
+      third_party/cupy/statistics_tests/test_histogram.py
       third_party/cupy/statistics_tests/test_meanvar.py
   VER_JSON_NAME: 'version.json'
   VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
