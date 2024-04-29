@@ -35,8 +35,9 @@ import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations
 
 __all__ = [
-    "check_stacked_2d",
-    "check_stacked_square",
+    "assert_2d",
+    "assert_stacked_2d",
+    "assert_stacked_square",
     "dpnp_cholesky",
     "dpnp_cond",
     "dpnp_det",
@@ -683,9 +684,9 @@ def _triu_inplace(a, host_tasks, depends=None):
     return out
 
 
-def check_2d(*arrays):
+def assert_2d(*arrays):
     """
-    Return ``True`` if each array in `arrays` is exactly two dimensions.
+    Check that each array in `arrays` is exactly two-dimensional.
 
     If any array is not two-dimensional, `dpnp.linalg.LinAlgError` will be raised.
 
@@ -693,11 +694,6 @@ def check_2d(*arrays):
     ----------
     arrays : {dpnp.ndarray, usm_ndarray}
         A sequence of input arrays to check for dimensionality.
-
-    Returns
-    -------
-    out : bool
-        ``True`` if each array in `arrays` is exactly two-dimensional.
 
     Raises
     ------
@@ -714,9 +710,9 @@ def check_2d(*arrays):
             )
 
 
-def check_stacked_2d(*arrays):
+def assert_stacked_2d(*arrays):
     """
-    Return ``True`` if each array in `arrays` has at least two dimensions.
+    Check that each array in `arrays` has at least two dimensions.
 
     If any array is less than two-dimensional, `dpnp.linalg.LinAlgError` will be raised.
 
@@ -724,11 +720,6 @@ def check_stacked_2d(*arrays):
     ----------
     arrays : {dpnp.ndarray, usm_ndarray}
         A sequence of input arrays to check for dimensionality.
-
-    Returns
-    -------
-    out : bool
-        ``True`` if each array in `arrays` is at least two-dimensional.
 
     Raises
     ------
@@ -745,9 +736,9 @@ def check_stacked_2d(*arrays):
             )
 
 
-def check_stacked_square(*arrays):
+def assert_stacked_square(*arrays):
     """
-    Return ``True`` if each array in `arrays` is a square matrix.
+    Check that each array in `arrays` is a square matrix.
 
     If any array does not form a square matrix, `dpnp.linalg.LinAlgError` will be raised.
 
@@ -755,19 +746,14 @@ def check_stacked_square(*arrays):
     beforehand. For example,
 
     >>> def solve(a):
-    ...     check_stacked_2d(a)
-    ...     check_stacked_square(a)
+    ...     assert_stacked_2d(a)
+    ...     assert_stacked_square(a)
     ...     ...
 
     Parameters
     ----------
     arrays : {dpnp.ndarray, usm_ndarray}
         A sequence of input arrays to check for square matrix shape.
-
-    Returns
-    -------
-    out : bool
-        ``True`` if each array in `arrays` forms a square matrix.
 
     Raises
     ------
@@ -2309,7 +2295,7 @@ def dpnp_svd(
     """
 
     if hermitian:
-        check_stacked_square(a)
+        assert_stacked_square(a)
 
         # _gesvd returns eigenvalues with s ** 2 sorted descending,
         # but dpnp.linalg.eigh returns s sorted ascending so we re-order the eigenvalues

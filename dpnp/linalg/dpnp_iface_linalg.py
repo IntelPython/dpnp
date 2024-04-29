@@ -42,9 +42,9 @@ import numpy
 import dpnp
 
 from .dpnp_utils_linalg import (
-    check_2d,
-    check_stacked_2d,
-    check_stacked_square,
+    assert_2d,
+    assert_stacked_2d,
+    assert_stacked_square,
     dpnp_cholesky,
     dpnp_cond,
     dpnp_det,
@@ -140,8 +140,8 @@ def cholesky(a, upper=False):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     return dpnp_cholesky(a, upper=upper)
 
@@ -243,8 +243,8 @@ def det(a):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     return dpnp_det(a)
 
@@ -334,8 +334,8 @@ def eig(a):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     a_sycl_queue = a.sycl_queue
     a_usm_type = a.usm_type
@@ -408,8 +408,8 @@ def eigh(a, UPLO="L"):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     UPLO = UPLO.upper()
     if UPLO not in ("L", "U"):
@@ -478,8 +478,8 @@ def eigvals(a):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     # Since geev function from OneMKL LAPACK is not implemented yet,
     # use NumPy for this calculation.
@@ -535,8 +535,8 @@ def eigvalsh(a, UPLO="L"):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     UPLO = UPLO.upper()
     if UPLO not in ("L", "U"):
@@ -591,8 +591,8 @@ def inv(a):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     return dpnp_inv(a)
 
@@ -663,7 +663,7 @@ def lstsq(a, b, rcond=None):
     """
 
     dpnp.check_supported_arrays_type(a, b)
-    check_2d(a)
+    assert_2d(a)
     if rcond is not None and not isinstance(rcond, (int, float)):
         raise TypeError("rcond must be integer, floating type, or None")
 
@@ -724,8 +724,8 @@ def matrix_power(a, n):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     if not isinstance(n, int):
         raise TypeError("exponent must be an integer")
@@ -896,7 +896,7 @@ def pinv(a, rcond=1e-15, hermitian=False):
 
     dpnp.check_supported_arrays_type(a)
     dpnp.check_supported_arrays_type(rcond, scalar_type=True)
-    check_stacked_2d(a)
+    assert_stacked_2d(a)
 
     return dpnp_pinv(a, rcond=rcond, hermitian=hermitian)
 
@@ -1067,7 +1067,7 @@ def qr(a, mode="reduced"):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
+    assert_stacked_2d(a)
 
     if mode not in ("reduced", "complete", "r", "raw"):
         raise ValueError(f"Unrecognized mode {mode}")
@@ -1114,8 +1114,8 @@ def solve(a, b):
     """
 
     dpnp.check_supported_arrays_type(a, b)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     if not (
         (a.ndim == b.ndim or a.ndim == b.ndim + 1)
@@ -1222,7 +1222,7 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
+    assert_stacked_2d(a)
 
     return dpnp_svd(a, full_matrices, compute_uv, hermitian)
 
@@ -1277,8 +1277,8 @@ def slogdet(a):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     return dpnp_slogdet(a)
 
