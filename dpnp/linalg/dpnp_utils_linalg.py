@@ -37,7 +37,7 @@ from dpnp.dpnp_utils import get_usm_allocations
 __all__ = [
     "assert_2d",
     "assert_stacked_2d",
-    "check_stacked_square",
+    "assert_stacked_square",
     "dpnp_cholesky",
     "dpnp_cond",
     "dpnp_det",
@@ -736,9 +736,9 @@ def assert_stacked_2d(*arrays):
             )
 
 
-def check_stacked_square(*arrays):
+def assert_stacked_square(*arrays):
     """
-    Return ``True`` if each array in `arrays` is a square matrix.
+    Check that each array in `arrays` is a square matrix.
 
     If any array does not form a square matrix, `dpnp.linalg.LinAlgError` will be raised.
 
@@ -747,18 +747,13 @@ def check_stacked_square(*arrays):
 
     >>> def solve(a):
     ...     assert_stacked_2d(a)
-    ...     check_stacked_square(a)
+    ...     assert_stacked_square(a)
     ...     ...
 
     Parameters
     ----------
     arrays : {dpnp.ndarray, usm_ndarray}
         A sequence of input arrays to check for square matrix shape.
-
-    Returns
-    -------
-    out : bool
-        ``True`` if each array in `arrays` forms a square matrix.
 
     Raises
     ------
@@ -2300,7 +2295,7 @@ def dpnp_svd(
     """
 
     if hermitian:
-        check_stacked_square(a)
+        assert_stacked_square(a)
 
         # _gesvd returns eigenvalues with s ** 2 sorted descending,
         # but dpnp.linalg.eigh returns s sorted ascending so we re-order the eigenvalues
