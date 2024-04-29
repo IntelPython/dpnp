@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev1+44.gc348bf4590 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev1+45.g6220539df2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=ff0417e1"></script>
+        <script src="../../../_static/documentation_options.js?v=b2a87260"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+44.gc348bf4590
+                0.15.0dev1+45.g6220539df2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -132,9 +132,9 @@
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
 <span class="kn">from</span> <span class="nn">.dpnp_utils_linalg</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">check_2d</span><span class="p">,</span>
-    <span class="n">check_stacked_2d</span><span class="p">,</span>
-    <span class="n">check_stacked_square</span><span class="p">,</span>
+    <span class="n">assert_2d</span><span class="p">,</span>
+    <span class="n">assert_stacked_2d</span><span class="p">,</span>
+    <span class="n">assert_stacked_square</span><span class="p">,</span>
     <span class="n">dpnp_cholesky</span><span class="p">,</span>
     <span class="n">dpnp_cond</span><span class="p">,</span>
     <span class="n">dpnp_det</span><span class="p">,</span>
@@ -232,8 +232,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_cholesky</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="n">upper</span><span class="p">)</span></div>
 
@@ -341,8 +341,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_det</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
 
@@ -435,8 +435,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="n">a_sycl_queue</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="n">a_usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
@@ -512,8 +512,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="n">UPLO</span> <span class="o">=</span> <span class="n">UPLO</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">UPLO</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;U&quot;</span><span class="p">):</span>
@@ -585,8 +585,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="c1"># Since geev function from OneMKL LAPACK is not implemented yet,</span>
     <span class="c1"># use NumPy for this calculation.</span>
@@ -645,8 +645,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="n">UPLO</span> <span class="o">=</span> <span class="n">UPLO</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">UPLO</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;U&quot;</span><span class="p">):</span>
@@ -704,8 +704,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_inv</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
 
@@ -779,7 +779,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-    <span class="n">check_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">rcond</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rcond</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;rcond must be integer, floating type, or None&quot;</span><span class="p">)</span>
 
@@ -843,8 +843,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;exponent must be an integer&quot;</span><span class="p">)</span>
@@ -1024,7 +1024,7 @@
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">rcond</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_pinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="n">rcond</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="n">hermitian</span><span class="p">)</span></div>
 
@@ -1201,7 +1201,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;reduced&quot;</span><span class="p">,</span> <span class="s2">&quot;complete&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized mode </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1251,8 +1251,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
         <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">or</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -1362,7 +1362,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_svd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">full_matrices</span><span class="p">,</span> <span class="n">compute_uv</span><span class="p">,</span> <span class="n">hermitian</span><span class="p">)</span></div>
 
@@ -1420,8 +1420,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">check_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_slogdet</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
 
