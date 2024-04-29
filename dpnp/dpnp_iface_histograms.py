@@ -208,7 +208,7 @@ def _search_sorted_inclusive(a, v):
 
 def histogram(a, bins=10, range=None, density=None, weights=None):
     """
-    Compute the histogram of a dataset.
+    Compute the histogram of a data set.
 
     For full documentation refer to :obj:`numpy.histogram`.
 
