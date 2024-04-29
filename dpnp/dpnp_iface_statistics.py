@@ -65,7 +65,6 @@ __all__ = [
     "bincount",
     "correlate",
     "cov",
-    "histogram",
     "max",
     "mean",
     "median",
@@ -449,43 +448,6 @@ def cov(
 
     return call_origin(
         numpy.cov, m, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype
-    )
-
-
-def histogram(a, bins=10, range=None, density=None, weights=None):
-    """
-    Compute the histogram of a set of data.
-
-    For full documentation refer to :obj:`numpy.histogram`.
-
-    Examples
-    --------
-    >>> import dpnp
-    >>> dpnp.histogram([1, 2, 1], bins=[0, 1, 2, 3])
-    (array([0, 2, 1]), array([0, 1, 2, 3]))
-    >>> dpnp.histogram(dpnp.arange(4), bins=dpnp.arange(5), density=True)
-    (array([0.25, 0.25, 0.25, 0.25]), array([0, 1, 2, 3, 4]))
-    >>> dpnp.histogram([[1, 2, 1], [1, 0, 1]], bins=[0,1,2,3])
-    (array([1, 4, 1]), array([0, 1, 2, 3]))
-    >>> a = dpnp.arange(5)
-    >>> hist, bin_edges = dpnp.histogram(a, density=True)
-    >>> hist
-    array([0.5, 0. , 0.5, 0. , 0. , 0.5, 0. , 0.5, 0. , 0.5])
-    >>> hist.sum()
-    2.4999999999999996
-    >>> res = dpnp.sum(hist * dpnp.diff(bin_edges))
-    >>> print(res)
-    1.0
-
-    """
-
-    return call_origin(
-        numpy.histogram,
-        a=a,
-        bins=bins,
-        range=range,
-        density=density,
-        weights=weights,
     )
 
 

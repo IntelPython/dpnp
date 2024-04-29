@@ -42,6 +42,7 @@ import numpy
 import dpnp
 
 from .dpnp_utils_linalg import (
+    check_2d,
     check_stacked_2d,
     check_stacked_square,
     dpnp_cholesky,
@@ -49,6 +50,7 @@ from .dpnp_utils_linalg import (
     dpnp_det,
     dpnp_eigh,
     dpnp_inv,
+    dpnp_lstsq,
     dpnp_matrix_power,
     dpnp_matrix_rank,
     dpnp_multi_dot,
@@ -69,6 +71,7 @@ __all__ = [
     "eigvals",
     "eigvalsh",
     "inv",
+    "lstsq",
     "matrix_power",
     "matrix_rank",
     "multi_dot",
@@ -592,6 +595,79 @@ def inv(a):
     check_stacked_square(a)
 
     return dpnp_inv(a)
+
+
+def lstsq(a, b, rcond=None):
+    """
+    Return the least-squares solution to a linear matrix equation.
+
+    For full documentation refer to :obj:`numpy.linalg.lstsq`.
+
+    Parameters
+    ----------
+    a : (M, N) {dpnp.ndarray, usm_ndarray}
+        "Coefficient" matrix.
+    b : {(M,), (M, K)} {dpnp.ndarray, usm_ndarray}
+        Ordinate or "dependent variable" values.
+        If `b` is two-dimensional, the least-squares solution
+        is calculated for each of the `K` columns of `b`.
+    rcond : {int, float, None}, optional
+        Cut-off ratio for small singular values of `a`.
+        For the purposes of rank determination, singular values are treated
+        as zero if they are smaller than `rcond` times the largest singular
+        value of `a`.
+        The default uses the machine precision times ``max(M, N)``.  Passing
+        ``-1`` will use machine precision.
+
+    Returns
+    -------
+    x : {(N,), (N, K)} dpnp.ndarray
+        Least-squares solution. If `b` is two-dimensional,
+        the solutions are in the `K` columns of `x`.
+    residuals : {(1,), (K,), (0,)} dpnp.ndarray
+        Sums of squared residuals: Squared Euclidean 2-norm for each column in
+        ``b - a @ x``.
+        If the rank of `a` is < N or M <= N, this is an empty array.
+        If `b` is 1-dimensional, this is a (1,) shape array.
+        Otherwise the shape is (K,).
+    rank : int
+        Rank of matrix `a`.
+    s : (min(M, N),) dpnp.ndarray
+        Singular values of `a`.
+
+    Examples
+    --------
+    Fit a line, ``y = mx + c``, through some noisy data-points:
+
+    >>> import dpnp as np
+    >>> x = np.array([0, 1, 2, 3])
+    >>> y = np.array([-1, 0.2, 0.9, 2.1])
+
+    By examining the coefficients, we see that the line should have a
+    gradient of roughly 1 and cut the y-axis at, more or less, -1.
+
+    We can rewrite the line equation as ``y = Ap``, where ``A = [[x 1]]``
+    and ``p = [[m], [c]]``.  Now use `lstsq` to solve for `p`:
+
+    >>> A = np.vstack([x, np.ones(len(x))]).T
+    >>> A
+    array([[0., 1.],
+           [1., 1.],
+           [2., 1.],
+           [3., 1.]])
+
+    >>> m, c = np.linalg.lstsq(A, y, rcond=None)[0]
+    >>> m, c
+    (array(1.), array(-0.95)) # may vary
+
+    """
+
+    dpnp.check_supported_arrays_type(a, b)
+    check_2d(a)
+    if rcond is not None and not isinstance(rcond, (int, float)):
+        raise TypeError("rcond must be integer, floating type, or None")
+
+    return dpnp_lstsq(a, b, rcond=rcond)
 
 
 def matrix_power(a, n):
