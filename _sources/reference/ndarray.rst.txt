@@ -231,9 +231,9 @@ Each of the arithmetic operations (``+``, ``-``, ``*``, ``/``, ``//``,
 ``%``, ``divmod()``, ``**`` or ``pow()``, ``<<``, ``>>``, ``&``,
 ``^``, ``|``, ``~``) and the comparisons (``==``, ``<``, ``>``,
 ``<=``, ``>=``, ``!=``) is equivalent to the corresponding
-universal function (or :term:`ufunc` for short) in DPNP. For
+universal function (or **ufunc** for short) in DPNP.  For
 more information, see the section on :ref:`Universal Functions
-<ufuncs>`.
+<ufunc>`.
 
 
 Comparison operators:
@@ -248,23 +248,6 @@ Comparison operators:
    dpnp.ndarray.__ge__
    dpnp.ndarray.__eq__
    dpnp.ndarray.__ne__
-
-Truth value of an array (:func:`bool()`):
-
-.. autosummary::
-   :toctree: generated/
-
-   dpnp.ndarray.__bool__
-
-.. note::
-
-   Truth-value testing of an array invokes
-   :meth:`dpnp.ndarray.__bool__`, which raises an error if the number of
-   elements in the array is larger than 1, because the truth value
-   of such arrays is ambiguous. Use :meth:`.any() <dpnp.ndarray.any>` and
-   :meth:`.all() <dpnp.ndarray.all>` instead to be clear about what is meant
-   in such cases. (If the number of elements is 0, the array evaluates
-   to ``False``.)
 
 
 Unary operations:
@@ -318,14 +301,6 @@ Arithmetic, in-place:
    dpnp.ndarray.__iand__
    dpnp.ndarray.__ior__
    dpnp.ndarray.__ixor__
-
-
-Matrix Multiplication:
-
-.. autosummary::
-   :toctree: generated/
-
-   dpnp.ndarray.__matmul__
 
 
 Special methods
