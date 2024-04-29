@@ -243,7 +243,7 @@ def inner(a, b):
     See Also
     --------
     :obj:`dpnp.einsum` : Einstein summation convention..
-    :obj:`dpnp.dot` : Generalised matrix product,
+    :obj:`dpnp.dot` : Generalized matrix product,
                       using second last dimension of `b`.
     :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
 
@@ -305,7 +305,10 @@ def inner(a, b):
 
 def kron(a, b):
     """
-    Returns the kronecker product of two arrays.
+    Kronecker product of two arrays.
+
+    Computes the Kronecker product, a composite array made of blocks of the
+    second array scaled by the first.
 
     For full documentation refer to :obj:`numpy.kron`.
 
@@ -597,7 +600,7 @@ def tensordot(a, b, axes=2):
     Returns
     -------
     out : dpnp.ndarray
-        Returns the tensordot product of `a` and `b`.
+        Returns the tensor dot product of `a` and `b`.
 
     See Also
     --------
@@ -676,7 +679,7 @@ def tensordot(a, b, axes=2):
         if not isinstance(axes, int):
             raise TypeError("Axes must be an integer.") from e
         if axes < 0:
-            raise ValueError("Axes must be a nonnegative integer.") from e
+            raise ValueError("Axes must be a non-negative integer.") from e
         axes_a = tuple(range(-axes, 0))
         axes_b = tuple(range(0, axes))
     else:

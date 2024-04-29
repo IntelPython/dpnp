@@ -225,7 +225,7 @@ def det(a):
 
     Examples
     --------
-    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+    The determinant of a 2-D array ``[[a, b], [c, d]]`` is ``ad - bc``:
 
     >>> import dpnp as dp
     >>> a = dp.array([[1, 2], [3, 4]])
@@ -549,8 +549,8 @@ def inv(a):
     """
     Compute the (multiplicative) inverse of a matrix.
 
-    Given a square matrix a, return the matrix ainv
-    satisfying ``dot(a, ainv) = dot(ainv, a) = eye(a.shape[0])``.
+    Given a square matrix `a`, return the matrix `ainv` satisfying
+    ``dot(a, ainv) = dot(ainv, a) = eye(a.shape[0])``.
 
     For full documentation refer to :obj:`numpy.linalg.inv`.
 
@@ -924,7 +924,7 @@ def norm(x, ord=None, axis=None, keepdims=False):
         The default is ``None``.
     keepdims : bool, optional
         If this is set to ``True``, the axes which are normed over are left in
-        the result as dimensions with size one.  With this option the result
+        the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
 
     Returns
@@ -1253,7 +1253,7 @@ def slogdet(a):
 
     Examples
     --------
-    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+    The determinant of a 2-D array ``[[a, b], [c, d]]`` is ``ad - bc``:
 
     >>> import dpnp as dp
     >>> a = dp.array([[1, 2], [3, 4]])

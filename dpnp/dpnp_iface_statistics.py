@@ -314,7 +314,7 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
 
 def bincount(x1, weights=None, minlength=0):
     """
-    Count number of occurrences of each value in array of non-negative ints.
+    Count number of occurrences of each value in array of non-negative integers.
 
     For full documentation refer to :obj:`numpy.bincount`.
 
@@ -842,7 +842,7 @@ def std(
     Notes
     -----
     Note that, for complex numbers, the absolute value is taken before squaring,
-    so that the result is always real and nonnegative.
+    so that the result is always real and non-negative.
 
     See Also
     --------
@@ -954,7 +954,7 @@ def var(
     Notes
     -----
     Note that, for complex numbers, the absolute value is taken before squaring,
-    so that the result is always real and nonnegative.
+    so that the result is always real and non-negative.
 
     See Also
     --------

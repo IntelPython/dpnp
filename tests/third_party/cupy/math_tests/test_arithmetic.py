@@ -131,7 +131,7 @@ class TestArithmeticUnary:
         arg1 = xp.asarray(arg1)
 
         if self.name in ("reciprocal") and xp is numpy:
-            # In Numpy, for integer arguments with absolute value larger than 1 the result is always zero.
+            # In NumPy, for integer arguments with absolute value larger than 1 the result is always zero.
             # We need to convert the input data type to float then compare the output with DPNP.
             if isinstance(arg1, numpy.ndarray) and numpy.issubdtype(
                 arg1.dtype, numpy.integer
@@ -143,7 +143,7 @@ class TestArithmeticUnary:
 
         if self.name in {"angle"}:
             y = getattr(xp, self.name)(arg1, self.deg)
-            # In Numpy, for boolean arguments the output data type is always default floating data type.
+            # In NumPy, for boolean arguments the output data type is always default floating data type.
             # while data type of output in DPNP is determined by Type Promotion Rules.
             if (
                 isinstance(arg1, cupy.ndarray)

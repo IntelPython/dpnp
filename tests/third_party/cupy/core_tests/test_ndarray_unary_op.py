@@ -130,7 +130,7 @@ class TestArrayIntUnaryOp(unittest.TestCase):
             # When op is operator.invert and dtype is inexact,
             # NumPy raises TypeError while DPNP raises ValueError.
             # With this logic, when ValueError is raised in DPNP,
-            # it is changed to TypeError to align with Numpy.
+            # it is changed to TypeError to align with NumPy.
             raise TypeError
 
     def test_invert_zerodim(self):
