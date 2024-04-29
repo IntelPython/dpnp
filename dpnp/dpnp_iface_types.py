@@ -231,7 +231,7 @@ def iinfo(dtype):
 
 def isscalar(obj):
     """
-    Returns True if the type of `obj` is a scalar type.
+    Returns ``True`` if the type of `obj` is a scalar type.
 
     For full documentation refer to :obj:`numpy.isscalar`.
 
@@ -241,7 +241,8 @@ def isscalar(obj):
 
 def issubdtype(arg1, arg2):
     """
-    Returns True if first argument is a typecode lower/equal in type hierarchy.
+    Returns ``True`` if the first argument is a type code lower/equal
+    in type hierarchy.
 
     For full documentation refer to :obj:`numpy.issubdtype`.
 

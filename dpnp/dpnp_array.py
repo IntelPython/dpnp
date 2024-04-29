@@ -54,7 +54,7 @@ class dpnp_array:
     Multi-dimensional array object.
 
     This is a wrapper around dpctl.tensor.usm_ndarray that provides
-    methods to be compliant with original Numpy.
+    methods to be compliant with original NumPy.
 
     """
 
@@ -137,15 +137,15 @@ class dpnp_array:
         return self._array_obj.usm_type
 
     def __abs__(self):
-        r"""Return \|self\|."""
+        r"""Return ``\|self\|``."""
         return dpnp.abs(self)
 
     def __add__(self, other):
-        """Return self+value."""
+        """Return ``self+value``."""
         return dpnp.add(self, other)
 
     def __and__(self, other):
-        """Return self&value."""
+        """Return ``self&value``."""
         return dpnp.bitwise_and(self, other)
 
     # '__array__',
@@ -159,6 +159,7 @@ class dpnp_array:
     # '__array_wrap__',
 
     def __bool__(self):
+        """``True`` if self else ``False``."""
         return self._array_obj.__bool__()
 
     # '__class__',
@@ -185,30 +186,66 @@ class dpnp_array:
     # '__doc__',
 
     def __dlpack__(self, stream=None):
+        """
+        Produces DLPack capsule.
+
+        Parameters
+        ----------
+        stream : {:class:`dpctl.SyclQueue`, None}, optional
+            Execution queue to synchronize with. If ``None``,
+            synchronization is not performed.
+
+        Raises
+        ------
+        MemoryError
+            when host memory can not be allocated.
+        DLPackCreationError
+            when array is allocated on a partitioned
+            SYCL device, or with a non-default context.
+
+        """
+
         return self._array_obj.__dlpack__(stream=stream)
 
     def __dlpack_device__(self):
+        """
+        Gives a tuple (``device_type``, ``device_id``) corresponding to
+        ``DLDevice`` entry in ``DLTensor`` in DLPack protocol.
+
+        The tuple describes the non-partitioned device where the array has been
+        allocated, or the non-partitioned parent device of the allocation
+        device.
+
+        Raises
+        ------
+        DLPackCreationError:
+            when the ``device_id`` could not be determined.
+
+        """
+
         return self._array_obj.__dlpack_device__()
 
     def __eq__(self, other):
+        """Return ``self==value``."""
         return dpnp.equal(self, other)
 
     def __float__(self):
         return self._array_obj.__float__()
 
     def __floordiv__(self, other):
-        """Return self//value."""
+        """Return ``self//value``."""
         return dpnp.floor_divide(self, other)
 
     # '__format__',
 
     def __ge__(self, other):
+        """Return ``self>=value``."""
         return dpnp.greater_equal(self, other)
 
     # '__getattribute__',
 
     def __getitem__(self, key):
-        """Return self[key]."""
+        """Return ``self[key]``."""
         key = _get_unwrapped_index_key(key)
 
         item = self._array_obj.__getitem__(key)
@@ -224,39 +261,40 @@ class dpnp_array:
         return res
 
     def __gt__(self, other):
+        """Return ``self>value``."""
         return dpnp.greater(self, other)
 
     # '__hash__',
 
     def __iadd__(self, other):
-        """Return self+=value."""
+        """Return ``self+=value``."""
         dpnp.add(self, other, out=self)
         return self
 
     def __iand__(self, other):
-        """Return self&=value."""
+        """Return ``self&=value``."""
         dpnp.bitwise_and(self, other, out=self)
         return self
 
     def __ifloordiv__(self, other):
-        """Return self//=value."""
+        """Return ``self//=value``."""
         dpnp.floor_divide(self, other, out=self)
         return self
 
     def __ilshift__(self, other):
-        """Return self<<=value."""
+        """Return ``self<<=value``."""
         dpnp.left_shift(self, other, out=self)
         return self
 
     # '__imatmul__',
 
     def __imod__(self, other):
-        """Return self%=value."""
+        """Return ``self%=value``."""
         dpnp.remainder(self, other, out=self)
         return self
 
     def __imul__(self, other):
-        """Return self*=value."""
+        """Return ``self*=value``."""
         dpnp.multiply(self, other, out=self)
         return self
 
@@ -270,86 +308,89 @@ class dpnp_array:
         return self._array_obj.__int__()
 
     def __invert__(self):
-        """Return ~self."""
+        """Return ``~self``."""
         return dpnp.invert(self)
 
     def __ior__(self, other):
-        """Return self|=value."""
+        """Return ``self|=value``."""
         dpnp.bitwise_or(self, other, out=self)
         return self
 
     def __ipow__(self, other):
-        """Return self**=value."""
+        """Return ``self**=value``."""
         dpnp.power(self, other, out=self)
         return self
 
     def __irshift__(self, other):
-        """Return self>>=value."""
+        """Return ``self>>=value``."""
         dpnp.right_shift(self, other, out=self)
         return self
 
     def __isub__(self, other):
-        """Return self-=value."""
+        """Return ``self-=value``."""
         dpnp.subtract(self, other, out=self)
         return self
 
     # '__iter__',
 
     def __itruediv__(self, other):
-        """Return self/=value."""
+        """Return ``self/=value``."""
         dpnp.true_divide(self, other, out=self)
         return self
 
     def __ixor__(self, other):
-        """Return self^=value."""
+        """Return ``self^=value``."""
         dpnp.bitwise_xor(self, other, out=self)
         return self
 
     def __le__(self, other):
+        """Return ``self<=value``."""
         return dpnp.less_equal(self, other)
 
     def __len__(self):
-        """Return len(self)."""
-
+        """Return ``len(self)``."""
         return self._array_obj.__len__()
 
     def __lshift__(self, other):
-        """Return self<<value."""
+        """Return ``self<<value``."""
         return dpnp.left_shift(self, other)
 
     def __lt__(self, other):
+        """Return ``self<value``."""
         return dpnp.less(self, other)
 
     def __matmul__(self, other):
+        """Return ``self@value``."""
         return dpnp.matmul(self, other)
 
     def __mod__(self, other):
-        """Return self%value."""
+        """Return ``self%value``."""
         return dpnp.remainder(self, other)
 
     def __mul__(self, other):
-        """Return self*value."""
+        """Return ``self*value``."""
         return dpnp.multiply(self, other)
 
     def __ne__(self, other):
+        """Return ``self!=value``."""
         return dpnp.not_equal(self, other)
 
     def __neg__(self):
-        """Return -self."""
+        """Return ``-self``."""
         return dpnp.negative(self)
 
     # '__new__',
 
     def __or__(self, other):
-        """Return self|value."""
+        """Return ``self|value``."""
         return dpnp.bitwise_or(self, other)
 
     def __pos__(self):
-        """Return +self."""
+        """Return ``+self``."""
         return dpnp.positive(self)
 
     def __pow__(self, other):
-        """Return self**value."""
+        """Return ``self**value``."""
         return dpnp.power(self, other)
 
     def __radd__(self, other):
@@ -363,6 +404,7 @@ class dpnp_array:
     # '__reduce_ex__',
 
     def __repr__(self):
+        """Return ``repr(self)``."""
         return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
 
     def __rfloordiv__(self, other):
@@ -390,7 +432,7 @@ class dpnp_array:
         return dpnp.right_shift(other, self)
 
     def __rshift__(self, other):
-        """Return self>>value."""
+        """Return ``self>>value``."""
         return dpnp.right_shift(self, other)
 
     def __rsub__(self, other):
@@ -405,7 +447,7 @@ class dpnp_array:
     # '__setattr__',
 
     def __setitem__(self, key, val):
-        """Set self[key] to value."""
+        """Set ``self[key]`` to value."""
         key = _get_unwrapped_index_key(key)
 
         if isinstance(val, dpnp_array):
@@ -417,32 +459,21 @@ class dpnp_array:
     # '__sizeof__',
 
     def __str__(self):
-        """
-        Output values from the array to standard output.
-
-        Examples
-        --------
-        >>> print(a)
-        [[ 136.  136.  136.]
-         [ 272.  272.  272.]
-         [ 408.  408.  408.]]
-
-        """
-
+        """Return ``str(self)``."""
         return self._array_obj.__str__()
 
     def __sub__(self, other):
-        """Return self-value."""
+        """Return ``self-value``."""
         return dpnp.subtract(self, other)
 
     # '__subclasshook__',
 
     def __truediv__(self, other):
-        """Return self/value."""
+        """Return ``self/value``."""
         return dpnp.true_divide(self, other)
 
     def __xor__(self, other):
-        """Return self^value."""
+        """Return ``self^value``."""
         return dpnp.bitwise_xor(self, other)
 
     @staticmethod
@@ -558,8 +589,10 @@ class dpnp_array:
               float64 to float32, are allowed.
             - 'unsafe' means any data conversions may be done.
         copy : bool, optional
-            By default, astype always returns a newly allocated array. If this is set to false, and the dtype,
-            order, and subok requirements are satisfied, the input array is returned instead of a copy.
+            By default, ``astype`` always returns a newly allocated array. If
+            this is set to ``False``, and the `dtype`, `order`, and `subok`
+            requirements are satisfied, the input array is returned instead of
+            a copy.
 
         Returns
         -------
@@ -977,12 +1010,13 @@ class dpnp_array:
         """
         Return a partitioned copy of an array.
 
-        Rearranges the elements in the array in such a way that the value of the
-        element in kth position is in the position it would be in a sorted array.
+        Rearranges the elements in the array in such a way that the value of
+        the element in `kth` position is in the position it would be in
+        a sorted array.
 
-        All elements smaller than the kth element are moved before this element and
-        all equal or greater are moved behind it. The ordering of the elements in
-        the two partitions is undefined.
+        All elements smaller than the `kth` element are moved before this
+        element and all equal or greater are moved behind it. The ordering
+        of the elements in the two partitions is undefined.
 
         Refer to `dpnp.partition` for full documentation.
 
@@ -1057,12 +1091,12 @@ class dpnp_array:
         array([1.        , 0.70710677])
 
         """
+
         if dpnp.issubsctype(self.dtype, dpnp.complexfloating):
             return dpnp_array._create_from_usm_ndarray(
                 dpnp.get_usm_ndarray(self).real
             )
-        else:
-            return self
+        return self
 
     @real.setter
     def real(self, value):
@@ -1080,6 +1114,7 @@ class dpnp_array:
         array([9.+2.j, 9.+4.j, 9.+6.j])
 
         """
+
         dpnp.copyto(self._array_obj.real, value)
 
     def repeat(self, repeats, axis=None):
@@ -1149,7 +1184,8 @@ class dpnp_array:
 
     @property
     def shape(self):
-        """Lengths of axes. A tuple of numbers represents size of each dimension.
+        """
+        Lengths of axes. A tuple of numbers represents size of each dimension.
 
         Setter of this property involves reshaping without copy. If the array
         cannot be reshaped without copy, it raises an exception.
@@ -1178,7 +1214,6 @@ class dpnp_array:
     @property
     def size(self):
         """Number of elements in the array."""
-
         return self._array_obj.size
 
     def sort(self, axis=-1, kind=None, order=None):
@@ -1189,9 +1224,10 @@ class dpnp_array:
 
         Note
         ----
-        `axis` in :obj:`dpnp.sort` could be integr or ``None``. If ``None``,
-        the array is flattened before sorting. However, `axis` in :obj:`dpnp.ndarray.sort`
-        can only be integer since it sorts an array in-place.
+        `axis` in :obj:`dpnp.sort` could be integer or ``None``. If ``None``,
+        the array is flattened before sorting. However, `axis` in
+        :obj:`dpnp.ndarray.sort` can only be integer since it sorts an array
+        in-place.
 
         Examples
         --------
@@ -1246,14 +1282,12 @@ class dpnp_array:
     @property
     def strides(self):
         """
-        Get strides of an array.
-
         Returns memory displacement in array elements, upon unit
         change of respective index.
 
-        E.g. for strides (s1, s2, s3) and multi-index (i1, i2, i3)
-
-           a[i1, i2, i3] == (&a[0,0,0])[ s1*s1 + s2*i2 + s3*i3]
+        For example, for strides ``(s1, s2, s3)`` and multi-index
+        ``(i1, i2, i3)`` position of the respective element relative
+        to zero multi-index element is ``s1*s1 + s2*i2 + s3*i3``.
 
         """
 
@@ -1323,11 +1357,12 @@ class dpnp_array:
         ----------
         axes : None, tuple or list of ints, n ints, optional
             * ``None`` or no argument: reverses the order of the axes.
-            * tuple or list of ints: `i` in the `j`-th place in the tuple/list
-              means that the array’s `i`-th axis becomes the transposed
-              array’s `j`-th axis.
-            * n ints: same as an n-tuple/n-list of the same ints (this form is
-              intended simply as a “convenience” alternative to the tuple form).
+            * ``tuple or list of ints``: `i` in the `j`-th place in the
+              tuple/list means that the array’s `i`-th axis becomes the
+              transposed array’s `j`-th axis.
+            * ``n ints``: same as an n-tuple/n-list of the same integers (this
+              form is intended simply as a “convenience” alternative to the
+              tuple form).
 
         Returns
         -------
@@ -1398,6 +1433,7 @@ class dpnp_array:
         Refer to :obj:`dpnp.var` for full documentation.
 
         """
+
         return dpnp.var(self, axis, dtype, out, ddof, keepdims, where=where)
 
 

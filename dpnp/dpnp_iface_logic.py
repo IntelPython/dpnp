@@ -145,15 +145,24 @@ def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
 
 def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     """
-    Returns True if two arrays are element-wise equal within a tolerance.
+    Returns ``True`` if two arrays are element-wise equal within a tolerance.
+
+    The tolerance values are positive, typically very small numbers. The
+    relative difference (`rtol` * abs(`b`)) and the absolute difference `atol`
+    are added together to compare against the absolute difference between `a`
+    and `b`.
+
+    If either array contains one or more ``NaNs``, ``False`` is returned.
+    ``Infs`` are treated as equal if they are in the same place and of the same
+    sign in both arrays.
 
     For full documentation refer to :obj:`numpy.allclose`.
 
     Returns
     -------
     out : dpnp.ndarray
-        A boolean 0-dim array. If its value is ``True``,
-        two arrays are element-wise equal within a tolerance.
+        A 0-dim array with ``True`` value if the two arrays are equal within
+        the given tolerance; with ``False`` otherwise.
 
     Limitations
     -----------
@@ -297,8 +306,8 @@ def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
 
 
 _EQUAL_DOCSTRING = """
-Calculates equality results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+Calculates equality test results for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.equal`.
 
@@ -318,8 +327,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise equality comparison.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    An array containing the result of element-wise equality comparison.
+    The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -366,8 +375,8 @@ equal = DPNPBinaryFunc(
 
 
 _GREATER_DOCSTRING = """
-Calculates the greater-than results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+Computes the greater-than test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.greater`.
 
@@ -387,8 +396,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise greater-than comparison.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    An array containing the result of element-wise greater-than comparison.
+    The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -429,8 +438,8 @@ greater = DPNPBinaryFunc(
 
 
 _GREATER_EQUAL_DOCSTRING = """
-Calculates the greater-than or equal-to results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+Computes the greater-than or equal-to test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.greater_equal`.
 
@@ -450,8 +459,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise greater-than or equal-to comparison.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    An array containing the result of element-wise greater-than or equal-to
+    comparison.
+    The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -535,7 +545,7 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
 
 
 _ISFINITE_DOCSTRING = """
-Checks if each element of input array is a finite number.
+Test if each element of input array is a finite number.
 
 For full documentation refer to :obj:`numpy.isfinite`.
 
@@ -554,7 +564,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array which is True where `x` is not positive infinity,
-    negative infinity, or NaN, False otherwise.
+    negative infinity, or ``NaN``, False otherwise.
     The data type of the returned array is `bool`.
 
 Limitations
@@ -594,7 +604,7 @@ isfinite = DPNPUnaryFunc(
 
 
 _ISINF_DOCSTRING = """
-Checks if each element of input array is an infinity.
+Test if each element of input array is an infinity.
 
 For full documentation refer to :obj:`numpy.isinf`.
 
@@ -647,7 +657,7 @@ isinf = DPNPUnaryFunc(
 
 
 _ISNAN_DOCSTRING = """
-Checks if each element of an input array is a NaN.
+Test if each element of an input array is a NaN.
 
 For full documentation refer to :obj:`numpy.isnan`.
 
@@ -665,7 +675,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array which is True where x is NaN, False otherwise.
+    An array which is True where `x` is ``NaN``, False otherwise.
     The data type of the returned array is `bool`.
 
 Limitations
@@ -701,8 +711,8 @@ isnan = DPNPUnaryFunc(
 
 
 _LESS_DOCSTRING = """
-Calculates the less-than results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+Computes the less-than test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.less`.
 
@@ -723,7 +733,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the result of element-wise less-than comparison.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -763,8 +773,8 @@ less = DPNPBinaryFunc(
 
 
 _LESS_EQUAL_DOCSTRING = """
-Calculates the less-than or equal-to results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+Computes the less-than or equal-to test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.less_equal`.
 
@@ -784,8 +794,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the result of element-wise less-than or equal-to comparison.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    An array containing the result of element-wise less-than or equal-to
+    comparison. The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -826,8 +836,8 @@ less_equal = DPNPBinaryFunc(
 
 
 _LOGICAL_AND_DOCSTRING = """
-Computes the logical AND for each element `x1_i` of the input array `x1`
-with the respective element `x2_i` of the input array `x2`.
+Computes the logical AND for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.logical_and`.
 
@@ -1025,8 +1035,10 @@ out : {None, dpnp.ndarray}, optional
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: "K".
-Returns:
-dpnp.ndarray:
+
+Returns
+-------
+out : dpnp.ndarray
     An array containing the element-wise logical XOR results.
 
 Limitations
@@ -1069,8 +1081,8 @@ logical_xor = DPNPBinaryFunc(
 
 
 _NOT_EQUAL_DOCSTRING = """
-Calculates inequality results for each element `x1_i` of
-the input array `x1` the respective element `x2_i` of the input array `x2`.
+Calculates inequality test results for each element `x1_i` of the
+input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.not_equal`.
 
@@ -1090,8 +1102,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise inequality comparison.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    An array containing the result of element-wise inequality comparison.
+    The returned array has a data type of `bool`.
 
 Limitations
 -----------

@@ -35,13 +35,15 @@ import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations
 
 __all__ = [
-    "check_stacked_2d",
-    "check_stacked_square",
+    "assert_2d",
+    "assert_stacked_2d",
+    "assert_stacked_square",
     "dpnp_cholesky",
     "dpnp_cond",
     "dpnp_det",
     "dpnp_eigh",
     "dpnp_inv",
+    "dpnp_lstsq",
     "dpnp_matrix_power",
     "dpnp_matrix_rank",
     "dpnp_multi_dot",
@@ -503,6 +505,35 @@ def _multi_svd_norm(x, row_axis, col_axis, op):
     return result
 
 
+def _nrm2_last_axis(x):
+    """
+    Calculate the sum of squares along the last axis of an array.
+
+    This function handles arrays containing real or complex numbers.
+    For complex data types, it computes the sum of squared magnitudes;
+    For real adata types, it sums the squares of the elements.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Sum of squares calculated along the last axis.
+
+    """
+
+    real_dtype = _real_type(x.dtype)
+    # TODO: use dpnp.sum(dpnp.square(dpnp.view(x)), axis=-1, dtype=real_dtype)
+    # w/a since dpnp.view() in not implemented yet
+    # Сalculate and sum the squares of both real and imaginary parts for compelex array.
+    if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
+        return dpnp.sum(dpnp.abs(x) ** 2, axis=-1, dtype=real_dtype)
+    else:
+        return dpnp.sum(dpnp.square(x), axis=-1, dtype=real_dtype)
+
+
 def _real_type(dtype, device=None):
     """
     Returns the real data type corresponding to a given dpnp data type.
@@ -653,9 +684,35 @@ def _triu_inplace(a, host_tasks, depends=None):
     return out
 
 
-def check_stacked_2d(*arrays):
+def assert_2d(*arrays):
     """
-    Return ``True`` if each array in `arrays` has at least two dimensions.
+    Check that each array in `arrays` is exactly two-dimensional.
+
+    If any array is not two-dimensional, `dpnp.linalg.LinAlgError` will be raised.
+
+    Parameters
+    ----------
+    arrays : {dpnp.ndarray, usm_ndarray}
+        A sequence of input arrays to check for dimensionality.
+
+    Raises
+    ------
+    dpnp.linalg.LinAlgError
+        If any array in `arrays` is not exactly two-dimensional.
+
+    """
+
+    for a in arrays:
+        if a.ndim != 2:
+            raise dpnp.linalg.LinAlgError(
+                f"{a.ndim}-dimensional array given. The input "
+                "array must be exactly two-dimensional"
+            )
+
+
+def assert_stacked_2d(*arrays):
+    """
+    Check that each array in `arrays` has at least two dimensions.
 
     If any array is less than two-dimensional, `dpnp.linalg.LinAlgError` will be raised.
 
@@ -663,11 +720,6 @@ def check_stacked_2d(*arrays):
     ----------
     arrays : {dpnp.ndarray, usm_ndarray}
         A sequence of input arrays to check for dimensionality.
-
-    Returns
-    -------
-    out : bool
-        ``True`` if each array in `arrays` is at least two-dimensional.
 
     Raises
     ------
@@ -684,9 +736,9 @@ def check_stacked_2d(*arrays):
             )
 
 
-def check_stacked_square(*arrays):
+def assert_stacked_square(*arrays):
     """
-    Return ``True`` if each array in `arrays` is a square matrix.
+    Check that each array in `arrays` is a square matrix.
 
     If any array does not form a square matrix, `dpnp.linalg.LinAlgError` will be raised.
 
@@ -694,19 +746,14 @@ def check_stacked_square(*arrays):
     beforehand. For example,
 
     >>> def solve(a):
-    ...     check_stacked_2d(a)
-    ...     check_stacked_square(a)
+    ...     assert_stacked_2d(a)
+    ...     assert_stacked_square(a)
     ...     ...
 
     Parameters
     ----------
     arrays : {dpnp.ndarray, usm_ndarray}
         A sequence of input arrays to check for square matrix shape.
-
-    Returns
-    -------
-    out : bool
-        ``True`` if each array in `arrays` forms a square matrix.
 
     Raises
     ------
@@ -1224,6 +1271,58 @@ def dpnp_inv(a):
     return b_f
 
 
+def dpnp_lstsq(a, b, rcond=None):
+    """
+    dpnp_lstsq(a, b, rcond=None)
+
+    Return the least-squares solution to a linear matrix equation.
+
+    """
+
+    if b.ndim > 2:
+        raise dpnp.linalg.LinAlgError(
+            f"{b.ndim}-dimensional array given. The input "
+            "array must be exactly two-dimensional"
+        )
+
+    m, n = a.shape[-2:]
+    m2 = b.shape[0]
+    if m != m2:
+        raise dpnp.linalg.LinAlgError("Incompatible dimensions")
+
+    u, s, vh = dpnp_svd(a, full_matrices=False, related_arrays=[b])
+
+    if rcond is None:
+        rcond = dpnp.finfo(s.dtype).eps * max(m, n)
+    elif rcond <= 0 or rcond >= 1:
+        # some doc of gelss/gelsd says "rcond < 0", but it's not true!
+        rcond = dpnp.finfo(s.dtype).eps
+
+    # number of singular values and matrix rank
+    s1 = 1 / s
+    rank = dpnp.array(
+        s.size, dtype="int32", sycl_queue=s.sycl_queue, usm_type=s.usm_type
+    )
+    if s.size > 0:
+        cutoff = rcond * s.max()
+        sing_vals = s <= cutoff
+        s1[sing_vals] = 0
+        rank -= sing_vals.sum(dtype="int32")
+
+    # Solve the least-squares solution
+    # x = vh.T.conj() @ diag(s1) @ u.T.conj() @ b
+    z = (dpnp.dot(b.T, u.conj()) * s1).T
+    x = dpnp.dot(vh.T.conj(), z)
+    # Calculate squared Euclidean 2-norm for each column in b - a*x
+    if m <= n or rank != n:
+        resids = dpnp.empty_like(s, shape=(0,))
+    else:
+        e = b - a.dot(x)
+        resids = dpnp.atleast_1d(_nrm2_last_axis(e.T))
+
+    return x, resids, rank, s
+
+
 def dpnp_matrix_power(a, n):
     """
     dpnp_matrix_power(a, n)
@@ -1281,7 +1380,7 @@ def dpnp_matrix_rank(A, tol=None, hermitian=False):
         rtol = max(A.shape[-2:]) * dpnp.finfo(S.dtype).eps
         tol = S.max(axis=-1, keepdims=True) * rtol
     elif not dpnp.isscalar(tol):
-        # Add a new axis to match Numpy's output
+        # Add a new axis to match NumPy's output
         tol = tol[..., None]
 
     return dpnp.count_nonzero(S > tol, axis=-1)
@@ -2031,16 +2130,25 @@ def dpnp_slogdet(a):
     )
 
 
-def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
+def dpnp_svd_batch(
+    a, uv_type, s_type, full_matrices=True, compute_uv=True, related_arrays=None
+):
     """
-    dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True)
+    dpnp_svd_batch(
+        a, uv_type, s_type, full_matrices=True, compute_uv=True, related_arrays=None
+    )
 
     Return the batched singular value decomposition (SVD) of a stack of matrices.
 
     """
 
-    a_usm_type = a.usm_type
-    a_sycl_queue = a.sycl_queue
+    # Set USM type and SYCL queue to be used based on `a`
+    # and optionally provided `related_arrays`.
+    # If `related_arrays` is not provided, default to USM type and SYCL queue of `a`.
+    # Otherwise, determine USM type and SYCL queue using
+    # compute-follows-data execution model for `a` and `related arrays`.
+    usm_type, exec_q = get_usm_allocations([a] + (related_arrays or []))
+
     reshape = False
     batch_shape_orig = a.shape[:-2]
 
@@ -2057,8 +2165,8 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
         s = dpnp.empty(
             batch_shape_orig + (k,),
             dtype=s_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
+            usm_type=usm_type,
+            sycl_queue=exec_q,
         )
         if compute_uv:
             if full_matrices:
@@ -2071,14 +2179,14 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
             u = dpnp.empty(
                 u_shape,
                 dtype=uv_type,
-                usm_type=a_usm_type,
-                sycl_queue=a_sycl_queue,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
             )
             vt = dpnp.empty(
                 vt_shape,
                 dtype=uv_type,
-                usm_type=a_usm_type,
-                sycl_queue=a_sycl_queue,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
             )
             return u, s, vt
         else:
@@ -2087,8 +2195,8 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
         s = dpnp.empty(
             batch_shape_orig + (0,),
             dtype=s_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
+            usm_type=usm_type,
+            sycl_queue=exec_q,
         )
         if compute_uv:
             if full_matrices:
@@ -2096,28 +2204,28 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
                     batch_shape_orig,
                     m,
                     dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
+                    usm_type=usm_type,
+                    sycl_queue=exec_q,
                 )
                 vt = _stacked_identity(
                     batch_shape_orig,
                     n,
                     dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
+                    usm_type=usm_type,
+                    sycl_queue=exec_q,
                 )
             else:
                 u = dpnp.empty(
                     batch_shape_orig + (m, 0),
                     dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
+                    usm_type=usm_type,
+                    sycl_queue=exec_q,
                 )
                 vt = dpnp.empty(
                     batch_shape_orig + (0, n),
                     dtype=uv_type,
-                    usm_type=a_usm_type,
-                    sycl_queue=a_sycl_queue,
+                    usm_type=usm_type,
+                    sycl_queue=exec_q,
                 )
             return u, s, vt
         else:
@@ -2165,17 +2273,29 @@ def dpnp_svd_batch(a, uv_type, s_type, full_matrices=True, compute_uv=True):
 
 
 def dpnp_svd(
-    a, full_matrices=True, compute_uv=True, hermitian=False, batch_call=False
+    a,
+    full_matrices=True,
+    compute_uv=True,
+    hermitian=False,
+    batch_call=False,
+    related_arrays=None,
 ):
     """
-    dpnp_svd(a, full_matrices=True, compute_uv=True, hermitian=False, batch_call=False)
+    dpnp_svd(
+        a,
+        full_matrices=True,
+        compute_uv=True,
+        hermitian=False,
+        batch_call=False,
+        related_arrays=None,
+    )
 
     Return the singular value decomposition (SVD).
 
     """
 
     if hermitian:
-        check_stacked_square(a)
+        assert_stacked_square(a)
 
         # _gesvd returns eigenvalues with s ** 2 sorted descending,
         # but dpnp.linalg.eigh returns s sorted ascending so we re-order the eigenvalues
@@ -2201,22 +2321,38 @@ def dpnp_svd(
             s = dpnp.abs(s)
             return dpnp.sort(s)[..., ::-1]
 
-    uv_type = _common_type(a)
+    uv_type = (
+        _common_type(a)
+        if not related_arrays
+        else _common_type(a, *related_arrays)
+    )
     s_type = _real_type(uv_type)
 
     if a.ndim > 2:
-        return dpnp_svd_batch(a, uv_type, s_type, full_matrices, compute_uv)
+        return dpnp_svd_batch(
+            a,
+            uv_type,
+            s_type,
+            full_matrices,
+            compute_uv,
+            related_arrays=related_arrays,
+        )
 
-    a_usm_type = a.usm_type
-    a_sycl_queue = a.sycl_queue
+    # Set USM type and SYCL queue to be used based on `a`
+    # and optionally provided `related_arrays`.
+    # If `related_arrays` is not provided, default to USM type and SYCL queue of `a`.
+    # Otherwise, determine USM type and SYCL queue using
+    # compute-follows-data execution model for `a` and `related arrays`.
+    usm_type, exec_q = get_usm_allocations([a] + (related_arrays or []))
+
     m, n = a.shape
 
     if m == 0 or n == 0:
         s = dpnp.empty(
             (0,),
             dtype=s_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
+            usm_type=usm_type,
+            sycl_queue=exec_q,
         )
         if compute_uv:
             if full_matrices:
@@ -2229,14 +2365,14 @@ def dpnp_svd(
             u = dpnp.eye(
                 *u_shape,
                 dtype=uv_type,
-                usm_type=a_usm_type,
-                sycl_queue=a_sycl_queue,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
             )
             vt = dpnp.eye(
                 *vt_shape,
                 dtype=uv_type,
-                usm_type=a_usm_type,
-                sycl_queue=a_sycl_queue,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
             )
             return u, s, vt
         else:
@@ -2244,14 +2380,16 @@ def dpnp_svd(
 
     # oneMKL LAPACK gesvd destroys `a` and assumes fortran-like array as input.
     # Allocate 'F' order memory for dpnp arrays to comply with these requirements.
-    a_h = dpnp.empty_like(a, order="F", dtype=uv_type)
+    a_h = dpnp.empty_like(
+        a, order="F", dtype=uv_type, usm_type=usm_type, sycl_queue=exec_q
+    )
 
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
     # use DPCTL tensor function to fill the сopy of the input array
     # from the input array
     a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=exec_q
     )
 
     k = min(m, n)
@@ -2273,26 +2411,20 @@ def dpnp_svd(
 
     # oneMKL LAPACK assumes fortran-like array as input.
     # Allocate 'F' order memory for dpnp output arrays to comply with these requirements.
-    u_h = dpnp.empty(
-        u_shape,
-        dtype=uv_type,
+    u_h = dpnp.empty_like(
+        a_h,
+        shape=u_shape,
         order="F",
-        usm_type=a_usm_type,
-        sycl_queue=a_sycl_queue,
     )
-    vt_h = dpnp.empty(
-        vt_shape,
-        dtype=uv_type,
+    vt_h = dpnp.empty_like(
+        a_h,
+        shape=vt_shape,
         order="F",
-        usm_type=a_usm_type,
-        sycl_queue=a_sycl_queue,
     )
-    s_h = dpnp.empty(
-        k, dtype=s_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
-    )
+    s_h = dpnp.empty_like(a_h, shape=(k,), dtype=s_type)
 
     ht_lapack_ev, _ = li._gesvd(
-        a_sycl_queue,
+        exec_q,
         jobu,
         jobvt,
         a_h.get_array(),

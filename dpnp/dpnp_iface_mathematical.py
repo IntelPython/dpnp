@@ -159,7 +159,7 @@ def _append_to_diff_array(a, axis, combined, values):
 
 
 _ABS_DOCSTRING = """
-Calculate the absolute value element-wise.
+Calculates the absolute value for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.absolute`.
 
@@ -245,8 +245,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise addition. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise sums. The data type of the
+    returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -390,7 +390,6 @@ def around(x, /, decimals=0, out=None):
 
 _CEIL_DOCSTRING = """
 Returns the ceiling for each element `x_i` for input array `x`.
-The ceil of the scalar `x` is the smallest integer `i`, such that `i >= x`.
 
 For full documentation refer to :obj:`numpy.ceil`.
 
@@ -408,8 +407,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise ceiling of input array.
-    The returned array has the same data type as `x`.
+    An array containing the element-wise ceiling.
 
 Limitations
 -----------
@@ -517,7 +515,7 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
 
 _CONJ_DOCSTRING = """
-Computes conjugate for each element `x_i` for input array `x`.
+Computes conjugate of each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.conj`.
 
@@ -535,8 +533,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise conjugate.
-    The returned array has the same data type as `x`.
+    An array containing the element-wise conjugate values.
 
 Limitations
 -----------
@@ -844,7 +841,7 @@ def cumsum(a, axis=None, dtype=None, out=None):
         Input array.
     axis : int, optional
         Axis along which the cumulative sum is computed. The default (``None``)
-        is to compute the cumsum over the flattened array.
+        is to compute the cumulative sum over the flattened array.
     dtype : dtype, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
@@ -939,7 +936,7 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
     a : {dpnp.ndarray, usm_ndarray}
         Input array
     n : int, optional
-        The number of times values are differenced. If zero, the input
+        The number of times the values differ. If ``zero``, the input
         is returned as-is.
     axis : int, optional
         The axis along which the difference is taken, default is the
@@ -1177,7 +1174,8 @@ def fabs(x1, **kwargs):
 
 _FLOOR_DOCSTRING = """
 Returns the floor for each element `x_i` for input array `x`.
-The floor of the scalar `x` is the largest integer `i`, such that `i <= x`.
+
+The floor of `x_i` is the largest integer `n`, such that `n <= x_i`.
 
 For full documentation refer to :obj:`numpy.floor`.
 
@@ -1195,8 +1193,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise floor of input array.
-    The returned array has the same data type as `x`.
+    An array containing the element-wise floor.
 
 Limitations
 -----------
@@ -1255,9 +1252,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise floor division.
+    An array containing the result of element-wise floor of division.
     The data type of the returned array is determined by the Type
-    Promotion Rules
+    Promotion Rules.
 
 Limitations
 -----------
@@ -1740,8 +1737,8 @@ imag = DPNPUnaryFunc(
 
 
 _MAXIMUM_DOCSTRING = """
-Compares two input arrays `x1` and `x2` and returns
-a new array containing the element-wise maxima.
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise maxima.
 
 For full documentation refer to :obj:`numpy.maximum`.
 
@@ -1812,8 +1809,8 @@ maximum = DPNPBinaryFunc(
 
 
 _MINIMUM_DOCSTRING = """
-Compares two input arrays `x1` and `x2` and returns
-a new array containing the element-wise minima.
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise minima.
 
 For full documentation refer to :obj:`numpy.minimum`.
 
@@ -1971,8 +1968,8 @@ def modf(x1, **kwargs):
 
 
 _MULTIPLY_DOCSTRING = """
-Calculates the product for each element `x1_i` of the input array `x1`
-with the respective element `x2_i` of the input array `x2`.
+Calculates the product for each element `x1_i` of the input array `x1` with the
+respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.multiply`.
 
@@ -1992,8 +1989,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise multiplication. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise products. The data type of
+    the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -2175,9 +2172,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the result of element-wise of raising each element
-    to a specified power.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    An array containing the bases in `x1` raised to the exponents in `x2`
+    element-wise. The data type of the returned array is determined by the
+    Type Promotion Rules.
 
 Limitations
 -----------
@@ -2327,7 +2324,6 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise projection.
-    The returned array has the same data type as `x`.
 
 Limitations
 -----------
@@ -2389,6 +2385,7 @@ real = DPNPReal(
 _REMAINDER_DOCSTRING = """
 Calculates the remainder of division for each element `x1_i` of the input array
 `x1` with the respective element `x2_i` of the input array `x2`.
+
 This function is equivalent to the Python modulus operator.
 
 For full documentation refer to :obj:`numpy.remainder`.
@@ -2409,8 +2406,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the element-wise remainders. The data type of
-    the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise remainders. Each remainder has the
+    same sign as respective element `x2_i`. The data type of the returned
+    array is determined by the Type Promotion Rules.
 
 Limitations
 Parameters `where` and `subok` are supported with their default values.
@@ -2452,7 +2450,11 @@ remainder = DPNPBinaryFunc(
 
 
 _RINT_DOCSTRING = """
-Round elements of the array to the nearest integer.
+Rounds each element `x_i` of the input array `x` to
+the nearest integer-valued number.
+
+When two integers are equally close to `x_i`, the result is the nearest even
+integer to `x_i`.
 
 For full documentation refer to :obj:`numpy.rint`.
 
@@ -2470,8 +2472,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise rounded value. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise rounded values.
 
 Limitations
 -----------
@@ -2508,6 +2509,9 @@ _ROUND_DOCSTRING = """
 Rounds each element `x_i` of the input array `x` to
 the nearest integer-valued number.
 
+When two integers are equally close to `x_i`, the result is the nearest even
+integer to `x_i`.
+
 For full documentation refer to :obj:`numpy.round`.
 
 Parameters
@@ -2524,8 +2528,7 @@ out : {None, dpnp.ndarray}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise rounded value. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise rounded values.
 
 See Also
 --------
@@ -2584,8 +2587,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise results. The data type of the
-    returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise result of the signum function. The
+    data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
@@ -2637,12 +2641,12 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise results. The returned array
+    An array containing the element-wise signbit results. The returned array
     must have a data type of `bool`.
 
 Limitations
 -----------
-Parameters `where` nd `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
@@ -2690,7 +2694,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise subtraction. The data type
+    An array containing the element-wise differences. The data type
     of the returned array is determined by the Type Promotion Rules.
 
 Limitations
@@ -2955,10 +2959,9 @@ true_divide = divide
 
 
 _TRUNC_DOCSTRING = """
-trunc(x, out=None, order='K')
-
 Returns the truncated value for each element `x_i` for input array `x`.
-The truncated value of the scalar `x` is the nearest integer `i` which is
+
+The truncated value of the scalar `x` is the nearest integer i which is
 closer to zero than `x` is. In short, the fractional part of the
 signed number `x` is discarded.
 
@@ -2976,7 +2979,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the truncated value of each element in `x`. The data type
+    An array containing the result of element-wise division. The data type
     of the returned array is determined by the Type Promotion Rules.
 
 Limitations

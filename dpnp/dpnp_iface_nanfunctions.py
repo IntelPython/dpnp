@@ -152,7 +152,7 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
     See Also
     --------
     :obj:`dpnp.nanargmin` : Returns the indices of the minimum values along an
-                            axis, igonring NaNs.
+                            axis, ignoring NaNs.
     :obj:`dpnp.argmax` : Returns the indices of the maximum values along
                          an axis.
 
@@ -224,7 +224,7 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
     See Also
     --------
     :obj:`dpnp.nanargmax` : Returns the indices of the maximum values along
-                            an axis, igonring NaNs.
+                            an axis, ignoring NaNs.
     :obj:`dpnp.argmin` : Returns the indices of the minimum values along
                          an axis.
 
@@ -305,7 +305,7 @@ def nancumsum(a, axis=None, dtype=None, out=None):
         Input array.
     axis : int, optional
         Axis along which the cumulative sum is computed. The default (``None``)
-        is to compute the cumsum over the flattened array.
+        is to compute the cumulative sum over the flattened array.
     dtype : dtype, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
@@ -862,7 +862,7 @@ def nanstd(
     out : dpnp.ndarray
         An array containing the standard deviations. If the standard
         deviation was computed over the entire array, a zero-dimensional
-        array is returned. If ddof is >= the number of non-NaN elements
+        array is returned. If `ddof` is >= the number of non-NaN elements
         in a slice or the slice contains only NaNs, then the result for
         that slice is NaN.
 
@@ -874,7 +874,7 @@ def nanstd(
     Notes
     -----
     Note that, for complex numbers, the absolute value is taken before
-    squaring, so that the result is always real and nonnegative.
+    squaring, so that the result is always real and non-negative.
 
     See Also
     --------
@@ -962,7 +962,7 @@ def nanvar(
     out : dpnp.ndarray
         An array containing the variances. If the variance was computed
         over the entire array, a zero-dimensional array is returned.
-        If ddof is >= the number of non-NaN elements in a slice or the
+        If `ddof` is >= the number of non-NaN elements in a slice or the
         slice contains only NaNs, then the result for that slice is NaN.
 
     Limitations
@@ -973,7 +973,7 @@ def nanvar(
     Notes
     -----
     Note that, for complex numbers, the absolute value is taken before squaring,
-    so that the result is always real and nonnegative.
+    so that the result is always real and non-negative.
 
     See Also
     --------

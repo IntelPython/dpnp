@@ -42,13 +42,15 @@ import numpy
 import dpnp
 
 from .dpnp_utils_linalg import (
-    check_stacked_2d,
-    check_stacked_square,
+    assert_2d,
+    assert_stacked_2d,
+    assert_stacked_square,
     dpnp_cholesky,
     dpnp_cond,
     dpnp_det,
     dpnp_eigh,
     dpnp_inv,
+    dpnp_lstsq,
     dpnp_matrix_power,
     dpnp_matrix_rank,
     dpnp_multi_dot,
@@ -69,6 +71,7 @@ __all__ = [
     "eigvals",
     "eigvalsh",
     "inv",
+    "lstsq",
     "matrix_power",
     "matrix_rank",
     "multi_dot",
@@ -137,8 +140,8 @@ def cholesky(a, upper=False):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     return dpnp_cholesky(a, upper=upper)
 
@@ -222,7 +225,7 @@ def det(a):
 
     Examples
     --------
-    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+    The determinant of a 2-D array ``[[a, b], [c, d]]`` is ``ad - bc``:
 
     >>> import dpnp as dp
     >>> a = dp.array([[1, 2], [3, 4]])
@@ -240,8 +243,8 @@ def det(a):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     return dpnp_det(a)
 
@@ -331,8 +334,8 @@ def eig(a):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     a_sycl_queue = a.sycl_queue
     a_usm_type = a.usm_type
@@ -405,8 +408,8 @@ def eigh(a, UPLO="L"):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     UPLO = UPLO.upper()
     if UPLO not in ("L", "U"):
@@ -475,8 +478,8 @@ def eigvals(a):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     # Since geev function from OneMKL LAPACK is not implemented yet,
     # use NumPy for this calculation.
@@ -532,8 +535,8 @@ def eigvalsh(a, UPLO="L"):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     UPLO = UPLO.upper()
     if UPLO not in ("L", "U"):
@@ -546,8 +549,8 @@ def inv(a):
     """
     Compute the (multiplicative) inverse of a matrix.
 
-    Given a square matrix a, return the matrix ainv
-    satisfying ``dot(a, ainv) = dot(ainv, a) = eye(a.shape[0])``.
+    Given a square matrix `a`, return the matrix `ainv` satisfying
+    ``dot(a, ainv) = dot(ainv, a) = eye(a.shape[0])``.
 
     For full documentation refer to :obj:`numpy.linalg.inv`.
 
@@ -588,10 +591,83 @@ def inv(a):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     return dpnp_inv(a)
+
+
+def lstsq(a, b, rcond=None):
+    """
+    Return the least-squares solution to a linear matrix equation.
+
+    For full documentation refer to :obj:`numpy.linalg.lstsq`.
+
+    Parameters
+    ----------
+    a : (M, N) {dpnp.ndarray, usm_ndarray}
+        "Coefficient" matrix.
+    b : {(M,), (M, K)} {dpnp.ndarray, usm_ndarray}
+        Ordinate or "dependent variable" values.
+        If `b` is two-dimensional, the least-squares solution
+        is calculated for each of the `K` columns of `b`.
+    rcond : {int, float, None}, optional
+        Cut-off ratio for small singular values of `a`.
+        For the purposes of rank determination, singular values are treated
+        as zero if they are smaller than `rcond` times the largest singular
+        value of `a`.
+        The default uses the machine precision times ``max(M, N)``.  Passing
+        ``-1`` will use machine precision.
+
+    Returns
+    -------
+    x : {(N,), (N, K)} dpnp.ndarray
+        Least-squares solution. If `b` is two-dimensional,
+        the solutions are in the `K` columns of `x`.
+    residuals : {(1,), (K,), (0,)} dpnp.ndarray
+        Sums of squared residuals: Squared Euclidean 2-norm for each column in
+        ``b - a @ x``.
+        If the rank of `a` is < N or M <= N, this is an empty array.
+        If `b` is 1-dimensional, this is a (1,) shape array.
+        Otherwise the shape is (K,).
+    rank : int
+        Rank of matrix `a`.
+    s : (min(M, N),) dpnp.ndarray
+        Singular values of `a`.
+
+    Examples
+    --------
+    Fit a line, ``y = mx + c``, through some noisy data-points:
+
+    >>> import dpnp as np
+    >>> x = np.array([0, 1, 2, 3])
+    >>> y = np.array([-1, 0.2, 0.9, 2.1])
+
+    By examining the coefficients, we see that the line should have a
+    gradient of roughly 1 and cut the y-axis at, more or less, -1.
+
+    We can rewrite the line equation as ``y = Ap``, where ``A = [[x 1]]``
+    and ``p = [[m], [c]]``.  Now use `lstsq` to solve for `p`:
+
+    >>> A = np.vstack([x, np.ones(len(x))]).T
+    >>> A
+    array([[0., 1.],
+           [1., 1.],
+           [2., 1.],
+           [3., 1.]])
+
+    >>> m, c = np.linalg.lstsq(A, y, rcond=None)[0]
+    >>> m, c
+    (array(1.), array(-0.95)) # may vary
+
+    """
+
+    dpnp.check_supported_arrays_type(a, b)
+    assert_2d(a)
+    if rcond is not None and not isinstance(rcond, (int, float)):
+        raise TypeError("rcond must be integer, floating type, or None")
+
+    return dpnp_lstsq(a, b, rcond=rcond)
 
 
 def matrix_power(a, n):
@@ -648,8 +724,8 @@ def matrix_power(a, n):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     if not isinstance(n, int):
         raise TypeError("exponent must be an integer")
@@ -822,7 +898,7 @@ def pinv(a, rcond=1e-15, hermitian=False):
 
     dpnp.check_supported_arrays_type(a)
     dpnp.check_supported_arrays_type(rcond, scalar_type=True, all_scalars=True)
-    check_stacked_2d(a)
+    assert_stacked_2d(a)
 
     return dpnp_pinv(a, rcond=rcond, hermitian=hermitian)
 
@@ -850,7 +926,7 @@ def norm(x, ord=None, axis=None, keepdims=False):
         The default is ``None``.
     keepdims : bool, optional
         If this is set to ``True``, the axes which are normed over are left in
-        the result as dimensions with size one.  With this option the result
+        the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
 
     Returns
@@ -993,7 +1069,7 @@ def qr(a, mode="reduced"):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
+    assert_stacked_2d(a)
 
     if mode not in ("reduced", "complete", "r", "raw"):
         raise ValueError(f"Unrecognized mode {mode}")
@@ -1040,8 +1116,8 @@ def solve(a, b):
     """
 
     dpnp.check_supported_arrays_type(a, b)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     if not (
         (a.ndim == b.ndim or a.ndim == b.ndim + 1)
@@ -1148,7 +1224,7 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
+    assert_stacked_2d(a)
 
     return dpnp_svd(a, full_matrices, compute_uv, hermitian)
 
@@ -1179,7 +1255,7 @@ def slogdet(a):
 
     Examples
     --------
-    The determinant of a 2-D array [[a, b], [c, d]] is ad - bc:
+    The determinant of a 2-D array ``[[a, b], [c, d]]`` is ``ad - bc``:
 
     >>> import dpnp as dp
     >>> a = dp.array([[1, 2], [3, 4]])
@@ -1203,8 +1279,8 @@ def slogdet(a):
     """
 
     dpnp.check_supported_arrays_type(a)
-    check_stacked_2d(a)
-    check_stacked_square(a)
+    assert_stacked_2d(a)
+    assert_stacked_square(a)
 
     return dpnp_slogdet(a)
 

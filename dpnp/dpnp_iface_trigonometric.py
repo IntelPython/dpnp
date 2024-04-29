@@ -151,7 +151,7 @@ arccos = DPNPUnaryFunc(
 
 
 _ACOSH_DOCSTRING = """
-Computes hyperbolic inverse cosine for each element `x_i` for input array `x`.
+Computes inverse hyperbolic cosine for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.arccosh`.
 
@@ -169,9 +169,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise inverse hyperbolic cosine.
-    The data type of the returned array is determined by
-    the Type Promotion Rules.
+    An array containing the element-wise inverse hyperbolic cosine, in
+    radians and in the half-closed interval `[0, inf)`. The data type
+    of the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -496,8 +496,7 @@ arctanh = DPNPUnaryFunc(
 
 
 _CBRT_DOCSTRING = """
-Returns the cbrting for each element `x_i` for input array `x`.
-The cbrt of the scalar `x` is the smallest integer `i`, such that `i >= x`.
+Computes positive cube-root for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.cbrt`.
 
@@ -515,8 +514,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise cbrting of input array.
-    The returned array has the same data type as `x`.
+    An array containing the element-wise positive cube-root.
+    The data type of the returned array is determined by
+    the Type Promotion Rules.
 
 Limitations
 -----------
@@ -708,7 +708,7 @@ def degrees(x1, **kwargs):
 
 
 _EXP_DOCSTRING = """
-Computes the exponential for each element `x_i` of input array `x`.
+Computes the exponent for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.exp`.
 
@@ -726,7 +726,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise exponential of `x`.
+    An array containing the element-wise exponent of `x`.
     The data type of the returned array is determined by
     the Type Promotion Rules.
 
@@ -760,7 +760,7 @@ exp = DPNPUnaryFunc(
 
 
 _EXP2_DOCSTRING = """
-Computes the base-2 exponential for each element `x_i` for input array `x`.
+Computes the base-2 exponent for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.exp2`.
 
@@ -778,7 +778,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise base-2 exponentials.
+    An array containing the element-wise base-2 exponents.
     The data type of the returned array is determined by
     the Type Promotion Rules.
 
@@ -790,7 +790,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.exp` : Calculate exponential for all elements in the array.
+:obj:`dpnp.exp` : Calculate exponent for all elements in the array.
 :obj:`dpnp.expm1` : ``exp(x) - 1``, the inverse of :obj:`dpnp.log1p`.
 :obj:`dpnp.power` : First array elements raised to powers from second array, element-wise.
 
@@ -813,7 +813,7 @@ exp2 = DPNPUnaryFunc(
 
 
 _EXPM1_DOCSTRING = """
-Computes the exponential minus 1 for each element `x_i` of input array `x`.
+Computes the exponent minus 1 for each element `x_i` of input array `x`.
 
 This function calculates `exp(x) - 1.0` more accurately for small values of `x`.
 
@@ -845,9 +845,9 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.exp` : Calculate exponential for all elements in the array.
+:obj:`dpnp.exp` : Calculate exponents for all elements in the array.
 :obj:`dpnp.exp2` : Calculate `2**x` for all elements in the array.
-:obj:`dpnp.log1p` : Callculate ``log(1 + x)``, the inverse of expm1.
+:obj:`dpnp.log1p` : Calculate ``log(1 + x)``, the inverse of :obj:`dpnp.expm1`.
 
 Examples
 --------
@@ -937,7 +937,7 @@ hypot = DPNPBinaryFunc(
 
 
 _LOG_DOCSTRING = """
-Computes the natural logarithm element-wise.
+Computes the natural logarithm for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.log`.
 
@@ -1009,7 +1009,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the base-10 logarithm of `x`.
+    An array containing the element-wise base-10 logarithm of `x`.
     The data type of the returned array is determined by the
     Type Promotion Rules.
 
@@ -1047,7 +1047,10 @@ log10 = DPNPUnaryFunc(
 
 
 _LOG1P_DOCSTRING = """
-Computes an approximation of `log(1+x)` element-wise.
+Computes the natural logarithm of (1 + `x`) for each element `x_i` of input
+array `x`.
+
+This function calculates `log(1 + x)` more accurately for small values of `x`.
 
 For full documentation refer to :obj:`numpy.log1p`.
 
@@ -1065,7 +1068,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise `log(1+x)` values. The data type
+    An array containing the element-wise `log(1 + x)` results. The data type
     of the returned array is determined by the Type Promotion Rules.
 
 Limitations
@@ -1124,7 +1127,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the base-2 logarithm of `x`.
+    An array containing the element-wise base-2 logarithm of `x`.
     The data type of the returned array is determined by the
     Type Promotion Rules.
 
@@ -1163,8 +1166,8 @@ log2 = DPNPUnaryFunc(
 
 
 _LOGADDEXP_DOCSTRING = """
-Calculates the natural logarithm of the sum of exponentiations for each element
-`x1_i` of the input array `x1` with the respective element `x2_i` of the input
+Calculates the natural logarithm of the sum of exponents for each element `x1_i`
+of the input array `x1` with the respective element `x2_i` of the input
 array `x2`.
 
 This function calculates `log(exp(x1) + exp(x2))` more accurately for small
@@ -1190,7 +1193,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the result of element-wise result. The data type
+    An array containing the element-wise results. The data type
     of the returned array is determined by the Type Promotion Rules.
 
 Limitations
@@ -1203,7 +1206,7 @@ See Also
 --------
 :obj:`dpnp.log` : Natural logarithm, element-wise.
 :obj:`dpnp.exp` : Exponential, element-wise.
-:obj:`dpnp.logsumdexp` : Logarithm of the sum of exponentials of elements in the input array.
+:obj:`dpnp.logsumdexp` : Logarithm of the sum of exponents of elements in the input array.
 
 Examples
 --------
@@ -1227,7 +1230,7 @@ logaddexp = DPNPBinaryFunc(
 
 def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
     """
-    Calculates the logarithm of the sum of exponentials of elements in
+    Calculates the logarithm of the sum of exponents of elements in
     the input array.
 
     Parameters
@@ -1274,7 +1277,7 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
     --------
     :obj:`dpnp.log` : Natural logarithm, element-wise.
     :obj:`dpnp.exp` : Exponential, element-wise.
-    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponentiations of
+    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponents of
                             the inputs, element-wise.
 
     Examples
@@ -1297,7 +1300,7 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
 
 
 _RECIPROCAL_DOCSTRING = """
-Computes the reciprocal of each element `x_i` for input array `x`.
+Computes the reciprocal square-root for each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.reciprocal`.
 
@@ -1431,7 +1434,9 @@ order : ({'C', 'F', 'A', 'K'}, optional):
 Returns
 -------
 out : dpnp.ndarray
-    The reciprocal square-root, element-wise.
+    An array containing the element-wise reciprocal square-root.
+    The returned array has a floating-point data type determined by
+    the Type Promotion Rules.
 
 Limitations
 -----------
@@ -1620,7 +1625,7 @@ sinh = DPNPUnaryFunc(
 
 
 _SQRT_DOCSTRING = """
-Computes the non-negative square-root for each element `x_i` for input array `x`.
+Computes the positive square-root for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.sqrt`.
 
@@ -1638,7 +1643,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise square-root results.
+    An array containing the element-wise positive square-roots of `x`. The
+    data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
@@ -1673,7 +1680,7 @@ sqrt = DPNPUnaryFunc(
 
 
 _SQUARE_DOCSTRING = """
-Computes `x_i**2` (or `x_i*x_i`) for each element `x_i` of input array `x`.
+Squares each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.square`.
 
@@ -1691,7 +1698,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise square results.
+    An array containing the element-wise squares of `x`. The data type of
+    the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
