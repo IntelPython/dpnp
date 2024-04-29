@@ -331,7 +331,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         n = dpnp.diff(cum_n)
 
     if density:
-        db = dpnp.diff(bin_edges)
+        db = dpnp.diff(bin_edges).astype(dpnp.default_float_type())
         return n / db / n.sum(), bin_edges
 
     return n, bin_edges
