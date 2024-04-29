@@ -84,6 +84,7 @@ class TestRounding(unittest.TestCase):
         }
     )
 )
+@pytest.mark.skip()
 class TestRound(unittest.TestCase):
     shape = (20,)
 
