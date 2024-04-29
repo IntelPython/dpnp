@@ -38,7 +38,7 @@ class TestRandint(unittest.TestCase):
         numpy.testing.assert_array_equal(a, cupy.array(()))
 
 
-# @testing.fix_random()
+@testing.fix_random()
 class TestRandint2(unittest.TestCase):
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @_condition.repeat(3, 10)
