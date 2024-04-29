@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.15.0dev1+43.g8d0459283 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.15.0dev1+63.gac302a942c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=96479cd5"></script>
+        <script src="../../_static/documentation_options.js?v=9e33d1a6"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+43.g8d0459283
+                0.15.0dev1+63.gac302a942c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -146,7 +146,7 @@
 <span class="sd">    Multi-dimensional array object.</span>
 
 <span class="sd">    This is a wrapper around dpctl.tensor.usm_ndarray that provides</span>
-<span class="sd">    methods to be compliant with original Numpy.</span>
+<span class="sd">    methods to be compliant with original NumPy.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -235,15 +235,15 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">usm_type</span>
 
     <span class="k">def</span> <span class="fm">__abs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return \|self\|.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return ``\|self\|``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self+value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self+value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__and__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self&amp;value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&amp;value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="c1"># &#39;__array__&#39;,</span>
@@ -257,6 +257,7 @@
     <span class="c1"># &#39;__array_wrap__&#39;,</span>
 
     <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;``True`` if self else ``False``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__bool__</span><span class="p">()</span>
 
     <span class="c1"># &#39;__class__&#39;,</span>
@@ -283,14 +284,49 @@
     <span class="c1"># &#39;__doc__&#39;,</span>
 
     <span class="k">def</span> <span class="nf">__dlpack__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Produces DLPack capsule.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        stream : {:class:`dpctl.SyclQueue`, None}, optional</span>
+<span class="sd">            Execution queue to synchronize with. If ``None``,</span>
+<span class="sd">            synchronization is not performed.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        MemoryError</span>
+<span class="sd">            when host memory can not be allocated.</span>
+<span class="sd">        DLPackCreationError</span>
+<span class="sd">            when array is allocated on a partitioned</span>
+<span class="sd">            SYCL device, or with a non-default context.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__dlpack__</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__dlpack_device__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gives a tuple (``device_type``, ``device_id``) corresponding to</span>
+<span class="sd">        ``DLDevice`` entry in ``DLTensor`` in DLPack protocol.</span>
+
+<span class="sd">        The tuple describes the non-partitioned device where the array has been</span>
+<span class="sd">        allocated, or the non-partitioned parent device of the allocation</span>
+<span class="sd">        device.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DLPackCreationError:</span>
+<span class="sd">            when the ``device_id`` could not be determined.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__dlpack_device__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="dpnp_array.__eq__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__eq__">[docs]</a>
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self==value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
 
 
@@ -298,7 +334,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__float__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__floordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self//value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self//value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="c1"># &#39;__format__&#39;,</span>
@@ -306,6 +342,7 @@
 <div class="viewcode-block" id="dpnp_array.__ge__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__ge__">[docs]</a>
     <span class="k">def</span> <span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&gt;=value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
 
 
@@ -314,7 +351,7 @@
 <div class="viewcode-block" id="dpnp_array.__getitem__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__getitem__">[docs]</a>
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self[key].&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self[key]``.&quot;&quot;&quot;</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">_get_unwrapped_index_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
         <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -333,40 +370,41 @@
 <div class="viewcode-block" id="dpnp_array.__gt__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__gt__">[docs]</a>
     <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&gt;value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
 
 
     <span class="c1"># &#39;__hash__&#39;,</span>
 
     <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self+=value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self+=value``.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__iand__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self&amp;=value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&amp;=value``.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__ifloordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self//=value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self//=value``.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__ilshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self&lt;&lt;=value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&lt;&lt;=value``.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">left_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="c1"># &#39;__imatmul__&#39;,</span>
 
     <span class="k">def</span> <span class="fm">__imod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self%=value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self%=value``.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__imul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self*=value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self*=value``.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
@@ -380,98 +418,101 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__int__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__invert__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ~self.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``~self``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__ior__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self|=value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self|=value``.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__ipow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self**=value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self**=value``.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__irshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self&gt;&gt;=value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&gt;&gt;=value``.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">right_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__isub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self-=value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self-=value``.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="c1"># &#39;__iter__&#39;,</span>
 
     <span class="k">def</span> <span class="fm">__itruediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self/=value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self/=value``.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">true_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__ixor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self^=value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self^=value``.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
 <div class="viewcode-block" id="dpnp_array.__le__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__le__">[docs]</a>
     <span class="k">def</span> <span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&lt;=value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="dpnp_array.__len__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__len__">[docs]</a>
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return len(self).&quot;&quot;&quot;</span>
-
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``len(self)``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span></div>
 
 
     <span class="k">def</span> <span class="fm">__lshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self&lt;&lt;value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&lt;&lt;value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">left_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
 <div class="viewcode-block" id="dpnp_array.__lt__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__lt__">[docs]</a>
     <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&lt;value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="fm">__matmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self@value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__mod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self%value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self%value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self*value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self*value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
 <div class="viewcode-block" id="dpnp_array.__ne__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__ne__">[docs]</a>
     <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self!=value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">not_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="fm">__neg__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return -self.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``-self``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">negative</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="c1"># &#39;__new__&#39;,</span>
 
     <span class="k">def</span> <span class="fm">__or__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self|value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self|value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__pos__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return +self.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``+self``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">positive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__pow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self**value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self**value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -485,6 +526,7 @@
     <span class="c1"># &#39;__reduce_ex__&#39;,</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``repr(self)``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray_repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;array&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__rfloordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -512,7 +554,7 @@
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">right_shift</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__rshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self&gt;&gt;value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&gt;&gt;value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">right_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__rsub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -529,7 +571,7 @@
 <div class="viewcode-block" id="dpnp_array.__setitem__">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.__setitem__">[docs]</a>
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set self[key] to value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set ``self[key]`` to value.&quot;&quot;&quot;</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">_get_unwrapped_index_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
@@ -542,32 +584,21 @@
     <span class="c1"># &#39;__sizeof__&#39;,</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Output values from the array to standard output.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; print(a)</span>
-<span class="sd">        [[ 136.  136.  136.]</span>
-<span class="sd">         [ 272.  272.  272.]</span>
-<span class="sd">         [ 408.  408.  408.]]</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``str(self)``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self-value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self-value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="c1"># &#39;__subclasshook__&#39;,</span>
 
     <span class="k">def</span> <span class="fm">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self/value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self/value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">true_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__xor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return self^value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self^value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
@@ -703,8 +734,10 @@
 <span class="sd">            - &#39;unsafe&#39; means any data conversions may be done.</span>
 
 <span class="sd">        copy : bool, optional</span>
-<span class="sd">            By default, astype always returns a newly allocated array. If this is set to false, and the dtype,</span>
-<span class="sd">            order, and subok requirements are satisfied, the input array is returned instead of a copy.</span>
+<span class="sd">            By default, ``astype`` always returns a newly allocated array. If</span>
+<span class="sd">            this is set to ``False``, and the `dtype`, `order`, and `subok`</span>
+<span class="sd">            requirements are satisfied, the input array is returned instead of</span>
+<span class="sd">            a copy.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1170,12 +1203,13 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a partitioned copy of an array.</span>
 
-<span class="sd">        Rearranges the elements in the array in such a way that the value of the</span>
-<span class="sd">        element in kth position is in the position it would be in a sorted array.</span>
+<span class="sd">        Rearranges the elements in the array in such a way that the value of</span>
+<span class="sd">        the element in `kth` position is in the position it would be in</span>
+<span class="sd">        a sorted array.</span>
 
-<span class="sd">        All elements smaller than the kth element are moved before this element and</span>
-<span class="sd">        all equal or greater are moved behind it. The ordering of the elements in</span>
-<span class="sd">        the two partitions is undefined.</span>
+<span class="sd">        All elements smaller than the `kth` element are moved before this</span>
+<span class="sd">        element and all equal or greater are moved behind it. The ordering</span>
+<span class="sd">        of the elements in the two partitions is undefined.</span>
 
 <span class="sd">        Refer to `dpnp.partition` for full documentation.</span>
 
@@ -1260,12 +1294,12 @@
 <span class="sd">        array([1.        , 0.70710677])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubsctype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
                 <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
             <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span>
 
     <span class="nd">@real</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">real</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -1283,6 +1317,7 @@
 <span class="sd">        array([9.+2.j, 9.+4.j, 9.+6.j])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="dpnp_array.repeat">
@@ -1364,7 +1399,8 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lengths of axes. A tuple of numbers represents size of each dimension.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lengths of axes. A tuple of numbers represents size of each dimension.</span>
 
 <span class="sd">        Setter of this property involves reshaping without copy. If the array</span>
 <span class="sd">        cannot be reshaped without copy, it raises an exception.</span>
@@ -1393,7 +1429,6 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of elements in the array.&quot;&quot;&quot;</span>
-
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">size</span>
 
 <div class="viewcode-block" id="dpnp_array.sort">
@@ -1406,9 +1441,10 @@
 
 <span class="sd">        Note</span>
 <span class="sd">        ----</span>
-<span class="sd">        `axis` in :obj:`dpnp.sort` could be integr or ``None``. If ``None``,</span>
-<span class="sd">        the array is flattened before sorting. However, `axis` in :obj:`dpnp.ndarray.sort`</span>
-<span class="sd">        can only be integer since it sorts an array in-place.</span>
+<span class="sd">        `axis` in :obj:`dpnp.sort` could be integer or ``None``. If ``None``,</span>
+<span class="sd">        the array is flattened before sorting. However, `axis` in</span>
+<span class="sd">        :obj:`dpnp.ndarray.sort` can only be integer since it sorts an array</span>
+<span class="sd">        in-place.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -1470,14 +1506,12 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">strides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get strides of an array.</span>
-
 <span class="sd">        Returns memory displacement in array elements, upon unit</span>
 <span class="sd">        change of respective index.</span>
 
-<span class="sd">        E.g. for strides (s1, s2, s3) and multi-index (i1, i2, i3)</span>
-
-<span class="sd">           a[i1, i2, i3] == (&amp;a[0,0,0])[ s1*s1 + s2*i2 + s3*i3]</span>
+<span class="sd">        For example, for strides ``(s1, s2, s3)`` and multi-index</span>
+<span class="sd">        ``(i1, i2, i3)`` position of the respective element relative</span>
+<span class="sd">        to zero multi-index element is ``s1*s1 + s2*i2 + s3*i3``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1558,11 +1592,12 @@
 <span class="sd">        ----------</span>
 <span class="sd">        axes : None, tuple or list of ints, n ints, optional</span>
 <span class="sd">            * ``None`` or no argument: reverses the order of the axes.</span>
-<span class="sd">            * tuple or list of ints: `i` in the `j`-th place in the tuple/list</span>
-<span class="sd">              means that the array’s `i`-th axis becomes the transposed</span>
-<span class="sd">              array’s `j`-th axis.</span>
-<span class="sd">            * n ints: same as an n-tuple/n-list of the same ints (this form is</span>
-<span class="sd">              intended simply as a “convenience” alternative to the tuple form).</span>
+<span class="sd">            * ``tuple or list of ints``: `i` in the `j`-th place in the</span>
+<span class="sd">              tuple/list means that the array’s `i`-th axis becomes the</span>
+<span class="sd">              transposed array’s `j`-th axis.</span>
+<span class="sd">            * ``n ints``: same as an n-tuple/n-list of the same integers (this</span>
+<span class="sd">              form is intended simply as a “convenience” alternative to the</span>
+<span class="sd">              tuple form).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1636,6 +1671,7 @@
 <span class="sd">        Refer to :obj:`dpnp.var` for full documentation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">ddof</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span></div>
 </div>
 
