@@ -161,26 +161,28 @@ class TestRoundExtreme(unittest.TestCase):
     )
 )
 class TestRoundBorder(unittest.TestCase):
-    @pytest.mark.skip("scalar input is not supported")
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    # @pytest.mark.skip("scalar input is not supported")
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_positive1(self, xp):
         a, decimals = self.value
+        a = xp.asarray(a)
         return xp.around(a, decimals)
 
-    @pytest.mark.skip("scalar input is not supported")
+    # @pytest.mark.skip("scalar input is not supported")
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_positive2(self, xp):
         a, decimals = self.value
         a = xp.asarray(a)
         return xp.around(a, decimals)
 
-    @pytest.mark.skip("scalar input is not supported")
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    # @pytest.mark.skip("scalar input is not supported")
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_negative1(self, xp):
         a, decimals = self.value
+        a = xp.asarray(a)
         return xp.around(-a, decimals)
 
-    @pytest.mark.skip("scalar input is not supported")
+    # @pytest.mark.skip("scalar input is not supported")
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_around_negative2(self, xp):
         a, decimals = self.value
