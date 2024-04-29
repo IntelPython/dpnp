@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.expand_dims &mdash; Data Parallel Extension for NumPy 0.15.0dev1+56.gdf9306c985 documentation</title>
+  <title>dpnp.expand_dims &mdash; Data Parallel Extension for NumPy 0.15.0dev1+62.g651e98a28a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=36f9a7b9"></script>
+        <script src="../../_static/documentation_options.js?v=ab42fab7"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+56.gdf9306c985
+                0.15.0dev1+62.g651e98a28a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -140,12 +140,12 @@ array shape.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Input array.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em>) – Position in the expanded axes where the new axis (or axes) is placed.</p></li>
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em>) -- Position in the expanded axes where the new axis (or axes) is placed.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – An array with the number of dimensions increased.
+<dd class="field-even"><p><strong>out</strong> -- An array with the number of dimensions increased.
 A view is returned whenever possible.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -160,7 +160,7 @@ singleton dimension is computed as <cite>N + axis + 1</cite>.
 Hence, if provided <cite>-1</cite>, the resolved axis position is <cite>N</cite> (i.e.,
 a singleton dimension must be appended to the input array <cite>a</cite>).
 If provided <cite>-N-1</cite>, the resolved axis position is <cite>0</cite> (i.e., a
-singleton dimension is prepended to the input array <cite>a</cite>).</p>
+singleton dimension is added to the input array <cite>a</cite>).</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">

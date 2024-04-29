@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.eigvals &mdash; Data Parallel Extension for NumPy 0.15.0dev1+56.gdf9306c985 documentation</title>
+  <title>dpnp.linalg.eigvals &mdash; Data Parallel Extension for NumPy 0.15.0dev1+62.g651e98a28a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=36f9a7b9"></script>
+        <script src="../../_static/documentation_options.js?v=ab42fab7"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+56.gdf9306c985
+                0.15.0dev1+62.g651e98a28a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -132,15 +132,15 @@
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvals.html#numpy.linalg.eigvals" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.eigvals</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – A complex- or real-valued matrix whose eigenvalues will be computed.</p>
+<dd class="field-odd"><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- A complex- or real-valued matrix whose eigenvalues will be computed.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>w</strong> – The eigenvalues, each repeated according to its multiplicity.
+<dd class="field-even"><p><strong>w</strong> -- The eigenvalues, each repeated according to its multiplicity.
 They are not necessarily ordered, nor are they necessarily
 real for real matrices.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(…, M) dpnp.ndarray</p>
+<dd class="field-odd"><p>(..., M) dpnp.ndarray</p>
 </dd>
 </dl>
 <div class="admonition note">
@@ -163,7 +163,7 @@ through a fallback on NumPy call.</p>
 <p>Illustration, using the fact that the eigenvalues of a diagonal matrix
 are its diagonal elements, that multiplying a matrix on the left
 by an orthogonal matrix, <cite>Q</cite>, and on the right by <cite>Q.T</cite> (the transpose
-of <cite>Q</cite>), preserves the eigenvalues of the “middle” matrix.  In other words,
+of <cite>Q</cite>), preserves the eigenvalues of the &quot;middle&quot; matrix.  In other words,
 if <cite>Q</cite> is orthogonal, then <code class="docutils literal notranslate"><span class="pre">Q</span> <span class="pre">*</span> <span class="pre">A</span> <span class="pre">*</span> <span class="pre">Q.T</span></code> has the same eigenvalues as
 <code class="docutils literal notranslate"><span class="pre">A</span></code>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
