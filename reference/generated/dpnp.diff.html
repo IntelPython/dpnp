@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.diff &mdash; Data Parallel Extension for NumPy 0.15.0dev1+63.gac302a942c documentation</title>
+  <title>dpnp.diff &mdash; Data Parallel Extension for NumPy 0.15.0dev1+49.g5dd1c4c7be documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9e33d1a6"></script>
+        <script src="../../_static/documentation_options.js?v=c3fade41"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+63.gac302a942c
+                0.15.0dev1+49.g5dd1c4c7be
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -140,17 +140,17 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array</p></li>
-<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) -- The number of times the values differ. If <code class="docutils literal notranslate"><span class="pre">zero</span></code>, the input
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – Input array</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – The number of times values are differenced. If zero, the input
 is returned as-is.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) -- The axis along which the difference is taken, default is the
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which the difference is taken, default is the
 last axis.</p></li>
-<li><p><strong>prepend</strong> (<em>{scalar</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- Values to prepend or append to <cite>a</cite> along axis prior to
+<li><p><strong>prepend</strong> (<em>{scalar</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) – Values to prepend or append to <cite>a</cite> along axis prior to
 performing the difference. Scalar values are expanded to
 arrays with length 1 in the direction of axis and the shape
 of the input array in along all other axes. Otherwise the
 dimension and shape must match <cite>a</cite> except along axis.</p></li>
-<li><p><strong>append</strong> (<em>{scalar</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- Values to prepend or append to <cite>a</cite> along axis prior to
+<li><p><strong>append</strong> (<em>{scalar</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) – Values to prepend or append to <cite>a</cite> along axis prior to
 performing the difference. Scalar values are expanded to
 arrays with length 1 in the direction of axis and the shape
 of the input array in along all other axes. Otherwise the
@@ -158,7 +158,7 @@ dimension and shape must match <cite>a</cite> except along axis.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- The n-th differences. The shape of the output is the same as <cite>a</cite>
+<dd class="field-even"><p><strong>out</strong> – The n-th differences. The shape of the output is the same as <cite>a</cite>
 except along <cite>axis</cite> where the dimension is smaller by <cite>n</cite>. The
 type of the output is the same as the type of the difference
 between any two elements of <cite>a</cite>. This is the same as the type of
