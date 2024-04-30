@@ -379,14 +379,14 @@ def einsum(
            [13, 40, 67, 94]])
 
     Chained array operations. For more complicated contractions, speed ups
-    might be achieved by repeatedly computing a "greedy" path or pre-computing
-    the "optimal" path and repeatedly applying it, using an `einsum_path`
-    insertion. Performance improvements can be particularly significant with
-    larger arrays:
+    might be achieved by repeatedly computing a "greedy" path or computing
+    the "optimal" path in advance and repeatedly applying it, using an
+    `einsum_path` insertion. Performance improvements can be particularly
+    significant with larger arrays:
 
     >>> a = np.ones(64000).reshape(20, 40, 80)
 
-    Basic `einsum`: 119 ms ± 26 ms per loop (benchmarked on 12th
+    Basic `einsum`: 119 ms ± 26 ms per loop (evaluated on 12th
     Gen Intel\u00AE Core\u2122 i7 processor)
 
     >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a)
