@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+41.gfaf2ef2674 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+53.g7fe931b930 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=bf79d1c3"></script>
+        <script src="../../_static/documentation_options.js?v=18ba9015"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+41.gfaf2ef2674
+                0.15.0dev1+53.g7fe931b930
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -912,7 +912,7 @@
 <span class="sd">    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).</span>
 <span class="sd">    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.</span>
 <span class="sd">    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.</span>
-<span class="sd">    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.</span>
+<span class="sd">    :obj:`dpnp.block` : Assemble an ndarray from nested lists of blocks.</span>
 <span class="sd">    :obj:`dpnp.dsplit` : Split array along third axis.</span>
 
 <span class="sd">    Examples</span>
@@ -976,7 +976,7 @@
 <span class="sd">    Hence, if provided `-1`, the resolved axis position is `N` (i.e.,</span>
 <span class="sd">    a singleton dimension must be appended to the input array `a`).</span>
 <span class="sd">    If provided `-N-1`, the resolved axis position is `0` (i.e., a</span>
-<span class="sd">    singleton dimension is prepended to the input array `a`).</span>
+<span class="sd">    singleton dimension is added to the input array `a`).</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1057,8 +1057,8 @@
 <span class="sd">         Axis or axes along which to flip over. The default,</span>
 <span class="sd">         ``axis=None``, will flip over all of the axes of the input array.</span>
 <span class="sd">         If `axis` is negative it counts from the last to the first axis.</span>
-<span class="sd">         If `axis` is a tuple of ints, flipping is performed on all of the axes</span>
-<span class="sd">         specified in the tuple.</span>
+<span class="sd">         If `axis` is a tuple of integers, flipping is performed on all of</span>
+<span class="sd">         the axes specified in the tuple.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1251,7 +1251,7 @@
 <span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise</span>
 <span class="sd">                         (along third dimension).</span>
 <span class="sd">    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.</span>
-<span class="sd">    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.</span>
+<span class="sd">    :obj:`dpnp.block` : Assemble an ndarray from nested lists of blocks.</span>
 <span class="sd">    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal</span>
 <span class="sd">                        size.</span>
 
@@ -1590,11 +1590,10 @@
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    shift : int or tuple of ints</span>
-<span class="sd">        The number of places by which elements are shifted. If a tuple,</span>
-<span class="sd">        then `axis` must be a tuple of the same size, and each of the</span>
-<span class="sd">        given axes is shifted by the corresponding number. If an int</span>
-<span class="sd">        while `axis` is a tuple of ints, then the same value is used for</span>
-<span class="sd">        all given axes.</span>
+<span class="sd">        The number of places by which elements are shifted. If a tuple, then</span>
+<span class="sd">        `axis` must be a tuple of the same size, and each of the given axes</span>
+<span class="sd">        is shifted by the corresponding number. If an integer while `axis` is</span>
+<span class="sd">        a tuple of integers, then the same value is used for all given axes.</span>
 <span class="sd">    axis : int or tuple of ints, optional</span>
 <span class="sd">        Axis or axes along which elements are shifted. By default, the</span>
 <span class="sd">        array is flattened before shifting, after which the original</span>
@@ -1666,7 +1665,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        An array with the same data type as `x` where the specified axis</span>
-<span class="sd">        has been repositioned to the desired position.</span>
+<span class="sd">        has been moved to the requested position.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1718,7 +1717,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    shape : tuple of ints</span>
+<span class="sd">    shape : tuple of integers</span>
 <span class="sd">        The elements of the shape tuple give the lengths of the</span>
 <span class="sd">        corresponding array dimensions.</span>
 
@@ -1837,7 +1836,7 @@
 <span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise</span>
 <span class="sd">                         (along third dimension).</span>
 <span class="sd">    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.</span>
-<span class="sd">    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.</span>
+<span class="sd">    :obj:`dpnp.block` : Assemble an ndarray from nested lists of blocks.</span>
 <span class="sd">    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal</span>
 <span class="sd">                        size.</span>
 
@@ -2155,7 +2154,7 @@
 <span class="sd">    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).</span>
 <span class="sd">    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third axis).</span>
 <span class="sd">    :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.</span>
-<span class="sd">    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.</span>
+<span class="sd">    :obj:`dpnp.block` : Assemble an ndarray from nested lists of blocks.</span>
 <span class="sd">    :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal</span>
 <span class="sd">                        size.</span>
 

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.put_along_axis &mdash; Data Parallel Extension for NumPy 0.15.0dev1+41.gfaf2ef2674 documentation</title>
+  <title>dpnp.put_along_axis &mdash; Data Parallel Extension for NumPy 0.15.0dev1+53.g7fe931b930 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=bf79d1c3"></script>
+        <script src="../../_static/documentation_options.js?v=18ba9015"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+41.gfaf2ef2674
+                0.15.0dev1+53.g7fe931b930
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -132,13 +132,13 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>(</em><em>Ni</em><em>...</em><em>, </em><em>M</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) – Destination array.</p></li>
-<li><p><strong>indices</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>(</em><em>Ni</em><em>...</em><em>, </em><em>J</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) – Indices to change along each 1d slice of <cite>a</cite>. This must match the
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>(</em><em>Ni</em><em>...</em><em>, </em><em>M</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) -- Destination array.</p></li>
+<li><p><strong>indices</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>(</em><em>Ni</em><em>...</em><em>, </em><em>J</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) -- Indices to change along each 1d slice of <cite>a</cite>. This must match the
 dimension of input array, but dimensions in <code class="docutils literal notranslate"><span class="pre">Ni</span></code> and <code class="docutils literal notranslate"><span class="pre">Nj</span></code>
 may be 1 to broadcast against <cite>a</cite>.</p></li>
-<li><p><strong>values</strong> (<em>{scalar</em><em>, </em><em>array_like}</em><em>, </em><em>(</em><em>Ni</em><em>...</em><em>, </em><em>J</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) – Values to insert at those indices. Its shape and dimension are
+<li><p><strong>values</strong> (<em>{scalar</em><em>, </em><em>array_like}</em><em>, </em><em>(</em><em>Ni</em><em>...</em><em>, </em><em>J</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) -- Values to insert at those indices. Its shape and dimension are
 broadcast to match that of <cite>indices</cite>.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The axis to take 1d slices along. If axis is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the destination
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) -- The axis to take 1d slices along. If axis is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the destination
 array is treated as if a flattened 1d view had been created of it.</p></li>
 </ul>
 </dd>
