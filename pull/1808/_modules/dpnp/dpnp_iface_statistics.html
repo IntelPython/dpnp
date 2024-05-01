@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.15.0dev1+49.gb43b49a26 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.15.0dev1+50.g02366887e1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3f03a03b"></script>
+        <script src="../../_static/documentation_options.js?v=e1cbdf73"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+49.gb43b49a26
+                0.15.0dev1+50.g02366887e1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -174,7 +174,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    arr : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">    axis : {None, int, tuple of ints}, optional</span>
 <span class="sd">        axis or axes along which the number of items used in a reduction</span>
 <span class="sd">        operation must be counted. If a tuple of unique integers is given,</span>
 <span class="sd">        the items are counted over multiple axes. If ``None``, the variance</span>
@@ -209,12 +209,7 @@
 
 
 <span class="k">def</span> <span class="nf">_wrap_comparison_call</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">_comparison_fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    TODO: add a description</span>
-
-<span class="sd">    TBA.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrap a call of comparison functions from dpctl.tensor interface.&quot;&quot;&quot;</span>
 
     <span class="n">input_out</span> <span class="o">=</span> <span class="n">out</span>
     <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -291,12 +286,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">    axis : {None, int, tuple of ints}, optional</span>
 <span class="sd">        Axis or axes along which the averages must be computed. If</span>
 <span class="sd">        a tuple of unique integers, the averages are computed over multiple</span>
 <span class="sd">        axes. If ``None``, the average is computed over the entire array.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    weights : array_like, optional</span>
+<span class="sd">    weights : {array_like}, optional</span>
 <span class="sd">        An array of weights associated with the values in `a`. Each value in</span>
 <span class="sd">        `a` contributes to the average according to its associated weight.</span>
 <span class="sd">        The weights array can either be 1-D (in which case its length must be</span>
@@ -307,12 +302,12 @@
 <span class="sd">            avg = sum(a * weights) / sum(weights)</span>
 
 <span class="sd">        The only constraint on `weights` is that `sum(weights)` must not be 0.</span>
-<span class="sd">    returned : bool, optional</span>
+<span class="sd">    returned : {bool}, optional</span>
 <span class="sd">        Default is ``False``. If ``True``, the tuple (`average`,</span>
 <span class="sd">        `sum_of_weights`) is returned, otherwise only the average is returned.</span>
 <span class="sd">        If `weights=None`, `sum_of_weights` is equivalent to the number of</span>
 <span class="sd">        elements over which the average is taken.</span>
-<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
 <span class="sd">        as singleton dimensions, so that the returned array remains</span>
 <span class="sd">        compatible with the input array according to Array Broadcasting</span>
@@ -609,7 +604,7 @@
 <span class="sd">        Alternative output array in which to place the result. Must be of the</span>
 <span class="sd">        same shape and buffer length as the expected output.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    keepdims : bool</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If this is set to ``True``, the axes which are reduced are left in the</span>
 <span class="sd">        result as dimensions with size one. With this option, the result will</span>
 <span class="sd">        broadcast correctly against the input array.</span>
@@ -681,12 +676,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">    axis : {None, int, tuple of ints}, optional</span>
 <span class="sd">        Axis or axes along which the arithmetic means must be computed. If</span>
 <span class="sd">        a tuple of unique integers, the means are computed over multiple</span>
 <span class="sd">        axes. If ``None``, the mean is computed over the entire array.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        Type to use in computing the mean. By default, if `a` has a</span>
 <span class="sd">        floating-point data type, the returned array will have</span>
 <span class="sd">        the same data type as `a`.</span>
@@ -697,7 +692,7 @@
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        the same shape as the expected output but the type (of the calculated</span>
 <span class="sd">        values) will be cast if necessary. Default: ``None``.</span>
-<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
 <span class="sd">        as singleton dimensions, so that the returned array remains</span>
 <span class="sd">        compatible with the input array according to Array Broadcasting</span>
@@ -827,7 +822,7 @@
 <span class="sd">        Alternative output array in which to place the result. Must be of the</span>
 <span class="sd">        same shape and buffer length as the expected output.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If this is set to ``True``, the axes which are reduced are left in the</span>
 <span class="sd">        result as dimensions with size one. With this option, the result will</span>
 <span class="sd">        broadcast correctly against the input array.</span>
@@ -948,13 +943,13 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">    axis : {None, int, tuple of ints}, optional</span>
 <span class="sd">        Axis or axes along which the standard deviations must be computed.</span>
 <span class="sd">        If a tuple of unique integers is given, the standard deviations</span>
 <span class="sd">        are computed over multiple axes. If ``None``, the standard deviation</span>
 <span class="sd">        is computed over the entire array.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        Type to use in computing the standard deviation. By default,</span>
 <span class="sd">        if `a` has a floating-point data type, the returned array</span>
 <span class="sd">        will have the same data type as `a`.</span>
@@ -970,7 +965,7 @@
 <span class="sd">        is ``N - ddof``, where ``N`` corresponds to the total</span>
 <span class="sd">        number of elements over which the standard deviation is calculated.</span>
 <span class="sd">        Default: `0.0`.</span>
-<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
 <span class="sd">        as singleton dimensions, so that the returned array remains</span>
 <span class="sd">        compatible with the input array according to Array Broadcasting</span>
@@ -1065,12 +1060,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">    axis : {None, int, tuple of ints}, optional</span>
 <span class="sd">        axis or axes along which the variances must be computed. If a tuple</span>
 <span class="sd">        of unique integers is given, the variances are computed over multiple</span>
 <span class="sd">        axes. If ``None``, the variance is computed over the entire array.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        Type to use in computing the variance. By default, if `a` has a</span>
 <span class="sd">        floating-point data type, the returned array will have</span>
 <span class="sd">        the same data type as `a`.</span>
@@ -1086,7 +1081,7 @@
 <span class="sd">        is ``N - ddof``, where ``N`` corresponds to the total</span>
 <span class="sd">        number of elements over which the variance is calculated.</span>
 <span class="sd">        Default: `0.0`.</span>
-<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
 <span class="sd">        as singleton dimensions, so that the returned array remains</span>
 <span class="sd">        compatible with the input array according to Array Broadcasting</span>
