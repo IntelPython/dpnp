@@ -25,6 +25,7 @@ Frobenius
 Hypergeometric
 iinfo
 Infs
+intp
 iterable
 Lomax
 Mersenne
