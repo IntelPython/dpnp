@@ -1048,6 +1048,29 @@ def test_multi_dot(device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+def test_einsum(device):
+    numpy_array_list = []
+    dpnp_array_list = []
+    for _ in range(3):  # creat arrays one by one
+        a = numpy.random.rand(10, 10)
+        b = dpnp.array(a, device=device)
+
+        numpy_array_list.append(a)
+        dpnp_array_list.append(b)
+
+    result = dpnp.einsum("ij,jk,kl->il", *dpnp_array_list)
+    expected = numpy.einsum("ij,jk,kl->il", *numpy_array_list)
+    assert_dtype_allclose(result, expected)
+
+    _, exec_q = get_usm_allocations(dpnp_array_list)
+    assert_sycl_queue_equal(result.sycl_queue, exec_q)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_out_multi_dot(device):
     numpy_array_list = []
     dpnp_array_list = []

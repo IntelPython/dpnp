@@ -580,14 +580,14 @@ class dpnp_array:
             If it is False and no cast happens, then this method returns the array itself.
             Otherwise, a copy is returned.
         casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
-            Controls what kind of data casting may occur. Defaults to 'unsafe' for backwards compatibility.
-
+            Controls what kind of data casting may occur.
+            Defaults to ``'unsafe'`` for backwards compatibility.
             - 'no' means the data types should not be cast at all.
             - 'equiv' means only byte-order changes are allowed.
             - 'safe' means only casts which can preserve values are allowed.
-            - 'same_kind' means only safe casts or casts within a kind, like float64 to float32, are allowed.
+            - 'same_kind' means only safe casts or casts within a kind, like
+              float64 to float32, are allowed.
             - 'unsafe' means any data conversions may be done.
-
         copy : bool, optional
             By default, ``astype`` always returns a newly allocated array. If
             this is set to ``False``, and the `dtype`, `order`, and `subok`

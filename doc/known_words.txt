@@ -5,7 +5,9 @@ broadcastable
 broadcasted
 byteorder
 Cholesky
+combinatorially
 conda
+cubically
 Decompositions
 dimensionality
 docstring
@@ -22,6 +24,7 @@ finfo
 finiteness
 Fortran
 Frobenius
+Hadamard
 Hypergeometric
 iinfo
 Infs

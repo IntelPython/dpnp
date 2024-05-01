@@ -2554,14 +2554,14 @@ class TestMatmul:
     def test_matmul(self, order_pair, shape_pair):
         order1, order2 = order_pair
         shape1, shape2 = shape_pair
-        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
-        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+        dtype = dpnp.default_float_type()
+        a1 = numpy.arange(numpy.prod(shape1), dtype=dtype).reshape(shape1)
+        a2 = numpy.arange(numpy.prod(shape2), dtype=dtype).reshape(shape2)
         a1 = numpy.array(a1, order=order1)
         a2 = numpy.array(a2, order=order2)
 
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
-
         result = dpnp.matmul(b1, b2)
         expected = numpy.matmul(a1, a2)
         assert_dtype_allclose(result, expected)

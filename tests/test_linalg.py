@@ -1,3 +1,5 @@
+from ast import Raise
+
 import dpctl
 import dpctl.tensor as dpt
 import numpy
@@ -582,6 +584,54 @@ class TestEigenvalue:
         # invalid UPLO
         if func in ("eigh", "eigvalsh"):
             assert_raises(ValueError, dpnp_func, a_dp, UPLO="N")
+
+
+class TestEinsum:
+    def test_einsum_trivial_cases(self):
+        a = inp.arange(25).reshape(5, 5)
+        b = inp.arange(5)
+        a_np = a.asnumpy()
+        b_np = b.asnumpy()
+
+        # one input, no optimization is needed
+        result = inp.einsum("i", b, optimize="greedy")
+        expected = numpy.einsum("i", b_np, optimize="greedy")
+        assert_dtype_allclose(result, expected)
+
+        # two inputs, no optimization is needed
+        result = inp.einsum("ij,jk", a, a, optimize="greedy")
+        expected = numpy.einsum("ij,jk", a_np, a_np, optimize="greedy")
+        assert_dtype_allclose(result, expected)
+
+        # no optimization in optimal mode
+        result = inp.einsum("ij,jk", a, a, optimize=["optimal", 1])
+        expected = numpy.einsum("ij,jk", a_np, a_np, optimize=["optimal", 1])
+        assert_dtype_allclose(result, expected)
+
+        # naive cost equal or smaller than optimized cost
+        result = inp.einsum("i,i,i", b, b, b, optimize="greedy")
+        expected = numpy.einsum("i,i,i", b_np, b_np, b_np, optimize="greedy")
+        assert_dtype_allclose(result, expected)
+
+    def test_einsum_error(self):
+        a = inp.ones((5, 5))
+        # unknown keyword argument
+        with pytest.raises(TypeError):
+            inp.einsum("ii->i", a, copy=False)
+
+        # unknown value for optimize keyword
+        with pytest.raises(TypeError):
+            inp.einsum("ii->i", a, optimize="average")
+
+        a = inp.ones((5, 4))
+        # different size for same label 5 != 4
+        with pytest.raises(ValueError):
+            inp.einsum("ii", a)
+
+        a = inp.ones((5, 5))
+        # repeated scripts in output
+        with pytest.raises(ValueError):
+            inp.einsum("ij,jk->ii", a, a)
 
 
 class TestInv:

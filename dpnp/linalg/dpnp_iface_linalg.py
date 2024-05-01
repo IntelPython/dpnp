@@ -781,7 +781,9 @@ def matrix_rank(A, tol=None, hermitian=False):
 
     dpnp.check_supported_arrays_type(A)
     if tol is not None:
-        dpnp.check_supported_arrays_type(tol, scalar_type=True)
+        dpnp.check_supported_arrays_type(
+            tol, scalar_type=True, all_scalars=True
+        )
 
     return dpnp_matrix_rank(A, tol=tol, hermitian=hermitian)
 
@@ -895,7 +897,7 @@ def pinv(a, rcond=1e-15, hermitian=False):
     """
 
     dpnp.check_supported_arrays_type(a)
-    dpnp.check_supported_arrays_type(rcond, scalar_type=True)
+    dpnp.check_supported_arrays_type(rcond, scalar_type=True, all_scalars=True)
     assert_stacked_2d(a)
 
     return dpnp_pinv(a, rcond=rcond, hermitian=hermitian)
