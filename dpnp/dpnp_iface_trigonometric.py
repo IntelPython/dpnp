@@ -97,6 +97,42 @@ __all__ = [
 ]
 
 
+def _wrap_accumulation_call(a, dtype, out, _accumulation_fn, *args, **kwargs):
+    """
+    TODO: add a description
+
+    TBA.
+
+    """
+
+    input_out = out
+    if out is None:
+        usm_out = None
+    else:
+        dpnp.check_supported_arrays_type(out)
+
+        # get data type used by dpctl for result array in accumulation function
+        if dtype is None:
+            res_dt = dtu._default_accumulation_dtype_fp_types(
+                a.dtype, a.sycl_queue
+            )
+        else:
+            res_dt = dpnp.dtype(dtype)
+            res_dt = dtu._to_device_supported_dtype(res_dt, a.sycl_device)
+
+        # dpctl requires strict data type matching of out array with the result
+        if out.dtype != res_dt:
+            out = dpnp.astype(out, dtype=res_dt, copy=False)
+
+        usm_out = dpnp.get_usm_ndarray(out)
+
+    kwargs["dtype"] = dtype
+    kwargs["out"] = usm_out
+    res_usm = _accumulation_fn(*args, **kwargs)
+    res = dpnp_array._create_from_usm_ndarray(res_usm)
+    return dpnp.get_result_array(res, input_out, casting="unsafe")
+
+
 _ACOS_DOCSTRING = """
 Computes inverse cosine for each element `x_i` for input array `x`.
 
@@ -1247,13 +1283,13 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         Data type of the returned array. If ``None``, the default data type is
         inferred from the "kind" of the input array data type.
 
-        * If `x` has a real-valued floating-point data type, the returned array
-            will have the same data type as `x`.
-        * If `x` has a boolean or integral data type, the returned array will
-            have the default floating point data type for the device where
-            input array `x` is allocated.
-        * If `x` has a complex-valued floating-point data type, an error is
-            raised.
+        - If `x` has a real-valued floating-point data type, the returned array
+          will have the same data type as `x`.
+        - If `x` has a boolean or integral data type, the returned array will
+          have the default floating point data type for the device where input
+          array `x` is allocated.
+        - If `x` has a complex-valued floating-point data type, an error is
+          raised.
 
         If the data type (either specified or resolved) differs from the data
         type of `x`, the input array elements are cast to the specified data
@@ -1302,33 +1338,9 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     """
 
     usm_x = dpnp.get_usm_ndarray(x)
-
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
-
-        # get dtype used by dpctl for result array in cumulative_sum
-        if dtype is None:
-            res_dt = dtu._default_accumulation_dtype_fp_types(
-                x.dtype, x.sycl_queue
-            )
-        else:
-            res_dt = dpnp.dtype(dtype)
-            res_dt = dtu._to_device_supported_dtype(res_dt, x.sycl_device)
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    res_usm = dpt.logsumexp(
-        usm_x, axis=axis, dtype=dtype, out=usm_out, keepdims=keepdims
+    return _wrap_accumulation_call(
+        x, dtype, out, dpt.logsumexp, usm_x, axis=axis, keepdims=keepdims
     )
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
 
 
 _RECIPROCAL_DOCSTRING = """
@@ -1398,13 +1410,13 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         Data type of the returned array. If ``None``, the default data type is
         inferred from the "kind" of the input array data type.
 
-        * If `x` has a real-valued floating-point data type, the returned array
-            will have the same data type as `x`.
-        * If `x` has a boolean or integral data type, the returned array will
-            have the default floating point data type for the device where
-            input array `x` is allocated.
-        * If `x` has a complex-valued floating-point data type, an error is
-            raised.
+        - If `x` has a real-valued floating-point data type, the returned array
+          will have the same data type as `x`.
+        - If `x` has a boolean or integral data type, the returned array will
+          have the default floating point data type for the device where input
+          array `x` is allocated.
+        - If `x` has a complex-valued floating-point data type, an error is
+          raised.
 
         If the data type (either specified or resolved) differs from the data
         type of `x`, the input array elements are cast to the specified data
@@ -1451,33 +1463,9 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     """
 
     usm_x = dpnp.get_usm_ndarray(x)
-
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
-
-        # get dtype used by dpctl for result array in cumulative_sum
-        if dtype is None:
-            res_dt = dtu._default_accumulation_dtype_fp_types(
-                x.dtype, x.sycl_queue
-            )
-        else:
-            res_dt = dpnp.dtype(dtype)
-            res_dt = dtu._to_device_supported_dtype(res_dt, x.sycl_device)
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    res_usm = dpt.reduce_hypot(
-        usm_x, axis=axis, dtype=dtype, out=usm_out, keepdims=keepdims
+    return _wrap_accumulation_call(
+        x, dtype, out, dpt.reduce_hypot, usm_x, axis=axis, keepdims=keepdims
     )
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
 
 
 _RSQRT_DOCSTRING = """

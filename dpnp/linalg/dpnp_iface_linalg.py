@@ -1021,11 +1021,13 @@ def qr(a, mode="reduced"):
         The input array with the dimensionality of at least 2.
     mode : {"reduced", "complete", "r", "raw"}, optional
         If K = min(M, N), then
+
         - "reduced" : returns Q, R with dimensions (…, M, K), (…, K, N)
         - "complete" : returns Q, R with dimensions (…, M, M), (…, M, N)
         - "r" : returns R only with dimensions (…, K, N)
         - "raw" : returns h, tau with dimensions (…, N, M), (…, K,)
-        Default: "reduced".
+
+        Default: ``"reduced"``.
 
     Returns
     -------

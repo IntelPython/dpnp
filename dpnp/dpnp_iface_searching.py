@@ -53,6 +53,42 @@ from .dpnp_utils import (
 __all__ = ["argmax", "argmin", "searchsorted", "where"]
 
 
+def _wrap_search_call(a, out, _search_fn, *args, **kwargs):
+    """
+    TODO: add a description
+
+    TBA.
+
+    """
+
+    input_out = out
+    if out is None:
+        usm_out = None
+    else:
+        dpnp.check_supported_arrays_type(out)
+
+        # get a data type used by dpctl for result array in search function
+        res_dt = dti.default_device_index_type(a.sycl_device)
+
+        # numpy raises TypeError if "out" data type mismatch default index type
+        if not dpnp.can_cast(out.dtype, res_dt, casting="safe"):
+            raise TypeError(
+                f"Cannot cast from {out.dtype} to {res_dt} "
+                "according to the rule safe."
+            )
+
+        # dpctl requires strict data type matching of out array with the result
+        if out.dtype != res_dt:
+            out = dpnp.astype(out, dtype=res_dt, copy=False)
+
+        usm_out = dpnp.get_usm_ndarray(out)
+
+    kwargs["out"] = usm_out
+    res_usm = _search_fn(*args, **kwargs)
+    res = dpnp_array._create_from_usm_ndarray(res_usm)
+    return dpnp.get_result_array(res, input_out, casting="unsafe")
+
+
 def argmax(a, axis=None, out=None, *, keepdims=False):
     """
     Returns the indices of the maximum values along an axis.
@@ -132,32 +168,9 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
-
-        # get dtype used by dpctl for result array in argmax function
-        res_dt = dti.default_device_index_type(a.sycl_device)
-
-        # dpctl requires strict data type matching of out array with the result
-        if not dpnp.can_cast(out.dtype, res_dt, casting="safe"):
-            raise TypeError(
-                f"Cannot cast from {out.dtype} to {res_dt} "
-                "according to the rule safe."
-            )
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    res_usm = dpt.argmax(usm_a, axis=axis, out=usm_out, keepdims=keepdims)
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
+    return _wrap_search_call(
+        a, out, dpt.argmax, usm_a, axis=axis, keepdims=keepdims
+    )
 
 
 def argmin(a, axis=None, out=None, *, keepdims=False):
@@ -240,32 +253,9 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
-
-        # get dtype used by dpctl for result array in argmin function
-        res_dt = dti.default_device_index_type(a.sycl_device)
-
-        # numpy raises TypeError if "out" data type mismatch default index type
-        if not dpnp.can_cast(out.dtype, res_dt, casting="safe"):
-            raise TypeError(
-                f"Cannot cast from {out.dtype} to {res_dt} "
-                "according to the rule safe."
-            )
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    res_usm = dpt.argmin(usm_a, axis=axis, out=usm_out, keepdims=keepdims)
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
+    return _wrap_search_call(
+        a, out, dpt.argmin, usm_a, axis=axis, keepdims=keepdims
+    )
 
 
 def searchsorted(a, v, side="left", sorter=None):

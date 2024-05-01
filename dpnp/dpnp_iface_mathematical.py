@@ -158,6 +158,40 @@ def _append_to_diff_array(a, axis, combined, values):
     combined.append(values)
 
 
+def _wrap_reduction_call(a, dtype, out, _reduction_fn, *args, **kwargs):
+    """
+    TODO: add a description
+
+    TBA.
+
+    """
+
+    input_out = out
+    if out is None:
+        usm_out = None
+    else:
+        dpnp.check_supported_arrays_type(out)
+
+        # get a data type used by dpctl for result array in reduction function
+        if dtype is None:
+            res_dt = dtu._default_accumulation_dtype(a.dtype, a.sycl_queue)
+        else:
+            res_dt = dpnp.dtype(dtype)
+            res_dt = dtu._to_device_supported_dtype(res_dt, a.sycl_device)
+
+        # dpctl requires strict data type matching of out array with the result
+        if out.dtype != res_dt:
+            out = dpnp.astype(out, dtype=res_dt, copy=False)
+
+        usm_out = dpnp.get_usm_ndarray(out)
+
+    kwargs["dtype"] = dtype
+    kwargs["out"] = usm_out
+    res_usm = _reduction_fn(*args, **kwargs)
+    res = dpnp_array._create_from_usm_ndarray(res_usm)
+    return dpnp.get_result_array(res, input_out, casting="unsafe")
+
+
 _ABS_DOCSTRING = """
 Calculates the absolute value for each element `x_i` of input array `x`.
 
@@ -901,28 +935,9 @@ def cumsum(a, axis=None, dtype=None, out=None):
     else:
         usm_a = dpnp.get_usm_ndarray(a)
 
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
-
-        # get dtype used by dpctl for result array in cumulative_sum
-        if dtype is None:
-            res_dt = dtu._default_accumulation_dtype(a.dtype, a.sycl_queue)
-        else:
-            res_dt = dpnp.dtype(dtype)
-            res_dt = dtu._to_device_supported_dtype(res_dt, a.sycl_device)
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    res_usm = dpt.cumulative_sum(usm_a, axis=axis, dtype=dtype, out=usm_out)
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
+    return _wrap_reduction_call(
+        a, dtype, out, dpt.cumulative_sum, usm_a, axis=axis
+    )
 
 
 def diff(a, n=1, axis=-1, prepend=None, append=None):
@@ -2322,30 +2337,9 @@ def prod(
     dpnp.check_limitations(initial=initial, where=where)
     usm_a = dpnp.get_usm_ndarray(a)
 
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
-
-        # get dtype used by dpctl for result array in cumulative_sum
-        if dtype is None:
-            res_dt = dtu._default_accumulation_dtype(a.dtype, a.sycl_queue)
-        else:
-            res_dt = dpnp.dtype(dtype)
-            res_dt = dtu._to_device_supported_dtype(res_dt, a.sycl_device)
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    res_usm = dpt.prod(
-        usm_a, axis=axis, dtype=dtype, out=usm_out, keepdims=keepdims
+    return _wrap_reduction_call(
+        a, dtype, out, dpt.prod, usm_a, axis=axis, keepdims=keepdims
     )
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
 
 
 _PROJ_DOCSTRING = """
@@ -2923,31 +2917,9 @@ def sum(
             return result
 
     usm_a = dpnp.get_usm_ndarray(a)
-
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
-
-        # get dtype used by dpctl for result array in cumulative_sum
-        if dtype is None:
-            res_dt = dtu._default_accumulation_dtype(a.dtype, a.sycl_queue)
-        else:
-            res_dt = dpnp.dtype(dtype)
-            res_dt = dtu._to_device_supported_dtype(res_dt, a.sycl_device)
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    res_usm = dpt.sum(
-        usm_a, axis=axis, dtype=dtype, out=usm_out, keepdims=keepdims
+    return _wrap_reduction_call(
+        a, dtype, out, dpt.sum, usm_a, axis=axis, keepdims=keepdims
     )
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
 
 
 def trapz(y1, x1=None, dx=1.0, axis=-1):

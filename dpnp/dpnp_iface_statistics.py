@@ -118,6 +118,35 @@ def _count_reduce_items(arr, axis, where=True):
     return items
 
 
+def _wrap_comparison_call(a, out, _comparison_fn, *args, **kwargs):
+    """
+    TODO: add a description
+
+    TBA.
+
+    """
+
+    input_out = out
+    if out is None:
+        usm_out = None
+    else:
+        dpnp.check_supported_arrays_type(out)
+
+        # get dtype used by dpctl for result array in comparison function
+        res_dt = a.dtype
+
+        # dpctl requires strict data type matching of out array with the result
+        if out.dtype != res_dt:
+            out = dpnp.astype(out, dtype=res_dt, copy=False)
+
+        usm_out = dpnp.get_usm_ndarray(out)
+
+    kwargs["out"] = usm_out
+    res_usm = _comparison_fn(*args, **kwargs)
+    res = dpnp_array._create_from_usm_ndarray(res_usm)
+    return dpnp.get_result_array(res, input_out, casting="unsafe")
+
+
 def amax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
     Return the maximum of an array or maximum along an axis.
@@ -524,24 +553,9 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     dpnp.check_limitations(initial=initial, where=where)
     usm_a = dpnp.get_usm_ndarray(a)
 
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
-
-        # get dtype used by dpctl for result array in max function
-        res_dt = a.dtype
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    res_usm = dpt.max(usm_a, axis=axis, out=usm_out, keepdims=keepdims)
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
+    return _wrap_comparison_call(
+        a, out, dpt.max, usm_a, axis=axis, keepdims=keepdims
+    )
 
 
 def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
@@ -748,24 +762,9 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     dpnp.check_limitations(initial=initial, where=where)
     usm_a = dpnp.get_usm_ndarray(a)
 
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
-
-        # get dtype used by dpctl for result array in min function
-        res_dt = a.dtype
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    res_usm = dpt.min(usm_a, axis=axis, out=usm_out, keepdims=keepdims)
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
+    return _wrap_comparison_call(
+        a, out, dpt.min, usm_a, axis=axis, keepdims=keepdims
+    )
 
 
 def ptp(
