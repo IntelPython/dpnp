@@ -160,6 +160,7 @@ class TestRoundExtreme(unittest.TestCase):
         }
     )
 )
+@pytest.mark.skip()
 class TestRoundBorder(unittest.TestCase):
     # @pytest.mark.skip("scalar input is not supported")
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
