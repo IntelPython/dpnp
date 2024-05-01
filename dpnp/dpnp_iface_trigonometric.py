@@ -98,12 +98,7 @@ __all__ = [
 
 
 def _wrap_accumulation_call(a, dtype, out, _accumulation_fn, *args, **kwargs):
-    """
-    TODO: add a description
-
-    TBA.
-
-    """
+    """Wrap a call of accumulation functions from dpctl.tensor interface."""
 
     input_out = out
     if out is None:
@@ -1279,7 +1274,7 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
         Default: ``None``.
-    dtype : data type, optional
+    dtype : {None, dtype}, optional
         Data type of the returned array. If ``None``, the default data type is
         inferred from the "kind" of the input array data type.
 
@@ -1295,7 +1290,7 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         type of `x`, the input array elements are cast to the specified data
         type before computing the result.
         Default: ``None``.
-    keepdims : bool
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains compatible
         with the input arrays according to Array Broadcasting rules. Otherwise,
@@ -1406,7 +1401,7 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
         Default: ``None``.
-    dtype : data type, optional
+    dtype : {None, dtype}, optional
         Data type of the returned array. If ``None``, the default data type is
         inferred from the "kind" of the input array data type.
 
@@ -1422,7 +1417,7 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         type of `x`, the input array elements are cast to the specified data
         type before computing the result.
         Default: ``None``.
-    keepdims : bool
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains compatible
         with the input arrays according to Array Broadcasting rules. Otherwise,

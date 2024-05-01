@@ -54,12 +54,7 @@ __all__ = ["argmax", "argmin", "searchsorted", "where"]
 
 
 def _wrap_search_call(a, out, _search_fn, *args, **kwargs):
-    """
-    TODO: add a description
-
-    TBA.
-
-    """
+    """Wrap a call of search functions from dpctl.tensor interface."""
 
     input_out = out
     if out is None:
@@ -107,7 +102,7 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
         If provided, the result will be inserted into this array. It should be
         of the appropriate shape and dtype.
         Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the array.
@@ -191,7 +186,7 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
         If provided, the result will be inserted into this array. It should be
         of the appropriate shape and dtype.
         Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the array.

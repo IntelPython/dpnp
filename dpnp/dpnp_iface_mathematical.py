@@ -159,12 +159,7 @@ def _append_to_diff_array(a, axis, combined, values):
 
 
 def _wrap_reduction_call(a, dtype, out, _reduction_fn, *args, **kwargs):
-    """
-    TODO: add a description
-
-    TBA.
-
-    """
+    """Wrap a call of reduction functions from dpctl.tensor interface."""
 
     input_out = out
     if out is None:
@@ -876,7 +871,7 @@ def cumsum(a, axis=None, dtype=None, out=None):
     axis : int, optional
         Axis along which the cumulative sum is computed. The default (``None``)
         is to compute the cumulative sum over the flattened array.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `a`, unless `a` has an integer dtype with a precision less than that of
@@ -2277,7 +2272,7 @@ def prod(
         axes specified in the tuple instead of a single axis or all the axes as
         before.
         Default: ``None``.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The type of the returned array, as well as of the accumulator in which
         the elements are multiplied. The dtype of `a` is used by default unless
         `a` has an integer dtype of less precision than the default platform
@@ -2290,7 +2285,7 @@ def prod(
         the same shape as the expected output, but the type of the output
         values will be cast if necessary.
         Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the input array.
@@ -2803,7 +2798,7 @@ def sum(
         specified in the tuple instead of a single axis or all the axes as
         before.
         Default: ``None``.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The type of the returned array and of the accumulator in which the
         elements are summed. The dtype of `a` is used by default unless `a` has
         an integer dtype of less precision than the default platform integer.
@@ -2816,7 +2811,7 @@ def sum(
         same shape as the expected output, but the type of the output values
         will be cast if necessary.
         Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the input array.

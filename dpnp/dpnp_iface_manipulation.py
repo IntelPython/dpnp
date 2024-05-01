@@ -1322,7 +1322,7 @@ def reshape(a, /, newshape, order="C", copy=None):
         changing fastest, and the last index changing slowest. Note that
         the ``"C"`` and ``"F"`` options take no account of the memory layout of
         the underlying array, and only refer to the order of indexing.
-    copy : bool, optional
+    copy : {None, bool}, optional
         Boolean indicating whether or not to copy the input array.
         If ``True``, the result array will always be a copy of input `a`.
         If ``False``, the result array can never be a copy
@@ -1434,12 +1434,12 @@ def roll(x, shift, axis=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    shift : int or tuple of ints
+    shift : {int, tuple of ints}
         The number of places by which elements are shifted. If a tuple, then
         `axis` must be a tuple of the same size, and each of the given axes
         is shifted by the corresponding number. If an integer while `axis` is
         a tuple of integers, then the same value is used for all given axes.
-    axis : int or tuple of ints, optional
+    axis : {None, int, tuple of ints}, optional
         Axis or axes along which elements are shifted. By default, the
         array is flattened before shifting, after which the original
         shape is restored.

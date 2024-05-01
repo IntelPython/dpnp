@@ -590,7 +590,7 @@ class dpnp_array:
             - 'same_kind' means only safe casts or casts within a kind, like float64 to float32, are allowed.
             - 'unsafe' means any data conversions may be done.
 
-        copy : bool, optional
+        copy : {bool}, optional
             By default, ``astype`` always returns a newly allocated array. If
             this is set to ``False``, and the `dtype`, `order`, and `subok`
             requirements are satisfied, the input array is returned instead of
