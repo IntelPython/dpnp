@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.15.0dev1+51.gefcd98c064 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.15.0dev1+53.gc540e7f7ea documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=a87943e3"></script>
+        <script src="../../_static/documentation_options.js?v=8107abfc"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+51.gefcd98c064
+                0.15.0dev1+53.gc540e7f7ea
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -727,12 +727,14 @@
 <span class="sd">            If it is False and no cast happens, then this method returns the array itself.</span>
 <span class="sd">            Otherwise, a copy is returned.</span>
 <span class="sd">        casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
-<span class="sd">            Controls what kind of data casting may occur. Defaults to &#39;unsafe&#39; for backwards compatibility.</span>
+<span class="sd">            Controls what kind of data casting may occur.</span>
+<span class="sd">            Defaults to ``&#39;unsafe&#39;`` for backwards compatibility.</span>
 
 <span class="sd">            - &#39;no&#39; means the data types should not be cast at all.</span>
 <span class="sd">            - &#39;equiv&#39; means only byte-order changes are allowed.</span>
 <span class="sd">            - &#39;safe&#39; means only casts which can preserve values are allowed.</span>
-<span class="sd">            - &#39;same_kind&#39; means only safe casts or casts within a kind, like float64 to float32, are allowed.</span>
+<span class="sd">            - &#39;same_kind&#39; means only safe casts or casts within a kind, like</span>
+<span class="sd">              float64 to float32, are allowed.</span>
 <span class="sd">            - &#39;unsafe&#39; means any data conversions may be done.</span>
 
 <span class="sd">        copy : {bool}, optional</span>
