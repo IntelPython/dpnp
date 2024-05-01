@@ -45,6 +45,7 @@ import dpnp
 
 from .dpnp_utils.dpnp_utils_einsum import dpnp_einsum
 from .dpnp_utils.dpnp_utils_linearalgebra import (
+    dpnp_axpy,
     dpnp_dot,
     dpnp_kron,
     dpnp_matmul,
@@ -135,16 +136,14 @@ def dot(a, b, out=None):
         if not out.flags.c_contiguous:
             raise ValueError("Only C-contiguous array is acceptable.")
 
-    if dpnp.isscalar(a) or dpnp.isscalar(b):
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b, out=out)
+    if dpnp.isscalar(a) or a.ndim == 0:
+        return dpnp_axpy(a, b, out=out)
+
+    if dpnp.isscalar(b) or b.ndim == 0:
+        return dpnp_axpy(b, a, out=out)
 
     a_ndim = a.ndim
     b_ndim = b.ndim
-    if a_ndim == 0 or b_ndim == 0:
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b, out=out)
-
     if a_ndim == 1 and b_ndim == 1:
         return dpnp_dot(a, b, out=out)
 
@@ -615,13 +614,11 @@ def inner(a, b):
 
     dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
-    if dpnp.isscalar(a) or dpnp.isscalar(b):
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b)
+    if dpnp.isscalar(a) or a.ndim == 0:
+        return dpnp_axpy(a, b)
 
-    if a.ndim == 0 or b.ndim == 0:
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b)
+    if dpnp.isscalar(b) or b.ndim == 0:
+        return dpnp_axpy(b, a)
 
     if a.shape[-1] != b.shape[-1]:
         raise ValueError(
@@ -694,17 +691,13 @@ def kron(a, b):
 
     dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
-    if dpnp.isscalar(a) or dpnp.isscalar(b):
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b)
+    if dpnp.isscalar(a) or a.ndim == 0:
+        return dpnp_axpy(a, b)
 
-    a_ndim = a.ndim
-    b_ndim = b.ndim
-    if a_ndim == 0 or b_ndim == 0:
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b)
+    if dpnp.isscalar(b) or b.ndim == 0:
+        return dpnp_axpy(b, a)
 
-    return dpnp_kron(a, b, a_ndim, b_ndim)
+    return dpnp_kron(a, b)
 
 
 def matmul(
@@ -994,19 +987,16 @@ def tensordot(a, b, axes=2):
 
     dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
-    if dpnp.isscalar(a) or dpnp.isscalar(b):
-        if not isinstance(axes, int) or axes != 0:
-            raise ValueError(
-                "One of the inputs is scalar, axes should be zero."
-            )
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b)
-
     try:
         iter(axes)
     except Exception as e:  # pylint: disable=broad-exception-caught
         if not isinstance(axes, int):
             raise TypeError("Axes must be an integer.") from e
+        if dpnp.isscalar(a) or dpnp.isscalar(b):
+            if axes != 0:
+                raise ValueError(
+                    "One of the inputs is scalar, axes should be zero."
+                ) from e
         if axes < 0:
             raise ValueError("Axes must be a non-negative integer.") from e
         axes_a = tuple(range(-axes, 0))
@@ -1022,15 +1012,17 @@ def tensordot(a, b, axes=2):
         if len(axes_a) != len(axes_b):
             raise ValueError("Axes length mismatch.")
 
+    if dpnp.isscalar(a) or a.ndim == 0:
+        return dpnp_axpy(a, b)
+
+    if dpnp.isscalar(b) or b.ndim == 0:
+        return dpnp_axpy(b, a)
+
     # Make the axes non-negative
     a_ndim = a.ndim
     b_ndim = b.ndim
     axes_a = normalize_axis_tuple(axes_a, a_ndim, "axis_a")
     axes_b = normalize_axis_tuple(axes_b, b_ndim, "axis_b")
-
-    if a.ndim == 0 or b.ndim == 0:
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b)
 
     a_shape = a.shape
     b_shape = b.shape
@@ -1126,8 +1118,16 @@ def vdot(a, b):
         a_conj = dpnp.conj(a)
         return dpnp.multiply(a_conj, b)
 
-    if a.ndim == 1 and b.ndim == 1:
-        return dpnp_dot(a, b, out=None, conjugate=True)
+    if dpnp.isscalar(b):
+        # for consistency with NumPy
+        if a.size != 1:
+            raise ValueError("The first array should be of size one.")
+        # In NumPy, scalar (which has the default dtype of platform) determines
+        # the output data type, but dtype of dpnp.multiply is determined with
+        # array and not the scalar so we need to convert the scalar to array
+        b = dpnp.array(b, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
+        a_conj = dpnp.conj(a)
+        return dpnp.multiply(a_conj, b)
 
     # dot product of flatten arrays
     return dpnp_dot(dpnp.ravel(a), dpnp.ravel(b), out=None, conjugate=True)

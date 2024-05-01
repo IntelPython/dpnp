@@ -26,6 +26,8 @@
 
 set(python_module_name _blas_impl)
 set(_module_src
+    ${CMAKE_CURRENT_SOURCE_DIR}/axpy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/axpy_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/blas_py.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm_batch.cpp
