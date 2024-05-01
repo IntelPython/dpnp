@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev1+53.g7fe931b930 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev1+54.g7b4ce1588b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=18ba9015"></script>
+        <script src="../../_static/documentation_options.js?v=59683fae"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+53.g7fe931b930
+                0.15.0dev1+54.g7b4ce1588b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -474,14 +474,14 @@
 <span class="sd">           [13, 40, 67, 94]])</span>
 
 <span class="sd">    Chained array operations. For more complicated contractions, speed ups</span>
-<span class="sd">    might be achieved by repeatedly computing a &quot;greedy&quot; path or pre-computing</span>
-<span class="sd">    the &quot;optimal&quot; path and repeatedly applying it, using an `einsum_path`</span>
-<span class="sd">    insertion. Performance improvements can be particularly significant with</span>
-<span class="sd">    larger arrays:</span>
+<span class="sd">    might be achieved by repeatedly computing a &quot;greedy&quot; path or computing</span>
+<span class="sd">    the &quot;optimal&quot; path in advance and repeatedly applying it, using an</span>
+<span class="sd">    `einsum_path` insertion. Performance improvements can be particularly</span>
+<span class="sd">    significant with larger arrays:</span>
 
 <span class="sd">    &gt;&gt;&gt; a = np.ones(64000).reshape(20, 40, 80)</span>
 
-<span class="sd">    Basic `einsum`: 119 ms ± 26 ms per loop (benchmarked on 12th</span>
+<span class="sd">    Basic `einsum`: 119 ms ± 26 ms per loop (evaluated on 12th</span>
 <span class="sd">    Gen Intel\u00AE Core\u2122 i7 processor)</span>
 
 <span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a)</span>

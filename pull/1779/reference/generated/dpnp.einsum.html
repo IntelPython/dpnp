@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.einsum &mdash; Data Parallel Extension for NumPy 0.15.0dev1+53.g7fe931b930 documentation</title>
+  <title>dpnp.einsum &mdash; Data Parallel Extension for NumPy 0.15.0dev1+54.g7b4ce1588b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=18ba9015"></script>
+        <script src="../../_static/documentation_options.js?v=59683fae"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+53.g7fe931b930
+                0.15.0dev1+54.g7b4ce1588b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -338,14 +338,14 @@ with ellipsis:</p>
 </pre></div>
 </div>
 <p>Chained array operations. For more complicated contractions, speed ups
-might be achieved by repeatedly computing a &quot;greedy&quot; path or pre-computing
-the &quot;optimal&quot; path and repeatedly applying it, using an <cite>einsum_path</cite>
-insertion. Performance improvements can be particularly significant with
-larger arrays:</p>
+might be achieved by repeatedly computing a &quot;greedy&quot; path or computing
+the &quot;optimal&quot; path in advance and repeatedly applying it, using an
+<cite>einsum_path</cite> insertion. Performance improvements can be particularly
+significant with larger arrays:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">64000</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Basic <cite>einsum</cite>: 119 ms ± 26 ms per loop (benchmarked on 12th
+<p>Basic <cite>einsum</cite>: 119 ms ± 26 ms per loop (evaluated on 12th
 Gen Intel® Core™ i7 processor)</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
 </pre></div>
