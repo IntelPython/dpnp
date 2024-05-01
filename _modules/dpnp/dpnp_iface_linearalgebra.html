@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev1+49.gb43b49a26 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev1+54.g7b4ce1588b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3f03a03b"></script>
+        <script src="../../_static/documentation_options.js?v=59683fae"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+49.gb43b49a26
+                0.15.0dev1+54.g7b4ce1588b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -139,6 +139,7 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_dot</span><span class="p">,</span>
+    <span class="n">dpnp_einsum</span><span class="p">,</span>
     <span class="n">dpnp_kron</span><span class="p">,</span>
     <span class="n">dpnp_matmul</span><span class="p">,</span>
 <span class="p">)</span>
@@ -214,11 +215,11 @@
 <span class="sd">    array([[4, 1],</span>
 <span class="sd">           [2, 2]])</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.arange(3*4*5*6).reshape((3,4,5,6))</span>
-<span class="sd">    &gt;&gt;&gt; b = np.arange(3*4*5*6)[::-1].reshape((5,4,6,3))</span>
-<span class="sd">    &gt;&gt;&gt; np.dot(a, b)[2,3,2,1,2,2]</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(3 * 4 * 5 * 6).reshape((3, 4, 5, 6))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(3 * 4 * 5 * 6)[::-1].reshape((5, 4, 6, 3))</span>
+<span class="sd">    &gt;&gt;&gt; np.dot(a, b)[2, 3, 2, 1, 2, 2]</span>
 <span class="sd">    array(499128)</span>
-<span class="sd">    &gt;&gt;&gt; sum(a[2,3,2,:] * b[1,2,:,2])</span>
+<span class="sd">    &gt;&gt;&gt; sum(a[2, 3, 2, :] * b[1, 2, :, 2])</span>
 <span class="sd">    array(499128)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -261,15 +262,61 @@
 
 <div class="viewcode-block" id="einsum">
 <a class="viewcode-back" href="../../reference/generated/dpnp.einsum.html#dpnp.einsum">[docs]</a>
-<span class="k">def</span> <span class="nf">einsum</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">einsum</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    einsum(subscripts, *operands, out=None, dtype=None, order=&quot;K&quot;, \</span>
+<span class="sd">        casting=&quot;safe&quot;, optimize=False)</span>
+
 <span class="sd">    Evaluates the Einstein summation convention on the operands.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.einsum`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Function is executed sequentially on CPU.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subscripts : str</span>
+<span class="sd">        Specifies the subscripts for summation as comma separated list of</span>
+<span class="sd">        subscript labels. An implicit (classical Einstein summation)</span>
+<span class="sd">        calculation is performed unless the explicit indicator &#39;-&gt;&#39; is</span>
+<span class="sd">        included as well as subscript labels of the precise output form.</span>
+<span class="sd">    *operands : sequence of {dpnp.ndarrays, usm_ndarray}</span>
+<span class="sd">        These are the arrays for the operation.</span>
+<span class="sd">    out : {dpnp.ndarrays, usm_ndarray, None}, optional</span>
+<span class="sd">        If provided, the calculation is done into this array.</span>
+<span class="sd">    dtype : {dtype, None}, optional</span>
+<span class="sd">        If provided, forces the calculation to use the data type specified.</span>
+<span class="sd">        Default is ``None``.</span>
+<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="sd">        Controls the memory layout of the output. ``&quot;C&quot;`` means it should be</span>
+<span class="sd">        C-contiguous. ``&quot;F&quot;`` means it should be F-contiguous, ``&quot;A&quot;`` means</span>
+<span class="sd">        it should be ``&quot;F&quot;`` if the inputs are all ``&quot;F&quot;``, ``&quot;C&quot;`` otherwise.</span>
+<span class="sd">        ``&quot;K&quot;`` means it should be as close to the layout as the inputs as</span>
+<span class="sd">        is possible, including arbitrarily permuted axes.</span>
+<span class="sd">        Default is ``&quot;K&quot;``.</span>
+<span class="sd">    casting : {&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;}, optional</span>
+<span class="sd">        Controls what kind of data casting may occur. Setting this to</span>
+<span class="sd">        ``&quot;unsafe&quot;`` is not recommended, as it can adversely affect</span>
+<span class="sd">        accumulations.</span>
+
+<span class="sd">          * ``&quot;no&quot;`` means the data types should not be cast at all.</span>
+<span class="sd">          * ``&quot;equiv&quot;`` means only byte-order changes are allowed.</span>
+<span class="sd">          * ``&quot;safe&quot;`` means only casts which can preserve values are allowed.</span>
+<span class="sd">          * ``&quot;same_kind&quot;`` means only safe casts or casts within a kind,</span>
+<span class="sd">            like float64 to float32, are allowed.</span>
+<span class="sd">          * ``&quot;unsafe&quot;`` means any data conversions may be done.</span>
+
+<span class="sd">        Default is ``&quot;safe&quot;``.</span>
+<span class="sd">    optimize : {False, True, &quot;greedy&quot;, &quot;optimal&quot;}, optional</span>
+<span class="sd">        Controls if intermediate optimization should occur. No optimization</span>
+<span class="sd">        will occur if ``False`` and ``True`` will default to the ``&quot;greedy&quot;``</span>
+<span class="sd">        algorithm. Also accepts an explicit contraction list from the</span>
+<span class="sd">        :obj:`dpnp.einsum_path` function. Default is ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The calculation based on the Einstein summation convention.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    -------</span>
@@ -278,39 +325,326 @@
 <span class="sd">    :obj:`dpnp.dot` : Returns the dot product of two arrays.</span>
 <span class="sd">    :obj:`dpnp.inner` : Returns the inner product of two arrays.</span>
 <span class="sd">    :obj:`dpnp.outer` : Returns the outer product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.tensordot` :  Sum products over arbitrary axes.</span>
+<span class="sd">    :obj:`dpnp.linalg.multi_dot` : Chained dot product.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(25).reshape(5,5)</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(5)</span>
+<span class="sd">    &gt;&gt;&gt; c = np.arange(6).reshape(2,3)</span>
+
+<span class="sd">    Trace of a matrix:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;ii&quot;, a)</span>
+<span class="sd">    array(60)</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(a, [0,0])</span>
+<span class="sd">    array(60)</span>
+<span class="sd">    &gt;&gt;&gt; np.trace(a)</span>
+<span class="sd">    array(60)</span>
+
+<span class="sd">    Extract the diagonal (requires explicit form):</span>
+
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;ii-&gt;i&quot;, a)</span>
+<span class="sd">    array([ 0,  6, 12, 18, 24])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(a, [0, 0], [0])</span>
+<span class="sd">    array([ 0,  6, 12, 18, 24])</span>
+<span class="sd">    &gt;&gt;&gt; np.diag(a)</span>
+<span class="sd">    array([ 0,  6, 12, 18, 24])</span>
+
+<span class="sd">    Sum over an axis (requires explicit form):</span>
+
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;ij-&gt;i&quot;, a)</span>
+<span class="sd">    array([ 10,  35,  60,  85, 110])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(a, [0, 1], [0])</span>
+<span class="sd">    array([ 10,  35,  60,  85, 110])</span>
+<span class="sd">    &gt;&gt;&gt; np.sum(a, axis=1)</span>
+<span class="sd">    array([ 10,  35,  60,  85, 110])</span>
+
+<span class="sd">    For higher dimensional arrays summing a single axis can be done</span>
+<span class="sd">    with ellipsis:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;...j-&gt;...&quot;, a)</span>
+<span class="sd">    array([ 10,  35,  60,  85, 110])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(a, [Ellipsis,1], [Ellipsis])</span>
+<span class="sd">    array([ 10,  35,  60,  85, 110])</span>
+
+<span class="sd">    Compute a matrix transpose, or reorder any number of axes:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;ji&quot;, c)</span>
+<span class="sd">    array([[0, 3],</span>
+<span class="sd">           [1, 4],</span>
+<span class="sd">           [2, 5]])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;ij-&gt;ji&quot;, c)</span>
+<span class="sd">    array([[0, 3],</span>
+<span class="sd">           [1, 4],</span>
+<span class="sd">           [2, 5]])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(c, [1, 0])</span>
+<span class="sd">    array([[0, 3],</span>
+<span class="sd">           [1, 4],</span>
+<span class="sd">           [2, 5]])</span>
+<span class="sd">    &gt;&gt;&gt; np.transpose(c)</span>
+<span class="sd">    array([[0, 3],</span>
+<span class="sd">           [1, 4],</span>
+<span class="sd">           [2, 5]])</span>
+
+<span class="sd">    Vector inner products:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;i,i&quot;, b, b)</span>
+<span class="sd">    array(30)</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(b, [0], b, [0])</span>
+<span class="sd">    array(30)</span>
+<span class="sd">    &gt;&gt;&gt; np.inner(b,b)</span>
+<span class="sd">    array(30)</span>
+
+<span class="sd">    Matrix vector multiplication:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;ij,j&quot;, a, b)</span>
+<span class="sd">    array([ 30,  80, 130, 180, 230])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(a, [0,1], b, [1])</span>
+<span class="sd">    array([ 30,  80, 130, 180, 230])</span>
+<span class="sd">    &gt;&gt;&gt; np.dot(a, b)</span>
+<span class="sd">    array([ 30,  80, 130, 180, 230])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;...j,j&quot;, a, b)</span>
+<span class="sd">    array([ 30,  80, 130, 180, 230])</span>
+
+<span class="sd">    Broadcasting and scalar multiplication:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;..., ...&quot;, 3, c)</span>
+<span class="sd">    array([[ 0,  3,  6],</span>
+<span class="sd">           [ 9, 12, 15]])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;,ij&quot;, 3, c)</span>
+<span class="sd">    array([[ 0,  3,  6],</span>
+<span class="sd">           [ 9, 12, 15]])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(3, [Ellipsis], c, [Ellipsis])</span>
+<span class="sd">    array([[ 0,  3,  6],</span>
+<span class="sd">           [ 9, 12, 15]])</span>
+<span class="sd">    &gt;&gt;&gt; np.multiply(3, c)</span>
+<span class="sd">    array([[ 0,  3,  6],</span>
+<span class="sd">           [ 9, 12, 15]])</span>
+
+<span class="sd">    Vector outer product:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;i,j&quot;, np.arange(2)+1, b)</span>
+<span class="sd">    array([[0, 1, 2, 3, 4],</span>
+<span class="sd">           [0, 2, 4, 6, 8]])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(np.arange(2)+1, [0], b, [1])</span>
+<span class="sd">    array([[0, 1, 2, 3, 4],</span>
+<span class="sd">           [0, 2, 4, 6, 8]])</span>
+<span class="sd">    &gt;&gt;&gt; np.outer(np.arange(2)+1, b)</span>
+<span class="sd">    array([[0, 1, 2, 3, 4],</span>
+<span class="sd">           [0, 2, 4, 6, 8]])</span>
+
+<span class="sd">    Tensor contraction:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.arange(60.).reshape(3, 4, 5)</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(24.).reshape(4, 3, 2)</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;ijk,jil-&gt;kl&quot;, a, b)</span>
+<span class="sd">    array([[4400., 4730.],</span>
+<span class="sd">           [4532., 4874.],</span>
+<span class="sd">           [4664., 5018.],</span>
+<span class="sd">           [4796., 5162.],</span>
+<span class="sd">           [4928., 5306.]])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(a, [0, 1, 2], b, [1, 0, 3], [2, 3])</span>
+<span class="sd">    array([[4400., 4730.],</span>
+<span class="sd">           [4532., 4874.],</span>
+<span class="sd">           [4664., 5018.],</span>
+<span class="sd">           [4796., 5162.],</span>
+<span class="sd">           [4928., 5306.]])</span>
+<span class="sd">    &gt;&gt;&gt; np.tensordot(a, b, axes=([1, 0],[0, 1]))</span>
+<span class="sd">    array([[4400., 4730.],</span>
+<span class="sd">           [4532., 4874.],</span>
+<span class="sd">           [4664., 5018.],</span>
+<span class="sd">           [4796., 5162.],</span>
+<span class="sd">           [4928., 5306.]])</span>
+
+<span class="sd">    Example of ellipsis use:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.arange(6).reshape((3, 2))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(12).reshape((4, 3))</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;ki,jk-&gt;ij&quot;, a, b)</span>
+<span class="sd">    array([[10, 28, 46, 64],</span>
+<span class="sd">           [13, 40, 67, 94]])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;ki,...k-&gt;i...&quot;, a, b)</span>
+<span class="sd">    array([[10, 28, 46, 64],</span>
+<span class="sd">           [13, 40, 67, 94]])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(&quot;k...,jk&quot;, a, b)</span>
+<span class="sd">    array([[10, 28, 46, 64],</span>
+<span class="sd">           [13, 40, 67, 94]])</span>
+
+<span class="sd">    Chained array operations. For more complicated contractions, speed ups</span>
+<span class="sd">    might be achieved by repeatedly computing a &quot;greedy&quot; path or computing</span>
+<span class="sd">    the &quot;optimal&quot; path in advance and repeatedly applying it, using an</span>
+<span class="sd">    `einsum_path` insertion. Performance improvements can be particularly</span>
+<span class="sd">    significant with larger arrays:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.ones(64000).reshape(20, 40, 80)</span>
+
+<span class="sd">    Basic `einsum`: 119 ms ± 26 ms per loop (evaluated on 12th</span>
+<span class="sd">    Gen Intel\u00AE Core\u2122 i7 processor)</span>
+
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a)</span>
+
+<span class="sd">    Sub-optimal `einsum`: 32.9 ms ± 5.1 ms per loop</span>
+
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;optimal&quot;)</span>
+
+<span class="sd">    Greedy `einsum`: 28.6 ms ± 4.8 ms per loop</span>
+
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;greedy&quot;)</span>
+
+<span class="sd">    Optimal `einsum`: 26.9 ms ± 6.3 ms per loop</span>
+
+<span class="sd">    &gt;&gt;&gt; path = np.einsum_path(</span>
+<span class="sd">        &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;optimal&quot;</span>
+<span class="sd">    )[0]</span>
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=path)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">optimize</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">optimize</span> <span class="o">=</span> <span class="s2">&quot;greedy&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp_einsum</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">operands</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span>
+        <span class="n">optimize</span><span class="o">=</span><span class="n">optimize</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="einsum_path">
 <a class="viewcode-back" href="../../reference/generated/dpnp.einsum_path.html#dpnp.einsum_path">[docs]</a>
-<span class="k">def</span> <span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="s2">&quot;greedy&quot;</span><span class="p">,</span> <span class="n">einsum_call</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    einsum_path(subscripts, *operands, optimize=&#39;greedy&#39;)</span>
+<span class="sd">    einsum_path(subscripts, *operands, optimize=&quot;greedy&quot;)</span>
 
 <span class="sd">    Evaluates the lowest cost contraction order for an einsum expression</span>
 <span class="sd">    by considering the creation of intermediate arrays.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.einsum_path`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Function is executed sequentially on CPU.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subscripts : str</span>
+<span class="sd">        Specifies the subscripts for summation.</span>
+<span class="sd">    *operands : sequence of arrays</span>
+<span class="sd">        These are the arrays for the operation in any form that can be</span>
+<span class="sd">        converted to an array. This includes scalars, lists, lists of</span>
+<span class="sd">        tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">    optimize : {bool, list, tuple, None, &quot;greedy&quot;, &quot;optimal&quot;}</span>
+<span class="sd">        Choose the type of path. If a tuple is provided, the second argument is</span>
+<span class="sd">        assumed to be the maximum intermediate size created. If only a single</span>
+<span class="sd">        argument is provided the largest input or output array size is used</span>
+<span class="sd">        as a maximum intermediate size.</span>
+
+<span class="sd">        * if a list is given that starts with ``einsum_path``, uses this as the</span>
+<span class="sd">          contraction path</span>
+<span class="sd">        * if ``False`` or ``None`` no optimization is taken</span>
+<span class="sd">        * if ``True`` defaults to the &quot;greedy&quot; algorithm</span>
+<span class="sd">        * ``&quot;optimal&quot;`` is an algorithm that combinatorially explores all</span>
+<span class="sd">          possible ways of contracting the listed tensors and chooses the</span>
+<span class="sd">          least costly path. Scales exponentially with the number of terms</span>
+<span class="sd">          in the contraction.</span>
+<span class="sd">        * ``&quot;greedy&quot;`` is an algorithm that chooses the best pair contraction</span>
+<span class="sd">          at each step. Effectively, this algorithm searches the largest inner,</span>
+<span class="sd">          Hadamard, and then outer products at each step. Scales cubically with</span>
+<span class="sd">          the number of terms in the contraction. Equivalent to the</span>
+<span class="sd">          ``&quot;optimal&quot;`` path for most contractions.</span>
+
+<span class="sd">        Default is ``&quot;greedy&quot;``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    path : list of tuples</span>
+<span class="sd">        A list representation of the einsum path.</span>
+<span class="sd">    string_repr : str</span>
+<span class="sd">        A printable representation of the einsum path.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The resulting path indicates which terms of the input contraction should be</span>
+<span class="sd">    contracted first, the result of this contraction is then appended to the</span>
+<span class="sd">    end of the contraction list. This list can then be iterated over until all</span>
+<span class="sd">    intermediate contractions are complete.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention</span>
 <span class="sd">                         on the operands.</span>
+<span class="sd">    :obj:`dpnp.linalg.multi_dot` : Chained dot product.</span>
 <span class="sd">    :obj:`dpnp.dot` : Returns the dot product of two arrays.</span>
 <span class="sd">    :obj:`dpnp.inner` : Returns the inner product of two arrays.</span>
 <span class="sd">    :obj:`dpnp.outer` : Returns the outer product of two arrays.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    We can begin with a chain dot example. In this case, it is optimal to</span>
+<span class="sd">    contract the ``b`` and ``c`` tensors first as represented by the first</span>
+<span class="sd">    element of the path ``(1, 2)``. The resulting tensor is added to the end</span>
+<span class="sd">    of the contraction and the remaining contraction ``(0, 1)`` is then</span>
+<span class="sd">    completed.</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.random.seed(123)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.random.rand(2, 2)</span>
+<span class="sd">    &gt;&gt;&gt; b = np.random.rand(2, 5)</span>
+<span class="sd">    &gt;&gt;&gt; c = np.random.rand(5, 2)</span>
+<span class="sd">    &gt;&gt;&gt; path_info = np.einsum_path(&quot;ij,jk,kl-&gt;il&quot;, a, b, c, optimize=&quot;greedy&quot;)</span>
+
+<span class="sd">    &gt;&gt;&gt; print(path_info[0])</span>
+<span class="sd">    [&#39;einsum_path&#39;, (1, 2), (0, 1)]</span>
+
+<span class="sd">    &gt;&gt;&gt; print(path_info[1])</span>
+<span class="sd">      Complete contraction:  ij,jk,kl-&gt;il # may vary</span>
+<span class="sd">             Naive scaling:  4</span>
+<span class="sd">         Optimized scaling:  3</span>
+<span class="sd">          Naive FLOP count:  1.200e+02</span>
+<span class="sd">      Optimized FLOP count:  5.700e+01</span>
+<span class="sd">       Theoretical speedup:  2.105</span>
+<span class="sd">      Largest intermediate:  4.000e+00 elements</span>
+<span class="sd">    -------------------------------------------------------------------------</span>
+<span class="sd">    scaling                  current                                remaining</span>
+<span class="sd">    -------------------------------------------------------------------------</span>
+<span class="sd">       3                   kl,jk-&gt;jl                                ij,jl-&gt;il</span>
+<span class="sd">       3                   jl,ij-&gt;il                                   il-&gt;il</span>
+
+<span class="sd">    A more complex index transformation example.</span>
+
+<span class="sd">    &gt;&gt;&gt; I = np.random.rand(10, 10, 10, 10)</span>
+<span class="sd">    &gt;&gt;&gt; C = np.random.rand(10, 10)</span>
+<span class="sd">    &gt;&gt;&gt; path_info = np.einsum_path(</span>
+<span class="sd">            &quot;ea,fb,abcd,gc,hd-&gt;efgh&quot;, C, C, I, C, C, optimize=&quot;greedy&quot;</span>
+<span class="sd">        )</span>
+<span class="sd">    &gt;&gt;&gt; print(path_info[0])</span>
+<span class="sd">    [&#39;einsum_path&#39;, (0, 2), (0, 3), (0, 2), (0, 1)]</span>
+<span class="sd">    &gt;&gt;&gt; print(path_info[1])</span>
+<span class="sd">      Complete contraction:  ea,fb,abcd,gc,hd-&gt;efgh # may vary</span>
+<span class="sd">             Naive scaling:  8</span>
+<span class="sd">         Optimized scaling:  5</span>
+<span class="sd">          Naive FLOP count:  5.000e+08</span>
+<span class="sd">      Optimized FLOP count:  8.000e+05</span>
+<span class="sd">       Theoretical speedup:  624.999</span>
+<span class="sd">      Largest intermediate:  1.000e+04 elements</span>
+<span class="sd">    --------------------------------------------------------------------------</span>
+<span class="sd">    scaling                  current                                remaining</span>
+<span class="sd">    --------------------------------------------------------------------------</span>
+<span class="sd">       5               abcd,ea-&gt;bcde                      fb,gc,hd,bcde-&gt;efgh</span>
+<span class="sd">       5               bcde,fb-&gt;cdef                         gc,hd,cdef-&gt;efgh</span>
+<span class="sd">       5               cdef,gc-&gt;defg                            hd,defg-&gt;efgh</span>
+<span class="sd">       5               defg,hd-&gt;efgh                               efgh-&gt;efgh</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">einsum_path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum_path</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">operands</span><span class="p">,</span>
+        <span class="n">optimize</span><span class="o">=</span><span class="n">optimize</span><span class="p">,</span>
+        <span class="n">einsum_call</span><span class="o">=</span><span class="n">einsum_call</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
@@ -515,7 +849,7 @@
 <span class="sd">        Type to use in computing the matrix product. By default, the returned</span>
 <span class="sd">        array will have data type that is determined by considering</span>
 <span class="sd">        Promotion Type Rule and device capabilities.</span>
-<span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
+<span class="sd">    casting : {&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur. Default: ``&quot;same_kind&quot;``.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array, if parameter `out` is ``None``.</span>

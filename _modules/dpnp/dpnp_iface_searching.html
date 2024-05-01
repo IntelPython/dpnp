@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.15.0dev1+49.gb43b49a26 documentation</title>
+  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.15.0dev1+54.g7b4ce1588b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3f03a03b"></script>
+        <script src="../../_static/documentation_options.js?v=59683fae"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+49.gb43b49a26
+                0.15.0dev1+54.g7b4ce1588b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -129,7 +129,6 @@
 
 
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">dti</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
@@ -141,42 +140,6 @@
 <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argmax&quot;</span><span class="p">,</span> <span class="s2">&quot;argmin&quot;</span><span class="p">,</span> <span class="s2">&quot;searchsorted&quot;</span><span class="p">,</span> <span class="s2">&quot;where&quot;</span><span class="p">]</span>
-
-
-<span class="k">def</span> <span class="nf">_wrap_search_call</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">_search_fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    TODO: add a description</span>
-
-<span class="sd">    TBA.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">input_out</span> <span class="o">=</span> <span class="n">out</span>
-    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">usm_out</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-
-        <span class="c1"># get a data type used by dpctl for result array in search function</span>
-        <span class="n">res_dt</span> <span class="o">=</span> <span class="n">dti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
-
-        <span class="c1"># numpy raises TypeError if &quot;out&quot; data type mismatch default index type</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Cannot cast from </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">res_dt</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="s2">&quot;according to the rule safe.&quot;</span>
-            <span class="p">)</span>
-
-        <span class="c1"># dpctl requires strict data type matching of out array with the result</span>
-        <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">res_dt</span><span class="p">:</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-        <span class="n">usm_out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-
-    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">usm_out</span>
-    <span class="n">res_usm</span> <span class="o">=</span> <span class="n">_search_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">res_usm</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">input_out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="argmax">
@@ -191,27 +154,27 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    axis : {None, int}, optional</span>
-<span class="sd">        By default, the index is into the flattened array, otherwise along</span>
-<span class="sd">        the specified axis.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        Axis along which to search. If ``None``, the function must return</span>
+<span class="sd">        the index of the maximum value of the flattened array.</span>
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        If provided, the result will be inserted into this array. It should be</span>
-<span class="sd">        of the appropriate shape and dtype.</span>
-<span class="sd">        Default: ``None``.</span>
-<span class="sd">    keepdims : bool, optional</span>
-<span class="sd">        If this is set to ``True``, the axes which are reduced are left in the</span>
-<span class="sd">        result as dimensions with size one. With this option, the result will</span>
-<span class="sd">        broadcast correctly against the array.</span>
+<span class="sd">        If provided, the result will be inserted into this array. It should</span>
+<span class="sd">        be of the appropriate shape and dtype.</span>
+<span class="sd">    keepdims : bool</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) must be included in the</span>
+<span class="sd">        result as singleton dimensions, and, accordingly, the result must be</span>
+<span class="sd">        compatible with the input array. Otherwise, if ``False``, the reduced</span>
+<span class="sd">        axes (dimensions) must not be included in the result.</span>
 <span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Array of indices into the array. It has the same shape as ``a.shape``</span>
-<span class="sd">        with the dimension along `axis` removed. If `keepdims` is set to</span>
-<span class="sd">        ``True``, then the size of `axis` will be ``1`` with the resulting</span>
-<span class="sd">        array having same shape as ``a.shape``.</span>
+<span class="sd">        If `axis` is ``None``, a zero-dimensional array containing the index of</span>
+<span class="sd">        the first occurrence of the maximum value; otherwise,</span>
+<span class="sd">        a non-zero-dimensional array containing the indices of the minimum</span>
+<span class="sd">        values. The returned array must have the default array index data type.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -259,10 +222,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_wrap_search_call</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">argmax</span><span class="p">,</span> <span class="n">usm_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span>
-    <span class="p">)</span></div>
+    <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
 
 
 
@@ -278,28 +243,27 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    axis : {None, int}, optional</span>
-<span class="sd">        By default, the index is into the flattened array, otherwise along</span>
-<span class="sd">        the specified axis.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        Axis along which to search. If ``None``, the function must return</span>
+<span class="sd">        the index of the minimum value of the flattened array.</span>
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        If provided, the result will be inserted into this array. It should be</span>
-<span class="sd">        of the appropriate shape and dtype.</span>
-<span class="sd">        Default: ``None``.</span>
+<span class="sd">        If provided, the result will be inserted into this array. It should</span>
+<span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">    keepdims : bool, optional</span>
-<span class="sd">        If this is set to ``True``, the axes which are reduced are left in the</span>
-<span class="sd">        result as dimensions with size one. With this option, the result will</span>
-<span class="sd">        broadcast correctly against the array.</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) must be included in the</span>
+<span class="sd">        result as singleton dimensions, and, accordingly, the result must be</span>
+<span class="sd">        compatible with the input array. Otherwise, if ``False``, the reduced</span>
+<span class="sd">        axes (dimensions) must not be included in the result.</span>
 <span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Array of indices into the array. It has the same shape as `a.shape`</span>
-<span class="sd">        with the dimension along `axis` removed. If `keepdims` is set to</span>
-<span class="sd">        ``True``, then the size of `axis` will be ``1`` with the resulting</span>
-<span class="sd">        array having same shape as `a.shape`.</span>
-
+<span class="sd">        If `axis` is ``None``, a zero-dimensional array containing the index of</span>
+<span class="sd">        the first occurrence of the minimum value; otherwise,</span>
+<span class="sd">        a non-zero-dimensional array containing the indices of the minimum</span>
+<span class="sd">        values. The returned array must have the default array index data type.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -347,10 +311,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_wrap_search_call</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">argmin</span><span class="p">,</span> <span class="n">usm_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span>
-    <span class="p">)</span></div>
+    <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
 
 
 
@@ -422,7 +388,7 @@
 
 <div class="viewcode-block" id="where">
 <a class="viewcode-back" href="../../reference/generated/dpnp.where.html#dpnp.where">[docs]</a>
-<span class="k">def</span> <span class="nf">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return elements chosen from `x` or `y` depending on `condition`.</span>
 
@@ -438,14 +404,6 @@
 <span class="sd">    x, y : {dpnp.ndarray, usm_ndarray, scalar}, optional</span>
 <span class="sd">        Values from which to choose. `x`, `y` and `condition` need to be</span>
 <span class="sd">        broadcastable to some shape.</span>
-<span class="sd">    order : {&quot;K&quot;, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;}, optional</span>
-<span class="sd">        Memory layout of the new output arra, if keyword `out` is ``None``.</span>
-<span class="sd">        Default: ``&quot;K&quot;``.</span>
-<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        The array into which the result is written. The data type of `out` must</span>
-<span class="sd">        match the expected shape and the expected data type of the result.</span>
-<span class="sd">        If ``None`` then a new array is returned.</span>
-<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -512,11 +470,9 @@
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">usm_y</span><span class="p">):</span>
         <span class="n">usm_y</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">usm_y</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
 
-    <span class="n">usm_out</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
-        <span class="n">dpt</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">usm_condition</span><span class="p">,</span> <span class="n">usm_x</span><span class="p">,</span> <span class="n">usm_y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">usm_out</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">usm_condition</span><span class="p">,</span> <span class="n">usm_x</span><span class="p">,</span> <span class="n">usm_y</span><span class="p">)</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 
