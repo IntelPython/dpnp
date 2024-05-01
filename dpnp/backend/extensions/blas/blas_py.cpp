@@ -30,6 +30,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "axpy.hpp"
 #include "dot.hpp"
 #include "dot_common.hpp"
 #include "dotc.hpp"
@@ -45,6 +46,8 @@ using dot_ns::dot_impl_fn_ptr_t;
 // populate dispatch vectors and tables
 void init_dispatch_vectors_tables(void)
 {
+    blas_ns::init_axpy_batch_dispatch_vector();
+    blas_ns::init_axpy_dispatch_vector();
     blas_ns::init_gemm_batch_dispatch_table();
     blas_ns::init_gemm_dispatch_table();
     blas_ns::init_gemv_dispatch_vector();
@@ -60,6 +63,22 @@ PYBIND11_MODULE(_blas_impl, m)
 
     using arrayT = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
+
+    {
+        m.def("_axpy", &blas_ns::axpy,
+              "Call `axpy` from OneMKL BLAS library to compute "
+              "the scalar-vector product.",
+              py::arg("sycl_queue"), py::arg("scalarA"), py::arg("vectorX"),
+              py::arg("vectorY"), py::arg("depends") = py::list());
+    }
+
+    {
+        m.def("_axpy_batch", &blas_ns::axpy_batch,
+              "Call `axpy` from OneMKL BLAS library to compute "
+              "the scalar-vector product for a batch on 1-D arrays.",
+              py::arg("sycl_queue"), py::arg("scalarA"), py::arg("vectorX"),
+              py::arg("vectorY"), py::arg("depends") = py::list());
+    }
 
     {
         dot_ns::init_dot_dispatch_vector<dot_impl_fn_ptr_t,

@@ -44,7 +44,14 @@ from dpnp.dpnp_utils import get_usm_allocations
 _einsum_symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
-__all__ = ["dpnp_cross", "dpnp_dot", "dpnp_einsum", "dpnp_kron", "dpnp_matmul"]
+__all__ = [
+    "dpnp_axpy",
+    "dpnp_cross",
+    "dpnp_dot",
+    "dpnp_einsum",
+    "dpnp_kron",
+    "dpnp_matmul",
+]
 
 
 def _calc_offset(shape, linear_id, strides):
@@ -1585,6 +1592,74 @@ def _view_work_around(a, shape, strides):
     return b
 
 
+def dpnp_axpy(a, x, out=None):
+    """Call axpy or axpy_batch from backend"""
+    if x.ndim == 0:
+        return dpnp.multiply(a, x, out=out)
+
+    if dpnp.isscalar(a):
+        a = dpnp.array(a, sycl_queue=x.sycl_queue, usm_type=x.usm_type)
+
+    res_usm_type, exec_q = get_usm_allocations([x, a])
+
+    # Determine the appropriate data types
+    axpy_dtype, res_dtype = _compute_res_dtype(a, x, sycl_queue=exec_q)
+
+    orig_shape = x.shape
+    # result should be zero array not an empty array
+    result = dpnp.zeros(
+        x.shape,
+        dtype=axpy_dtype,
+        usm_type=res_usm_type,
+        sycl_queue=exec_q,
+    )
+
+    dep_events_list = []
+    host_tasks_list = []
+    # copying is needed if dtypes of input arrays are different
+    a = _copy_array(a, dep_events_list, host_tasks_list, dtype=axpy_dtype)
+    x = _copy_array(x, dep_events_list, host_tasks_list, dtype=axpy_dtype)
+
+    if x.ndim == 1:
+        ht_ev, _ = bi._axpy(
+            exec_q,
+            dpnp.get_usm_ndarray(a),
+            dpnp.get_usm_ndarray(x),
+            dpnp.get_usm_ndarray(result),
+            dep_events_list,
+        )
+    else:
+        x = dpnp.reshape(x, (-1, x.shape[-1]))
+        result = result.reshape(-1, result.shape[-1])
+        x = _copy_array(
+            x, dep_events_list, host_tasks_list, copy_flag=x.strides[0] < 0
+        )
+        ht_ev, _ = bi._axpy_batch(
+            exec_q,
+            dpnp.get_usm_ndarray(a),
+            dpnp.get_usm_ndarray(x),
+            dpnp.get_usm_ndarray(result),
+            dep_events_list,
+        )
+    host_tasks_list.append(ht_ev)
+    dpctl.SyclEvent.wait_for(host_tasks_list)
+
+    if result.shape != orig_shape:
+        result = result.reshape(orig_shape)
+
+    if axpy_dtype != res_dtype:
+        result = result.astype(res_dtype, copy=False)
+
+    # int are converted to float for calculation in scal,
+    # so it should be allowed to be back to int, however,
+    # dot in general does not allow casting
+    if not dpnp.issubdtype(res_dtype, dpnp.inexact):
+        casting = "same_kind"
+    else:
+        casting = "no"
+    return dpnp.get_result_array(result, out, casting=casting)
+
+
 def dpnp_cross(a, b, cp, exec_q):
     """Return the cross product of two (arrays of) vectors."""
 
@@ -2036,9 +2111,11 @@ def dpnp_einsum(
     return dpnp.get_result_array(arr_out, out)
 
 
-def dpnp_kron(a, b, a_ndim, b_ndim):
+def dpnp_kron(a, b):
     """Returns the kronecker product of two arrays."""
 
+    a_ndim = a.ndim
+    b_ndim = b.ndim
     a_shape = a.shape
     b_shape = b.shape
     if not a.flags.contiguous:
@@ -2126,7 +2203,7 @@ def dpnp_matmul(
 
     # Determine the appropriate data types
     compute_dtype, res_dtype = _compute_res_dtype(
-        x1, x2, dtype=dtype, casting=casting, sycl_queue=exec_q
+        x1, x2, sycl_queue=exec_q, dtype=dtype, casting=casting
     )
 
     call_flag = None
