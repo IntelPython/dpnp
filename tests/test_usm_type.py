@@ -717,6 +717,26 @@ def test_multi_dot(usm_type):
         assert result.usm_type == usm_type
 
 
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_einsum(usm_type):
+    numpy_array_list = []
+    dpnp_array_list = []
+    for _ in range(3):  # creat arrays one by one
+        a = numpy.random.rand(10, 10)
+        b = dp.array(a, usm_type=usm_type)
+
+        numpy_array_list.append(a)
+        dpnp_array_list.append(b)
+
+    result = dp.einsum("ij,jk,kl->il", *dpnp_array_list)
+    expected = numpy.einsum("ij,jk,kl->il", *numpy_array_list)
+    assert_dtype_allclose(result, expected)
+
+    input_usm_type, _ = get_usm_allocations(dpnp_array_list)
+    assert input_usm_type == usm_type
+    assert result.usm_type == usm_type
+
+
 @pytest.mark.parametrize("func", ["take", "take_along_axis"])
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
