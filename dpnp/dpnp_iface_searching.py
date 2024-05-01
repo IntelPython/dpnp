@@ -331,7 +331,7 @@ def searchsorted(a, v, side="left", sorter=None):
     )
 
 
-def where(condition, x=None, y=None, /):
+def where(condition, x=None, y=None, /, *, order="K", out=None):
     """
     Return elements chosen from `x` or `y` depending on `condition`.
 
@@ -347,6 +347,14 @@ def where(condition, x=None, y=None, /):
     x, y : {dpnp.ndarray, usm_ndarray, scalar}, optional
         Values from which to choose. `x`, `y` and `condition` need to be
         broadcastable to some shape.
+    order : {"K", "C", "F", "A"}, optional
+        Memory layout of the new output arra, if keyword `out` is ``None``.
+        Default: ``"K"``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        The array into which the result is written. The data type of `out` must
+        match the expected shape and the expected data type of the result.
+        If ``None`` then a new array is returned.
+        Default: ``None``.
 
     Returns
     -------
@@ -413,6 +421,8 @@ def where(condition, x=None, y=None, /):
     if dpnp.isscalar(usm_y):
         usm_y = dpt.asarray(usm_y, usm_type=usm_type, sycl_queue=queue)
 
-    return dpnp_array._create_from_usm_ndarray(
-        dpt.where(usm_condition, usm_x, usm_y)
+    usm_out = None if out is None else dpnp.get_usm_ndarray(out)
+    result = dpnp_array._create_from_usm_ndarray(
+        dpt.where(usm_condition, usm_x, usm_y, order=order, out=usm_out)
     )
+    return dpnp.get_result_array(result, out)

@@ -304,3 +304,39 @@ class TestWhere:
         np_res = numpy.vstack(numpy.where(a == 99.0))
         dpnp_res = dpnp.vstack(dpnp.where(ia == 99.0))
         assert_array_equal(np_res, dpnp_res)
+
+    @pytest.mark.parametrize("x_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("y_dt", get_all_dtypes(no_none=True))
+    def test_out(self, x_dt, y_dt):
+        cond = numpy.random.rand(50).reshape((2, 25)).astype(dtype="?")
+        x = numpy.random.rand(50).reshape((2, 25)).astype(dtype=x_dt)
+        y = numpy.random.rand(50).reshape((2, 25)).astype(dtype=y_dt)
+        out = numpy.zeros_like(cond, dtype=numpy.result_type(x, y))
+
+        icond = dpnp.array(cond)
+        ix = dpnp.array(x)
+        iy = dpnp.array(y)
+        iout = dpnp.array(out)
+
+        result = dpnp.where(icond, ix, iy, out=iout)
+        expected = numpy.where(cond, x, y)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("order", ["C", "F", "A", "K", None])
+    def test_order(self, order):
+        cond = numpy.array([True, False, True])
+        x = numpy.array([2, 5, 3], order="F")
+        y = numpy.array([-2, -5, -3], order="C")
+
+        icond = dpnp.array(cond)
+        ix = dpnp.array(x)
+        iy = dpnp.array(y)
+
+        result = dpnp.where(icond, ix, iy, order=order)
+        expected = numpy.where(cond, x, y)
+        assert_array_equal(expected, result)
+
+        if order == "F":
+            assert result.flags.f_contiguous
+        else:
+            assert result.flags.c_contiguous
