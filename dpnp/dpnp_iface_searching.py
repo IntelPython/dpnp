@@ -49,39 +49,24 @@ from .dpnp_array import dpnp_array
 from .dpnp_utils import (
     get_usm_allocations,
 )
+from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
 __all__ = ["argmax", "argmin", "searchsorted", "where"]
 
 
-def _wrap_search_call(a, out, _search_fn, *args, **kwargs):
-    """Wrap a call of search functions from dpctl.tensor interface."""
+def _get_search_res_dt(a, _dtype, out):
+    """Get a data type used by dpctl for result array in search function."""
 
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
+    # get a data type used by dpctl for result array in search function
+    res_dt = dti.default_device_index_type(a.sycl_device)
 
-        # get a data type used by dpctl for result array in search function
-        res_dt = dti.default_device_index_type(a.sycl_device)
-
-        # numpy raises TypeError if "out" data type mismatch default index type
-        if not dpnp.can_cast(out.dtype, res_dt, casting="safe"):
-            raise TypeError(
-                f"Cannot cast from {out.dtype} to {res_dt} "
-                "according to the rule safe."
-            )
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    kwargs["out"] = usm_out
-    res_usm = _search_fn(*args, **kwargs)
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
+    # numpy raises TypeError if "out" data type mismatch default index type
+    if not dpnp.can_cast(out.dtype, res_dt, casting="safe"):
+        raise TypeError(
+            f"Cannot cast from {out.dtype} to {res_dt} "
+            "according to the rule safe."
+        )
+    return res_dt
 
 
 def argmax(a, axis=None, out=None, *, keepdims=False):
@@ -163,8 +148,14 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-    return _wrap_search_call(
-        a, out, dpt.argmax, usm_a, axis=axis, keepdims=keepdims
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.argmax,
+        _get_search_res_dt,
+        usm_a,
+        axis=axis,
+        keepdims=keepdims,
     )
 
 
@@ -248,8 +239,14 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-    return _wrap_search_call(
-        a, out, dpt.argmin, usm_a, axis=axis, keepdims=keepdims
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.argmin,
+        _get_search_res_dt,
+        usm_a,
+        axis=axis,
+        keepdims=keepdims,
     )
 
 

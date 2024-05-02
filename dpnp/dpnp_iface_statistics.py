@@ -54,6 +54,7 @@ from .dpnp_utils import (
     call_origin,
     get_usm_allocations,
 )
+from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 from .dpnp_utils.dpnp_utils_statistics import (
     dpnp_cov,
 )
@@ -118,28 +119,10 @@ def _count_reduce_items(arr, axis, where=True):
     return items
 
 
-def _wrap_comparison_call(a, out, _comparison_fn, *args, **kwargs):
-    """Wrap a call of comparison functions from dpctl.tensor interface."""
+def _get_comparison_res_dt(a, _dtype, _out):
+    """Get a data type used by dpctl for result array in comparison function."""
 
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
-
-        # get dtype used by dpctl for result array in comparison function
-        res_dt = a.dtype
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    kwargs["out"] = usm_out
-    res_usm = _comparison_fn(*args, **kwargs)
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
+    return a.dtype
 
 
 def amax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
@@ -548,8 +531,14 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     dpnp.check_limitations(initial=initial, where=where)
     usm_a = dpnp.get_usm_ndarray(a)
 
-    return _wrap_comparison_call(
-        a, out, dpt.max, usm_a, axis=axis, keepdims=keepdims
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.max,
+        _get_comparison_res_dt,
+        usm_a,
+        axis=axis,
+        keepdims=keepdims,
     )
 
 
@@ -757,8 +746,14 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     dpnp.check_limitations(initial=initial, where=where)
     usm_a = dpnp.get_usm_ndarray(a)
 
-    return _wrap_comparison_call(
-        a, out, dpt.min, usm_a, axis=axis, keepdims=keepdims
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.min,
+        _get_comparison_res_dt,
+        usm_a,
+        axis=axis,
+        keepdims=keepdims,
     )
 
 

@@ -50,14 +50,15 @@ import numpy
 
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
-from dpnp.dpnp_algo import (
+
+from .dpnp_algo import (
     dpnp_degrees,
     dpnp_radians,
     dpnp_unwrap,
 )
-from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
-from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import call_origin
+from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
+from .dpnp_utils import call_origin
+from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
 __all__ = [
     "arccos",
@@ -97,35 +98,14 @@ __all__ = [
 ]
 
 
-def _wrap_accumulation_call(a, dtype, out, _accumulation_fn, *args, **kwargs):
-    """Wrap a call of accumulation functions from dpctl.tensor interface."""
+def _get_accumulation_res_dt(a, dtype, _out):
+    """Get a dtype used by dpctl for result array in accumulation function."""
 
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
+    if dtype is None:
+        return dtu._default_accumulation_dtype_fp_types(a.dtype, a.sycl_queue)
 
-        # get data type used by dpctl for result array in accumulation function
-        if dtype is None:
-            res_dt = dtu._default_accumulation_dtype_fp_types(
-                a.dtype, a.sycl_queue
-            )
-        else:
-            res_dt = dpnp.dtype(dtype)
-            res_dt = dtu._to_device_supported_dtype(res_dt, a.sycl_device)
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    kwargs["dtype"] = dtype
-    kwargs["out"] = usm_out
-    res_usm = _accumulation_fn(*args, **kwargs)
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
+    dtype = dpnp.dtype(dtype)
+    return dtu._to_device_supported_dtype(dtype, a.sycl_device)
 
 
 _ACOS_DOCSTRING = """
@@ -1333,8 +1313,15 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     """
 
     usm_x = dpnp.get_usm_ndarray(x)
-    return _wrap_accumulation_call(
-        x, dtype, out, dpt.logsumexp, usm_x, axis=axis, keepdims=keepdims
+    return dpnp_wrap_reduction_call(
+        x,
+        out,
+        dpt.logsumexp,
+        _get_accumulation_res_dt,
+        usm_x,
+        axis=axis,
+        dtype=dtype,
+        keepdims=keepdims,
     )
 
 
@@ -1458,8 +1445,15 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     """
 
     usm_x = dpnp.get_usm_ndarray(x)
-    return _wrap_accumulation_call(
-        x, dtype, out, dpt.reduce_hypot, usm_x, axis=axis, keepdims=keepdims
+    return dpnp_wrap_reduction_call(
+        x,
+        out,
+        dpt.logsumexp,
+        reduce_hypot,
+        usm_x,
+        axis=axis,
+        dtype=dtype,
+        keepdims=keepdims,
     )
 
 
