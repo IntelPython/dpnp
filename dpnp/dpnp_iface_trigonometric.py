@@ -1448,8 +1448,8 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     return dpnp_wrap_reduction_call(
         x,
         out,
-        dpt.logsumexp,
-        reduce_hypot,
+        dpt.reduce_hypot,
+        _get_accumulation_res_dt,
         usm_x,
         axis=axis,
         dtype=dtype,
