@@ -30,7 +30,9 @@ from dpnp.dpnp_array import dpnp_array
 __all__ = ["dpnp_wrap_reduction_call"]
 
 
-def dpnp_wrap_reduction_call(a, out, _reduction_fn, _get_res_dt_fn, *args, **kwargs):
+def dpnp_wrap_reduction_call(
+    a, out, _reduction_fn, _get_res_dt_fn, *args, **kwargs
+):
     """Wrap a reduction call from dpctl.tensor interface."""
 
     input_out = out
@@ -39,7 +41,7 @@ def dpnp_wrap_reduction_call(a, out, _reduction_fn, _get_res_dt_fn, *args, **kwa
     else:
         dpnp.check_supported_arrays_type(out)
 
-        # fetch dtype from the passsed kwargs to the reduction call
+        # fetch dtype from the passed kwargs to the reduction call
         dtype = kwargs.get("dtype", None)
 
         # dpctl requires strict data type matching of out array with the result
