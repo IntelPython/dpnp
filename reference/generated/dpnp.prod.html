@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.prod &mdash; Data Parallel Extension for NumPy 0.15.0dev1+56.g2791c2a333 documentation</title>
+  <title>dpnp.prod &mdash; Data Parallel Extension for NumPy 0.15.0dev1+54.gabf9aac915 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=92551b5a"></script>
+        <script src="../../_static/documentation_options.js?v=8e060acb"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+56.g2791c2a333
+                0.15.0dev1+54.gabf9aac915
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -138,46 +138,21 @@
 <dd><p>Return the product of array elements over a given axis.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.prod.html#numpy.prod" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.prod</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- Axis or axes along which a product is performed. The default,
-<code class="docutils literal notranslate"><span class="pre">axis=None</span></code>, will calculate the product of all the elements in the
-input array. If <cite>axis</cite> is negative it counts from the last to the first
-axis.
-If <cite>axis</cite> is a tuple of integers, a product is performed on all of the
-axes specified in the tuple instead of a single axis or all the axes as
-before.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><em>dtype}</em><em>, </em><em>optional</em>) -- The type of the returned array, as well as of the accumulator in which
-the elements are multiplied. The dtype of <cite>a</cite> is used by default unless
-<cite>a</cite> has an integer dtype of less precision than the default platform
-integer. In that case, if <cite>a</cite> is signed then the platform integer is
-used while if <cite>a</cite> is unsigned then an unsigned integer of the same
-precision as the platform integer is used.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- Alternative output array in which to place the result. It must have
-the same shape as the expected output, but the type of the output
-values will be cast if necessary.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>keepdims</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- If this is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the axes which are reduced are left in the
-result as dimensions with size one. With this option, the result will
-broadcast correctly against the input array.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
-</ul>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>out</strong> -- A new array holding the result is returned unless <cite>out</cite> is specified,
+in which case it is returned.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- An array shaped as <cite>a</cite> but with the specified axis removed.
-Returns a reference to <cite>out</cite> if specified.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dpnp.ndarray</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
-<p>Parameters <cite>initial</cite> and <cite>where</cite> are only supported with their default
+<p>Input array is only supported as either <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or
+<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code>.
+Parameters <cite>initial</cite>, and <cite>where</cite> are only supported with their default
 values.
-Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
+Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.
+Input array data types are limited by DPNP <a class="reference internal" href="../dtypes_table.html#data-types"><span class="std std-ref">Available array data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
