@@ -419,12 +419,12 @@ def indices(
     out : one dpnp.ndarray or tuple of dpnp.ndarray
         If sparse is ``False``:
         Returns one array of grid indices,
-        grid.shape = (len(dimensions),) + tuple(dimensions).
+        ``grid.shape = (len(dimensions),) + tuple(dimensions)``.
 
         If sparse is ``True``:
         Returns a tuple of arrays,
         with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
-        with dimensions[i] in the ith place.
+        with dimensions[i] in the i-th place.
 
     Examples
     --------
@@ -779,7 +779,8 @@ def putmask(x1, mask, values):
 
 def select(condlist, choicelist, default=0):
     """
-    Return an array drawn from elements in choicelist, depending on conditions.
+    Return an array drawn from elements in `choicelist`, depending on
+    conditions.
 
     For full documentation refer to :obj:`numpy.select`.
 
@@ -930,7 +931,8 @@ def take_along_axis(a, indices, axis):
     >>> import dpnp as np
     >>> a = np.array([[10, 30, 20], [60, 40, 50]])
 
-    We can sort either by using sort directly, or argsort and this function
+    We can sort either by using :obj:`dpnp.sort` directly, or
+    :obj:`dpnp.argsort` and this function:
 
     >>> np.sort(a, axis=1)
     array([[10, 20, 30],
@@ -958,7 +960,7 @@ def take_along_axis(a, indices, axis):
            [60]])
 
     If we want to get the max and min at the same time, we can stack the
-    indices first
+    indices first:
 
     >>> ai_min = np.argmin(a, axis=1, keepdims=True)
     >>> ai_max = np.argmax(a, axis=1, keepdims=True)

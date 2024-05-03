@@ -1,3 +1,5 @@
+from ast import Raise
+
 import dpctl
 import dpctl.tensor as dpt
 import numpy
@@ -584,6 +586,54 @@ class TestEigenvalue:
             assert_raises(ValueError, dpnp_func, a_dp, UPLO="N")
 
 
+class TestEinsum:
+    def test_einsum_trivial_cases(self):
+        a = inp.arange(25).reshape(5, 5)
+        b = inp.arange(5)
+        a_np = a.asnumpy()
+        b_np = b.asnumpy()
+
+        # one input, no optimization is needed
+        result = inp.einsum("i", b, optimize="greedy")
+        expected = numpy.einsum("i", b_np, optimize="greedy")
+        assert_dtype_allclose(result, expected)
+
+        # two inputs, no optimization is needed
+        result = inp.einsum("ij,jk", a, a, optimize="greedy")
+        expected = numpy.einsum("ij,jk", a_np, a_np, optimize="greedy")
+        assert_dtype_allclose(result, expected)
+
+        # no optimization in optimal mode
+        result = inp.einsum("ij,jk", a, a, optimize=["optimal", 1])
+        expected = numpy.einsum("ij,jk", a_np, a_np, optimize=["optimal", 1])
+        assert_dtype_allclose(result, expected)
+
+        # naive cost equal or smaller than optimized cost
+        result = inp.einsum("i,i,i", b, b, b, optimize="greedy")
+        expected = numpy.einsum("i,i,i", b_np, b_np, b_np, optimize="greedy")
+        assert_dtype_allclose(result, expected)
+
+    def test_einsum_error(self):
+        a = inp.ones((5, 5))
+        # unknown keyword argument
+        with pytest.raises(TypeError):
+            inp.einsum("ii->i", a, copy=False)
+
+        # unknown value for optimize keyword
+        with pytest.raises(TypeError):
+            inp.einsum("ii->i", a, optimize="average")
+
+        a = inp.ones((5, 4))
+        # different size for same label 5 != 4
+        with pytest.raises(ValueError):
+            inp.einsum("ii", a)
+
+        a = inp.ones((5, 5))
+        # repeated scripts in output
+        with pytest.raises(ValueError):
+            inp.einsum("ij,jk->ii", a, a)
+
+
 class TestInv:
     @pytest.mark.parametrize(
         "array",
@@ -704,6 +754,89 @@ class TestInv:
         # a is not square
         a_dp = inp.ones((2, 3))
         assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp)
+
+
+class TestLstsq:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "a_shape, b_shape",
+        [
+            ((2, 2), (2, 2)),
+            ((2, 2), (2, 3)),
+            ((2, 2), (2,)),
+            ((4, 2), (4, 2)),
+            ((4, 2), (4, 6)),
+            ((4, 2), (4,)),
+            ((2, 4), (2, 4)),
+            ((2, 4), (2, 6)),
+            ((2, 4), (2,)),
+        ],
+    )
+    def test_lstsq(self, a_shape, b_shape, dtype):
+        a_np = numpy.random.rand(*a_shape).astype(dtype)
+        b_np = numpy.random.rand(*b_shape).astype(dtype)
+
+        a_dp = inp.array(a_np)
+        b_dp = inp.array(b_np)
+
+        result = inp.linalg.lstsq(a_dp, b_dp)
+        expected = numpy.linalg.lstsq(a_np, b_np)
+
+        for param_dp, param_np in zip(result, expected):
+            assert_dtype_allclose(param_dp, param_np)
+
+    @pytest.mark.parametrize("a_dtype", get_all_dtypes())
+    @pytest.mark.parametrize("b_dtype", get_all_dtypes())
+    def test_lstsq_diff_type(self, a_dtype, b_dtype):
+        a_np = numpy.array([[1, 2], [3, -5]], dtype=a_dtype)
+        b_np = numpy.array([4, 1], dtype=b_dtype)
+
+        a_dp = inp.array(a_np)
+        b_dp = inp.array(b_np)
+
+        expected = numpy.linalg.lstsq(a_np, b_np)
+        result = inp.linalg.lstsq(a_dp, b_dp)
+
+        for param_dp, param_np in zip(result, expected):
+            assert_dtype_allclose(param_dp, param_np)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        ["m", "n", "nrhs"],
+        [(0, 4, 1), (0, 4, 2), (4, 0, 1), (4, 0, 2), (4, 2, 0), (0, 0, 0)],
+    )
+    def test_lstsq_empty(self, m, n, nrhs, dtype):
+        a_np = numpy.arange(m * n).reshape(m, n).astype(dtype)
+        b_np = numpy.ones((m, nrhs)).astype(dtype)
+
+        a_dp = inp.array(a_np)
+        b_dp = inp.array(b_np)
+
+        result = inp.linalg.lstsq(a_dp, b_dp)
+        expected = numpy.linalg.lstsq(a_np, b_np)
+
+        for param_dp, param_np in zip(result, expected):
+            assert_dtype_allclose(param_dp, param_np)
+
+    def test_lstsq_errors(self):
+        a_dp = inp.array([[1, 0.5], [0.5, 1]], dtype="float32")
+        b_dp = inp.array(a_dp, dtype="float32")
+
+        # diffetent queue
+        a_queue = dpctl.SyclQueue()
+        b_queue = dpctl.SyclQueue()
+        a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
+        b_dp_q = inp.array(b_dp, sycl_queue=b_queue)
+        assert_raises(ValueError, inp.linalg.lstsq, a_dp_q, b_dp_q)
+
+        # unsupported type `a` and `b`
+        a_np = inp.asnumpy(a_dp)
+        b_np = inp.asnumpy(b_dp)
+        assert_raises(TypeError, inp.linalg.lstsq, a_np, b_dp)
+        assert_raises(TypeError, inp.linalg.lstsq, a_dp, b_np)
+
+        # unsupported type `rcond`
+        assert_raises(TypeError, inp.linalg.lstsq, a_dp, b_dp, [-1])
 
 
 class TestMatrixPower:

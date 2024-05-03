@@ -38,7 +38,7 @@ class TestAngle:
         expected = numpy.angle(np_a, deg=deg)
         result = dpnp.angle(dp_a, deg=deg)
 
-        # In Numpy, for boolean arguments the output data type is always default floating data type.
+        # In NumPy, for boolean arguments the output data type is always default floating data type.
         # while data type of output in DPNP is determined by Type Promotion Rules.
         # data type should not be compared
         assert_allclose(result.asnumpy(), expected)
@@ -2571,7 +2571,6 @@ class TestMatmul:
 
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
-
         result = dpnp.matmul(b1, b2)
         expected = numpy.matmul(a1, a2)
         assert_dtype_allclose(result, expected)

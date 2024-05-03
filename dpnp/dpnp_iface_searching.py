@@ -88,13 +88,13 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     --------
     :obj:`dpnp.ndarray.argmax` : Equivalent function.
     :obj:`dpnp.nanargmax` : Returns the indices of the maximum values along
-                            an axis, igonring NaNs.
+                            an axis, ignoring NaNs.
     :obj:`dpnp.argmin` : Returns the indices of the minimum values
                          along an axis.
     :obj:`dpnp.max` : The maximum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
     :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``
-                                  from argmax to an array as if by calling max.
+                    from :obj:`dpnp.argmax` to an array as if by calling max.
 
     Notes
     -----
@@ -174,13 +174,13 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     --------
     :obj:`dpnp.ndarray.argmin` : Equivalent function.
     :obj:`dpnp.nanargmin` : Returns the indices of the minimum values
-                            along an axis, igonring NaNs.
+                            along an axis, ignoring NaNs.
     :obj:`dpnp.argmax` : Returns the indices of the maximum values
                          along an axis.
     :obj:`dpnp.min` : The minimum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
     :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``
-                                  from argmin to an array as if by calling min.
+                    from :obj:`dpnp.argmin` to an array as if by calling min.
 
     Notes
     -----
@@ -245,7 +245,7 @@ def searchsorted(a, v, side="left", sorter=None):
         Default is ``'left'``.
     sorter : {dpnp.ndarray, usm_ndarray}, optional
         Optional 1-D array of integer indices that sort array a into ascending
-        order. They are typically the result of argsort.
+        order. They are typically the result of :obj:`dpnp.argsort`.
         Out of bound index values of `sorter` array are treated using `"wrap"`
         mode documented in :py:func:`dpnp.take`.
         Default is ``None``.

@@ -49,6 +49,7 @@ from .dpnp_utils import (
 )
 from .dpnp_utils.dpnp_utils_linearalgebra import (
     dpnp_dot,
+    dpnp_einsum,
     dpnp_kron,
     dpnp_matmul,
 )
@@ -122,11 +123,11 @@ def dot(a, b, out=None):
     array([[4, 1],
            [2, 2]])
 
-    >>> a = np.arange(3*4*5*6).reshape((3,4,5,6))
-    >>> b = np.arange(3*4*5*6)[::-1].reshape((5,4,6,3))
-    >>> np.dot(a, b)[2,3,2,1,2,2]
+    >>> a = np.arange(3 * 4 * 5 * 6).reshape((3, 4, 5, 6))
+    >>> b = np.arange(3 * 4 * 5 * 6)[::-1].reshape((5, 4, 6, 3))
+    >>> np.dot(a, b)[2, 3, 2, 1, 2, 2]
     array(499128)
-    >>> sum(a[2,3,2,:] * b[1,2,:,2])
+    >>> sum(a[2, 3, 2, :] * b[1, 2, :, 2])
     array(499128)
 
     """
@@ -166,15 +167,61 @@ def dot(a, b, out=None):
     return dpnp.get_result_array(result, out, casting="no")
 
 
-def einsum(*args, **kwargs):
+def einsum(
+    *operands, out=None, dtype=None, order="K", casting="safe", optimize=False
+):
     """
+    einsum(subscripts, *operands, out=None, dtype=None, order="K", \
+        casting="safe", optimize=False)
+
     Evaluates the Einstein summation convention on the operands.
 
     For full documentation refer to :obj:`numpy.einsum`.
 
-    Limitations
-    -----------
-    Function is executed sequentially on CPU.
+    Parameters
+    ----------
+    subscripts : str
+        Specifies the subscripts for summation as comma separated list of
+        subscript labels. An implicit (classical Einstein summation)
+        calculation is performed unless the explicit indicator '->' is
+        included as well as subscript labels of the precise output form.
+    *operands : sequence of {dpnp.ndarrays, usm_ndarray}
+        These are the arrays for the operation.
+    out : {dpnp.ndarrays, usm_ndarray, None}, optional
+        If provided, the calculation is done into this array.
+    dtype : {dtype, None}, optional
+        If provided, forces the calculation to use the data type specified.
+        Default is ``None``.
+    order : {"C", "F", "A", "K"}, optional
+        Controls the memory layout of the output. ``"C"`` means it should be
+        C-contiguous. ``"F"`` means it should be F-contiguous, ``"A"`` means
+        it should be ``"F"`` if the inputs are all ``"F"``, ``"C"`` otherwise.
+        ``"K"`` means it should be as close to the layout as the inputs as
+        is possible, including arbitrarily permuted axes.
+        Default is ``"K"``.
+    casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
+        Controls what kind of data casting may occur. Setting this to
+        ``"unsafe"`` is not recommended, as it can adversely affect
+        accumulations.
+
+          * ``"no"`` means the data types should not be cast at all.
+          * ``"equiv"`` means only byte-order changes are allowed.
+          * ``"safe"`` means only casts which can preserve values are allowed.
+          * ``"same_kind"`` means only safe casts or casts within a kind,
+            like float64 to float32, are allowed.
+          * ``"unsafe"`` means any data conversions may be done.
+
+        Default is ``"safe"``.
+    optimize : {False, True, "greedy", "optimal"}, optional
+        Controls if intermediate optimization should occur. No optimization
+        will occur if ``False`` and ``True`` will default to the ``"greedy"``
+        algorithm. Also accepts an explicit contraction list from the
+        :obj:`dpnp.einsum_path` function. Default is ``False``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The calculation based on the Einstein summation convention.
 
     See Also
     -------
@@ -183,36 +230,323 @@ def einsum(*args, **kwargs):
     :obj:`dpnp.dot` : Returns the dot product of two arrays.
     :obj:`dpnp.inner` : Returns the inner product of two arrays.
     :obj:`dpnp.outer` : Returns the outer product of two arrays.
+    :obj:`dpnp.tensordot` :  Sum products over arbitrary axes.
+    :obj:`dpnp.linalg.multi_dot` : Chained dot product.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(25).reshape(5,5)
+    >>> b = np.arange(5)
+    >>> c = np.arange(6).reshape(2,3)
+
+    Trace of a matrix:
+
+    >>> np.einsum("ii", a)
+    array(60)
+    >>> np.einsum(a, [0,0])
+    array(60)
+    >>> np.trace(a)
+    array(60)
+
+    Extract the diagonal (requires explicit form):
+
+    >>> np.einsum("ii->i", a)
+    array([ 0,  6, 12, 18, 24])
+    >>> np.einsum(a, [0, 0], [0])
+    array([ 0,  6, 12, 18, 24])
+    >>> np.diag(a)
+    array([ 0,  6, 12, 18, 24])
+
+    Sum over an axis (requires explicit form):
+
+    >>> np.einsum("ij->i", a)
+    array([ 10,  35,  60,  85, 110])
+    >>> np.einsum(a, [0, 1], [0])
+    array([ 10,  35,  60,  85, 110])
+    >>> np.sum(a, axis=1)
+    array([ 10,  35,  60,  85, 110])
+
+    For higher dimensional arrays summing a single axis can be done
+    with ellipsis:
+
+    >>> np.einsum("...j->...", a)
+    array([ 10,  35,  60,  85, 110])
+    >>> np.einsum(a, [Ellipsis,1], [Ellipsis])
+    array([ 10,  35,  60,  85, 110])
+
+    Compute a matrix transpose, or reorder any number of axes:
+
+    >>> np.einsum("ji", c)
+    array([[0, 3],
+           [1, 4],
+           [2, 5]])
+    >>> np.einsum("ij->ji", c)
+    array([[0, 3],
+           [1, 4],
+           [2, 5]])
+    >>> np.einsum(c, [1, 0])
+    array([[0, 3],
+           [1, 4],
+           [2, 5]])
+    >>> np.transpose(c)
+    array([[0, 3],
+           [1, 4],
+           [2, 5]])
+
+    Vector inner products:
+
+    >>> np.einsum("i,i", b, b)
+    array(30)
+    >>> np.einsum(b, [0], b, [0])
+    array(30)
+    >>> np.inner(b,b)
+    array(30)
+
+    Matrix vector multiplication:
+
+    >>> np.einsum("ij,j", a, b)
+    array([ 30,  80, 130, 180, 230])
+    >>> np.einsum(a, [0,1], b, [1])
+    array([ 30,  80, 130, 180, 230])
+    >>> np.dot(a, b)
+    array([ 30,  80, 130, 180, 230])
+    >>> np.einsum("...j,j", a, b)
+    array([ 30,  80, 130, 180, 230])
+
+    Broadcasting and scalar multiplication:
+
+    >>> np.einsum("..., ...", 3, c)
+    array([[ 0,  3,  6],
+           [ 9, 12, 15]])
+    >>> np.einsum(",ij", 3, c)
+    array([[ 0,  3,  6],
+           [ 9, 12, 15]])
+    >>> np.einsum(3, [Ellipsis], c, [Ellipsis])
+    array([[ 0,  3,  6],
+           [ 9, 12, 15]])
+    >>> np.multiply(3, c)
+    array([[ 0,  3,  6],
+           [ 9, 12, 15]])
+
+    Vector outer product:
+
+    >>> np.einsum("i,j", np.arange(2)+1, b)
+    array([[0, 1, 2, 3, 4],
+           [0, 2, 4, 6, 8]])
+    >>> np.einsum(np.arange(2)+1, [0], b, [1])
+    array([[0, 1, 2, 3, 4],
+           [0, 2, 4, 6, 8]])
+    >>> np.outer(np.arange(2)+1, b)
+    array([[0, 1, 2, 3, 4],
+           [0, 2, 4, 6, 8]])
+
+    Tensor contraction:
+
+    >>> a = np.arange(60.).reshape(3, 4, 5)
+    >>> b = np.arange(24.).reshape(4, 3, 2)
+    >>> np.einsum("ijk,jil->kl", a, b)
+    array([[4400., 4730.],
+           [4532., 4874.],
+           [4664., 5018.],
+           [4796., 5162.],
+           [4928., 5306.]])
+    >>> np.einsum(a, [0, 1, 2], b, [1, 0, 3], [2, 3])
+    array([[4400., 4730.],
+           [4532., 4874.],
+           [4664., 5018.],
+           [4796., 5162.],
+           [4928., 5306.]])
+    >>> np.tensordot(a, b, axes=([1, 0],[0, 1]))
+    array([[4400., 4730.],
+           [4532., 4874.],
+           [4664., 5018.],
+           [4796., 5162.],
+           [4928., 5306.]])
+
+    Example of ellipsis use:
+
+    >>> a = np.arange(6).reshape((3, 2))
+    >>> b = np.arange(12).reshape((4, 3))
+    >>> np.einsum("ki,jk->ij", a, b)
+    array([[10, 28, 46, 64],
+           [13, 40, 67, 94]])
+    >>> np.einsum("ki,...k->i...", a, b)
+    array([[10, 28, 46, 64],
+           [13, 40, 67, 94]])
+    >>> np.einsum("k...,jk", a, b)
+    array([[10, 28, 46, 64],
+           [13, 40, 67, 94]])
+
+    Chained array operations. For more complicated contractions, speed ups
+    might be achieved by repeatedly computing a "greedy" path or computing
+    the "optimal" path in advance and repeatedly applying it, using an
+    `einsum_path` insertion. Performance improvements can be particularly
+    significant with larger arrays:
+
+    >>> a = np.ones(64000).reshape(20, 40, 80)
+
+    Basic `einsum`: 119 ms ± 26 ms per loop (evaluated on 12th
+    Gen Intel\u00AE Core\u2122 i7 processor)
+
+    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a)
+
+    Sub-optimal `einsum`: 32.9 ms ± 5.1 ms per loop
+
+    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="optimal")
+
+    Greedy `einsum`: 28.6 ms ± 4.8 ms per loop
+
+    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="greedy")
+
+    Optimal `einsum`: 26.9 ms ± 6.3 ms per loop
+
+    >>> path = np.einsum_path(
+        "ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="optimal"
+    )[0]
+    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize=path)
 
     """
 
-    return call_origin(numpy.einsum, *args, **kwargs)
+    if optimize is True:
+        optimize = "greedy"
+
+    return dpnp_einsum(
+        *operands,
+        out=out,
+        dtype=dtype,
+        order=order,
+        casting=casting,
+        optimize=optimize,
+    )
 
 
-def einsum_path(*args, **kwargs):
+def einsum_path(*operands, optimize="greedy", einsum_call=False):
     """
-    einsum_path(subscripts, *operands, optimize='greedy')
+    einsum_path(subscripts, *operands, optimize="greedy")
 
     Evaluates the lowest cost contraction order for an einsum expression
     by considering the creation of intermediate arrays.
 
     For full documentation refer to :obj:`numpy.einsum_path`.
 
-    Limitations
-    -----------
-    Function is executed sequentially on CPU.
+    Parameters
+    ----------
+    subscripts : str
+        Specifies the subscripts for summation.
+    *operands : sequence of arrays
+        These are the arrays for the operation in any form that can be
+        converted to an array. This includes scalars, lists, lists of
+        tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.
+    optimize : {bool, list, tuple, None, "greedy", "optimal"}
+        Choose the type of path. If a tuple is provided, the second argument is
+        assumed to be the maximum intermediate size created. If only a single
+        argument is provided the largest input or output array size is used
+        as a maximum intermediate size.
+
+        * if a list is given that starts with ``einsum_path``, uses this as the
+          contraction path
+        * if ``False`` or ``None`` no optimization is taken
+        * if ``True`` defaults to the "greedy" algorithm
+        * ``"optimal"`` is an algorithm that combinatorially explores all
+          possible ways of contracting the listed tensors and chooses the
+          least costly path. Scales exponentially with the number of terms
+          in the contraction.
+        * ``"greedy"`` is an algorithm that chooses the best pair contraction
+          at each step. Effectively, this algorithm searches the largest inner,
+          Hadamard, and then outer products at each step. Scales cubically with
+          the number of terms in the contraction. Equivalent to the
+          ``"optimal"`` path for most contractions.
+
+        Default is ``"greedy"``.
+
+    Returns
+    -------
+    path : list of tuples
+        A list representation of the einsum path.
+    string_repr : str
+        A printable representation of the einsum path.
+
+    Notes
+    -----
+    The resulting path indicates which terms of the input contraction should be
+    contracted first, the result of this contraction is then appended to the
+    end of the contraction list. This list can then be iterated over until all
+    intermediate contractions are complete.
 
     See Also
     --------
     :obj:`dpnp.einsum` : Evaluates the Einstein summation convention
                          on the operands.
+    :obj:`dpnp.linalg.multi_dot` : Chained dot product.
     :obj:`dpnp.dot` : Returns the dot product of two arrays.
     :obj:`dpnp.inner` : Returns the inner product of two arrays.
     :obj:`dpnp.outer` : Returns the outer product of two arrays.
 
+    Examples
+    --------
+    We can begin with a chain dot example. In this case, it is optimal to
+    contract the ``b`` and ``c`` tensors first as represented by the first
+    element of the path ``(1, 2)``. The resulting tensor is added to the end
+    of the contraction and the remaining contraction ``(0, 1)`` is then
+    completed.
+
+    >>> import dpnp as np
+    >>> np.random.seed(123)
+    >>> a = np.random.rand(2, 2)
+    >>> b = np.random.rand(2, 5)
+    >>> c = np.random.rand(5, 2)
+    >>> path_info = np.einsum_path("ij,jk,kl->il", a, b, c, optimize="greedy")
+
+    >>> print(path_info[0])
+    ['einsum_path', (1, 2), (0, 1)]
+
+    >>> print(path_info[1])
+      Complete contraction:  ij,jk,kl->il # may vary
+             Naive scaling:  4
+         Optimized scaling:  3
+          Naive FLOP count:  1.200e+02
+      Optimized FLOP count:  5.700e+01
+       Theoretical speedup:  2.105
+      Largest intermediate:  4.000e+00 elements
+    -------------------------------------------------------------------------
+    scaling                  current                                remaining
+    -------------------------------------------------------------------------
+       3                   kl,jk->jl                                ij,jl->il
+       3                   jl,ij->il                                   il->il
+
+    A more complex index transformation example.
+
+    >>> I = np.random.rand(10, 10, 10, 10)
+    >>> C = np.random.rand(10, 10)
+    >>> path_info = np.einsum_path(
+            "ea,fb,abcd,gc,hd->efgh", C, C, I, C, C, optimize="greedy"
+        )
+    >>> print(path_info[0])
+    ['einsum_path', (0, 2), (0, 3), (0, 2), (0, 1)]
+    >>> print(path_info[1])
+      Complete contraction:  ea,fb,abcd,gc,hd->efgh # may vary
+             Naive scaling:  8
+         Optimized scaling:  5
+          Naive FLOP count:  5.000e+08
+      Optimized FLOP count:  8.000e+05
+       Theoretical speedup:  624.999
+      Largest intermediate:  1.000e+04 elements
+    --------------------------------------------------------------------------
+    scaling                  current                                remaining
+    --------------------------------------------------------------------------
+       5               abcd,ea->bcde                      fb,gc,hd,bcde->efgh
+       5               bcde,fb->cdef                         gc,hd,cdef->efgh
+       5               cdef,gc->defg                            hd,defg->efgh
+       5               defg,hd->efgh                               efgh->efgh
+
     """
 
-    return call_origin(numpy.einsum_path, *args, **kwargs)
+    return numpy.einsum_path(
+        *operands,
+        optimize=optimize,
+        einsum_call=einsum_call,
+    )
 
 
 def inner(a, b):
@@ -243,7 +577,7 @@ def inner(a, b):
     See Also
     --------
     :obj:`dpnp.einsum` : Einstein summation convention..
-    :obj:`dpnp.dot` : Generalised matrix product,
+    :obj:`dpnp.dot` : Generalized matrix product,
                       using second last dimension of `b`.
     :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
 
@@ -305,7 +639,10 @@ def inner(a, b):
 
 def kron(a, b):
     """
-    Returns the kronecker product of two arrays.
+    Kronecker product of two arrays.
+
+    Computes the Kronecker product, a composite array made of blocks of the
+    second array scaled by the first.
 
     For full documentation refer to :obj:`numpy.kron`.
 
@@ -405,7 +742,7 @@ def matmul(
         Type to use in computing the matrix product. By default, the returned
         array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.
-    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+    casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur. Default: ``"same_kind"``.
     order : {"C", "F", "A", "K", None}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
@@ -597,7 +934,7 @@ def tensordot(a, b, axes=2):
     Returns
     -------
     out : dpnp.ndarray
-        Returns the tensordot product of `a` and `b`.
+        Returns the tensor dot product of `a` and `b`.
 
     See Also
     --------
@@ -676,7 +1013,7 @@ def tensordot(a, b, axes=2):
         if not isinstance(axes, int):
             raise TypeError("Axes must be an integer.") from e
         if axes < 0:
-            raise ValueError("Axes must be a nonnegative integer.") from e
+            raise ValueError("Axes must be a non-negative integer.") from e
         axes_a = tuple(range(-axes, 0))
         axes_b = tuple(range(0, axes))
     else:

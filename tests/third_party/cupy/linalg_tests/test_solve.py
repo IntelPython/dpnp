@@ -19,6 +19,7 @@ from tests.third_party.cupy.testing import _condition
         }
     )
 )
+@testing.fix_random()
 class TestSolve(unittest.TestCase):
     # TODO: add get_batched_gesv_limit
     # def setUp(self):
@@ -66,7 +67,7 @@ class TestSolve(unittest.TestCase):
                 xp.linalg.solve(a, b)
 
     # Undefined behavior is implementation-dependent:
-    # Numpy with OpenBLAS returns an empty array
+    # NumPy with OpenBLAS returns an empty array
     # while numpy with OneMKL raises LinAlgError
     @pytest.mark.skip("Undefined behavior")
     def test_solve_singular_empty(self, xp):
@@ -137,9 +138,7 @@ class TestInv(unittest.TestCase):
 
     def check_shape(self, a_shape):
         a = cupy.random.rand(*a_shape)
-        with self.assertRaises(
-            (numpy.linalg.LinAlgError, cupy.linalg.LinAlgError)
-        ):
+        with self.assertRaises(cupy.linalg.LinAlgError):
             cupy.linalg.inv(a)
 
     def test_inv(self):
@@ -226,6 +225,98 @@ class TestPinv(unittest.TestCase):
         self.check_x((2, 0, 3), rcond=1e-15)
 
 
+class TestLstsq:
+    @testing.for_dtypes("ifdFD")
+    @testing.numpy_cupy_allclose(atol=1e-3, type_check=has_support_aspect64())
+    def check_lstsq_solution(
+        self, a_shape, b_shape, seed, rcond, xp, dtype, singular=False
+    ):
+        if singular:
+            m, n = a_shape
+            rank = min(m, n) - 1
+            a = xp.matmul(
+                testing.shaped_random(
+                    (m, rank), xp, dtype=dtype, scale=3, seed=seed
+                ),
+                testing.shaped_random(
+                    (rank, n), xp, dtype=dtype, scale=3, seed=seed + 42
+                ),
+            )
+        else:
+            a = testing.shaped_random(a_shape, xp, dtype=dtype, seed=seed)
+        b = testing.shaped_random(b_shape, xp, dtype=dtype, seed=seed + 37)
+        a_copy = a.copy()
+        b_copy = b.copy()
+        results = xp.linalg.lstsq(a, b, rcond)
+        if xp is cupy:
+            testing.assert_array_equal(a_copy, a)
+            testing.assert_array_equal(b_copy, b)
+        return results
+
+    def check_invalid_shapes(self, a_shape, b_shape):
+        a = cupy.random.rand(*a_shape)
+        b = cupy.random.rand(*b_shape)
+        with pytest.raises(cupy.linalg.LinAlgError):
+            cupy.linalg.lstsq(a, b, rcond=None)
+
+    def test_lstsq_solutions(self):
+        # Compares numpy.linalg.lstsq and cupy.linalg.lstsq solutions for:
+        #   a shapes range from (3, 3) to (5, 3) and (3, 5)
+        #   b shapes range from (i, 3) to (i, )
+        #   sets a random seed for deterministic testing
+        for i in range(3, 6):
+            for j in range(3, 6):
+                for k in range(2, 4):
+                    seed = i + j + k
+                    # check when b has shape (i, k)
+                    self.check_lstsq_solution((i, j), (i, k), seed, rcond=-1)
+                    self.check_lstsq_solution((i, j), (i, k), seed, rcond=None)
+                    self.check_lstsq_solution((i, j), (i, k), seed, rcond=0.5)
+                    self.check_lstsq_solution(
+                        (i, j), (i, k), seed, rcond=1e-6, singular=True
+                    )
+                # check when b has shape (i, )
+                self.check_lstsq_solution((i, j), (i,), seed + 1, rcond=-1)
+                self.check_lstsq_solution((i, j), (i,), seed + 1, rcond=None)
+                self.check_lstsq_solution((i, j), (i,), seed + 1, rcond=0.5)
+                self.check_lstsq_solution(
+                    (i, j), (i,), seed + 1, rcond=1e-6, singular=True
+                )
+
+    @pytest.mark.parametrize("rcond", [-1, None, 0.5])
+    @pytest.mark.parametrize("k", [None, 0, 1, 4])
+    @pytest.mark.parametrize(("i", "j"), [(0, 0), (3, 0), (0, 7)])
+    @testing.for_dtypes("ifdFD")
+    @testing.numpy_cupy_allclose(rtol=1e-6, type_check=has_support_aspect64())
+    def test_lstsq_empty_matrix(self, xp, dtype, i, j, k, rcond):
+        a = xp.empty((i, j), dtype=dtype)
+        assert a.size == 0
+        b_shape = (i,) if k is None else (i, k)
+        b = testing.shaped_random(b_shape, xp, dtype)
+        return xp.linalg.lstsq(a, b, rcond)
+
+    def test_invalid_shapes(self):
+        self.check_invalid_shapes((4, 3), (3,))
+        self.check_invalid_shapes((3, 3, 3), (2, 2))
+        self.check_invalid_shapes((3, 3, 3), (3, 3))
+        self.check_invalid_shapes((3, 3), (3, 3, 3))
+        self.check_invalid_shapes((2, 2), (10,))
+        self.check_invalid_shapes((3, 3), (2, 2))
+        self.check_invalid_shapes((4, 3), (10, 3, 3))
+
+    # dpnp.linalg.lstsq() does not raise a FutureWarning
+    # because dpnp did not have a previous implementation of dpnp.linalg.lstsq()
+    # and there is no need to get rid of old deprecated behavior as numpy did.
+    @pytest.mark.skip("No support of deprecated behavior")
+    @testing.for_float_dtypes(no_float16=True)
+    @testing.numpy_cupy_allclose(atol=1e-3)
+    def test_warn_rcond(self, xp, dtype):
+        a = testing.shaped_random((3, 3), xp, dtype)
+        b = testing.shaped_random((3,), xp, dtype)
+        with testing.assert_warns(FutureWarning):
+            return xp.linalg.lstsq(a, b)
+
+
 class TestTensorInv(unittest.TestCase):
     @testing.for_dtypes("ifdFD")
     @_condition.retry(10)
@@ -240,9 +331,7 @@ class TestTensorInv(unittest.TestCase):
 
     def check_shape(self, a_shape, ind):
         a = cupy.random.rand(*a_shape)
-        with self.assertRaises(
-            (numpy.linalg.LinAlgError, cupy.linalg.LinAlgError)
-        ):
+        with self.assertRaises(cupy.linalg.LinAlgError):
             cupy.linalg.tensorinv(a, ind=ind)
 
     def check_ind(self, a_shape, ind):

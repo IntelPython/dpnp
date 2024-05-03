@@ -1048,6 +1048,29 @@ def test_multi_dot(device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+def test_einsum(device):
+    numpy_array_list = []
+    dpnp_array_list = []
+    for _ in range(3):  # creat arrays one by one
+        a = numpy.random.rand(10, 10)
+        b = dpnp.array(a, device=device)
+
+        numpy_array_list.append(a)
+        dpnp_array_list.append(b)
+
+    result = dpnp.einsum("ij,jk,kl->il", *dpnp_array_list)
+    expected = numpy.einsum("ij,jk,kl->il", *numpy_array_list)
+    assert_dtype_allclose(result, expected)
+
+    _, exec_q = get_usm_allocations(dpnp_array_list)
+    assert_sycl_queue_equal(result.sycl_queue, exec_q)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_out_multi_dot(device):
     numpy_array_list = []
     dpnp_array_list = []
@@ -2022,3 +2045,59 @@ def test_tensorsolve(device):
     result_queue = result.sycl_queue
 
     assert_sycl_queue_equal(result_queue, a_dp.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    ["m", "n", "nrhs"],
+    [
+        (4, 2, 2),
+        (4, 0, 1),
+        (4, 2, 0),
+        (0, 0, 0),
+    ],
+)
+def test_lstsq(m, n, nrhs, device):
+    a_np = numpy.arange(m * n).reshape(m, n).astype(dpnp.default_float_type())
+    b_np = numpy.ones((m, nrhs)).astype(dpnp.default_float_type())
+
+    a_dp = dpnp.array(a_np, device=device)
+    b_dp = dpnp.array(b_np, device=device)
+
+    result_dp = dpnp.linalg.lstsq(a_dp, b_dp)
+    result = numpy.linalg.lstsq(a_np, b_np)
+
+    for param_dp, param_np in zip(result_dp, result):
+        assert_dtype_allclose(param_dp, param_np)
+
+    for param_dp in result_dp:
+        assert_sycl_queue_equal(param_dp.sycl_queue, a_dp.sycl_queue)
+        assert_sycl_queue_equal(param_dp.sycl_queue, b_dp.sycl_queue)
+
+
+@pytest.mark.parametrize("weights", [None, numpy.arange(7, 12)])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_histogram(weights, device):
+    v = numpy.arange(5)
+    w = weights
+
+    iv = dpnp.array(v, device=device)
+    iw = None if weights is None else dpnp.array(w, sycl_queue=iv.sycl_queue)
+
+    expected_hist, expected_edges = numpy.histogram(v, weights=w)
+    result_hist, result_edges = dpnp.histogram(iv, weights=iw)
+    assert_array_equal(result_hist, expected_hist)
+    assert_dtype_allclose(result_edges, expected_edges)
+
+    hist_queue = result_hist.sycl_queue
+    edges_queue = result_edges.sycl_queue
+    assert_sycl_queue_equal(hist_queue, iv.sycl_queue)
+    assert_sycl_queue_equal(edges_queue, iv.sycl_queue)
