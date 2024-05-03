@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.15.0dev1+41.g174a388a7c documentation</title>
+  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.15.0dev1+54.gabf9aac915 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=294050fa"></script>
+        <script src="../../_static/documentation_options.js?v=8e060acb"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+41.g174a388a7c
+                0.15.0dev1+54.gabf9aac915
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -180,13 +180,13 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.ndarray.argmax` : Equivalent function.</span>
 <span class="sd">    :obj:`dpnp.nanargmax` : Returns the indices of the maximum values along</span>
-<span class="sd">                            an axis, igonring NaNs.</span>
+<span class="sd">                            an axis, ignoring NaNs.</span>
 <span class="sd">    :obj:`dpnp.argmin` : Returns the indices of the minimum values</span>
 <span class="sd">                         along an axis.</span>
 <span class="sd">    :obj:`dpnp.max` : The maximum value along a given axis.</span>
 <span class="sd">    :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.</span>
 <span class="sd">    :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``</span>
-<span class="sd">                                  from argmax to an array as if by calling max.</span>
+<span class="sd">                    from :obj:`dpnp.argmax` to an array as if by calling max.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -269,13 +269,13 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.ndarray.argmin` : Equivalent function.</span>
 <span class="sd">    :obj:`dpnp.nanargmin` : Returns the indices of the minimum values</span>
-<span class="sd">                            along an axis, igonring NaNs.</span>
+<span class="sd">                            along an axis, ignoring NaNs.</span>
 <span class="sd">    :obj:`dpnp.argmax` : Returns the indices of the maximum values</span>
 <span class="sd">                         along an axis.</span>
 <span class="sd">    :obj:`dpnp.min` : The minimum value along a given axis.</span>
 <span class="sd">    :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.</span>
 <span class="sd">    :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``</span>
-<span class="sd">                                  from argmin to an array as if by calling min.</span>
+<span class="sd">                    from :obj:`dpnp.argmin` to an array as if by calling min.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -343,7 +343,7 @@
 <span class="sd">        Default is ``&#39;left&#39;``.</span>
 <span class="sd">    sorter : {dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Optional 1-D array of integer indices that sort array a into ascending</span>
-<span class="sd">        order. They are typically the result of argsort.</span>
+<span class="sd">        order. They are typically the result of :obj:`dpnp.argsort`.</span>
 <span class="sd">        Out of bound index values of `sorter` array are treated using `&quot;wrap&quot;`</span>
 <span class="sd">        mode documented in :py:func:`dpnp.take`.</span>
 <span class="sd">        Default is ``None``.</span>
