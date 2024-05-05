@@ -555,6 +555,7 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
     if res_shape != orig_shape:
         res = res.reshape(orig_shape)
 
+    res = dpnp.ascontiguousarray(res)
     return res
 
 
@@ -2063,7 +2064,9 @@ def dpnp_matmul(
             )
             host_tasks_list.append(ht_blas_ev)
             if not row_major:
-                result = dpnp.reshape(result.ravel(), result.shape, order="F")
+                result = dpnp.ascontiguousarray(
+                    dpnp.reshape(result.ravel(), result.shape, order="F")
+                )
         else:
             result = _gemm_batch_matmul(
                 exec_q,
@@ -2105,6 +2108,10 @@ def dpnp_matmul(
         else:
             return result
     else:
+        # TODO: There is oppurtinuty to improve performance when out keyword
+        # is present. For some cases, out is NOT result but they have the same
+        # base (They are views of the same data). In this case, we can avoid
+        # copyign result to out.
         result = dpnp.get_result_array(result, out, casting=casting)
         if axes is not None and out is result:
             # out and out_orig contain the same data but they have different shape
