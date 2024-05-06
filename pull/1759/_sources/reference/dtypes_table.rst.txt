@@ -1,8 +1,7 @@
-Available array data types
-==========================
-
 .. _Data types:
 
+Available array data types
+==========================
 
 Table below shows a list of all supported data types (dtypes) and constants of the Data Parallel Extension for NumPy*.
 

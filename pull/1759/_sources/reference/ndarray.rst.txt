@@ -115,7 +115,7 @@ For the following methods there are also corresponding functions in
 :func:`diagonal <dpnp.diagonal>`, :func:`imag <dpnp.imag>`,
 :func:`max <dpnp.max>`, :func:`mean <dpnp.mean>`, :func:`min <dpnp.min>`,
 :func:`nonzero <dpnp.nonzero>`, :func:`partition <dpnp.partition>`,
-:func:`prod <dpnp.prod>`, :func:`ptp <dpnp.ptp>`, :func:`put <dpnp.put>`,
+:func:`prod <dpnp.prod>`, :func:`put <dpnp.put>`,
 :func:`ravel <dpnp.ravel>`, :func:`real <dpnp.real>`, :func:`repeat <dpnp.repeat>`,
 :func:`reshape <dpnp.reshape>`, :func:`round <dpnp.around>`,
 :func:`searchsorted <dpnp.searchsorted>`, :func:`sort <dpnp.sort>`,
@@ -204,7 +204,6 @@ Calculation
    dpnp.ndarray.argmax
    dpnp.ndarray.min
    dpnp.ndarray.argmin
-   dpnp.ndarray.ptp
    dpnp.ndarray.clip
    dpnp.ndarray.conj
    dpnp.ndarray.conjugate
@@ -232,9 +231,9 @@ Each of the arithmetic operations (``+``, ``-``, ``*``, ``/``, ``//``,
 ``%``, ``divmod()``, ``**`` or ``pow()``, ``<<``, ``>>``, ``&``,
 ``^``, ``|``, ``~``) and the comparisons (``==``, ``<``, ``>``,
 ``<=``, ``>=``, ``!=``) is equivalent to the corresponding
-universal function (or **ufunc** for short) in DPNP.  For
+universal function (or :term:`ufunc` for short) in DPNP. For
 more information, see the section on :ref:`Universal Functions
-<ufunc>`.
+<ufuncs>`.
 
 
 Comparison operators:
@@ -249,6 +248,23 @@ Comparison operators:
    dpnp.ndarray.__ge__
    dpnp.ndarray.__eq__
    dpnp.ndarray.__ne__
+
+Truth value of an array (:func:`bool()`):
+
+.. autosummary::
+   :toctree: generated/
+
+   dpnp.ndarray.__bool__
+
+.. note::
+
+   Truth-value testing of an array invokes
+   :meth:`dpnp.ndarray.__bool__`, which raises an error if the number of
+   elements in the array is larger than 1, because the truth value
+   of such arrays is ambiguous. Use :meth:`.any() <dpnp.ndarray.any>` and
+   :meth:`.all() <dpnp.ndarray.all>` instead to be clear about what is meant
+   in such cases. (If the number of elements is 0, the array evaluates
+   to ``False``.)
 
 
 Unary operations:
@@ -302,6 +318,14 @@ Arithmetic, in-place:
    dpnp.ndarray.__iand__
    dpnp.ndarray.__ior__
    dpnp.ndarray.__ixor__
+
+
+Matrix Multiplication:
+
+.. autosummary::
+   :toctree: generated/
+
+   dpnp.ndarray.__matmul__
 
 
 Special methods

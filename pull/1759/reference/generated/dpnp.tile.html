@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.tile &mdash; Data Parallel Extension for NumPy 0.15.0dev1+16.gfcd50a6e7e documentation</title>
+  <title>dpnp.tile &mdash; Data Parallel Extension for NumPy 0.15.0dev1+63.g35c37aeeb0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,8 +24,8 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=e72dfe83"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/documentation_options.js?v=4e58ae65"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+16.gfcd50a6e7e
+                0.15.0dev1+63.g35c37aeeb0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -141,21 +141,21 @@ axes. So a shape (3,) array is promoted to (1, 3) for 2-D replication,
 or shape (1, 1, 3) for 3-D replication. If this is not the desired
 behavior, promote <cite>A</cite> to d-dimensions manually before calling this
 function.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">A.ndim</span> <span class="pre">&gt;</span> <span class="pre">d</span></code>, <cite>reps</cite> is promoted to <cite>A</cite>.ndim by prepending 1’s to it.
+<p>If <code class="docutils literal notranslate"><span class="pre">A.ndim</span> <span class="pre">&gt;</span> <span class="pre">d</span></code>, <cite>reps</cite> is promoted to <cite>A</cite>.ndim by prepending 1's to it.
 Thus for an <cite>A</cite> of shape (2, 3, 4, 5), a <cite>reps</cite> of (2, 2) is treated as
 (1, 1, 2, 2).</p>
 <p>Note : Although tile may be used for broadcasting, it is strongly
-recommended to use dpnp’s broadcasting operations and functions.</p>
+recommended to use dpnp's broadcasting operations and functions.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tile.html#numpy.tile" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tile</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) – The input array.</p></li>
-<li><p><strong>reps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em>) – The number of repetitions of <cite>A</cite> along each axis.</p></li>
+<li><p><strong>A</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- The input array.</p></li>
+<li><p><strong>reps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em>) -- The number of repetitions of <cite>A</cite> along each axis.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> – The tiled output array.</p>
+<dd class="field-even"><p><strong>out</strong> -- The tiled output array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
