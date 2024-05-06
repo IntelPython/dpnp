@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+63.g35c37aeeb0 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+64.g091550d760 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4e58ae65"></script>
+        <script src="../../_static/documentation_options.js?v=cce681eb"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+63.g35c37aeeb0
+                0.15.0dev1+64.g091550d760
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -220,7 +220,7 @@
 <span class="sd">    step : {int, real}, optional</span>
 <span class="sd">        Spacing between values. The default `step` size is 1. If `step`</span>
 <span class="sd">        is specified as a position argument, `start` must also be given.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
@@ -322,11 +322,11 @@
 <span class="sd">        Input data, in any form that can be converted to an array. This</span>
 <span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
 <span class="sd">        tuples of lists, and ndarrays.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
-<span class="sd">    copy : bool, optional</span>
+<span class="sd">    copy : {bool}, optional</span>
 <span class="sd">        If ``True`` (default), then the object is copied.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array. Default: &quot;K&quot;.</span>
@@ -451,7 +451,7 @@
 <span class="sd">        Input data, in any form that can be converted to an array. This</span>
 <span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
 <span class="sd">        tuples of lists, and ndarrays.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
@@ -550,7 +550,7 @@
 <span class="sd">        Input data, in any form that can be converted to an array. This</span>
 <span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
 <span class="sd">        tuples of lists, and ndarrays.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
@@ -644,7 +644,7 @@
 <span class="sd">        Input data, in any form that can be converted to an array. This</span>
 <span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
 <span class="sd">        tuples of lists, and ndarrays.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
@@ -757,7 +757,7 @@
 <span class="sd">        Input data, in any form that can be converted to an array. This</span>
 <span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
 <span class="sd">        tuples of lists, and ndarrays.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
@@ -1200,7 +1200,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
@@ -1301,7 +1301,7 @@
 <span class="sd">    a : {dpnp_array, usm_ndarray}</span>
 <span class="sd">        The shape and dtype of `a` define these same attributes</span>
 <span class="sd">        of the returned array.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
@@ -1417,7 +1417,7 @@
 <span class="sd">        Index of the diagonal: 0 (the default) refers to the main diagonal,</span>
 <span class="sd">        a positive value refers to an upper diagonal, and a negative value to</span>
 <span class="sd">        a lower diagonal.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
@@ -2045,7 +2045,7 @@
 <span class="sd">        Fill value, in any form that can be converted to an array. This</span>
 <span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
 <span class="sd">        tuples of lists, and ndarrays.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
@@ -2149,7 +2149,7 @@
 <span class="sd">        Fill value, in any form that can be converted to an array. This</span>
 <span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
 <span class="sd">        tuples of lists, and ndarrays.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
@@ -2270,7 +2270,7 @@
 <span class="sd">        all but the last (a sequence of length `num`) are returned.</span>
 <span class="sd">    num : int, optional</span>
 <span class="sd">        Number of samples to generate. Default is 50.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
@@ -2286,10 +2286,10 @@
 <span class="sd">        Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
-<span class="sd">    endpoint : bool, optional</span>
+<span class="sd">    endpoint : {bool}, optional</span>
 <span class="sd">        If ``True``, `stop` is the last sample. Otherwise, it is not included.</span>
 <span class="sd">        Default is ``True``.</span>
-<span class="sd">    axis : int, optional</span>
+<span class="sd">    axis : {int}, optional</span>
 <span class="sd">        The axis in the result to store the samples. Relevant only if start or</span>
 <span class="sd">        stop are array-like. By default (0), the samples will be along a new</span>
 <span class="sd">        axis inserted at the beginning. Use -1 to get an axis at the end.</span>
@@ -2383,7 +2383,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    n : int</span>
 <span class="sd">        Number of rows (and columns) in `n` x `n` output.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
@@ -2497,7 +2497,7 @@
 <span class="sd">        of tuples, tuples of lists, and ndarrays. If `endpoint` is set to</span>
 <span class="sd">        ``False`` the sequence consists of all but the last of ``num + 1``</span>
 <span class="sd">        evenly spaced samples, so that `stop` is excluded.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
@@ -2513,13 +2513,13 @@
 <span class="sd">        Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
-<span class="sd">    endpoint : bool, optional</span>
+<span class="sd">    endpoint : {bool}, optional</span>
 <span class="sd">        If ``True``, `stop` is the last sample. Otherwise, it is not included.</span>
 <span class="sd">        Default is ``True``.</span>
-<span class="sd">    retstep : bool, optional</span>
+<span class="sd">    retstep : {bool}, optional</span>
 <span class="sd">        If ``True``, return (samples, step), where step is the spacing between</span>
 <span class="sd">        samples.</span>
-<span class="sd">    axis : int, optional</span>
+<span class="sd">    axis : {int}, optional</span>
 <span class="sd">        The axis in the result to store the samples. Relevant only if start or</span>
 <span class="sd">        stop are array-like. By default (0), the samples will be along a new</span>
 <span class="sd">        axis inserted at the beginning. Use -1 to get an axis at the end.</span>
@@ -2737,10 +2737,10 @@
 <span class="sd">        Default is ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
-<span class="sd">    endpoint : bool, optional</span>
+<span class="sd">    endpoint : {bool}, optional</span>
 <span class="sd">        If ``True``, stop is the last sample. Otherwise, it is not included.</span>
 <span class="sd">        Default is ``True``.</span>
-<span class="sd">    base : array_like, optional</span>
+<span class="sd">    base : {array_like}, optional</span>
 <span class="sd">        Input data, in any form that can be converted to an array. This</span>
 <span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
 <span class="sd">        tuples of lists, and ndarrays. The base of the log space, in any form</span>
@@ -2748,11 +2748,11 @@
 <span class="sd">        of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">        The `step` size between the elements in ``ln(samples) / ln(base)``</span>
 <span class="sd">        (or log_base(samples)) is uniform. Default is 10.0.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
-<span class="sd">    axis : int, optional</span>
+<span class="sd">    axis : {int}, optional</span>
 <span class="sd">        The axis in the result to store the samples. Relevant only if start,</span>
 <span class="sd">        stop, or base are array-like. By default (0), the samples will be along</span>
 <span class="sd">        a new axis inserted at the beginning. Use -1 to get an axis at the end.</span>
@@ -2838,11 +2838,11 @@
 <span class="sd">        1-D arrays representing the coordinates of a grid.</span>
 <span class="sd">    indexing : {&#39;xy&#39;, &#39;ij&#39;}, optional</span>
 <span class="sd">        Cartesian (``&#39;xy&#39;``, default) or matrix (``&#39;ij&#39;``) indexing of output.</span>
-<span class="sd">    sparse : bool, optional</span>
+<span class="sd">    sparse : {bool}, optional</span>
 <span class="sd">        If True the shape of the returned coordinate array for dimension `i`</span>
 <span class="sd">        is reduced from ``(N1, ..., Ni, ... Nn)`` to</span>
 <span class="sd">        ``(1, ..., 1, Ni, 1, ..., 1)``. Default is False.</span>
-<span class="sd">    copy : bool, optional</span>
+<span class="sd">    copy : {bool}, optional</span>
 <span class="sd">        If False, a view into the original arrays are returned in order to</span>
 <span class="sd">        conserve memory.  Default is True.</span>
 
@@ -3075,7 +3075,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
@@ -3182,7 +3182,7 @@
 <span class="sd">    a : {dpnp_array, usm_ndarray}</span>
 <span class="sd">        The shape and dtype of `a` define these same attributes</span>
 <span class="sd">        of the returned array.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
@@ -3334,7 +3334,7 @@
 <span class="sd">        The sub-diagonal at and below which the array is filled. k = 0 is</span>
 <span class="sd">        the main diagonal, while k &lt; 0 is below it, and k &gt; 0 is above.</span>
 <span class="sd">        The default is 0.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
@@ -3570,7 +3570,7 @@
 <span class="sd">    N : int, optional</span>
 <span class="sd">        Number of columns in the output. If `N` is not specified, a square</span>
 <span class="sd">        array is returned ``(N = len(x))``.</span>
-<span class="sd">    increasing : bool, optional</span>
+<span class="sd">    increasing : {bool}, optional</span>
 <span class="sd">        Order of the powers of the columns. If ``True,`` the powers increase</span>
 <span class="sd">        from left to right, if ``False`` (the default) they are reversed.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -3687,7 +3687,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
@@ -3794,7 +3794,7 @@
 <span class="sd">    a : {dpnp_array, usm_ndarray}</span>
 <span class="sd">        The shape and dtype of `a` define these same attributes</span>
 <span class="sd">        of the returned array.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>

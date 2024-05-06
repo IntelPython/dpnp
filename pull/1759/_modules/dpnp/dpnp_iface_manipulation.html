@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+63.g35c37aeeb0 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+64.g091550d760 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4e58ae65"></script>
+        <script src="../../_static/documentation_options.js?v=cce681eb"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+63.g35c37aeeb0
+                0.15.0dev1+64.g091550d760
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1471,7 +1471,7 @@
 <span class="sd">        changing fastest, and the last index changing slowest. Note that</span>
 <span class="sd">        the ``&quot;C&quot;`` and ``&quot;F&quot;`` options take no account of the memory layout of</span>
 <span class="sd">        the underlying array, and only refer to the order of indexing.</span>
-<span class="sd">    copy : bool, optional</span>
+<span class="sd">    copy : {None, bool}, optional</span>
 <span class="sd">        Boolean indicating whether or not to copy the input array.</span>
 <span class="sd">        If ``True``, the result array will always be a copy of input `a`.</span>
 <span class="sd">        If ``False``, the result array can never be a copy</span>
@@ -1589,12 +1589,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    shift : int or tuple of ints</span>
+<span class="sd">    shift : {int, tuple of ints}</span>
 <span class="sd">        The number of places by which elements are shifted. If a tuple, then</span>
 <span class="sd">        `axis` must be a tuple of the same size, and each of the given axes</span>
 <span class="sd">        is shifted by the corresponding number. If an integer while `axis` is</span>
 <span class="sd">        a tuple of integers, then the same value is used for all given axes.</span>
-<span class="sd">    axis : int or tuple of ints, optional</span>
+<span class="sd">    axis : {None, int, tuple of ints}, optional</span>
 <span class="sd">        Axis or axes along which elements are shifted. By default, the</span>
 <span class="sd">        array is flattened before shifting, after which the original</span>
 <span class="sd">        shape is restored.</span>
