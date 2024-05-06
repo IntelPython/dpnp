@@ -64,7 +64,7 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
         return x
 
     # input arrays must follow CFD paradigm
-    usm_type, queue = get_usm_allocations((m,) if y is None else (m, y))
+    _, queue = get_usm_allocations((m,) if y is None else (m, y))
 
     # calculate a type of result array if not passed explicitly
     if dtype is None:

@@ -105,9 +105,29 @@ class TestMaxMin:
             getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
 
         # output has incorrect shape -> Error
-        dpnp_res = dpnp.array(numpy.empty((4, 2)))
+        dpnp_res = dpnp.array(numpy.zeros((4, 2)))
         with pytest.raises(ValueError):
             getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("func", ["max", "min", "nanmax", "nanmin"])
+    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
+    def test_max_min_out_dtype(self, func, arr_dt, out_dt):
+        a = (
+            numpy.arange(12, dtype=numpy.float32)
+            .reshape((2, 2, 3))
+            .astype(dtype=arr_dt)
+        )
+        out = numpy.zeros_like(a, shape=(2, 3), dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = getattr(dpnp, func)(ia, out=iout, axis=1)
+        expected = getattr(numpy, func)(a, out=out, axis=1)
+        assert_array_equal(expected, result)
+        assert result is iout
 
     @pytest.mark.parametrize("func", ["max", "min", "nanmax", "nanmin"])
     def test_max_min_error(self, func):

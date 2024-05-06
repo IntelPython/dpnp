@@ -106,7 +106,7 @@ def cholesky(a, upper=False):
     a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         Hermitian (symmetric if all elements are real), positive-definite
         input matrix.
-    upper : bool, optional
+    upper : {bool}, optional
         If ``True``, the result must be the upper-triangular Cholesky factor.
         If ``False``, the result must be the lower-triangular Cholesky factor.
         Default: ``False``.
@@ -749,7 +749,7 @@ def matrix_rank(A, tol=None, hermitian=False):
         None, and ``S`` is an array with singular values for `M`, and
         ``eps`` is the epsilon value for datatype of ``S``, then `tol` is
         set to ``S.max() * max(M.shape) * eps``.
-    hermitian : bool, optional
+    hermitian : {bool}, optional
         If True, `A` is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
         Defaults to False.
@@ -871,7 +871,7 @@ def pinv(a, rcond=1e-15, hermitian=False):
         Singular values less than or equal to ``rcond * largest_singular_value``
         are set to zero. Broadcasts against the stack of matrices.
         Default: ``1e-15``.
-    hermitian : bool, optional
+    hermitian : {bool}, optional
         If ``True``, a is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
         Default: ``False``.
@@ -924,7 +924,7 @@ def norm(x, ord=None, axis=None, keepdims=False):
         are computed.  If `axis` is ``None`` then either a vector norm (when
         `x` is 1-D) or a matrix norm (when `x` is 2-D) is returned.
         The default is ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are normed over are left in
         the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
@@ -1023,11 +1023,13 @@ def qr(a, mode="reduced"):
         The input array with the dimensionality of at least 2.
     mode : {"reduced", "complete", "r", "raw"}, optional
         If K = min(M, N), then
+
         - "reduced" : returns Q, R with dimensions (…, M, K), (…, K, N)
         - "complete" : returns Q, R with dimensions (…, M, M), (…, M, N)
         - "r" : returns R only with dimensions (…, K, N)
         - "raw" : returns h, tau with dimensions (…, N, M), (…, K,)
-        Default: "reduced".
+
+        Default: ``"reduced"``.
 
     Returns
     -------
@@ -1141,14 +1143,14 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     ----------
     a : (..., M, N) {dpnp.ndarray, usm_ndarray}
         Input array with ``a.ndim >= 2``.
-    full_matrices : bool, optional
+    full_matrices : {bool}, optional
         If ``True``, it returns `u` and `Vh` with full-sized matrices.
         If ``False``, the matrices are reduced in size.
         Default: ``True``.
-    compute_uv : bool, optional
+    compute_uv : {bool}, optional
         If ``False``, it only returns singular values.
         Default: ``True``.
-    hermitian : bool, optional
+    hermitian : {bool}, optional
         If True, a is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
         Default: ``False``.

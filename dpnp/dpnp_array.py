@@ -525,7 +525,8 @@ class dpnp_array:
         Refer to :obj:`dpnp.argmax` for full documentation.
 
         """
-        return dpnp.argmax(self, axis, out, keepdims=keepdims)
+
+        return dpnp.argmax(self, axis=axis, out=out, keepdims=keepdims)
 
     def argmin(self, axis=None, out=None, *, keepdims=False):
         """
@@ -534,7 +535,8 @@ class dpnp_array:
         Refer to :obj:`dpnp.argmin` for full documentation.
 
         """
-        return dpnp.argmin(self, axis, out, keepdims=keepdims)
+
+        return dpnp.argmin(self, axis=axis, out=out, keepdims=keepdims)
 
     # 'argpartition',
 
@@ -582,13 +584,15 @@ class dpnp_array:
         casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
             Controls what kind of data casting may occur.
             Defaults to ``'unsafe'`` for backwards compatibility.
+
             - 'no' means the data types should not be cast at all.
             - 'equiv' means only byte-order changes are allowed.
             - 'safe' means only casts which can preserve values are allowed.
             - 'same_kind' means only safe casts or casts within a kind, like
               float64 to float32, are allowed.
             - 'unsafe' means any data conversions may be done.
-        copy : bool, optional
+
+        copy : {bool}, optional
             By default, ``astype`` always returns a newly allocated array. If
             this is set to ``False``, and the `dtype`, `order`, and `subok`
             requirements are satisfied, the input array is returned instead of
@@ -951,7 +955,14 @@ class dpnp_array:
 
         """
 
-        return dpnp.max(self, axis, out, keepdims, initial, where)
+        return dpnp.max(
+            self,
+            axis=axis,
+            out=out,
+            keepdims=keepdims,
+            initial=initial,
+            where=where,
+        )
 
     def mean(
         self, axis=None, dtype=None, out=None, keepdims=False, *, where=True
@@ -980,7 +991,14 @@ class dpnp_array:
 
         """
 
-        return dpnp.min(self, axis, out, keepdims, initial, where)
+        return dpnp.min(
+            self,
+            axis=axis,
+            out=out,
+            keepdims=keepdims,
+            initial=initial,
+            where=where,
+        )
 
     @property
     def nbytes(self):
@@ -1054,7 +1072,15 @@ class dpnp_array:
 
         """
 
-        return dpnp.prod(self, axis, dtype, out, keepdims, initial, where)
+        return dpnp.prod(
+            self,
+            axis=axis,
+            dtype=dtype,
+            out=out,
+            keepdims=keepdims,
+            initial=initial,
+            where=where,
+        )
 
     def put(self, indices, vals, /, *, axis=None, mode="wrap"):
         """
@@ -1295,13 +1321,11 @@ class dpnp_array:
 
     def sum(
         self,
-        /,
-        *,
         axis=None,
         dtype=None,
-        keepdims=False,
         out=None,
-        initial=0,
+        keepdims=False,
+        initial=None,
         where=True,
     ):
         """
