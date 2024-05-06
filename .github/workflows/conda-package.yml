@@ -27,11 +27,13 @@ env:
       test_logic.py
       test_manipulation.py
       test_mathematical.py
+      test_nanfunctions.py
       test_product.py
       test_random_state.py
       test_sort.py
       test_special.py
       test_statistics.py
+      test_sum.py
       test_sycl_queue.py
       test_umath.py
       test_usm_type.py

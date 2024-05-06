@@ -850,7 +850,7 @@ def cumsum(a, axis=None, dtype=None, out=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : {int}, optional
+    axis : {None, int}, optional
         Axis along which the cumulative sum is computed. It defaults to compute
         the cumulative sum over the flattened array.
         Default: ``None``.
@@ -2285,8 +2285,10 @@ def prod(
     Returns
     -------
     out : dpnp.ndarray
-        An array shaped as `a` but with the specified axis removed.
-        Returns a reference to `out` if specified.
+        An array with the same shape as `a`, with the specified axis removed.
+        If `a` is a 0-d array, or if `axis` is ``None``, a zero-dimensional
+        array is returned. If an output array is specified, a reference to
+        `out` is returned.
 
     Limitations
     -----------

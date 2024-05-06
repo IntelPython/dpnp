@@ -301,7 +301,7 @@ def nancumsum(a, axis=None, dtype=None, out=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : {int}, optional
+    axis : {None, int}, optional
         Axis along which the cumulative sum is computed. The default (``None``)
         is to compute the cumulative sum over the flattened array.
     dtype : {None, dtype}, optional
