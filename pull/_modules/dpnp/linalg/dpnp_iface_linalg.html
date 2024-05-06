@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev1+47.g36ae1febbc documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev1+48.g4dc16b4891 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=8d57abc8"></script>
+        <script src="../../../_static/documentation_options.js?v=1eb27783"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+47.g36ae1febbc
+                0.15.0dev1+48.g4dc16b4891
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -198,7 +198,7 @@
 <span class="sd">    a : (..., M, M) {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Hermitian (symmetric if all elements are real), positive-definite</span>
 <span class="sd">        input matrix.</span>
-<span class="sd">    upper : bool, optional</span>
+<span class="sd">    upper : {bool}, optional</span>
 <span class="sd">        If ``True``, the result must be the upper-triangular Cholesky factor.</span>
 <span class="sd">        If ``False``, the result must be the lower-triangular Cholesky factor.</span>
 <span class="sd">        Default: ``False``.</span>
@@ -871,7 +871,7 @@
 <span class="sd">        None, and ``S`` is an array with singular values for `M`, and</span>
 <span class="sd">        ``eps`` is the epsilon value for datatype of ``S``, then `tol` is</span>
 <span class="sd">        set to ``S.max() * max(M.shape) * eps``.</span>
-<span class="sd">    hermitian : bool, optional</span>
+<span class="sd">    hermitian : {bool}, optional</span>
 <span class="sd">        If True, `A` is assumed to be Hermitian (symmetric if real-valued),</span>
 <span class="sd">        enabling a more efficient method for finding singular values.</span>
 <span class="sd">        Defaults to False.</span>
@@ -999,7 +999,7 @@
 <span class="sd">        Singular values less than or equal to ``rcond * largest_singular_value``</span>
 <span class="sd">        are set to zero. Broadcasts against the stack of matrices.</span>
 <span class="sd">        Default: ``1e-15``.</span>
-<span class="sd">    hermitian : bool, optional</span>
+<span class="sd">    hermitian : {bool}, optional</span>
 <span class="sd">        If ``True``, a is assumed to be Hermitian (symmetric if real-valued),</span>
 <span class="sd">        enabling a more efficient method for finding singular values.</span>
 <span class="sd">        Default: ``False``.</span>
@@ -1055,7 +1055,7 @@
 <span class="sd">        are computed.  If `axis` is ``None`` then either a vector norm (when</span>
 <span class="sd">        `x` is 1-D) or a matrix norm (when `x` is 2-D) is returned.</span>
 <span class="sd">        The default is ``None``.</span>
-<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If this is set to ``True``, the axes which are normed over are left in</span>
 <span class="sd">        the result as dimensions with size one. With this option the result</span>
 <span class="sd">        will broadcast correctly against the original `x`.</span>
@@ -1157,11 +1157,13 @@
 <span class="sd">        The input array with the dimensionality of at least 2.</span>
 <span class="sd">    mode : {&quot;reduced&quot;, &quot;complete&quot;, &quot;r&quot;, &quot;raw&quot;}, optional</span>
 <span class="sd">        If K = min(M, N), then</span>
+
 <span class="sd">        - &quot;reduced&quot; : returns Q, R with dimensions (…, M, K), (…, K, N)</span>
 <span class="sd">        - &quot;complete&quot; : returns Q, R with dimensions (…, M, M), (…, M, N)</span>
 <span class="sd">        - &quot;r&quot; : returns R only with dimensions (…, K, N)</span>
 <span class="sd">        - &quot;raw&quot; : returns h, tau with dimensions (…, N, M), (…, K,)</span>
-<span class="sd">        Default: &quot;reduced&quot;.</span>
+
+<span class="sd">        Default: ``&quot;reduced&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1281,14 +1283,14 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : (..., M, N) {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array with ``a.ndim &gt;= 2``.</span>
-<span class="sd">    full_matrices : bool, optional</span>
+<span class="sd">    full_matrices : {bool}, optional</span>
 <span class="sd">        If ``True``, it returns `u` and `Vh` with full-sized matrices.</span>
 <span class="sd">        If ``False``, the matrices are reduced in size.</span>
 <span class="sd">        Default: ``True``.</span>
-<span class="sd">    compute_uv : bool, optional</span>
+<span class="sd">    compute_uv : {bool}, optional</span>
 <span class="sd">        If ``False``, it only returns singular values.</span>
 <span class="sd">        Default: ``True``.</span>
-<span class="sd">    hermitian : bool, optional</span>
+<span class="sd">    hermitian : {bool}, optional</span>
 <span class="sd">        If True, a is assumed to be Hermitian (symmetric if real-valued),</span>
 <span class="sd">        enabling a more efficient method for finding singular values.</span>
 <span class="sd">        Default: ``False``.</span>
