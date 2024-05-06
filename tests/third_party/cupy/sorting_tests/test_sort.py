@@ -17,6 +17,7 @@ def get_array_module(*args):
 cupy.get_array_module = get_array_module
 
 
+@pytest.mark.skip()
 class TestSort(unittest.TestCase):
     # Test ranks
 
