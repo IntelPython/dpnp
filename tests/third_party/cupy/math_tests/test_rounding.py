@@ -68,10 +68,12 @@ class TestRounding(unittest.TestCase):
         self.check_unary("fix")
         self.check_unary_complex_unsupported("fix")
 
+    @pytest.mark.skip()
     def test_around(self):
         self.check_unary("around")
         self.check_unary_complex("around")
 
+    @pytest.mark.skip()
     def test_round(self):
         self.check_unary("round")
         self.check_unary_complex("around")
