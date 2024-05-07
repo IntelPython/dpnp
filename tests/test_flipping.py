@@ -60,7 +60,7 @@ class TestFlip:
     )
     def test_lr_equivalent(self, dtype):
         dp_a = dpnp.arange(4, dtype=dtype)
-        dp_a = dp_a[:, dpnp.newaxis] + dp_a[dpnp.newaxis, :]
+        dp_a = dpnp.add.outer(dp_a, dp_a)
         assert_equal(dpnp.flip(dp_a, 1), dpnp.fliplr(dp_a))
 
         np_a = numpy.arange(4, dtype=dtype)
@@ -72,7 +72,7 @@ class TestFlip:
     )
     def test_ud_equivalent(self, dtype):
         dp_a = dpnp.arange(4, dtype=dtype)
-        dp_a = dp_a[:, dpnp.newaxis] + dp_a[dpnp.newaxis, :]
+        dp_a = dpnp.add.outer(dp_a, dp_a)
         assert_equal(dpnp.flip(dp_a, 0), dpnp.flipud(dp_a))
 
         np_a = numpy.arange(4, dtype=dtype)

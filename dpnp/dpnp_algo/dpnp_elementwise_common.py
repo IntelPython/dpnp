@@ -341,6 +341,11 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                 return out
             return dpnp_array._create_from_usm_ndarray(res_usm)
 
+    def outer(self, x1, x2):
+        _x1 = x1[(Ellipsis,) + (None,) * x2.ndim]
+        _x2 = x2[(None,) * x1.ndim + (Ellipsis,)]
+        return self.__call__(_x1, _x2)
+
 
 class DPNPAngle(DPNPUnaryFunc):
     """Class that implements dpnp.angle unary element-wise functions."""
