@@ -1,0 +1,6 @@
+﻿dpnp.empty
+==========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: empty
