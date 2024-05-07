@@ -20,11 +20,7 @@ SKBUILD_ARGS=(-- "-DCMAKE_C_COMPILER:PATH=icx" "-DCMAKE_CXX_COMPILER:PATH=icpx" 
 SKBUILD_ARGS=("${SKBUILD_ARGS[@]}" "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON")
 
 # Build wheel package
-if [ "$CONDA_PY" == "36" ]; then
-    WHEELS_BUILD_ARGS=("-p" "manylinux1_x86_64")
-else
-    WHEELS_BUILD_ARGS=("-p" "manylinux_2_28_x86_64")
-fi
+WHEELS_BUILD_ARGS=("-p" "manylinux_2_28_x86_64")
 if [ -n "${WHEELS_OUTPUT_FOLDER}" ]; then
     $PYTHON setup.py install bdist_wheel "${WHEELS_BUILD_ARGS[@]}" "${SKBUILD_ARGS[@]}"
     cp dist/dpnp*.whl "${WHEELS_OUTPUT_FOLDER}"
