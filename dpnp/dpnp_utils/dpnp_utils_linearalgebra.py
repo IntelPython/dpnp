@@ -2064,6 +2064,8 @@ def dpnp_matmul(
             )
             host_tasks_list.append(ht_blas_ev)
             if not row_major:
+                # TODO: investigate the possibility of defining result
+                # array with "F" order for this case
                 result = dpnp.ascontiguousarray(
                     dpnp.reshape(result.ravel(), result.shape, order="F")
                 )

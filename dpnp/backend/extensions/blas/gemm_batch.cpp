@@ -78,7 +78,7 @@ static sycl::event gemm_batch_impl(sycl::queue &exec_q,
                                    const std::int64_t batch_size,
                                    const std::int64_t lda,
                                    const std::int64_t ldb,
-                                   const std::int64_t ld_result,
+                                   const std::int64_t ldc,
                                    size_t stridea,
                                    size_t strideb,
                                    size_t stridec,
@@ -102,60 +102,50 @@ static sycl::event gemm_batch_impl(sycl::queue &exec_q,
 
     sycl::event gemm_batch_event;
     try {
-        if (is_row_major) {
-            gemm_batch_event = mkl_blas::row_major::gemm_batch(
-                exec_q,
-                transA,  // Defines the transpose operation for matrix A:
-                         // 'N' indicates no transpose, 'T' for transpose,
-                         // or 'C' for a conjugate transpose.
-                transB,  // Same as transA but for matrix B.
-                m,       // Number of rows in matrices A and C.
-                n,       // Number of columns in matrices B and C.
-                k,       // Number of columns in matrix A and rows in matrix B.
-                Tab(1),  // Scaling factor for the product of matrices A and B.
-                a,       // Pointer to matrix A.
-                lda,     // Leading dimension of matrix A, which is the
-                         // stride between successive rows (for row major
-                         // layout).
-                stridea, // Stride between different A matrices.
-                b,       // Pointer to matrix B.
-                ldb,     // Leading dimension of matrix B, similar to lda.
-                strideb, // Stride between different B matrices.
-                Tab(0),  // Scaling factor for matrix C.
-                res,     // Pointer to matrix C, where the result is stored.
-                ld_result,  // Leading dimension of matrix C.
-                stridec,    // Stride between different C matrices.
-                batch_size, // Specifies the number of matrix multiply
-                            // operations to perform.
-                depends);
-        }
-        else {
-            gemm_batch_event = mkl_blas::column_major::gemm_batch(
-                exec_q,
-                transA,  // Defines the transpose operation for matrix A:
-                         // 'N' indicates no transpose, 'T' for transpose,
-                         // or 'C' for a conjugate transpose.
-                transB,  // Same as transA but for matrix B.
-                m,       // Number of rows in matrices A and C.
-                n,       // Number of columns in matrices B and C.
-                k,       // Number of columns in matrix A and rows in matrix B.
-                Tab(1),  // Scaling factor for the product of matrices A and B.
-                a,       // Pointer to matrix A.
-                lda,     // Leading dimension of matrix A, which is the
-                         // stride between successive rows (for row major
-                         // layout).
-                stridea, // Stride between different A matrices.
-                b,       // Pointer to matrix B.
-                ldb,     // Leading dimension of matrix B, similar to lda.
-                strideb, // Stride between different B matrices.
-                Tab(0),  // Scaling factor for matrix C.
-                res,     // Pointer to matrix C, where the result is stored.
-                ld_result,  // Leading dimension of matrix C.
-                stridec,    // Stride between different C matrices.
-                batch_size, // Specifies the number of matrix multiply
-                            // operations to perform.
-                depends);
-        }
+        auto gemm_batch_func =
+            [&](sycl::queue &q, oneapi::mkl::transpose transA,
+                oneapi::mkl::transpose transB, std::int64_t m, std::int64_t n,
+                std::int64_t k, Tab alpha, const Tab *a, std::int64_t lda,
+                std::int64_t stridea, const Tab *b, std::int64_t ldb,
+                std::int64_t strideb, Tab beta, Tc *c, std::int64_t ldc,
+                std::int64_t stridec, std::int64_t batch_size,
+                const std::vector<sycl::event> &deps) -> sycl::event {
+            if (is_row_major) {
+                return mkl_blas::row_major::gemm_batch(
+                    q, transA, transB, m, n, k, alpha, a, lda, stridea, b, ldb,
+                    strideb, beta, c, ldc, stridec, batch_size, deps);
+            }
+            else {
+                return mkl_blas::column_major::gemm_batch(
+                    q, transA, transB, m, n, k, alpha, a, lda, stridea, b, ldb,
+                    strideb, beta, c, ldc, stridec, batch_size, deps);
+            }
+        };
+        gemm_batch_event = gemm_batch_func(
+            exec_q,
+            transA,     // Defines the transpose operation for matrix A:
+                        // 'N' indicates no transpose, 'T' for transpose,
+                        // or 'C' for a conjugate transpose.
+            transB,     // Same as transA but for matrix B.
+            m,          // Number of rows in matrices A and C.
+            n,          // Number of columns in matrices B and C.
+            k,          // Number of columns in matrix A and rows in matrix B.
+            Tab(1),     // Scaling factor for the product of matrices A and B.
+            a,          // Pointer to matrix A.
+            lda,        // Leading dimension of matrix A, which is the
+                        // stride between successive rows (for row major
+                        // layout).
+            stridea,    // Stride between different A matrices.
+            b,          // Pointer to matrix B.
+            ldb,        // Leading dimension of matrix B, similar to lda.
+            strideb,    // Stride between different B matrices.
+            Tab(0),     // Scaling factor for matrix C.
+            res,        // Pointer to matrix C, where the result is stored.
+            ldc,        // Leading dimension of matrix C.
+            stridec,    // Stride between different C matrices.
+            batch_size, // Specifies the number of matrix multiply
+                        // operations to perform.
+            depends);
     } catch (oneapi::mkl::exception const &e) {
         error_msg << "Unexpected MKL exception caught during gemm_batch() "
                      "call:\nreason: "
