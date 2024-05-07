@@ -27,11 +27,13 @@ env:
       test_logic.py
       test_manipulation.py
       test_mathematical.py
+      test_nanfunctions.py
       test_product.py
       test_random_state.py
       test_sort.py
       test_special.py
       test_statistics.py
+      test_sum.py
       test_sycl_queue.py
       test_umath.py
       test_usm_type.py
@@ -97,15 +99,11 @@ jobs:
           miniconda-version: 'latest'
           activate-environment: 'build'
 
-      - if: matrix.os == 'ubuntu-20.04'
-        name: Store conda paths as envs on Linux
-        run: echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/linux-64/" >> $GITHUB_ENV
-
-      - if: matrix.os == 'windows-latest'
-        name: Store conda paths as envs on Win
+      - name: Store conda paths as envs
+        shell: bash -l {0}
         run: |
-          @echo on
-          (echo CONDA_BLD=%CONDA_PREFIX%\conda-bld\win-64\) >> %GITHUB_ENV%
+          echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\" '/' >> $GITHUB_ENV
+          echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
 
       - name: Install conda-build
         run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
@@ -130,6 +128,12 @@ jobs:
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+
+      - name: Upload wheels artifact
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+          path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
 
   test_linux:
     name: Test ['${{ matrix.os }}', python='${{ matrix.python }}']
@@ -410,7 +414,7 @@ jobs:
 
     defaults:
       run:
-        shell: ${{ matrix.os == 'windows-latest' && 'cmd /C CALL {0}' || 'bash -l {0}' }}
+        shell: bash -l {0}
 
     continue-on-error: true
 
@@ -424,6 +428,11 @@ jobs:
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
+      - name: Download wheels artifact
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
@@ -435,8 +444,16 @@ jobs:
       - name: Install anaconda-client
         run: conda install anaconda-client
 
+      - name: Package version
+        run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.tar.bz2 | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
+
       - name: Upload
         run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+
+      - name: Upload wheels
+        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl --version ${{ env.PACKAGE_VERSION }}
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
 

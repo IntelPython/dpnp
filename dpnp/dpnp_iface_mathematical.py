@@ -55,10 +55,8 @@ from numpy.core.numeric import (
 
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
-from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
-from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import call_origin, get_usm_allocations
 
+from .backend.extensions.sycl_ext import _sycl_ext_impl
 from .dpnp_algo import (
     dpnp_cumprod,
     dpnp_ediff1d,
@@ -81,7 +79,10 @@ from .dpnp_algo.dpnp_elementwise_common import (
     acceptance_fn_sign,
     acceptance_fn_subtract,
 )
+from .dpnp_array import dpnp_array
+from .dpnp_utils import call_origin, get_usm_allocations
 from .dpnp_utils.dpnp_utils_linearalgebra import dpnp_cross
+from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
 __all__ = [
     "abs",
@@ -156,6 +157,16 @@ def _append_to_diff_array(a, axis, combined, values):
         shape[axis] = 1
         values = dpnp.broadcast_to(values, tuple(shape))
     combined.append(values)
+
+
+def _get_reduction_res_dt(a, dtype, _out):
+    """Get a data type used by dpctl for result array in reduction function."""
+
+    if dtype is None:
+        return dtu._default_accumulation_dtype(a.dtype, a.sycl_queue)
+
+    dtype = dpnp.dtype(dtype)
+    return dtu._to_device_supported_dtype(dtype, a.sycl_device)
 
 
 _ABS_DOCSTRING = """
@@ -839,19 +850,22 @@ def cumsum(a, axis=None, dtype=None, out=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int, optional
-        Axis along which the cumulative sum is computed. The default (``None``)
-        is to compute the cumulative sum over the flattened array.
-    dtype : dtype, optional
+    axis : {None, int}, optional
+        Axis along which the cumulative sum is computed. It defaults to compute
+        the cumulative sum over the flattened array.
+        Default: ``None``.
+    dtype : {None, dtype}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `a`, unless `a` has an integer dtype with a precision less than that of
         the default platform integer. In that case, the default platform
         integer is used.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have the
         same shape and buffer length as the expected output but the type will
         be cast if necessary.
+        Default: ``None``.
 
     Returns
     -------
@@ -901,28 +915,15 @@ def cumsum(a, axis=None, dtype=None, out=None):
     else:
         usm_a = dpnp.get_usm_ndarray(a)
 
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
-
-        # get dtype used by dpctl for result array in cumulative_sum
-        if dtype is None:
-            res_dt = dtu._default_accumulation_dtype(a.dtype, a.sycl_queue)
-        else:
-            res_dt = dpnp.dtype(dtype)
-            res_dt = dtu._to_device_supported_dtype(res_dt, a.sycl_device)
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    res_usm = dpt.cumulative_sum(usm_a, axis=axis, dtype=dtype, out=usm_out)
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.cumulative_sum,
+        _get_reduction_res_dt,
+        usm_a,
+        axis=axis,
+        dtype=dtype,
+    )
 
 
 def diff(a, n=1, axis=-1, prepend=None, append=None):
@@ -935,13 +936,13 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array
-    n : int, optional
+    n : {int}, optional
         The number of times the values differ. If ``zero``, the input
         is returned as-is.
-    axis : int, optional
+    axis : {int}, optional
         The axis along which the difference is taken, default is the
         last axis.
-    prepend, append : {scalar, dpnp.ndarray, usm_ndarray}, optional
+    prepend, append : {None, scalar, dpnp.ndarray, usm_ndarray}, optional
         Values to prepend or append to `a` along axis prior to
         performing the difference. Scalar values are expanded to
         arrays with length 1 in the direction of axis and the shape
@@ -2249,20 +2250,51 @@ def prod(
 
     For full documentation refer to :obj:`numpy.prod`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int or tuple of ints}, optional
+        Axis or axes along which a product is performed. The default,
+        ``axis=None``, will calculate the product of all the elements in the
+        input array. If `axis` is negative it counts from the last to the first
+        axis.
+        If `axis` is a tuple of integers, a product is performed on all of the
+        axes specified in the tuple instead of a single axis or all the axes as
+        before.
+        Default: ``None``.
+    dtype : {None, dtype}, optional
+        The type of the returned array, as well as of the accumulator in which
+        the elements are multiplied. The dtype of `a` is used by default unless
+        `a` has an integer dtype of less precision than the default platform
+        integer. In that case, if `a` is signed then the platform integer is
+        used while if `a` is unsigned then an unsigned integer of the same
+        precision as the platform integer is used.
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have
+        the same shape as the expected output, but the type of the output
+        values will be cast if necessary.
+        Default: ``None``.
+    keepdims : {None, bool}, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the input array.
+        Default: ``False``.
+
     Returns
     -------
     out : dpnp.ndarray
-        A new array holding the result is returned unless `out` is specified,
-        in which case it is returned.
+        An array with the same shape as `a`, with the specified axis removed.
+        If `a` is a 0-d array, or if `axis` is ``None``, a zero-dimensional
+        array is returned. If an output array is specified, a reference to
+        `out` is returned.
 
     Limitations
     -----------
-    Input array is only supported as either :class:`dpnp.ndarray` or
-    :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `initial`, and `where` are only supported with their default
+    Parameters `initial` and `where` are only supported with their default
     values.
     Otherwise ``NotImplementedError`` exception will be raised.
-    Input array data types are limited by DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -2290,20 +2322,19 @@ def prod(
 
     """
 
-    if initial is not None:
-        raise NotImplementedError(
-            "initial keyword argument is only supported with its default value."
-        )
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
-    )
+    dpnp.check_limitations(initial=initial, where=where)
+    usm_a = dpnp.get_usm_ndarray(a)
 
-    return dpnp.get_result_array(result, out)
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.prod,
+        _get_reduction_res_dt,
+        usm_a,
+        axis=axis,
+        dtype=dtype,
+        keepdims=keepdims,
+    )
 
 
 _PROJ_DOCSTRING = """
@@ -2743,13 +2774,11 @@ subtract = DPNPBinaryFunc(
 
 def sum(
     a,
-    /,
-    *,
     axis=None,
     dtype=None,
-    keepdims=False,
     out=None,
-    initial=0,
+    keepdims=False,
+    initial=None,
     where=True,
 ):
     """
@@ -2761,39 +2790,40 @@ def sum(
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int or tuple of ints, optional
-        Axis or axes along which sums must be computed. If a tuple
-        of unique integers, sums are computed over multiple axes.
-        If ``None``, the sum is computed over the entire array.
+    axis : {None, int or tuple of ints}, optional
+        Axis or axes along which a sum is performed. The default,
+        ``axis=None``, will sum all of the elements of the input array. If axis
+        is negative it counts from the last to the first axis.
+        If `axis` is a tuple of integers, a sum is performed on all of the axes
+        specified in the tuple instead of a single axis or all the axes as
+        before.
         Default: ``None``.
-    dtype : dtype, optional
-        Data type of the returned array. If ``None``, it defaults to the dtype
-        of `a`, unless `a` has an integer dtype with a precision less than that
-        of the default platform integer. In that case, the default platform
-        integer is used.
-        If the data type (either specified or resolved) differs from the
-        data type of `a`, the input array elements are cast to the
-        specified data type before computing the sum.
+    dtype : {None, dtype}, optional
+        The type of the returned array and of the accumulator in which the
+        elements are summed. The dtype of `a` is used by default unless `a` has
+        an integer dtype of less precision than the default platform integer.
+        In that case, if `a` is signed then the platform integer is used while
+        if `a` is unsigned then an unsigned integer of the same precision as
+        the platform integer is used.
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        Alternative output array in which to place the result. It must
-        have the same shape as the expected output, but the type of
-        the output values will be cast if necessary.
+        Alternative output array in which to place the result. It must have the
+        same shape as the expected output, but the type of the output values
+        will be cast if necessary.
         Default: ``None``.
-    keepdims : bool, optional
-        If ``True``, the reduced axes (dimensions) are included in the result
-        as singleton dimensions, so that the returned array remains
-        compatible with the input array according to Array Broadcasting
-        rules. Otherwise, if ``False``, the reduced axes are not included in
-        the returned array. Default: ``False``.
+    keepdims : {None, bool}, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the input array.
+        Default: ``False``.
 
     Returns
     -------
     out : dpnp.ndarray
-        An array containing the sums. If the sum is computed over the
-        entire array, a zero-dimensional array is returned. The returned
-        array has the data type as described in the `dtype` parameter
-        description above.
+        An array with the same shape as `a`, with the specified axis removed.
+        If `a` is a 0-d array, or if `axis` is ``None``, a zero-dimensional
+        array is returned. If an output array is specified, a reference to
+        `out` is returned.
 
     Limitations
     -----------
@@ -2827,20 +2857,7 @@ def sum(
 
     """
 
-    if axis is not None:
-        if not isinstance(axis, (tuple, list)):
-            axis = (axis,)
-
-        axis = normalize_axis_tuple(axis, a.ndim, "axis")
-
-    if initial != 0:
-        raise NotImplementedError(
-            "initial keyword argument is only supported with its default value."
-        )
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
+    dpnp.check_limitations(initial=initial, where=where)
 
     sycl_sum_call = False
     if len(a.shape) == 2 and a.itemsize == 4:
@@ -2859,6 +2876,12 @@ def sum(
         sycl_sum_call = c_contiguous_rules or f_contiguous_rules
 
     if sycl_sum_call:
+        if axis is not None:
+            if not isinstance(axis, (tuple, list)):
+                axis = (axis,)
+
+            axis = normalize_axis_tuple(axis, a.ndim, "axis")
+
         input = a
         if axis == (1,):
             input = input.T
@@ -2888,11 +2911,17 @@ def sum(
 
             return result
 
-    y = dpt.sum(
-        dpnp.get_usm_ndarray(a), axis=axis, dtype=dtype, keepdims=keepdims
+    usm_a = dpnp.get_usm_ndarray(a)
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.sum,
+        _get_reduction_res_dt,
+        usm_a,
+        axis=axis,
+        dtype=dtype,
+        keepdims=keepdims,
     )
-    result = dpnp_array._create_from_usm_ndarray(y)
-    return dpnp.get_result_array(result, out, casting="same_kind")
 
 
 def trapz(y1, x1=None, dx=1.0, axis=-1):

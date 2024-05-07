@@ -875,6 +875,23 @@ class TestProd:
         with pytest.raises(ValueError):
             getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
 
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("func", ["prod", "nanprod"])
+    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_prod_out_dtype(self, func, arr_dt, out_dt, dtype):
+        a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
+        out = numpy.zeros_like(a, shape=(2,), dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = getattr(dpnp, func)(ia, out=iout, dtype=dtype, axis=1)
+        expected = getattr(numpy, func)(a, out=out, dtype=dtype, axis=1)
+        assert_array_equal(expected, result)
+        assert result is iout
+
     def test_prod_nanprod_Error(self):
         ia = dpnp.arange(5)
 
@@ -1960,6 +1977,26 @@ class TestLogSumExp:
 
         assert_allclose(res, exp, rtol=1e-06)
 
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize(
+        "arr_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "out_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_logsumexp_out_dtype(self, arr_dt, out_dt, dtype):
+        a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
+        out = numpy.zeros_like(a, shape=(2,), dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = dpnp.logsumexp(ia, out=iout, dtype=dtype, axis=1)
+        exp = numpy.logaddexp.reduce(a, out=out, axis=1)
+        assert_allclose(result, exp.astype(dtype), rtol=1e-06)
+        assert result is iout
+
 
 class TestReduceHypot:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
@@ -2009,6 +2046,25 @@ class TestReduceHypot:
         exp = exp.astype(out_dtype)
 
         assert_allclose(res, exp, rtol=1e-06)
+
+    @pytest.mark.parametrize(
+        "arr_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "out_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_reduce_hypot_out_dtype(self, arr_dt, out_dt, dtype):
+        a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
+        out = numpy.zeros_like(a, shape=(2,), dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = dpnp.reduce_hypot(ia, out=iout, dtype=dtype, axis=1)
+        exp = numpy.hypot.reduce(a, out=out, axis=1)
+        assert_allclose(result, exp.astype(dtype), rtol=1e-06)
+        assert result is iout
 
 
 class TestMaximum:

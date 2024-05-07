@@ -397,9 +397,9 @@ def indices(
     ----------
     dimensions : sequence of ints
         The shape of the grid.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         Data type of the result.
-    sparse : boolean, optional
+    sparse : {None, boolean}, optional
         Return a sparse representation of the grid instead of a dense
         representation. Default is ``False``.
     device : {None, string, SyclDevice, SyclQueue}, optional
