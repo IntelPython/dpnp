@@ -2063,6 +2063,7 @@ def dpnp_matmul(
                 dep_events_list,
             )
             host_tasks_list.append(ht_blas_ev)
+            dpctl.SyclEvent.wait_for(host_tasks_list)
             if not row_major:
                 # TODO: investigate the possibility of defining result
                 # array with "F" order for this case
@@ -2077,8 +2078,7 @@ def dpnp_matmul(
                 result,
                 dep_events_list,
             )
-
-        dpctl.SyclEvent.wait_for(host_tasks_list)
+            dpctl.SyclEvent.wait_for(host_tasks_list)
 
     if appended_axes:
         result = dpnp.squeeze(result, tuple(appended_axes))
