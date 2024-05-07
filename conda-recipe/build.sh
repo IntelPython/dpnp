@@ -23,7 +23,7 @@ SKBUILD_ARGS=("${SKBUILD_ARGS[@]}" "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON")
 if [ "$CONDA_PY" == "36" ]; then
     WHEELS_BUILD_ARGS=("-p" "manylinux1_x86_64")
 else
-    WHEELS_BUILD_ARGS=("-p" "manylinux2014_x86_64")
+    WHEELS_BUILD_ARGS=("-p" "manylinux_2_28_x86_64")
 fi
 if [ -n "${WHEELS_OUTPUT_FOLDER}" ]; then
     $PYTHON setup.py install bdist_wheel "${WHEELS_BUILD_ARGS[@]}" "${SKBUILD_ARGS[@]}"
