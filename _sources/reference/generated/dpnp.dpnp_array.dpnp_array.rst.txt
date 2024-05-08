@@ -70,9 +70,6 @@
    .. automethod:: copy
 
 
-   .. automethod:: cumprod
-
-
    .. automethod:: cumsum
 
 
