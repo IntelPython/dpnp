@@ -86,25 +86,20 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
     bool is_exception_caught = false;
 
     sycl::event gemm_event;
+    typedef sycl::event (*gemm_func_t)(
+        sycl::queue &, oneapi::mkl::transpose, oneapi::mkl::transpose,
+        std::int64_t, std::int64_t, std::int64_t, Tab, const Tab *,
+        std::int64_t, const Tab *, std::int64_t, Tc, Tc *, std::int64_t,
+        const std::vector<sycl::event> &);
     try {
-        auto gemm_func =
-            [&](sycl::queue &q, oneapi::mkl::transpose transA,
-                oneapi::mkl::transpose transB, const std::int64_t m,
-                const std::int64_t n, const std::int64_t k, Tab alpha,
-                const Tab *a, const std::int64_t lda, const Tab *b,
-                const std::int64_t ldb, Tab beta, Tc *c, const std::int64_t ldc,
-                const std::vector<sycl::event> &deps) -> sycl::event {
-            if (is_row_major) {
-                return mkl_blas::row_major::gemm(q, transA, transB, m, n, k,
-                                                 alpha, a, lda, b, ldb, beta, c,
-                                                 ldc, deps);
-            }
-            else {
-                return mkl_blas::column_major::gemm(q, transA, transB, m, n, k,
-                                                    alpha, a, lda, b, ldb, beta,
-                                                    c, ldc, deps);
-            }
-        };
+        gemm_func_t gemm_func;
+        if (is_row_major) {
+            gemm_func = &mkl_blas::row_major::gemm;
+        }
+        else {
+            gemm_func = &mkl_blas::column_major::gemm;
+        }
+
         gemm_event = gemm_func(
             exec_q,
             transA, // Defines the transpose operation for matrix A:
