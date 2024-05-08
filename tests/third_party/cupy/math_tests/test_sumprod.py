@@ -579,6 +579,7 @@ class TestCumprod:
             return xp.cumproduct(a)
 
 
+@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 @testing.parameterize(
     *testing.product(
         {
@@ -590,12 +591,6 @@ class TestCumprod:
 )
 class TestNanCumSumProd:
     zero_density = 0.25
-
-    @pytest.fixture(autouse=True)
-    def setUp(self):
-        if self.func == "nancumprod":
-            pytest.skip("nancumprod() is not implemented yet")
-        pass
 
     def _make_array(self, dtype):
         dtype = numpy.dtype(dtype)

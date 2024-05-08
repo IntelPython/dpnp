@@ -105,8 +105,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_COV,           /**< Used in numpy.cov() impl  */
     DPNP_FN_CROSS,         /**< Used in numpy.cross() impl  */
     DPNP_FN_CUMPROD,       /**< Used in numpy.cumprod() impl  */
-    DPNP_FN_CUMPROD_EXT,   /**< Used in numpy.cumprod() impl, requires extra
-                              parameters */
     DPNP_FN_CUMSUM,        /**< Used in numpy.cumsum() impl  */
     DPNP_FN_DEGREES,       /**< Used in numpy.degrees() impl  */
     DPNP_FN_DEGREES_EXT,   /**< Used in numpy.degrees() impl, requires extra
