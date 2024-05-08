@@ -1206,37 +1206,6 @@ def _reduced_binary_einsum(arr0, sub0, arr1, sub1, sub_others):
     return arr_out, sub_out
 
 
-def _standardize_strides(strides, inherently_2D, shape, ndim):
-    """
-    Standardizing the strides.
-
-    When shape of an array along any particular dimension is 1, the stride
-    along that dimension is undefined. This functions standardize the strides
-    in the following way:
-    For N-D arrays that are inherently 2D (all dimesnsion are one except for two of them),
-    we use zero as the stride for dimensions equal one.
-    For other N-D arrays, the non-zero value of strides is calculated and used.
-
-    """
-
-    if inherently_2D:
-        stndrd_strides = tuple(
-            str_i if sh_i > 1 else 0 for sh_i, str_i in zip(shape, strides)
-        )
-    else:
-        stndrd_strides = [
-            numpy.prod(shape[i + 1 :]) if strides[i] == 0 else strides[i]
-            for i in range(ndim - 1)
-        ]
-        # last dimension
-        stndrd_strides.append(
-            1 if strides[ndim - 1] == 0 else strides[ndim - 1]
-        )
-        stndrd_strides = tuple(stndrd_strides)
-
-    return stndrd_strides
-
-
 def _tuple_sorted_by_0(zs):
     """Copied from _tuple_sorted_by_0 in cupy/core/_einsum.py"""
     return tuple(i for _, i in sorted(zs))
@@ -2054,6 +2023,7 @@ def dpnp_matmul(
         # gain performance.
         # TODO: investigate usage of syrk function from BLAS in
         # case of a.T @ a and a @ a.T to gain performance.
+        row_major = True
         if x1_is_2D and x2_is_2D:
             ht_blas_ev, _, row_major = bi._gemm(
                 exec_q,
@@ -2063,13 +2033,6 @@ def dpnp_matmul(
                 dep_events_list,
             )
             host_tasks_list.append(ht_blas_ev)
-            dpctl.SyclEvent.wait_for(host_tasks_list)
-            if not row_major:
-                # TODO: investigate the possibility of defining result
-                # array with "F" order for this case
-                result = dpnp.ascontiguousarray(
-                    dpnp.reshape(result.ravel(), result.shape, order="F")
-                )
         else:
             result = _gemm_batch_matmul(
                 exec_q,
@@ -2078,8 +2041,14 @@ def dpnp_matmul(
                 result,
                 dep_events_list,
             )
-            dpctl.SyclEvent.wait_for(host_tasks_list)
 
+        dpctl.SyclEvent.wait_for(host_tasks_list)
+        if not row_major:
+            # TODO: investigate the possibility of defining result
+            # array with "F" order for this case
+            result = dpnp.ascontiguousarray(
+                dpnp.reshape(result.ravel(), result.shape, order="F")
+            )
     if appended_axes:
         result = dpnp.squeeze(result, tuple(appended_axes))
         if len(appended_axes) == 2 and out is not None:
