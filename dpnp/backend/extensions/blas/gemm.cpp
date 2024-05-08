@@ -93,44 +93,50 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
 
     sycl::event gemm_event;
     try {
-        auto gemm_func =
-            [&](sycl::queue &q, oneapi::mkl::transpose transA,
-                oneapi::mkl::transpose transB, std::int64_t m, std::int64_t n,
-                std::int64_t k, Tab alpha, const Tab *a, std::int64_t lda,
-                const Tab *b, std::int64_t ldb, Tab beta, Tc *c,
-                std::int64_t ldc,
-                const std::vector<sycl::event> &deps) -> sycl::event {
-            if (is_row_major) {
-                return mkl_blas::row_major::gemm(q, transA, transB, m, n, k,
-                                                 alpha, a, lda, b, ldb, beta, c,
-                                                 ldc, deps);
-            }
-            else {
-                return mkl_blas::column_major::gemm(q, transA, transB, m, n, k,
-                                                    alpha, a, lda, b, ldb, beta,
-                                                    c, ldc, deps);
-            }
-        };
-        gemm_event = gemm_func(
-            exec_q,
-            transA, // Defines the transpose operation for matrix A:
-                    // 'N' indicates no transpose, 'T' for transpose,
-                    // or 'C' for a conjugate transpose.
-            transB, // Same as transA but for matrix B.
-            m,      // Number of rows in matrices A and C.
-            n,      // Number of columns in matrices B and C.
-            k,      // Number of columns in matrix A and rows in matrix B.
-            Tab(1), // Scaling factor for the product of matrices A and B.
-            a,      // Pointer to matrix A.
-            lda,    // Leading dimension of matrix A, which is the
-                    // stride between successive rows (for row major
-                    // layout).
-            b,      // Pointer to matrix B.
-            ldb,    // Leading dimension of matrix B, similar to lda.
-            Tab(0), // Scaling factor for matrix C.
-            res,    // Pointer to matrix C, where the result is stored.
-            ldc,    // Leading dimension of matrix C.
-            depends);
+        if (is_row_major) {
+            gemm_event = mkl_blas::row_major::gemm(
+                exec_q,
+                transA, // Defines the transpose operation for matrix A:
+                        // 'N' indicates no transpose, 'T' for transpose,
+                        // or 'C' for a conjugate transpose.
+                transB, // Same as transA but for matrix B.
+                m,      // Number of rows in matrices A and C.
+                n,      // Number of columns in matrices B and C.
+                k,      // Number of columns in matrix A and rows in matrix B.
+                Tab(1), // Scaling factor for the product of matrices A and B.
+                a,      // Pointer to matrix A.
+                lda,    // Leading dimension of matrix A, which is the
+                        // stride between successive rows (for row major
+                        // layout).
+                b,      // Pointer to matrix B.
+                ldb,    // Leading dimension of matrix B, similar to lda.
+                Tab(0), // Scaling factor for matrix C.
+                res,    // Pointer to matrix C, where the result is stored.
+                ldc,    // Leading dimension of matrix C.
+                depends);
+        }
+        else {
+            gemm_event = mkl_blas::column_major::gemm(
+                exec_q,
+                transA, // Defines the transpose operation for matrix A:
+                        // 'N' indicates no transpose, 'T' for transpose,
+                        // or 'C' for a conjugate transpose.
+                transB, // Same as transA but for matrix B.
+                m,      // Number of rows in matrices A and C.
+                n,      // Number of columns in matrices B and C.
+                k,      // Number of columns in matrix A and rows in matrix B.
+                Tab(1), // Scaling factor for the product of matrices A and B.
+                a,      // Pointer to matrix A.
+                lda,    // Leading dimension of matrix A, which is the
+                        // stride between successive rows (for row major
+                        // layout).
+                b,      // Pointer to matrix B.
+                ldb,    // Leading dimension of matrix B, similar to lda.
+                Tab(0), // Scaling factor for matrix C.
+                res,    // Pointer to matrix C, where the result is stored.
+                ldc,    // Leading dimension of matrix C.
+                depends);
+        }
     } catch (oneapi::mkl::exception const &e) {
         error_msg
             << "Unexpected MKL exception caught during gemm() call:\nreason: "
@@ -229,41 +235,41 @@ std::tuple<sycl::event, sycl::event, bool>
             "Result array is not c-contiguous nor f-contiguous.");
     }
     bool is_row_major = true;
-    if (is_matrixA_f_contig && is_matrixB_f_contig) {
+    if (is_matrixA_f_contig || is_matrixB_f_contig) {
         is_row_major = false;
     }
     oneapi::mkl::transpose transA;
     oneapi::mkl::transpose transB;
     if (is_row_major) {
-        transA = is_matrixA_f_contig ? oneapi::mkl::transpose::T
-                                     : oneapi::mkl::transpose::N;
-        transB = is_matrixB_f_contig ? oneapi::mkl::transpose::T
-                                     : oneapi::mkl::transpose::N;
-    }
-    else {
         transA = oneapi::mkl::transpose::N;
         transB = oneapi::mkl::transpose::N;
+    }
+    else {
+        transA = is_matrixA_c_contig ? oneapi::mkl::transpose::T
+                                     : oneapi::mkl::transpose::N;
+        transB = is_matrixB_c_contig ? oneapi::mkl::transpose::T
+                                     : oneapi::mkl::transpose::N;
     }
 
     std::int64_t lda;
     std::int64_t ldb;
     if (is_row_major) {
-        if (transA == oneapi::mkl::transpose::N) {
-            lda = k;
-        }
-        else {
-            lda = m;
-        }
-        if (transB == oneapi::mkl::transpose::N) {
-            ldb = n;
-        }
-        else {
-            ldb = k;
-        }
+        lda = k;
+        ldb = n;
     }
     else {
-        lda = m;
-        ldb = k;
+        if (transA == oneapi::mkl::transpose::N) {
+            lda = m;
+        }
+        else {
+            lda = k;
+        }
+        if (transB == oneapi::mkl::transpose::N) {
+            ldb = k;
+        }
+        else {
+            ldb = n;
+        }
     }
     const std::int64_t ldc = is_row_major ? n : m;
 
