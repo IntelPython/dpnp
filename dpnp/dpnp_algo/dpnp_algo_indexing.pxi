@@ -37,23 +37,14 @@ and the rest of the library
 
 __all__ += [
     "dpnp_choose",
-    "dpnp_diag_indices",
     "dpnp_diagonal",
-    "dpnp_fill_diagonal",
     "dpnp_putmask",
     "dpnp_select",
-    "dpnp_tril_indices",
-    "dpnp_tril_indices_from",
-    "dpnp_triu_indices",
-    "dpnp_triu_indices_from"
 ]
 
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_choose_t)(c_dpctl.DPCTLSyclQueueRef,
                                                         void *, void * , void ** , size_t, size_t, size_t,
                                                         const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_diag_indices)(c_dpctl.DPCTLSyclQueueRef,
-                                                            void * , size_t,
-                                                            const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_2in_1out_func_ptr_t_)(c_dpctl.DPCTLSyclQueueRef,
                                                                           void * ,
                                                                           const size_t,
@@ -115,38 +106,6 @@ cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor x1, list choices1)
     return res_array
 
 
-cpdef tuple dpnp_diag_indices(n, ndim):
-    cdef size_t res_size = 0 if n < 0 else n
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.int64)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAG_INDICES_EXT, param1_type, param1_type)
-
-    cdef fptr_dpnp_diag_indices func = <fptr_dpnp_diag_indices > kernel_data.ptr
-
-    cdef c_dpctl.SyclQueue q
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref
-    cdef c_dpctl.DPCTLSyclEventRef event_ref
-
-    res_list = []
-    cdef utils.dpnp_descriptor res_arr
-    cdef shape_type_c result_shape = utils._object_to_tuple(res_size)
-    for i in range(ndim):
-        res_arr = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
-
-        q = <c_dpctl.SyclQueue> res_arr.get_array().sycl_queue
-        q_ref = q.get_queue_ref()
-
-        event_ref = func(q_ref, res_arr.get_data(), res_size, NULL)
-
-        with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-        c_dpctl.DPCTLEvent_Delete(event_ref)
-
-        res_list.append(res_arr.get_pyobj())
-
-    return tuple(res_list)
-
-
 cpdef utils.dpnp_descriptor dpnp_diagonal(dpnp_descriptor x1, offset=0):
     cdef shape_type_c x1_shape = x1.shape
 
@@ -203,39 +162,6 @@ cpdef utils.dpnp_descriptor dpnp_diagonal(dpnp_descriptor x1, offset=0):
     return result
 
 
-cpdef dpnp_fill_diagonal(dpnp_descriptor x1, val):
-    x1_obj = x1.get_array()
-
-    cdef shape_type_c x1_shape = x1.shape
-    cdef utils.dpnp_descriptor val_arr = utils_py.create_output_descriptor_py((1,),
-                                                                              x1.dtype,
-                                                                              None,
-                                                                              device=x1_obj.sycl_device,
-                                                                              usm_type=x1_obj.usm_type,
-                                                                              sycl_queue=x1_obj.sycl_queue)
-
-    val_arr.get_pyobj()[0] = val
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FILL_DIAGONAL_EXT, param1_type, param1_type)
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> x1_obj.sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_indexing_2in_func_ptr_t func = <custom_indexing_2in_func_ptr_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    x1.get_data(),
-                                                    val_arr.get_data(),
-                                                    x1_shape.data(),
-                                                    x1.ndim,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-
 cpdef dpnp_putmask(utils.dpnp_descriptor arr, utils.dpnp_descriptor mask, utils.dpnp_descriptor values):
     cdef int values_size = values.size
 
@@ -263,91 +189,3 @@ cpdef utils.dpnp_descriptor dpnp_select(list condlist, list choicelist, default)
         res_array.get_pyobj()[ind] = val
 
     return res_array
-
-
-cpdef tuple dpnp_tril_indices(n, k=0, m=None):
-    array1 = []
-    array2 = []
-    if m is None:
-        for i in range(n):
-            for j in range(i + 1 + k):
-                if j >= n:
-                    continue
-                else:
-                    array1.append(i)
-                    array2.append(j)
-    else:
-        for i in range(n):
-            for j in range(i + 1 + k):
-                if j < m:
-                    array1.append(i)
-                    array2.append(j)
-
-    array1 = dpnp.array(array1, dtype=dpnp.int64)
-    array2 = dpnp.array(array2, dtype=dpnp.int64)
-    return (array1, array2)
-
-
-cpdef tuple dpnp_tril_indices_from(dpnp_descriptor arr, k=0):
-    m = arr.shape[0]
-    n = arr.shape[1]
-    array1 = []
-    array2 = []
-    if m is None:
-        for i in range(n):
-            for j in range(i + 1 + k):
-                if j >= n:
-                    continue
-                else:
-                    array1.append(i)
-                    array2.append(j)
-    else:
-        for i in range(n):
-            for j in range(i + 1 + k):
-                if j < m:
-                    array1.append(i)
-                    array2.append(j)
-
-    array1 = dpnp.array(array1, dtype=dpnp.int64)
-    array2 = dpnp.array(array2, dtype=dpnp.int64)
-    return (array1, array2)
-
-
-cpdef tuple dpnp_triu_indices(n, k=0, m=None):
-    array1 = []
-    array2 = []
-    if m is None:
-        for i in range(n):
-            for j in range(i + k, n):
-                array1.append(i)
-                array2.append(j)
-    else:
-        for i in range(n):
-            for j in range(i + k, m):
-                array1.append(i)
-                array2.append(j)
-
-    array1 = dpnp.array(array1, dtype=dpnp.int64)
-    array2 = dpnp.array(array2, dtype=dpnp.int64)
-    return (array1, array2)
-
-
-cpdef tuple dpnp_triu_indices_from(dpnp_descriptor arr, k=0):
-    m = arr.shape[0]
-    n = arr.shape[1]
-    array1 = []
-    array2 = []
-    if m is None:
-        for i in range(n):
-            for j in range(i + k, n):
-                array1.append(i)
-                array2.append(j)
-    else:
-        for i in range(n):
-            for j in range(i + k, m):
-                array1.append(i)
-                array2.append(j)
-
-    array1 = dpnp.array(array1, dtype=dpnp.int64)
-    array2 = dpnp.array(array2, dtype=dpnp.int64)
-    return (array1, array2)

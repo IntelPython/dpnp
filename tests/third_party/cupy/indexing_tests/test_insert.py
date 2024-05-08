@@ -255,7 +255,6 @@ class TestPutmaskDifferentDtypes(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestFillDiagonal(unittest.TestCase):
     def _compute_val(self, xp):
         if type(self.val) is int:
@@ -341,7 +340,6 @@ class TestDiagIndicesFrom(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDiagIndicesFromRaises(unittest.TestCase):
     def test_non_equal_dims(self):
         for xp in (numpy, cupy):

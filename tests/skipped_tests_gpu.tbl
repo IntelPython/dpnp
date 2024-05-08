@@ -218,57 +218,6 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diago
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative3
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative4
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative5
-
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_0_{n=2, ndim=2}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_1_{n=2, ndim=3}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_2_{n=2, ndim=1}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_5_{n=4, ndim=2}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_6_{n=4, ndim=3}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_7_{n=4, ndim=1}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_10_{n=-3, ndim=2}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_11_{n=-3, ndim=3}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_12_{n=-3, ndim=1}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_15_{n=0, ndim=2}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_16_{n=0, ndim=3}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_17_{n=0, ndim=1}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndicesInvalidValues_param_0_{n=-3, ndim=1}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndicesInvalidValues_param_3_{n=0, ndim=1}::test_diag_indices
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndicesFrom_param_0_{shape=(3, 3)}::test_diag_indices_from
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndicesFrom_param_1_{shape=(0, 0)}::test_diag_indices_from
-tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndicesFrom_param_2_{shape=(2, 2, 2)}::test_diag_indices_from
-
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_0_{shape=(3, 3), val=1, wrap=True}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_11_{shape=(2, 2, 2), val=0, wrap=False}::test_1darray
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_16_{shape=(3, 5), val=1, wrap=True}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_17_{shape=(3, 5), val=1, wrap=False}::test_1darray
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_17_{shape=(3, 5), val=1, wrap=False}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_18_{shape=(3, 5), val=0, wrap=True}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_19_{shape=(3, 5), val=0, wrap=False}::test_1darray
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_19_{shape=(3, 5), val=0, wrap=False}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_1_{shape=(3, 3), val=1, wrap=False}::test_1darray
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_1_{shape=(3, 3), val=1, wrap=False}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_20_{shape=(3, 5), val=(2,), wrap=True}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_21_{shape=(3, 5), val=(2,), wrap=False}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_22_{shape=(3, 5), val=(2, 2), wrap=True}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_23_{shape=(3, 5), val=(2, 2), wrap=False}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_24_{shape=(5, 3), val=1, wrap=True}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_25_{shape=(5, 3), val=1, wrap=False}::test_1darray
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_25_{shape=(5, 3), val=1, wrap=False}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_26_{shape=(5, 3), val=0, wrap=True}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_27_{shape=(5, 3), val=0, wrap=False}::test_1darray
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_27_{shape=(5, 3), val=0, wrap=False}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_28_{shape=(5, 3), val=(2,), wrap=True}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_29_{shape=(5, 3), val=(2,), wrap=False}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_2_{shape=(3, 3), val=0, wrap=True}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_30_{shape=(5, 3), val=(2, 2), wrap=True}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_31_{shape=(5, 3), val=(2, 2), wrap=False}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_3_{shape=(3, 3), val=0, wrap=False}::test_1darray
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_3_{shape=(3, 3), val=0, wrap=False}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_5_{shape=(3, 3), val=(2,), wrap=False}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_6_{shape=(3, 3), val=(2, 2), wrap=True}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_7_{shape=(3, 3), val=(2, 2), wrap=False}::test_columnar_slice
-tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_9_{shape=(2, 2, 2), val=1, wrap=False}::test_1darray
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmaskDifferentDtypes::test_putmask_differnt_dtypes_raises
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_non_equal_shape_raises
 

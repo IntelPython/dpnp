@@ -46,15 +46,9 @@ import dpnp
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
     dpnp_choose,
-    dpnp_diag_indices,
     dpnp_diagonal,
-    dpnp_fill_diagonal,
     dpnp_putmask,
     dpnp_select,
-    dpnp_tril_indices,
-    dpnp_tril_indices_from,
-    dpnp_triu_indices,
-    dpnp_triu_indices_from,
 )
 from .dpnp_array import dpnp_array
 from .dpnp_utils import (
@@ -70,6 +64,7 @@ __all__ = [
     "extract",
     "fill_diagonal",
     "indices",
+    "mask_indices",
     "nonzero",
     "place",
     "put",
@@ -194,6 +189,15 @@ def diag_indices(n, ndim=2):
 
     For full documentation refer to :obj:`numpy.diag_indices`.
 
+    Parameters
+    ----------
+    n : int
+      The size, along each dimension, of the arrays for which the returned
+      indices can be used.
+
+    ndim : int, optional
+      The number of dimensions.
+
     See also
     --------
     :obj:`diag_indices_from` : Return the indices to access the main
@@ -238,42 +242,62 @@ def diag_indices(n, ndim=2):
 
     """
 
-    if not use_origin_backend():
-        return dpnp_diag_indices(n, ndim)
-
-    return call_origin(numpy.diag_indices, n, ndim)
+    idx = dpnp.arange(n)
+    return (idx,) * ndim
 
 
-def diag_indices_from(x1):
+def diag_indices_from(arr):
     """
     Return the indices to access the main diagonal of an n-dimensional array.
 
     For full documentation refer to :obj:`numpy.diag_indices_from`.
+
+    Parameters
+    ----------
+    arr : array, at least 2-D
 
     See also
     --------
     :obj:`diag_indices` : Return the indices to access the main
                           diagonal of an array.
 
+    Examples
+    --------
+    Create a 4 by 4 array.
+
+    >>> import dpnp as np
+    >>> a = np.arange(16).reshape(4, 4)
+    >>> a
+    array([[ 0,  1,  2,  3],
+           [ 4,  5,  6,  7],
+           [ 8,  9, 10, 11],
+           [12, 13, 14, 15]])
+
+    Get the indices of the diagonal elements.
+
+    >>> di = np.diag_indices_from(a)
+    >>> di
+    (array([0, 1, 2, 3]), array([0, 1, 2, 3]))
+
+    >>> a[di]
+    array([ 0,  5, 10, 15])
+
+    This is simply syntactic sugar for diag_indices.
+
+    >>> np.diag_indices(a.shape[0])
+    (array([0, 1, 2, 3]), array([0, 1, 2, 3]))
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        # original limitation
-        if not x1_desc.ndim >= 2:
-            pass
+    if not arr.ndim >= 2:
+        raise ValueError("input array must be at least 2-d")
 
-        # original limitation
-        # For more than d=2, the strided formula is only valid for arrays with
-        # all dimensions equal, so we check first.
-        elif not numpy.alltrue(
-            numpy.diff(x1_desc.shape) == 0
-        ):  # TODO: replace alltrue and diff funcs with dpnp own ones
-            pass
-        else:
-            return dpnp_diag_indices(x1_desc.shape[0], x1_desc.ndim)
+    sh0 = arr.shape[0]
+    for sh in arr.shape[1:]:
+        if sh != sh0:
+            raise ValueError("All dimensions of input must be of equal length")
 
-    return call_origin(numpy.diag_indices_from, x1)
+    return diag_indices(sh0, arr.ndim)
 
 
 def diagonal(x1, offset=0, axis1=0, axis2=1):
@@ -344,15 +368,24 @@ def extract(condition, x):
     return call_origin(numpy.extract, condition, x)
 
 
-def fill_diagonal(x1, val, wrap=False):
+def fill_diagonal(a, val, wrap=False):
     """
     Fill the main diagonal of the given array of any dimensionality.
 
     For full documentation refer to :obj:`numpy.fill_diagonal`.
 
-    Limitations
-    -----------
-    Parameter `wrap` is supported only with default values.
+    Parameters
+    ----------
+    a : array, at least 2-D.
+      Array whose diagonal is to be filled in-place.
+    val : scalar or array_like
+      Value(s) to write on the diagonal. If `val` is scalar, the value is
+      written along the diagonal. If array-like, the flattened `val` is
+      written along the diagonal, repeating if necessary to fill all
+      diagonal entries.
+    wrap : bool
+      The diagonal "wrapped" after N columns. You can have this behavior
+      with this option. This affects only tall matrices.
 
     See Also
     --------
@@ -361,20 +394,113 @@ def fill_diagonal(x1, val, wrap=False):
     :obj:`dpnp.diag_indices_from` : Return the indices to access the main
                                     diagonal of an n-dimensional array.
 
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.zeros((3, 3), dtype=int)
+    >>> np.fill_diagonal(a, 5)
+    >>> a
+    array([[5, 0, 0],
+           [0, 5, 0],
+           [0, 0, 5]])
+
+    The same function can operate on a 4-D array:
+
+    >>> a = np.zeros((3, 3, 3, 3), dtype=int)
+    >>> np.fill_diagonal(a, 4)
+
+    We only show a few blocks for clarity:
+
+    >>> a[0, 0]
+    array([[4, 0, 0],
+           [0, 0, 0],
+           [0, 0, 0]])
+    >>> a[1, 1]
+    array([[0, 0, 0],
+           [0, 4, 0],
+           [0, 0, 0]])
+    >>> a[2, 2]
+    array([[0, 0, 0],
+           [0, 0, 0],
+           [0, 0, 4]])
+
+    The wrap option affects only tall matrices:
+
+    >>> # tall matrices no wrap
+    >>> a = np.zeros((5, 3), dtype=int)
+    >>> np.fill_diagonal(a, 4)
+    >>> a
+    array([[4, 0, 0],
+           [0, 4, 0],
+           [0, 0, 4],
+           [0, 0, 0],
+           [0, 0, 0]])
+
+    >>> # tall matrices wrap
+    >>> a = np.zeros((5, 3), dtype=int)
+    >>> np.fill_diagonal(a, 4, wrap=True)
+    >>> a
+    array([[4, 0, 0],
+           [0, 4, 0],
+           [0, 0, 4],
+           [0, 0, 0],
+           [4, 0, 0]])
+
+    >>> # wide matrices
+    >>> a = np.zeros((3, 5), dtype=int)
+    >>> np.fill_diagonal(a, 4, wrap=True)
+    >>> a
+    array([[4, 0, 0, 0, 0],
+           [0, 4, 0, 0, 0],
+           [0, 0, 4, 0, 0]])
+
+    The anti-diagonal can be filled by reversing the order of elements
+    using either `dpnp.flipud` or `dpnp.fliplr`.
+
+    >>> a = np.zeros((3, 3), dtype=int)
+    >>> val = np.array([1, 2, 3])
+    >>> np.fill_diagonal(np.fliplr(a), val)  # Horizontal flip
+    >>> a
+    array([[0, 0, 1],
+           [0, 2, 0],
+           [3, 0, 0]])
+    >>> np.fill_diagonal(np.flipud(a), val)  # Vertical flip
+    >>> a
+    array([[0, 0, 3],
+           [0, 2, 0],
+           [1, 0, 0]])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    if x1_desc:
-        if not dpnp.isscalar(val):
-            pass
-        elif wrap:
-            pass
-        else:
-            return dpnp_fill_diagonal(x1_desc, val)
+    dpnp.check_supported_arrays_type(a, scalar_type=True, all_scalars=True)
 
-    return call_origin(numpy.fill_diagonal, x1, val, wrap, dpnp_inplace=True)
+    if a.ndim < 2:
+        raise ValueError("array must be at least 2-d")
+    end = a.size
+    if a.ndim == 2:
+        step = a.shape[1] + 1
+        if not wrap and a.shape[0] > a.shape[1]:
+            end = a.shape[1] * a.shape[1]
+    else:
+        sh0 = a.shape[0]
+        for sh in a.shape[1:]:
+            if sh != sh0:
+                raise ValueError(
+                    "All dimensions of input must be of equal length"
+                )
+        step = sum(sh0**x for x in range(a.ndim))
+
+    # TODO: implement flatiter for slice key
+    # a.flat[:end:step] = val
+    fl = a.flat
+    if dpnp.isscalar(val):
+        for idx in range(0, end, step):
+            fl[idx] = val
+    else:
+        flat_val = val.flatten()
+        for i in range(0, flat_val.size):
+            for idx in range((step * i), end, step * (1 + i)):
+                fl[idx] = flat_val[i]
 
 
 def indices(
@@ -491,6 +617,70 @@ def indices(
         else:
             res[i] = idx
     return res
+
+
+def mask_indices(n, mask_func, k=0):
+    """
+    Return the indices to access (n, n) arrays, given a masking function.
+
+    Assume `mask_func` is a function that, for a square array a of size
+    ``(n, n)`` with a possible offset argument `k`, when called as
+    ``mask_func(a, k)`` returns a new array with zeros in certain locations
+    (functions like `triu` or `tril` do precisely this). Then this function
+    returns the indices where the non-zero values would be located.
+
+    Parameters
+    ----------
+    n : int
+        The returned indices will be valid to access arrays of shape (n, n).
+    mask_func : callable
+        A function whose call signature is similar to that of `triu`, `tril`.
+        That is, ``mask_func(x, k)`` returns a boolean array, shaped like `x`.
+        `k` is an optional argument to the function.
+    k : scalar
+        An optional argument which is passed through to `mask_func`. Functions
+        like `triu`, `tril` take a second argument that is interpreted as an
+        offset.
+
+    Returns
+    -------
+    indices : tuple of arrays.
+        The `n` arrays of indices corresponding to the locations where
+        ``mask_func(np.ones((n, n)), k)`` is True.
+
+    Examples
+    --------
+    These are the indices that would allow you to access the upper triangular
+    part of any 3x3 array:
+
+    >>> import dpnp as np
+    >>> iu = np.mask_indices(3, np.triu)
+
+    For example, if `a` is a 3x3 array:
+
+    >>> a = np.arange(9).reshape(3, 3)
+    >>> a
+    array([[0, 1, 2],
+           [3, 4, 5],
+           [6, 7, 8]])
+    >>> a[iu]
+    array([0, 1, 2, 4, 5, 8])
+
+    An offset can be passed also to the masking function.  This gets us the
+    indices starting on the first diagonal right of the main one:
+
+    >>> iu1 = np.mask_indices(3, np.triu, 1)
+
+    with which we now extract only three elements:
+
+    >>> a[iu1]
+    array([1, 2, 5])
+
+    """
+
+    m = dpnp.ones((n, n), dtype=int)
+    a = mask_func(m, k)
+    return nonzero(a != 0)
 
 
 def nonzero(a):
@@ -986,6 +1176,8 @@ def tril_indices(n, k=0, m=None):
     """
     Return the indices for the lower-triangle of an (n, m) array.
 
+    For full documentation refer to :obj:`numpy.tril_indices`.
+
     Parameters
     ----------
     n : int
@@ -1006,24 +1198,63 @@ def tril_indices(n, k=0, m=None):
         The indices for the triangle. The returned tuple contains two arrays,
         each with the indices along one dimension of the array.
 
+    Examples
+    --------
+    Compute two different sets of indices to access 4x4 arrays, one for the
+    lower triangular part starting at the main diagonal, and one starting two
+    diagonals further right:
+
+    >>> import dpnp as np
+    >>> il1 = np.tril_indices(4)
+    >>> il2 = np.tril_indices(4, 2)
+
+    Here is how they can be used with a sample array:
+
+    >>> a = np.arange(16).reshape(4, 4)
+    >>> a
+    array([[ 0,  1,  2,  3],
+           [ 4,  5,  6,  7],
+           [ 8,  9, 10, 11],
+           [12, 13, 14, 15]])
+
+    Both for indexing:
+
+    >>> a[il1]
+    array([ 0,  4,  5, ..., 13, 14, 15])
+
+    And for assigning values:
+
+    >>> a[il1] = -1
+    >>> a
+    array([[-1,  1,  2,  3],
+           [-1, -1,  6,  7],
+           [-1, -1, -1, 11],
+           [-1, -1, -1, -1]])
+
+    These cover almost the whole array (two diagonals right of the main one):
+
+    >>> a[il2] = -10
+    >>> a
+    array([[-10, -10, -10,   3],
+           [-10, -10, -10, -10],
+           [-10, -10, -10, -10],
+           [-10, -10, -10, -10]])
+
     """
 
-    if not use_origin_backend():
-        if (
-            isinstance(n, int)
-            and isinstance(k, int)
-            and (isinstance(m, int) or m is None)
-        ):
-            return dpnp_tril_indices(n, k, m)
+    tri_ = dpnp.tri(n, m, k=k, dtype=bool)
 
-    return call_origin(numpy.tril_indices, n, k, m)
+    return tuple(
+        dpnp.broadcast_to(inds, tri_.shape)[tri_]
+        for inds in indices(tri_.shape, sparse=True)
+    )
 
 
-def tril_indices_from(x1, k=0):
+def tril_indices_from(arr, k=0):
     """
     Return the indices for the lower-triangle of arr.
 
-    See `tril_indices` for full details.
+    For full documentation refer to :obj:`numpy.tril_indices_from`.
 
     Parameters
     ----------
@@ -1033,19 +1264,54 @@ def tril_indices_from(x1, k=0):
 
     k : int, optional
         Diagonal offset (see `tril` for details).
+
+    Examples
+    --------
+    Create a 4 by 4 array.
+
+    >>> import dpnp as np
+    >>> a = np.arange(16).reshape(4, 4)
+    >>> a
+    array([[ 0,  1,  2,  3],
+           [ 4,  5,  6,  7],
+           [ 8,  9, 10, 11],
+           [12, 13, 14, 15]])
+
+    Pass the array to get the indices of the lower triangular elements.
+
+    >>> trili = np.tril_indices_from(a)
+    >>> trili
+    (array([0, 1, 1, 2, 2, 2, 3, 3, 3, 3]),
+     array([0, 0, 1, 0, 1, 2, 0, 1, 2, 3]))
+
+    >>> a[trili]
+    array([ 0,  4,  5,  8,  9, 10, 12, 13, 14, 15])
+
+    This is syntactic sugar for tril_indices().
+
+    >>> np.tril_indices(a.shape[0])
+    (array([0, 1, 1, 2, 2, 2, 3, 3, 3, 3]),
+     array([0, 0, 1, 0, 1, 2, 0, 1, 2, 3]))
+
+    Use the `k` parameter to return the indices for the lower triangular array
+    up to the k-th diagonal.
+
+    >>> trili1 = np.tril_indices_from(a, k=1)
+    >>> a[trili1]
+    array([ 0,  1,  4,  5,  6,  8,  9, 10, 11, 12, 13, 14, 15])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if isinstance(k, int):
-            return dpnp_tril_indices_from(x1_desc, k)
-
-    return call_origin(numpy.tril_indices_from, x1, k)
+    if arr.ndim != 2:
+        raise ValueError("input array must be 2-d")
+    return tril_indices(arr.shape[-2], k=k, m=arr.shape[-1])
 
 
 def triu_indices(n, k=0, m=None):
     """
     Return the indices for the upper-triangle of an (n, m) array.
+
+    For full documentation refer to :obj:`numpy.triu_indices`.
 
     Parameters
     ----------
@@ -1067,24 +1333,65 @@ def triu_indices(n, k=0, m=None):
         The indices for the triangle. The returned tuple contains two arrays,
         each with the indices along one dimension of the array.  Can be used
         to slice a ndarray of shape(`n`, `n`).
+
+    Examples
+    --------
+    Compute two different sets of indices to access 4x4 arrays, one for the
+    upper triangular part starting at the main diagonal, and one starting two
+    diagonals further right:
+
+    >>> import dpnp as np
+    >>> iu1 = np.triu_indices(4)
+    >>> iu2 = np.triu_indices(4, 2)
+
+    Here is how they can be used with a sample array:
+
+    >>> a = np.arange(16).reshape(4, 4)
+    >>> a
+    array([[ 0,  1,  2,  3],
+           [ 4,  5,  6,  7],
+           [ 8,  9, 10, 11],
+           [12, 13, 14, 15]])
+
+    Both for indexing:
+
+    >>> a[iu1]
+    array([ 0,  1,  2, ..., 10, 11, 15])
+
+    And for assigning values:
+
+    >>> a[iu1] = -1
+    >>> a
+    array([[-1, -1, -1, -1],
+           [ 4, -1, -1, -1],
+           [ 8,  9, -1, -1],
+           [12, 13, 14, -1]])
+
+    These cover only a small part of the whole array (two diagonals right
+    of the main one):
+
+    >>> a[iu2] = -10
+    >>> a
+    array([[ -1,  -1, -10, -10],
+           [  4,  -1,  -1, -10],
+           [  8,   9,  -1,  -1],
+           [ 12,  13,  14,  -1]])
+
     """
 
-    if not use_origin_backend():
-        if (
-            isinstance(n, int)
-            and isinstance(k, int)
-            and (isinstance(m, int) or m is None)
-        ):
-            return dpnp_triu_indices(n, k, m)
+    tri_ = ~dpnp.tri(n, m, k=k - 1, dtype=bool)
 
-    return call_origin(numpy.triu_indices, n, k, m)
+    return tuple(
+        dpnp.broadcast_to(inds, tri_.shape)[tri_]
+        for inds in indices(tri_.shape, sparse=True)
+    )
 
 
-def triu_indices_from(x1, k=0):
+def triu_indices_from(arr, k=0):
     """
     Return the indices for the lower-triangle of arr.
 
-    See `tril_indices` for full details.
+    For full documentation refer to :obj:`numpy.triu_indices_from`.
 
     Parameters
     ----------
@@ -1094,11 +1401,44 @@ def triu_indices_from(x1, k=0):
 
     k : int, optional
         Diagonal offset (see `tril` for details).
+
+    Examples
+    --------
+    Create a 4 by 4 array.
+
+    >>> import dpnp as np
+    >>> a = np.arange(16).reshape(4, 4)
+    >>> a
+    array([[ 0,  1,  2,  3],
+           [ 4,  5,  6,  7],
+           [ 8,  9, 10, 11],
+           [12, 13, 14, 15]])
+
+    Pass the array to get the indices of the upper triangular elements.
+
+    >>> triui = np.triu_indices_from(a)
+    >>> triui
+    (array([0, 0, 0, 0, 1, 1, 1, 2, 2, 3]),
+     array([0, 1, 2, 3, 1, 2, 3, 2, 3, 3]))
+
+    >>> a[triui]
+    array([ 0,  1,  2,  3,  5,  6,  7, 10, 11, 15])
+
+    This is syntactic sugar for triu_indices().
+
+    >>> np.triu_indices(a.shape[0])
+    (array([0, 0, 0, 0, 1, 1, 1, 2, 2, 3]),
+     array([0, 1, 2, 3, 1, 2, 3, 2, 3, 3]))
+
+    Use the `k` parameter to return the indices for the upper triangular array
+    from the k-th diagonal.
+
+    >>> triuim1 = np.triu_indices_from(a, k=1)
+    >>> a[triuim1]
+    array([ 1,  2,  3,  6,  7, 11])
+
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if isinstance(k, int):
-            return dpnp_triu_indices_from(x1_desc, k)
-
-    return call_origin(numpy.triu_indices_from, x1, k)
+    if arr.ndim != 2:
+        raise ValueError("input array must be 2-d")
+    return triu_indices(arr.shape[-2], k=k, m=arr.shape[-1])
