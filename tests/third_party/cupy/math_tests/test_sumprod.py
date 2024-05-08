@@ -483,13 +483,11 @@ class TestCumprod:
         return res
 
     @testing.for_all_dtypes()
-    # TODO: remove type_check once proper cumprod is implemented
-    @testing.numpy_cupy_allclose(type_check=(not is_win_platform()))
+    @testing.numpy_cupy_allclose()
     def test_cumprod_1dim(self, xp, dtype):
         a = testing.shaped_arange((5,), xp, dtype)
         return self._cumprod(xp, a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_cumprod_out(self, xp, dtype):
@@ -498,7 +496,6 @@ class TestCumprod:
         self._cumprod(xp, a, out=out)
         return out
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_cumprod_out_noncontiguous(self, xp, dtype):
@@ -507,24 +504,18 @@ class TestCumprod:
         self._cumprod(xp, a, out=out)
         return out
 
-    # TODO: remove skip once proper cumprod is implemented
-    @pytest.mark.skipif(
-        is_win_platform(), reason="numpy has another default integral dtype"
-    )
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_cumprod_2dim_without_axis(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return self._cumprod(xp, a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_cumprod_2dim_with_axis(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
         return self._cumprod(xp, a, axis=1)
 
-    @pytest.mark.skip("ndarray.cumprod() is not implemented yet")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_ndarray_cumprod_2dim_with_axis(self, xp, dtype):
@@ -535,17 +526,13 @@ class TestCumprod:
     @testing.slow
     def test_cumprod_huge_array(self):
         size = 2**32
-        # Free huge memory for slow test
-        cupy.get_default_memory_pool().free_all_blocks()
-        a = cupy.ones(size, "b")
+        a = cupy.ones(size, dtype="b")
         result = cupy.cumprod(a, dtype="b")
         del a
         assert (result == 1).all()
         # Free huge memory for slow test
         del result
-        cupy.get_default_memory_pool().free_all_blocks()
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     def test_invalid_axis_lower1(self, dtype):
         for xp in (numpy, cupy):
@@ -553,7 +540,6 @@ class TestCumprod:
             with pytest.raises(numpy.AxisError):
                 xp.cumprod(a, axis=-a.ndim - 1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     def test_invalid_axis_lower2(self, dtype):
         for xp in (numpy, cupy):
@@ -561,7 +547,6 @@ class TestCumprod:
             with pytest.raises(numpy.AxisError):
                 xp.cumprod(a, axis=-a.ndim - 1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     def test_invalid_axis_upper1(self, dtype):
         for xp in (numpy, cupy):
@@ -569,19 +554,16 @@ class TestCumprod:
             with pytest.raises(numpy.AxisError):
                 return xp.cumprod(a, axis=a.ndim)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     def test_invalid_axis_upper2(self, dtype):
         a = testing.shaped_arange((4, 5), cupy, dtype)
         with pytest.raises(numpy.AxisError):
             return cupy.cumprod(a, axis=a.ndim)
 
-    @pytest.mark.skip("no exception is raised by numpy")
     def test_cumprod_arraylike(self):
         with pytest.raises(TypeError):
             return cupy.cumprod((1, 2, 3))
 
-    @pytest.mark.skip("no exception is raised by numpy")
     @testing.for_float_dtypes()
     def test_cumprod_numpy_array(self, dtype):
         a_numpy = numpy.arange(1, 6, dtype=dtype)

@@ -522,6 +522,7 @@ def test_norm(usm_type, ord, axis):
         ),
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("count_nonzero", [0, 1, 7, 0]),
+        pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),

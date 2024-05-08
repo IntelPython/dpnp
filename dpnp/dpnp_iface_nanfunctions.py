@@ -265,8 +265,8 @@ def nancumprod(x1, **kwargs):
 
     See Also
     --------
-    :obj:`dpnp.cumprod` : Return the cumulative product of elements
-                          along a given axis.
+    :obj:`dpnp.cumprod` : Cumulative product across array propagating NaNs.
+    :obj:`dpnp.isnan` : Show which elements are NaN.
 
     Examples
     --------
