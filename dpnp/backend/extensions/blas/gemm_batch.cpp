@@ -286,7 +286,7 @@ std::tuple<sycl::event, sycl::event, bool>
         c_stride[1] == c_shape[2] && c_stride[2] == 1;
 
     bool is_row_major = true;
-    if (A_base_is_f_contig && B_base_is_f_contig) {
+    if (A_base_is_f_contig || B_base_is_f_contig) {
         is_row_major = false;
     }
 
@@ -306,35 +306,35 @@ std::tuple<sycl::event, sycl::event, bool>
     oneapi::mkl::transpose transA;
     oneapi::mkl::transpose transB;
     if (is_row_major) {
-        transA = A_base_is_f_contig ? oneapi::mkl::transpose::T
-                                    : oneapi::mkl::transpose::N;
-        transB = B_base_is_f_contig ? oneapi::mkl::transpose::T
-                                    : oneapi::mkl::transpose::N;
-    }
-    else {
         transA = oneapi::mkl::transpose::N;
         transB = oneapi::mkl::transpose::N;
+    }
+    else {
+        transA = A_base_is_c_contig ? oneapi::mkl::transpose::T
+                                    : oneapi::mkl::transpose::N;
+        transB = B_base_is_c_contig ? oneapi::mkl::transpose::T
+                                    : oneapi::mkl::transpose::N;
     }
 
     std::int64_t lda;
     std::int64_t ldb;
     if (is_row_major) {
-        if (transA == oneapi::mkl::transpose::N) {
-            lda = k;
-        }
-        else {
-            lda = m;
-        }
-        if (transB == oneapi::mkl::transpose::N) {
-            ldb = n;
-        }
-        else {
-            ldb = k;
-        }
+        lda = k;
+        ldb = n;
     }
     else {
-        lda = m;
-        ldb = k;
+        if (transA == oneapi::mkl::transpose::N) {
+            lda = m;
+        }
+        else {
+            lda = k;
+        }
+        if (transB == oneapi::mkl::transpose::N) {
+            ldb = k;
+        }
+        else {
+            ldb = n;
+        }
     }
     const std::int64_t ldc = is_row_major ? n : m;
 

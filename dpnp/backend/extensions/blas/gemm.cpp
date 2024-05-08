@@ -223,41 +223,41 @@ std::tuple<sycl::event, sycl::event, bool>
             "Result array is not c-contiguous nor f-contiguous.");
     }
     bool is_row_major = true;
-    if (is_matrixA_f_contig && is_matrixB_f_contig) {
+    if (is_matrixA_f_contig || is_matrixB_f_contig) {
         is_row_major = false;
     }
     oneapi::mkl::transpose transA;
     oneapi::mkl::transpose transB;
     if (is_row_major) {
-        transA = is_matrixA_f_contig ? oneapi::mkl::transpose::T
-                                     : oneapi::mkl::transpose::N;
-        transB = is_matrixB_f_contig ? oneapi::mkl::transpose::T
-                                     : oneapi::mkl::transpose::N;
-    }
-    else {
         transA = oneapi::mkl::transpose::N;
         transB = oneapi::mkl::transpose::N;
+    }
+    else {
+        transA = is_matrixA_c_contig ? oneapi::mkl::transpose::T
+                                     : oneapi::mkl::transpose::N;
+        transB = is_matrixB_c_contig ? oneapi::mkl::transpose::T
+                                     : oneapi::mkl::transpose::N;
     }
 
     std::int64_t lda;
     std::int64_t ldb;
     if (is_row_major) {
-        if (transA == oneapi::mkl::transpose::N) {
-            lda = k;
-        }
-        else {
-            lda = m;
-        }
-        if (transB == oneapi::mkl::transpose::N) {
-            ldb = n;
-        }
-        else {
-            ldb = k;
-        }
+        lda = k;
+        ldb = n;
     }
     else {
-        lda = m;
-        ldb = k;
+        if (transA == oneapi::mkl::transpose::N) {
+            lda = m;
+        }
+        else {
+            lda = k;
+        }
+        if (transB == oneapi::mkl::transpose::N) {
+            ldb = k;
+        }
+        else {
+            ldb = n;
+        }
     }
     const std::int64_t ldc = is_row_major ? n : m;
 
