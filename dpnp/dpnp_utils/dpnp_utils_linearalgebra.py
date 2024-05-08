@@ -297,6 +297,7 @@ def _define_contig_flag(x):
     if x.ndim < 2:
         return True
 
+    x_strides = _standardize_strides_to_nonzero(x_strides, x_shape)
     x_is_c_contiguous = x_strides[-1] == 1 and x_strides[-2] == x_shape[-1]
     x_is_f_contiguous = x_strides[-2] == 1 and x_strides[-1] == x_shape[-2]
     if x_is_c_contiguous or x_is_f_contiguous:
@@ -1369,6 +1370,28 @@ def _shape_error(a, b, core_dim, err_msg):
             "Output array does not have enough dimensions "
             f"(has {a} while requires {b})"
         )
+
+
+def _standardize_strides_to_nonzero(strides, shape):
+    """
+    Standardizing the strides.
+    When shape of an array along any particular dimension is 1, the stride
+    along that dimension is undefined. This function standardize the strides
+    by calculating the non-zero value of the strides.
+    """
+
+    ndim = len(strides)
+    if numpy.prod(strides) == 0:
+        stndrd_strides = tuple(
+            numpy.prod(shape[i + 1 :]) if strides[i] == 0 else strides[i]
+            for i in range(ndim - 1)
+        )
+        last_stride = 1 if strides[ndim - 1] == 0 else strides[ndim - 1]
+        stndrd_strides += (last_stride,)
+    else:
+        stndrd_strides = strides
+
+    return stndrd_strides
 
 
 def _transpose_ex(a, axeses):
