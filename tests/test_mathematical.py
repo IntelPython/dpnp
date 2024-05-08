@@ -2578,9 +2578,14 @@ class TestMatmul:
         "shape_pair",
         [
             ((4,), (4,)),
+            ((1, 4), (4, 1)),
             ((4,), (4, 2)),
+            ((1, 4), (4, 2)),
             ((2, 4), (4,)),
+            ((2, 4), (4, 1)),
             ((1, 4), (4,)),  # output should be 1-d not 0-d
+            ((4,), (4, 1)),
+            ((1, 4), (4, 1)),
             ((2, 4), (4, 3)),
             ((1, 2, 3), (1, 3, 5)),
             ((4, 2, 3), (4, 3, 5)),
@@ -2605,11 +2610,15 @@ class TestMatmul:
             ((1, 5, 3, 2), (6, 5, 2, 4)),
             ((5, 3, 2), (6, 5, 2, 4)),
             ((1, 3, 3), (10, 1, 3, 1)),
+            ((2, 3, 3), (10, 1, 3, 1)),
+            ((10, 2, 3, 3), (10, 1, 3, 1)),
         ],
     )
     def test_matmul(self, order_pair, shape_pair):
         order1, order2 = order_pair
         shape1, shape2 = shape_pair
+        # input should be float type otherwise they are copied to c-contigous array
+        # so testing order becomes meaningless
         dtype = dpnp.default_float_type()
         a1 = numpy.arange(numpy.prod(shape1), dtype=dtype).reshape(shape1)
         a2 = numpy.arange(numpy.prod(shape2), dtype=dtype).reshape(shape2)
@@ -2652,8 +2661,9 @@ class TestMatmul:
     def test_matmul_empty(self, order_pair, shape_pair):
         order1, order2 = order_pair
         shape1, shape2 = shape_pair
-        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
-        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+        dtype = dpnp.default_float_type()
+        a1 = numpy.arange(numpy.prod(shape1), dtype=dtype).reshape(shape1)
+        a2 = numpy.arange(numpy.prod(shape2), dtype=dtype).reshape(shape2)
         a1 = numpy.array(a1, order=order1)
         a2 = numpy.array(a2, order=order2)
 
@@ -2928,17 +2938,83 @@ class TestMatmul:
         [(-2, -2, -2, -2), (2, 2, 2, 2), (-2, 2, -2, 2), (2, -2, 2, -2)],
         ids=["-2", "2", "(-2, 2)", "(2, -2)"],
     )
-    def test_matmul_strided(self, stride):
+    def test_matmul_strided1(self, stride):
         for dim in [1, 2, 3, 4]:
-            A = numpy.random.rand(*([20] * dim))
-            B = dpnp.asarray(A)
+            shape = tuple(20 for _ in range(dim))
+            A = numpy.random.rand(*shape)
+            A_dp = dpnp.asarray(A)
             slices = tuple(slice(None, None, stride[i]) for i in range(dim))
             a = A[slices]
-            b = B[slices]
-
-            result = dpnp.matmul(b, b)
+            a_dp = A_dp[slices]
+            # input arrays will be copied into c-contiguous arrays
+            # the 2D base is not c-contiguous nor f-contigous
+            result = dpnp.matmul(a_dp, a_dp)
             expected = numpy.matmul(a, a)
             assert_dtype_allclose(result, expected)
+
+            OUT = dpnp.empty(shape, dtype=result.dtype)
+            out = OUT[slices]
+            result = dpnp.matmul(a_dp, a_dp, out=out)
+            assert result is out
+            assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "shape", [(10, 3, 3), (12, 10, 3, 3)], ids=["3D", "4D"]
+    )
+    @pytest.mark.parametrize("stride", [-1, -2, 2], ids=["-1", "-2", "2"])
+    @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
+    def test_matmul_strided2(self, shape, stride, transpose):
+        # one dimension (-3) is strided
+        # if negative stride, copy is needed and the base becomes c-contiguous
+        # otherwise the base remains the same as input in gemm_batch
+        A = numpy.random.rand(*shape)
+        A_dp = dpnp.asarray(A)
+        if transpose:
+            A = numpy.moveaxis(A, (-2, -1), (-1, -2))
+            A_dp = dpnp.moveaxis(A_dp, (-2, -1), (-1, -2))
+        index = [slice(None)] * len(shape)
+        index[-3] = slice(None, None, stride)
+        index = tuple(index)
+        a = A[index]
+        a_dp = A_dp[index]
+        result = dpnp.matmul(a_dp, a_dp)
+        expected = numpy.matmul(a, a)
+        assert_dtype_allclose(result, expected)
+
+        OUT = dpnp.empty(shape, dtype=result.dtype)
+        out = OUT[index]
+        result = dpnp.matmul(a_dp, a_dp, out=out)
+        assert result is out
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "stride",
+        [(-2, -2), (2, 2), (-2, 2), (2, -2)],
+        ids=["(-2, -2)", "(2, 2)", "(-2, 2)", "(2, -2)"],
+    )
+    @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
+    def test_matmul_strided3(self, stride, transpose):
+        # 4D case, the 1st and 2nd dimensions are strided
+        # For negative stride, copy is needed and the base becomes c-contiguous.
+        # For positive stride, no copy but reshape makes the base c-contiguous.
+        stride0, stride1 = stride
+        shape = (12, 10, 3, 3)  # 4D array
+        A = numpy.random.rand(*shape)
+        A_dp = dpnp.asarray(A)
+        if transpose:
+            A = numpy.moveaxis(A, (-2, -1), (-1, -2))
+            A_dp = dpnp.moveaxis(A_dp, (-2, -1), (-1, -2))
+        a = A[::stride0, ::stride1]
+        a_dp = A_dp[::stride0, ::stride1]
+        result = dpnp.matmul(a_dp, a_dp)
+        expected = numpy.matmul(a, a)
+        assert_dtype_allclose(result, expected)
+
+        OUT = dpnp.empty(shape, dtype=result.dtype)
+        out = OUT[::stride0, ::stride1]
+        result = dpnp.matmul(a_dp, a_dp, out=out)
+        assert result is out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
@@ -2975,6 +3051,30 @@ class TestMatmul:
         assert result is dpnp_out
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.skipif(is_cpu_device(), reason="large size")
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            ((4096, 4096, 4, 4)),
+            ((2048, 2048, 8, 8)),
+        ],
+    )
+    def test_matmul_large(self, shape):
+        size = numpy.prod(shape, dtype=int)
+        a = numpy.array(numpy.random.uniform(-5, 5, size)).reshape(shape)
+        a_dp = dpnp.asarray(a)
+
+        result = dpnp.matmul(a_dp, a_dp)
+        expected = numpy.matmul(a, a)
+        assert_dtype_allclose(result, expected, factor=24)
+
+        # make the 2-d base f-contiguous
+        a = a.transpose(0, 1, 3, 2)
+        a_dp = a_dp.transpose(0, 1, 3, 2)
+        result = dpnp.matmul(a_dp, a_dp)
+        expected = numpy.matmul(a, a)
+        assert_dtype_allclose(result, expected, factor=24)
+
 
 class TestMatmulInvalidCases:
     @pytest.mark.parametrize(
@@ -2996,10 +3096,12 @@ class TestMatmulInvalidCases:
     @pytest.mark.parametrize(
         "shape_pair",
         [
-            ((5, 3, 1), (3, 1, 4)),
-            ((3, 2, 3), (3, 2, 4)),
-            ((3, 2), (1,)),
-            ((1, 2), (3, 1)),
+            ((2, 3), (4, 5)),
+            ((2, 4), (3, 5)),
+            ((2, 3), (4,)),
+            ((3,), (4, 5)),
+            ((2, 2, 3), (2, 4, 5)),
+            ((3, 2, 3), (2, 4, 5)),
             ((4, 3, 2), (6, 5, 2, 4)),
             ((6, 5, 3, 2), (3, 2, 4)),
         ],
@@ -3020,8 +3122,8 @@ class TestMatmulInvalidCases:
             ((5, 4, 3), (3, 1), (5, 4, 2)),
             ((5, 4, 3), (3,), (5, 3)),
             ((5, 4, 3), (3,), (6, 4)),
-            ((3,), (3, 4, 5), (3, 5)),
-            ((3,), (3, 4, 5), (4, 6)),
+            ((4,), (3, 4, 5), (4, 5)),
+            ((4,), (3, 4, 5), (3, 6)),
         ],
     )
     def test_invalid_shape_out(self, shape_pair):
