@@ -47,7 +47,6 @@ import dpnp
 from .dpnp_algo import (
     dpnp_choose,
     dpnp_diag_indices,
-    dpnp_diagonal,
     dpnp_fill_diagonal,
     dpnp_putmask,
     dpnp_select,
@@ -276,34 +275,164 @@ def diag_indices_from(x1):
     return call_origin(numpy.diag_indices_from, x1)
 
 
-def diagonal(x1, offset=0, axis1=0, axis2=1):
+def diagonal(a, offset=0, axis1=0, axis2=1):
     """
     Return specified diagonals.
 
     For full documentation refer to :obj:`numpy.diagonal`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameters `axis1` and `axis2` are supported only with default values.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Array from which the diagonals are taken.
+    offset : int, optional
+        Offset of the diagonal from the main diagonal.  Can be positive or
+        negative.  Defaults to main diagonal (0).
+    axis1 : int, optional
+        Axis to be used as the first axis of the 2-D sub-arrays from which
+        the diagonals should be taken.  Defaults to first axis (0).
+    axis2 : int, optional
+        Axis to be used as the second axis of the 2-D sub-arrays from
+        which the diagonals should be taken. Defaults to second axis (1).
+
+    Returns
+    -------
+    array_of_diagonals : dpnp.ndarray
+        If `a` is 2-D, then a 1-D array containing the diagonal and of the
+        same type as `a` is returned unless `a` is a `matrix`, in which case
+        a 1-D array rather than a (2-D) `matrix` is returned in order to
+        maintain backward compatibility.
+
+        If ``a.ndim > 2``, then the dimensions specified by `axis1` and `axis2`
+        are removed, and a new axis inserted at the end corresponding to the
+        diagonal.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(4).reshape(2,2)
+    >>> a
+    array([[0, 1],
+           [2, 3]])
+    >>> a.diagonal()
+    array([0, 3])
+    >>> a.diagonal(1)
+    array([1])
+
+    A 3-D example:
+
+    >>> a = np.arange(8).reshape(2,2,2)
+    >>> a
+    array([[[0, 1],
+            [2, 3]],
+
+           [[4, 5],
+            [6, 7]]])
+    >>> a.diagonal(0,  # Main diagonals of two arrays created by skipping
+    ...            0,  # across the outer(left)-most axis last and
+    ...            1)  # the "middle" (row) axis first.
+    array([[0, 6],
+           [1, 7]])
+
+    The sub-arrays whose main diagonals we just obtained; note that each
+    corresponds to fixing the right-most (column) axis, and that the
+    diagonals are "packed" in rows.
+
+    >>> a[:,:,0]  # main diagonal is [0 6]
+    array([[0, 2],
+           [4, 6]])
+    >>> a[:,:,1]  # main diagonal is [1 7]
+    array([[1, 3],
+           [5, 7]])
+
+    The anti-diagonal can be obtained by reversing the order of elements
+    using either `dpnp.flipud` or `dpnp.fliplr`.
+
+    >>> a = np.arange(9).reshape(3, 3)
+    >>> a
+    array([[0, 1, 2],
+           [3, 4, 5],
+           [6, 7, 8]])
+    >>> np.fliplr(a).diagonal()  # Horizontal flip
+    array([2, 4, 6])
+    >>> np.flipud(a).diagonal()  # Vertical flip
+    array([6, 4, 2])
+
+    Note that the order in which the diagonal is retrieved varies depending
+    on the flip function.
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if not isinstance(offset, int):
-            pass
-        elif offset < 0:
-            pass
-        elif axis1 != 0:
-            pass
-        elif axis2 != 1:
-            pass
-        else:
-            return dpnp_diagonal(x1_desc, offset).get_pyobj()
+    dpnp.check_supported_arrays_type(a)
+    a_ndim = a.ndim
 
-    return call_origin(numpy.diagonal, x1, offset, axis1, axis2)
+    if a_ndim < 2:
+        raise ValueError("diag requires an array of at least two dimensions")
+
+    if not isinstance(offset, int):
+        raise TypeError(
+            f"`offset` must be an integer data type, but got {type(offset)}"
+        )
+
+    axis1 = normalize_axis_index(axis1, a_ndim)
+    axis2 = normalize_axis_index(axis2, a_ndim)
+
+    if axis1 == axis2:
+        raise ValueError("`axis1` and `axis2` cannot be the same")
+
+    if axis1 < axis2:
+        min_axis, max_axis = axis1, axis2
+    else:
+        min_axis, max_axis = axis2, axis1
+
+    # get list of the order of axes removing the two target axes
+    axes_order = list(range(a_ndim))
+    del axes_order[max_axis]
+    del axes_order[min_axis]
+
+    # transpose the input array to put the target axes at the end
+    # to simplify diagonal extraction
+    if offset >= 0:
+        a = dpnp.transpose(a, axes_order + [axis1, axis2])
+    else:
+        a = dpnp.transpose(a, axes_order + [axis2, axis1])
+        offset = -offset
+
+    a_shape = a.shape
+    a_straides = a.strides
+    n, m = a_shape[-2:]
+    st_n, st_m = a_straides[-2:]
+    # pylint: disable=W0212
+    a_element_offset = a.get_array()._element_offset
+
+    # Compute shape, strides and offset of the resulting diagonal array
+    # based on the input offset
+    if offset == 0:
+        out_shape = a_shape[:-2] + (min(n, m),)
+        out_strides = a_straides[:-2] + (st_n + st_m,)
+        out_offset = a_element_offset
+    elif 0 < offset < m:
+        out_shape = a_shape[:-2] + (min(n, m - offset),)
+        out_strides = a_straides[:-2] + (st_n + st_m,)
+        out_offset = a_element_offset + st_m * offset
+    elif -n < offset < 0:
+        out_shape = a_shape[:-2] + (min(n + offset, m),)
+        out_strides = a_straides[:-2] + (st_n + st_m,)
+        out_offset = a_element_offset - st_n * offset
+    else:
+        out_shape = a_shape[:-2] + (0,)
+        out_strides = a_straides[:-2] + (1,)
+        out_offset = a_element_offset
+
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.usm_ndarray(
+            out_shape,
+            dtype=a.dtype,
+            buffer=a.get_array(),
+            strides=out_strides,
+            offset=out_offset,
+        )
+    )
 
 
 def extract(condition, x):
