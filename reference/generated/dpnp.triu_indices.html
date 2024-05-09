@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.triu_indices &mdash; Data Parallel Extension for NumPy 0.15.0dev1+52.g4eb7320a97 documentation</title>
+  <title>dpnp.triu_indices &mdash; Data Parallel Extension for NumPy 0.15.0dev1+53.g13e31a2564 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3926740f"></script>
+        <script src="../../_static/documentation_options.js?v=ef49832e"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+52.g4eb7320a97
+                0.15.0dev1+53.g13e31a2564
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -128,7 +128,6 @@
 <dt class="sig sig-object py" id="dpnp.triu_indices">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">triu_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_indexing.html#triu_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.triu_indices" title="Link to this definition"></a></dt>
 <dd><p>Return the indices for the upper-triangle of an (n, m) array.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.triu_indices.html#numpy.triu_indices" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.triu_indices</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -149,48 +148,6 @@ to slice a ndarray of shape(<cite>n</cite>, <cite>n</cite>).</p>
 <dd class="field-odd"><p>tuple, shape(2) of ndarrays, shape(<cite>n</cite>)</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<p>Compute two different sets of indices to access 4x4 arrays, one for the
-upper triangular part starting at the main diagonal, and one starting two
-diagonals further right:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">iu1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">iu2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Here is how they can be used with a sample array:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
-<span class="go">array([[ 0,  1,  2,  3],</span>
-<span class="go">       [ 4,  5,  6,  7],</span>
-<span class="go">       [ 8,  9, 10, 11],</span>
-<span class="go">       [12, 13, 14, 15]])</span>
-</pre></div>
-</div>
-<p>Both for indexing:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="n">iu1</span><span class="p">]</span>
-<span class="go">array([ 0,  1,  2, ..., 10, 11, 15])</span>
-</pre></div>
-</div>
-<p>And for assigning values:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="n">iu1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
-<span class="go">array([[-1, -1, -1, -1],</span>
-<span class="go">       [ 4, -1, -1, -1],</span>
-<span class="go">       [ 8,  9, -1, -1],</span>
-<span class="go">       [12, 13, 14, -1]])</span>
-</pre></div>
-</div>
-<p>These cover only a small part of the whole array (two diagonals right
-of the main one):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="n">iu2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
-<span class="go">array([[ -1,  -1, -10, -10],</span>
-<span class="go">       [  4,  -1,  -1, -10],</span>
-<span class="go">       [  8,   9,  -1,  -1],</span>
-<span class="go">       [ 12,  13,  14,  -1]])</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </section>
