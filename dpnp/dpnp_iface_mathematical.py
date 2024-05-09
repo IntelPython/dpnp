@@ -58,7 +58,6 @@ import dpnp.backend.extensions.vm._vm_impl as vmi
 
 from .backend.extensions.sycl_ext import _sycl_ext_impl
 from .dpnp_algo import (
-    dpnp_cumprod,
     dpnp_ediff1d,
     dpnp_fabs,
     dpnp_fmax,
@@ -806,38 +805,85 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     return dpnp.moveaxis(cp, -1, axisc)
 
 
-def cumprod(x1, **kwargs):
+def cumprod(a, axis=None, dtype=None, out=None):
     """
     Return the cumulative product of elements along a given axis.
 
     For full documentation refer to :obj:`numpy.cumprod`.
 
-    Limitations
-    -----------
-    Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int}, optional
+        Axis along which the cumulative product is computed. It defaults to
+        compute the cumulative product over the flattened array.
+        Default: ``None``.
+    dtype : {None, dtype}, optional
+        Type of the returned array and of the accumulator in which the elements
+        are multiplied. If `dtype` is not specified, it defaults to the dtype
+        of `a`, unless `a` has an integer dtype with a precision less than that
+        of the default platform integer. In that case, the default platform
+        integer is used.
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have the
+        same shape and buffer length as the expected output but the type will
+        be cast if necessary.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A new array holding the result is returned unless `out` is specified as
+        :class:`dpnp.ndarray`, in which case a reference to `out` is returned.
+        The result has the same size as `a`, and the same shape as `a` if `axis`
+        is not ``None`` or `a` is a 1-d array.
+
+    See Also
+    --------
+    :obj:`dpnp.prod` : Product array elements.
 
     Examples
     --------
     >>> import dpnp as np
     >>> a = np.array([1, 2, 3])
-    >>> result = np.cumprod(a)
-    >>> [x for x in result]
-    [1, 2, 6]
-    >>> b = np.array([[1, 2, 3], [4, 5, 6]])
-    >>> result = np.cumprod(b)
-    >>> [x for x in result]
-    [1, 2, 6, 24, 120, 720]
+    >>> np.cumprod(a) # intermediate results 1, 1*2
+    ...               # total product 1*2*3 = 6
+    array([1, 2, 6])
+    >>> a = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> np.cumprod(a, dtype=np.float32) # specify type of output
+    array([  1.,   2.,   6.,  24., 120., 720.], dtype=float32)
+
+    The cumulative product for each column (i.e., over the rows) of `a`:
+
+    >>> np.cumprod(a, axis=0)
+    array([[ 1,  2,  3],
+           [ 4, 10, 18]])
+
+    The cumulative product for each row (i.e. over the columns) of `a`:
+
+    >>> np.cumprod(a, axis=1)
+    array([[  1,   2,   6],
+           [  4,  20, 120]])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_cumprod(x1_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(a)
+    if a.ndim > 1 and axis is None:
+        usm_a = dpnp.ravel(a).get_array()
+    else:
+        usm_a = dpnp.get_usm_ndarray(a)
 
-    return call_origin(numpy.cumprod, x1, **kwargs)
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.cumulative_prod,
+        _get_reduction_res_dt,
+        usm_a,
+        axis=axis,
+        dtype=dtype,
+    )
 
 
 def cumsum(a, axis=None, dtype=None, out=None):
