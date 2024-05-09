@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndarray.partition &mdash; Data Parallel Extension for NumPy 0.15.0dev1+51.ga079815177 documentation</title>
+  <title>dpnp.ndarray.cumprod &mdash; Data Parallel Extension for NumPy 0.15.0dev1+51.ga079815177 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -30,8 +30,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.ndarray.searchsorted" href="dpnp.ndarray.searchsorted.html" />
-    <link rel="prev" title="dpnp.ndarray.argsort" href="dpnp.ndarray.argsort.html" /> 
+    <link rel="next" title="dpnp.ndarray.all" href="dpnp.ndarray.all.html" />
+    <link rel="prev" title="dpnp.ndarray.prod" href="dpnp.ndarray.prod.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -72,20 +72,27 @@
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-methods">Array methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-conversion">Array conversion</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#shape-manipulation">Shape manipulation</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../ndarray.html#item-selection-and-manipulation">Item selection and manipulation</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.take.html">dpnp.ndarray.take</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.put.html">dpnp.ndarray.put</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.repeat.html">dpnp.ndarray.repeat</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.choose.html">dpnp.ndarray.choose</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.sort.html">dpnp.ndarray.sort</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.argsort.html">dpnp.ndarray.argsort</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">dpnp.ndarray.partition</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.searchsorted.html">dpnp.ndarray.searchsorted</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.nonzero.html">dpnp.ndarray.nonzero</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.diagonal.html">dpnp.ndarray.diagonal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#item-selection-and-manipulation">Item selection and manipulation</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../ndarray.html#calculation">Calculation</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.max.html">dpnp.ndarray.max</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.argmax.html">dpnp.ndarray.argmax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.min.html">dpnp.ndarray.min</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.argmin.html">dpnp.ndarray.argmin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.clip.html">dpnp.ndarray.clip</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.conj.html">dpnp.ndarray.conj</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.conjugate.html">dpnp.ndarray.conjugate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.round.html">dpnp.ndarray.round</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.sum.html">dpnp.ndarray.sum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.cumsum.html">dpnp.ndarray.cumsum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.mean.html">dpnp.ndarray.mean</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.var.html">dpnp.ndarray.var</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.std.html">dpnp.ndarray.std</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.prod.html">dpnp.ndarray.prod</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dpnp.ndarray.cumprod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.all.html">dpnp.ndarray.all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.any.html">dpnp.ndarray.any</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#calculation">Calculation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#arithmetic-matrix-multiplication-and-comparison-operations">Arithmetic, matrix multiplication, and comparison operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#special-methods">Special methods</a></li>
 </ul>
@@ -120,9 +127,9 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
-      <li class="breadcrumb-item active">dpnp.ndarray.partition</li>
+      <li class="breadcrumb-item active">dpnp.ndarray.cumprod</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/reference/generated/dpnp.ndarray.partition.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.ndarray.cumprod.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -130,34 +137,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dpnp-ndarray-partition">
-<h1>dpnp.ndarray.partition<a class="headerlink" href="#dpnp-ndarray-partition" title="Link to this heading"></a></h1>
+  <section id="dpnp-ndarray-cumprod">
+<h1>dpnp.ndarray.cumprod<a class="headerlink" href="#dpnp-ndarray-cumprod" title="Link to this heading"></a></h1>
 <dl class="py method">
-<dt class="sig sig-object py" id="dpnp.ndarray.partition">
-<span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">partition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'introselect'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.partition" title="Link to this definition"></a></dt>
-<dd><p>Return a partitioned copy of an array.</p>
-<p>Rearranges the elements in the array in such a way that the value of
-the element in <cite>kth</cite> position is in the position it would be in
-a sorted array.</p>
-<p>All elements smaller than the <cite>kth</cite> element are moved before this
-element and all equal or greater are moved behind it. The ordering
-of the elements in the two partitions is undefined.</p>
-<p>Refer to <cite>dpnp.partition</cite> for full documentation.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="dpnp.partition.html#dpnp.partition" title="dpnp.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.partition</span></code></a></dt><dd><p>Return a partitioned copy of an array.</p>
-</dd>
-</dl>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
-<span class="go">array([1, 2, 3, 4])</span>
-</pre></div>
-</div>
+<dt class="sig sig-object py" id="dpnp.ndarray.cumprod">
+<span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">cumprod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.cumprod" title="Link to this definition"></a></dt>
+<dd><p>Return the cumulative product of the elements along the given axis.</p>
+<p>Refer to <a class="reference internal" href="dpnp.cumprod.html#dpnp.cumprod" title="dpnp.cumprod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.cumprod</span></code></a> for full documentation.</p>
 </dd></dl>
 
 </section>
@@ -166,8 +152,8 @@ of the elements in the two partitions is undefined.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.ndarray.argsort.html" class="btn btn-neutral float-left" title="dpnp.ndarray.argsort" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.ndarray.searchsorted.html" class="btn btn-neutral float-right" title="dpnp.ndarray.searchsorted" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.ndarray.prod.html" class="btn btn-neutral float-left" title="dpnp.ndarray.prod" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.ndarray.all.html" class="btn btn-neutral float-right" title="dpnp.ndarray.all" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
