@@ -108,39 +108,59 @@ def _chr(label):
         return chr(label)
 
 
-def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
+def _compute_res_dtype(*arrays, dtype, casting, sycl_queue):
     """
-    Create the result array.
+    Determines the output array data type and an intermediate data type
+    used in performing calculations related to a specific math function.
+    If dtype is ``None``, the output array data type of the operation is
+    determined based on the Promotion Type Rule and device capabilities.
+    Otherwise, `dtype` is used as output array dtype, if input arrays
+    can cast to it according to the casting rule determined. If casting
+    cannot be done, a ``TypeError`` is raised.
+    The intermediate data type is the data type used for performing the math
+    function calculations. If output array dtype is a floating-point data type,
+    it is also used for the intermediate data type. If output array dtype is an
+    integral data type, the default floating point data type of the device where
+    input arrays are allocated on are used for intermediate data type.
 
-    If `out` is not ``None`` and its features match the specified `shape`, `dtype,
-    `usm_type`, and `sycl_queue` and it is C-contiguous or F-contiguous and
-    does not have any memory overlap with `x1` and `x2`, `out` itself is returned.
-    If these conditions are not satisfied, an empty array is returned with the
-    specified `shape`, `dtype, `usm_type`, and `sycl_queue`.
+    Parameters
+    ----------
+    arrays : {dpnp.ndarray, usm_ndarray}
+        Input arrays.
+    dtype : dtype
+        If not ``None``, data type of the output array.
+    casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
+        Controls what kind of data casting may occur.
+    sycl_queue : {SyclQueue}
+        A SYCL queue to use for determining default floating point datat type.
+
+    Returns
+    -------
+    compute_dtype, res_dtype :
+        `compute_dtype` is the data type used in performing math function calculations.
+        The input arrays of the math function are cast to `compute_dtype` and then
+        the calculations are performed.
+        `res_dtype` is the output data type. When the result is obtained, it is cast
+        to `res_dtype`.
+
     """
 
-    if out is not None:
-        x1_usm = dpnp.get_usm_ndarray(x1)
-        x2_usm = dpnp.get_usm_ndarray(x2)
-        out_usm = dpnp.get_usm_ndarray(out)
+    res_dtype = dpnp.result_type(*arrays)
+    default_dtype = dpnp.default_float_type(sycl_queue=sycl_queue)
 
-        if (
-            out.dtype == dtype
-            and out.shape == shape
-            and out.usm_type == usm_type
-            and out.sycl_queue == sycl_queue
-            and out.flags.c_contiguous
-            and not ti._array_overlap(x1_usm, out_usm)
-            and not ti._array_overlap(x2_usm, out_usm)
-        ):
-            return out
+    if dtype is not None:
+        if dpnp.can_cast(res_dtype, dtype, casting=casting):
+            res_dtype = dtype
+        else:
+            raise TypeError(
+                f"Cannot cast from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
+            )
 
-    return dpnp.empty(
-        shape,
-        dtype=dtype,
-        usm_type=usm_type,
-        sycl_queue=sycl_queue,
+    compute_dtype = (
+        res_dtype if dpnp.issubdtype(res_dtype, dpnp.inexact) else default_dtype
     )
+
+    return compute_dtype, res_dtype
 
 
 def _compute_size_by_dict(indices, idx_dict):
@@ -198,20 +218,20 @@ def _compute_size(start, shape):
     return ret
 
 
-def _copy_array(x, dep_events, host_events, contig_copy=False, dtype=None):
+def _copy_array(x, dep_events, host_events, copy_flag=False, dtype=None):
     """
     Creating a copy of input array if needed.
 
-    If `contig_copy` is ``True``, a C-contiguous copy of input array is returned.
+    If `copy_flag` is ``True``, a C-contiguous copy of input array is returned.
     In this case, the copy array has the input array data type unless `dtype` is
     determined.
-    If `contig_copy` is ``False`` and input array data type is different than `dtype`,
+    If `copy_flag` is ``False`` and input array data type is different than `dtype`,
     a C-contiguous copy of input array with specified `dtype` is returned.
 
     """
 
-    if contig_copy:
-        copy = contig_copy
+    if copy_flag:
+        copy = copy_flag
     else:
         copy = x.dtype != dtype if dtype is not None else False
 
@@ -226,6 +246,62 @@ def _copy_array(x, dep_events, host_events, contig_copy=False, dtype=None):
         host_events.append(ht_copy_ev)
         return x_copy
     return x
+
+
+def _create_result_array(x1, x2, out, shape, dtype, usm_type, sycl_queue):
+    """
+    Create the result array.
+
+    If `out` is not ``None`` and its features match the specified `shape`, `dtype,
+    `usm_type`, and `sycl_queue` and it is C-contiguous or F-contiguous and
+    does not have any memory overlap with `x1` and `x2`, `out` itself is returned.
+    If these conditions are not satisfied, an empty array is returned with the
+    specified `shape`, `dtype, `usm_type`, and `sycl_queue`.
+    """
+
+    if out is not None:
+        x1_usm = dpnp.get_usm_ndarray(x1)
+        x2_usm = dpnp.get_usm_ndarray(x2)
+        out_usm = dpnp.get_usm_ndarray(out)
+        contig_flag = _define_contig_flag(out)
+
+        if (
+            out.dtype == dtype
+            and out.shape == shape
+            and out.usm_type == usm_type
+            and out.sycl_queue == sycl_queue
+            and contig_flag
+            and not ti._array_overlap(x1_usm, out_usm)
+            and not ti._array_overlap(x2_usm, out_usm)
+        ):
+            return out
+
+    return dpnp.empty(
+        shape,
+        dtype=dtype,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
+
+
+def _define_contig_flag(x):
+    """
+    Determines if the data in last two dimensions of array `x` are
+    c_contiguous or f_contiguous. For 2D arrays, it is the same as using
+    x.flags.c_contiguous or x.flags.f_contiguous.
+    """
+
+    flag = False
+    x_strides = x.strides
+    x_shape = x.shape
+    if x.ndim < 2:
+        return True
+
+    x_is_c_contiguous = x_strides[-1] == 1 and x_strides[-2] == x_shape[-1]
+    x_is_f_contiguous = x_strides[-2] == 1 and x_strides[-1] == x_shape[-2]
+    if x_is_c_contiguous or x_is_f_contiguous:
+        flag = True
+    return flag
 
 
 def _einsum_diagonals(input_subscripts, operands):
@@ -489,54 +565,53 @@ def _flop_count(idx_contraction, inner, num_terms, size_dictionary):
     return overall_size * op_factor
 
 
-def _gemm_batch_matmul(exec_q, x1, x2, res, x1_is_2D, x2_is_2D, dev_tasks_list):
-    # If input array is F-contiguous, we need to change the order to C-contiguous.
-    # because mkl::gemm_bacth needs each 2D array to be F-contiguous but
-    # when the input array is F-contiguous, the data of 2D array
-    # that needs to be called in mkl::gemm_batch are not contiguous.
+def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
+    # arrays here are already at least 3D, make them 3D
+    x1 = x1.reshape(-1, x1.shape[-2], x1.shape[-1])
+    x2 = x2.reshape(-1, x2.shape[-2], x2.shape[-1])
+    orig_shape = res.shape
+    res = res.reshape(-1, res.shape[-2], res.shape[-1])
+
     ht_tasks_list = []
-    contig_copy = not x1.flags.c_contiguous
-    x1 = _copy_array(x1, dev_tasks_list, ht_tasks_list, contig_copy=contig_copy)
-    contig_copy = not x2.flags.c_contiguous
-    x2 = _copy_array(x2, dev_tasks_list, ht_tasks_list, contig_copy=contig_copy)
-
-    x1_strides = x1.strides
-    x2_strides = x2.strides
-    res_strides = res.strides
-
-    # need to standardize to use in ti._contract_iter2
-    x1_strides = _standardize_strides(x1_strides, x1_is_2D, x1.shape, x1.ndim)
-    x2_strides = _standardize_strides(x2_strides, x2_is_2D, x2.shape, x2.ndim)
-
-    batch_size = res.shape[:-2][0]
-    stridea = x1_strides[0]
-    strideb = x2_strides[0]
-    stridec = res_strides[-3]
-
-    if x1.ndim > 3:
-        iter = ti._contract_iter2(
-            res.shape[:-2], x1_strides[:-2], x2_strides[:-2]
-        )
-
-        if len(iter[0]) != 1:
-            raise ValueError("Input arrays cannot be used in gemm_batch")
-        batch_size = iter[0][0]
-        stridea = iter[1][0]
-        strideb = iter[3][0]
-
-    ht_blas_ev, _ = bi._gemm_batch(
-        exec_q,
-        dpnp.get_usm_ndarray(x1),
-        dpnp.get_usm_ndarray(x2),
-        dpnp.get_usm_ndarray(res),
-        batch_size,
-        stridea,
-        strideb,
-        stridec,
-        dev_tasks_list,
+    # gemm_batch does not handle negative strides, make a copy if needed
+    x1 = _copy_array(
+        x1, dev_tasks_list, ht_tasks_list, copy_flag=x1.strides[0] < 0
     )
+    x2 = _copy_array(
+        x2, dev_tasks_list, ht_tasks_list, copy_flag=x2.strides[0] < 0
+    )
+    res = _copy_array(
+        res, dev_tasks_list, ht_tasks_list, copy_flag=res.strides[0] < 0
+    )
+    # onemkl::blas::gemm_bacth throws an exception (Provided range is out
+    # of integer limits) if the batch_size is too large (>=4096*4096), so
+    # we need to split the batch into smaller chunks
+    chunk = 2048 * 2048
+    batch_size = res.shape[0]
+    for i in range(0, batch_size, chunk):
+        x1_usm = dpnp.get_usm_ndarray(x1[i : i + chunk, ...])
+        x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
+        res_usm = dpnp.get_usm_ndarray(res[i : i + chunk, ...])
+        ht_blas_ev, _, row_major = bi._gemm_batch(
+            exec_q,
+            x1_usm,
+            x2_usm,
+            res_usm,
+            dev_tasks_list,
+        )
+        ht_tasks_list.append(ht_blas_ev)
+    dpctl.SyclEvent.wait_for(ht_tasks_list)
+    res_shape = res.shape
+    if not row_major:
+        res = dpnp.reshape(
+            res.ravel(), (batch_size, res_shape[2], res_shape[1])
+        ).transpose(0, 2, 1)
 
-    return ht_blas_ev, ht_tasks_list, res
+    if res_shape != orig_shape:
+        res = res.reshape(orig_shape)
+
+    res = dpnp.ascontiguousarray(res)
+    return res
 
 
 def _greedy_path(input_sets, output_set, idx_dict, memory_limit):
@@ -657,34 +732,6 @@ def _greedy_path(input_sets, output_set, idx_dict, memory_limit):
     return path
 
 
-def _iter_path_pairs(path):
-    """
-    Copied from _iter_path_pairs in cupy/core/_einsum.py
-
-    Decompose path into binary path
-
-    Parameters
-    ----------
-    path : sequence of tuples of ints
-
-    Yields
-    ------
-    tuple of ints
-        pair (idx0, idx1) that represents the operation
-        {pop(idx0); pop(idx1); append();}
-
-    """
-
-    for indices in path:
-        assert all(idx >= 0 for idx in indices)
-        # [3, 1, 4, 9] -> [(9, 4), (-1, 3), (-1, 1)]
-        if len(indices) >= 2:
-            indices = sorted(indices, reverse=True)
-            yield indices[0], indices[1]
-            for idx in indices[2:]:
-                yield -1, idx
-
-
 def _index_linear_to_tuple(shape, linear_id):
     """
     Convert a linear index to a tuple of indices in a multi-dimensional array.
@@ -713,6 +760,34 @@ def _index_linear_to_tuple(shape, linear_id):
     return tuple(indices)
 
 
+def _iter_path_pairs(path):
+    """
+    Copied from _iter_path_pairs in cupy/core/_einsum.py
+
+    Decompose path into binary path
+
+    Parameters
+    ----------
+    path : sequence of tuples of ints
+
+    Yields
+    ------
+    tuple of ints
+        pair (idx0, idx1) that represents the operation
+        {pop(idx0); pop(idx1); append();}
+
+    """
+
+    for indices in path:
+        assert all(idx >= 0 for idx in indices)
+        # [3, 1, 4, 9] -> [(9, 4), (-1, 3), (-1, 1)]
+        if len(indices) >= 2:
+            indices = sorted(indices, reverse=True)
+            yield indices[0], indices[1]
+            for idx in indices[2:]:
+                yield -1, idx
+
+
 def _make_transpose_axes(sub, b_dims, c_dims):
     """Copied from _make_transpose_axes in cupy/core/_einsum.py"""
     bs = []
@@ -730,63 +805,6 @@ def _make_transpose_axes(sub, b_dims, c_dims):
         _tuple_sorted_by_0(cs),
         _tuple_sorted_by_0(ts),
     )
-
-
-def _op_res_dtype(*arrays, dtype, casting, sycl_queue):
-    """
-    _op_res_dtype(*arrays, dtype, casting, sycl_queue)
-
-    Determines the output array data type and an intermediate data type
-    used in performing calculations related to a specific math function.
-    If dtype is ``None``, the output array data type of the operation is
-    determined based on the Promotion Type Rule and device capabilities.
-    Otherwise, `dtype` is used as output array dtype, if input arrays
-    can cast to it according to the casting rule determined. If casting
-    cannot be done, a ``TypeError`` is raised.
-    The intermediate data type is the data type used for performing the math
-    function calculations. If output array dtype is a floating-point data type,
-    it is also used for the intermediate data type. If output array dtype is an
-    integral data type, the default floating point data type of the device where
-    input arrays are allocated on are used for intermediate data type.
-
-    Parameters
-    ----------
-    arrays : {dpnp.ndarray, usm_ndarray}
-        Input arrays.
-    dtype : dtype
-        If not ``None``, data type of the output array.
-    casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
-        Controls what kind of data casting may occur.
-    sycl_queue : {SyclQueue}
-        A SYCL queue to use for determining default floating point datat type.
-
-    Returns
-    -------
-    op_dtype, res_dtype :
-        `op_dtype` is the data type used in performing math function calculations.
-        The input arrays of the math function are cast to `op_dtype` and then
-        the calculations are performed.
-        `res_dtype` is the output data type. When the result is obtained, it is cast
-        to `res_dtype`.
-
-    """
-
-    res_dtype = dpnp.result_type(*arrays)
-    default_dtype = dpnp.default_float_type(sycl_queue=sycl_queue)
-
-    if dtype is not None:
-        if dpnp.can_cast(res_dtype, dtype, casting=casting):
-            res_dtype = dtype
-        else:
-            raise TypeError(
-                f"Cannot cast from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
-            )
-
-    op_dtype = (
-        res_dtype if dpnp.issubdtype(res_dtype, dpnp.inexact) else default_dtype
-    )
-
-    return op_dtype, res_dtype
 
 
 def _optimal_path(input_sets, output_set, idx_dict, memory_limit):
@@ -1119,31 +1137,6 @@ def _parse_possible_contraction(
     return [sort, positions, new_input_sets]
 
 
-def _shape_error(a, b, core_dim, err_msg):
-    if err_msg == 0:
-        raise ValueError(
-            "Input arrays have a mismatch in their core dimensions. "
-            "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
-            f"(size {a} is different from {b})"
-        )
-    elif err_msg == 1:
-        raise ValueError(
-            f"Output array has a mismatch in its core dimension {core_dim}. "
-            "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
-            f"(size {a} is different from {b})"
-        )
-    elif err_msg == 2:
-        raise ValueError(
-            "Input arrays could not be broadcast together with remapped shapes, "
-            f"{a} is different from {b}."
-        )
-    elif err_msg == 3:
-        raise ValueError(
-            "Output array could not be broadcast to input arrays with remapped shapes, "
-            f"{a} is different from {b}."
-        )
-
-
 def _reduced_binary_einsum(arr0, sub0, arr1, sub1, sub_others):
     """Copied from _reduced_binary_einsum in cupy/core/_einsum.py"""
 
@@ -1188,40 +1181,29 @@ def _reduced_binary_einsum(arr0, sub0, arr1, sub1, sub_others):
     return arr_out, sub_out
 
 
-def _standardize_strides(strides, inherently_2D, shape, ndim):
-    """
-    Standardizing the strides.
-
-    When shape of an array along any particular dimension is 1, the stride
-    along that dimension is undefined. This functions standardize the strides
-    in the following way:
-    For N-D arrays that are inherently 2D (all dimesnsion are one except for two of them),
-    we use zero as the stride for dimensions equal one.
-    For other N-D arrays, the non-zero value of strides is calculated and used.
-
-    """
-
-    if inherently_2D:
-        stndrd_strides = tuple(
-            str_i if sh_i > 1 else 0 for sh_i, str_i in zip(shape, strides)
+def _shape_error(a, b, core_dim, err_msg):
+    if err_msg == 0:
+        raise ValueError(
+            "Input arrays have a mismatch in their core dimensions. "
+            "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
+            f"(size {a} is different from {b})"
         )
-    else:
-        stndrd_strides = [
-            numpy.prod(shape[i + 1 :]) if strides[i] == 0 else strides[i]
-            for i in range(ndim - 1)
-        ]
-        # last dimension
-        stndrd_strides.append(
-            1 if strides[ndim - 1] == 0 else strides[ndim - 1]
+    elif err_msg == 1:
+        raise ValueError(
+            f"Output array has a mismatch in its core dimension {core_dim}. "
+            "The core dimensions should follow this signature: (n?,k),(k,m?)->(n?,m?) "
+            f"(size {a} is different from {b})"
         )
-        stndrd_strides = tuple(stndrd_strides)
-
-    return stndrd_strides
-
-
-def _tuple_sorted_by_0(zs):
-    """Copied from _tuple_sorted_by_0 in cupy/core/_einsum.py"""
-    return tuple(i for _, i in sorted(zs))
+    elif err_msg == 2:
+        raise ValueError(
+            "Input arrays could not be broadcast together with remapped shapes, "
+            f"{a} is different from {b}."
+        )
+    elif err_msg == 3:
+        raise ValueError(
+            "Output array could not be broadcast to input arrays with remapped shapes, "
+            f"{a} is different from {b}."
+        )
 
 
 def _transpose_ex(a, axeses):
@@ -1254,6 +1236,11 @@ def _transpose_ex(a, axeses):
     # TODO: replace with a.view() when it is implemented in dpnp
     a = _view_work_around(a, shape, strides)
     return a
+
+
+def _tuple_sorted_by_0(zs):
+    """Copied from _tuple_sorted_by_0 in cupy/core/_einsum.py"""
+    return tuple(i for _, i in sorted(zs))
 
 
 def _update_other_results(results, best):
@@ -1541,6 +1528,79 @@ def dpnp_cross(a, b, cp, exec_q):
     return cp
 
 
+def dpnp_dot(a, b, /, out=None, *, conjugate=False):
+    """
+    Return the dot product of two arrays.
+
+    The routine that is used to perform the main calculation
+    depends on input arrays data type: 1) For integer and boolean data types,
+    `dpctl.tensor.vecdot` form the Data Parallel Control library is used,
+    2) For real-valued floating point data types, `dot` routines from
+    BLAS library of OneMKL are used, and 3) For complex data types,
+    `dotu` or `dotc` routines from BLAS library of OneMKL are used.
+    If `conjugate` is ``False``, `dotu` is used. Otherwise, `dotc` is used,
+    for which the first array is conjugated before calculating the dot product.
+
+    """
+
+    if a.size != b.size:
+        raise ValueError(
+            "Input arrays have a mismatch in their size. "
+            f"(size {a.size} is different from {b.size})"
+        )
+
+    res_usm_type, exec_q = get_usm_allocations([a, b])
+
+    # Determine the appropriate data types
+    # casting is irrelevant here since dtype is `None`
+    dot_dtype, res_dtype = _compute_res_dtype(
+        a, b, dtype=None, casting="no", sycl_queue=exec_q
+    )
+
+    result = _create_result_array(
+        a, b, out, (), dot_dtype, res_usm_type, exec_q
+    )
+    # input arrays should have the proper data type
+    dep_events_list = []
+    host_tasks_list = []
+    if dpnp.issubdtype(res_dtype, dpnp.inexact):
+        # copying is needed if dtypes of input arrays are different
+        a = _copy_array(a, dep_events_list, host_tasks_list, dtype=dot_dtype)
+        b = _copy_array(b, dep_events_list, host_tasks_list, dtype=dot_dtype)
+        if dpnp.issubdtype(res_dtype, dpnp.complexfloating):
+            if conjugate:
+                dot_func = "_dotc"
+            else:
+                dot_func = "_dotu"
+            ht_ev, _ = getattr(bi, dot_func)(
+                exec_q,
+                dpnp.get_usm_ndarray(a),
+                dpnp.get_usm_ndarray(b),
+                dpnp.get_usm_ndarray(result),
+                dep_events_list,
+            )
+        else:
+            ht_ev, _ = bi._dot(
+                exec_q,
+                dpnp.get_usm_ndarray(a),
+                dpnp.get_usm_ndarray(b),
+                dpnp.get_usm_ndarray(result),
+                dep_events_list,
+            )
+        host_tasks_list.append(ht_ev)
+        dpctl.SyclEvent.wait_for(host_tasks_list)
+    else:
+        dpt_a = dpnp.get_usm_ndarray(a)
+        dpt_b = dpnp.get_usm_ndarray(b)
+        result = dpnp_array._create_from_usm_ndarray(dpt.vecdot(dpt_a, dpt_b))
+
+    if dot_dtype != res_dtype:
+        result = result.astype(res_dtype, copy=False)
+
+    # numpy.dot does not allow casting even if it is safe
+    return dpnp.get_result_array(result, out, casting="no")
+
+
 def dpnp_einsum(
     *operands, out=None, dtype=None, order="K", casting="safe", optimize=False
 ):
@@ -1780,79 +1840,6 @@ def dpnp_kron(a, b, a_ndim, b_ndim):
     return result.reshape(tuple(numpy.multiply(a_shape, b_shape)))
 
 
-def dpnp_dot(a, b, /, out=None, *, conjugate=False):
-    """
-    Return the dot product of two arrays.
-
-    The routine that is used to perform the main calculation
-    depends on input arrays data type: 1) For integer and boolean data types,
-    `dpctl.tensor.vecdot` form the Data Parallel Control library is used,
-    2) For real-valued floating point data types, `dot` routines from
-    BLAS library of OneMKL are used, and 3) For complex data types,
-    `dotu` or `dotc` routines from BLAS library of OneMKL are used.
-    If `conjugate` is ``False``, `dotu` is used. Otherwise, `dotc` is used,
-    for which the first array is conjugated before calculating the dot product.
-
-    """
-
-    if a.size != b.size:
-        raise ValueError(
-            "Input arrays have a mismatch in their size. "
-            f"(size {a.size} is different from {b.size})"
-        )
-
-    res_usm_type, exec_q = get_usm_allocations([a, b])
-
-    # Determine the appropriate data types
-    # casting is irrelevant here since dtype is `None`
-    dot_dtype, res_dtype = _op_res_dtype(
-        a, b, dtype=None, casting="no", sycl_queue=exec_q
-    )
-
-    result = _create_result_array(
-        a, b, out, (), dot_dtype, res_usm_type, exec_q
-    )
-    # input arrays should have the proper data type
-    dep_events_list = []
-    host_tasks_list = []
-    if dpnp.issubdtype(res_dtype, dpnp.inexact):
-        # copying is needed if dtypes of input arrays are different
-        a = _copy_array(a, dep_events_list, host_tasks_list, dtype=dot_dtype)
-        b = _copy_array(b, dep_events_list, host_tasks_list, dtype=dot_dtype)
-        if dpnp.issubdtype(res_dtype, dpnp.complexfloating):
-            if conjugate:
-                dot_func = "_dotc"
-            else:
-                dot_func = "_dotu"
-            ht_ev, _ = getattr(bi, dot_func)(
-                exec_q,
-                dpnp.get_usm_ndarray(a),
-                dpnp.get_usm_ndarray(b),
-                dpnp.get_usm_ndarray(result),
-                dep_events_list,
-            )
-        else:
-            ht_ev, _ = bi._dot(
-                exec_q,
-                dpnp.get_usm_ndarray(a),
-                dpnp.get_usm_ndarray(b),
-                dpnp.get_usm_ndarray(result),
-                dep_events_list,
-            )
-        host_tasks_list.append(ht_ev)
-        dpctl.SyclEvent.wait_for(host_tasks_list)
-    else:
-        dpt_a = dpnp.get_usm_ndarray(a)
-        dpt_b = dpnp.get_usm_ndarray(b)
-        result = dpnp_array._create_from_usm_ndarray(dpt.vecdot(dpt_a, dpt_b))
-
-    if dot_dtype != res_dtype:
-        result = result.astype(res_dtype, copy=False)
-
-    # numpy.dot does not allow casting even if it is safe
-    return dpnp.get_result_array(result, out, casting="no")
-
-
 def dpnp_matmul(
     x1,
     x2,
@@ -1939,7 +1926,7 @@ def dpnp_matmul(
                     _shape_error(out_shape[-1], x2_shape[-1], 0, 1)
 
     # Determine the appropriate data types
-    gemm_dtype, res_dtype = _op_res_dtype(
+    gemm_dtype, res_dtype = _compute_res_dtype(
         x1, x2, dtype=dtype, casting=casting, sycl_queue=exec_q
     )
 
@@ -2010,24 +1997,24 @@ def dpnp_matmul(
     elif x1.size == 0 or x2.size == 0:
         result.fill(0)
     else:
-        # input arrays should have the proper data type
-        # and be C_CONTIGUOUS or F_CONTIGUOUS
+        # input arrays should have the proper data type and
+        # their base (last 2-dimensions) to be c-contiguous or f-contiguous
         dep_events_list = []
         host_tasks_list = []
-        contig_copy = not (x1.flags.c_contiguous or x1.flags.f_contiguous)
+        contig_flag = _define_contig_flag(x1)
         x1 = _copy_array(
             x1,
             dep_events_list,
             host_tasks_list,
-            contig_copy=contig_copy,
+            copy_flag=not contig_flag,
             dtype=gemm_dtype,
         )
-        contig_copy = not (x2.flags.c_contiguous or x2.flags.f_contiguous)
+        contig_flag = _define_contig_flag(x2)
         x2 = _copy_array(
             x2,
             dep_events_list,
             host_tasks_list,
-            contig_copy=contig_copy,
+            copy_flag=not contig_flag,
             dtype=gemm_dtype,
         )
 
@@ -2036,33 +2023,32 @@ def dpnp_matmul(
         # gain performance.
         # TODO: investigate usage of syrk function from BLAS in
         # case of a.T @ a and a @ a.T to gain performance.
+        row_major = True
         if x1_is_2D and x2_is_2D:
-            ht_blas_ev, _ = bi._gemm(
+            ht_blas_ev, _, row_major = bi._gemm(
                 exec_q,
                 dpnp.get_usm_ndarray(x1),
                 dpnp.get_usm_ndarray(x2),
                 dpnp.get_usm_ndarray(result),
                 dep_events_list,
             )
+            host_tasks_list.append(ht_blas_ev)
         else:
-            (
-                ht_blas_ev,
-                ht_copy_ev,
-                result,
-            ) = _gemm_batch_matmul(
+            result = _gemm_batch_matmul(
                 exec_q,
                 x1,
                 x2,
                 result,
-                x1_is_2D,
-                x2_is_2D,
                 dep_events_list,
             )
-            host_tasks_list += ht_copy_ev
 
-        host_tasks_list.append(ht_blas_ev)
         dpctl.SyclEvent.wait_for(host_tasks_list)
-
+        if not row_major:
+            # TODO: investigate the possibility of defining result
+            # array with "F" order for this case
+            result = dpnp.ascontiguousarray(
+                dpnp.reshape(result.ravel(), result.shape, order="F")
+            )
     if appended_axes:
         result = dpnp.squeeze(result, tuple(appended_axes))
         if len(appended_axes) == 2 and out is not None:
@@ -2093,6 +2079,10 @@ def dpnp_matmul(
         else:
             return result
     else:
+        # TODO: There is oppurtinuty to improve performance when out keyword
+        # is present. For some cases, out is NOT result but they have the same
+        # base (They are views of the same data). In this case, we can avoid
+        # copyign result to out.
         result = dpnp.get_result_array(result, out, casting=casting)
         if axes is not None and out is result:
             # out and out_orig contain the same data but they have different shape
