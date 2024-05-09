@@ -1228,3 +1228,11 @@ def test_histogram(usm_type_v, usm_type_w):
     assert w.usm_type == usm_type_w
     assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_diagonal(usm_type):
+    a = dp.arange(12, usm_type=usm_type).reshape(3, 2, 2)
+
+    res = dp.diagonal(a)
+    assert res.usm_type == usm_type
