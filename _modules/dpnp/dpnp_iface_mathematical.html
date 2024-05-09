@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev1+53.g13e31a2564 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.15.0dev1+52.g76715d4063 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=ef49832e"></script>
+        <script src="../../_static/documentation_options.js?v=cbd3081d"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+53.g13e31a2564
+                0.15.0dev1+52.g76715d4063
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -148,6 +148,7 @@
 
 <span class="kn">from</span> <span class="nn">.backend.extensions.sycl_ext</span> <span class="kn">import</span> <span class="n">_sycl_ext_impl</span>
 <span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">dpnp_cumprod</span><span class="p">,</span>
     <span class="n">dpnp_ediff1d</span><span class="p">,</span>
     <span class="n">dpnp_fabs</span><span class="p">,</span>
     <span class="n">dpnp_fmax</span><span class="p">,</span>
@@ -909,85 +910,38 @@
 
 <div class="viewcode-block" id="cumprod">
 <a class="viewcode-back" href="../../reference/generated/dpnp.cumprod.html#dpnp.cumprod">[docs]</a>
-<span class="k">def</span> <span class="nf">cumprod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cumprod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the cumulative product of elements along a given axis.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.cumprod`.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input array.</span>
-<span class="sd">    axis : {None, int}, optional</span>
-<span class="sd">        Axis along which the cumulative product is computed. It defaults to</span>
-<span class="sd">        compute the cumulative product over the flattened array.</span>
-<span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
-<span class="sd">        Type of the returned array and of the accumulator in which the elements</span>
-<span class="sd">        are multiplied. If `dtype` is not specified, it defaults to the dtype</span>
-<span class="sd">        of `a`, unless `a` has an integer dtype with a precision less than that</span>
-<span class="sd">        of the default platform integer. In that case, the default platform</span>
-<span class="sd">        integer is used.</span>
-<span class="sd">        Default: ``None``.</span>
-<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        Alternative output array in which to place the result. It must have the</span>
-<span class="sd">        same shape and buffer length as the expected output but the type will</span>
-<span class="sd">        be cast if necessary.</span>
-<span class="sd">        Default: ``None``.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        A new array holding the result is returned unless `out` is specified as</span>
-<span class="sd">        :class:`dpnp.ndarray`, in which case a reference to `out` is returned.</span>
-<span class="sd">        The result has the same size as `a`, and the same shape as `a` if `axis`</span>
-<span class="sd">        is not ``None`` or `a` is a 1-d array.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.prod` : Product array elements.</span>
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter `x` is supported as :class:`dpnp.ndarray`.</span>
+<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3])</span>
-<span class="sd">    &gt;&gt;&gt; np.cumprod(a) # intermediate results 1, 1*2</span>
-<span class="sd">    ...               # total product 1*2*3 = 6</span>
-<span class="sd">    array([1, 2, 6])</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2, 3], [4, 5, 6]])</span>
-<span class="sd">    &gt;&gt;&gt; np.cumprod(a, dtype=np.float32) # specify type of output</span>
-<span class="sd">    array([  1.,   2.,   6.,  24., 120., 720.], dtype=float32)</span>
-
-<span class="sd">    The cumulative product for each column (i.e., over the rows) of `a`:</span>
-
-<span class="sd">    &gt;&gt;&gt; np.cumprod(a, axis=0)</span>
-<span class="sd">    array([[ 1,  2,  3],</span>
-<span class="sd">           [ 4, 10, 18]])</span>
-
-<span class="sd">    The cumulative product for each row (i.e. over the columns) of `a`:</span>
-
-<span class="sd">    &gt;&gt;&gt; np.cumprod(a, axis=1)</span>
-<span class="sd">    array([[  1,   2,   6],</span>
-<span class="sd">           [  4,  20, 120]])</span>
+<span class="sd">    &gt;&gt;&gt; result = np.cumprod(a)</span>
+<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
+<span class="sd">    [1, 2, 6]</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([[1, 2, 3], [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; result = np.cumprod(b)</span>
+<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
+<span class="sd">    [1, 2, 6, 24, 120, 720]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_cumprod</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span>
-        <span class="n">out</span><span class="p">,</span>
-        <span class="n">dpt</span><span class="o">.</span><span class="n">cumulative_prod</span><span class="p">,</span>
-        <span class="n">_get_reduction_res_dt</span><span class="p">,</span>
-        <span class="n">usm_a</span><span class="p">,</span>
-        <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-    <span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cumprod</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 
