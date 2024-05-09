@@ -368,6 +368,14 @@ class TestDiagonal:
         a_np = dpnp.asnumpy(a)
         assert_raises(TypeError, dpnp.diagonal, a_np)
 
+        # a.ndim < 2
+        a_ndim_1 = a.flatten()
+        assert_raises(ValueError, dpnp.diagonal, a_ndim_1)
+
+        # unsupported type `offset`
+        assert_raises(TypeError, dpnp.diagonal, a, offset=1.0)
+        assert_raises(TypeError, dpnp.diagonal, a, offset=[0])
+
         # axes are out of bounds
         assert_raises(numpy.AxisError, a.diagonal, axis1=0, axis2=5)
         assert_raises(numpy.AxisError, a.diagonal, axis1=5, axis2=0)
