@@ -161,6 +161,100 @@ class TestClip:
             dpnp.clip(a, 1, 5, **kwargs)
 
 
+class TestCumLogSumExp:
+    def _assert_arrays(self, res, exp, axis, include_initial):
+        if include_initial:
+            if axis != None:
+                res_initial = dpnp.take(res, dpnp.array([0]), axis=axis)
+                res_no_initial = dpnp.take(res, dpnp.array(range(1, res.shape[axis])), axis=axis)
+            else:
+                res_initial = res[0]
+                res_no_initial = res[1:]
+            assert_dtype_allclose(res_no_initial, exp)
+            assert (res_initial == -dpnp.inf).all()
+        else:
+            assert_dtype_allclose(res, exp)
+
+    def _get_exp_array(self, a, axis, dtype):
+        np_a = dpnp.asnumpy(a)
+        if axis != None:
+            return numpy.logaddexp.accumulate(np_a, axis=axis, dtype=dtype)
+        return numpy.logaddexp.accumulate(np_a.ravel(), dtype=dtype)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("axis", [None, 2, -1])
+    @pytest.mark.parametrize("include_initial", [True, False])
+    def test_basic(self, dtype, axis, include_initial):
+        a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
+        res = dpnp.cumlogsumexp(a, axis=axis, include_initial=include_initial)
+
+        exp_dt = None
+        if dtype == dpnp.bool:
+            exp_dt = dpnp.default_float_type(a.device)
+
+        exp = self._get_exp_array(a, axis, exp_dt)
+        self._assert_arrays(res, exp, axis, include_initial)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("axis", [None, 2, -1])
+    @pytest.mark.parametrize("include_initial", [True, False])
+    def test_out(self, dtype, axis, include_initial):
+        a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
+
+        exp_dt = dpnp.default_float_type(a.device)
+        if axis != None:
+            if include_initial:
+                norm_axis = numpy.core.numeric.normalize_axis_index(axis, a.ndim, "axis")
+                out_sh = a.shape[:norm_axis] + (a.shape[norm_axis] + 1,) + a.shape[norm_axis + 1 :]
+            else:
+                out_sh = a.shape
+        else:
+            out_sh = (a.size + int(include_initial),)
+        out = dpnp.empty_like(a, shape=out_sh, dtype=exp_dt)
+        res = dpnp.cumlogsumexp(a, axis=axis, include_initial=include_initial, out=out)
+
+        exp = self._get_exp_array(a, axis, exp_dt)
+
+        assert res is out
+        self._assert_arrays(res, exp, axis, include_initial)
+
+    def test_axis_tuple(self):
+        a = dpnp.ones((3, 4))
+        assert_raises(TypeError, dpnp.cumlogsumexp, a, axis=(0, 1))
+
+    @pytest.mark.parametrize(
+        "in_dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("out_dtype", get_all_dtypes(no_bool=True))
+    def test_dtype(self, in_dtype, out_dtype):
+        a = dpnp.ones(100, dtype=in_dtype)
+        res = dpnp.cumlogsumexp(a, dtype=out_dtype)
+        exp = numpy.logaddexp.accumulate(dpnp.asnumpy(a))
+        exp = exp.astype(out_dtype)
+
+        assert_allclose(res, exp, rtol=1e-06)
+
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize(
+        "arr_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "out_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_out_dtype(self, arr_dt, out_dt, dtype):
+        a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
+        out = numpy.zeros_like(a, dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = dpnp.cumlogsumexp(ia, out=iout, dtype=dtype, axis=1)
+        exp = numpy.logaddexp.accumulate(a, out=out, axis=1)
+        assert_allclose(result, exp.astype(dtype), rtol=1e-06)
+        assert result is iout
+
+
 class TestCumProd:
     @pytest.mark.parametrize(
         "arr, axis",

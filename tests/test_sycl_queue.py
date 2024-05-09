@@ -562,6 +562,22 @@ def test_logsumexp(device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+def test_cumlogsumexp(device):
+    x = dpnp.arange(10, device=device)
+    result = dpnp.cumlogsumexp(x)
+    expected = numpy.logaddexp.accumulate(x.asnumpy())
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = x.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_reduce_hypot(device):
     x = dpnp.arange(10, device=device)
     result = dpnp.reduce_hypot(x)
