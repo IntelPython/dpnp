@@ -64,6 +64,7 @@ typedef sycl::event (*gemm_batch_impl_fn_ptr_t)(
     char *,
     char *,
     char *,
+    bool,
     const std::vector<sycl::event> &);
 
 static gemm_batch_impl_fn_ptr_t
@@ -77,7 +78,7 @@ static sycl::event gemm_batch_impl(sycl::queue &exec_q,
                                    const std::int64_t batch_size,
                                    const std::int64_t lda,
                                    const std::int64_t ldb,
-                                   const std::int64_t ld_result,
+                                   const std::int64_t ldc,
                                    size_t stridea,
                                    size_t strideb,
                                    size_t stridec,
@@ -86,6 +87,7 @@ static sycl::event gemm_batch_impl(sycl::queue &exec_q,
                                    char *matrixA,
                                    char *matrixB,
                                    char *resultC,
+                                   bool is_row_major,
                                    const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<Tab>(exec_q);
@@ -100,7 +102,26 @@ static sycl::event gemm_batch_impl(sycl::queue &exec_q,
 
     sycl::event gemm_batch_event;
     try {
-        gemm_batch_event = mkl_blas::row_major::gemm_batch(
+        auto gemm_batch_func =
+            [&](sycl::queue &q, oneapi::mkl::transpose transA,
+                oneapi::mkl::transpose transB, std::int64_t m, std::int64_t n,
+                std::int64_t k, Tab alpha, const Tab *a, std::int64_t lda,
+                std::int64_t stridea, const Tab *b, std::int64_t ldb,
+                std::int64_t strideb, Tab beta, Tc *c, std::int64_t ldc,
+                std::int64_t stridec, std::int64_t batch_size,
+                const std::vector<sycl::event> &deps) -> sycl::event {
+            if (is_row_major) {
+                return mkl_blas::row_major::gemm_batch(
+                    q, transA, transB, m, n, k, alpha, a, lda, stridea, b, ldb,
+                    strideb, beta, c, ldc, stridec, batch_size, deps);
+            }
+            else {
+                return mkl_blas::column_major::gemm_batch(
+                    q, transA, transB, m, n, k, alpha, a, lda, stridea, b, ldb,
+                    strideb, beta, c, ldc, stridec, batch_size, deps);
+            }
+        };
+        gemm_batch_event = gemm_batch_func(
             exec_q,
             transA,     // Defines the transpose operation for matrix A:
                         // 'N' indicates no transpose, 'T' for transpose,
@@ -120,10 +141,10 @@ static sycl::event gemm_batch_impl(sycl::queue &exec_q,
             strideb,    // Stride between different B matrices.
             Tab(0),     // Scaling factor for matrix C.
             res,        // Pointer to matrix C, where the result is stored.
-            ld_result,  // Leading dimension of matrix C.
+            ldc,        // Leading dimension of matrix C.
             stridec,    // Stride between different C matrices.
-            batch_size, // Specifies the number of matrix multiply operations to
-                        // perform.
+            batch_size, // Specifies the number of matrix multiply
+                        // operations to perform.
             depends);
     } catch (oneapi::mkl::exception const &e) {
         error_msg << "Unexpected MKL exception caught during gemm_batch() "
@@ -145,15 +166,11 @@ static sycl::event gemm_batch_impl(sycl::queue &exec_q,
     return gemm_batch_event;
 }
 
-std::pair<sycl::event, sycl::event>
+std::tuple<sycl::event, sycl::event, bool>
     gemm_batch(sycl::queue &exec_q,
                dpctl::tensor::usm_ndarray matrixA,
                dpctl::tensor::usm_ndarray matrixB,
                dpctl::tensor::usm_ndarray resultC,
-               const std::int64_t batch_size,
-               size_t stridea,
-               size_t strideb,
-               size_t stridec,
                const std::vector<sycl::event> &depends = {})
 {
     const int matrixA_nd = matrixA.get_ndim();
@@ -185,49 +202,90 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *a_shape = matrixA.get_shape_raw();
     const py::ssize_t *b_shape = matrixB.get_shape_raw();
     const py::ssize_t *c_shape = resultC.get_shape_raw();
-    const std::int64_t m = a_shape[matrixA_nd - 2];
-    const std::int64_t n = b_shape[matrixB_nd - 1];
-    const std::int64_t k = a_shape[matrixA_nd - 1];
-    if (a_shape[matrixA_nd - 1] != b_shape[matrixB_nd - 2]) {
+    const std::int64_t m = a_shape[1];
+    const std::int64_t n = b_shape[2];
+    const std::int64_t k = a_shape[2];
+    const std::int64_t batch_size = c_shape[0];
+    if (a_shape[2] != b_shape[1]) {
         throw py::value_error("The number of columns in A must be equal to "
                               "the number of rows in B.");
     }
-    if (a_shape[matrixA_nd - 2] != c_shape[resultC_nd - 2]) {
+    if (a_shape[1] != c_shape[1]) {
         throw py::value_error("The number of rows in A must be equal to "
                               "the number of rows in result array.");
     }
-    if (b_shape[matrixB_nd - 1] != c_shape[resultC_nd - 1]) {
+    if (b_shape[2] != c_shape[2]) {
         throw py::value_error("The number of columns in B must be equal to "
                               "the number of columns in result array.");
     }
 
-    bool shapes_equal = true;
-    size_t src_nelems = 1;
-    py::ssize_t lead_dim;
-    for (int i = 0; i < matrixA_nd - 2; ++i) {
-        if (a_shape[i] == b_shape[i]) {
-            lead_dim = a_shape[i];
-        }
-        else if (a_shape[i] == 1 || b_shape[i] == 1) {
-            lead_dim = std::max(a_shape[i], b_shape[i]);
-        }
-        else {
-            throw py::value_error("Array shapes do not match.");
-        }
-        src_nelems *= static_cast<size_t>(lead_dim);
-        shapes_equal = shapes_equal && (lead_dim == c_shape[i]);
+    std::int64_t first_dim;
+    if (a_shape[0] == b_shape[0]) {
+        first_dim = a_shape[0];
     }
-    src_nelems *= (m * n);
-    if (!shapes_equal) {
+    else if (a_shape[0] == 1 || b_shape[0] == 1) {
+        first_dim = std::max(a_shape[0], b_shape[0]);
+    }
+    else {
         throw py::value_error("Array shapes do not match.");
     }
+    if (first_dim != c_shape[0]) {
+        throw py::value_error("Array shapes do not match.");
+    }
+    std::int64_t src_nelems = first_dim * m * n;
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(resultC);
     dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(resultC,
                                                                src_nelems);
 
-    // transA and transB are always False
-    oneapi::mkl::transpose transA = oneapi::mkl::transpose::N;
-    oneapi::mkl::transpose transB = oneapi::mkl::transpose::N;
+    std::vector<py::ssize_t> a_stride = matrixA.get_strides_vector();
+    std::vector<py::ssize_t> b_stride = matrixB.get_strides_vector();
+    std::vector<py::ssize_t> c_stride = resultC.get_strides_vector();
+    const std::int64_t stridea = a_stride[0];
+    const std::int64_t strideb = b_stride[0];
+    const std::int64_t stridec = c_stride[0];
+
+    bool A_base_is_f_contig = a_stride[1] == 1 && a_stride[2] == a_shape[1];
+    bool B_base_is_f_contig = b_stride[1] == 1 && b_stride[2] == b_shape[1];
+
+    bool is_row_major = true;
+    if (A_base_is_f_contig && B_base_is_f_contig) {
+        is_row_major = false;
+    }
+
+    oneapi::mkl::transpose transA;
+    oneapi::mkl::transpose transB;
+    if (is_row_major) {
+        transA = A_base_is_f_contig ? oneapi::mkl::transpose::T
+                                    : oneapi::mkl::transpose::N;
+        transB = B_base_is_f_contig ? oneapi::mkl::transpose::T
+                                    : oneapi::mkl::transpose::N;
+    }
+    else {
+        transA = oneapi::mkl::transpose::N;
+        transB = oneapi::mkl::transpose::N;
+    }
+
+    std::int64_t lda;
+    std::int64_t ldb;
+    if (is_row_major) {
+        if (transA == oneapi::mkl::transpose::N) {
+            lda = k;
+        }
+        else {
+            lda = m;
+        }
+        if (transB == oneapi::mkl::transpose::N) {
+            ldb = n;
+        }
+        else {
+            ldb = k;
+        }
+    }
+    else {
+        lda = m;
+        ldb = k;
+    }
+    const std::int64_t ldc = is_row_major ? n : m;
 
     int matrixA_typenum = matrixA.get_typenum();
     int matrixB_typenum = matrixB.get_typenum();
@@ -252,15 +310,15 @@ std::pair<sycl::event, sycl::event>
     char *b_typeless_ptr = matrixB.get_data();
     char *r_typeless_ptr = resultC.get_data();
 
-    // Note that lda = k, ldb = n, and ld_result = n
-    sycl::event gemm_batch_ev = gemm_batch_fn(
-        exec_q, m, n, k, batch_size, k, n, n, stridea, strideb, stridec, transA,
-        transB, a_typeless_ptr, b_typeless_ptr, r_typeless_ptr, depends);
+    sycl::event gemm_batch_ev =
+        gemm_batch_fn(exec_q, m, n, k, batch_size, lda, ldb, ldc, stridea,
+                      strideb, stridec, transA, transB, a_typeless_ptr,
+                      b_typeless_ptr, r_typeless_ptr, is_row_major, depends);
 
     sycl::event args_batch_ev = dpctl::utils::keep_args_alive(
         exec_q, {matrixA, matrixB, resultC}, {gemm_batch_ev});
 
-    return std::make_pair(args_batch_ev, gemm_batch_ev);
+    return std::make_tuple(args_batch_ev, gemm_batch_ev, is_row_major);
 }
 
 template <typename fnT, typename Tab, typename Tc>
