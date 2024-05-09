@@ -166,7 +166,9 @@ class TestCumLogSumExp:
         if include_initial:
             if axis != None:
                 res_initial = dpnp.take(res, dpnp.array([0]), axis=axis)
-                res_no_initial = dpnp.take(res, dpnp.array(range(1, res.shape[axis])), axis=axis)
+                res_no_initial = dpnp.take(
+                    res, dpnp.array(range(1, res.shape[axis])), axis=axis
+                )
             else:
                 res_initial = res[0]
                 res_no_initial = res[1:]
@@ -204,14 +206,22 @@ class TestCumLogSumExp:
         exp_dt = dpnp.default_float_type(a.device)
         if axis != None:
             if include_initial:
-                norm_axis = numpy.core.numeric.normalize_axis_index(axis, a.ndim, "axis")
-                out_sh = a.shape[:norm_axis] + (a.shape[norm_axis] + 1,) + a.shape[norm_axis + 1 :]
+                norm_axis = numpy.core.numeric.normalize_axis_index(
+                    axis, a.ndim, "axis"
+                )
+                out_sh = (
+                    a.shape[:norm_axis]
+                    + (a.shape[norm_axis] + 1,)
+                    + a.shape[norm_axis + 1 :]
+                )
             else:
                 out_sh = a.shape
         else:
             out_sh = (a.size + int(include_initial),)
         out = dpnp.empty_like(a, shape=out_sh, dtype=exp_dt)
-        res = dpnp.cumlogsumexp(a, axis=axis, include_initial=include_initial, out=out)
+        res = dpnp.cumlogsumexp(
+            a, axis=axis, include_initial=include_initial, out=out
+        )
 
         exp = self._get_exp_array(a, axis, exp_dt)
 
