@@ -543,6 +543,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("min", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("nanargmax", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanargmin", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nancumprod", [3.0, dp.nan]),
         pytest.param("nancumsum", [3.0, dp.nan]),
         pytest.param("nanmax", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanmean", [1.0, 2.0, 4.0, dp.nan]),

@@ -25,12 +25,6 @@ from .helper import (
     )
 )
 class TestNanCumSumProd:
-    @pytest.fixture(autouse=True)
-    def setUp(self):
-        if self.func == "nancumprod":
-            pytest.skip("nancumprod() is not implemented yet")
-        pass
-
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize(
         "array",
