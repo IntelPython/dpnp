@@ -203,7 +203,11 @@ class TestCumLogSumExp:
     def test_out(self, dtype, axis, include_initial):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
 
-        exp_dt = dpnp.default_float_type(a.device)
+        if dpnp.issubdtype(a, dpnp.float32):
+            exp_dt = dpnp.float32
+        else:
+            exp_dt = dpnp.default_float_type(a.device)
+
         if axis != None:
             if include_initial:
                 norm_axis = numpy.core.numeric.normalize_axis_index(
