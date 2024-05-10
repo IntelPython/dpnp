@@ -283,7 +283,7 @@ def nancumprod(a, axis=None, dtype=None, out=None):
     --------
     >>> import dpnp as np
     >>> np.nancumprod(np.array(1))
-    array([1])
+    array(1)
     >>> np.nancumprod(np.array([1]))
     array([1])
     >>> np.nancumprod(np.array([1, np.nan]))
@@ -347,7 +347,7 @@ def nancumsum(a, axis=None, dtype=None, out=None):
     --------
     >>> import dpnp as np
     >>> np.nancumsum(np.array(1))
-    array([1])
+    array(1)
     >>> np.nancumsum(np.array([1]))
     array([1])
     >>> np.nancumsum(np.array([1, np.nan]))
