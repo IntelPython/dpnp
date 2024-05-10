@@ -383,15 +383,8 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
     if axis1 == axis2:
         raise ValueError("`axis1` and `axis2` cannot be the same")
 
-    if axis1 < axis2:
-        min_axis, max_axis = axis1, axis2
-    else:
-        min_axis, max_axis = axis2, axis1
-
-    # get list of the order of axes removing the two target axes
-    axes_order = list(range(a_ndim))
-    del axes_order[max_axis]
-    del axes_order[min_axis]
+    # get list of the order of all axes excluding the two target axes
+    axes_order = [i for i in range(a_ndim) if i not in [axis1, axis2]]
 
     # transpose the input array to put the target axes at the end
     # to simplify diagonal extraction
