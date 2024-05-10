@@ -677,7 +677,7 @@ def cumlogsumexp(
     ----------
     x : {dpnp.ndarray, usm_ndarray}
         Input array, expected to have a real-valued data type.
-    axis : {None, int or tuple of ints}, optional
+    axis : {None, int}, optional
         Axis or axes along which values must be computed. If a tuple of unique
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
@@ -719,7 +719,7 @@ def cumlogsumexp(
 
     Note
     ----
-    This function is equivalent of `numpy.logaddexp.reduce`.
+    This function is equivalent of `numpy.logaddexp.accumulate`.
 
     See Also
     --------
