@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.15.0dev1+65.gcd3f68150f documentation</title>
+  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.15.0dev1+52.g5d94ca8423 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=925af8f9"></script>
+        <script src="../../_static/documentation_options.js?v=42b24a4d"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+65.gcd3f68150f
+                0.15.0dev1+52.g5d94ca8423
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -129,17 +129,7 @@
 
 <span class="kn">import</span> <span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span>
-
 <span class="kn">import</span> <span class="nn">dpnp</span>
-
-<span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">dpnp_nancumprod</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">call_origin</span><span class="p">,</span>
-<span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;nanargmax&quot;</span><span class="p">,</span>
@@ -347,19 +337,40 @@
 
 <div class="viewcode-block" id="nancumprod">
 <a class="viewcode-back" href="../../reference/generated/dpnp.nancumprod.html#dpnp.nancumprod">[docs]</a>
-<span class="k">def</span> <span class="nf">nancumprod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">nancumprod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the cumulative product of array elements over a given axis treating</span>
-<span class="sd">    Not a Numbers (NaNs) as one.</span>
+<span class="sd">    Not a Numbers (NaNs) as zero. The cumulative product does not change when</span>
+<span class="sd">    NaNs are encountered and leading NaNs are replaced by ones.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.nancumprod`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : {None, int}, optional</span>
+<span class="sd">        Axis along which the cumulative product is computed. The default</span>
+<span class="sd">        (``None``) is to compute the cumulative product over the flattened</span>
+<span class="sd">        array.</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">        Type of the returned array and of the accumulator in which the elements</span>
+<span class="sd">        are summed. If `dtype` is not specified, it defaults to the dtype of</span>
+<span class="sd">        `a`, unless `a` has an integer dtype with a precision less than that of</span>
+<span class="sd">        the default platform integer. In that case, the default platform</span>
+<span class="sd">        integer is used.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have the</span>
+<span class="sd">        same shape and buffer length as the expected output but the type will</span>
+<span class="sd">        be cast if necessary.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        A new array holding the result is returned unless `out` is specified as</span>
+<span class="sd">        :class:`dpnp.ndarray`, in which case a reference to `out` is returned.</span>
+<span class="sd">        The result has the same size as `a`, and the same shape as `a` if `axis`</span>
+<span class="sd">        is not ``None`` or `a` is a 1-d array.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -369,22 +380,26 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array([1., np.nan])</span>
-<span class="sd">    &gt;&gt;&gt; result = np.nancumprod(a)</span>
-<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
-<span class="sd">    [1.0, 1.0]</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([[1., 2., np.nan], [4., np.nan, 6.]])</span>
-<span class="sd">    &gt;&gt;&gt; result = np.nancumprod(b)</span>
-<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
-<span class="sd">    [1.0, 2.0, 2.0, 8.0, 8.0, 48.0]</span>
+<span class="sd">    &gt;&gt;&gt; np.nancumprod(np.array(1))</span>
+<span class="sd">    array(1)</span>
+<span class="sd">    &gt;&gt;&gt; np.nancumprod(np.array([1]))</span>
+<span class="sd">    array([1])</span>
+<span class="sd">    &gt;&gt;&gt; np.nancumprod(np.array([1, np.nan]))</span>
+<span class="sd">    array([1., 1.])</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2], [3, np.nan]])</span>
+<span class="sd">    &gt;&gt;&gt; np.nancumprod(a)</span>
+<span class="sd">    array([1., 2., 6., 6.])</span>
+<span class="sd">    &gt;&gt;&gt; np.nancumprod(a, axis=0)</span>
+<span class="sd">    array([[1., 2.],</span>
+<span class="sd">           [3., 2.]])</span>
+<span class="sd">    &gt;&gt;&gt; np.nancumprod(a, axis=1)</span>
+<span class="sd">    array([[1., 2.],</span>
+<span class="sd">           [3., 3.]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_nancumprod</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nancumprod</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="n">a</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
 
 
 
@@ -433,7 +448,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; np.nancumsum(np.array(1))</span>
-<span class="sd">    array([1])</span>
+<span class="sd">    array(1)</span>
 <span class="sd">    &gt;&gt;&gt; np.nancumsum(np.array([1]))</span>
 <span class="sd">    array([1])</span>
 <span class="sd">    &gt;&gt;&gt; np.nancumsum(np.array([1, np.nan]))</span>
