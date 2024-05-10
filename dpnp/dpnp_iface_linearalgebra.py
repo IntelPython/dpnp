@@ -889,13 +889,13 @@ def outer(a, b, out=None):
     dpnp.check_supported_arrays_type(a, b, scalar_type=True, all_scalars=False)
     if dpnp.isscalar(a):
         x1 = a
-        x2 = b.flatten()[None, :]
+        x2 = b.ravel()[None, :]
     elif dpnp.isscalar(b):
-        x1 = a.flatten()[:, None]
+        x1 = a.ravel()[:, None]
         x2 = b
     else:
-        x1 = a.flatten()
-        x2 = b.flatten()
+        x1 = a.ravel()
+        x2 = b.ravel()
 
     return dpnp.multiply.outer(x1, x2, out=out)
 
