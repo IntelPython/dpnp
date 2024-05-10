@@ -44,9 +44,6 @@ from numpy.core.numeric import normalize_axis_tuple
 import dpnp
 
 # pylint: disable=no-name-in-module
-from .dpnp_utils import (
-    call_origin,
-)
 from .dpnp_utils.dpnp_utils_linearalgebra import (
     dpnp_dot,
     dpnp_einsum,
@@ -851,19 +848,25 @@ def matmul(
     )
 
 
-def outer(x1, x2, out=None):
+def outer(a, b, out=None):
     """
     Returns the outer product of two arrays.
 
     For full documentation refer to :obj:`numpy.outer`.
 
-    Limitations
-    -----------
-        Parameters `x1` and `x2` are supported as either scalar,
-        :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both
-        `x1` and `x2` can not be scalars at the same time. Otherwise
-        the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    a(M,) : {dpnp.ndarray, usm_ndarray}
+        First input vector. Input is flattened if not already 1-dimensional.
+    b(N,) : {dpnp.ndarray, usm_ndarray}
+        Second input vector. Input is flattened if not already 1-dimensional.
+    out(M, N) : {dpnp.ndarray, usm_ndarray}, optional
+        A location where the result is stored
+
+    Returns
+    -------
+    out(M, N) : dpnp.ndarray
+        out[i, j] = a[i] * b[j]
 
     See Also
     --------
@@ -876,37 +879,25 @@ def outer(x1, x2, out=None):
     >>> import dpnp as np
     >>> a = np.array([1, 1, 1])
     >>> b = np.array([1, 2, 3])
-    >>> result = np.outer(a, b)
-    >>> [x for x in result]
+    >>> np.outer(a, b)
     array([[1, 2, 3],
            [1, 2, 3],
            [1, 2, 3]])
 
     """
 
-    x1_is_scalar = dpnp.isscalar(x1)
-    x2_is_scalar = dpnp.isscalar(x2)
-
-    if x1_is_scalar and x2_is_scalar:
-        pass
-    elif not dpnp.is_supported_array_or_scalar(x1):
-        pass
-    elif not dpnp.is_supported_array_or_scalar(x2):
-        pass
+    dpnp.check_supported_arrays_type(a, b, scalar_type=True, all_scalars=False)
+    if dpnp.isscalar(a):
+        x1 = a
+        x2 = b.flatten()[None, :]
+    elif dpnp.isscalar(b):
+        x1 = a.flatten()[:, None]
+        x2 = b
     else:
-        x1_in = (
-            x1
-            if x1_is_scalar
-            else (x1.reshape(-1) if x1.ndim > 1 else x1)[:, None]
-        )
-        x2_in = (
-            x2
-            if x2_is_scalar
-            else (x2.reshape(-1) if x2.ndim > 1 else x2)[None, :]
-        )
-        return dpnp.multiply(x1_in, x2_in, out=out)
+        x1 = a.flatten()
+        x2 = b.flatten()
 
-    return call_origin(numpy.outer, x1, x2, out=out)
+    return dpnp.multiply.outer(x1, x2, out=out)
 
 
 def tensordot(a, b, axes=2):

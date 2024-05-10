@@ -341,10 +341,60 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                 return out
             return dpnp_array._create_from_usm_ndarray(res_usm)
 
-    def outer(self, x1, x2):
-        _x1 = x1[(Ellipsis,) + (None,) * x2.ndim]
-        _x2 = x2[(None,) * x1.ndim + (Ellipsis,)]
-        return self.__call__(_x1, _x2)
+    def outer(
+        self,
+        x1,
+        x2,
+        out=None,
+        where=True,
+        order="K",
+        dtype=None,
+        subok=True,
+        **kwargs,
+    ):
+        """
+        Apply the ufunc op to all pairs (a, b) with a in A and b in B.
+
+        Parameters
+        ----------
+        x1 : {dpnp.ndarray, usm_ndarray}
+            First input array.
+        x2 : {dpnp.ndarray, usm_ndarray}
+            Second input array.
+        out : {None, dpnp.ndarray}, optional
+            Output array to populate.
+            Array must have the correct shape and the expected data type.
+        order : {"C", "F", "A", "K"}, optional
+            Memory layout of the newly output array, if parameter `out` is ``None``.
+            Default: "K".
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            Output array. The data type of the returned array is determined by
+            the Type Promotion Rules.
+
+        """
+
+        dpnp.check_supported_arrays_type(
+            x1, x2, scalar_type=True, all_scalars=False
+        )
+        if dpnp.isscalar(x1) or dpnp.isscalar(x2):
+            _x1 = x1
+            _x2 = x2
+        else:
+            _x1 = x1[(Ellipsis,) + (None,) * x2.ndim]
+            _x2 = x2[(None,) * x1.ndim + (Ellipsis,)]
+        return self.__call__(
+            _x1,
+            _x2,
+            out=out,
+            where=where,
+            order=order,
+            dtype=dtype,
+            subok=subok,
+            **kwargs,
+        )
 
 
 class DPNPAngle(DPNPUnaryFunc):

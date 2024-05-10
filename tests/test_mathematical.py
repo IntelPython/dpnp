@@ -3173,6 +3173,14 @@ def test_elemenwise_outer(x_shape, y_shape):
 
     assert_dtype_allclose(result, expected)
 
-    if x_shape != () and y_shape != ():
-        result_outer = dpnp.outer(x, y)
-        assert dpnp.allclose(result.flatten(), result_outer.flatten())
+    result_outer = dpnp.outer(x, y)
+    assert dpnp.allclose(result.flatten(), result_outer.flatten())
+
+
+def test_elemenwise_outer_scalar():
+    s = 5
+    x = dpnp.asarray([1, 2, 3])
+    y = dpnp.asarray(s)
+    expected = dpnp.add.outer(x, y)
+    result = dpnp.add.outer(x, s)
+    assert_dtype_allclose(result, expected)
