@@ -286,26 +286,30 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
     a : {dpnp.ndarray, usm_ndarray}
         Array from which the diagonals are taken.
     offset : int, optional
-        Offset of the diagonal from the main diagonal.  Can be positive or
-        negative.  Defaults to main diagonal (0).
+        Offset of the diagonal from the main diagonal. Can be positive or
+        negative. Defaults to main diagonal (``0``).
     axis1 : int, optional
         Axis to be used as the first axis of the 2-D sub-arrays from which
-        the diagonals should be taken.  Defaults to first axis (0).
+        the diagonals should be taken. Defaults to first axis (``0``).
     axis2 : int, optional
         Axis to be used as the second axis of the 2-D sub-arrays from
-        which the diagonals should be taken. Defaults to second axis (1).
+        which the diagonals should be taken. Defaults to second axis (``1``).
 
     Returns
     -------
     array_of_diagonals : dpnp.ndarray
         If `a` is 2-D, then a 1-D array containing the diagonal and of the
-        same type as `a` is returned unless `a` is a `matrix`, in which case
-        a 1-D array rather than a (2-D) `matrix` is returned in order to
-        maintain backward compatibility.
-
+        same type as `a` is returned.
         If ``a.ndim > 2``, then the dimensions specified by `axis1` and `axis2`
         are removed, and a new axis inserted at the end corresponding to the
         diagonal.
+
+    See Also
+    --------
+    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
+    :obj:`dpnp.diagflat` : Create a two-dimensional array
+                           with the flattened input as a diagonal.
+    :obj:`dpnp.trace` : Return the sum along diagonals of the array.
 
     Examples
     --------
@@ -325,7 +329,6 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
     >>> a
     array([[[0, 1],
             [2, 3]],
-
            [[4, 5],
             [6, 7]]])
     >>> a.diagonal(0,  # Main diagonals of two arrays created by skipping
