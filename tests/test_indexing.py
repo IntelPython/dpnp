@@ -324,7 +324,7 @@ def test_choose():
 
 class TestDiagonal:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize("offset", [-1, 0, 1])
+    @pytest.mark.parametrize("offset", [-3, -1, 0, 1, 3])
     @pytest.mark.parametrize(
         "shape",
         [(2, 2), (3, 3), (2, 5), (3, 2, 2), (2, 2, 2, 2), (2, 2, 2, 3)],
