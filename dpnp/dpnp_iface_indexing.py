@@ -411,10 +411,6 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
         out_shape = a_shape[:-2] + (min(n, m - offset),)
         out_strides = a_straides[:-2] + (st_n + st_m,)
         out_offset = a_element_offset + st_m * offset
-    elif -n < offset < 0:
-        out_shape = a_shape[:-2] + (min(n + offset, m),)
-        out_strides = a_straides[:-2] + (st_n + st_m,)
-        out_offset = a_element_offset - st_n * offset
     else:
         out_shape = a_shape[:-2] + (0,)
         out_strides = a_straides[:-2] + (1,)
