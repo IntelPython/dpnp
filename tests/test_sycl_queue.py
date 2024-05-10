@@ -417,6 +417,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("count_nonzero", [3, 0, 2, -1.2]),
         pytest.param("cumprod", [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
+        pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
@@ -2099,21 +2100,3 @@ def test_histogram(weights, device):
     edges_queue = result_edges.sycl_queue
     assert_sycl_queue_equal(hist_queue, iv.sycl_queue)
     assert_sycl_queue_equal(edges_queue, iv.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_diagonal(device):
-    a = numpy.arange(12).reshape(3, 2, 2)
-    a_dp = dpnp.array(a, device=device)
-
-    expected = numpy.diagonal(a)
-    result = dpnp.diagonal(a_dp)
-
-    assert_dtype_allclose(result, expected)
-
-    result_queue = result.sycl_queue
-    assert_sycl_queue_equal(result_queue, a_dp.sycl_queue)

@@ -38,7 +38,6 @@ and the rest of the library
 __all__ += [
     "dpnp_choose",
     "dpnp_diag_indices",
-    "dpnp_diagonal",
     "dpnp_fill_diagonal",
     "dpnp_putmask",
     "dpnp_select",

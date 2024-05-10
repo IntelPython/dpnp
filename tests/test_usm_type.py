@@ -523,6 +523,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("count_nonzero", [0, 1, 7, 0]),
         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
+        pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("exp2", [0.0, 1.0, 2.0]),
@@ -1228,11 +1229,3 @@ def test_histogram(usm_type_v, usm_type_w):
     assert w.usm_type == usm_type_w
     assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
-
-
-@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_diagonal(usm_type):
-    a = dp.arange(12, usm_type=usm_type).reshape(3, 2, 2)
-
-    res = dp.diagonal(a)
-    assert res.usm_type == usm_type
