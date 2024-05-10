@@ -161,6 +161,75 @@ class TestClip:
             dpnp.clip(a, 1, 5, **kwargs)
 
 
+class TestCumProd:
+    @pytest.mark.parametrize(
+        "arr, axis",
+        [
+            pytest.param([1, 2, 10, 11, 6, 5, 4], -1),
+            pytest.param([[1, 2, 3, 4], [5, 6, 7, 9], [10, 3, 4, 5]], 0),
+            pytest.param([[1, 2, 3, 4], [5, 6, 7, 9], [10, 3, 4, 5]], -1),
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_axis(self, arr, axis, dtype):
+        a = numpy.array(arr, dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.cumprod(ia, axis=axis)
+        expected = numpy.cumprod(a, axis=axis)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_ndarray_method(self, dtype):
+        a = numpy.arange(1, 10).astype(dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = ia.cumprod()
+        expected = a.cumprod()
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("sh", [(10,), (2, 5)])
+    @pytest.mark.parametrize(
+        "xp_in, xp_out, check",
+        [
+            pytest.param(dpt, dpt, False),
+            pytest.param(dpt, dpnp, True),
+            pytest.param(dpnp, dpt, False),
+        ],
+    )
+    def test_usm_ndarray(self, sh, xp_in, xp_out, check):
+        a = numpy.arange(-12, -2).reshape(sh)
+        ia = xp_in.asarray(a)
+
+        result = dpnp.cumprod(ia)
+        expected = numpy.cumprod(a)
+        assert_array_equal(expected, result)
+
+        out = numpy.empty((10,))
+        iout = xp_out.asarray(out)
+
+        result = dpnp.cumprod(ia, out=iout)
+        expected = numpy.cumprod(a, out=out)
+        assert_array_equal(expected, result)
+        assert (result is iout) is check
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_out_dtype(self, arr_dt, out_dt, dtype):
+        a = numpy.arange(5, 10).astype(dtype=arr_dt)
+        out = numpy.zeros_like(a, dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = ia.cumprod(out=iout, dtype=dtype)
+        expected = a.cumprod(out=out, dtype=dtype)
+        assert_array_equal(expected, result)
+        assert result is iout
+
+
 class TestCumSum:
     @pytest.mark.parametrize(
         "arr, axis",

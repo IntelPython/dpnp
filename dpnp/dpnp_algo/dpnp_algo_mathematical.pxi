@@ -36,7 +36,6 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_cumprod",
     "dpnp_ediff1d",
     "dpnp_fabs",
     "dpnp_fmod",

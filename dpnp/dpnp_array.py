@@ -721,7 +721,16 @@ class dpnp_array:
         return dpnp.copy(self, order=order)
 
     # 'ctypes',
-    # 'cumprod',
+
+    def cumprod(self, axis=None, dtype=None, out=None):
+        """
+        Return the cumulative product of the elements along the given axis.
+
+        Refer to :obj:`dpnp.cumprod` for full documentation.
+
+        """
+
+        return dpnp.cumprod(self, axis=axis, dtype=dtype, out=out)
 
     def cumsum(self, axis=None, dtype=None, out=None):
         """
