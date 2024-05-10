@@ -735,15 +735,26 @@ class dpnp_array:
 
     # 'data',
 
-    def diagonal(input, offset=0, axis1=0, axis2=1):
+    def diagonal(self, offset=0, axis1=0, axis2=1):
         """
         Return specified diagonals.
 
         Refer to :obj:`dpnp.diagonal` for full documentation.
 
+        See Also
+        --------
+        :obj:`dpnp.diagonal` : Equivalent function.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.arange(4).reshape(2,2)
+        >>> a.diagonal()
+        array([0, 3])
+
         """
 
-        return dpnp.diagonal(input, offset, axis1, axis2)
+        return dpnp.diagonal(self, offset=offset, axis1=axis1, axis2=axis2)
 
     def dot(self, b, out=None):
         """
