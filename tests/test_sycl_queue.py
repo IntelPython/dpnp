@@ -245,7 +245,6 @@ def test_array_creation_follow_device_2d_array(func, args, kwargs, device):
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.skip("muted until the issue reported by SAT-5969 is resolved")
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [
@@ -292,7 +291,6 @@ def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
-@pytest.mark.skip("muted until the issue reported by SAT-5969 is resolved")
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [
@@ -419,6 +417,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("count_nonzero", [3, 0, 2, -1.2]),
         pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
+        pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
