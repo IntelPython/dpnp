@@ -525,6 +525,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("cumlogsumexp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
+        pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("exp2", [0.0, 1.0, 2.0]),
