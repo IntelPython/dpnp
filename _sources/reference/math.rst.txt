@@ -96,6 +96,7 @@ Exponents and logarithms
    dpnp.logaddexp
    dpnp.logaddexp2
    dpnp.logsumexp
+   dpnp.cumlogsumexp
 
 
 Other special functions
