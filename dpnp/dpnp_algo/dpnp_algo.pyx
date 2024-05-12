@@ -147,56 +147,6 @@ cdef dpnp_DPNPFuncType_to_dtype(size_t type):
         utils.checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
 
 
-cdef utils.dpnp_descriptor call_fptr_1in_1out(DPNPFuncName fptr_name,
-                                              utils.dpnp_descriptor x1,
-                                              shape_type_c result_shape,
-                                              utils.dpnp_descriptor out=None,
-                                              func_name=None):
-
-    """ Convert type (x1.dtype) to C enum DPNPFuncType """
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    """ get the FPTR data structure """
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param1_type)
-
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-
-    cdef utils.dpnp_descriptor result
-
-    if out is None:
-        """ Create result array with type given by FPTR data """
-        x1_obj = x1.get_array()
-        result = utils.create_output_descriptor(result_shape,
-                                                kernel_data.return_type,
-                                                None,
-                                                device=x1_obj.sycl_device,
-                                                usm_type=x1_obj.usm_type,
-                                                sycl_queue=x1_obj.sycl_queue)
-    else:
-        if out.dtype != result_type:
-            utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
-        if out.shape != result_shape:
-            utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
-
-        result = out
-
-        utils.get_common_usm_allocation(x1, result)  # check USM allocation is common
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref, x1.get_data(), result.get_data(), x1.size, NULL)
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
 cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
                                                       utils.dpnp_descriptor x1,
                                                       object dtype=None,

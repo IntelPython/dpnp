@@ -78,6 +78,8 @@ from dpnp.dpnp_iface_bitwise import *
 from dpnp.dpnp_iface_bitwise import __all__ as __all__bitwise
 from dpnp.dpnp_iface_counting import *
 from dpnp.dpnp_iface_counting import __all__ as __all__counting
+from dpnp.dpnp_iface_histograms import *
+from dpnp.dpnp_iface_histograms import __all__ as __all__histograms
 from dpnp.dpnp_iface_indexing import *
 from dpnp.dpnp_iface_indexing import __all__ as __all__indexing
 from dpnp.dpnp_iface_libmath import *
@@ -111,6 +113,7 @@ from .dpnp_utils import (
 __all__ += __all__arraycreation
 __all__ += __all__bitwise
 __all__ += __all__counting
+__all__ += __all__histograms
 __all__ += __all__indexing
 __all__ += __all__libmath
 __all__ += __all__linearalgebra
@@ -206,9 +209,9 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True):
               float64 to float32, are allowed.
             - 'unsafe' means any data conversions may be done.
 
-    copy : bool, optional
-        By default, astype always returns a newly allocated array. If this
-        is set to ``False``, and the dtype, order, and subok requirements
+    copy : {bool}, optional
+        By default, ``astype`` always returns a newly allocated array. If this
+        is set to ``False``, and the `dtype`, `order`, and `subok` requirements
         are satisfied, the input array is returned instead of a copy.
 
     Returns
@@ -328,7 +331,7 @@ def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
             f"An array must be any of supported type, but got {type(a)}"
         )
 
-    if len(arrays) > 1 and not (all_scalars or any_is_array):
+    if len(arrays) > 0 and not (all_scalars or any_is_array):
         raise TypeError(
             "At least one input must be of supported array type, "
             "but got all scalars."

@@ -67,6 +67,23 @@ def test_sum_out(dtype, axis):
     assert_array_equal(expected, res.asnumpy())
 
 
+@pytest.mark.usefixtures("suppress_complex_warning")
+@pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
+@pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes())
+def test_sum_out_dtype(arr_dt, out_dt, dtype):
+    a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
+    out = numpy.zeros_like(a, shape=(2,), dtype=out_dt)
+
+    ia = dpnp.array(a)
+    iout = dpnp.array(out)
+
+    result = dpnp.sum(ia, out=iout, dtype=dtype, axis=1)
+    expected = numpy.sum(a, out=out, dtype=dtype, axis=1)
+    assert_array_equal(expected, result)
+    assert result is iout
+
+
 def test_sum_NotImplemented():
     ia = dpnp.arange(5)
     with pytest.raises(NotImplementedError):

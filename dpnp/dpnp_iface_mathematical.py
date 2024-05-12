@@ -55,12 +55,9 @@ from numpy.core.numeric import (
 
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
-from dpnp.backend.extensions.sycl_ext import _sycl_ext_impl
-from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import call_origin, get_usm_allocations
 
+from .backend.extensions.sycl_ext import _sycl_ext_impl
 from .dpnp_algo import (
-    dpnp_cumprod,
     dpnp_ediff1d,
     dpnp_fabs,
     dpnp_fmax,
@@ -81,7 +78,10 @@ from .dpnp_algo.dpnp_elementwise_common import (
     acceptance_fn_sign,
     acceptance_fn_subtract,
 )
+from .dpnp_array import dpnp_array
+from .dpnp_utils import call_origin, get_usm_allocations
 from .dpnp_utils.dpnp_utils_linearalgebra import dpnp_cross
+from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
 __all__ = [
     "abs",
@@ -145,7 +145,7 @@ def _append_to_diff_array(a, axis, combined, values):
 
     """
 
-    dpnp.check_supported_arrays_type(values, scalar_type=True)
+    dpnp.check_supported_arrays_type(values, scalar_type=True, all_scalars=True)
     if dpnp.isscalar(values):
         values = dpnp.asarray(
             values, sycl_queue=a.sycl_queue, usm_type=a.usm_type
@@ -158,8 +158,18 @@ def _append_to_diff_array(a, axis, combined, values):
     combined.append(values)
 
 
+def _get_reduction_res_dt(a, dtype, _out):
+    """Get a data type used by dpctl for result array in reduction function."""
+
+    if dtype is None:
+        return dtu._default_accumulation_dtype(a.dtype, a.sycl_queue)
+
+    dtype = dpnp.dtype(dtype)
+    return dtu._to_device_supported_dtype(dtype, a.sycl_device)
+
+
 _ABS_DOCSTRING = """
-Calculate the absolute value element-wise.
+Calculates the absolute value for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.absolute`.
 
@@ -245,8 +255,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise addition. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise sums. The data type of the
+    returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -390,7 +400,6 @@ def around(x, /, decimals=0, out=None):
 
 _CEIL_DOCSTRING = """
 Returns the ceiling for each element `x_i` for input array `x`.
-The ceil of the scalar `x` is the smallest integer `i`, such that `i >= x`.
 
 For full documentation refer to :obj:`numpy.ceil`.
 
@@ -408,8 +417,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise ceiling of input array.
-    The returned array has the same data type as `x`.
+    An array containing the element-wise ceiling.
 
 Limitations
 -----------
@@ -517,7 +525,7 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
 
 _CONJ_DOCSTRING = """
-Computes conjugate for each element `x_i` for input array `x`.
+Computes conjugate of each element `x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.conj`.
 
@@ -535,8 +543,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise conjugate.
-    The returned array has the same data type as `x`.
+    An array containing the element-wise conjugate values.
 
 Limitations
 -----------
@@ -798,38 +805,85 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     return dpnp.moveaxis(cp, -1, axisc)
 
 
-def cumprod(x1, **kwargs):
+def cumprod(a, axis=None, dtype=None, out=None):
     """
     Return the cumulative product of elements along a given axis.
 
     For full documentation refer to :obj:`numpy.cumprod`.
 
-    Limitations
-    -----------
-    Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int}, optional
+        Axis along which the cumulative product is computed. It defaults to
+        compute the cumulative product over the flattened array.
+        Default: ``None``.
+    dtype : {None, dtype}, optional
+        Type of the returned array and of the accumulator in which the elements
+        are multiplied. If `dtype` is not specified, it defaults to the dtype
+        of `a`, unless `a` has an integer dtype with a precision less than that
+        of the default platform integer. In that case, the default platform
+        integer is used.
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have the
+        same shape and buffer length as the expected output but the type will
+        be cast if necessary.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A new array holding the result is returned unless `out` is specified as
+        :class:`dpnp.ndarray`, in which case a reference to `out` is returned.
+        The result has the same size as `a`, and the same shape as `a` if `axis`
+        is not ``None`` or `a` is a 1-d array.
+
+    See Also
+    --------
+    :obj:`dpnp.prod` : Product array elements.
 
     Examples
     --------
     >>> import dpnp as np
     >>> a = np.array([1, 2, 3])
-    >>> result = np.cumprod(a)
-    >>> [x for x in result]
-    [1, 2, 6]
-    >>> b = np.array([[1, 2, 3], [4, 5, 6]])
-    >>> result = np.cumprod(b)
-    >>> [x for x in result]
-    [1, 2, 6, 24, 120, 720]
+    >>> np.cumprod(a) # intermediate results 1, 1*2
+    ...               # total product 1*2*3 = 6
+    array([1, 2, 6])
+    >>> a = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> np.cumprod(a, dtype=np.float32) # specify type of output
+    array([  1.,   2.,   6.,  24., 120., 720.], dtype=float32)
+
+    The cumulative product for each column (i.e., over the rows) of `a`:
+
+    >>> np.cumprod(a, axis=0)
+    array([[ 1,  2,  3],
+           [ 4, 10, 18]])
+
+    The cumulative product for each row (i.e. over the columns) of `a`:
+
+    >>> np.cumprod(a, axis=1)
+    array([[  1,   2,   6],
+           [  4,  20, 120]])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_cumprod(x1_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(a)
+    if a.ndim > 1 and axis is None:
+        usm_a = dpnp.ravel(a).get_array()
+    else:
+        usm_a = dpnp.get_usm_ndarray(a)
 
-    return call_origin(numpy.cumprod, x1, **kwargs)
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.cumulative_prod,
+        _get_reduction_res_dt,
+        usm_a,
+        axis=axis,
+        dtype=dtype,
+    )
 
 
 def cumsum(a, axis=None, dtype=None, out=None):
@@ -842,19 +896,22 @@ def cumsum(a, axis=None, dtype=None, out=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int, optional
-        Axis along which the cumulative sum is computed. The default (``None``)
-        is to compute the cumsum over the flattened array.
-    dtype : dtype, optional
+    axis : {None, int}, optional
+        Axis along which the cumulative sum is computed. It defaults to compute
+        the cumulative sum over the flattened array.
+        Default: ``None``.
+    dtype : {None, dtype}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `a`, unless `a` has an integer dtype with a precision less than that of
         the default platform integer. In that case, the default platform
         integer is used.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have the
         same shape and buffer length as the expected output but the type will
         be cast if necessary.
+        Default: ``None``.
 
     Returns
     -------
@@ -904,28 +961,15 @@ def cumsum(a, axis=None, dtype=None, out=None):
     else:
         usm_a = dpnp.get_usm_ndarray(a)
 
-    input_out = out
-    if out is None:
-        usm_out = None
-    else:
-        dpnp.check_supported_arrays_type(out)
-
-        # get dtype used by dpctl for result array in cumulative_sum
-        if dtype is None:
-            res_dt = dtu._default_accumulation_dtype(a.dtype, a.sycl_queue)
-        else:
-            res_dt = dpnp.dtype(dtype)
-            res_dt = dtu._to_device_supported_dtype(res_dt, a.sycl_device)
-
-        # dpctl requires strict data type matching of out array with the result
-        if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
-
-        usm_out = dpnp.get_usm_ndarray(out)
-
-    res_usm = dpt.cumulative_sum(usm_a, axis=axis, dtype=dtype, out=usm_out)
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.cumulative_sum,
+        _get_reduction_res_dt,
+        usm_a,
+        axis=axis,
+        dtype=dtype,
+    )
 
 
 def diff(a, n=1, axis=-1, prepend=None, append=None):
@@ -938,13 +982,13 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array
-    n : int, optional
-        The number of times values are differenced. If zero, the input
+    n : {int}, optional
+        The number of times the values differ. If ``zero``, the input
         is returned as-is.
-    axis : int, optional
+    axis : {int}, optional
         The axis along which the difference is taken, default is the
         last axis.
-    prepend, append : {scalar, dpnp.ndarray, usm_ndarray}, optional
+    prepend, append : {None, scalar, dpnp.ndarray, usm_ndarray}, optional
         Values to prepend or append to `a` along axis prior to
         performing the difference. Scalar values are expanded to
         arrays with length 1 in the direction of axis and the shape
@@ -1177,7 +1221,8 @@ def fabs(x1, **kwargs):
 
 _FLOOR_DOCSTRING = """
 Returns the floor for each element `x_i` for input array `x`.
-The floor of the scalar `x` is the largest integer `i`, such that `i <= x`.
+
+The floor of `x_i` is the largest integer `n`, such that `n <= x_i`.
 
 For full documentation refer to :obj:`numpy.floor`.
 
@@ -1195,8 +1240,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise floor of input array.
-    The returned array has the same data type as `x`.
+    An array containing the element-wise floor.
 
 Limitations
 -----------
@@ -1255,9 +1299,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise floor division.
+    An array containing the result of element-wise floor of division.
     The data type of the returned array is determined by the Type
-    Promotion Rules
+    Promotion Rules.
 
 Limitations
 -----------
@@ -1740,8 +1784,8 @@ imag = DPNPUnaryFunc(
 
 
 _MAXIMUM_DOCSTRING = """
-Compares two input arrays `x1` and `x2` and returns
-a new array containing the element-wise maxima.
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise maxima.
 
 For full documentation refer to :obj:`numpy.maximum`.
 
@@ -1812,8 +1856,8 @@ maximum = DPNPBinaryFunc(
 
 
 _MINIMUM_DOCSTRING = """
-Compares two input arrays `x1` and `x2` and returns
-a new array containing the element-wise minima.
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise minima.
 
 For full documentation refer to :obj:`numpy.minimum`.
 
@@ -1971,8 +2015,8 @@ def modf(x1, **kwargs):
 
 
 _MULTIPLY_DOCSTRING = """
-Calculates the product for each element `x1_i` of the input array `x1`
-with the respective element `x2_i` of the input array `x2`.
+Calculates the product for each element `x1_i` of the input array `x1` with the
+respective element `x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.multiply`.
 
@@ -1992,8 +2036,8 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise multiplication. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise products. The data type of
+    the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -2175,9 +2219,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the result of element-wise of raising each element
-    to a specified power.
-    The data type of the returned array is determined by the Type Promotion Rules.
+    An array containing the bases in `x1` raised to the exponents in `x2`
+    element-wise. The data type of the returned array is determined by the
+    Type Promotion Rules.
 
 Limitations
 -----------
@@ -2252,20 +2296,51 @@ def prod(
 
     For full documentation refer to :obj:`numpy.prod`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int or tuple of ints}, optional
+        Axis or axes along which a product is performed. The default,
+        ``axis=None``, will calculate the product of all the elements in the
+        input array. If `axis` is negative it counts from the last to the first
+        axis.
+        If `axis` is a tuple of integers, a product is performed on all of the
+        axes specified in the tuple instead of a single axis or all the axes as
+        before.
+        Default: ``None``.
+    dtype : {None, dtype}, optional
+        The type of the returned array, as well as of the accumulator in which
+        the elements are multiplied. The dtype of `a` is used by default unless
+        `a` has an integer dtype of less precision than the default platform
+        integer. In that case, if `a` is signed then the platform integer is
+        used while if `a` is unsigned then an unsigned integer of the same
+        precision as the platform integer is used.
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have
+        the same shape as the expected output, but the type of the output
+        values will be cast if necessary.
+        Default: ``None``.
+    keepdims : {None, bool}, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the input array.
+        Default: ``False``.
+
     Returns
     -------
     out : dpnp.ndarray
-        A new array holding the result is returned unless `out` is specified,
-        in which case it is returned.
+        An array with the same shape as `a`, with the specified axis removed.
+        If `a` is a 0-d array, or if `axis` is ``None``, a zero-dimensional
+        array is returned. If an output array is specified, a reference to
+        `out` is returned.
 
     Limitations
     -----------
-    Input array is only supported as either :class:`dpnp.ndarray` or
-    :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `initial`, and `where` are only supported with their default
+    Parameters `initial` and `where` are only supported with their default
     values.
     Otherwise ``NotImplementedError`` exception will be raised.
-    Input array data types are limited by DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -2293,20 +2368,19 @@ def prod(
 
     """
 
-    if initial is not None:
-        raise NotImplementedError(
-            "initial keyword argument is only supported with its default value."
-        )
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.prod(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
-    )
+    dpnp.check_limitations(initial=initial, where=where)
+    usm_a = dpnp.get_usm_ndarray(a)
 
-    return dpnp.get_result_array(result, out)
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.prod,
+        _get_reduction_res_dt,
+        usm_a,
+        axis=axis,
+        dtype=dtype,
+        keepdims=keepdims,
+    )
 
 
 _PROJ_DOCSTRING = """
@@ -2327,7 +2401,6 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise projection.
-    The returned array has the same data type as `x`.
 
 Limitations
 -----------
@@ -2389,6 +2462,7 @@ real = DPNPReal(
 _REMAINDER_DOCSTRING = """
 Calculates the remainder of division for each element `x1_i` of the input array
 `x1` with the respective element `x2_i` of the input array `x2`.
+
 This function is equivalent to the Python modulus operator.
 
 For full documentation refer to :obj:`numpy.remainder`.
@@ -2409,8 +2483,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the element-wise remainders. The data type of
-    the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise remainders. Each remainder has the
+    same sign as respective element `x2_i`. The data type of the returned
+    array is determined by the Type Promotion Rules.
 
 Limitations
 Parameters `where` and `subok` are supported with their default values.
@@ -2452,7 +2527,11 @@ remainder = DPNPBinaryFunc(
 
 
 _RINT_DOCSTRING = """
-Round elements of the array to the nearest integer.
+Rounds each element `x_i` of the input array `x` to
+the nearest integer-valued number.
+
+When two integers are equally close to `x_i`, the result is the nearest even
+integer to `x_i`.
 
 For full documentation refer to :obj:`numpy.rint`.
 
@@ -2470,8 +2549,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise rounded value. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise rounded values.
 
 Limitations
 -----------
@@ -2508,6 +2586,9 @@ _ROUND_DOCSTRING = """
 Rounds each element `x_i` of the input array `x` to
 the nearest integer-valued number.
 
+When two integers are equally close to `x_i`, the result is the nearest even
+integer to `x_i`.
+
 For full documentation refer to :obj:`numpy.round`.
 
 Parameters
@@ -2524,8 +2605,7 @@ out : {None, dpnp.ndarray}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise rounded value. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise rounded values.
 
 See Also
 --------
@@ -2584,8 +2664,9 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise results. The data type of the
-    returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise result of the signum function. The
+    data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
@@ -2637,12 +2718,12 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise results. The returned array
+    An array containing the element-wise signbit results. The returned array
     must have a data type of `bool`.
 
 Limitations
 -----------
-Parameters `where` nd `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
@@ -2690,7 +2771,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    an array containing the result of element-wise subtraction. The data type
+    An array containing the element-wise differences. The data type
     of the returned array is determined by the Type Promotion Rules.
 
 Limitations
@@ -2739,13 +2820,11 @@ subtract = DPNPBinaryFunc(
 
 def sum(
     a,
-    /,
-    *,
     axis=None,
     dtype=None,
-    keepdims=False,
     out=None,
-    initial=0,
+    keepdims=False,
+    initial=None,
     where=True,
 ):
     """
@@ -2757,39 +2836,40 @@ def sum(
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int or tuple of ints, optional
-        Axis or axes along which sums must be computed. If a tuple
-        of unique integers, sums are computed over multiple axes.
-        If ``None``, the sum is computed over the entire array.
+    axis : {None, int or tuple of ints}, optional
+        Axis or axes along which a sum is performed. The default,
+        ``axis=None``, will sum all of the elements of the input array. If axis
+        is negative it counts from the last to the first axis.
+        If `axis` is a tuple of integers, a sum is performed on all of the axes
+        specified in the tuple instead of a single axis or all the axes as
+        before.
         Default: ``None``.
-    dtype : dtype, optional
-        Data type of the returned array. If ``None``, it defaults to the dtype
-        of `a`, unless `a` has an integer dtype with a precision less than that
-        of the default platform integer. In that case, the default platform
-        integer is used.
-        If the data type (either specified or resolved) differs from the
-        data type of `a`, the input array elements are cast to the
-        specified data type before computing the sum.
+    dtype : {None, dtype}, optional
+        The type of the returned array and of the accumulator in which the
+        elements are summed. The dtype of `a` is used by default unless `a` has
+        an integer dtype of less precision than the default platform integer.
+        In that case, if `a` is signed then the platform integer is used while
+        if `a` is unsigned then an unsigned integer of the same precision as
+        the platform integer is used.
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        Alternative output array in which to place the result. It must
-        have the same shape as the expected output, but the type of
-        the output values will be cast if necessary.
+        Alternative output array in which to place the result. It must have the
+        same shape as the expected output, but the type of the output values
+        will be cast if necessary.
         Default: ``None``.
-    keepdims : bool, optional
-        If ``True``, the reduced axes (dimensions) are included in the result
-        as singleton dimensions, so that the returned array remains
-        compatible with the input array according to Array Broadcasting
-        rules. Otherwise, if ``False``, the reduced axes are not included in
-        the returned array. Default: ``False``.
+    keepdims : {None, bool}, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the input array.
+        Default: ``False``.
 
     Returns
     -------
     out : dpnp.ndarray
-        An array containing the sums. If the sum is computed over the
-        entire array, a zero-dimensional array is returned. The returned
-        array has the data type as described in the `dtype` parameter
-        description above.
+        An array with the same shape as `a`, with the specified axis removed.
+        If `a` is a 0-d array, or if `axis` is ``None``, a zero-dimensional
+        array is returned. If an output array is specified, a reference to
+        `out` is returned.
 
     Limitations
     -----------
@@ -2823,20 +2903,7 @@ def sum(
 
     """
 
-    if axis is not None:
-        if not isinstance(axis, (tuple, list)):
-            axis = (axis,)
-
-        axis = normalize_axis_tuple(axis, a.ndim, "axis")
-
-    if initial != 0:
-        raise NotImplementedError(
-            "initial keyword argument is only supported with its default value."
-        )
-    if where is not True:
-        raise NotImplementedError(
-            "where keyword argument is only supported with its default value."
-        )
+    dpnp.check_limitations(initial=initial, where=where)
 
     sycl_sum_call = False
     if len(a.shape) == 2 and a.itemsize == 4:
@@ -2855,6 +2922,12 @@ def sum(
         sycl_sum_call = c_contiguous_rules or f_contiguous_rules
 
     if sycl_sum_call:
+        if axis is not None:
+            if not isinstance(axis, (tuple, list)):
+                axis = (axis,)
+
+            axis = normalize_axis_tuple(axis, a.ndim, "axis")
+
         input = a
         if axis == (1,):
             input = input.T
@@ -2884,11 +2957,17 @@ def sum(
 
             return result
 
-    y = dpt.sum(
-        dpnp.get_usm_ndarray(a), axis=axis, dtype=dtype, keepdims=keepdims
+    usm_a = dpnp.get_usm_ndarray(a)
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.sum,
+        _get_reduction_res_dt,
+        usm_a,
+        axis=axis,
+        dtype=dtype,
+        keepdims=keepdims,
     )
-    result = dpnp_array._create_from_usm_ndarray(y)
-    return dpnp.get_result_array(result, out, casting="same_kind")
 
 
 def trapz(y1, x1=None, dx=1.0, axis=-1):
@@ -2955,10 +3034,9 @@ true_divide = divide
 
 
 _TRUNC_DOCSTRING = """
-trunc(x, out=None, order='K')
-
 Returns the truncated value for each element `x_i` for input array `x`.
-The truncated value of the scalar `x` is the nearest integer `i` which is
+
+The truncated value of the scalar `x` is the nearest integer i which is
 closer to zero than `x` is. In short, the fractional part of the
 signed number `x` is discarded.
 
@@ -2976,7 +3054,7 @@ order : {"C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the truncated value of each element in `x`. The data type
+    An array containing the result of element-wise division. The data type
     of the returned array is determined by the Type Promotion Rules.
 
 Limitations

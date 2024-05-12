@@ -119,8 +119,7 @@ def _get_random_state(device=None, sycl_queue=None):
 
 
 def beta(a, b, size=None):
-    """Beta distribution.
-
+    """
     Draw samples from a Beta distribution.
 
     For full documentation refer to :obj:`numpy.random.beta`.
@@ -134,6 +133,7 @@ def beta(a, b, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> a, b = .4, .5  # alpha, beta
     >>> s = dpnp.random.beta(a, b, 1000)
 
@@ -157,8 +157,7 @@ def beta(a, b, size=None):
 
 
 def binomial(n, p, size=None):
-    """Binomial distribution.
-
+    """
     Draw samples from a binomial distribution.
 
     For full documentation refer to :obj:`numpy.random.binomial`.
@@ -172,6 +171,7 @@ def binomial(n, p, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> n, p = 10, .5  # number of trials, probability of each trial
     >>> s = dpnp.random.binomial(n, p, 1000)
     # result of flipping a coin 10 times, tested 1000 times.
@@ -203,8 +203,7 @@ def binomial(n, p, size=None):
 
 
 def bytes(length):
-    """Bytes
-
+    """
     Return random bytes.
 
     For full documentation refer to :obj:`numpy.random.bytes`.
@@ -220,8 +219,7 @@ def bytes(length):
 
 
 def chisquare(df, size=None):
-    """Chi-square distribution
-
+    """
     Draw samples from a chi-square distribution.
 
     For full documentation refer to :obj:`numpy.random.chisquare`.
@@ -271,8 +269,7 @@ def choice(a, size=None, replace=True, p=None):
 
 
 def dirichlet(alpha, size=None):
-    """Dirichlet distribution.
-
+    """
     Draw samples from the Dirichlet distribution.
 
     For full documentation refer to :obj:`numpy.random.dirichlet`.
@@ -288,8 +285,7 @@ def dirichlet(alpha, size=None):
 
 
 def exponential(scale=1.0, size=None):
-    """Exponential distribution.
-
+    """
     Draw samples from an exponential distribution.
 
     For full documentation refer to :obj:`numpy.random.exponential`.
@@ -303,6 +299,7 @@ def exponential(scale=1.0, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> scale = .5  # alpha
     >>> s = dpnp.random.exponential(scale, 1000)
 
@@ -322,8 +319,7 @@ def exponential(scale=1.0, size=None):
 
 
 def f(dfnum, dfden, size=None):
-    """F distribution.
-
+    """
     Draw samples from an F distribution.
 
     For full documentation refer to :obj:`numpy.random.f`.
@@ -359,8 +355,7 @@ def f(dfnum, dfden, size=None):
 
 
 def gamma(shape, scale=1.0, size=None):
-    """Gamma distribution.
-
+    """
     Draw samples from a Gamma distribution.
 
     For full documentation refer to :obj:`numpy.random.gamma`.
@@ -374,6 +369,7 @@ def gamma(shape, scale=1.0, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> shape, scale = 0, 0.1  # shape and scale
     >>> s = dpnp.random.gamma(shape, scale, 1000)
 
@@ -397,8 +393,7 @@ def gamma(shape, scale=1.0, size=None):
 
 
 def geometric(p, size=None):
-    """Geometric distribution.
-
+    """
     Draw samples from the geometric distribution.
 
     For full documentation refer to :obj:`numpy.random.geometric`.
@@ -413,6 +408,7 @@ def geometric(p, size=None):
     --------
     Draw ten thousand values from the geometric distribution,
     with the probability of an individual success equal to 0.35:
+
     >>> z = dpnp.random.geometric(p=0.35, size=10000)
 
     """
@@ -431,8 +427,7 @@ def geometric(p, size=None):
 
 
 def gumbel(loc=0.0, scale=1.0, size=None):
-    """Gumbel distribution.
-
+    """
     Draw samples from a Gumbel distribution.
 
     For full documentation refer to :obj:`numpy.random.gumbel`.
@@ -446,6 +441,7 @@ def gumbel(loc=0.0, scale=1.0, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> mu, beta = 0, 0.1 # location and scale
     >>> s = dpnp.random.gumbel(mu, beta, 1000)
 
@@ -467,8 +463,7 @@ def gumbel(loc=0.0, scale=1.0, size=None):
 
 
 def hypergeometric(ngood, nbad, nsample, size=None):
-    """Hypergeometric distribution.
-
+    """
     Draw samples from a Hypergeometric distribution.
 
     For full documentation refer to :obj:`numpy.random.hypergeometric`.
@@ -483,6 +478,7 @@ def hypergeometric(ngood, nbad, nsample, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> ngood, nbad, nsamp = 100, 2, 10
     # number of good, number of bad, and number of samples
     >>> s = dpnp.random.hypergeometric(ngood, nbad, nsamp, 1000)
@@ -518,8 +514,7 @@ def hypergeometric(ngood, nbad, nsample, size=None):
 
 
 def laplace(loc=0.0, scale=1.0, size=None):
-    """Laplace distribution.
-
+    """
     Draw samples from the Laplace or double exponential distribution with
     specified location (or mean) and scale (decay).
 
@@ -554,8 +549,7 @@ def laplace(loc=0.0, scale=1.0, size=None):
 
 
 def logistic(loc=0.0, scale=1.0, size=None):
-    """Logistic distribution.
-
+    """
     Draw samples from a logistic distribution.
 
     For full documentation refer to :obj:`numpy.random.logistic`.
@@ -593,8 +587,7 @@ def logistic(loc=0.0, scale=1.0, size=None):
 
 
 def lognormal(mean=0.0, sigma=1.0, size=None):
-    """Lognormal distribution.
-
+    """
     Draw samples from a log-normal distribution.
 
     For full documentation refer to :obj:`numpy.random.lognormal`.
@@ -609,6 +602,7 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> mu, sigma = 3., 1. # mean and standard deviation
     >>> s = dpnp.random.lognormal(mu, sigma, 1000)
 
@@ -630,8 +624,7 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
 
 
 def logseries(p, size=None):
-    """Logseries distribution.
-
+    """
     Draw samples from a logarithmic series distribution.
 
     For full documentation refer to :obj:`numpy.random.logseries`.
@@ -647,8 +640,7 @@ def logseries(p, size=None):
 
 
 def multinomial(n, pvals, size=None):
-    """Multinomial distribution.
-
+    """
     Draw samples from a multinomial distribution.
 
     For full documentation refer to :obj:`numpy.random.multinomial`.
@@ -663,6 +655,7 @@ def multinomial(n, pvals, size=None):
     Examples
     --------
     Throw a dice 20 times:
+
     >>> s = dpnp.random.multinomial(20, [1/6.]*6, size=1)
     >>> s.shape
     (1, 6)
@@ -696,8 +689,7 @@ def multinomial(n, pvals, size=None):
 
 
 def multivariate_normal(mean, cov, size=None, check_valid="warn", tol=1e-8):
-    """Multivariate normal distributions.
-
+    """
     Draw random samples from a multivariate normal distribution.
 
     For full documentation refer to :obj:`numpy.random.multivariate_normal`.
@@ -746,8 +738,7 @@ def multivariate_normal(mean, cov, size=None, check_valid="warn", tol=1e-8):
 
 
 def negative_binomial(n, p, size=None):
-    """Negative binomial distribution.
-
+    """
     Draw samples from a negative binomial distribution.
 
     For full documentation refer to :obj:`numpy.random.negative_binomial`.
@@ -834,6 +825,7 @@ def normal(
     Examples
     --------
     Draw samples from the distribution:
+
     >>> mu, sigma = 0, 0.1 # mean and standard deviation
     >>> s = dpnp.random.normal(mu, sigma, 1000)
 
@@ -846,9 +838,8 @@ def normal(
 
 
 def noncentral_chisquare(df, nonc, size=None):
-    """Noncentral chi-square distribution.
-
-    Draw samples from a noncentral chi-square distribution.
+    """
+    Draw samples from a non-central chi-square distribution.
 
     For full documentation refer to :obj:`numpy.random.noncentral_chisquare`.
 
@@ -874,9 +865,8 @@ def noncentral_chisquare(df, nonc, size=None):
 
 
 def noncentral_f(dfnum, dfden, nonc, size=None):
-    """Noncentral F distribution.
-
-    Draw samples from the noncentral F distribution.
+    """
+    Draw samples from the non-central F distribution.
 
     For full documentation refer to :obj:`numpy.random.noncentral_f`.
 
@@ -891,8 +881,7 @@ def noncentral_f(dfnum, dfden, nonc, size=None):
 
 
 def pareto(a, size=None):
-    """Pareto II or Lomax distribution.
-
+    """
     Draw samples from a Pareto II or Lomax distribution with specified shape.
 
     For full documentation refer to :obj:`numpy.random.pareto`.
@@ -906,6 +895,7 @@ def pareto(a, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> a = .5  # alpha
     >>> s = dpnp.random.pareto(a, 1000)
 
@@ -960,8 +950,7 @@ def permutation(x):
 
 
 def poisson(lam=1.0, size=None):
-    """Poisson distribution.
-
+    """
     Draw samples from a Poisson distribution.
 
     For full documentation refer to :obj:`numpy.random.poisson`.
@@ -975,6 +964,7 @@ def poisson(lam=1.0, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> import numpy as np
     >>> s = dpnp.random.poisson(5, 10000)
 
@@ -994,8 +984,7 @@ def poisson(lam=1.0, size=None):
 
 
 def power(a, size=None):
-    """Power distribution.
-
+    """
     Draws samples in [0, 1] from a power distribution with positive
     exponent a - 1.
 
@@ -1010,6 +999,7 @@ def power(a, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> a = .5  # alpha
     >>> s = dpnp.random.power(a, 1000)
 
@@ -1116,6 +1106,7 @@ def randint(
     Examples
     --------
     Draw samples from the distribution:
+
     >>> low, high = 3, 11 # low and high
     >>> s = dpnp.random.randint(low, high, 1000, dtype=dpnp.int32)
 
@@ -1373,8 +1364,7 @@ def ranf(size=None, device=None, usm_type="device", sycl_queue=None):
 
 
 def rayleigh(scale=1.0, size=None):
-    """Rayleigh distribution.
-
+    """
     Draw samples from a Rayleigh distribution.
 
     For full documentation refer to :obj:`numpy.random.rayleigh`.
@@ -1388,6 +1378,7 @@ def rayleigh(scale=1.0, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> import numpy as np
     >>> s = dpnp.random.rayleigh(1.0, 10000)
 
@@ -1483,17 +1474,19 @@ def seed(seed=None, device=None, sycl_queue=None):
     Parameters
     ----------
     device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API concept of device where an array with generated numbers will be created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector string,
-        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
-        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        An array API concept of device where an array with generated numbers
+        will be created. The `device` can be ``None`` (the default), an OneAPI
+        filter selector string, an instance of :class:`dpctl.SyclDevice`
+        corresponding to a non-partitioned SYCL device, an instance of
+        :class:`dpctl.SyclQueue`, or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for an array with generated numbers.
 
     Limitations
     -----------
-    Parameter `seed` is supported as either a scalar or an array of maximumum three integer scalars.
+    The `seed` parameter is supported as a scalar or an array of at most three
+    integer scalars.
 
     """
 
@@ -1526,8 +1519,7 @@ def seed(seed=None, device=None, sycl_queue=None):
 
 
 def standard_cauchy(size=None):
-    """Standard cauchy distribution.
-
+    """
     Draw samples from a standard Cauchy distribution with mode = 0.
 
     Also known as the Lorentz distribution.
@@ -1539,6 +1531,7 @@ def standard_cauchy(size=None):
     Examples
     --------
     Draw samples and plot the distribution:
+
     >>> import matplotlib.pyplot as plt
     >>> s = dpnp.random.standard_cauchy(1000000)
     >>> s = s[(s>-25) & (s<25)]  # truncate distribution so it plots well
@@ -1554,8 +1547,7 @@ def standard_cauchy(size=None):
 
 
 def standard_exponential(size=None):
-    """Standard exponential distribution.
-
+    """
     Draw samples from the standard exponential distribution.
 
     `standard_exponential` is identical to the exponential distribution
@@ -1568,6 +1560,7 @@ def standard_exponential(size=None):
     Examples
     --------
     Output a 3x8000 array:
+
     >>> n = dpnp.random.standard_exponential((3, 8000))
 
     """
@@ -1579,8 +1572,7 @@ def standard_exponential(size=None):
 
 
 def standard_gamma(shape, size=None):
-    """Standard gamma distribution.
-
+    """
     Draw samples from a standard Gamma distribution.
 
     For full documentation refer to :obj:`numpy.random.standard_gamma`.
@@ -1595,6 +1587,7 @@ def standard_gamma(shape, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> shape = 2.
     >>> s = dpnp.random.standard_gamma(shape, 1000000)
 
@@ -1615,7 +1608,7 @@ def standard_gamma(shape, size=None):
 
 def standard_normal(size=None, device=None, usm_type="device", sycl_queue=None):
     """
-    Draw samples from a standard Normal distribution (mean=0, stdev=1).
+    Draw samples from a standard Normal distribution ``(mean=0, stdev=1)``.
 
     For full documentation refer to :obj:`numpy.random.standard_normal`.
 
@@ -1642,6 +1635,7 @@ def standard_normal(size=None, device=None, usm_type="device", sycl_queue=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> s = dpnp.random.standard_normal(1000)
 
     """
@@ -1651,10 +1645,9 @@ def standard_normal(size=None, device=None, usm_type="device", sycl_queue=None):
 
 
 def standard_t(df, size=None):
-    """Standard Student’s t distribution.
-
+    """
     Draw samples from a standard Student’s t distribution with
-    df degrees of freedom.
+    `df` degrees of freedom.
 
     For full documentation refer to :obj:`numpy.random.standard_t`.
 
@@ -1668,6 +1661,7 @@ def standard_t(df, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> df = 2.
     >>> s = dpnp.random.standard_t(df, 1000000)
 
@@ -1687,8 +1681,7 @@ def standard_t(df, size=None):
 
 
 def triangular(left, mode, right, size=None):
-    """Triangular distribution.
-
+    """
     Draw samples from the triangular distribution over the interval
     [left, right].
 
@@ -1704,6 +1697,7 @@ def triangular(left, mode, right, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> df = 2.
     >>> s = dpnp.random.triangular(-3, 0, 8, 1000000)
 
@@ -1775,6 +1769,7 @@ def uniform(
     Examples
     --------
     Draw samples from the distribution:
+
     >>> low, high = 0, 0.1 # low and high
     >>> s = dpnp.random.uniform(low, high, 10000)
 
@@ -1792,8 +1787,6 @@ def uniform(
 
 def vonmises(mu, kappa, size=None):
     """
-    Von Mises distribution.
-
     Draw samples from a von Mises distribution.
 
     For full documentation refer to :obj:`numpy.random.vonmises`.
@@ -1808,6 +1801,7 @@ def vonmises(mu, kappa, size=None):
     Examples
     --------
     Draw samples from the distribution:
+
     >>> mu, kappa = 0.0, 4.0 # mean and dispersion
     >>> s = dpnp.random.vonmises(mu, kappa, 1000)
 
@@ -1831,8 +1825,7 @@ def vonmises(mu, kappa, size=None):
 
 
 def wald(mean, scale, size=None):
-    """Wald distribution.
-
+    """
     Draw samples from a Wald, or inverse Gaussian, distribution.
 
     For full documentation refer to :obj:`numpy.random.wald`.
@@ -1869,7 +1862,6 @@ def wald(mean, scale, size=None):
 
 def weibull(a, size=None):
     """
-
     Draw samples from a Weibull distribution.
 
     For full documentation refer to :obj:`numpy.random.weibull`.
@@ -1901,8 +1893,7 @@ def weibull(a, size=None):
 
 
 def zipf(a, size=None):
-    """Zipf distribution.
-
+    """
     Returns an array of samples drawn from the Zipf distribution.
 
     For full documentation refer to :obj:`numpy.random.zipf`.

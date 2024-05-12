@@ -37,19 +37,35 @@ it contains:
 
 """
 
+# pylint: disable=no-name-in-module
 
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as dti
 
 import dpnp
 
 from .dpnp_array import dpnp_array
-
-# pylint: disable=no-name-in-module
 from .dpnp_utils import (
     get_usm_allocations,
 )
+from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
 __all__ = ["argmax", "argmin", "searchsorted", "where"]
+
+
+def _get_search_res_dt(a, _dtype, out):
+    """Get a data type used by dpctl for result array in search function."""
+
+    # get a data type used by dpctl for result array in search function
+    res_dt = dti.default_device_index_type(a.sycl_device)
+
+    # numpy raises TypeError if "out" data type mismatch default index type
+    if not dpnp.can_cast(out.dtype, res_dt, casting="safe"):
+        raise TypeError(
+            f"Cannot cast from {out.dtype} to {res_dt} "
+            "according to the rule safe."
+        )
+    return res_dt
 
 
 def argmax(a, axis=None, out=None, *, keepdims=False):
@@ -62,39 +78,39 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int, optional
-        Axis along which to search. If ``None``, the function must return
-        the index of the maximum value of the flattened array.
+    axis : {None, int}, optional
+        By default, the index is into the flattened array, otherwise along
+        the specified axis.
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
-    keepdims : bool
-        If ``True``, the reduced axes (dimensions) must be included in the
-        result as singleton dimensions, and, accordingly, the result must be
-        compatible with the input array. Otherwise, if ``False``, the reduced
-        axes (dimensions) must not be included in the result.
+        If provided, the result will be inserted into this array. It should be
+        of the appropriate shape and dtype.
+        Default: ``None``.
+    keepdims : {None, bool}, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the array.
         Default: ``False``.
 
     Returns
     -------
     out : dpnp.ndarray
-        If `axis` is ``None``, a zero-dimensional array containing the index of
-        the first occurrence of the maximum value; otherwise,
-        a non-zero-dimensional array containing the indices of the minimum
-        values. The returned array must have the default array index data type.
+        Array of indices into the array. It has the same shape as ``a.shape``
+        with the dimension along `axis` removed. If `keepdims` is set to
+        ``True``, then the size of `axis` will be ``1`` with the resulting
+        array having same shape as ``a.shape``.
 
     See Also
     --------
     :obj:`dpnp.ndarray.argmax` : Equivalent function.
     :obj:`dpnp.nanargmax` : Returns the indices of the maximum values along
-                            an axis, igonring NaNs.
+                            an axis, ignoring NaNs.
     :obj:`dpnp.argmin` : Returns the indices of the minimum values
                          along an axis.
     :obj:`dpnp.max` : The maximum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
     :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``
-                                  from argmax to an array as if by calling max.
+                    from :obj:`dpnp.argmax` to an array as if by calling max.
 
     Notes
     -----
@@ -130,12 +146,16 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.argmax(dpt_array, axis=axis, keepdims=keepdims)
+    usm_a = dpnp.get_usm_ndarray(a)
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.argmax,
+        _get_search_res_dt,
+        usm_a,
+        axis=axis,
+        keepdims=keepdims,
     )
-
-    return dpnp.get_result_array(result, out)
 
 
 def argmin(a, axis=None, out=None, *, keepdims=False):
@@ -148,39 +168,40 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int, optional
-        Axis along which to search. If ``None``, the function must return
-        the index of the minimum value of the flattened array.
+    axis : {None, int}, optional
+        By default, the index is into the flattened array, otherwise along
+        the specified axis.
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
-    keepdims : bool, optional
-        If ``True``, the reduced axes (dimensions) must be included in the
-        result as singleton dimensions, and, accordingly, the result must be
-        compatible with the input array. Otherwise, if ``False``, the reduced
-        axes (dimensions) must not be included in the result.
+        If provided, the result will be inserted into this array. It should be
+        of the appropriate shape and dtype.
+        Default: ``None``.
+    keepdims : {None, bool}, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the array.
         Default: ``False``.
 
     Returns
     -------
     out : dpnp.ndarray
-        If `axis` is ``None``, a zero-dimensional array containing the index of
-        the first occurrence of the minimum value; otherwise,
-        a non-zero-dimensional array containing the indices of the minimum
-        values. The returned array must have the default array index data type.
+        Array of indices into the array. It has the same shape as `a.shape`
+        with the dimension along `axis` removed. If `keepdims` is set to
+        ``True``, then the size of `axis` will be ``1`` with the resulting
+        array having same shape as `a.shape`.
+
 
     See Also
     --------
     :obj:`dpnp.ndarray.argmin` : Equivalent function.
     :obj:`dpnp.nanargmin` : Returns the indices of the minimum values
-                            along an axis, igonring NaNs.
+                            along an axis, ignoring NaNs.
     :obj:`dpnp.argmax` : Returns the indices of the maximum values
                          along an axis.
     :obj:`dpnp.min` : The minimum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
     :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``
-                                  from argmin to an array as if by calling min.
+                    from :obj:`dpnp.argmin` to an array as if by calling min.
 
     Notes
     -----
@@ -216,12 +237,16 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.argmin(dpt_array, axis=axis, keepdims=keepdims)
+    usm_a = dpnp.get_usm_ndarray(a)
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.argmin,
+        _get_search_res_dt,
+        usm_a,
+        axis=axis,
+        keepdims=keepdims,
     )
-
-    return dpnp.get_result_array(result, out)
 
 
 def searchsorted(a, v, side="left", sorter=None):
@@ -245,7 +270,7 @@ def searchsorted(a, v, side="left", sorter=None):
         Default is ``'left'``.
     sorter : {dpnp.ndarray, usm_ndarray}, optional
         Optional 1-D array of integer indices that sort array a into ascending
-        order. They are typically the result of argsort.
+        order. They are typically the result of :obj:`dpnp.argsort`.
         Out of bound index values of `sorter` array are treated using `"wrap"`
         mode documented in :py:func:`dpnp.take`.
         Default is ``None``.
@@ -287,7 +312,7 @@ def searchsorted(a, v, side="left", sorter=None):
     )
 
 
-def where(condition, x=None, y=None, /):
+def where(condition, x=None, y=None, /, *, order="K", out=None):
     """
     Return elements chosen from `x` or `y` depending on `condition`.
 
@@ -303,6 +328,14 @@ def where(condition, x=None, y=None, /):
     x, y : {dpnp.ndarray, usm_ndarray, scalar}, optional
         Values from which to choose. `x`, `y` and `condition` need to be
         broadcastable to some shape.
+    order : {"K", "C", "F", "A"}, optional
+        Memory layout of the new output arra, if keyword `out` is ``None``.
+        Default: ``"K"``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        The array into which the result is written. The data type of `out` must
+        match the expected shape and the expected data type of the result.
+        If ``None`` then a new array is returned.
+        Default: ``None``.
 
     Returns
     -------
@@ -369,6 +402,8 @@ def where(condition, x=None, y=None, /):
     if dpnp.isscalar(usm_y):
         usm_y = dpt.asarray(usm_y, usm_type=usm_type, sycl_queue=queue)
 
-    return dpnp_array._create_from_usm_ndarray(
-        dpt.where(usm_condition, usm_x, usm_y)
+    usm_out = None if out is None else dpnp.get_usm_ndarray(out)
+    result = dpnp_array._create_from_usm_ndarray(
+        dpt.where(usm_condition, usm_x, usm_y, order=order, out=usm_out)
     )
+    return dpnp.get_result_array(result, out)

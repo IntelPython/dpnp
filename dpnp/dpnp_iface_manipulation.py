@@ -790,7 +790,7 @@ def dstack(tup):
     :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
     :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
     :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
-    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.block` : Assemble an ndarray from nested lists of blocks.
     :obj:`dpnp.dsplit` : Split array along third axis.
 
     Examples
@@ -851,7 +851,7 @@ def expand_dims(a, axis):
     Hence, if provided `-1`, the resolved axis position is `N` (i.e.,
     a singleton dimension must be appended to the input array `a`).
     If provided `-N-1`, the resolved axis position is `0` (i.e., a
-    singleton dimension is prepended to the input array `a`).
+    singleton dimension is added to the input array `a`).
 
     See Also
     --------
@@ -929,8 +929,8 @@ def flip(m, axis=None):
          Axis or axes along which to flip over. The default,
          ``axis=None``, will flip over all of the axes of the input array.
          If `axis` is negative it counts from the last to the first axis.
-         If `axis` is a tuple of ints, flipping is performed on all of the axes
-         specified in the tuple.
+         If `axis` is a tuple of integers, flipping is performed on all of
+         the axes specified in the tuple.
 
     Returns
     -------
@@ -1114,7 +1114,7 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     :obj:`dpnp.dstack` : Stack arrays in sequence depth wise
                          (along third dimension).
     :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
-    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.block` : Assemble an ndarray from nested lists of blocks.
     :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal
                         size.
 
@@ -1322,7 +1322,7 @@ def reshape(a, /, newshape, order="C", copy=None):
         changing fastest, and the last index changing slowest. Note that
         the ``"C"`` and ``"F"`` options take no account of the memory layout of
         the underlying array, and only refer to the order of indexing.
-    copy : bool, optional
+    copy : {None, bool}, optional
         Boolean indicating whether or not to copy the input array.
         If ``True``, the result array will always be a copy of input `a`.
         If ``False``, the result array can never be a copy
@@ -1434,13 +1434,12 @@ def roll(x, shift, axis=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    shift : int or tuple of ints
-        The number of places by which elements are shifted. If a tuple,
-        then `axis` must be a tuple of the same size, and each of the
-        given axes is shifted by the corresponding number. If an int
-        while `axis` is a tuple of ints, then the same value is used for
-        all given axes.
-    axis : int or tuple of ints, optional
+    shift : {int, tuple of ints}
+        The number of places by which elements are shifted. If a tuple, then
+        `axis` must be a tuple of the same size, and each of the given axes
+        is shifted by the corresponding number. If an integer while `axis` is
+        a tuple of integers, then the same value is used for all given axes.
+    axis : {None, int, tuple of ints}, optional
         Axis or axes along which elements are shifted. By default, the
         array is flattened before shifting, after which the original
         shape is restored.
@@ -1508,7 +1507,7 @@ def rollaxis(x, axis, start=0):
     -------
     out : dpnp.ndarray
         An array with the same data type as `x` where the specified axis
-        has been repositioned to the desired position.
+        has been moved to the requested position.
 
     See Also
     --------
@@ -1557,7 +1556,7 @@ def shape(a):
 
     Returns
     -------
-    shape : tuple of ints
+    shape : tuple of integers
         The elements of the shape tuple give the lengths of the
         corresponding array dimensions.
 
@@ -1670,7 +1669,7 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
     :obj:`dpnp.dstack` : Stack arrays in sequence depth wise
                          (along third dimension).
     :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
-    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.block` : Assemble an ndarray from nested lists of blocks.
     :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal
                         size.
 
@@ -1973,7 +1972,7 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
     :obj:`dpnp.dstack` : Stack arrays in sequence depth wise (along third axis).
     :obj:`dpnp.column_stack` : Stack 1-D arrays as columns into a 2-D array.
-    :obj:`dpnp.block` : Assemble an nd-array from nested lists of blocks.
+    :obj:`dpnp.block` : Assemble an ndarray from nested lists of blocks.
     :obj:`dpnp.split` : Split array into a list of multiple sub-arrays of equal
                         size.
 

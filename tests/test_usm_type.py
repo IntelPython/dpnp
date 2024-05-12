@@ -522,7 +522,9 @@ def test_norm(usm_type, ord, axis):
         ),
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("count_nonzero", [0, 1, 7, 0]),
+        pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
+        pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("exp2", [0.0, 1.0, 2.0]),
@@ -541,6 +543,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("min", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("nanargmax", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanargmin", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nancumprod", [3.0, dp.nan]),
         pytest.param("nancumsum", [3.0, dp.nan]),
         pytest.param("nanmax", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanmean", [1.0, 2.0, 4.0, dp.nan]),
@@ -715,6 +718,26 @@ def test_multi_dot(usm_type):
         input_usm_type, _ = get_usm_allocations(dpnp_array_list)
         assert input_usm_type == usm_type
         assert result.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_einsum(usm_type):
+    numpy_array_list = []
+    dpnp_array_list = []
+    for _ in range(3):  # creat arrays one by one
+        a = numpy.random.rand(10, 10)
+        b = dp.array(a, usm_type=usm_type)
+
+        numpy_array_list.append(a)
+        dpnp_array_list.append(b)
+
+    result = dp.einsum("ij,jk,kl->il", *dpnp_array_list)
+    expected = numpy.einsum("ij,jk,kl->il", *numpy_array_list)
+    assert_dtype_allclose(result, expected)
+
+    input_usm_type, _ = get_usm_allocations(dpnp_array_list)
+    assert input_usm_type == usm_type
+    assert result.usm_type == usm_type
 
 
 @pytest.mark.parametrize("func", ["take", "take_along_axis"])
@@ -1170,3 +1193,41 @@ def test_tensorsolve(usm_type_a, usm_type_b):
     assert a.usm_type == usm_type_a
     assert b.usm_type == usm_type_b
     assert result.usm_type == du.get_coerced_usm_type([usm_type_a, usm_type_b])
+
+
+@pytest.mark.parametrize("usm_type_a", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_b", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    ["m", "n", "nrhs"],
+    [
+        (4, 2, 2),
+        (4, 0, 1),
+        (4, 2, 0),
+        (0, 0, 0),
+    ],
+)
+def test_lstsq(m, n, nrhs, usm_type_a, usm_type_b):
+    a = dp.arange(m * n, usm_type=usm_type_a).reshape(m, n)
+    b = dp.ones((m, nrhs), usm_type=usm_type_b)
+
+    result = dp.linalg.lstsq(a, b)
+
+    assert a.usm_type == usm_type_a
+    assert b.usm_type == usm_type_b
+    for param in result:
+        assert param.usm_type == du.get_coerced_usm_type(
+            [usm_type_a, usm_type_b]
+        )
+
+
+@pytest.mark.parametrize("usm_type_v", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_w", list_of_usm_types, ids=list_of_usm_types)
+def test_histogram(usm_type_v, usm_type_w):
+    v = dp.arange(5, usm_type=usm_type_v)
+    w = dp.arange(7, 12, usm_type=usm_type_w)
+
+    hist, edges = dp.histogram(v, weights=w)
+    assert v.usm_type == usm_type_v
+    assert w.usm_type == usm_type_w
+    assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+    assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])

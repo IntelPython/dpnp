@@ -38,7 +38,7 @@ class TestAngle:
         expected = numpy.angle(np_a, deg=deg)
         result = dpnp.angle(dp_a, deg=deg)
 
-        # In Numpy, for boolean arguments the output data type is always default floating data type.
+        # In NumPy, for boolean arguments the output data type is always default floating data type.
         # while data type of output in DPNP is determined by Type Promotion Rules.
         # data type should not be compared
         assert_allclose(result.asnumpy(), expected)
@@ -159,6 +159,75 @@ class TestClip:
         numpy.clip(a.asnumpy(), 1, 5, **kwargs)
         with pytest.raises(NotImplementedError):
             dpnp.clip(a, 1, 5, **kwargs)
+
+
+class TestCumProd:
+    @pytest.mark.parametrize(
+        "arr, axis",
+        [
+            pytest.param([1, 2, 10, 11, 6, 5, 4], -1),
+            pytest.param([[1, 2, 3, 4], [5, 6, 7, 9], [10, 3, 4, 5]], 0),
+            pytest.param([[1, 2, 3, 4], [5, 6, 7, 9], [10, 3, 4, 5]], -1),
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_axis(self, arr, axis, dtype):
+        a = numpy.array(arr, dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.cumprod(ia, axis=axis)
+        expected = numpy.cumprod(a, axis=axis)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_ndarray_method(self, dtype):
+        a = numpy.arange(1, 10).astype(dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = ia.cumprod()
+        expected = a.cumprod()
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("sh", [(10,), (2, 5)])
+    @pytest.mark.parametrize(
+        "xp_in, xp_out, check",
+        [
+            pytest.param(dpt, dpt, False),
+            pytest.param(dpt, dpnp, True),
+            pytest.param(dpnp, dpt, False),
+        ],
+    )
+    def test_usm_ndarray(self, sh, xp_in, xp_out, check):
+        a = numpy.arange(-12, -2).reshape(sh)
+        ia = xp_in.asarray(a)
+
+        result = dpnp.cumprod(ia)
+        expected = numpy.cumprod(a)
+        assert_array_equal(expected, result)
+
+        out = numpy.empty((10,))
+        iout = xp_out.asarray(out)
+
+        result = dpnp.cumprod(ia, out=iout)
+        expected = numpy.cumprod(a, out=out)
+        assert_array_equal(expected, result)
+        assert (result is iout) is check
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_out_dtype(self, arr_dt, out_dt, dtype):
+        a = numpy.arange(5, 10).astype(dtype=arr_dt)
+        out = numpy.zeros_like(a, dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = ia.cumprod(out=iout, dtype=dtype)
+        expected = a.cumprod(out=out, dtype=dtype)
+        assert_array_equal(expected, result)
+        assert result is iout
 
 
 class TestCumSum:
@@ -874,6 +943,23 @@ class TestProd:
         dpnp_res = dpnp.array(numpy.empty((2, 3)))
         with pytest.raises(ValueError):
             getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("func", ["prod", "nanprod"])
+    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_prod_out_dtype(self, func, arr_dt, out_dt, dtype):
+        a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
+        out = numpy.zeros_like(a, shape=(2,), dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = getattr(dpnp, func)(ia, out=iout, dtype=dtype, axis=1)
+        expected = getattr(numpy, func)(a, out=out, dtype=dtype, axis=1)
+        assert_array_equal(expected, result)
+        assert result is iout
 
     def test_prod_nanprod_Error(self):
         ia = dpnp.arange(5)
@@ -1960,6 +2046,26 @@ class TestLogSumExp:
 
         assert_allclose(res, exp, rtol=1e-06)
 
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize(
+        "arr_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "out_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_logsumexp_out_dtype(self, arr_dt, out_dt, dtype):
+        a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
+        out = numpy.zeros_like(a, shape=(2,), dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = dpnp.logsumexp(ia, out=iout, dtype=dtype, axis=1)
+        exp = numpy.logaddexp.reduce(a, out=out, axis=1)
+        assert_allclose(result, exp.astype(dtype), rtol=1e-06)
+        assert result is iout
+
 
 class TestReduceHypot:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
@@ -2009,6 +2115,25 @@ class TestReduceHypot:
         exp = exp.astype(out_dtype)
 
         assert_allclose(res, exp, rtol=1e-06)
+
+    @pytest.mark.parametrize(
+        "arr_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "out_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_reduce_hypot_out_dtype(self, arr_dt, out_dt, dtype):
+        a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
+        out = numpy.zeros_like(a, shape=(2,), dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = dpnp.reduce_hypot(ia, out=iout, dtype=dtype, axis=1)
+        exp = numpy.hypot.reduce(a, out=out, axis=1)
+        assert_allclose(result, exp.astype(dtype), rtol=1e-06)
+        assert result is iout
 
 
 class TestMaximum:
@@ -2522,9 +2647,14 @@ class TestMatmul:
         "shape_pair",
         [
             ((4,), (4,)),
+            ((1, 4), (4, 1)),
             ((4,), (4, 2)),
+            ((1, 4), (4, 2)),
             ((2, 4), (4,)),
+            ((2, 4), (4, 1)),
             ((1, 4), (4,)),  # output should be 1-d not 0-d
+            ((4,), (4, 1)),
+            ((1, 4), (4, 1)),
             ((2, 4), (4, 3)),
             ((1, 2, 3), (1, 3, 5)),
             ((4, 2, 3), (4, 3, 5)),
@@ -2549,19 +2679,23 @@ class TestMatmul:
             ((1, 5, 3, 2), (6, 5, 2, 4)),
             ((5, 3, 2), (6, 5, 2, 4)),
             ((1, 3, 3), (10, 1, 3, 1)),
+            ((2, 3, 3), (10, 1, 3, 1)),
+            ((10, 2, 3, 3), (10, 1, 3, 1)),
         ],
     )
     def test_matmul(self, order_pair, shape_pair):
         order1, order2 = order_pair
         shape1, shape2 = shape_pair
-        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
-        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+        # input should be float type otherwise they are copied to c-contigous array
+        # so testing order becomes meaningless
+        dtype = dpnp.default_float_type()
+        a1 = numpy.arange(numpy.prod(shape1), dtype=dtype).reshape(shape1)
+        a2 = numpy.arange(numpy.prod(shape2), dtype=dtype).reshape(shape2)
         a1 = numpy.array(a1, order=order1)
         a2 = numpy.array(a2, order=order2)
 
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
-
         result = dpnp.matmul(b1, b2)
         expected = numpy.matmul(a1, a2)
         assert_dtype_allclose(result, expected)
@@ -2596,8 +2730,9 @@ class TestMatmul:
     def test_matmul_empty(self, order_pair, shape_pair):
         order1, order2 = order_pair
         shape1, shape2 = shape_pair
-        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
-        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+        dtype = dpnp.default_float_type()
+        a1 = numpy.arange(numpy.prod(shape1), dtype=dtype).reshape(shape1)
+        a2 = numpy.arange(numpy.prod(shape2), dtype=dtype).reshape(shape2)
         a1 = numpy.array(a1, order=order1)
         a2 = numpy.array(a2, order=order2)
 
@@ -2872,17 +3007,83 @@ class TestMatmul:
         [(-2, -2, -2, -2), (2, 2, 2, 2), (-2, 2, -2, 2), (2, -2, 2, -2)],
         ids=["-2", "2", "(-2, 2)", "(2, -2)"],
     )
-    def test_matmul_strided(self, stride):
+    def test_matmul_strided1(self, stride):
         for dim in [1, 2, 3, 4]:
-            A = numpy.random.rand(*([20] * dim))
-            B = dpnp.asarray(A)
+            shape = tuple(20 for _ in range(dim))
+            A = numpy.random.rand(*shape)
+            A_dp = dpnp.asarray(A)
             slices = tuple(slice(None, None, stride[i]) for i in range(dim))
             a = A[slices]
-            b = B[slices]
-
-            result = dpnp.matmul(b, b)
+            a_dp = A_dp[slices]
+            # input arrays will be copied into c-contiguous arrays
+            # the 2D base is not c-contiguous nor f-contigous
+            result = dpnp.matmul(a_dp, a_dp)
             expected = numpy.matmul(a, a)
             assert_dtype_allclose(result, expected)
+
+            OUT = dpnp.empty(shape, dtype=result.dtype)
+            out = OUT[slices]
+            result = dpnp.matmul(a_dp, a_dp, out=out)
+            assert result is out
+            assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "shape", [(10, 3, 3), (12, 10, 3, 3)], ids=["3D", "4D"]
+    )
+    @pytest.mark.parametrize("stride", [-1, -2, 2], ids=["-1", "-2", "2"])
+    @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
+    def test_matmul_strided2(self, shape, stride, transpose):
+        # one dimension (-3) is strided
+        # if negative stride, copy is needed and the base becomes c-contiguous
+        # otherwise the base remains the same as input in gemm_batch
+        A = numpy.random.rand(*shape)
+        A_dp = dpnp.asarray(A)
+        if transpose:
+            A = numpy.moveaxis(A, (-2, -1), (-1, -2))
+            A_dp = dpnp.moveaxis(A_dp, (-2, -1), (-1, -2))
+        index = [slice(None)] * len(shape)
+        index[-3] = slice(None, None, stride)
+        index = tuple(index)
+        a = A[index]
+        a_dp = A_dp[index]
+        result = dpnp.matmul(a_dp, a_dp)
+        expected = numpy.matmul(a, a)
+        assert_dtype_allclose(result, expected)
+
+        OUT = dpnp.empty(shape, dtype=result.dtype)
+        out = OUT[index]
+        result = dpnp.matmul(a_dp, a_dp, out=out)
+        assert result is out
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "stride",
+        [(-2, -2), (2, 2), (-2, 2), (2, -2)],
+        ids=["(-2, -2)", "(2, 2)", "(-2, 2)", "(2, -2)"],
+    )
+    @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
+    def test_matmul_strided3(self, stride, transpose):
+        # 4D case, the 1st and 2nd dimensions are strided
+        # For negative stride, copy is needed and the base becomes c-contiguous.
+        # For positive stride, no copy but reshape makes the base c-contiguous.
+        stride0, stride1 = stride
+        shape = (12, 10, 3, 3)  # 4D array
+        A = numpy.random.rand(*shape)
+        A_dp = dpnp.asarray(A)
+        if transpose:
+            A = numpy.moveaxis(A, (-2, -1), (-1, -2))
+            A_dp = dpnp.moveaxis(A_dp, (-2, -1), (-1, -2))
+        a = A[::stride0, ::stride1]
+        a_dp = A_dp[::stride0, ::stride1]
+        result = dpnp.matmul(a_dp, a_dp)
+        expected = numpy.matmul(a, a)
+        assert_dtype_allclose(result, expected)
+
+        OUT = dpnp.empty(shape, dtype=result.dtype)
+        out = OUT[::stride0, ::stride1]
+        result = dpnp.matmul(a_dp, a_dp, out=out)
+        assert result is out
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
@@ -2919,6 +3120,30 @@ class TestMatmul:
         assert result is dpnp_out
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.skipif(is_cpu_device(), reason="large size")
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            ((4096, 4096, 4, 4)),
+            ((2048, 2048, 8, 8)),
+        ],
+    )
+    def test_matmul_large(self, shape):
+        size = numpy.prod(shape, dtype=int)
+        a = numpy.array(numpy.random.uniform(-5, 5, size)).reshape(shape)
+        a_dp = dpnp.asarray(a)
+
+        result = dpnp.matmul(a_dp, a_dp)
+        expected = numpy.matmul(a, a)
+        assert_dtype_allclose(result, expected, factor=24)
+
+        # make the 2-d base f-contiguous
+        a = a.transpose(0, 1, 3, 2)
+        a_dp = a_dp.transpose(0, 1, 3, 2)
+        result = dpnp.matmul(a_dp, a_dp)
+        expected = numpy.matmul(a, a)
+        assert_dtype_allclose(result, expected, factor=24)
+
 
 class TestMatmulInvalidCases:
     @pytest.mark.parametrize(
@@ -2940,10 +3165,12 @@ class TestMatmulInvalidCases:
     @pytest.mark.parametrize(
         "shape_pair",
         [
-            ((5, 3, 1), (3, 1, 4)),
-            ((3, 2, 3), (3, 2, 4)),
-            ((3, 2), (1,)),
-            ((1, 2), (3, 1)),
+            ((2, 3), (4, 5)),
+            ((2, 4), (3, 5)),
+            ((2, 3), (4,)),
+            ((3,), (4, 5)),
+            ((2, 2, 3), (2, 4, 5)),
+            ((3, 2, 3), (2, 4, 5)),
             ((4, 3, 2), (6, 5, 2, 4)),
             ((6, 5, 3, 2), (3, 2, 4)),
         ],
@@ -2964,8 +3191,8 @@ class TestMatmulInvalidCases:
             ((5, 4, 3), (3, 1), (5, 4, 2)),
             ((5, 4, 3), (3,), (5, 3)),
             ((5, 4, 3), (3,), (6, 4)),
-            ((3,), (3, 4, 5), (3, 5)),
-            ((3,), (3, 4, 5), (4, 6)),
+            ((4,), (3, 4, 5), (4, 5)),
+            ((4,), (3, 4, 5), (3, 6)),
         ],
     )
     def test_invalid_shape_out(self, shape_pair):
