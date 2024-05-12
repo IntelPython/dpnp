@@ -17,7 +17,6 @@ def get_array_module(*args):
 cupy.get_array_module = get_array_module
 
 
-@pytest.mark.skip()
 class TestSort(unittest.TestCase):
     # Test ranks
 
@@ -204,6 +203,7 @@ class TestSort(unittest.TestCase):
 
     # Large case
 
+    @pytest.mark.skip()
     @testing.slow
     @testing.numpy_cupy_array_equal()
     def test_large(self, xp):

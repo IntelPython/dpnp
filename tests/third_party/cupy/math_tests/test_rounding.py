@@ -68,12 +68,10 @@ class TestRounding(unittest.TestCase):
         self.check_unary("fix")
         self.check_unary_complex_unsupported("fix")
 
-    @pytest.mark.skip()
     def test_around(self):
         self.check_unary("around")
         self.check_unary_complex("around")
 
-    @pytest.mark.skip()
     def test_round(self):
         self.check_unary("round")
         self.check_unary_complex("around")
@@ -86,7 +84,6 @@ class TestRounding(unittest.TestCase):
         }
     )
 )
-@pytest.mark.skip()
 class TestRound(unittest.TestCase):
     shape = (20,)
 
@@ -162,7 +159,6 @@ class TestRoundExtreme(unittest.TestCase):
         }
     )
 )
-@pytest.mark.skip()
 class TestRoundBorder(unittest.TestCase):
     # @pytest.mark.skip("scalar input is not supported")
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
