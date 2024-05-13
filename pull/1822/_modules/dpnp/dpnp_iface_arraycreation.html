@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+61.g4e018f620 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+64.gca42767a49 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8108b604"></script>
+        <script src="../../_static/documentation_options.js?v=729772f1"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+61.g4e018f620
+                0.15.0dev1+64.gca42767a49
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1062,12 +1062,7 @@
 
     <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">size</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">))</span>
         <span class="n">ret</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">k</span><span class="p">)[:]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="k">return</span> <span class="n">ret</span>
 
@@ -1117,9 +1112,9 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`diag` : Return the extracted diagonal or constructed diagonal array.</span>
-<span class="sd">    :obj:`diagonal` : Return specified diagonals.</span>
-<span class="sd">    :obj:`trace` : Return sum along diagonals.</span>
+<span class="sd">    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.</span>
+<span class="sd">    :obj:`dpnp.diagonal` : Return specified diagonals.</span>
+<span class="sd">    :obj:`dpnp.trace` : Return sum along diagonals.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1441,6 +1436,11 @@
 <span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.identity` : Return the identity array.</span>
+<span class="sd">    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2409,7 +2409,7 @@
 <span class="sd">    :obj:`dpnp.eye` : Return a 2-D array with ones on the diagonal and zeros</span>
 <span class="sd">                      elsewhere.</span>
 <span class="sd">    :obj:`dpnp.ones` : Return a new array setting values to one.</span>
-<span class="sd">    :obj:`dpnp.diag` : Return diagonal 2-D array from an input 1-D array.</span>
+<span class="sd">    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
