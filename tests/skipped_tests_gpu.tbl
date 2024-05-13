@@ -210,14 +210,6 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_broadcastable_complex
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_non_broadcastable
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_type_error_condlist
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_invalid1
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_invalid2
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative1
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative2
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative3
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative4
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative5
 
 tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_0_{n=2, ndim=2}::test_diag_indices
 tests/third_party/cupy/indexing_tests/test_insert.py::TestDiagIndices_param_1_{n=2, ndim=3}::test_diag_indices

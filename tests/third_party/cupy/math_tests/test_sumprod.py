@@ -235,17 +235,6 @@ class TestNansumNanprodLong:
         )
 
     def _test(self, xp, dtype):
-        if (
-            self.func == "nanprod"
-            and self.shape == (20, 30, 40)
-            and has_support_aspect64()
-        ):
-            # If input type is float, NumPy returns the same data type but
-            # dpctl (and dpnp) returns default platform float following array api.
-            # When input is `float32` and output is a very large number, dpnp returns
-            # the number because it is `float64` but NumPy returns `inf` since it is `float32`.
-            pytest.skip("Output is a very large number.")
-
         a = testing.shaped_arange(self.shape, xp, dtype)
         if self.transpose_axes:
             a = a.transpose(2, 0, 1)
@@ -265,9 +254,7 @@ class TestNansumNanprodLong:
         return self._test(xp, dtype)
 
     @testing.for_all_dtypes(no_bool=True, no_float16=True)
-    @testing.numpy_cupy_allclose(
-        contiguous_check=False, type_check=has_support_aspect64()
-    )
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_nansum_axis_transposed(self, xp, dtype):
         if (
             not self._numpy_nanprod_implemented()
@@ -579,6 +566,7 @@ class TestCumprod:
             return xp.cumproduct(a)
 
 
+@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 @testing.parameterize(
     *testing.product(
         {
@@ -590,12 +578,6 @@ class TestCumprod:
 )
 class TestNanCumSumProd:
     zero_density = 0.25
-
-    @pytest.fixture(autouse=True)
-    def setUp(self):
-        if self.func == "nancumprod":
-            pytest.skip("nancumprod() is not implemented yet")
-        pass
 
     def _make_array(self, dtype):
         dtype = numpy.dtype(dtype)
