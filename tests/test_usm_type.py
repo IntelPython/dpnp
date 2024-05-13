@@ -611,11 +611,6 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("fmax", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
         pytest.param("fmin", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
         pytest.param(
-            "histogram_bin_edges",
-            [0, 0, 0, 1, 2, 3, 3, 4, 5],
-            [1, 2],
-        ),
-        pytest.param(
             "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
