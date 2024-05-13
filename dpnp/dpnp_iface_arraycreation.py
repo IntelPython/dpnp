@@ -949,12 +949,7 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
 
     if v.ndim == 1:
         size = v.shape[0] + abs(k)
-        ret = dpnp.zeros(
-            (size, size),
-            dtype=v.dtype,
-            usm_type=v.usm_type,
-            sycl_queue=v.sycl_queue,
-        )
+        ret = dpnp.zeros_like(v, shape=(size, size))
         ret.diagonal(k)[:] = v
         return ret
 
