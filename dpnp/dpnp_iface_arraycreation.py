@@ -996,9 +996,9 @@ def diagflat(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
 
     See Also
     --------
-    :obj:`diag` : Return the extracted diagonal or constructed diagonal array.
-    :obj:`diagonal` : Return specified diagonals.
-    :obj:`trace` : Return sum along diagonals.
+    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
+    :obj:`dpnp.diagonal` : Return specified diagonals.
+    :obj:`dpnp.trace` : Return sum along diagonals.
 
     Examples
     --------
@@ -1311,6 +1311,11 @@ def eye(
     ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
+
+    See Also
+    --------
+    :obj:`dpnp.identity` : Return the identity array.
+    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
 
     Examples
     --------
@@ -2252,7 +2257,7 @@ def identity(
     :obj:`dpnp.eye` : Return a 2-D array with ones on the diagonal and zeros
                       elsewhere.
     :obj:`dpnp.ones` : Return a new array setting values to one.
-    :obj:`dpnp.diag` : Return diagonal 2-D array from an input 1-D array.
+    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
 
     Examples
     --------
