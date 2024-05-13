@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+58.g793cf5e31e documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.15.0dev1+59.g4ef21572e7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=5aad269a"></script>
+        <script src="../../_static/documentation_options.js?v=8cc9bd4c"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+58.g793cf5e31e
+                0.15.0dev1+59.g4ef21572e7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -979,9 +979,14 @@
 <span class="sd">    v : array_like</span>
 <span class="sd">        Input data, in any form that can be converted to an array. This</span>
 <span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
-<span class="sd">        tuples of lists, and ndarrays. If `v` is a 2-D array, return a copy of</span>
-<span class="sd">        its k-th diagonal. If `v` is a 1-D array, return a 2-D array with `v`</span>
-<span class="sd">        on the k-th diagonal.</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
+<span class="sd">        If `v` is a 1-D array, return a 2-D array with `v`</span>
+<span class="sd">        on the `k`-th diagonal.</span>
+<span class="sd">        If `v` is a 2-D array and is an instance of</span>
+<span class="sd">        {dpnp.ndarray, usm_ndarray}, then:</span>
+<span class="sd">          - If `device`, `usm_type`, and `sycl_queue` are set to their</span>
+<span class="sd">            default values, returns a read/write view of its k-th diagonal.</span>
+<span class="sd">          - Otherwise, returns a copy of its k-th diagonal.</span>
 <span class="sd">    k : int, optional</span>
 <span class="sd">        Diagonal in question. The default is 0. Use k &gt; 0 for diagonals above</span>
 <span class="sd">        the main diagonal, and k &lt; 0 for diagonals below the main diagonal.</span>
@@ -1007,43 +1012,43 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`diagonal` : Return specified diagonals.</span>
 <span class="sd">    :obj:`diagflat` : Create a 2-D array with the flattened input as a diagonal.</span>
-<span class="sd">    :obj:`trace` : Return sum along diagonals.</span>
-<span class="sd">    :obj:`triu` : Return upper triangle of an array.</span>
-<span class="sd">    :obj:`tril` : Return lower triangle of an array.</span>
+<span class="sd">    :obj:`trace` : Return the sum along diagonals of the array.</span>
+<span class="sd">    :obj:`triu` : Upper triangle of an array.</span>
+<span class="sd">    :obj:`tril` : Lower triangle of an array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x0 = np.arange(9).reshape((3, 3))</span>
-<span class="sd">    &gt;&gt;&gt; x0</span>
+<span class="sd">    &gt;&gt;&gt; x = np.arange(9).reshape((3, 3))</span>
+<span class="sd">    &gt;&gt;&gt; x</span>
 <span class="sd">    array([[0, 1, 2],</span>
 <span class="sd">           [3, 4, 5],</span>
 <span class="sd">           [6, 7, 8]])</span>
 
-<span class="sd">    &gt;&gt;&gt; np.diag(x0)</span>
+<span class="sd">    &gt;&gt;&gt; np.diag(x)</span>
 <span class="sd">    array([0, 4, 8])</span>
-<span class="sd">    &gt;&gt;&gt; np.diag(x0, k=1)</span>
+<span class="sd">    &gt;&gt;&gt; np.diag(x, k=1)</span>
 <span class="sd">    array([1, 5])</span>
-<span class="sd">    &gt;&gt;&gt; np.diag(x0, k=-1)</span>
+<span class="sd">    &gt;&gt;&gt; np.diag(x, k=-1)</span>
 <span class="sd">    array([3, 7])</span>
 
-<span class="sd">    &gt;&gt;&gt; np.diag(np.diag(x0))</span>
+<span class="sd">    &gt;&gt;&gt; np.diag(np.diag(x))</span>
 <span class="sd">    array([[0, 0, 0],</span>
 <span class="sd">           [0, 4, 0],</span>
 <span class="sd">           [0, 0, 8]])</span>
 
 <span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.diag(x0) # default case</span>
-<span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
+<span class="sd">    &gt;&gt;&gt; res = np.diag(x) # default case</span>
+<span class="sd">    &gt;&gt;&gt; res, res.device, res.usm_type</span>
 <span class="sd">    (array([0, 4, 8]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
-<span class="sd">    &gt;&gt;&gt; y = np.diag(x0, device=&quot;cpu&quot;)</span>
-<span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
+<span class="sd">    &gt;&gt;&gt; res_cpu = np.diag(x, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; res_cpu, res_cpu.device, res_cpu.usm_type</span>
 <span class="sd">    (array([0, 4, 8]), Device(opencl:cpu:0), &#39;device&#39;)</span>
 
-<span class="sd">    &gt;&gt;&gt; z = np.diag(x0, usm_type=&quot;host&quot;)</span>
-<span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
+<span class="sd">    &gt;&gt;&gt; res_host = np.diag(x, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; res_host, res_host.device, res_host.usm_type</span>
 <span class="sd">    (array([0, 4, 8]), Device(level_zero:gpu:0), &#39;host&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1051,35 +1056,18 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An integer is required, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span>
+        <span class="n">v</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
+    <span class="p">)</span>
 
-    <span class="n">init0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">k</span><span class="p">)</span>
-    <span class="n">init1</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">size</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="n">m</span><span class="p">[(</span><span class="n">init0</span> <span class="o">+</span> <span class="n">i</span><span class="p">),</span> <span class="n">init1</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">m</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">))</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">k</span><span class="p">)[:]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">return</span> <span class="n">ret</span>
 
     <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
-            <span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">size</span><span class="p">,),</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
-            <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[(</span><span class="n">init0</span> <span class="o">+</span> <span class="n">i</span><span class="p">),</span> <span class="n">init1</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">m</span>
+        <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input must be a 1-D or 2-D array.&quot;</span><span class="p">)</span></div>
 
@@ -1124,9 +1112,9 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`diag` : Return the extracted diagonal or constructed diagonal array.</span>
-<span class="sd">    :obj:`diagonal` : Return specified diagonals.</span>
-<span class="sd">    :obj:`trace` : Return sum along diagonals.</span>
+<span class="sd">    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.</span>
+<span class="sd">    :obj:`dpnp.diagonal` : Return specified diagonals.</span>
+<span class="sd">    :obj:`dpnp.trace` : Return sum along diagonals.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1448,6 +1436,11 @@
 <span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.identity` : Return the identity array.</span>
+<span class="sd">    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2416,7 +2409,7 @@
 <span class="sd">    :obj:`dpnp.eye` : Return a 2-D array with ones on the diagonal and zeros</span>
 <span class="sd">                      elsewhere.</span>
 <span class="sd">    :obj:`dpnp.ones` : Return a new array setting values to one.</span>
-<span class="sd">    :obj:`dpnp.diag` : Return diagonal 2-D array from an input 1-D array.</span>
+<span class="sd">    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
