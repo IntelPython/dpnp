@@ -531,6 +531,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
         pytest.param(
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
@@ -609,6 +610,11 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
         pytest.param("fmax", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
         pytest.param("fmin", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
+        pytest.param(
+            "histogram_bin_edges",
+            [0, 0, 0, 1, 2, 3, 3, 4, 5],
+            [1, 2],
+        ),
         pytest.param(
             "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),
@@ -1231,4 +1237,16 @@ def test_histogram(usm_type_v, usm_type_w):
     assert v.usm_type == usm_type_v
     assert w.usm_type == usm_type_w
     assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+    assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+
+
+@pytest.mark.parametrize("usm_type_v", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_w", list_of_usm_types, ids=list_of_usm_types)
+def test_histogram_bin_edges(usm_type_v, usm_type_w):
+    v = dp.arange(5, usm_type=usm_type_v)
+    w = dp.arange(7, 12, usm_type=usm_type_w)
+
+    edges = dp.histogram_bin_edges(v, weights=w)
+    assert v.usm_type == usm_type_v
+    assert w.usm_type == usm_type_w
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
