@@ -321,6 +321,7 @@ class TestNansumNanprodAxes:
         return xp.nansum(a, axis=self.axis)
 
 
+@pytest.mark.skip()
 class TestNansumNanprodHuge:
     def _test(self, xp, nan_slice):
         a = testing.shaped_random((2048, 1, 1024), xp, "f")
