@@ -866,9 +866,14 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     v : array_like
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
-        tuples of lists, and ndarrays. If `v` is a 2-D array, return a copy of
-        its k-th diagonal. If `v` is a 1-D array, return a 2-D array with `v`
-        on the k-th diagonal.
+        tuples of lists, and ndarrays.
+        If `v` is a 1-D array, return a 2-D array with `v`
+        on the `k`-th diagonal.
+        If `v` is a 2-D array and is an instance of
+        {dpnp.ndarray, usm_ndarray}, then:
+          - If `device`, `usm_type`, and `sycl_queue` are set to their
+            default values, returns a read/write view of its k-th diagonal.
+          - Otherwise, returns a copy of its k-th diagonal.
     k : int, optional
         Diagonal in question. The default is 0. Use k > 0 for diagonals above
         the main diagonal, and k < 0 for diagonals below the main diagonal.
@@ -894,43 +899,43 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     --------
     :obj:`diagonal` : Return specified diagonals.
     :obj:`diagflat` : Create a 2-D array with the flattened input as a diagonal.
-    :obj:`trace` : Return sum along diagonals.
-    :obj:`triu` : Return upper triangle of an array.
-    :obj:`tril` : Return lower triangle of an array.
+    :obj:`trace` : Return the sum along diagonals of the array.
+    :obj:`triu` : Upper triangle of an array.
+    :obj:`tril` : Lower triangle of an array.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> x0 = np.arange(9).reshape((3, 3))
-    >>> x0
+    >>> x = np.arange(9).reshape((3, 3))
+    >>> x
     array([[0, 1, 2],
            [3, 4, 5],
            [6, 7, 8]])
 
-    >>> np.diag(x0)
+    >>> np.diag(x)
     array([0, 4, 8])
-    >>> np.diag(x0, k=1)
+    >>> np.diag(x, k=1)
     array([1, 5])
-    >>> np.diag(x0, k=-1)
+    >>> np.diag(x, k=-1)
     array([3, 7])
 
-    >>> np.diag(np.diag(x0))
+    >>> np.diag(np.diag(x))
     array([[0, 0, 0],
            [0, 4, 0],
            [0, 0, 8]])
 
     Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.diag(x0) # default case
-    >>> x, x.device, x.usm_type
+    >>> res = np.diag(x) # default case
+    >>> res, res.device, res.usm_type
     (array([0, 4, 8]), Device(level_zero:gpu:0), 'device')
 
-    >>> y = np.diag(x0, device="cpu")
-    >>> y, y.device, y.usm_type
+    >>> res_cpu = np.diag(x, device="cpu")
+    >>> res_cpu, res_cpu.device, res_cpu.usm_type
     (array([0, 4, 8]), Device(opencl:cpu:0), 'device')
 
-    >>> z = np.diag(x0, usm_type="host")
-    >>> z, z.device, z.usm_type
+    >>> res_host = np.diag(x, usm_type="host")
+    >>> res_host, res_host.device, res_host.usm_type
     (array([0, 4, 8]), Device(level_zero:gpu:0), 'host')
 
     """
@@ -938,35 +943,23 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     if not isinstance(k, int):
         raise TypeError(f"An integer is required, but got {type(k)}")
 
-    v = dpnp.asarray(v, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
+    v = dpnp.asanyarray(
+        v, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
 
-    init0 = max(0, -k)
-    init1 = max(0, k)
     if v.ndim == 1:
         size = v.shape[0] + abs(k)
-        m = dpnp.zeros(
+        ret = dpnp.zeros(
             (size, size),
             dtype=v.dtype,
             usm_type=v.usm_type,
             sycl_queue=v.sycl_queue,
         )
-        for i in range(v.shape[0]):
-            m[(init0 + i), init1 + i] = v[i]
-        return m
+        ret.diagonal(k)[:] = v
+        return ret
 
     if v.ndim == 2:
-        size = max(
-            0, min(v.shape[0], v.shape[0] + k, v.shape[1], v.shape[1] - k)
-        )
-        m = dpnp.zeros(
-            (size,),
-            dtype=v.dtype,
-            usm_type=v.usm_type,
-            sycl_queue=v.sycl_queue,
-        )
-        for i in range(size):
-            m[i] = v[(init0 + i), init1 + i]
-        return m
+        return v.diagonal(k)
 
     raise ValueError("Input must be a 1-D or 2-D array.")
 
