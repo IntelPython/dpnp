@@ -71,6 +71,7 @@ __all__ = [
     "cbrt",
     "cos",
     "cosh",
+    "cumlogsumexp",
     "deg2rad",
     "degrees",
     "exp",
@@ -663,6 +664,94 @@ cosh = DPNPUnaryFunc(
     mkl_fn_to_call=vmi._mkl_cosh_to_call,
     mkl_impl_fn=vmi._cosh,
 )
+
+
+def cumlogsumexp(
+    x, /, *, axis=None, dtype=None, include_initial=False, out=None
+):
+    """
+    Calculates the cumulative logarithm of the sum of elements in the input
+    array `x`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array, expected to have a real-valued data type.
+    axis : {None, int}, optional
+        Axis or axes along which values must be computed. If a tuple of unique
+        integers, values are computed over multiple axes. If ``None``, the
+        result is computed over the entire array.
+        Default: ``None``.
+    dtype : {None, dtype}, optional
+        Data type of the returned array. If ``None``, the default data type is
+        inferred from the "kind" of the input array data type.
+
+        - If `x` has a real-valued floating-point data type, the returned array
+          will have the same data type as `x`.
+        - If `x` has a boolean or integral data type, the returned array will
+          have the default floating point data type for the device where input
+          array `x` is allocated.
+        - If `x` has a complex-valued floating-point data type, an error is
+          raised.
+
+        If the data type (either specified or resolved) differs from the data
+        type of `x`, the input array elements are cast to the specified data
+        type before computing the result.
+        Default: ``None``.
+    include_initial : {None, bool}, optional
+        A boolean indicating whether to include the initial value (i.e., the
+        additive identity, zero) as the first value along the provided axis in
+        the output.
+        Default: ``False``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        The array into which the result is written. The data type of `out` must
+        match the expected shape and the expected data type of the result or
+        (if provided) `dtype`. If ``None`` then a new array is returned.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array containing the results. If the result was computed over the
+        entire array, a zero-dimensional array is returned. The returned array
+        has the data type as described in the `dtype` parameter description
+        above.
+
+    Note
+    ----
+    This function is equivalent of `numpy.logaddexp.accumulate`.
+
+    See Also
+    --------
+    :obj:`dpnp.logsumexp` : Logarithm of the sum of elements of the inputs,
+                            element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.ones(10)
+    >>> np.cumlogsumexp(a)
+    array([1.        , 1.69314718, 2.09861229, 2.38629436, 2.60943791,
+           2.79175947, 2.94591015, 3.07944154, 3.19722458, 3.30258509])
+
+    """
+
+    dpnp.check_supported_arrays_type(x)
+    if x.ndim > 1 and axis is None:
+        usm_x = dpnp.ravel(x).get_array()
+    else:
+        usm_x = dpnp.get_usm_ndarray(x)
+
+    return dpnp_wrap_reduction_call(
+        x,
+        out,
+        dpt.cumulative_logsumexp,
+        _get_accumulation_res_dt,
+        usm_x,
+        axis=axis,
+        dtype=dtype,
+        include_initial=include_initial,
+    )
 
 
 def deg2rad(x1):
