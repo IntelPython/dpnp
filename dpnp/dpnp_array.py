@@ -839,6 +839,8 @@ class dpnp_array:
         """
         Return a copy of the array collapsed into one dimension.
 
+        For full documentation refer to :obj:`numpy.ndarray.flatten`.
+
         Parameters
         ----------
         order : {"C", "F"}, optional
