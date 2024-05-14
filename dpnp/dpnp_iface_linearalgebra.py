@@ -43,7 +43,6 @@ from numpy.core.numeric import normalize_axis_tuple
 
 import dpnp
 
-# pylint: disable=no-name-in-module
 from .dpnp_utils.dpnp_utils_linearalgebra import (
     dpnp_dot,
     dpnp_einsum,
@@ -856,16 +855,16 @@ def outer(a, b, out=None):
 
     Parameters
     ----------
-    a(M,) : {dpnp.ndarray, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         First input vector. Input is flattened if not already 1-dimensional.
-    b(N,) : {dpnp.ndarray, usm_ndarray}
+    b : {dpnp.ndarray, usm_ndarray}
         Second input vector. Input is flattened if not already 1-dimensional.
-    out(M, N) : {dpnp.ndarray, usm_ndarray}, optional
+    out : {dpnp.ndarray, usm_ndarray}, optional
         A location where the result is stored
 
     Returns
     -------
-    out(M, N) : dpnp.ndarray
+    out : dpnp.ndarray
         out[i, j] = a[i] * b[j]
 
     See Also
@@ -873,6 +872,8 @@ def outer(a, b, out=None):
     :obj:`dpnp.einsum` : Evaluates the Einstein summation convention
                          on the operands.
     :obj:`dpnp.inner` : Returns the inner product of two arrays.
+    :obj:`dpnp.tensordot` : dpnp.tensordot(a.ravel(), b.ravel(), axes=((), ()))
+                            is the equivalent.
 
     Examples
     --------

@@ -361,18 +361,62 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             First input array.
         x2 : {dpnp.ndarray, usm_ndarray}
             Second input array.
-        out : {None, dpnp.ndarray}, optional
+        out : {None, dpnp.ndarray, usm_ndarray}, optional
             Output array to populate.
             Array must have the correct shape and the expected data type.
         order : {"C", "F", "A", "K"}, optional
-            Memory layout of the newly output array, if parameter `out` is ``None``.
-            Default: "K".
+            Memory layout of the newly output array, Cannot be provided
+            together with `out`. Default: "K".
+        dtype : dtype, optional
+            If provided, the destination array will have this dtype. Cannot be
+            provided together with `out`. Default: ``None``.
 
         Returns
         -------
         out : dpnp.ndarray
             Output array. The data type of the returned array is determined by
             the Type Promotion Rules.
+
+        Limitations
+        -----------
+        Parameters `where` and `subok` are supported with their default values.
+        Keyword argument `kwargs` is currently unsupported.
+        Otherwise ``NotImplementedError`` exception will be raised.
+
+        See also
+        --------
+        :obj:`dpnp.outer` : A less powerful version of dpnp.multiply.outer
+                            that ravels all inputs to 1D. This exists primarily
+                            for compatibility with old code.
+
+        :obj:`dpnp.tensordot` : dpnp.tensordot(a, b, axes=((), ())) and
+                                dpnp.multiply.outer(a, b) behave same for all
+                                dimensions of a and b.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> np.multiply.outer([1, 2, 3], [4, 5, 6])
+        array([[ 4,  5,  6],
+            [ 8, 10, 12],
+            [12, 15, 18]])
+
+        A multi-dimensional example:
+        >>> A = np.array([[1, 2, 3], [4, 5, 6]])
+        >>> A.shape
+        (2, 3)
+        >>> B = np.array([[1, 2, 3, 4]])
+        >>> B.shape
+        (1, 4)
+        >>> C = np.multiply.outer(A, B)
+        >>> C.shape; C
+        (2, 3, 1, 4)
+        array([[[[ 1,  2,  3,  4]],
+                [[ 2,  4,  6,  8]],
+                [[ 3,  6,  9, 12]]],
+            [[[ 4,  8, 12, 16]],
+                [[ 5, 10, 15, 20]],
+                [[ 6, 12, 18, 24]]]])
 
         """
 
