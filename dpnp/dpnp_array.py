@@ -877,7 +877,7 @@ class dpnp_array:
 
         """
 
-        return dpnp.reshape(self, -1, order=order, copy=True)
+        return self.reshape(-1, order=order, copy=True)
 
     # 'getfield',
 
