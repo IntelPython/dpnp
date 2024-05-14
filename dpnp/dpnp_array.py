@@ -843,12 +843,16 @@ class dpnp_array:
         ----------
         order : {"C", "F"}, optional
             Read the elements using this index order, and place the elements
-            into the reshaped array using this index order. ``"C"`` means to
-            read / write the elements using C-like index order, with the last
-            axis index changing fastest, back to the first axis index changing
-            slowest. ``"F"`` means to read / write the elements using
-            Fortran-like index order, with the first index changing fastest,
-            and the last index changing slowest.
+            into the reshaped array using this index order.
+
+                - "C" means to read / write the elements using C-like index
+                  order, with the last axis index changing fastest, back to the
+                  first axis index changing slowest.
+                - "F" means to read / write the elements using Fortran-like
+                  index order, with the first index changing fastest, and the
+                  last index changing slowest.
+
+            The default is ``"C"``.
 
         Returns
         -------
