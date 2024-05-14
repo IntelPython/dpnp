@@ -856,24 +856,24 @@ class dpnp_array:
         --------
         :obj:`dpnp.ravel`, :obj:`dpnp.flat`
 
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.array([[1, 2], [3, 4]])
+        >>> a.flatten()
+        array([1, 2, 3, 4])
+        >>> a.flatten('F')
+        array([1, 3, 2, 4])
+
         """
-        new_arr = self.__new__(dpnp_array)
-        new_arr._array_obj = dpt.empty(
-            self.shape,
-            dtype=self.dtype,
-            order=order,
-            device=self._array_obj.sycl_device,
-            usm_type=self._array_obj.usm_type,
-            sycl_queue=self._array_obj.sycl_queue,
-        )
 
-        if self.size > 0:
-            dpt._copy_utils._copy_from_usm_ndarray_to_usm_ndarray(
-                new_arr._array_obj, self._array_obj
-            )
-            new_arr._array_obj = dpt.reshape(new_arr._array_obj, (self.size,))
-
-        return new_arr
+        res = dpnp.reshape(self, -1, order=order)
+        if res._array_obj._pointer == self._array_obj._pointer:
+            # Return copy of result if result use same memory as array.
+            return res.copy()
+        else:
+            # dpnp.reshape returned a copy of the result. No need for an additional copy
+            return res
 
     # 'getfield',
 
