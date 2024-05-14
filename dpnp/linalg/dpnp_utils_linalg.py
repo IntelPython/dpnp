@@ -953,11 +953,7 @@ def dpnp_det(a):
 
     lu, ipiv, dev_info = _lu_factor(a, res_type)
 
-    # Transposing 'lu' to swap the last two axes for compatibility
-    # with 'dpnp.diagonal' as it does not support 'axis1' and 'axis2' arguments.
-    # TODO: Replace with 'dpnp.diagonal(lu, axis1=-2, axis2=-1)' when supported.
-    lu_transposed = lu.transpose(-2, -1, *range(lu.ndim - 2))
-    diag = dpnp.diagonal(lu_transposed)
+    diag = dpnp.diagonal(lu, axis1=-2, axis2=-1)
 
     det = dpnp.prod(dpnp.abs(diag), axis=-1)
 
@@ -2112,11 +2108,7 @@ def dpnp_slogdet(a):
 
     lu, ipiv, dev_info = _lu_factor(a, res_type)
 
-    # Transposing 'lu' to swap the last two axes for compatibility
-    # with 'dpnp.diagonal' as it does not support 'axis1' and 'axis2' arguments.
-    # TODO: Replace with 'dpnp.diagonal(lu, axis1=-2, axis2=-1)' when supported.
-    lu_transposed = lu.transpose(-2, -1, *range(lu.ndim - 2))
-    diag = dpnp.diagonal(lu_transposed)
+    diag = dpnp.diagonal(lu, axis1=-2, axis2=-1)
 
     logdet = dpnp.log(dpnp.abs(diag)).sum(axis=-1)
 
