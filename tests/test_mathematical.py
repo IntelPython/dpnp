@@ -2789,6 +2789,11 @@ class TestMatmul:
             ((1, 3, 3), (10, 1, 3, 1)),
             ((2, 3, 3), (10, 1, 3, 1)),
             ((10, 2, 3, 3), (10, 1, 3, 1)),
+            ((10, 2, 3, 3), (10, 2, 3, 1)),
+            ((10, 1, 1, 3), (1, 3, 3)),
+            ((10, 1, 1, 3), (2, 3, 3)),
+            ((10, 1, 1, 3), (10, 2, 3, 3)),
+            ((10, 2, 1, 3), (10, 2, 3, 3)),
         ],
     )
     def test_matmul(self, order_pair, shape_pair):
@@ -2972,6 +2977,11 @@ class TestMatmul:
         axes = [0, 0, ()]
         result = dpnp.matmul(ia, ia, axes=axes)
         expected = numpy.matmul(a, a, axes=axes)
+        assert_dtype_allclose(result, expected)
+
+        out = dpnp.empty((), dtype=ia.dtype)
+        result = dpnp.matmul(ia, ia, axes=axes, out=out)
+        assert out is result
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
@@ -3273,6 +3283,7 @@ class TestMatmulInvalidCases:
     @pytest.mark.parametrize(
         "shape_pair",
         [
+            ((3,), (4,)),
             ((2, 3), (4, 5)),
             ((2, 4), (3, 5)),
             ((2, 3), (4,)),
@@ -3297,6 +3308,7 @@ class TestMatmulInvalidCases:
             ((5, 4, 3), (3, 1), (3, 4, 1)),
             ((5, 4, 3), (3, 1), (5, 6, 1)),
             ((5, 4, 3), (3, 1), (5, 4, 2)),
+            ((5, 4, 3), (3, 1), (4, 1)),
             ((5, 4, 3), (3,), (5, 3)),
             ((5, 4, 3), (3,), (6, 4)),
             ((4,), (3, 4, 5), (4, 5)),
