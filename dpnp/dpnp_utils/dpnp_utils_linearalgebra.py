@@ -322,6 +322,8 @@ def _define_dim_flags(x, pos):
     x_ndim = x.ndim
     x_is_1D = x_ndim == 1
     if numpy.prod(x_shape) != 0:
+        # the 2nd condition is only expected to be checked for
+        # ND-arrays (N>1) since index is in [-2, -1]
         x_is_1D = x_is_1D or numpy.prod(x_shape) == x_shape[index]
 
     x_is_2D = False
@@ -682,14 +684,19 @@ def _get_result_shape(x1, x2, out, np_flag):
             if len_out != len_res:
                 _shape_error(len_out, len_res, None, err_msg=4)
             for i in range(len_out):
-                if out_shape[i] != result_shape[i] and i == len_out - 1:
-                    _shape_error(out_shape[i], result_shape[i], 1, err_msg=1)
-                elif out_shape[i] != result_shape[i] and i == len_out - 2:
-                    _shape_error(out_shape[i], result_shape[i], 0, err_msg=1)
-                elif out_shape[i] != result_shape[i]:
-                    _shape_error(
-                        out_shape[:-2], result_shape[:-2], None, err_msg=3
-                    )
+                if out_shape[i] != result_shape[i]:
+                    if i == len_out - 1:
+                        _shape_error(
+                            out_shape[i], result_shape[i], 1, err_msg=1
+                        )
+                    elif i == len_out - 2:
+                        _shape_error(
+                            out_shape[i], result_shape[i], 0, err_msg=1
+                        )
+                    else:
+                        _shape_error(
+                            out_shape[:-2], result_shape[:-2], None, err_msg=3
+                        )
 
     return x1, x2, result_shape
 
@@ -2167,7 +2174,7 @@ def dpnp_matmul(
                     res,
                     dep_events_list,
                 )
-            elif call_flag == "gemm_batch":
+            else:  # call_flag == "gemm_batch"
                 res = _gemm_batch_matmul(
                     exec_q,
                     x1,

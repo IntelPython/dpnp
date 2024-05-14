@@ -2979,6 +2979,11 @@ class TestMatmul:
         expected = numpy.matmul(a, a, axes=axes)
         assert_dtype_allclose(result, expected)
 
+        out = dpnp.empty((), dtype=ia.dtype)
+        result = dpnp.matmul(ia, ia, axes=axes, out=out)
+        assert out is result
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
         "axes, out_shape",
