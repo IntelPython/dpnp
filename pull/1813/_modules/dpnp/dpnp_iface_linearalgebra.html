@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev1+57.g48444e5350 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.15.0dev1+66.g5000de202c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=88dfa03f"></script>
+        <script src="../../_static/documentation_options.js?v=1700a3d3"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+57.g48444e5350
+                0.15.0dev1+66.g5000de202c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -133,7 +133,6 @@
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
-<span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_dot</span><span class="p">,</span>
     <span class="n">dpnp_einsum</span><span class="p">,</span>
@@ -966,16 +965,16 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a(M,) : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        First input vector. Input is flattened if not already 1-dimensional.</span>
-<span class="sd">    b(N,) : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">    b : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Second input vector. Input is flattened if not already 1-dimensional.</span>
-<span class="sd">    out(M, N) : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        A location where the result is stored</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out(M, N) : dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        out[i, j] = a[i] * b[j]</span>
 
 <span class="sd">    See Also</span>
@@ -983,6 +982,8 @@
 <span class="sd">    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention</span>
 <span class="sd">                         on the operands.</span>
 <span class="sd">    :obj:`dpnp.inner` : Returns the inner product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.tensordot` : dpnp.tensordot(a.ravel(), b.ravel(), axes=((), ()))</span>
+<span class="sd">                            is the equivalent.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
