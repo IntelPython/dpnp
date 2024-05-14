@@ -173,6 +173,7 @@ def _get_bin_edges(a, bins, range, usm_type):
         # numpy's gh-10322 means that type resolution rules are dependent on
         # array shapes. To avoid this causing problems, we pick a type now and
         # stick with it throughout.
+        # pylint: disable=possibly-used-before-assignment
         bin_type = dpnp.result_type(first_edge, last_edge, a)
         if dpnp.issubdtype(bin_type, dpnp.integer):
             bin_type = dpnp.result_type(
@@ -332,6 +333,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     if density:
         db = dpnp.diff(bin_edges).astype(dpnp.default_float_type())
+        # pylint: disable=possibly-used-before-assignment
         return n / db / n.sum(), bin_edges
 
     return n, bin_edges
