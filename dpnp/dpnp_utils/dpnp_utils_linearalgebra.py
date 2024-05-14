@@ -307,10 +307,12 @@ def _define_contig_flag(x):
 def _define_dim_flags(x, pos):
     """
     Define useful flags for the main calculation in dpnp_matmul.
-    x_is_1D: `x` is 1D array or inhernetly 1D (all dimesnsion are one except for one of them), for instance,
-    if x.shape = (1, 1, 1, 2), then x_is_1D = True
-    x_is_2D: `x` is 2D array or inhernetly 2D (all dimesnsion are one except for the last two of them), for instance,
-    if x.shape = (1, 1, 3, 2), then x_is_2D = True
+    x_is_1D: `x` is 1D array or inherently 1D (all dimensions are equal to one
+    except for one of them), for instance, if x.shape = (1, 1, 1, 2),
+    then x_is_1D = True
+    x_is_2D: `x` is 2D array or inherently 2D (all dimensions are equal to one
+    except for the last two of them), for instance, if x.shape = (1, 1, 3, 2),
+    then x_is_2D = True
     x_base_is_1D: `x` is 1D considering only its last two dimensions, for instance,
     if x.shape = (3, 4, 1, 2), then x_base_is_1D = True
     """
@@ -616,9 +618,6 @@ def _get_result_shape(x1, x2, out, np_flag):
             "Input array 1 does not have enough dimensions (has 0, but requires at least 1)"
         )
 
-    x1_is_2D, x1_is_1D, _ = _define_dim_flags(x1, pos=0)
-    x2_is_2D, x2_is_1D, _ = _define_dim_flags(x2, pos=1)
-
     if x1_ndim == 1 and x2_ndim == 1:
         if x1_shape[-1] != x2_shape[-1]:
             _shape_error(x1_shape[-1], x2_shape[-1], None, err_msg=0)
@@ -632,6 +631,9 @@ def _get_result_shape(x1, x2, out, np_flag):
             _shape_error(x1_shape[-1], x2_shape[-1], None, err_msg=0)
         result_shape = x1_shape[:-1]
     else:  # at least 2D
+        x1_is_2D, x1_is_1D, _ = _define_dim_flags(x1, pos=0)
+        x2_is_2D, x2_is_1D, _ = _define_dim_flags(x2, pos=1)
+
         if x1_shape[-1] != x2_shape[-2]:
             _shape_error(x1_shape[-1], x2_shape[-2], None, err_msg=0)
 
@@ -672,24 +674,22 @@ def _get_result_shape(x1, x2, out, np_flag):
 
             result_shape = tuple(tmp_shape) + (x1.shape[-2], x2.shape[-1])
 
-        if out is not None:
-            out_shape = out.shape
-            if out_shape != result_shape and not np_flag:
-                len_out = len(out_shape)
-                len_res = len(result_shape)
-                if len_out != len_res:
-                    _shape_error(len_out, len_res, None, err_msg=5)
-                for i in range(len_out):
-                    if out_shape[i] != result_shape[i] and i == len_out - 1:
-                        _shape_error(
-                            out_shape[i], result_shape[i], 1, err_msg=1
-                        )
-                    elif out_shape[i] != result_shape[i] and i == len_out - 2:
-                        _shape_error(
-                            out_shape[i], result_shape[i], 0, err_msg=1
-                        )
-                    elif out_shape[i] != result_shape[i]:
-                        _shape_error(out_shape, result_shape, None, err_msg=3)
+    if out is not None:
+        out_shape = out.shape
+        if out_shape != result_shape and not np_flag:
+            len_out = len(out_shape)
+            len_res = len(result_shape)
+            if len_out != len_res:
+                _shape_error(len_out, len_res, None, err_msg=4)
+            for i in range(len_out):
+                if out_shape[i] != result_shape[i] and i == len_out - 1:
+                    _shape_error(out_shape[i], result_shape[i], 1, err_msg=1)
+                elif out_shape[i] != result_shape[i] and i == len_out - 2:
+                    _shape_error(out_shape[i], result_shape[i], 0, err_msg=1)
+                elif out_shape[i] != result_shape[i]:
+                    _shape_error(
+                        out_shape[:-2], result_shape[:-2], None, err_msg=3
+                    )
 
     return x1, x2, result_shape
 
@@ -740,6 +740,26 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
         res = res.reshape(orig_shape)
 
     res = dpnp.ascontiguousarray(res)
+    return res
+
+
+def _gemm_matmul(exec_q, x1, x2, res, dev_tasks_list):
+    ht_blas_ev, _, row_major = bi._gemm(
+        exec_q,
+        dpnp.get_usm_ndarray(x1),
+        dpnp.get_usm_ndarray(x2),
+        dpnp.get_usm_ndarray(res),
+        dev_tasks_list,
+    )
+    ht_blas_ev.wait()
+
+    if not row_major:
+        # TODO: investigate the possibility of defining result
+        # array with "F" order for this case
+        res = dpnp.ascontiguousarray(
+            dpnp.reshape(res.ravel(), res.shape, order="F")
+        )
+
     return res
 
 
@@ -2112,61 +2132,51 @@ def dpnp_matmul(
             x1, x2, out, res_shape, compute_dtype, res_usm_type, exec_q
         )
 
-    # calculate result
-    if res.size == 0:
-        pass
-    elif x1.size == 0 or x2.size == 0:
-        res.fill(0)
-    else:
-        # input arrays should have the proper data type and
-        # their base (last 2-dimensions) to be c-contiguous or f-contiguous
-        dep_events_list = []
-        host_tasks_list = []
-        contig_flag = _define_contig_flag(x1)
-        x1 = _copy_array(
-            x1,
-            dep_events_list,
-            host_tasks_list,
-            copy_flag=not contig_flag,
-            dtype=compute_dtype,
-        )
-        contig_flag = _define_contig_flag(x2)
-        x2 = _copy_array(
-            x2,
-            dep_events_list,
-            host_tasks_list,
-            copy_flag=not contig_flag,
-            dtype=compute_dtype,
-        )
-
-        row_major = True
-        ht_blas_ev = []
-        if call_flag == "gemm":
-            ht_blas_ev, _, row_major = bi._gemm(
-                exec_q,
-                dpnp.get_usm_ndarray(x1),
-                dpnp.get_usm_ndarray(x2),
-                dpnp.get_usm_ndarray(res),
-                dep_events_list,
-            )
-        elif call_flag == "gemm_batch":
-            res = _gemm_batch_matmul(
-                exec_q,
+        # calculate result
+        if res.size == 0:
+            pass
+        elif x1.size == 0 or x2.size == 0:
+            res.fill(0)
+        else:
+            # input arrays should have the proper data type and
+            # their base (last 2-dimensions) to be c-contiguous or f-contiguous
+            dep_events_list = []
+            host_tasks_list = []
+            contig_flag = _define_contig_flag(x1)
+            x1 = _copy_array(
                 x1,
-                x2,
-                res,
                 dep_events_list,
+                host_tasks_list,
+                copy_flag=not contig_flag,
+                dtype=compute_dtype,
+            )
+            contig_flag = _define_contig_flag(x2)
+            x2 = _copy_array(
+                x2,
+                dep_events_list,
+                host_tasks_list,
+                copy_flag=not contig_flag,
+                dtype=compute_dtype,
             )
 
-        if ht_blas_ev:
-            host_tasks_list.append(ht_blas_ev)
-        dpctl.SyclEvent.wait_for(host_tasks_list)
-        if not row_major:
-            # TODO: investigate the possibility of defining result
-            # array with "F" order for this case
-            res = dpnp.ascontiguousarray(
-                dpnp.reshape(res.ravel(), res.shape, order="F")
-            )
+            if call_flag == "gemm":
+                res = _gemm_matmul(
+                    exec_q,
+                    x1,
+                    x2,
+                    res,
+                    dep_events_list,
+                )
+            elif call_flag == "gemm_batch":
+                res = _gemm_batch_matmul(
+                    exec_q,
+                    x1,
+                    x2,
+                    res,
+                    dep_events_list,
+                )
+
+            dpctl.SyclEvent.wait_for(host_tasks_list)
 
     if NumPy_special_behavior:
         result = dpnp.tile(res, out.shape)
