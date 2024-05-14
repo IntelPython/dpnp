@@ -841,20 +841,24 @@ class dpnp_array:
 
         Parameters
         ----------
-        order: {'C', 'F', 'A', 'K'}, optional
-            'C' means to flatten in row-major (C-style) order.
-            'F' means to flatten in column-major (Fortran- style) order.
-            'A' means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
-            'K' means to flatten a in the order the elements occur in memory. The default is 'C'.
+        order : {"C", "F"}, optional
+            Read the elements using this index order, and place the elements
+            into the reshaped array using this index order. ``"C"`` means to
+            read / write the elements using C-like index order, with the last
+            axis index changing fastest, back to the first axis index changing
+            slowest. ``"F"`` means to read / write the elements using
+            Fortran-like index order, with the first index changing fastest,
+            and the last index changing slowest.
 
         Returns
         -------
-        out: ndarray
+        out: dpnp.ndarray
             A copy of the input array, flattened to one dimension.
 
         See Also
         --------
-        :obj:`dpnp.ravel`, :obj:`dpnp.flat`
+        :obj:`dpnp.ravel` : Return a flattened array.
+        :obj:`dpnp.flat` : A 1-D flat iterator over the array.
 
         Examples
         --------
@@ -862,18 +866,12 @@ class dpnp_array:
         >>> a = np.array([[1, 2], [3, 4]])
         >>> a.flatten()
         array([1, 2, 3, 4])
-        >>> a.flatten('F')
+        >>> a.flatten("F")
         array([1, 3, 2, 4])
 
         """
 
-        res = dpnp.reshape(self, -1, order=order)
-        if res._array_obj._pointer == self._array_obj._pointer:
-            # Return copy of result if result use same memory as array.
-            return res.copy()
-        else:
-            # dpnp.reshape returned a copy of the result. No need for an additional copy
-            return res
+        return dpnp.reshape(self, -1, order=order, copy=True)
 
     # 'getfield',
 
