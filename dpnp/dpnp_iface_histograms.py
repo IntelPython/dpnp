@@ -403,7 +403,7 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
     >>> shared_bins
     array([0., 1., 2., 3., 4., 5.])
 
-    >>> gid = np.array([0, 1, 1, 0, 1, 1, 0, 1, 1], sycl_queue=arr.sycl_queue)
+    >>> gid = np.array([0, 1, 1, 0, 1, 1, 0, 1, 1])
     >>> hist_0, _ = np.histogram(arr[gid == 0], bins=shared_bins)
     >>> hist_1, _ = np.histogram(arr[gid == 1], bins=shared_bins)
 
