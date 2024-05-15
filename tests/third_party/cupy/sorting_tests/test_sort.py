@@ -203,7 +203,7 @@ class TestSort(unittest.TestCase):
 
     # Large case
 
-    @pytest.mark.skip()
+    # @pytest.mark.skip()
     @testing.slow
     @testing.numpy_cupy_array_equal()
     def test_large(self, xp):
