@@ -1130,6 +1130,7 @@ def _norm_tuple_axis(x, ord, row_axis, col_axis, keepdims):
 
     """
 
+    axis = (row_axis, col_axis)
     if row_axis == col_axis:
         raise ValueError("Duplicate axes given.")
     if ord == 2:
@@ -1153,7 +1154,6 @@ def _norm_tuple_axis(x, ord, row_axis, col_axis, keepdims):
             row_axis -= 1
         ret = dpnp.abs(x).sum(axis=col_axis).min(axis=row_axis)
     elif ord in [None, "fro", "f"]:
-        axis = (row_axis, col_axis)
         ret = dpnp.sqrt(dpnp.sum((dpnp.conj(x) * x).real, axis=axis))
     elif ord == "nuc":
         ret = _multi_svd_norm(x, row_axis, col_axis, dpnp.sum)
@@ -1162,8 +1162,8 @@ def _norm_tuple_axis(x, ord, row_axis, col_axis, keepdims):
 
     if keepdims:
         ret_shape = list(x.shape)
-        ret_shape[row_axis] = 1
-        ret_shape[col_axis] = 1
+        ret_shape[axis[0]] = 1
+        ret_shape[axis[1]] = 1
         ret = ret.reshape(ret_shape)
     return ret
 
