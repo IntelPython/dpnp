@@ -343,7 +343,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
 
 def histogram_bin_edges(a, bins=10, range=None, weights=None):
-    r"""
+    """
     Function to calculate only the edges of the bins used by the
     :obj:`dpnp.histogram` function.
 
