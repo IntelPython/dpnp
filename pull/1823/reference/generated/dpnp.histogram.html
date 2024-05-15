@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.histogram &mdash; Data Parallel Extension for NumPy 0.15.0dev1+68.gd04a011e87 documentation</title>
+  <title>dpnp.histogram &mdash; Data Parallel Extension for NumPy 0.15.0dev1+69.g374cdc0c87 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7c883814"></script>
+        <script src="../../_static/documentation_options.js?v=c55bf2ee"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+68.gd04a011e87
+                0.15.0dev1+69.g374cdc0c87
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -146,12 +146,12 @@ affects the automatic bin computation as well. While bin width is
 computed to be optimal based on the actual data within <cite>range</cite>, the bin
 count will fill the entire range including portions containing no data.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>density</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the result will contain the number of samples in each bin.
-If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the result is the value of the probability <em>density</em>
-function at the bin, normalized such that the <em>integral</em> over the range
-is <code class="docutils literal notranslate"><span class="pre">1</span></code>. Note that the sum of the histogram values will not be equal
-to <code class="docutils literal notranslate"><span class="pre">1</span></code> unless bins of unity width are chosen; it is not a probability
-<em>mass</em> function.
+<li><p><strong>density</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>, the result will contain the number of samples
+in each bin. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the result is the value of the probability
+<em>density</em> function at the bin, normalized such that the <em>integral</em> over
+the range is <code class="docutils literal notranslate"><span class="pre">1</span></code>. Note that the sum of the histogram values will not
+be equal to <code class="docutils literal notranslate"><span class="pre">1</span></code> unless bins of unity width are chosen; it is not
+a probability <em>mass</em> function.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>weights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- An array of weights, of the same shape as <cite>a</cite>. Each value in <cite>a</cite> only
 contributes its associated weight towards the bin count (instead of 1).
