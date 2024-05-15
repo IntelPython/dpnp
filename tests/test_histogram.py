@@ -15,6 +15,7 @@ import dpnp
 from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
+    get_float_dtypes,
     has_support_aspect64,
 )
 
@@ -389,3 +390,30 @@ class TestHistogram:
         w = dpnp.arange(7, 12, sycl_queue=dpctl.SyclQueue())
         with assert_raises(ValueError):
             dpnp.histogram(v, weights=w)
+
+
+class TestHistogramBinEdges:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    def test_basic(self, dtype):
+        bins = [1, 2]
+        v = numpy.array([1, 2, 3, 4], dtype=dtype)
+        iv = dpnp.array(v)
+
+        expected_edges = numpy.histogram_bin_edges(v, bins=bins)
+        result_edges = dpnp.histogram_bin_edges(iv, bins=bins)
+        assert_array_equal(result_edges, expected_edges)
+
+    @pytest.mark.parametrize("range", [(-0.5, 5), (0, 1)])
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_range(self, range, dtype):
+        bins = 30
+        v = numpy.array(
+            [0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 3.0, 4.0, 5.0], dtype=dtype
+        )
+        iv = dpnp.array(v)
+
+        expected_edges = numpy.histogram_bin_edges(v, bins=bins, range=range)
+        result_edges = dpnp.histogram_bin_edges(iv, bins=bins, range=range)
+        assert_dtype_allclose(result_edges, expected_edges)
