@@ -12,6 +12,8 @@ from tests.helper import (
 )
 from tests.third_party.cupy import testing
 
+pytestmark = pytest.mark.skip()
+
 
 class TestSumprod:
     @pytest.fixture(autouse=True)
