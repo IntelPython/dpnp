@@ -234,12 +234,12 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         count will fill the entire range including portions containing no data.
         Default: ``None``.
     density : {None, bool}, optional
-        If ``False``, the result will contain the number of samples in each bin.
-        If ``True``, the result is the value of the probability *density*
-        function at the bin, normalized such that the *integral* over the range
-        is ``1``. Note that the sum of the histogram values will not be equal
-        to ``1`` unless bins of unity width are chosen; it is not a probability
-        *mass* function.
+        If ``False`` or ``None``, the result will contain the number of samples
+        in each bin. If ``True``, the result is the value of the probability
+        *density* function at the bin, normalized such that the *integral* over
+        the range is ``1``. Note that the sum of the histogram values will not
+        be equal to ``1`` unless bins of unity width are chosen; it is not
+        a probability *mass* function.
         Default: ``None``.
     weights : {None, dpnp.ndarray, usm_ndarray}, optional
         An array of weights, of the same shape as `a`. Each value in `a` only
