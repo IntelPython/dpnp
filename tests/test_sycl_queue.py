@@ -426,6 +426,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("fabs", [-1.2, 1.2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1.0, 2.0, 4.0, 7.0, 11.0, 16.0]),
+        pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
         pytest.param(
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
@@ -621,6 +622,11 @@ def test_reduce_hypot(device):
             [2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
         ),
         pytest.param(
+            "histogram_bin_edges",
+            [0, 0, 0, 1, 2, 3, 3, 4, 5],
+            [1, 2],
+        ),
+        pytest.param(
             "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
@@ -792,13 +798,25 @@ def test_2in_1out_diff_queue_but_equal_context(func, device):
 @pytest.mark.parametrize(
     "shape_pair",
     [
+        ((2, 4), (4,)),
+        ((4,), (4, 3)),
         ((2, 4), (4, 3)),
+        ((2, 0), (0, 3)),
+        ((2, 4), (4, 0)),
         ((4, 2, 3), (4, 3, 5)),
+        ((4, 2, 3), (4, 3, 1)),
+        ((4, 1, 3), (4, 3, 5)),
         ((6, 7, 4, 3), (6, 7, 3, 5)),
     ],
     ids=[
+        "((2, 4), (4,))",
+        "((4,), (4, 3))",
         "((2, 4), (4, 3))",
+        "((2, 0), (0, 3))",
+        "((2, 4), (4, 0))",
         "((4, 2, 3), (4, 3, 5))",
+        "((4, 2, 3), (4, 3, 1))",
+        "((4, 1, 3), (4, 3, 5))",
         "((6, 7, 4, 3), (6, 7, 3, 5))",
     ],
 )
@@ -2115,4 +2133,25 @@ def test_histogram(weights, device):
     hist_queue = result_hist.sycl_queue
     edges_queue = result_edges.sycl_queue
     assert_sycl_queue_equal(hist_queue, iv.sycl_queue)
+    assert_sycl_queue_equal(edges_queue, iv.sycl_queue)
+
+
+@pytest.mark.parametrize("weights", [None, numpy.arange(7, 12)])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_histogram_bin_edges(weights, device):
+    v = numpy.arange(5)
+    w = weights
+
+    iv = dpnp.array(v, device=device)
+    iw = None if weights is None else dpnp.array(w, sycl_queue=iv.sycl_queue)
+
+    expected_edges = numpy.histogram_bin_edges(v, weights=w)
+    result_edges = dpnp.histogram_bin_edges(iv, weights=iw)
+    assert_dtype_allclose(result_edges, expected_edges)
+
+    edges_queue = result_edges.sycl_queue
     assert_sycl_queue_equal(edges_queue, iv.sycl_queue)

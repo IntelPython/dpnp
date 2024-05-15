@@ -47,6 +47,7 @@ import dpnp
 
 __all__ = [
     "histogram",
+    "histogram_bin_edges",
 ]
 
 # range is a keyword argument to many functions, so save the builtin so they can
@@ -173,6 +174,7 @@ def _get_bin_edges(a, bins, range, usm_type):
         # numpy's gh-10322 means that type resolution rules are dependent on
         # array shapes. To avoid this causing problems, we pick a type now and
         # stick with it throughout.
+        # pylint: disable=possibly-used-before-assignment
         bin_type = dpnp.result_type(first_edge, last_edge, a)
         if dpnp.issubdtype(bin_type, dpnp.integer):
             bin_type = dpnp.result_type(
@@ -218,20 +220,28 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         Input data. The histogram is computed over the flattened array.
     bins : {int, dpnp.ndarray, usm_ndarray, sequence of scalars}, optional
         If `bins` is an int, it defines the number of equal-width bins in the
-        given range (``10``, by default).
+        given range.
         If `bins` is a sequence, it defines a monotonically increasing array
         of bin edges, including the rightmost edge, allowing for non-uniform
         bin widths.
-        If `bins` is a string, it defines the method used to calculate the
-        optimal bin width, as defined by :obj:`dpnp.histogram_bin_edges`.
-    range : {2-tuple of float}, optional
+        Default: ``10``.
+    range : {None, 2-tuple of float}, optional
         The lower and upper range of the bins. If not provided, range is simply
         ``(a.min(), a.max())``. Values outside the range are ignored. The first
         element of the range must be less than or equal to the second. `range`
         affects the automatic bin computation as well. While bin width is
         computed to be optimal based on the actual data within `range`, the bin
         count will fill the entire range including portions containing no data.
-    weights : {dpnp.ndarray, usm_ndarray}, optional
+        Default: ``None``.
+    density : {None, bool}, optional
+        If ``False`` or ``None``, the result will contain the number of samples
+        in each bin. If ``True``, the result is the value of the probability
+        *density* function at the bin, normalized such that the *integral* over
+        the range is ``1``. Note that the sum of the histogram values will not
+        be equal to ``1`` unless bins of unity width are chosen; it is not
+        a probability *mass* function.
+        Default: ``None``.
+    weights : {None, dpnp.ndarray, usm_ndarray}, optional
         An array of weights, of the same shape as `a`. Each value in `a` only
         contributes its associated weight towards the bin count (instead of 1).
         If `density` is ``True``, the weights are normalized, so that the
@@ -239,13 +249,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         Please note that the ``dtype`` of `weights` will also become the
         ``dtype`` of the returned accumulator (`hist`), so it must be large
         enough to hold accumulated values as well.
-    density : {bool}, optional
-        If ``False``, the result will contain the number of samples in each bin.
-        If ``True``, the result is the value of the probability *density*
-        function at the bin, normalized such that the *integral* over the range
-        is ``1``. Note that the sum of the histogram values will not be equal
-        to ``1`` unless bins of unity width are chosen; it is not a probability
-        *mass* function.
+        Default: ``None``.
 
     Returns
     -------
@@ -332,6 +336,92 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     if density:
         db = dpnp.diff(bin_edges).astype(dpnp.default_float_type())
+        # pylint: disable=possibly-used-before-assignment
         return n / db / n.sum(), bin_edges
 
     return n, bin_edges
+
+
+def histogram_bin_edges(a, bins=10, range=None, weights=None):
+    """
+    Function to calculate only the edges of the bins used by the
+    :obj:`dpnp.histogram` function.
+
+    For full documentation refer to :obj:`numpy.histogram_bin_edges`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input data. The histogram is computed over the flattened array.
+    bins : {int, dpnp.ndarray, usm_ndarray, sequence of scalars}, optional
+        If `bins` is an int, it defines the number of equal-width bins in the
+        given range.
+        If `bins` is a sequence, it defines the bin edges, including the
+        rightmost edge, allowing for non-uniform bin widths.
+        Default: ``10``.
+    range : {None, 2-tuple of float}, optional
+        The lower and upper range of the bins. If not provided, range is simply
+        ``(a.min(), a.max())``. Values outside the range are ignored. The first
+        element of the range must be less than or equal to the second. `range`
+        affects the automatic bin computation as well. While bin width is
+        computed to be optimal based on the actual data within `range`, the bin
+        count will fill the entire range including portions containing no data.
+        Default: ``None``.
+    weights : {None, dpnp.ndarray, usm_ndarray}, optional
+        An array of weights, of the same shape as `a`. Each value in `a` only
+        contributes its associated weight towards the bin count (instead of 1).
+        This is currently not used by any of the bin estimators, but may be in
+        the future.
+        Default: ``None``.
+
+    Returns
+    -------
+    bin_edges : {dpnp.ndarray of floating data type}
+        The edges to pass into :obj:`dpnp.histogram`.
+
+    See Also
+    --------
+    :obj:`dpnp.histogram` : Compute the histogram of a data set.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> arr = np.array([0, 0, 0, 1, 2, 3, 3, 4, 5])
+    >>> np.histogram_bin_edges(arr, bins=2)
+    array([0. , 2.5, 5. ])
+
+    For consistency with histogram, an array of pre-computed bins is
+    passed through unmodified:
+
+    >>> np.histogram_bin_edges(arr, [1, 2])
+    array([1, 2])
+
+    This function allows one set of bins to be computed, and reused across
+    multiple histograms:
+
+    >>> shared_bins = np.histogram_bin_edges(arr, bins=5)
+    >>> shared_bins
+    array([0., 1., 2., 3., 4., 5.])
+
+    >>> gid = np.array([0, 1, 1, 0, 1, 1, 0, 1, 1])
+    >>> hist_0, _ = np.histogram(arr[gid == 0], bins=shared_bins)
+    >>> hist_1, _ = np.histogram(arr[gid == 1], bins=shared_bins)
+
+    >>> hist_0, hist_1
+    (array([1, 1, 0, 1, 0]), array([2, 0, 1, 1, 2]))
+
+    Which gives more easily comparable results than using separate bins for
+    each histogram:
+
+    >>> hist_0, bins_0 = np.histogram(arr[gid == 0], bins=3)
+    >>> hist_1, bins_1 = np.histogram(arr[gid == 1], bins=4)
+    >>> hist_0, hist_1
+    (array([1, 1, 1]), array([2, 1, 1, 2]))
+    >>> bins_0, bins_1
+    (array([0., 1., 2., 3.]), array([0.  , 1.25, 2.5 , 3.75, 5.  ]))
+
+    """
+
+    a, weights, usm_type = _ravel_check_a_and_weights(a, weights)
+    bin_edges, _ = _get_bin_edges(a, bins, range, usm_type)
+    return bin_edges
