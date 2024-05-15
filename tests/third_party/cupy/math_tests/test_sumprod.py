@@ -12,7 +12,7 @@ from tests.helper import (
 )
 from tests.third_party.cupy import testing
 
-pytestmark = pytest.mark.skip()
+# pytestmark = pytest.mark.skip()
 
 
 class TestSumprod:
@@ -65,6 +65,7 @@ class TestSumprod:
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return a.sum(axis=1)
 
+    @pytest.mark.skip()
     @testing.slow
     @testing.numpy_cupy_allclose()
     def test_sum_axis_huge(self, xp):
