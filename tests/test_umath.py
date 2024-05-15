@@ -2,6 +2,7 @@ import numpy
 import pytest
 from numpy.testing import (
     assert_allclose,
+    assert_raises,
 )
 
 import dpnp
@@ -10,7 +11,6 @@ from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
     get_float_complex_dtypes,
-    get_float_dtypes,
     has_support_aspect16,
     has_support_aspect64,
 )
@@ -264,10 +264,8 @@ class TestUmath:
     def test_invalid_out(self, func_params, out):
         func_name = func_params["func_name"]
         a = dpnp.arange(10)
-        numpy.testing.assert_raises(TypeError, getattr(dpnp, func_name), a, out)
-        numpy.testing.assert_raises(
-            TypeError, getattr(numpy, func_name), a.asnumpy(), out
-        )
+        assert_raises(TypeError, getattr(dpnp, func_name), a, out)
+        assert_raises(TypeError, getattr(numpy, func_name), a.asnumpy(), out)
 
 
 class TestCbrt:
@@ -351,7 +349,7 @@ class TestRsqrt:
     )
     def test_invalid_out(self, out):
         a = dpnp.arange(10)
-        numpy.testing.assert_raises(TypeError, dpnp.rsqrt, a, out)
+        assert_raises(TypeError, dpnp.rsqrt, a, out)
 
 
 class TestSquare:
@@ -395,8 +393,8 @@ class TestSquare:
     def test_invalid_out(self, out):
         a = dpnp.arange(10)
 
-        numpy.testing.assert_raises(TypeError, dpnp.square, a, out)
-        numpy.testing.assert_raises(TypeError, numpy.square, a.asnumpy(), out)
+        assert_raises(TypeError, dpnp.square, a, out)
+        assert_raises(TypeError, numpy.square, a.asnumpy(), out)
 
 
 class TestReciprocal:

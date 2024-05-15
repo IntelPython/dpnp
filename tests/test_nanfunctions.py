@@ -22,7 +22,7 @@ from .helper import (
 )
 
 
-class TestNanargmaxNanargmin:
+class TestNanArgmaxNanArgmin:
     @pytest.mark.parametrize("func", ["nanargmin", "nanargmax"])
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2])
     @pytest.mark.parametrize("keepdims", [False, True])
@@ -201,7 +201,7 @@ class TestNanCumSumProd:
         assert result is iout
 
 
-class TestNanmaxNanmin:
+class TestNanMaxNanMin:
     @pytest.mark.parametrize("func", ["nanmax", "nanmin"])
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
     @pytest.mark.parametrize("keepdims", [False, True])
