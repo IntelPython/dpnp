@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.astype
+===================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.astype
