@@ -36,6 +36,8 @@ it contains:
 
 """
 
+# pylint: disable=invalid-name
+# pylint: disable=no-member
 
 import numpy
 
@@ -158,8 +160,9 @@ def cond(x, p=None):
         The matrix whose condition number is sought.
     p : {None, 1, -1, 2, -2, inf, -inf, "fro"}, optional
         Order of the norm used in the condition number computation.
-        inf means the `dpnp.inf` object, and the Frobenius norm is
-        the root-of-sum-of-squares norm. The default is ``None``.
+        ``inf`` means the `dpnp.inf` object, and the Frobenius norm is
+        the root-of-sum-of-squares norm.
+        Default: ``None``.
 
     Returns
     -------
@@ -194,7 +197,9 @@ def cond(x, p=None):
     array(1.41421356)
     >>> np.linalg.cond(a, -2)
     array(0.70710678) # may vary
-    >>> min(np.linalg.svd(a, compute_uv=False))*min(np.linalg.svd(np.linalg.inv(a), compute_uv=False))
+    >>> x = min(np.linalg.svd(a, compute_uv=False))
+    >>> y = min(np.linalg.svd(np.linalg.inv(a), compute_uv=False))
+    >>> x * y
     array(0.70710678) # may vary
 
     """
@@ -221,7 +226,8 @@ def det(a):
 
     See Also
     --------
-    :obj:`dpnp.linalg.slogdet` : Returns sign and logarithm of the determinant of an array.
+    :obj:`dpnp.linalg.slogdet` : Returns sign and logarithm of the determinant
+                                 of an array.
 
     Examples
     --------
@@ -283,10 +289,11 @@ def eig(a):
     See Also
     --------
     :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.
-    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian
-                              (conjugate symmetric) or a real symmetric matrix.
-    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or
-                                  real symmetric matrix.
+    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of
+                              a complex Hermitian (conjugate symmetric) or
+                              a real symmetric matrix.
+    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex
+                                  Hermitian or real symmetric matrix.
 
     Examples
     --------
@@ -351,8 +358,6 @@ def eig(a):
 
 def eigh(a, UPLO="L"):
     """
-    eigh(a, UPLO="L")
-
     Return the eigenvalues and eigenvectors of a complex Hermitian
     (conjugate symmetric) or a real symmetric matrix.
 
@@ -365,7 +370,8 @@ def eigh(a, UPLO="L"):
     Parameters
     ----------
     a : (..., M, M) {dpnp.ndarray, usm_ndarray}
-        A complex- or real-valued array whose eigenvalues and eigenvectors are to be computed.
+        A complex- or real-valued array whose eigenvalues and eigenvectors are
+        to be computed.
     UPLO : {"L", "U"}, optional
         Specifies the calculation uses either the lower ("L") or upper ("U")
         triangular part of the matrix.
@@ -373,7 +379,7 @@ def eigh(a, UPLO="L"):
         considered to preserve the Hermite matrix property.
         It therefore follows that the imaginary part of the diagonal
         will always be treated as zero.
-        Default: "L".
+        Default: ``"L"``.
 
     Returns
     -------
@@ -386,8 +392,8 @@ def eigh(a, UPLO="L"):
 
     See Also
     --------
-    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or
-                                  real symmetric matrix.
+    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex
+                                  Hermitian or real symmetric matrix.
     :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of
                              a square array.
     :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.
@@ -443,11 +449,13 @@ def eigvals(a):
 
     See Also
     --------
-    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of a square array.
-    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or
-                                  real symmetric matrix.
-    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian
-                              (conjugate symmetric) or a real symmetric matrix.
+    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of
+                             a square array.
+    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex
+                                  Hermitian or real symmetric matrix.
+    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of
+                              a complex Hermitian (conjugate symmetric) or
+                              a real symmetric matrix.
 
     Examples
     --------
@@ -465,7 +473,8 @@ def eigvals(a):
     >>> LA.norm(Q[0, :]), LA.norm(Q[1, :]), np.dot(Q[0, :],Q[1, :])
     (array(1.), array(1.), array(0.))
 
-    Now multiply a diagonal matrix by ``Q`` on one side and by ``Q.T`` on the other:
+    Now multiply a diagonal matrix by ``Q`` on one side and by ``Q.T`` on the
+    other:
 
     >>> D = np.diag((-1,1))
     >>> LA.eigvals(D)
@@ -489,11 +498,10 @@ def eigvals(a):
 
 def eigvalsh(a, UPLO="L"):
     """
-    eigvalsh(a, UPLO="L")
-
     Compute the eigenvalues of a complex Hermitian or real symmetric matrix.
 
-    Main difference from :obj:`dpnp.linalg.eigh`: the eigenvectors are not computed.
+    Main difference from :obj:`dpnp.linalg.eigh`: the eigenvectors are not
+    computed.
 
     For full documentation refer to :obj:`numpy.linalg.eigvalsh`.
 
@@ -508,7 +516,7 @@ def eigvalsh(a, UPLO="L"):
         considered to preserve the Hermite matrix property.
         It therefore follows that the imaginary part of the diagonal
         will always be treated as zero.
-        Default: "L".
+        Default: ``"L"``.
 
     Returns
     -------
@@ -518,8 +526,9 @@ def eigvalsh(a, UPLO="L"):
 
     See Also
     --------
-    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian
-                              (conjugate symmetric) or a real symmetric matrix.
+    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of
+                              a complex Hermitian (conjugate symmetric)
+                              or a real symmetric matrix.
     :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.
     :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of
                              a general matrix.
@@ -611,13 +620,14 @@ def lstsq(a, b, rcond=None):
         Ordinate or "dependent variable" values.
         If `b` is two-dimensional, the least-squares solution
         is calculated for each of the `K` columns of `b`.
-    rcond : {int, float, None}, optional
+    rcond : {None, int, float}, optional
         Cut-off ratio for small singular values of `a`.
-        For the purposes of rank determination, singular values are treated
-        as zero if they are smaller than `rcond` times the largest singular
-        value of `a`.
-        The default uses the machine precision times ``max(M, N)``.  Passing
+        For the purposes of rank determination, singular values are treated as
+        zero if they are smaller than `rcond` times the largest singular value
+        of `a`.
+        The default uses the machine precision times ``max(M, N)``. Passing
         ``-1`` will use machine precision.
+        Default: ``None``.
 
     Returns
     -------
@@ -681,7 +691,8 @@ def matrix_power(a, n):
     a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         Matrix to be "powered".
     n : int
-        The exponent can be any integer or long integer, positive, negative, or zero.
+        The exponent can be any integer or long integer, positive, negative,
+        or zero.
 
     Returns
     -------
@@ -701,7 +712,7 @@ def matrix_power(a, n):
     >>> np.linalg.matrix_power(i, 0)
     array([[1, 0],
            [0, 1]])
-    >>> np.linalg.matrix_power(i, -3) # should = 1/(-i) = i, but w/ f.p. elements
+    >>> np.linalg.matrix_power(i, -3) # should 1/(-i) = i, but w/ f.p. elements
     array([[ 0.,  1.],
            [-1.,  0.]])
 
@@ -746,13 +757,14 @@ def matrix_rank(A, tol=None, hermitian=False):
         Input vector or stack of matrices.
     tol : (...) {float, dpnp.ndarray, usm_ndarray}, optional
         Threshold below which SVD values are considered zero. If `tol` is
-        None, and ``S`` is an array with singular values for `M`, and
+        ``None``, and ``S`` is an array with singular values for `M`, and
         ``eps`` is the epsilon value for datatype of ``S``, then `tol` is
         set to ``S.max() * max(M.shape) * eps``.
-    hermitian : {bool}, optional
-        If True, `A` is assumed to be Hermitian (symmetric if real-valued),
+        Default: ``None``.
+    hermitian : bool, optional
+        If ``True``, `A` is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
-        Defaults to False.
+        Default: ``False``.
 
     Returns
     -------
@@ -806,6 +818,7 @@ def multi_dot(arrays, *, out=None):
         C-contiguous, and its dtype must be the dtype that would be returned
         for `dot(a, b)`. If these conditions are not met, an exception is
         raised, instead of attempting to be flexible.
+        Default: ``None``.
 
     Returns
     -------
@@ -853,56 +866,6 @@ def multi_dot(arrays, *, out=None):
     return dpnp_multi_dot(n, arrays, out)
 
 
-def pinv(a, rcond=1e-15, hermitian=False):
-    """
-    Compute the (Moore-Penrose) pseudo-inverse of a matrix.
-
-    Calculate the generalized inverse of a matrix using its
-    singular-value decomposition (SVD) and including all large singular values.
-
-    For full documentation refer to :obj:`numpy.linalg.inv`.
-
-    Parameters
-    ----------
-    a : (..., M, N) {dpnp.ndarray, usm_ndarray}
-        Matrix or stack of matrices to be pseudo-inverted.
-    rcond : {float, dpnp.ndarray, usm_ndarray}, optional
-        Cutoff for small singular values.
-        Singular values less than or equal to ``rcond * largest_singular_value``
-        are set to zero. Broadcasts against the stack of matrices.
-        Default: ``1e-15``.
-    hermitian : {bool}, optional
-        If ``True``, a is assumed to be Hermitian (symmetric if real-valued),
-        enabling a more efficient method for finding singular values.
-        Default: ``False``.
-
-    Returns
-    -------
-    out : (..., N, M) dpnp.ndarray
-        The pseudo-inverse of a.
-
-    Examples
-    --------
-    The following example checks that ``a * a+ * a == a`` and
-    ``a+ * a * a+ == a+``:
-
-    >>> import dpnp as np
-    >>> a = np.random.randn(9, 6)
-    >>> B = np.linalg.pinv(a)
-    >>> np.allclose(a, np.dot(a, np.dot(B, a)))
-    array([ True])
-    >>> np.allclose(B, np.dot(B, np.dot(a, B)))
-    array([ True])
-
-    """
-
-    dpnp.check_supported_arrays_type(a)
-    dpnp.check_supported_arrays_type(rcond, scalar_type=True, all_scalars=True)
-    assert_stacked_2d(a)
-
-    return dpnp_pinv(a, rcond=rcond, hermitian=hermitian)
-
-
 def norm(x, ord=None, axis=None, keepdims=False):
     """
     Matrix or vector norm.
@@ -923,11 +886,12 @@ def norm(x, ord=None, axis=None, keepdims=False):
         axes that hold 2-D matrices, and the matrix norms of these matrices
         are computed. If `axis` is ``None`` then either a vector norm (when
         `x` is 1-D) or a matrix norm (when `x` is 2-D) is returned.
-        The default is ``None``.
-    keepdims : {None, bool}, optional
+        Default: ``False``.
+    keepdims : bool, optional
         If this is set to ``True``, the axes which are normed over are left in
         the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
+        Default: ``False``.
 
     Returns
     -------
@@ -1008,6 +972,56 @@ def norm(x, ord=None, axis=None, keepdims=False):
     return dpnp_norm(x, ord, axis, keepdims)
 
 
+def pinv(a, rcond=1e-15, hermitian=False):
+    """
+    Compute the (Moore-Penrose) pseudo-inverse of a matrix.
+
+    Calculate the generalized inverse of a matrix using its
+    singular-value decomposition (SVD) and including all large singular values.
+
+    For full documentation refer to :obj:`numpy.linalg.inv`.
+
+    Parameters
+    ----------
+    a : (..., M, N) {dpnp.ndarray, usm_ndarray}
+        Matrix or stack of matrices to be pseudo-inverted.
+    rcond : {float, dpnp.ndarray, usm_ndarray}, optional
+        Cutoff for small singular values.
+        Singular values less than or equal to ``rcond * largest_singular_value``
+        are set to zero. Broadcasts against the stack of matrices.
+        Default: ``1e-15``.
+    hermitian : {bool}, optional
+        If ``True``, a is assumed to be Hermitian (symmetric if real-valued),
+        enabling a more efficient method for finding singular values.
+        Default: ``False``.
+
+    Returns
+    -------
+    out : (..., N, M) dpnp.ndarray
+        The pseudo-inverse of a.
+
+    Examples
+    --------
+    The following example checks that ``a * a+ * a == a`` and
+    ``a+ * a * a+ == a+``:
+
+    >>> import dpnp as np
+    >>> a = np.random.randn(9, 6)
+    >>> B = np.linalg.pinv(a)
+    >>> np.allclose(a, np.dot(a, np.dot(B, a)))
+    array([ True])
+    >>> np.allclose(B, np.dot(B, np.dot(a, B)))
+    array([ True])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    dpnp.check_supported_arrays_type(rcond, scalar_type=True, all_scalars=True)
+    assert_stacked_2d(a)
+
+    return dpnp_pinv(a, rcond=rcond, hermitian=hermitian)
+
+
 def qr(a, mode="reduced"):
     """
     Compute the qr factorization of a matrix.
@@ -1046,8 +1060,8 @@ def qr(a, mode="reduced"):
         The upper-triangular matrix or a stack of upper-triangular matrices
         if the number of dimensions in the input array is greater than 2.
     (h, tau) : tuple of dpnp.ndarray
-        The h array contains the Householder reflectors that generate Q along with R.
-        The tau array contains scaling factors for the reflectors.
+        The `h` array contains the Householder reflectors that generate Q along
+        with R. The `tau` array contains scaling factors for the reflectors.
 
     Examples
     --------
@@ -1122,8 +1136,7 @@ def solve(a, b):
     assert_stacked_square(a)
 
     if not (
-        (a.ndim == b.ndim or a.ndim == b.ndim + 1)
-        and a.shape[:-1] == b.shape[: a.ndim - 1]
+        a.ndim in [b.ndim, b.ndim + 1] and a.shape[:-1] == b.shape[: a.ndim - 1]
     ):
         raise dpnp.linalg.LinAlgError(
             "a must have (..., M, M) shape and b must have (..., M) "
@@ -1161,12 +1174,12 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
         Unitary matrix, where M is the number of rows of the input array `a`.
         The shape of the matrix `u` depends on the value of `full_matrices`.
         If `full_matrices` is ``True``, `u` has the shape (…, M, M).
-        If `full_matrices` is ``False``, `u` has the shape (…, M, K),
-        where K = min(M, N), and N is the number of columns of the input array `a`.
+        If `full_matrices` is ``False``, `u` has the shape (…, M, K), where
+        K = min(M, N), and N is the number of columns of the input array `a`.
         If `compute_uv` is ``False``, neither `u` or `Vh` are computed.
     s : (…, K) dpnp.ndarray
-        Vector containing the singular values of `a`, sorted in descending order.
-        The length of `s` is min(M, N).
+        Vector containing the singular values of `a`, sorted in descending
+        order. The length of `s` is min(M, N).
     Vh : { (…, N, N), (…, K, N) } dpnp.ndarray
         Unitary matrix, where N is the number of columns of the input array `a`.
         The shape of the matrix `Vh` depends on the value of `full_matrices`.
@@ -1301,7 +1314,7 @@ def tensorinv(a, ind=2):
     ind : int, optional
         Number of first indices that are involved in the inverse sum.
         Must be a positive integer.
-        Default: 2.
+        Default: ``2``.
 
     Returns
     -------
@@ -1311,8 +1324,10 @@ def tensorinv(a, ind=2):
 
     See Also
     --------
-    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.
-    :obj:`dpnp.linalg.tensorsolve` : Solve the tensor equation ``a x = b`` for x.
+    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified
+                                   axes.
+    :obj:`dpnp.linalg.tensorsolve` : Solve the tensor equation
+                                     ``a x = b`` for x.
 
     Examples
     --------
@@ -1361,7 +1376,7 @@ def tensorsolve(a, b, axes=None):
         'square').
     b : {dpnp.ndarray, usm_ndarray}
         Right-hand tensor, which can be of any shape.
-    axes : tuple of ints, optional
+    axes : {None, tuple of ints}, optional
         Axes in `a` to reorder to the right, before inversion.
         If ``None`` , no reordering is done.
         Default: ``None``.
@@ -1373,9 +1388,12 @@ def tensorsolve(a, b, axes=None):
 
     See Also
     --------
-    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.
-    :obj:`dpnp.linalg.tensorinv` : Compute the 'inverse' of an N-dimensional array.
-    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
+    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified
+                                   axes.
+    :obj:`dpnp.linalg.tensorinv` : Compute the 'inverse' of an N-dimensional
+                                   array.
+    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the
+                         operands.
 
     Examples
     --------
@@ -1406,8 +1424,8 @@ def tensorsolve(a, b, axes=None):
 
     if a.size != prod**2:
         raise dpnp.linalg.LinAlgError(
-            "Input arrays must satisfy the requirement \
-            prod(a.shape[b.ndim:]) == prod(a.shape[:b.ndim])"
+            "Input arrays must satisfy the requirement "
+            "prod(a.shape[b.ndim:]) == prod(a.shape[:b.ndim])"
         )
 
     a = a.reshape(-1, prod)

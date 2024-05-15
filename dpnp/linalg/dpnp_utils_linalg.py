@@ -27,13 +27,12 @@
 Helping functions to implement the Linear Algebra interface.
 
 These include assetion functions to validate input arrays and
-functions with the main implementation part to fullfil the interface.
+functions with the main implementation part to fulfill the interface.
 The main computational work is performed by enabling LAPACK functions
 available as a pybind11 extension.
 
 """
 
-# pylint: disable=c-extension-no-member
 # pylint: disable=invalid-name
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
