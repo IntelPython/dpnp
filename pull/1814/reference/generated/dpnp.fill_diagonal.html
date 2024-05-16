@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fill_diagonal &mdash; Data Parallel Extension for NumPy 0.15.0dev1+52.g4eb7320a97 documentation</title>
+  <title>dpnp.fill_diagonal &mdash; Data Parallel Extension for NumPy 0.15.0dev1+69.g1ac24af4c6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3926740f"></script>
+        <script src="../../_static/documentation_options.js?v=99106289"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+52.g4eb7320a97
+                0.15.0dev1+69.g1ac24af4c6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -133,12 +133,12 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>array</em><em>, </em><em>at least 2-D.</em>) -- Array whose diagonal is to be filled in-place.</p></li>
-<li><p><strong>val</strong> (<em>scalar</em><em> or </em><em>array_like</em>) -- Value(s) to write on the diagonal. If <cite>val</cite> is scalar, the value is
+<li><p><strong>val</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Value(s) to write on the diagonal. If <cite>val</cite> is scalar, the value is
 written along the diagonal. If array-like, the flattened <cite>val</cite> is
 written along the diagonal, repeating if necessary to fill all
 diagonal entries.</p></li>
 <li><p><strong>wrap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) -- The diagonal &quot;wrapped&quot; after N columns. You can have this behavior
-with this option. This affects only tall matrices.</p></li>
+with this option. This affects only tall matrices. Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
