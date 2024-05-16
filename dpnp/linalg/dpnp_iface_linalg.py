@@ -990,7 +990,7 @@ def pinv(a, rcond=1e-15, hermitian=False):
         Singular values less than or equal to ``rcond * largest_singular_value``
         are set to zero. Broadcasts against the stack of matrices.
         Default: ``1e-15``.
-    hermitian : {bool}, optional
+    hermitian : bool, optional
         If ``True``, a is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
         Default: ``False``.
