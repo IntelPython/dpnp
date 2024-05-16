@@ -702,6 +702,23 @@ def _get_result_shape(x1, x2, out, np_flag):
     return x1, x2, result_shape
 
 
+def _dot_batch_matmul(x1, x2, res):
+    x1 = dpnp.reshape(x1, (-1, x1.shape[-1]))
+    x2 = dpnp.reshape(x2, (-1, x2.shape[-2]))
+    orig_shape = res.shape
+    res = dpnp.reshape(res, (-1, 1, 1))
+
+    batch_size = res.shape[0]
+    for i in range(0, batch_size):
+        # WRONG, now it waits for each calculation
+        # directly call bi._dot function
+        # or implement batch version in the backend
+        dpnp_dot(x1[i, :], x2[i, :], out=res[i, 0, 0])
+
+    if res.shape != orig_shape:
+        res = res.reshape(orig_shape)
+
+
 def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
     # arrays here are already at least 3D, make them 3D
     x1 = dpnp.reshape(x1, (-1, x1.shape[-2], x1.shape[-1]))
@@ -2029,7 +2046,7 @@ def dpnp_kron(a, b, a_ndim, b_ndim):
     ndim = max(b_ndim, a_ndim)
     a_arr = dpnp.expand_dims(a_arr, axis=tuple(range(1, 2 * ndim, 2)))
     b_arr = dpnp.expand_dims(b_arr, axis=tuple(range(0, 2 * ndim, 2)))
-    result = dpnp.multiply(a_arr, b_arr, order="C")
+    result = dpnp.multiply(a_arr, b_arr)
 
     # Reshape back
     return result.reshape(tuple(numpy.multiply(a_shape, b_shape)))
@@ -2090,7 +2107,7 @@ def dpnp_matmul(
     )
 
     # Determine the appropriate data types
-    compute_dtype, res_dtype = _compute_res_dtype(
+    compute_dtype, result_dtype = _compute_res_dtype(
         x1, x2, dtype=dtype, casting=casting, sycl_queue=exec_q
     )
 
@@ -2106,14 +2123,15 @@ def dpnp_matmul(
         res_shape = result_shape
     elif x1_shape[-1] == 1:
         call_flag = "multiply"
+        res_shape = result_shape
     elif x1_is_1D and x2_is_1D:
         call_flag = "dot"
         x1 = dpnp.reshape(x1, x1_shape[-1])
         if x2_ndim != 1:
             x2 = dpnp.reshape(x2, x2_shape[-2])
+        res_shape = ()
     elif x1_base_is_1D and x2_base_is_1D:
-        # TODO: implement a batch version of dot to use it here
-        call_flag = "gemm_batch"
+        call_flag = "dot_batch"
         res_shape = result_shape
     elif x1_is_1D and x2_is_2D:
         transpose = True
@@ -2151,81 +2169,81 @@ def dpnp_matmul(
         call_flag = "gemm_batch"
         res_shape = result_shape
 
-    if call_flag == "multiply":
-        res = dpnp.multiply(x1, x2)
-        res_shape = res.shape
-    elif call_flag == "dot":
-        if out is not None and out.shape != ():
-            res = dpnp_dot(x1, x2)
-        else:
-            res = dpnp_dot(x1, x2, out=out)
-        res_shape = res.shape
+    if call_flag in ["multiply", "dot", "dot_batch"]:
+        res_dtype = result_dtype
     else:
-        res = _create_result_array(
-            x1, x2, out, res_shape, compute_dtype, res_usm_type, exec_q
+        res_dtype = compute_dtype
+    res = _create_result_array(
+        x1, x2, out, res_shape, res_dtype, res_usm_type, exec_q
+    )
+
+    # calculate result
+    if res.size == 0:
+        pass
+    elif x1.size == 0 or x2.size == 0:
+        res.fill(0)
+    elif call_flag == "multiply":
+        dpnp.multiply(x1, x2, out=res)
+    elif call_flag == "dot":
+        dpnp_dot(x1, x2, out=res)
+    elif call_flag == "dot_batch":
+        _dot_batch_matmul(x1, x2, res)
+    else:
+        # input arrays should have the proper data type and
+        # their base (last 2-dimensions) to be c-contiguous or f-contiguous
+        dep_events_list = []
+        host_tasks_list = []
+        contig_flag = _define_contig_flag(x1)
+        x1 = _copy_array(
+            x1,
+            dep_events_list,
+            host_tasks_list,
+            copy_flag=not contig_flag,
+            dtype=compute_dtype,
+        )
+        contig_flag = _define_contig_flag(x2)
+        x2 = _copy_array(
+            x2,
+            dep_events_list,
+            host_tasks_list,
+            copy_flag=not contig_flag,
+            dtype=compute_dtype,
         )
 
-        # calculate result
-        if res.size == 0:
-            pass
-        elif x1.size == 0 or x2.size == 0:
-            res.fill(0)
-        else:
-            # input arrays should have the proper data type and
-            # their base (last 2-dimensions) to be c-contiguous or f-contiguous
-            dep_events_list = []
-            host_tasks_list = []
-            contig_flag = _define_contig_flag(x1)
-            x1 = _copy_array(
+        if call_flag == "gemv":
+            if transpose:
+                a_usm = dpnp.get_usm_ndarray(x2)
+                x_usm = dpnp.get_usm_ndarray(x1)
+            else:
+                a_usm = dpnp.get_usm_ndarray(x1)
+                x_usm = dpnp.get_usm_ndarray(x2)
+            ht_blas_ev, _ = bi._gemv(
+                exec_q,
+                a_usm,
+                x_usm,
+                dpnp.get_usm_ndarray(res),
+                transpose,
+                dep_events_list,
+            )
+            host_tasks_list.append(ht_blas_ev)
+        elif call_flag == "gemm":
+            res = _gemm_matmul(
+                exec_q,
                 x1,
-                dep_events_list,
-                host_tasks_list,
-                copy_flag=not contig_flag,
-                dtype=compute_dtype,
-            )
-            contig_flag = _define_contig_flag(x2)
-            x2 = _copy_array(
                 x2,
+                res,
                 dep_events_list,
-                host_tasks_list,
-                copy_flag=not contig_flag,
-                dtype=compute_dtype,
+            )
+        else:  # call_flag == "gemm_batch"
+            res = _gemm_batch_matmul(
+                exec_q,
+                x1,
+                x2,
+                res,
+                dep_events_list,
             )
 
-            if call_flag == "gemv":
-                if transpose:
-                    a_usm = dpnp.get_usm_ndarray(x2)
-                    x_usm = dpnp.get_usm_ndarray(x1)
-                else:
-                    a_usm = dpnp.get_usm_ndarray(x1)
-                    x_usm = dpnp.get_usm_ndarray(x2)
-                ht_blas_ev, _ = bi._gemv(
-                    exec_q,
-                    a_usm,
-                    x_usm,
-                    dpnp.get_usm_ndarray(res),
-                    transpose,
-                    dep_events_list,
-                )
-                host_tasks_list.append(ht_blas_ev)
-            elif call_flag == "gemm":
-                res = _gemm_matmul(
-                    exec_q,
-                    x1,
-                    x2,
-                    res,
-                    dep_events_list,
-                )
-            else:  # call_flag == "gemm_batch"
-                res = _gemm_batch_matmul(
-                    exec_q,
-                    x1,
-                    x2,
-                    res,
-                    dep_events_list,
-                )
-
-            dpctl.SyclEvent.wait_for(host_tasks_list)
+        dpctl.SyclEvent.wait_for(host_tasks_list)
 
     if NumPy_special_behavior:
         result = dpnp.tile(res, out.shape)
@@ -2236,8 +2254,8 @@ def dpnp_matmul(
             else res
         )
 
-    if compute_dtype != res_dtype:
-        result = dpnp.astype(result, res_dtype, copy=False)
+    if compute_dtype != result_dtype:
+        result = dpnp.astype(result, result_dtype, copy=False)
 
     if out is None:
         if axes is not None:
