@@ -173,8 +173,6 @@ void standardize_strides_to_nonzero(std::vector<py::ssize_t> &strides,
     // along that dimension is undefined. This function standardize the strides
     // by calculating the non-zero value of the strides.
     std::size_t ndim = strides.size();
-    std::vector<py::ssize_t> stndrd_strides(strides.size(), 0);
-
     bool has_zero_stride = std::accumulate(strides.begin(), strides.end(), 1,
                                            std::multiplies<py::ssize_t>{}) == 0;
 
