@@ -24,6 +24,16 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+"""
+``dpnp.linalg``
+================
+
+The DPNP linear algebra functions rely on BLAS and LAPACK to provide efficient
+low level implementations of standard linear algebra algorithms.
+
+"""
+
+
 from dpnp.linalg.dpnp_iface_linalg import *
 from dpnp.linalg.dpnp_iface_linalg import __all__ as __all__linalg
 
