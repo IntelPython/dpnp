@@ -181,10 +181,11 @@ DPCTLSyclEventRef dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
     _DataType *array_1 = input1_ptr.get_ptr();
     _DataType *result = result_ptr.get_ptr();
 
+    const size_t res_shape_ndim_sub_1 =
+        static_cast<size_t>(res_shape[res_ndim - 1]);
+
     if (res_ndim <= 1) {
-        for (size_t i = 0; i < static_cast<size_t>(res_shape[res_ndim - 1]);
-             ++i)
-        {
+        for (size_t i = 0; i < res_shape_ndim_sub_1; ++i) {
             result[i] = array_1[i * shape[res_ndim] + i + offset];
         }
     }
@@ -219,9 +220,7 @@ DPCTLSyclEventRef dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
             index += 1;
         }
 
-        for (size_t i = 0; i < static_cast<size_t>(res_shape[res_ndim - 1]);
-             i++)
-        {
+        for (size_t i = 0; i < res_shape_ndim_sub_1; i++) {
             for (size_t j = 0; j < xyz.size(); j++) {
                 std::vector<size_t> ind_list = xyz[j];
                 if (ind_list.size() == 0) {

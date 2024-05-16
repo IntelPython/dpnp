@@ -177,7 +177,7 @@ def choose(x1, choices, out=None, mode="raise"):
     return call_origin(numpy.choose, x1, choices, out, mode)
 
 
-def diag_indices(n, ndim=2):
+def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
     """
     Return the indices to access the main diagonal of an array.
 
@@ -192,11 +192,26 @@ def diag_indices(n, ndim=2):
     Parameters
     ----------
     n : int
-      The size, along each dimension, of the arrays for which the returned
-      indices can be used.
-
+        The size, along each dimension, of the arrays for which the returned
+        indices can be used.
     ndim : int, optional
-      The number of dimensions.
+        The number of dimensions. Default: ``2``.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Return
+    ------
+    out : tuple of dpnp.ndarray
+        The indices to access the main diagonal of an array.
 
     See also
     --------
@@ -242,11 +257,16 @@ def diag_indices(n, ndim=2):
 
     """
 
-    idx = dpnp.arange(n)
+    idx = dpnp.arange(
+        n,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
     return (idx,) * ndim
 
 
-def diag_indices_from(arr):
+def diag_indices_from(arr, device=None, usm_type=None, sycl_queue=None):
     """
     Return the indices to access the main diagonal of an n-dimensional array.
 
@@ -254,7 +274,24 @@ def diag_indices_from(arr):
 
     Parameters
     ----------
-    arr : array, at least 2-D
+    arr : dpnp.ndarray
+        Array at least 2-D
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Return
+    ------
+    out : tuple of dpnp.ndarray
+        The indices to access the main diagonal of an n-dimensional array.
 
     See also
     --------
@@ -289,6 +326,8 @@ def diag_indices_from(arr):
 
     """
 
+    dpnp.check_supported_arrays_type(arr)
+
     if not arr.ndim >= 2:
         raise ValueError("input array must be at least 2-d")
 
@@ -297,7 +336,16 @@ def diag_indices_from(arr):
         if sh != sh0:
             raise ValueError("All dimensions of input must be of equal length")
 
-    return diag_indices(sh0, arr.ndim)
+    _usm_type = arr.usm_type if usm_type is None else usm_type
+    _sycl_queue = dpnp.get_normalized_queue_device(
+        arr, sycl_queue=sycl_queue, device=device
+    )
+    return diag_indices(
+        sh0,
+        arr.ndim,
+        usm_type=_usm_type,
+        sycl_queue=_sycl_queue,
+    )
 
 
 def diagonal(x1, offset=0, axis1=0, axis2=1):
@@ -377,15 +425,15 @@ def fill_diagonal(a, val, wrap=False):
     Parameters
     ----------
     a : array, at least 2-D.
-      Array whose diagonal is to be filled in-place.
-    val : scalar or array_like
-      Value(s) to write on the diagonal. If `val` is scalar, the value is
-      written along the diagonal. If array-like, the flattened `val` is
-      written along the diagonal, repeating if necessary to fill all
-      diagonal entries.
+        Array whose diagonal is to be filled in-place.
+    val : {dpnp.ndarray, usm_ndarray, scalar}
+        Value(s) to write on the diagonal. If `val` is scalar, the value is
+        written along the diagonal. If array-like, the flattened `val` is
+        written along the diagonal, repeating if necessary to fill all
+        diagonal entries.
     wrap : bool
-      The diagonal "wrapped" after N columns. You can have this behavior
-      with this option. This affects only tall matrices.
+        The diagonal "wrapped" after N columns. You can have this behavior
+        with this option. This affects only tall matrices. Default: ``False``.
 
     See Also
     --------
@@ -619,13 +667,20 @@ def indices(
     return res
 
 
-def mask_indices(n, mask_func, k=0):
+def mask_indices(
+    n,
+    mask_func,
+    k=0,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Return the indices to access (n, n) arrays, given a masking function.
 
     Assume `mask_func` is a function that, for a square array a of size
     ``(n, n)`` with a possible offset argument `k`, when called as
-    ``mask_func(a, k)`` returns a new array with zeros in certain locations
+    ``mask_func(a, k=k)`` returns a new array with zeros in certain locations
     (functions like `triu` or `tril` do precisely this). Then this function
     returns the indices where the non-zero values would be located.
 
@@ -635,16 +690,27 @@ def mask_indices(n, mask_func, k=0):
         The returned indices will be valid to access arrays of shape (n, n).
     mask_func : callable
         A function whose call signature is similar to that of `triu`, `tril`.
-        That is, ``mask_func(x, k)`` returns a boolean array, shaped like `x`.
+        That is, ``mask_func(x, k=k)`` returns a boolean array, shaped like `x`.
         `k` is an optional argument to the function.
     k : scalar
         An optional argument which is passed through to `mask_func`. Functions
         like `triu`, `tril` take a second argument that is interpreted as an
         offset.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
 
     Returns
     -------
-    indices : tuple of arrays.
+    indices : tuple of dpnp.ndarray
         The `n` arrays of indices corresponding to the locations where
         ``mask_func(np.ones((n, n)), k)`` is True.
 
@@ -678,8 +744,14 @@ def mask_indices(n, mask_func, k=0):
 
     """
 
-    m = dpnp.ones((n, n), dtype=int)
-    a = mask_func(m, k)
+    m = dpnp.ones(
+        (n, n),
+        dtype=int,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
+    a = mask_func(m, k=k)
     return nonzero(a != 0)
 
 
@@ -1172,7 +1244,14 @@ def take_along_axis(a, indices, axis):
     return a[_build_along_axis_index(a, indices, axis)]
 
 
-def tril_indices(n, k=0, m=None):
+def tril_indices(
+    n,
+    k=0,
+    m=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Return the indices for the lower-triangle of an (n, m) array.
 
@@ -1183,18 +1262,27 @@ def tril_indices(n, k=0, m=None):
     n : int
         The row dimension of the arrays for which the returned
         indices will be valid.
-
     k : int, optional
-        Diagonal offset (see `tril` for details).
-
+        Diagonal offset (see `tril` for details). Default: ``0``.
     m : int, optional
         The column dimension of the arrays for which the returned
         arrays will be valid.
         By default `m` is taken equal to `n`.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
 
     Returns
     -------
-    inds : tuple of arrays
+    inds : tuple of dpnp.ndarray
         The indices for the triangle. The returned tuple contains two arrays,
         each with the indices along one dimension of the array.
 
@@ -1242,15 +1330,35 @@ def tril_indices(n, k=0, m=None):
 
     """
 
-    tri_ = dpnp.tri(n, m, k=k, dtype=bool)
+    tri_ = dpnp.tri(
+        n,
+        m,
+        k=k,
+        dtype=bool,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
     return tuple(
         dpnp.broadcast_to(inds, tri_.shape)[tri_]
-        for inds in indices(tri_.shape, sparse=True)
+        for inds in indices(
+            tri_.shape,
+            sparse=True,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
     )
 
 
-def tril_indices_from(arr, k=0):
+def tril_indices_from(
+    arr,
+    k=0,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
     """
     Return the indices for the lower-triangle of arr.
 
@@ -1258,12 +1366,28 @@ def tril_indices_from(arr, k=0):
 
     Parameters
     ----------
-    arr : array_like
+    arr : {dpnp.ndarray, usm_ndarray}
         The indices will be valid for square arrays whose dimensions are
         the same as arr.
-
     k : int, optional
-        Diagonal offset (see `tril` for details).
+        Diagonal offset (see `tril` for details). Default: ``0``.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    inds : tuple of dpnp.ndarray
+        The indices for the triangle. The returned tuple contains two arrays,
+        each with the indices along one dimension of the array.
 
     Examples
     --------
@@ -1302,12 +1426,33 @@ def tril_indices_from(arr, k=0):
 
     """
 
+    dpnp.check_supported_arrays_type(arr)
+
     if arr.ndim != 2:
         raise ValueError("input array must be 2-d")
-    return tril_indices(arr.shape[-2], k=k, m=arr.shape[-1])
+
+    _usm_type = arr.usm_type if usm_type is None else usm_type
+    _sycl_queue = dpnp.get_normalized_queue_device(
+        arr, sycl_queue=sycl_queue, device=device
+    )
+
+    return tril_indices(
+        arr.shape[-2],
+        k=k,
+        m=arr.shape[-1],
+        usm_type=_usm_type,
+        sycl_queue=_sycl_queue,
+    )
 
 
-def triu_indices(n, k=0, m=None):
+def triu_indices(
+    n,
+    k=0,
+    m=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
     """
     Return the indices for the upper-triangle of an (n, m) array.
 
@@ -1318,18 +1463,27 @@ def triu_indices(n, k=0, m=None):
     n : int
         The size of the arrays for which the returned indices will
         be valid.
-
     k : int, optional
-        Diagonal offset (see `triu` for details).
-
+        Diagonal offset (see `triu` for details). Default: ``0``.
     m : int, optional
         The column dimension of the arrays for which the returned
         arrays will be valid.
         By default `m` is taken equal to `n`.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
 
     Returns
     -------
-    inds : tuple, shape(2) of ndarrays, shape(`n`)
+    inds : tuple of dpnp.ndarray
         The indices for the triangle. The returned tuple contains two arrays,
         each with the indices along one dimension of the array.  Can be used
         to slice a ndarray of shape(`n`, `n`).
@@ -1379,15 +1533,35 @@ def triu_indices(n, k=0, m=None):
 
     """
 
-    tri_ = ~dpnp.tri(n, m, k=k - 1, dtype=bool)
+    tri_ = ~dpnp.tri(
+        n,
+        m,
+        k=k - 1,
+        dtype=bool,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
 
     return tuple(
         dpnp.broadcast_to(inds, tri_.shape)[tri_]
-        for inds in indices(tri_.shape, sparse=True)
+        for inds in indices(
+            tri_.shape,
+            sparse=True,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
     )
 
 
-def triu_indices_from(arr, k=0):
+def triu_indices_from(
+    arr,
+    k=0,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
     """
     Return the indices for the lower-triangle of arr.
 
@@ -1395,12 +1569,29 @@ def triu_indices_from(arr, k=0):
 
     Parameters
     ----------
-    arr : array_like
+    arr : {dpnp.ndarray, usm_ndarray}
         The indices will be valid for square arrays whose dimensions are
         the same as arr.
-
     k : int, optional
-        Diagonal offset (see `tril` for details).
+        Diagonal offset (see `triu` for details). Default: ``0``.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    usm_type : {"device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+
+    Returns
+    -------
+    inds : tuple of dpnp.ndarray
+        The indices for the triangle. The returned tuple contains two arrays,
+        each with the indices along one dimension of the array.  Can be used
+        to slice a ndarray of shape(`n`, `n`).
 
     Examples
     --------
@@ -1439,6 +1630,20 @@ def triu_indices_from(arr, k=0):
 
     """
 
+    dpnp.check_supported_arrays_type(arr)
+
     if arr.ndim != 2:
         raise ValueError("input array must be 2-d")
-    return triu_indices(arr.shape[-2], k=k, m=arr.shape[-1])
+
+    _usm_type = arr.usm_type if usm_type is None else usm_type
+    _sycl_queue = dpnp.get_normalized_queue_device(
+        arr, sycl_queue=sycl_queue, device=device
+    )
+
+    return triu_indices(
+        arr.shape[-2],
+        k=k,
+        m=arr.shape[-1],
+        usm_type=_usm_type,
+        sycl_queue=_sycl_queue,
+    )
