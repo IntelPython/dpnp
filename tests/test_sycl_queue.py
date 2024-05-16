@@ -245,7 +245,6 @@ def test_array_creation_follow_device_2d_array(func, args, kwargs, device):
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.skip("muted until the issue reported by SAT-5969 is resolved")
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [
@@ -292,7 +291,6 @@ def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
-@pytest.mark.skip("muted until the issue reported by SAT-5969 is resolved")
 @pytest.mark.parametrize(
     "func, args, kwargs",
     [
@@ -417,8 +415,9 @@ def test_meshgrid(device_x, device_y):
         ),
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("count_nonzero", [3, 0, 2, -1.2]),
-        pytest.param("cumprod", [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
+        pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
+        pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
@@ -427,6 +426,7 @@ def test_meshgrid(device_x, device_y):
         pytest.param("fabs", [-1.2, 1.2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1.0, 2.0, 4.0, 7.0, 11.0, 16.0]),
+        pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
         pytest.param(
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
@@ -562,6 +562,22 @@ def test_logsumexp(device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+def test_cumlogsumexp(device):
+    x = dpnp.arange(10, device=device)
+    result = dpnp.cumlogsumexp(x)
+    expected = numpy.logaddexp.accumulate(x.asnumpy())
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = x.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_reduce_hypot(device):
     x = dpnp.arange(10, device=device)
     result = dpnp.reduce_hypot(x)
@@ -604,6 +620,11 @@ def test_reduce_hypot(device):
             "fmod",
             [-3.0, -2.0, -1.0, 1.0, 2.0, 3.0],
             [2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
+        ),
+        pytest.param(
+            "histogram_bin_edges",
+            [0, 0, 0, 1, 2, 3, 3, 4, 5],
+            [1, 2],
         ),
         pytest.param(
             "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
@@ -777,13 +798,25 @@ def test_2in_1out_diff_queue_but_equal_context(func, device):
 @pytest.mark.parametrize(
     "shape_pair",
     [
+        ((2, 4), (4,)),
+        ((4,), (4, 3)),
         ((2, 4), (4, 3)),
+        ((2, 0), (0, 3)),
+        ((2, 4), (4, 0)),
         ((4, 2, 3), (4, 3, 5)),
+        ((4, 2, 3), (4, 3, 1)),
+        ((4, 1, 3), (4, 3, 5)),
         ((6, 7, 4, 3), (6, 7, 3, 5)),
     ],
     ids=[
+        "((2, 4), (4,))",
+        "((4,), (4, 3))",
         "((2, 4), (4, 3))",
+        "((2, 0), (0, 3))",
+        "((2, 4), (4, 0))",
         "((4, 2, 3), (4, 3, 5))",
+        "((4, 2, 3), (4, 3, 1))",
+        "((4, 1, 3), (4, 3, 5))",
         "((6, 7, 4, 3), (6, 7, 3, 5))",
     ],
 )
@@ -2160,3 +2193,24 @@ def test_mask_indices(mask_func, device):
     res = dpnp.mask_indices(4, getattr(dpnp, mask_func), sycl_queue=sycl_queue)
     for x in res:
         assert_sycl_queue_equal(x.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize("weights", [None, numpy.arange(7, 12)])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_histogram_bin_edges(weights, device):
+    v = numpy.arange(5)
+    w = weights
+
+    iv = dpnp.array(v, device=device)
+    iw = None if weights is None else dpnp.array(w, sycl_queue=iv.sycl_queue)
+
+    expected_edges = numpy.histogram_bin_edges(v, weights=w)
+    result_edges = dpnp.histogram_bin_edges(iv, weights=iw)
+    assert_dtype_allclose(result_edges, expected_edges)
+
+    edges_queue = result_edges.sycl_queue
+    assert_sycl_queue_equal(edges_queue, iv.sycl_queue)

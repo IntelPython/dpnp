@@ -322,48 +322,68 @@ def test_choose():
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_bool=True))
-@pytest.mark.parametrize("offset", [0, 1], ids=["0", "1"])
-@pytest.mark.parametrize(
-    "array",
-    [
-        [[0, 0], [0, 0]],
-        [[1, 2], [1, 2]],
-        [[1, 2], [3, 4]],
-        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
-        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
-        [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
-        [
-            [[[1, 2], [3, 4]], [[1, 2], [2, 1]]],
-            [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
+class TestDiagonal:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("offset", [-3, -1, 0, 1, 3])
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (3, 3), (2, 5), (3, 2, 2), (2, 2, 2, 2), (2, 2, 2, 3)],
+        ids=[
+            "(2,2)",
+            "(3,3)",
+            "(2,5)",
+            "(3,2,2)",
+            "(2,2,2,2)",
+            "(2,2,2,3)",
         ],
+    )
+    def test_diagonal_offset(self, shape, dtype, offset):
+        a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+        a_dp = dpnp.array(a)
+        expected = numpy.diagonal(a, offset)
+        result = dpnp.diagonal(a_dp, offset)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape, axis_pairs",
         [
-            [[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]],
-            [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]],
+            ((3, 4), [(0, 1), (1, 0)]),
+            ((3, 4, 5), [(0, 1), (1, 2), (0, 2)]),
+            ((4, 3, 5, 2), [(0, 1), (1, 2), (2, 3), (0, 3)]),
         ],
-        [
-            [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]],
-            [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]],
-        ],
-    ],
-    ids=[
-        "[[0, 0], [0, 0]]",
-        "[[1, 2], [1, 2]]",
-        "[[1, 2], [3, 4]]",
-        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
-        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
-        "[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]",
-        "[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]",
-        "[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]",
-        "[[[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]]]",
-    ],
-)
-def test_diagonal(array, arr_dtype, offset):
-    a = numpy.array(array, dtype=arr_dtype)
-    ia = dpnp.array(a)
-    expected = numpy.diagonal(a, offset)
-    result = dpnp.diagonal(ia, offset)
-    assert_array_equal(expected, result)
+    )
+    def test_diagonal_axes(self, shape, axis_pairs, dtype):
+        a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+        a_dp = dpnp.array(a)
+        for axis1, axis2 in axis_pairs:
+            expected = numpy.diagonal(a, axis1=axis1, axis2=axis2)
+            result = dpnp.diagonal(a_dp, axis1=axis1, axis2=axis2)
+            assert_array_equal(expected, result)
+
+    def test_diagonal_errors(self):
+        a = dpnp.arange(12).reshape(3, 4)
+
+        # unsupported type
+        a_np = dpnp.asnumpy(a)
+        assert_raises(TypeError, dpnp.diagonal, a_np)
+
+        # a.ndim < 2
+        a_ndim_1 = a.flatten()
+        assert_raises(ValueError, dpnp.diagonal, a_ndim_1)
+
+        # unsupported type `offset`
+        assert_raises(TypeError, dpnp.diagonal, a, offset=1.0)
+        assert_raises(TypeError, dpnp.diagonal, a, offset=[0])
+
+        # axes are out of bounds
+        assert_raises(numpy.AxisError, a.diagonal, axis1=0, axis2=5)
+        assert_raises(numpy.AxisError, a.diagonal, axis1=5, axis2=0)
+        assert_raises(numpy.AxisError, a.diagonal, axis1=5, axis2=5)
+
+        # same axes
+        assert_raises(ValueError, a.diagonal, axis1=1, axis2=1)
+        assert_raises(ValueError, a.diagonal, axis1=1, axis2=-1)
 
 
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes())

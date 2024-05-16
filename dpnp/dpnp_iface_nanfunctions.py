@@ -39,17 +39,7 @@ it contains:
 
 import warnings
 
-import numpy
-
 import dpnp
-
-# pylint: disable=no-name-in-module
-from .dpnp_algo import (
-    dpnp_nancumprod,
-)
-from .dpnp_utils import (
-    call_origin,
-)
 
 __all__ = [
     "nanargmax",
@@ -249,44 +239,69 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
     return dpnp.argmin(a, axis=axis, out=out, keepdims=keepdims)
 
 
-def nancumprod(x1, **kwargs):
+def nancumprod(a, axis=None, dtype=None, out=None):
     """
     Return the cumulative product of array elements over a given axis treating
-    Not a Numbers (NaNs) as one.
+    Not a Numbers (NaNs) as zero. The cumulative product does not change when
+    NaNs are encountered and leading NaNs are replaced by ones.
 
     For full documentation refer to :obj:`numpy.nancumprod`.
 
-    Limitations
-    -----------
-    Parameter `x` is supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int}, optional
+        Axis along which the cumulative product is computed. The default
+        (``None``) is to compute the cumulative product over the flattened
+        array.
+    dtype : {None, dtype}, optional
+        Type of the returned array and of the accumulator in which the elements
+        are summed. If `dtype` is not specified, it defaults to the dtype of
+        `a`, unless `a` has an integer dtype with a precision less than that of
+        the default platform integer. In that case, the default platform
+        integer is used.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have the
+        same shape and buffer length as the expected output but the type will
+        be cast if necessary.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A new array holding the result is returned unless `out` is specified as
+        :class:`dpnp.ndarray`, in which case a reference to `out` is returned.
+        The result has the same size as `a`, and the same shape as `a` if `axis`
+        is not ``None`` or `a` is a 1-d array.
 
     See Also
     --------
-    :obj:`dpnp.cumprod` : Return the cumulative product of elements
-                          along a given axis.
+    :obj:`dpnp.cumprod` : Cumulative product across array propagating NaNs.
+    :obj:`dpnp.isnan` : Show which elements are NaN.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([1., np.nan])
-    >>> result = np.nancumprod(a)
-    >>> [x for x in result]
-    [1.0, 1.0]
-    >>> b = np.array([[1., 2., np.nan], [4., np.nan, 6.]])
-    >>> result = np.nancumprod(b)
-    >>> [x for x in result]
-    [1.0, 2.0, 2.0, 8.0, 8.0, 48.0]
+    >>> np.nancumprod(np.array(1))
+    array(1)
+    >>> np.nancumprod(np.array([1]))
+    array([1])
+    >>> np.nancumprod(np.array([1, np.nan]))
+    array([1., 1.])
+    >>> a = np.array([[1, 2], [3, np.nan]])
+    >>> np.nancumprod(a)
+    array([1., 2., 6., 6.])
+    >>> np.nancumprod(a, axis=0)
+    array([[1., 2.],
+           [3., 2.]])
+    >>> np.nancumprod(a, axis=1)
+    array([[1., 2.],
+           [3., 3.]])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_nancumprod(x1_desc).get_pyobj()
-
-    return call_origin(numpy.nancumprod, x1, **kwargs)
+    a, _ = _replace_nan(a, 1)
+    return dpnp.cumprod(a, axis=axis, dtype=dtype, out=out)
 
 
 def nancumsum(a, axis=None, dtype=None, out=None):
@@ -332,7 +347,7 @@ def nancumsum(a, axis=None, dtype=None, out=None):
     --------
     >>> import dpnp as np
     >>> np.nancumsum(np.array(1))
-    array([1])
+    array(1)
     >>> np.nancumsum(np.array([1]))
     array([1])
     >>> np.nancumsum(np.array([1, np.nan]))

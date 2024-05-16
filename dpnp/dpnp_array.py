@@ -721,7 +721,16 @@ class dpnp_array:
         return dpnp.copy(self, order=order)
 
     # 'ctypes',
-    # 'cumprod',
+
+    def cumprod(self, axis=None, dtype=None, out=None):
+        """
+        Return the cumulative product of the elements along the given axis.
+
+        Refer to :obj:`dpnp.cumprod` for full documentation.
+
+        """
+
+        return dpnp.cumprod(self, axis=axis, dtype=dtype, out=out)
 
     def cumsum(self, axis=None, dtype=None, out=None):
         """
@@ -735,15 +744,26 @@ class dpnp_array:
 
     # 'data',
 
-    def diagonal(input, offset=0, axis1=0, axis2=1):
+    def diagonal(self, offset=0, axis1=0, axis2=1):
         """
         Return specified diagonals.
 
         Refer to :obj:`dpnp.diagonal` for full documentation.
 
+        See Also
+        --------
+        :obj:`dpnp.diagonal` : Equivalent function.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.arange(4).reshape(2,2)
+        >>> a.diagonal()
+        array([0, 3])
+
         """
 
-        return dpnp.diagonal(input, offset, axis1, axis2)
+        return dpnp.diagonal(self, offset=offset, axis1=axis1, axis2=axis2)
 
     def dot(self, b, out=None):
         """

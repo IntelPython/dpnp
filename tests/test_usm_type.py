@@ -425,17 +425,25 @@ def test_coerced_usm_types_bitwise_op(op, usm_type_x, usm_type_y):
 @pytest.mark.parametrize(
     "shape_pair",
     [
+        ((2, 4), (4,)),
+        ((4,), (4, 3)),
         ((2, 4), (4, 3)),
         ((2, 0), (0, 3)),
         ((2, 4), (4, 0)),
         ((4, 2, 3), (4, 3, 5)),
+        ((4, 2, 3), (4, 3, 1)),
+        ((4, 1, 3), (4, 3, 5)),
         ((6, 7, 4, 3), (6, 7, 3, 5)),
     ],
     ids=[
+        "((2, 4), (4,))",
+        "((4,), (4, 3))",
         "((2, 4), (4, 3))",
         "((2, 0), (0, 3))",
         "((2, 4), (4, 0))",
         "((4, 2, 3), (4, 3, 5))",
+        "((4, 2, 3), (4, 3, 1))",
+        "((4, 1, 3), (4, 3, 5))",
         "((6, 7, 4, 3), (6, 7, 3, 5))",
     ],
 )
@@ -522,12 +530,16 @@ def test_norm(usm_type, ord, axis):
         ),
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("count_nonzero", [0, 1, 7, 0]),
+        pytest.param("cumlogsumexp", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
+        pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
         pytest.param(
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
@@ -541,6 +553,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("min", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("nanargmax", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanargmin", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nancumprod", [3.0, dp.nan]),
         pytest.param("nancumsum", [3.0, dp.nan]),
         pytest.param("nanmax", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanmean", [1.0, 2.0, 4.0, dp.nan]),
@@ -1268,3 +1281,15 @@ def test_mask_indices(mask_func, usm_type):
     res = dp.mask_indices(4, getattr(dp, mask_func), usm_type=usm_type)
     for x in res:
         assert x.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type_v", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_w", list_of_usm_types, ids=list_of_usm_types)
+def test_histogram_bin_edges(usm_type_v, usm_type_w):
+    v = dp.arange(5, usm_type=usm_type_v)
+    w = dp.arange(7, 12, usm_type=usm_type_w)
+
+    edges = dp.histogram_bin_edges(v, weights=w)
+    assert v.usm_type == usm_type_v
+    assert w.usm_type == usm_type_w
+    assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
