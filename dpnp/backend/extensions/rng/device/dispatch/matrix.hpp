@@ -49,19 +49,35 @@ struct GaussianTypePairSupportFactory
         TypePairDefinedEntry<T,
                              double,
                              M,
-                             mkl_rng_dev::gaussian_method::by_default>,
+                             mkl_rng_dev::gaussian_method::box_muller2>,
+        TypePairDefinedEntry<T,
+                             float,
+                             M,
+                             mkl_rng_dev::gaussian_method::box_muller2>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+template <typename T, typename M>
+struct UniformTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
         TypePairDefinedEntry<T,
                              double,
                              M,
-                             mkl_rng_dev::gaussian_method::box_muller2>,
+                             mkl_rng_dev::uniform_method::standard>,
+        TypePairDefinedEntry<T,
+                             double,
+                             M,
+                             mkl_rng_dev::uniform_method::accurate>,
         TypePairDefinedEntry<T,
                              float,
                              M,
-                             mkl_rng_dev::gaussian_method::by_default>,
+                             mkl_rng_dev::uniform_method::standard>,
         TypePairDefinedEntry<T,
                              float,
                              M,
-                             mkl_rng_dev::gaussian_method::box_muller2>,
+                             mkl_rng_dev::uniform_method::accurate>,
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };

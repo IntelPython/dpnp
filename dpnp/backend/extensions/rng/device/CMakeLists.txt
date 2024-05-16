@@ -28,6 +28,7 @@ set(python_module_name _rng_dev_impl)
 pybind11_add_module(${python_module_name} MODULE
     rng_py.cpp
     gaussian.cpp
+    uniform.cpp
 )
 
 if (WIN32)

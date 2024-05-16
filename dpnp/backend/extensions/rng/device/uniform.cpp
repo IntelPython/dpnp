@@ -32,7 +32,7 @@
 #include "utils/type_utils.hpp"
 
 #include "common_impl.hpp"
-#include "gaussian.hpp"
+#include "uniform.hpp"
 
 #include "engine/builder/builder.hpp"
 
@@ -51,7 +51,7 @@ using dpctl_krn_ns::disabled_sg_loadstore_wrapper_krn;
 using dpctl_krn_ns::is_aligned;
 using dpctl_krn_ns::required_alignment;
 
-constexpr auto no_of_methods = 1; // number of methods of gaussian distribution
+constexpr auto no_of_methods = 2; // number of methods of gaussian distribution
 
 constexpr auto seq_of_vec_sizes =
     std::integer_sequence<std::uint8_t, 2, 4, 8, 16>{};
@@ -84,7 +84,7 @@ private:
 public:
     using result_type = DataT;
     using method_type = Method;
-    using distr_type = typename mkl_rng_dev::gaussian<DataT, Method>;
+    using distr_type = typename mkl_rng_dev::uniform<DataT, Method>;
 
     DistributorBuilder(const DataT mean, const DataT stddev)
         : mean_(mean), stddev_(stddev)
@@ -97,37 +97,37 @@ public:
     }
 };
 
-typedef sycl::event (*gaussian_impl_fn_ptr_t)(engine::EngineBase *engine,
-                                              const double,
-                                              const double,
-                                              const std::uint64_t,
-                                              char *,
-                                              const std::vector<sycl::event> &);
+typedef sycl::event (*uniform_impl_fn_ptr_t)(engine::EngineBase *engine,
+                                             const double,
+                                             const double,
+                                             const std::uint64_t,
+                                             char *,
+                                             const std::vector<sycl::event> &);
 
-static gaussian_impl_fn_ptr_t gaussian_dispatch_table[no_of_engines]
-                                                     [dpctl_td_ns::num_types]
-                                                     [no_of_methods];
+static uniform_impl_fn_ptr_t uniform_dispatch_table[no_of_engines]
+                                                   [dpctl_td_ns::num_types]
+                                                   [no_of_methods];
 
 template <typename EngineT,
           typename DataT,
           typename Method,
           unsigned int items_per_wi>
-class gaussian_kernel;
+class uniform_kernel;
 
 template <typename EngineT, typename DataT, typename Method>
-static sycl::event gaussian_impl(engine::EngineBase *engine,
-                                 const double mean_val,
-                                 const double stddev_val,
-                                 const std::uint64_t n,
-                                 char *out_ptr,
-                                 const std::vector<sycl::event> &depends)
+static sycl::event uniform_impl(engine::EngineBase *engine,
+                                const double a_val,
+                                const double b_val,
+                                const std::uint64_t n,
+                                char *out_ptr,
+                                const std::vector<sycl::event> &depends)
 {
     auto &exec_q = engine->get_queue();
     dpctl_tu_ns::validate_type_for_device<DataT>(exec_q);
 
     DataT *out = reinterpret_cast<DataT *>(out_ptr);
-    DataT mean = static_cast<DataT>(mean_val);
-    DataT stddev = static_cast<DataT>(stddev_val);
+    DataT a = static_cast<DataT>(a_val);
+    DataT b = static_cast<DataT>(b_val);
 
     constexpr std::size_t vec_sz = EngineT::vec_size;
     constexpr std::size_t items_per_wi = 4;
@@ -147,12 +147,12 @@ static sycl::event gaussian_impl(engine::EngineBase *engine,
             // eng_builder.print(); // TODO: remove
 
             using DistributorBuilderT = DistributorBuilder<DataT, Method>;
-            DistributorBuilderT dist_builder(mean, stddev);
+            DistributorBuilderT dist_builder(a, b);
 
             if (is_aligned<required_alignment>(out_ptr)) {
                 constexpr bool enable_sg_load = true;
                 using KernelName =
-                    gaussian_kernel<EngineT, DataT, Method, items_per_wi>;
+                    uniform_kernel<EngineT, DataT, Method, items_per_wi>;
 
                 cgh.parallel_for<KernelName>(
                     sycl::nd_range<1>({global_size}, {local_size}),
@@ -164,7 +164,7 @@ static sycl::event gaussian_impl(engine::EngineBase *engine,
             else {
                 constexpr bool disable_sg_load = false;
                 using InnerKernelName =
-                    gaussian_kernel<EngineT, DataT, Method, items_per_wi>;
+                    uniform_kernel<EngineT, DataT, Method, items_per_wi>;
                 using KernelName =
                     disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
 
@@ -194,14 +194,14 @@ static sycl::event gaussian_impl(engine::EngineBase *engine,
 }
 
 std::pair<sycl::event, sycl::event>
-    gaussian(engine::EngineBase *engine,
-             const std::uint8_t method_id,
-             const std::uint8_t vec_size,
-             const double mean,
-             const double stddev,
-             const std::uint64_t n,
-             dpctl::tensor::usm_ndarray res,
-             const std::vector<sycl::event> &depends)
+    uniform(engine::EngineBase *engine,
+            const std::uint8_t method_id,
+            const std::uint8_t vec_size,
+            const double a,
+            const double b,
+            const std::uint64_t n,
+            dpctl::tensor::usm_ndarray res,
+            const std::vector<sycl::event> &depends)
 {
     auto &exec_q = engine->get_queue();
 
@@ -254,30 +254,29 @@ std::pair<sycl::event, sycl::event>
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int res_type_id = array_types.typenum_to_lookup_id(res.get_typenum());
 
-    auto gaussian_fn =
-        gaussian_dispatch_table[enginge_id][res_type_id][method_id];
-    if (gaussian_fn == nullptr) {
+    auto uniform_fn =
+        uniform_dispatch_table[enginge_id][res_type_id][method_id];
+    if (uniform_fn == nullptr) {
         throw py::value_error(
             "No gaussian implementation defined for a required type");
     }
 
     char *res_data = res.get_data();
-    sycl::event gaussian_ev =
-        gaussian_fn(engine, mean, stddev, n, res_data, depends);
+    sycl::event uniform_ev =
+        uniform_fn(engine, a, b, n, res_data, depends);
 
     sycl::event ht_ev =
-        dpctl::utils::keep_args_alive(exec_q, {res}, {gaussian_ev});
-    return std::make_pair(ht_ev, gaussian_ev);
+        dpctl::utils::keep_args_alive(exec_q, {res}, {uniform_ev});
+    return std::make_pair(ht_ev, uniform_ev);
 }
 
 template <typename fnT, typename E, typename T, typename M>
-struct GaussianContigFactory
+struct UniformContigFactory
 {
     fnT get()
     {
-        if constexpr (dispatch::GaussianTypePairSupportFactory<T,
-                                                               M>::is_defined) {
-            return gaussian_impl<E, T, M>;
+        if constexpr (dispatch::UniformTypePairSupportFactory<T, M>::is_defined) {
+            return uniform_impl<E, T, M>;
         }
         else {
             return nullptr;
@@ -285,12 +284,12 @@ struct GaussianContigFactory
     }
 };
 
-void init_gaussian_dispatch_3d_table(void)
+void init_uniform_dispatch_3d_table(void)
 {
-    dispatch::Dispatch3DTableBuilder<gaussian_impl_fn_ptr_t,
-                                     GaussianContigFactory, no_of_engines,
+    dispatch::Dispatch3DTableBuilder<uniform_impl_fn_ptr_t,
+                                     UniformContigFactory, no_of_engines,
                                      dpctl_td_ns::num_types, no_of_methods>
         contig;
-    contig.populate<mkl_rng_dev::gaussian_method::box_muller2>(gaussian_dispatch_table, seq_of_vec_sizes);
+    contig.populate<mkl_rng_dev::uniform_method::standard, mkl_rng_dev::uniform_method::accurate>(uniform_dispatch_table, seq_of_vec_sizes);
 }
 } // namespace dpnp::backend::ext::rng::device

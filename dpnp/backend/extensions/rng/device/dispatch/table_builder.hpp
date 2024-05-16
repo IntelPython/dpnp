@@ -40,37 +40,34 @@ template <typename funcPtrT,
 class Dispatch3DTableBuilder
 {
 private:
-    template <typename E, typename T>
+    template <typename E, typename T, typename... Methods>
     const std::vector<funcPtrT> row_per_method() const
     {
         std::vector<funcPtrT> per_method = {
-            factory<funcPtrT, E, T, mkl_rng_dev::gaussian_method::by_default>{}
-                .get(),
-            factory<funcPtrT, E, T, mkl_rng_dev::gaussian_method::box_muller2>{}
-                .get(),
+            factory<funcPtrT, E, T, Methods>{}.get()...,
         };
         assert(per_method.size() == _no_of_methods);
         return per_method;
     }
 
-    template <typename E>
+    template <typename E, typename... Methods>
     auto table_per_type_and_method() const
     {
         std::vector<std::vector<funcPtrT>> table_by_type = {
-            row_per_method<E, bool>(),
-            row_per_method<E, int8_t>(),
-            row_per_method<E, uint8_t>(),
-            row_per_method<E, int16_t>(),
-            row_per_method<E, uint16_t>(),
-            row_per_method<E, int32_t>(),
-            row_per_method<E, uint32_t>(),
-            row_per_method<E, int64_t>(),
-            row_per_method<E, uint64_t>(),
-            row_per_method<E, sycl::half>(),
-            row_per_method<E, float>(),
-            row_per_method<E, double>(),
-            row_per_method<E, std::complex<float>>(),
-            row_per_method<E, std::complex<double>>()};
+            row_per_method<E, bool, Methods...>(),
+            row_per_method<E, int8_t, Methods...>(),
+            row_per_method<E, uint8_t, Methods...>(),
+            row_per_method<E, int16_t, Methods...>(),
+            row_per_method<E, uint16_t, Methods...>(),
+            row_per_method<E, int32_t, Methods...>(),
+            row_per_method<E, uint32_t, Methods...>(),
+            row_per_method<E, int64_t, Methods...>(),
+            row_per_method<E, uint64_t, Methods...>(),
+            row_per_method<E, sycl::half, Methods...>(),
+            row_per_method<E, float, Methods...>(),
+            row_per_method<E, double, Methods...>(),
+            row_per_method<E, std::complex<float>, Methods...>(),
+            row_per_method<E, std::complex<double>, Methods...>()};
         assert(table_by_type.size() == _no_of_types);
         return table_by_type;
     }
@@ -79,16 +76,15 @@ public:
     Dispatch3DTableBuilder() = default;
     ~Dispatch3DTableBuilder() = default;
 
-    template <std::uint8_t... VecSizes>
+    template <typename... Methods, std::uint8_t... VecSizes>
     void populate(funcPtrT table[][_no_of_types][_no_of_methods],
                   std::integer_sequence<std::uint8_t, VecSizes...>) const
     {
         const auto map_by_engine = {
-            table_per_type_and_method<mkl_rng_dev::mrg32k3a<VecSizes>>()...,
-            table_per_type_and_method<
-                mkl_rng_dev::philox4x32x10<VecSizes>>()...,
-            table_per_type_and_method<mkl_rng_dev::mcg31m1<VecSizes>>()...,
-            table_per_type_and_method<mkl_rng_dev::mcg59<VecSizes>>()...};
+            table_per_type_and_method<mkl_rng_dev::mrg32k3a<VecSizes>, Methods...>()...,
+            table_per_type_and_method<mkl_rng_dev::philox4x32x10<VecSizes>, Methods...>()...,
+            table_per_type_and_method<mkl_rng_dev::mcg31m1<VecSizes>, Methods...>()...,
+            table_per_type_and_method<mkl_rng_dev::mcg59<VecSizes>, Methods...>()...};
         assert(map_by_engine.size() == _no_of_engines);
 
         std::uint16_t engine_id = 0;

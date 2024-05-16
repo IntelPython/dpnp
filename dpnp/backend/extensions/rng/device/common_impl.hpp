@@ -30,17 +30,7 @@
 #include <oneapi/mkl/rng/device.hpp>
 #include <sycl/sycl.hpp>
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace rng
-{
-namespace device
-{
-namespace details
+namespace dpnp::backend::ext::rng::device::details
 {
 namespace py = pybind11;
 
@@ -129,9 +119,4 @@ public:
         }
     }
 };
-} // namespace details
-} // namespace device
-} // namespace rng
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::backend::ext::rng::device::details
