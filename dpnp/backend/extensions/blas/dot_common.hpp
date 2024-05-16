@@ -166,6 +166,125 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(args_ev, dot_ev);
 }
 
+template <typename dispatchT>
+std::pair<sycl::event, sycl::event>
+    batch_dot_func(sycl::queue &exec_q,
+                   dpctl::tensor::usm_ndarray vectorX,
+                   dpctl::tensor::usm_ndarray vectorY,
+                   dpctl::tensor::usm_ndarray result,
+                   const std::vector<sycl::event> &depends,
+                   const dispatchT &dot_dispatch_vector)
+{
+    const int vectorX_nd = vectorX.get_ndim();
+    const int vectorY_nd = vectorY.get_ndim();
+    const int result_nd = result.get_ndim();
+
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(vectorX, result)) {
+        throw py::value_error(
+            "The first input array and output array are overlapping "
+            "segments of memory");
+    }
+    if (overlap(vectorY, result)) {
+        throw py::value_error(
+            "The second input array and output array are overlapping "
+            "segments of memory");
+    }
+
+    if (!dpctl::utils::queues_are_compatible(
+            exec_q,
+            {vectorX.get_queue(), vectorY.get_queue(), result.get_queue()}))
+    {
+        throw py::value_error(
+            "USM allocations are not compatible with the execution queue.");
+    }
+
+    // size_t src_nelems = 1;
+    // dpctl::tensor::validation::CheckWritable::throw_if_not_writable(result);
+    // dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(result,
+    //                                                            src_nelems);
+
+    py::ssize_t x_size = vectorX.get_size();
+    py::ssize_t y_size = vectorY.get_size();
+    const std::int64_t n = x_size;
+    if (x_size != y_size) {
+        throw py::value_error("The size of the first input array must be "
+                              "equal to the size of the second input array.");
+    }
+
+    int vectorX_typenum = vectorX.get_typenum();
+    int vectorY_typenum = vectorY.get_typenum();
+    int result_typenum = result.get_typenum();
+
+    if (result_typenum != vectorX_typenum || result_typenum != vectorY_typenum)
+    {
+        throw py::value_error("Given arrays must be of the same type.");
+    }
+
+    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    int type_id = array_types.typenum_to_lookup_id(vectorX_typenum);
+
+    dot_impl_fn_ptr_t dot_fn = dot_dispatch_vector[type_id];
+    if (dot_fn == nullptr) {
+        throw py::value_error(
+            "Types of input vectors and result array are mismatched.");
+    }
+
+    char *x_typeless_ptr = vectorX.get_data();
+    char *y_typeless_ptr = vectorY.get_data();
+    char *r_typeless_ptr = result.get_data();
+
+    std::vector<py::ssize_t> x_stride = vectorX.get_strides_vector();
+    std::vector<py::ssize_t> y_stride = vectorY.get_strides_vector();
+    const int x_elemsize = vectorX.get_elemsize();
+    const int y_elemsize = vectorY.get_elemsize();
+
+    const std::int64_t incx = x_stride[0];
+    const std::int64_t incy = y_stride[0];
+    // In OneMKL, the pointer should always point out to the first element of
+    // the array and OneMKL handle the rest depending on the sign of stride.
+    // In OneMKL, when the stride is positive, the data is read in order and
+    // when it is negative, the data is read in reverse order while pointer
+    // always point to the first element
+    // When the stride is negative, the pointer of the array coming from dpnp
+    // points to the last element. So, we need to adjust the pointer
+    if (incx < 0) {
+        x_typeless_ptr -= (n - 1) * std::abs(incx) * x_elemsize;
+    }
+    if (incy < 0) {
+        y_typeless_ptr -= (n - 1) * std::abs(incy) * y_elemsize;
+    }
+
+    std::int64_t batch_size = 10; // incorrect size
+    std::vector<sycl::event> dot_task_events;
+    dot_task_events.reserve(batch_size);
+
+    // Release GIL to avoid serialization of host task
+    // submissions to the same queue in OneMKL
+    // py::gil_scoped_release release;
+
+    for (std::int64_t i = 0; i < batch_size; ++i) {
+        char *x_batch_ptr =
+            x_typeless_ptr; // update pointer location in each loop
+        char *y_batch_ptr = y_typeless_ptr; // consider incx and incy here also
+        char *r_batch_ptr = r_typeless_ptr;
+
+        sycl::event dot_ev = dot_fn(exec_q, n, x_batch_ptr, incx, y_batch_ptr,
+                                    incy, r_batch_ptr, depends);
+
+        dot_task_events.push_back(dot_ev);
+    }
+
+    sycl::event combine_ev = exec_q.submit(
+        [&](sycl::handler &cgh) { cgh.depends_on(dot_task_events); });
+
+    sycl::event args_ev = dpctl::utils::keep_args_alive(
+        exec_q, {vectorX, vectorY, result}, dot_task_events);
+    // exec_q, {vectorX, vectorY, result}, {combine_ev});
+
+    return std::make_pair(args_ev, combine_ev);
+}
+
 template <typename dispatchT,
           template <typename fnT, typename T>
           typename factoryT>
