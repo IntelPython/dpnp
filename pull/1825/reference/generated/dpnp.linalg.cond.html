@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.cond &mdash; Data Parallel Extension for NumPy 0.15.0dev1+67.g15486e6397 documentation</title>
+  <title>dpnp.linalg.cond &mdash; Data Parallel Extension for NumPy 0.15.0dev1+72.g3174ad97e3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4c42616a"></script>
+        <script src="../../_static/documentation_options.js?v=0c660e34"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+67.g15486e6397
+                0.15.0dev1+72.g3174ad97e3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -135,8 +135,9 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- The matrix whose condition number is sought.</p></li>
 <li><p><strong>p</strong> (<em>{None</em><em>, </em><em>1</em><em>, </em><em>-1</em><em>, </em><em>2</em><em>, </em><em>-2</em><em>, </em><em>inf</em><em>, </em><em>-inf</em><em>, </em><em>&quot;fro&quot;}</em><em>, </em><em>optional</em>) -- Order of the norm used in the condition number computation.
-inf means the <cite>dpnp.inf</cite> object, and the Frobenius norm is
-the root-of-sum-of-squares norm. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">inf</span></code> means the <cite>dpnp.inf</cite> object, and the Frobenius norm is
+the root-of-sum-of-squares norm.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -176,7 +177,9 @@ the root-of-sum-of-squares norm. The default is <code class="docutils literal no
 <span class="go">array(1.41421356)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
 <span class="go">array(0.70710678) # may vary</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span><span class="o">*</span><span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">*</span> <span class="n">y</span>
 <span class="go">array(0.70710678) # may vary</span>
 </pre></div>
 </div>
