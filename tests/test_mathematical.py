@@ -813,16 +813,6 @@ def test_op_with_scalar(array, val, func, data_type, val_type):
             pytest.skip(
                 "(0j ** 0) is different: (NaN + NaNj) in dpnp and (1 + 0j) in numpy"
             )
-        # TODO: Remove when #1378 (dpctl) is solved and 2024.1 is released (coverage is failing otherwise)
-        elif (
-            is_cpu_device()
-            and dpnp_a.dtype == dpnp.complex128
-            and dpnp_a.size >= 8
-            and not dpnp.all(dpnp_a)
-        ):
-            pytest.skip(
-                "[..., 0j ** val] is different for x.size >= 8: [..., NaN + NaNj] in dpnp and [..., 0 + 0j] in numpy"
-            )
 
     if func == "subtract" and val_type == bool and data_type == dpnp.bool:
         with pytest.raises(TypeError):
@@ -1286,19 +1276,6 @@ def test_power(array, val, data_type, val_type):
     np_a = numpy.array(array, dtype=data_type)
     dpnp_a = dpnp.array(array, dtype=data_type)
     val_ = val_type(val)
-
-    # TODO: Remove when #1378 (dpctl) is solved and 2024.1 is released (coverage is failing otherwise)
-    if (
-        is_cpu_device()
-        and (
-            dpnp.complex128 in (data_type, val_type)
-            or dpnp.complex64 in (data_type, val_type)
-        )
-        and dpnp_a.size >= 8
-    ):
-        pytest.skip(
-            "[..., 0j ** val] is different for x.size >= 8: [..., NaN + NaNj] in dpnp and [..., 0 + 0j] in numpy"
-        )
 
     result = dpnp.power(dpnp_a, val_)
     expected = numpy.power(np_a, val_)
@@ -2647,7 +2624,7 @@ class TestMatmul:
         assert result is dpnp_out
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.skipif(is_cpu_device(), reason="large size")
+    @testing.slow
     @pytest.mark.parametrize(
         "shape",
         [
