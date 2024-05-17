@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.argmax
+===================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.argmax
