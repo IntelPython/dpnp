@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.15.0dev1+65.g86c8640c88 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.15.0dev1+66.gd0d26b4c9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=735bc56a"></script>
+        <script src="../../_static/documentation_options.js?v=c1a8fe55"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+65.g86c8640c88
+                0.15.0dev1+66.gd0d26b4c9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1017,41 +1017,45 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a copy of the array collapsed into one dimension.</span>
 
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.flatten`.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        order: {&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}, optional</span>
-<span class="sd">            &#39;C&#39; means to flatten in row-major (C-style) order.</span>
-<span class="sd">            &#39;F&#39; means to flatten in column-major (Fortran- style) order.</span>
-<span class="sd">            &#39;A&#39; means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.</span>
-<span class="sd">            &#39;K&#39; means to flatten a in the order the elements occur in memory. The default is &#39;C&#39;.</span>
+<span class="sd">        order : {&quot;C&quot;, &quot;F&quot;}, optional</span>
+<span class="sd">            Read the elements using this index order, and place the elements</span>
+<span class="sd">            into the reshaped array using this index order.</span>
+
+<span class="sd">                - &quot;C&quot; means to read / write the elements using C-like index</span>
+<span class="sd">                  order, with the last axis index changing fastest, back to the</span>
+<span class="sd">                  first axis index changing slowest.</span>
+<span class="sd">                - &quot;F&quot; means to read / write the elements using Fortran-like</span>
+<span class="sd">                  index order, with the first index changing fastest, and the</span>
+<span class="sd">                  last index changing slowest.</span>
+
+<span class="sd">            The default is ``&quot;C&quot;``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        out: ndarray</span>
+<span class="sd">        out: dpnp.ndarray</span>
 <span class="sd">            A copy of the input array, flattened to one dimension.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :obj:`dpnp.ravel`, :obj:`dpnp.flat`</span>
+<span class="sd">        :obj:`dpnp.ravel` : Return a flattened array.</span>
+<span class="sd">        :obj:`dpnp.flat` : A 1-D flat iterator over the array.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
+<span class="sd">        &gt;&gt;&gt; a.flatten()</span>
+<span class="sd">        array([1, 2, 3, 4])</span>
+<span class="sd">        &gt;&gt;&gt; a.flatten(&quot;F&quot;)</span>
+<span class="sd">        array([1, 3, 2, 4])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">dpnp_array</span><span class="p">)</span>
-        <span class="n">new_arr</span><span class="o">.</span><span class="n">_array_obj</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-        <span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">dpt</span><span class="o">.</span><span class="n">_copy_utils</span><span class="o">.</span><span class="n">_copy_from_usm_ndarray_to_usm_ndarray</span><span class="p">(</span>
-                <span class="n">new_arr</span><span class="o">.</span><span class="n">_array_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span>
-            <span class="p">)</span>
-            <span class="n">new_arr</span><span class="o">.</span><span class="n">_array_obj</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">new_arr</span><span class="o">.</span><span class="n">_array_obj</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,))</span>
-
-        <span class="k">return</span> <span class="n">new_arr</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
     <span class="c1"># &#39;getfield&#39;,</span>
