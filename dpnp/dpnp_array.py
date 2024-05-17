@@ -839,41 +839,45 @@ class dpnp_array:
         """
         Return a copy of the array collapsed into one dimension.
 
+        For full documentation refer to :obj:`numpy.ndarray.flatten`.
+
         Parameters
         ----------
-        order: {'C', 'F', 'A', 'K'}, optional
-            'C' means to flatten in row-major (C-style) order.
-            'F' means to flatten in column-major (Fortran- style) order.
-            'A' means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
-            'K' means to flatten a in the order the elements occur in memory. The default is 'C'.
+        order : {"C", "F"}, optional
+            Read the elements using this index order, and place the elements
+            into the reshaped array using this index order.
+
+                - "C" means to read / write the elements using C-like index
+                  order, with the last axis index changing fastest, back to the
+                  first axis index changing slowest.
+                - "F" means to read / write the elements using Fortran-like
+                  index order, with the first index changing fastest, and the
+                  last index changing slowest.
+
+            The default is ``"C"``.
 
         Returns
         -------
-        out: ndarray
+        out: dpnp.ndarray
             A copy of the input array, flattened to one dimension.
 
         See Also
         --------
-        :obj:`dpnp.ravel`, :obj:`dpnp.flat`
+        :obj:`dpnp.ravel` : Return a flattened array.
+        :obj:`dpnp.flat` : A 1-D flat iterator over the array.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.array([[1, 2], [3, 4]])
+        >>> a.flatten()
+        array([1, 2, 3, 4])
+        >>> a.flatten("F")
+        array([1, 3, 2, 4])
 
         """
-        new_arr = self.__new__(dpnp_array)
-        new_arr._array_obj = dpt.empty(
-            self.shape,
-            dtype=self.dtype,
-            order=order,
-            device=self._array_obj.sycl_device,
-            usm_type=self._array_obj.usm_type,
-            sycl_queue=self._array_obj.sycl_queue,
-        )
 
-        if self.size > 0:
-            dpt._copy_utils._copy_from_usm_ndarray_to_usm_ndarray(
-                new_arr._array_obj, self._array_obj
-            )
-            new_arr._array_obj = dpt.reshape(new_arr._array_obj, (self.size,))
-
-        return new_arr
+        return self.reshape(-1, order=order, copy=True)
 
     # 'getfield',
 
