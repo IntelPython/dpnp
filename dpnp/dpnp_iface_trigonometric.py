@@ -45,18 +45,20 @@ it contains:
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
+import dpctl.tensor._type_utils as dtu
 import numpy
 
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
-from dpnp.dpnp_algo import (
+
+from .dpnp_algo import (
     dpnp_degrees,
     dpnp_radians,
     dpnp_unwrap,
 )
-from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
-from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import call_origin
+from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
+from .dpnp_utils import call_origin
+from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
 __all__ = [
     "arccos",
@@ -69,6 +71,7 @@ __all__ = [
     "cbrt",
     "cos",
     "cosh",
+    "cumlogsumexp",
     "deg2rad",
     "degrees",
     "exp",
@@ -94,6 +97,16 @@ __all__ = [
     "tanh",
     "unwrap",
 ]
+
+
+def _get_accumulation_res_dt(a, dtype, _out):
+    """Get a dtype used by dpctl for result array in accumulation function."""
+
+    if dtype is None:
+        return dtu._default_accumulation_dtype_fp_types(a.dtype, a.sycl_queue)
+
+    dtype = dpnp.dtype(dtype)
+    return dtu._to_device_supported_dtype(dtype, a.sycl_device)
 
 
 _ACOS_DOCSTRING = """
@@ -651,6 +664,94 @@ cosh = DPNPUnaryFunc(
     mkl_fn_to_call=vmi._mkl_cosh_to_call,
     mkl_impl_fn=vmi._cosh,
 )
+
+
+def cumlogsumexp(
+    x, /, *, axis=None, dtype=None, include_initial=False, out=None
+):
+    """
+    Calculates the cumulative logarithm of the sum of elements in the input
+    array `x`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array, expected to have a real-valued data type.
+    axis : {None, int}, optional
+        Axis or axes along which values must be computed. If a tuple of unique
+        integers, values are computed over multiple axes. If ``None``, the
+        result is computed over the entire array.
+        Default: ``None``.
+    dtype : {None, dtype}, optional
+        Data type of the returned array. If ``None``, the default data type is
+        inferred from the "kind" of the input array data type.
+
+        - If `x` has a real-valued floating-point data type, the returned array
+          will have the same data type as `x`.
+        - If `x` has a boolean or integral data type, the returned array will
+          have the default floating point data type for the device where input
+          array `x` is allocated.
+        - If `x` has a complex-valued floating-point data type, an error is
+          raised.
+
+        If the data type (either specified or resolved) differs from the data
+        type of `x`, the input array elements are cast to the specified data
+        type before computing the result.
+        Default: ``None``.
+    include_initial : {None, bool}, optional
+        A boolean indicating whether to include the initial value (i.e., the
+        additive identity, zero) as the first value along the provided axis in
+        the output.
+        Default: ``False``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        The array into which the result is written. The data type of `out` must
+        match the expected shape and the expected data type of the result or
+        (if provided) `dtype`. If ``None`` then a new array is returned.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array containing the results. If the result was computed over the
+        entire array, a zero-dimensional array is returned. The returned array
+        has the data type as described in the `dtype` parameter description
+        above.
+
+    Note
+    ----
+    This function is equivalent of `numpy.logaddexp.accumulate`.
+
+    See Also
+    --------
+    :obj:`dpnp.logsumexp` : Logarithm of the sum of elements of the inputs,
+                            element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.ones(10)
+    >>> np.cumlogsumexp(a)
+    array([1.        , 1.69314718, 2.09861229, 2.38629436, 2.60943791,
+           2.79175947, 2.94591015, 3.07944154, 3.19722458, 3.30258509])
+
+    """
+
+    dpnp.check_supported_arrays_type(x)
+    if x.ndim > 1 and axis is None:
+        usm_x = dpnp.ravel(x).get_array()
+    else:
+        usm_x = dpnp.get_usm_ndarray(x)
+
+    return dpnp_wrap_reduction_call(
+        x,
+        out,
+        dpt.cumulative_logsumexp,
+        _get_accumulation_res_dt,
+        usm_x,
+        axis=axis,
+        dtype=dtype,
+        include_initial=include_initial,
+    )
 
 
 def deg2rad(x1):
@@ -1228,7 +1329,7 @@ logaddexp = DPNPBinaryFunc(
 )
 
 
-def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
+def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     """
     Calculates the logarithm of the sum of exponents of elements in
     the input array.
@@ -1237,37 +1338,46 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
     ----------
     x : {dpnp.ndarray, usm_ndarray}
         Input array, expected to have a real-valued data type.
-    axis : int or tuple of ints, optional
-        Axis or axes along which values must be computed. If a tuple
-        of unique integers, values are computed over multiple axes.
-        If ``None``, the result is computed over the entire array.
+    axis : {None, int or tuple of ints}, optional
+        Axis or axes along which values must be computed. If a tuple of unique
+        integers, values are computed over multiple axes. If ``None``, the
+        result is computed over the entire array.
         Default: ``None``.
-    out : {None, dpnp.ndarray, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
-    dtype : data type, optional
-        Data type of the returned array. If ``None``, it defaults to the dtype
-        of `a`, unless `a` has an integer dtype with a precision less than that
-        of the default platform integer. In that case, the default platform
-        integer is used.
-        If the data type (either specified or resolved) differs from the
-        data type of `x`, the input array elements are cast to the
-        specified data type before computing the result.
+    dtype : {None, dtype}, optional
+        Data type of the returned array. If ``None``, the default data type is
+        inferred from the "kind" of the input array data type.
+
+        - If `x` has a real-valued floating-point data type, the returned array
+          will have the same data type as `x`.
+        - If `x` has a boolean or integral data type, the returned array will
+          have the default floating point data type for the device where input
+          array `x` is allocated.
+        - If `x` has a complex-valued floating-point data type, an error is
+          raised.
+
+        If the data type (either specified or resolved) differs from the data
+        type of `x`, the input array elements are cast to the specified data
+        type before computing the result.
         Default: ``None``.
-    keepdims : bool
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
-        as singleton dimensions, so that the returned array remains
-        compatible with the input arrays according to Array Broadcasting
-        rules. Otherwise, if ``False``, the reduced axes are not included in
-        the returned array. Default: ``False``.
+        as singleton dimensions, so that the returned array remains compatible
+        with the input arrays according to Array Broadcasting rules. Otherwise,
+        if ``False``, the reduced axes are not included in the returned array.
+        Default: ``False``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        The array into which the result is written. The data type of `out` must
+        match the expected shape and the expected data type of the result or
+        (if provided) `dtype`. If ``None`` then a new array is returned.
+        Default: ``None``.
 
     Returns
     -------
     out : dpnp.ndarray
-        An array containing the results. If the result was computed over
-        the entire array, a zero-dimensional array is returned. The returned
-        array has the data type as described in the `dtype` parameter
-        description above.
+        An array containing the results. If the result was computed over the
+        entire array, a zero-dimensional array is returned. The returned array
+        has the data type as described in the `dtype` parameter description
+        above.
 
     Note
     ----
@@ -1291,12 +1401,17 @@ def logsumexp(x, axis=None, out=None, dtype=None, keepdims=False):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(x)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.logsumexp(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
+    usm_x = dpnp.get_usm_ndarray(x)
+    return dpnp_wrap_reduction_call(
+        x,
+        out,
+        dpt.logsumexp,
+        _get_accumulation_res_dt,
+        usm_x,
+        axis=axis,
+        dtype=dtype,
+        keepdims=keepdims,
     )
-
-    return dpnp.get_result_array(result, out, casting="same_kind")
 
 
 _RECIPROCAL_DOCSTRING = """
@@ -1348,7 +1463,7 @@ reciprocal = DPNPUnaryFunc(
 )
 
 
-def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
+def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     """
     Calculates the square root of the sum of squares of elements in
     the input array.
@@ -1357,37 +1472,46 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
     ----------
     x : {dpnp.ndarray, usm_ndarray}
         Input array, expected to have a real-valued data type.
-    axis : int or tuple of ints, optional
-        Axis or axes along which values must be computed. If a tuple
-        of unique integers, values are computed over multiple axes.
-        If ``None``, the result is computed over the entire array.
+    axis : {None, int or tuple of ints}, optional
+        Axis or axes along which values must be computed. If a tuple of unique
+        integers, values are computed over multiple axes. If ``None``, the
+        result is computed over the entire array.
         Default: ``None``.
-    out : {None, dpnp.ndarray, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
-    dtype : data type, optional
-        Data type of the returned array. If ``None``, it defaults to the dtype
-        of `a`, unless `a` has an integer dtype with a precision less than that
-        of the default platform integer. In that case, the default platform
-        integer is used.
-        If the data type (either specified or resolved) differs from the
-        data type of `x`, the input array elements are cast to the
-        specified data type before computing the result.
+    dtype : {None, dtype}, optional
+        Data type of the returned array. If ``None``, the default data type is
+        inferred from the "kind" of the input array data type.
+
+        - If `x` has a real-valued floating-point data type, the returned array
+          will have the same data type as `x`.
+        - If `x` has a boolean or integral data type, the returned array will
+          have the default floating point data type for the device where input
+          array `x` is allocated.
+        - If `x` has a complex-valued floating-point data type, an error is
+          raised.
+
+        If the data type (either specified or resolved) differs from the data
+        type of `x`, the input array elements are cast to the specified data
+        type before computing the result.
         Default: ``None``.
-    keepdims : bool
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
-        as singleton dimensions, so that the returned array remains
-        compatible with the input arrays according to Array Broadcasting
-        rules. Otherwise, if ``False``, the reduced axes are not included in
-        the returned array. Default: ``False``.
+        as singleton dimensions, so that the returned array remains compatible
+        with the input arrays according to Array Broadcasting rules. Otherwise,
+        if ``False``, the reduced axes are not included in the returned array.
+        Default: ``False``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        The array into which the result is written. The data type of `out` must
+        match the expected shape and the expected data type of the result or
+        (if provided) `dtype`. If ``None`` then a new array is returned.
+        Default: ``None``.
 
     Returns
     -------
     out : dpnp.ndarray
-        An array containing the results. If the result was computed over
-        the entire array, a zero-dimensional array is returned. The returned
-        array has the data type as described in the `dtype` parameter
-        description above.
+        An array containing the results. If the result was computed over the
+        entire array, a zero-dimensional array is returned. The returned array
+        has the data type as described in the `dtype` parameter description
+        above.
 
     Note
     ----
@@ -1409,12 +1533,17 @@ def reduce_hypot(x, axis=None, out=None, dtype=None, keepdims=False):
 
     """
 
-    dpt_array = dpnp.get_usm_ndarray(x)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.reduce_hypot(dpt_array, axis=axis, dtype=dtype, keepdims=keepdims)
+    usm_x = dpnp.get_usm_ndarray(x)
+    return dpnp_wrap_reduction_call(
+        x,
+        out,
+        dpt.reduce_hypot,
+        _get_accumulation_res_dt,
+        usm_x,
+        axis=axis,
+        dtype=dtype,
+        keepdims=keepdims,
     )
-
-    return dpnp.get_result_array(result, out, casting="same_kind")
 
 
 _RSQRT_DOCSTRING = """

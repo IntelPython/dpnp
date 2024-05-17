@@ -126,6 +126,16 @@ def test_logsumexp(dtype):
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_cumlogsumexp(dtype):
+    a = numpy.arange(10, dtype=dtype)[::2]
+    dpa = dpnp.arange(10, dtype=dtype)[::2]
+
+    result = dpnp.cumlogsumexp(dpa)
+    expected = numpy.logaddexp.accumulate(a)
+    assert_allclose(result, expected)
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
 def test_reduce_hypot(dtype):
     a = numpy.arange(10, dtype=dtype)[::2]
     dpa = dpnp.arange(10, dtype=dtype)[::2]

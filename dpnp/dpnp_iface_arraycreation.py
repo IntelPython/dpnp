@@ -128,7 +128,7 @@ def arange(
     step : {int, real}, optional
         Spacing between values. The default `step` size is 1. If `step`
         is specified as a position argument, `start` must also be given.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -227,11 +227,11 @@ def array(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
-    copy : bool, optional
+    copy : {bool}, optional
         If ``True`` (default), then the object is copied.
     order : {"C", "F", "A", "K"}, optional
         Memory layout of the newly output array. Default: "K".
@@ -353,7 +353,7 @@ def asanyarray(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -449,7 +449,7 @@ def asarray(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -540,7 +540,7 @@ def ascontiguousarray(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -650,7 +650,7 @@ def asfortranarray(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -866,9 +866,14 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     v : array_like
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
-        tuples of lists, and ndarrays. If `v` is a 2-D array, return a copy of
-        its k-th diagonal. If `v` is a 1-D array, return a 2-D array with `v`
-        on the k-th diagonal.
+        tuples of lists, and ndarrays.
+        If `v` is a 1-D array, return a 2-D array with `v`
+        on the `k`-th diagonal.
+        If `v` is a 2-D array and is an instance of
+        {dpnp.ndarray, usm_ndarray}, then:
+          - If `device`, `usm_type`, and `sycl_queue` are set to their
+            default values, returns a read/write view of its k-th diagonal.
+          - Otherwise, returns a copy of its k-th diagonal.
     k : int, optional
         Diagonal in question. The default is 0. Use k > 0 for diagonals above
         the main diagonal, and k < 0 for diagonals below the main diagonal.
@@ -894,43 +899,43 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     --------
     :obj:`diagonal` : Return specified diagonals.
     :obj:`diagflat` : Create a 2-D array with the flattened input as a diagonal.
-    :obj:`trace` : Return sum along diagonals.
-    :obj:`triu` : Return upper triangle of an array.
-    :obj:`tril` : Return lower triangle of an array.
+    :obj:`trace` : Return the sum along diagonals of the array.
+    :obj:`triu` : Upper triangle of an array.
+    :obj:`tril` : Lower triangle of an array.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> x0 = np.arange(9).reshape((3, 3))
-    >>> x0
+    >>> x = np.arange(9).reshape((3, 3))
+    >>> x
     array([[0, 1, 2],
            [3, 4, 5],
            [6, 7, 8]])
 
-    >>> np.diag(x0)
+    >>> np.diag(x)
     array([0, 4, 8])
-    >>> np.diag(x0, k=1)
+    >>> np.diag(x, k=1)
     array([1, 5])
-    >>> np.diag(x0, k=-1)
+    >>> np.diag(x, k=-1)
     array([3, 7])
 
-    >>> np.diag(np.diag(x0))
+    >>> np.diag(np.diag(x))
     array([[0, 0, 0],
            [0, 4, 0],
            [0, 0, 8]])
 
     Creating an array on a different device or with a specified usm_type
 
-    >>> x = np.diag(x0) # default case
-    >>> x, x.device, x.usm_type
+    >>> res = np.diag(x) # default case
+    >>> res, res.device, res.usm_type
     (array([0, 4, 8]), Device(level_zero:gpu:0), 'device')
 
-    >>> y = np.diag(x0, device="cpu")
-    >>> y, y.device, y.usm_type
+    >>> res_cpu = np.diag(x, device="cpu")
+    >>> res_cpu, res_cpu.device, res_cpu.usm_type
     (array([0, 4, 8]), Device(opencl:cpu:0), 'device')
 
-    >>> z = np.diag(x0, usm_type="host")
-    >>> z, z.device, z.usm_type
+    >>> res_host = np.diag(x, usm_type="host")
+    >>> res_host, res_host.device, res_host.usm_type
     (array([0, 4, 8]), Device(level_zero:gpu:0), 'host')
 
     """
@@ -938,35 +943,18 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
     if not isinstance(k, int):
         raise TypeError(f"An integer is required, but got {type(k)}")
 
-    v = dpnp.asarray(v, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
+    v = dpnp.asanyarray(
+        v, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
 
-    init0 = max(0, -k)
-    init1 = max(0, k)
     if v.ndim == 1:
         size = v.shape[0] + abs(k)
-        m = dpnp.zeros(
-            (size, size),
-            dtype=v.dtype,
-            usm_type=v.usm_type,
-            sycl_queue=v.sycl_queue,
-        )
-        for i in range(v.shape[0]):
-            m[(init0 + i), init1 + i] = v[i]
-        return m
+        ret = dpnp.zeros_like(v, shape=(size, size))
+        ret.diagonal(k)[:] = v
+        return ret
 
     if v.ndim == 2:
-        size = max(
-            0, min(v.shape[0], v.shape[0] + k, v.shape[1], v.shape[1] - k)
-        )
-        m = dpnp.zeros(
-            (size,),
-            dtype=v.dtype,
-            usm_type=v.usm_type,
-            sycl_queue=v.sycl_queue,
-        )
-        for i in range(size):
-            m[i] = v[(init0 + i), init1 + i]
-        return m
+        return v.diagonal(k)
 
     raise ValueError("Input must be a 1-D or 2-D array.")
 
@@ -1008,9 +996,9 @@ def diagflat(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
 
     See Also
     --------
-    :obj:`diag` : Return the extracted diagonal or constructed diagonal array.
-    :obj:`diagonal` : Return specified diagonals.
-    :obj:`trace` : Return sum along diagonals.
+    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
+    :obj:`dpnp.diagonal` : Return specified diagonals.
+    :obj:`dpnp.trace` : Return sum along diagonals.
 
     Examples
     --------
@@ -1081,7 +1069,7 @@ def empty(
     ----------
     shape : {int, sequence of ints}
         Shape of the new array, e.g., (2, 3) or 2.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -1179,7 +1167,7 @@ def empty_like(
     a : {dpnp_array, usm_ndarray}
         The shape and dtype of `a` define these same attributes
         of the returned array.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -1292,7 +1280,7 @@ def eye(
         Index of the diagonal: 0 (the default) refers to the main diagonal,
         a positive value refers to an upper diagonal, and a negative value to
         a lower diagonal.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -1323,6 +1311,11 @@ def eye(
     ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
+
+    See Also
+    --------
+    :obj:`dpnp.identity` : Return the identity array.
+    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
 
     Examples
     --------
@@ -1902,7 +1895,7 @@ def full(
         Fill value, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -2003,7 +1996,7 @@ def full_like(
         Fill value, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -2121,7 +2114,7 @@ def geomspace(
         all but the last (a sequence of length `num`) are returned.
     num : int, optional
         Number of samples to generate. Default is 50.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -2137,10 +2130,10 @@ def geomspace(
         Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
-    endpoint : bool, optional
+    endpoint : {bool}, optional
         If ``True``, `stop` is the last sample. Otherwise, it is not included.
         Default is ``True``.
-    axis : int, optional
+    axis : {int}, optional
         The axis in the result to store the samples. Relevant only if start or
         stop are array-like. By default (0), the samples will be along a new
         axis inserted at the beginning. Use -1 to get an axis at the end.
@@ -2231,7 +2224,7 @@ def identity(
     ----------
     n : int
         Number of rows (and columns) in `n` x `n` output.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -2264,7 +2257,7 @@ def identity(
     :obj:`dpnp.eye` : Return a 2-D array with ones on the diagonal and zeros
                       elsewhere.
     :obj:`dpnp.ones` : Return a new array setting values to one.
-    :obj:`dpnp.diag` : Return diagonal 2-D array from an input 1-D array.
+    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
 
     Examples
     --------
@@ -2342,7 +2335,7 @@ def linspace(
         of tuples, tuples of lists, and ndarrays. If `endpoint` is set to
         ``False`` the sequence consists of all but the last of ``num + 1``
         evenly spaced samples, so that `stop` is excluded.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -2358,13 +2351,13 @@ def linspace(
         Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
-    endpoint : bool, optional
+    endpoint : {bool}, optional
         If ``True``, `stop` is the last sample. Otherwise, it is not included.
         Default is ``True``.
-    retstep : bool, optional
+    retstep : {bool}, optional
         If ``True``, return (samples, step), where step is the spacing between
         samples.
-    axis : int, optional
+    axis : {int}, optional
         The axis in the result to store the samples. Relevant only if start or
         stop are array-like. By default (0), the samples will be along a new
         axis inserted at the beginning. Use -1 to get an axis at the end.
@@ -2576,10 +2569,10 @@ def logspace(
         Default is ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
-    endpoint : bool, optional
+    endpoint : {bool}, optional
         If ``True``, stop is the last sample. Otherwise, it is not included.
         Default is ``True``.
-    base : array_like, optional
+    base : {array_like}, optional
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays. The base of the log space, in any form
@@ -2587,11 +2580,11 @@ def logspace(
         of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.
         The `step` size between the elements in ``ln(samples) / ln(base)``
         (or log_base(samples)) is uniform. Default is 10.0.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
-    axis : int, optional
+    axis : {int}, optional
         The axis in the result to store the samples. Relevant only if start,
         stop, or base are array-like. By default (0), the samples will be along
         a new axis inserted at the beginning. Use -1 to get an axis at the end.
@@ -2674,11 +2667,11 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
         1-D arrays representing the coordinates of a grid.
     indexing : {'xy', 'ij'}, optional
         Cartesian (``'xy'``, default) or matrix (``'ij'``) indexing of output.
-    sparse : bool, optional
+    sparse : {bool}, optional
         If True the shape of the returned coordinate array for dimension `i`
         is reduced from ``(N1, ..., Ni, ... Nn)`` to
         ``(1, ..., 1, Ni, 1, ..., 1)``. Default is False.
-    copy : bool, optional
+    copy : {bool}, optional
         If False, a view into the original arrays are returned in order to
         conserve memory.  Default is True.
 
@@ -2908,7 +2901,7 @@ def ones(
     ----------
     shape : {int, sequence of ints}
         Shape of the new array, e.g., (2, 3) or 2.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -3012,7 +3005,7 @@ def ones_like(
     a : {dpnp_array, usm_ndarray}
         The shape and dtype of `a` define these same attributes
         of the returned array.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -3158,7 +3151,7 @@ def tri(
         The sub-diagonal at and below which the array is filled. k = 0 is
         the main diagonal, while k < 0 is below it, and k > 0 is above.
         The default is 0.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -3385,7 +3378,7 @@ def vander(
     N : int, optional
         Number of columns in the output. If `N` is not specified, a square
         array is returned ``(N = len(x))``.
-    increasing : bool, optional
+    increasing : {bool}, optional
         Order of the powers of the columns. If ``True,`` the powers increase
         from left to right, if ``False`` (the default) they are reversed.
     device : {None, string, SyclDevice, SyclQueue}, optional
@@ -3499,7 +3492,7 @@ def zeros(
     ----------
     shape : {int, sequence of ints}
         Shape of the new array, e.g., (2, 3) or 2.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -3603,7 +3596,7 @@ def zeros_like(
     a : {dpnp_array, usm_ndarray}
         The shape and dtype of `a` define these same attributes
         of the returned array.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.

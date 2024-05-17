@@ -54,6 +54,7 @@ from .dpnp_utils import (
     call_origin,
     get_usm_allocations,
 )
+from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 from .dpnp_utils.dpnp_utils_statistics import (
     dpnp_cov,
 )
@@ -84,7 +85,7 @@ def _count_reduce_items(arr, axis, where=True):
     ----------
     arr : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int or tuple of ints, optional
+    axis : {None, int, tuple of ints}, optional
         axis or axes along which the number of items used in a reduction
         operation must be counted. If a tuple of unique integers is given,
         the items are counted over multiple axes. If ``None``, the variance
@@ -116,6 +117,12 @@ def _count_reduce_items(arr, axis, where=True):
             "where keyword argument is only supported with its default value."
         )
     return items
+
+
+def _get_comparison_res_dt(a, _dtype, _out):
+    """Get a data type used by dpctl for result array in comparison function."""
+
+    return a.dtype
 
 
 def amax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
@@ -164,12 +171,12 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int or tuple of ints, optional
+    axis : {None, int, tuple of ints}, optional
         Axis or axes along which the averages must be computed. If
         a tuple of unique integers, the averages are computed over multiple
         axes. If ``None``, the average is computed over the entire array.
         Default: ``None``.
-    weights : array_like, optional
+    weights : {array_like}, optional
         An array of weights associated with the values in `a`. Each value in
         `a` contributes to the average according to its associated weight.
         The weights array can either be 1-D (in which case its length must be
@@ -180,12 +187,12 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
             avg = sum(a * weights) / sum(weights)
 
         The only constraint on `weights` is that `sum(weights)` must not be 0.
-    returned : bool, optional
+    returned : {bool}, optional
         Default is ``False``. If ``True``, the tuple (`average`,
         `sum_of_weights`) is returned, otherwise only the average is returned.
         If `weights=None`, `sum_of_weights` is equivalent to the number of
         elements over which the average is taken.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting
@@ -461,28 +468,28 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int or tuple of ints, optional
-        Axis or axes along which maximum values must be computed. By default,
-        the maximum value must be computed over the entire array. If a tuple of
-        integers, maximum values must be computed over multiple axes.
+    axis : {None, int or tuple of ints}, optional
+        Axis or axes along which to operate. By default, flattened input is
+        used. If this is a tuple of integers, the minimum is selected over
+        multiple axes, instead of a single axis or all the axes as before.
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
-    keepdims : bool
-        If ``True``, the reduced axes (dimensions) must be included in the
-        result as singleton dimensions, and, accordingly, the result must be
-        compatible with the input array. Otherwise, if ``False``, the reduced
-        axes (dimensions) must not be included in the result.
+        Alternative output array in which to place the result. Must be of the
+        same shape and buffer length as the expected output.
+        Default: ``None``.
+    keepdims : {None, bool}, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the input array.
         Default: ``False``.
 
     Returns
     -------
     out : dpnp.ndarray
-        If the maximum value was computed over the entire array,
-        a zero-dimensional array containing the maximum value; otherwise,
-        a non-zero-dimensional array containing the maximum values.
-        The returned array must have the same data type as `a`.
+        Maximum of `a`. If `axis` is ``None``, the result is a zero-dimensional
+        array. If `axis` is an integer, the result is an array of dimension
+        ``a.ndim - 1``. If `axis` is a tuple, the result is an array of
+        dimension ``a.ndim - len(axis)``.
 
     Limitations
     -----------.
@@ -522,13 +529,17 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
 
     dpnp.check_limitations(initial=initial, where=where)
+    usm_a = dpnp.get_usm_ndarray(a)
 
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.max(dpt_array, axis=axis, keepdims=keepdims)
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.max,
+        _get_comparison_res_dt,
+        usm_a,
+        axis=axis,
+        keepdims=keepdims,
     )
-
-    return dpnp.get_result_array(result, out)
 
 
 def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
@@ -541,12 +552,12 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int or tuple of ints, optional
+    axis : {None, int, tuple of ints}, optional
         Axis or axes along which the arithmetic means must be computed. If
         a tuple of unique integers, the means are computed over multiple
         axes. If ``None``, the mean is computed over the entire array.
         Default: ``None``.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         Type to use in computing the mean. By default, if `a` has a
         floating-point data type, the returned array will have
         the same data type as `a`.
@@ -557,7 +568,7 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary. Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting
@@ -672,28 +683,28 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int or tuple of ints, optional
-        Axis or axes along which minimum values must be computed. By default,
-        the minimum value must be computed over the entire array. If a tuple
-        of integers, minimum values must be computed over multiple axes.
+    axis : {None, int or tuple of ints}, optional
+        Axis or axes along which to operate. By default, flattened input is
+        used. If this is a tuple of integers, the minimum is selected over
+        multiple axes, instead of a single axis or all the axes as before.
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
-    keepdims : bool, optional
-        If ``True``, the reduced axes (dimensions) must be included in the
-        result as singleton dimensions, and, accordingly, the result must be
-        compatible with the input array. Otherwise, if ``False``, the reduced
-        axes (dimensions) must not be included in the result.
+        Alternative output array in which to place the result. Must be of the
+        same shape and buffer length as the expected output.
+        Default: ``None``.
+    keepdims : {None, bool}, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the input array.
         Default: ``False``.
 
     Returns
     -------
     out : dpnp.ndarray
-        If the minimum value was computed over the entire array,
-        a zero-dimensional array containing the minimum value; otherwise,
-        a non-zero-dimensional array containing the minimum values.
-        The returned array must have the same data type as `a`.
+        Minimum of `a`. If `axis` is ``None``, the result is a zero-dimensional
+        array. If `axis` is an integer, the result is an array of dimension
+        ``a.ndim - 1``. If `axis` is a tuple, the result is an array of
+        dimension ``a.ndim - len(axis)``.
 
     Limitations
     -----------
@@ -733,13 +744,17 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
 
     dpnp.check_limitations(initial=initial, where=where)
+    usm_a = dpnp.get_usm_ndarray(a)
 
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.min(dpt_array, axis=axis, keepdims=keepdims)
+    return dpnp_wrap_reduction_call(
+        a,
+        out,
+        dpt.min,
+        _get_comparison_res_dt,
+        usm_a,
+        axis=axis,
+        keepdims=keepdims,
     )
-
-    return dpnp.get_result_array(result, out)
 
 
 def ptp(
@@ -798,13 +813,13 @@ def std(
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int or tuple of ints, optional
+    axis : {None, int, tuple of ints}, optional
         Axis or axes along which the standard deviations must be computed.
         If a tuple of unique integers is given, the standard deviations
         are computed over multiple axes. If ``None``, the standard deviation
         is computed over the entire array.
         Default: ``None``.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         Type to use in computing the standard deviation. By default,
         if `a` has a floating-point data type, the returned array
         will have the same data type as `a`.
@@ -820,7 +835,7 @@ def std(
         is ``N - ddof``, where ``N`` corresponds to the total
         number of elements over which the standard deviation is calculated.
         Default: `0.0`.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting
@@ -912,12 +927,12 @@ def var(
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int or tuple of ints, optional
+    axis : {None, int, tuple of ints}, optional
         axis or axes along which the variances must be computed. If a tuple
         of unique integers is given, the variances are computed over multiple
         axes. If ``None``, the variance is computed over the entire array.
         Default: ``None``.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         Type to use in computing the variance. By default, if `a` has a
         floating-point data type, the returned array will have
         the same data type as `a`.
@@ -933,7 +948,7 @@ def var(
         is ``N - ddof``, where ``N`` corresponds to the total
         number of elements over which the variance is calculated.
         Default: `0.0`.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting

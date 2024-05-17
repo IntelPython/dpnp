@@ -525,7 +525,8 @@ class dpnp_array:
         Refer to :obj:`dpnp.argmax` for full documentation.
 
         """
-        return dpnp.argmax(self, axis, out, keepdims=keepdims)
+
+        return dpnp.argmax(self, axis=axis, out=out, keepdims=keepdims)
 
     def argmin(self, axis=None, out=None, *, keepdims=False):
         """
@@ -534,7 +535,8 @@ class dpnp_array:
         Refer to :obj:`dpnp.argmin` for full documentation.
 
         """
-        return dpnp.argmin(self, axis, out, keepdims=keepdims)
+
+        return dpnp.argmin(self, axis=axis, out=out, keepdims=keepdims)
 
     # 'argpartition',
 
@@ -582,13 +584,15 @@ class dpnp_array:
         casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
             Controls what kind of data casting may occur.
             Defaults to ``'unsafe'`` for backwards compatibility.
+
             - 'no' means the data types should not be cast at all.
             - 'equiv' means only byte-order changes are allowed.
             - 'safe' means only casts which can preserve values are allowed.
             - 'same_kind' means only safe casts or casts within a kind, like
               float64 to float32, are allowed.
             - 'unsafe' means any data conversions may be done.
-        copy : bool, optional
+
+        copy : {bool}, optional
             By default, ``astype`` always returns a newly allocated array. If
             this is set to ``False``, and the `dtype`, `order`, and `subok`
             requirements are satisfied, the input array is returned instead of
@@ -717,7 +721,16 @@ class dpnp_array:
         return dpnp.copy(self, order=order)
 
     # 'ctypes',
-    # 'cumprod',
+
+    def cumprod(self, axis=None, dtype=None, out=None):
+        """
+        Return the cumulative product of the elements along the given axis.
+
+        Refer to :obj:`dpnp.cumprod` for full documentation.
+
+        """
+
+        return dpnp.cumprod(self, axis=axis, dtype=dtype, out=out)
 
     def cumsum(self, axis=None, dtype=None, out=None):
         """
@@ -731,15 +744,26 @@ class dpnp_array:
 
     # 'data',
 
-    def diagonal(input, offset=0, axis1=0, axis2=1):
+    def diagonal(self, offset=0, axis1=0, axis2=1):
         """
         Return specified diagonals.
 
         Refer to :obj:`dpnp.diagonal` for full documentation.
 
+        See Also
+        --------
+        :obj:`dpnp.diagonal` : Equivalent function.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.arange(4).reshape(2,2)
+        >>> a.diagonal()
+        array([0, 3])
+
         """
 
-        return dpnp.diagonal(input, offset, axis1, axis2)
+        return dpnp.diagonal(self, offset=offset, axis1=axis1, axis2=axis2)
 
     def dot(self, b, out=None):
         """
@@ -815,22 +839,32 @@ class dpnp_array:
         """
         Return a copy of the array collapsed into one dimension.
 
+        For full documentation refer to :obj:`numpy.ndarray.flatten`.
+
         Parameters
         ----------
-        order: {'C', 'F', 'A', 'K'}, optional
-            'C' means to flatten in row-major (C-style) order.
-            'F' means to flatten in column-major (Fortran- style) order.
-            'A' means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
-            'K' means to flatten a in the order the elements occur in memory. The default is 'C'.
+        order : {"C", "F"}, optional
+            Read the elements using this index order, and place the elements
+            into the reshaped array using this index order.
+
+                - "C" means to read / write the elements using C-like index
+                  order, with the last axis index changing fastest, back to the
+                  first axis index changing slowest.
+                - "F" means to read / write the elements using Fortran-like
+                  index order, with the first index changing fastest, and the
+                  last index changing slowest.
+
+            The default is ``"C"``.
 
         Returns
         -------
-        out: ndarray
+        out: dpnp.ndarray
             A copy of the input array, flattened to one dimension.
 
         See Also
         --------
-        :obj:`dpnp.ravel`, :obj:`dpnp.flat`
+        :obj:`dpnp.ravel` : Return a flattened array.
+        :obj:`dpnp.flat` : A 1-D flat iterator over the array.
 
         Examples
         --------
@@ -838,17 +872,12 @@ class dpnp_array:
         >>> a = np.array([[1, 2], [3, 4]])
         >>> a.flatten()
         array([1, 2, 3, 4])
-        >>> a.flatten('F')
+        >>> a.flatten("F")
         array([1, 3, 2, 4])
 
         """
-        res = dpnp.reshape(self, -1, order=order)
-        if res._array_obj._pointer == self._array_obj._pointer:
-            # Return copy of result if result use same memory as array.
-            return res.copy()
-        else:
-            # dpnp.reshape returned a copy of the result. No need for an additional copy
-            return res
+
+        return self.reshape(-1, order=order, copy=True)
 
     # 'getfield',
 
@@ -950,7 +979,14 @@ class dpnp_array:
 
         """
 
-        return dpnp.max(self, axis, out, keepdims, initial, where)
+        return dpnp.max(
+            self,
+            axis=axis,
+            out=out,
+            keepdims=keepdims,
+            initial=initial,
+            where=where,
+        )
 
     def mean(
         self, axis=None, dtype=None, out=None, keepdims=False, *, where=True
@@ -979,7 +1015,14 @@ class dpnp_array:
 
         """
 
-        return dpnp.min(self, axis, out, keepdims, initial, where)
+        return dpnp.min(
+            self,
+            axis=axis,
+            out=out,
+            keepdims=keepdims,
+            initial=initial,
+            where=where,
+        )
 
     @property
     def nbytes(self):
@@ -1053,7 +1096,15 @@ class dpnp_array:
 
         """
 
-        return dpnp.prod(self, axis, dtype, out, keepdims, initial, where)
+        return dpnp.prod(
+            self,
+            axis=axis,
+            dtype=dtype,
+            out=out,
+            keepdims=keepdims,
+            initial=initial,
+            where=where,
+        )
 
     def put(self, indices, vals, /, *, axis=None, mode="wrap"):
         """
@@ -1294,13 +1345,11 @@ class dpnp_array:
 
     def sum(
         self,
-        /,
-        *,
         axis=None,
         dtype=None,
-        keepdims=False,
         out=None,
-        initial=0,
+        keepdims=False,
+        initial=None,
         where=True,
     ):
         """

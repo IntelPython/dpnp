@@ -37,7 +37,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CHOOSE_EXT
         DPNP_FN_COPY_EXT
         DPNP_FN_CORRELATE_EXT
-        DPNP_FN_CUMPROD_EXT
         DPNP_FN_DEGREES_EXT
         DPNP_FN_DIAG_INDICES_EXT
         DPNP_FN_DIAGONAL_EXT
@@ -127,9 +126,6 @@ cdef extern from "dpnp_iface.hpp":
 
 
 # C function pointer to the C library template functions
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_1out_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                     void *, void * , size_t,
-                                                     const c_dpctl.DPCTLEventVectorRef)
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_1out_strides_t)(c_dpctl.DPCTLSyclQueueRef,
                                                              void *, const size_t, const size_t,
                                                              const shape_elem_type * , const shape_elem_type * ,

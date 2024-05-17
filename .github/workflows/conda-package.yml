@@ -15,42 +15,45 @@ env:
   CONDA_BUILD_VERSION: '24.1.2'
   CONDA_INDEX_VERSION: '0.4.0'
   TEST_ENV_NAME: 'test'
-  # TODO: to add test_arraymanipulation.py back to the scope once crash on Windows is gone
   TEST_SCOPE: >-
-      test_arraycreation.py
+      test_absolute.py
       test_amin_amax.py
-      test_dparray.py
+      test_arithmetic.py
+      test_arraycreation.py
+      test_arraymanipulation.py
+      test_bitwise.py
       test_copy.py
+      test_counting.py
+      test_dparray.py
+      test_extensions.py
       test_fft.py
+      test_flat.py
       test_histogram.py
+      test_indexing.py
       test_linalg.py
       test_logic.py
       test_manipulation.py
       test_mathematical.py
+      test_mixins.py
+      test_nanfunctions.py
+      test_outer.py
       test_product.py
       test_random_state.py
+      test_search.py
       test_sort.py
       test_special.py
       test_statistics.py
+      test_sum.py
       test_sycl_queue.py
       test_umath.py
       test_usm_type.py
       third_party/cupy/core_tests
-      third_party/cupy/linalg_tests/test_decomposition.py
-      third_party/cupy/linalg_tests/test_norms.py
-      third_party/cupy/linalg_tests/test_product.py
-      third_party/cupy/linalg_tests/test_solve.py
-      third_party/cupy/linalg_tests/test_einsum.py
-      third_party/cupy/logic_tests/test_comparison.py
-      third_party/cupy/logic_tests/test_truth.py
-      third_party/cupy/manipulation_tests/test_basic.py
-      third_party/cupy/manipulation_tests/test_dims.py
-      third_party/cupy/manipulation_tests/test_join.py
-      third_party/cupy/manipulation_tests/test_rearrange.py
-      third_party/cupy/manipulation_tests/test_transpose.py
+      third_party/cupy/indexing_tests/test_indexing.py
+      third_party/cupy/linalg_tests
+      third_party/cupy/logic_tests
+      third_party/cupy/manipulation_tests
       third_party/cupy/math_tests
-      third_party/cupy/sorting_tests/test_sort.py
-      third_party/cupy/sorting_tests/test_count.py
+      third_party/cupy/sorting_tests
       third_party/cupy/statistics_tests/test_histogram.py
       third_party/cupy/statistics_tests/test_meanvar.py
   VER_JSON_NAME: 'version.json'
@@ -76,7 +79,7 @@ jobs:
       run:
         shell: ${{ matrix.os == 'windows-latest' && 'cmd /C CALL {0}' || 'bash -l {0}' }}
 
-    continue-on-error: false
+    continue-on-error: true
 
     steps:
       - name: Cancel Previous Runs
@@ -85,7 +88,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
+        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
         with:
           fetch-depth: 0
 
@@ -97,15 +100,11 @@ jobs:
           miniconda-version: 'latest'
           activate-environment: 'build'
 
-      - if: matrix.os == 'ubuntu-20.04'
-        name: Store conda paths as envs on Linux
-        run: echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/linux-64/" >> $GITHUB_ENV
-
-      - if: matrix.os == 'windows-latest'
-        name: Store conda paths as envs on Win
+      - name: Store conda paths as envs
+        shell: bash -l {0}
         run: |
-          @echo on
-          (echo CONDA_BLD=%CONDA_PREFIX%\conda-bld\win-64\) >> %GITHUB_ENV%
+          echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\" '/' >> $GITHUB_ENV
+          echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
 
       - name: Install conda-build
         run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
@@ -130,6 +129,12 @@ jobs:
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+
+      - name: Upload wheels artifact
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+          path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
 
   test_linux:
     name: Test ['${{ matrix.os }}', python='${{ matrix.python }}']
@@ -410,7 +415,7 @@ jobs:
 
     defaults:
       run:
-        shell: ${{ matrix.os == 'windows-latest' && 'cmd /C CALL {0}' || 'bash -l {0}' }}
+        shell: bash -l {0}
 
     continue-on-error: true
 
@@ -424,6 +429,11 @@ jobs:
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
+      - name: Download wheels artifact
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
@@ -435,8 +445,16 @@ jobs:
       - name: Install anaconda-client
         run: conda install anaconda-client
 
+      - name: Package version
+        run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.tar.bz2 | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
+
       - name: Upload
         run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+
+      - name: Upload wheels
+        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl --version ${{ env.PACKAGE_VERSION }}
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
 
@@ -459,7 +477,7 @@ jobs:
         run: conda install anaconda-client
 
       - name: Checkout repo
-        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
+        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0

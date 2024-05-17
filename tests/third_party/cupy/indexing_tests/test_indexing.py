@@ -99,7 +99,6 @@ class TestIndexing(unittest.TestCase):
         a = testing.shaped_arange((3, 4, 5), xp, dtype)
         return a.diagonal(1, 2, 0)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_external_diagonal(self, xp, dtype):

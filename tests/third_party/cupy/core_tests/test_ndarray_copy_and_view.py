@@ -384,7 +384,6 @@ class TestArrayAsType:
         return a.astype(numpy.int8)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestArrayDiagonal:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()

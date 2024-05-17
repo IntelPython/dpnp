@@ -734,7 +734,7 @@ def matmul(
         Alternative output array in which to place the result. It must have
         a shape that matches the signature `(n,k),(k,m)->(n,m)` but the type
         (of the calculated values) will be cast if necessary. Default: ``None``.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         Type to use in computing the matrix product. By default, the returned
         array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.
@@ -743,7 +743,7 @@ def matmul(
     order : {"C", "F", "A", "K", None}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: "K".
-    axes : list of tuples, optional
+    axes : {list of tuples}, optional
         A list of tuples with indices of axes the matrix product should operate
         on. For instance, for the signature of ``(i,j),(j,k)->(i,k)``, the base
         elements are 2d matrices and these are taken to be stored in the two
