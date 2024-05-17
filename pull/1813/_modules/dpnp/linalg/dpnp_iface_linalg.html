@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev1+66.g5000de202c documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.15.0dev1+74.g80610effda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=1700a3d3"></script>
+        <script src="../../../_static/documentation_options.js?v=45668d97"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+66.g5000de202c
+                0.15.0dev1+74.g80610effda
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -126,6 +126,8 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="c1"># pylint: disable=invalid-name</span>
+<span class="c1"># pylint: disable=no-member</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span>
 
@@ -253,8 +255,9 @@
 <span class="sd">        The matrix whose condition number is sought.</span>
 <span class="sd">    p : {None, 1, -1, 2, -2, inf, -inf, &quot;fro&quot;}, optional</span>
 <span class="sd">        Order of the norm used in the condition number computation.</span>
-<span class="sd">        inf means the `dpnp.inf` object, and the Frobenius norm is</span>
-<span class="sd">        the root-of-sum-of-squares norm. The default is ``None``.</span>
+<span class="sd">        ``inf`` means the `dpnp.inf` object, and the Frobenius norm is</span>
+<span class="sd">        the root-of-sum-of-squares norm.</span>
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -289,7 +292,9 @@
 <span class="sd">    array(1.41421356)</span>
 <span class="sd">    &gt;&gt;&gt; np.linalg.cond(a, -2)</span>
 <span class="sd">    array(0.70710678) # may vary</span>
-<span class="sd">    &gt;&gt;&gt; min(np.linalg.svd(a, compute_uv=False))*min(np.linalg.svd(np.linalg.inv(a), compute_uv=False))</span>
+<span class="sd">    &gt;&gt;&gt; x = min(np.linalg.svd(a, compute_uv=False))</span>
+<span class="sd">    &gt;&gt;&gt; y = min(np.linalg.svd(np.linalg.inv(a), compute_uv=False))</span>
+<span class="sd">    &gt;&gt;&gt; x * y</span>
 <span class="sd">    array(0.70710678) # may vary</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -319,7 +324,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.linalg.slogdet` : Returns sign and logarithm of the determinant of an array.</span>
+<span class="sd">    :obj:`dpnp.linalg.slogdet` : Returns sign and logarithm of the determinant</span>
+<span class="sd">                                 of an array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -384,10 +390,11 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.</span>
-<span class="sd">    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian</span>
-<span class="sd">                              (conjugate symmetric) or a real symmetric matrix.</span>
-<span class="sd">    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or</span>
-<span class="sd">                                  real symmetric matrix.</span>
+<span class="sd">    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of</span>
+<span class="sd">                              a complex Hermitian (conjugate symmetric) or</span>
+<span class="sd">                              a real symmetric matrix.</span>
+<span class="sd">    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex</span>
+<span class="sd">                                  Hermitian or real symmetric matrix.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -455,8 +462,6 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eigh.html#dpnp.linalg.eigh">[docs]</a>
 <span class="k">def</span> <span class="nf">eigh</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">UPLO</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    eigh(a, UPLO=&quot;L&quot;)</span>
-
 <span class="sd">    Return the eigenvalues and eigenvectors of a complex Hermitian</span>
 <span class="sd">    (conjugate symmetric) or a real symmetric matrix.</span>
 
@@ -469,7 +474,8 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : (..., M, M) {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        A complex- or real-valued array whose eigenvalues and eigenvectors are to be computed.</span>
+<span class="sd">        A complex- or real-valued array whose eigenvalues and eigenvectors are</span>
+<span class="sd">        to be computed.</span>
 <span class="sd">    UPLO : {&quot;L&quot;, &quot;U&quot;}, optional</span>
 <span class="sd">        Specifies the calculation uses either the lower (&quot;L&quot;) or upper (&quot;U&quot;)</span>
 <span class="sd">        triangular part of the matrix.</span>
@@ -477,7 +483,7 @@
 <span class="sd">        considered to preserve the Hermite matrix property.</span>
 <span class="sd">        It therefore follows that the imaginary part of the diagonal</span>
 <span class="sd">        will always be treated as zero.</span>
-<span class="sd">        Default: &quot;L&quot;.</span>
+<span class="sd">        Default: ``&quot;L&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -490,8 +496,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or</span>
-<span class="sd">                                  real symmetric matrix.</span>
+<span class="sd">    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex</span>
+<span class="sd">                                  Hermitian or real symmetric matrix.</span>
 <span class="sd">    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of</span>
 <span class="sd">                             a square array.</span>
 <span class="sd">    :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.</span>
@@ -550,11 +556,13 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of a square array.</span>
-<span class="sd">    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex Hermitian or</span>
-<span class="sd">                                  real symmetric matrix.</span>
-<span class="sd">    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian</span>
-<span class="sd">                              (conjugate symmetric) or a real symmetric matrix.</span>
+<span class="sd">    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of</span>
+<span class="sd">                             a square array.</span>
+<span class="sd">    :obj:`dpnp.linalg.eigvalsh` : Compute the eigenvalues of a complex</span>
+<span class="sd">                                  Hermitian or real symmetric matrix.</span>
+<span class="sd">    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of</span>
+<span class="sd">                              a complex Hermitian (conjugate symmetric) or</span>
+<span class="sd">                              a real symmetric matrix.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -572,7 +580,8 @@
 <span class="sd">    &gt;&gt;&gt; LA.norm(Q[0, :]), LA.norm(Q[1, :]), np.dot(Q[0, :],Q[1, :])</span>
 <span class="sd">    (array(1.), array(1.), array(0.))</span>
 
-<span class="sd">    Now multiply a diagonal matrix by ``Q`` on one side and by ``Q.T`` on the other:</span>
+<span class="sd">    Now multiply a diagonal matrix by ``Q`` on one side and by ``Q.T`` on the</span>
+<span class="sd">    other:</span>
 
 <span class="sd">    &gt;&gt;&gt; D = np.diag((-1,1))</span>
 <span class="sd">    &gt;&gt;&gt; LA.eigvals(D)</span>
@@ -599,11 +608,10 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eigvalsh.html#dpnp.linalg.eigvalsh">[docs]</a>
 <span class="k">def</span> <span class="nf">eigvalsh</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">UPLO</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    eigvalsh(a, UPLO=&quot;L&quot;)</span>
-
 <span class="sd">    Compute the eigenvalues of a complex Hermitian or real symmetric matrix.</span>
 
-<span class="sd">    Main difference from :obj:`dpnp.linalg.eigh`: the eigenvectors are not computed.</span>
+<span class="sd">    Main difference from :obj:`dpnp.linalg.eigh`: the eigenvectors are not</span>
+<span class="sd">    computed.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.linalg.eigvalsh`.</span>
 
@@ -618,7 +626,7 @@
 <span class="sd">        considered to preserve the Hermite matrix property.</span>
 <span class="sd">        It therefore follows that the imaginary part of the diagonal</span>
 <span class="sd">        will always be treated as zero.</span>
-<span class="sd">        Default: &quot;L&quot;.</span>
+<span class="sd">        Default: ``&quot;L&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -628,8 +636,9 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of a complex Hermitian</span>
-<span class="sd">                              (conjugate symmetric) or a real symmetric matrix.</span>
+<span class="sd">    :obj:`dpnp.linalg.eigh` : Return the eigenvalues and eigenvectors of</span>
+<span class="sd">                              a complex Hermitian (conjugate symmetric)</span>
+<span class="sd">                              or a real symmetric matrix.</span>
 <span class="sd">    :obj:`dpnp.linalg.eigvals` : Compute the eigenvalues of a general matrix.</span>
 <span class="sd">    :obj:`dpnp.linalg.eig` : Compute the eigenvalues and right eigenvectors of</span>
 <span class="sd">                             a general matrix.</span>
@@ -727,13 +736,14 @@
 <span class="sd">        Ordinate or &quot;dependent variable&quot; values.</span>
 <span class="sd">        If `b` is two-dimensional, the least-squares solution</span>
 <span class="sd">        is calculated for each of the `K` columns of `b`.</span>
-<span class="sd">    rcond : {int, float, None}, optional</span>
+<span class="sd">    rcond : {None, int, float}, optional</span>
 <span class="sd">        Cut-off ratio for small singular values of `a`.</span>
-<span class="sd">        For the purposes of rank determination, singular values are treated</span>
-<span class="sd">        as zero if they are smaller than `rcond` times the largest singular</span>
-<span class="sd">        value of `a`.</span>
-<span class="sd">        The default uses the machine precision times ``max(M, N)``.  Passing</span>
+<span class="sd">        For the purposes of rank determination, singular values are treated as</span>
+<span class="sd">        zero if they are smaller than `rcond` times the largest singular value</span>
+<span class="sd">        of `a`.</span>
+<span class="sd">        The default uses the machine precision times ``max(M, N)``. Passing</span>
 <span class="sd">        ``-1`` will use machine precision.</span>
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -800,7 +810,8 @@
 <span class="sd">    a : (..., M, M) {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Matrix to be &quot;powered&quot;.</span>
 <span class="sd">    n : int</span>
-<span class="sd">        The exponent can be any integer or long integer, positive, negative, or zero.</span>
+<span class="sd">        The exponent can be any integer or long integer, positive, negative,</span>
+<span class="sd">        or zero.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -820,7 +831,7 @@
 <span class="sd">    &gt;&gt;&gt; np.linalg.matrix_power(i, 0)</span>
 <span class="sd">    array([[1, 0],</span>
 <span class="sd">           [0, 1]])</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.matrix_power(i, -3) # should = 1/(-i) = i, but w/ f.p. elements</span>
+<span class="sd">    &gt;&gt;&gt; np.linalg.matrix_power(i, -3) # should 1/(-i) = i, but w/ f.p. elements</span>
 <span class="sd">    array([[ 0.,  1.],</span>
 <span class="sd">           [-1.,  0.]])</span>
 
@@ -868,13 +879,14 @@
 <span class="sd">        Input vector or stack of matrices.</span>
 <span class="sd">    tol : (...) {float, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Threshold below which SVD values are considered zero. If `tol` is</span>
-<span class="sd">        None, and ``S`` is an array with singular values for `M`, and</span>
+<span class="sd">        ``None``, and ``S`` is an array with singular values for `M`, and</span>
 <span class="sd">        ``eps`` is the epsilon value for datatype of ``S``, then `tol` is</span>
 <span class="sd">        set to ``S.max() * max(M.shape) * eps``.</span>
-<span class="sd">    hermitian : {bool}, optional</span>
-<span class="sd">        If True, `A` is assumed to be Hermitian (symmetric if real-valued),</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    hermitian : bool, optional</span>
+<span class="sd">        If ``True``, `A` is assumed to be Hermitian (symmetric if real-valued),</span>
 <span class="sd">        enabling a more efficient method for finding singular values.</span>
-<span class="sd">        Defaults to False.</span>
+<span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -931,6 +943,7 @@
 <span class="sd">        C-contiguous, and its dtype must be the dtype that would be returned</span>
 <span class="sd">        for `dot(a, b)`. If these conditions are not met, an exception is</span>
 <span class="sd">        raised, instead of attempting to be flexible.</span>
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -979,59 +992,6 @@
 
 
 
-<div class="viewcode-block" id="pinv">
-<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.pinv.html#dpnp.linalg.pinv">[docs]</a>
-<span class="k">def</span> <span class="nf">pinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the (Moore-Penrose) pseudo-inverse of a matrix.</span>
-
-<span class="sd">    Calculate the generalized inverse of a matrix using its</span>
-<span class="sd">    singular-value decomposition (SVD) and including all large singular values.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.linalg.inv`.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    a : (..., M, N) {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Matrix or stack of matrices to be pseudo-inverted.</span>
-<span class="sd">    rcond : {float, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        Cutoff for small singular values.</span>
-<span class="sd">        Singular values less than or equal to ``rcond * largest_singular_value``</span>
-<span class="sd">        are set to zero. Broadcasts against the stack of matrices.</span>
-<span class="sd">        Default: ``1e-15``.</span>
-<span class="sd">    hermitian : {bool}, optional</span>
-<span class="sd">        If ``True``, a is assumed to be Hermitian (symmetric if real-valued),</span>
-<span class="sd">        enabling a more efficient method for finding singular values.</span>
-<span class="sd">        Default: ``False``.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : (..., N, M) dpnp.ndarray</span>
-<span class="sd">        The pseudo-inverse of a.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    The following example checks that ``a * a+ * a == a`` and</span>
-<span class="sd">    ``a+ * a * a+ == a+``:</span>
-
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.random.randn(9, 6)</span>
-<span class="sd">    &gt;&gt;&gt; B = np.linalg.pinv(a)</span>
-<span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(a, np.dot(B, a)))</span>
-<span class="sd">    array([ True])</span>
-<span class="sd">    &gt;&gt;&gt; np.allclose(B, np.dot(B, np.dot(a, B)))</span>
-<span class="sd">    array([ True])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">rcond</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_pinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="n">rcond</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="n">hermitian</span><span class="p">)</span></div>
-
-
-
 <div class="viewcode-block" id="norm">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.norm.html#dpnp.linalg.norm">[docs]</a>
 <span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1052,13 +1012,14 @@
 <span class="sd">        If `axis` is an integer, it specifies the axis of `x` along which to</span>
 <span class="sd">        compute the vector norms.  If `axis` is a 2-tuple, it specifies the</span>
 <span class="sd">        axes that hold 2-D matrices, and the matrix norms of these matrices</span>
-<span class="sd">        are computed.  If `axis` is ``None`` then either a vector norm (when</span>
+<span class="sd">        are computed. If `axis` is ``None`` then either a vector norm (when</span>
 <span class="sd">        `x` is 1-D) or a matrix norm (when `x` is 2-D) is returned.</span>
-<span class="sd">        The default is ``None``.</span>
-<span class="sd">    keepdims : {None, bool}, optional</span>
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    keepdims : bool, optional</span>
 <span class="sd">        If this is set to ``True``, the axes which are normed over are left in</span>
 <span class="sd">        the result as dimensions with size one. With this option the result</span>
 <span class="sd">        will broadcast correctly against the original `x`.</span>
+<span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1140,6 +1101,59 @@
 
 
 
+<div class="viewcode-block" id="pinv">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.pinv.html#dpnp.linalg.pinv">[docs]</a>
+<span class="k">def</span> <span class="nf">pinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the (Moore-Penrose) pseudo-inverse of a matrix.</span>
+
+<span class="sd">    Calculate the generalized inverse of a matrix using its</span>
+<span class="sd">    singular-value decomposition (SVD) and including all large singular values.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.linalg.inv`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : (..., M, N) {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Matrix or stack of matrices to be pseudo-inverted.</span>
+<span class="sd">    rcond : {float, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Cutoff for small singular values.</span>
+<span class="sd">        Singular values less than or equal to ``rcond * largest_singular_value``</span>
+<span class="sd">        are set to zero. Broadcasts against the stack of matrices.</span>
+<span class="sd">        Default: ``1e-15``.</span>
+<span class="sd">    hermitian : bool, optional</span>
+<span class="sd">        If ``True``, a is assumed to be Hermitian (symmetric if real-valued),</span>
+<span class="sd">        enabling a more efficient method for finding singular values.</span>
+<span class="sd">        Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : (..., N, M) dpnp.ndarray</span>
+<span class="sd">        The pseudo-inverse of a.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The following example checks that ``a * a+ * a == a`` and</span>
+<span class="sd">    ``a+ * a * a+ == a+``:</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.random.randn(9, 6)</span>
+<span class="sd">    &gt;&gt;&gt; B = np.linalg.pinv(a)</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(a, np.dot(B, a)))</span>
+<span class="sd">    array([ True])</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(B, np.dot(B, np.dot(a, B)))</span>
+<span class="sd">    array([ True])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">rcond</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_pinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="n">rcond</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="n">hermitian</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="qr">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.qr.html#dpnp.linalg.qr">[docs]</a>
 <span class="k">def</span> <span class="nf">qr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reduced&quot;</span><span class="p">):</span>
@@ -1180,8 +1194,8 @@
 <span class="sd">        The upper-triangular matrix or a stack of upper-triangular matrices</span>
 <span class="sd">        if the number of dimensions in the input array is greater than 2.</span>
 <span class="sd">    (h, tau) : tuple of dpnp.ndarray</span>
-<span class="sd">        The h array contains the Householder reflectors that generate Q along with R.</span>
-<span class="sd">        The tau array contains scaling factors for the reflectors.</span>
+<span class="sd">        The `h` array contains the Householder reflectors that generate Q along</span>
+<span class="sd">        with R. The `tau` array contains scaling factors for the reflectors.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1259,8 +1273,7 @@
     <span class="n">assert_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">or</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">LinAlgError</span><span class="p">(</span>
             <span class="s2">&quot;a must have (..., M, M) shape and b must have (..., M) &quot;</span>
@@ -1301,12 +1314,12 @@
 <span class="sd">        Unitary matrix, where M is the number of rows of the input array `a`.</span>
 <span class="sd">        The shape of the matrix `u` depends on the value of `full_matrices`.</span>
 <span class="sd">        If `full_matrices` is ``True``, `u` has the shape (…, M, M).</span>
-<span class="sd">        If `full_matrices` is ``False``, `u` has the shape (…, M, K),</span>
-<span class="sd">        where K = min(M, N), and N is the number of columns of the input array `a`.</span>
+<span class="sd">        If `full_matrices` is ``False``, `u` has the shape (…, M, K), where</span>
+<span class="sd">        K = min(M, N), and N is the number of columns of the input array `a`.</span>
 <span class="sd">        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.</span>
 <span class="sd">    s : (…, K) dpnp.ndarray</span>
-<span class="sd">        Vector containing the singular values of `a`, sorted in descending order.</span>
-<span class="sd">        The length of `s` is min(M, N).</span>
+<span class="sd">        Vector containing the singular values of `a`, sorted in descending</span>
+<span class="sd">        order. The length of `s` is min(M, N).</span>
 <span class="sd">    Vh : { (…, N, N), (…, K, N) } dpnp.ndarray</span>
 <span class="sd">        Unitary matrix, where N is the number of columns of the input array `a`.</span>
 <span class="sd">        The shape of the matrix `Vh` depends on the value of `full_matrices`.</span>
@@ -1447,7 +1460,7 @@
 <span class="sd">    ind : int, optional</span>
 <span class="sd">        Number of first indices that are involved in the inverse sum.</span>
 <span class="sd">        Must be a positive integer.</span>
-<span class="sd">        Default: 2.</span>
+<span class="sd">        Default: ``2``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1457,8 +1470,10 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.</span>
-<span class="sd">    :obj:`dpnp.linalg.tensorsolve` : Solve the tensor equation ``a x = b`` for x.</span>
+<span class="sd">    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified</span>
+<span class="sd">                                   axes.</span>
+<span class="sd">    :obj:`dpnp.linalg.tensorsolve` : Solve the tensor equation</span>
+<span class="sd">                                     ``a x = b`` for x.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1510,7 +1525,7 @@
 <span class="sd">        &#39;square&#39;).</span>
 <span class="sd">    b : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Right-hand tensor, which can be of any shape.</span>
-<span class="sd">    axes : tuple of ints, optional</span>
+<span class="sd">    axes : {None, tuple of ints}, optional</span>
 <span class="sd">        Axes in `a` to reorder to the right, before inversion.</span>
 <span class="sd">        If ``None`` , no reordering is done.</span>
 <span class="sd">        Default: ``None``.</span>
@@ -1522,9 +1537,12 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified axes.</span>
-<span class="sd">    :obj:`dpnp.linalg.tensorinv` : Compute the &#39;inverse&#39; of an N-dimensional array.</span>
-<span class="sd">    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.</span>
+<span class="sd">    :obj:`dpnp.linalg.tensordot` : Compute tensor dot product along specified</span>
+<span class="sd">                                   axes.</span>
+<span class="sd">    :obj:`dpnp.linalg.tensorinv` : Compute the &#39;inverse&#39; of an N-dimensional</span>
+<span class="sd">                                   array.</span>
+<span class="sd">    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the</span>
+<span class="sd">                         operands.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1555,8 +1573,8 @@
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">prod</span><span class="o">**</span><span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">LinAlgError</span><span class="p">(</span>
-            <span class="s2">&quot;Input arrays must satisfy the requirement </span><span class="se">\</span>
-<span class="s2">            prod(a.shape[b.ndim:]) == prod(a.shape[:b.ndim])&quot;</span>
+            <span class="s2">&quot;Input arrays must satisfy the requirement &quot;</span>
+            <span class="s2">&quot;prod(a.shape[b.ndim:]) == prod(a.shape[:b.ndim])&quot;</span>
         <span class="p">)</span>
 
     <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">prod</span><span class="p">)</span>
