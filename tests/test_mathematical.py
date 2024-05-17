@@ -2647,7 +2647,7 @@ class TestMatmul:
         assert result is dpnp_out
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.skipif(is_cpu_device(), reason="large size")
+    @testing.slow
     @pytest.mark.parametrize(
         "shape",
         [
