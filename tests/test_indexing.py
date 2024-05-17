@@ -967,3 +967,9 @@ def test_indices_from_err():
         dpnp.diag_indices_from(arr)
     with pytest.raises(ValueError):
         dpnp.diag_indices_from(dpnp.ones((2, 3)))
+
+
+def test_fill_diagonal_error():
+    arr = dpnp.ones((1, 2, 3))
+    with pytest.raises(ValueError):
+        dpnp.fill_diagonal(arr, 5)
