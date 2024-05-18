@@ -8,7 +8,6 @@ import dpnp as cupy
 from tests.helper import (
     has_support_aspect16,
     has_support_aspect64,
-    is_win_platform,
 )
 from tests.third_party.cupy import testing
 
