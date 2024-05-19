@@ -1,6 +1,0 @@
-﻿dpnp.fromfile
-=============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: fromfile
