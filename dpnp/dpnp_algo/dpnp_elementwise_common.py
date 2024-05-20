@@ -366,7 +366,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             Array must have the correct shape and the expected data type.
         order : {None, "C", "F", "A", "K"}, optional
             Memory layout of the newly output array, Cannot be provided
-            together with `out`. Default: "K".
+            together with `out`. Default: ``"K"``.
         dtype : {None, dtype}, optional
             If provided, the destination array will have this dtype. Cannot be
             provided together with `out`. Default: ``None``.
