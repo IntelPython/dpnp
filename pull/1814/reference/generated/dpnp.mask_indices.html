@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.mask_indices &mdash; Data Parallel Extension for NumPy 0.15.0dev1+80.g1820d09f03 documentation</title>
+  <title>dpnp.mask_indices &mdash; Data Parallel Extension for NumPy 0.15.0dev1+81.g34e02f37c3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9b89e051"></script>
+        <script src="../../_static/documentation_options.js?v=523eb450"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+80.g1820d09f03
+                0.15.0dev1+81.g34e02f37c3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -131,18 +131,19 @@
 <p>Assume <cite>mask_func</cite> is a function that, for a square array a of size
 <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">n)</span></code> with a possible offset argument <cite>k</cite>, when called as
 <code class="docutils literal notranslate"><span class="pre">mask_func(a,</span> <span class="pre">k=k)</span></code> returns a new array with zeros in certain locations
-(functions like <cite>triu</cite> or <cite>tril</cite> do precisely this). Then this function
-returns the indices where the non-zero values would be located.</p>
+(functions like <a class="reference internal" href="dpnp.triu.html#dpnp.triu" title="dpnp.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.triu</span></code></a> or <a class="reference internal" href="dpnp.tril.html#dpnp.tril" title="dpnp.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tril</span></code></a> do precisely this).
+Then this function returns the indices where the non-zero values would be
+located.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) -- The returned indices will be valid to access arrays of shape (n, n).</p></li>
-<li><p><strong>mask_func</strong> (<em>callable</em>) -- A function whose call signature is similar to that of <cite>triu</cite>, <cite>tril</cite>.
-That is, <code class="docutils literal notranslate"><span class="pre">mask_func(x,</span> <span class="pre">k=k)</span></code> returns a boolean array, shaped like <cite>x</cite>.
-<cite>k</cite> is an optional argument to the function.</p></li>
+<li><p><strong>mask_func</strong> (<em>callable</em>) -- A function whose call signature is similar to that of <a class="reference internal" href="dpnp.triu.html#dpnp.triu" title="dpnp.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.triu</span></code></a>,
+<a class="reference internal" href="dpnp.tril.html#dpnp.tril" title="dpnp.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tril</span></code></a>. That is, <code class="docutils literal notranslate"><span class="pre">mask_func(x,</span> <span class="pre">k=k)</span></code> returns a boolean
+array, shaped like <cite>x</cite>.`k` is an optional argument to the function.</p></li>
 <li><p><strong>k</strong> (<em>scalar</em>) -- An optional argument which is passed through to <cite>mask_func</cite>. Functions
-like <cite>triu</cite>, <cite>tril</cite> take a second argument that is interpreted as an
-offset.</p></li>
+like <a class="reference internal" href="dpnp.triu.html#dpnp.triu" title="dpnp.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.triu</span></code></a>, <a class="reference internal" href="dpnp.tril.html#dpnp.tril" title="dpnp.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tril</span></code></a> take a second argument that is
+interpreted as an offset. Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
 <li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) -- An array API concept of device where the output array is created.
 The <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), an OneAPI filter selector
 string, an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code> corresponding to
@@ -161,6 +162,19 @@ or a <cite>Device</cite> object returned by
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a> of dpnp.ndarray</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.tril.html#dpnp.tril" title="dpnp.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tril</span></code></a></dt><dd><p>Return lower triangle of an array.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.triu.html#dpnp.triu" title="dpnp.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.triu</span></code></a></dt><dd><p>Return upper triangle of an array.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.triu_indices.html#dpnp.triu_indices" title="dpnp.triu_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.triu_indices</span></code></a></dt><dd><p>Return the indices for the upper-triangle of an (n, m) array.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.tril_indices.html#dpnp.tril_indices" title="dpnp.tril_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tril_indices</span></code></a></dt><dd><p>Return the indices for the lower-triangle of an (n, m) array.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Examples</p>
 <p>These are the indices that would allow you to access the upper triangular
 part of any 3x3 array:</p>
@@ -178,7 +192,7 @@ part of any 3x3 array:</p>
 <span class="go">array([0, 1, 2, 4, 5, 8])</span>
 </pre></div>
 </div>
-<p>An offset can be passed also to the masking function.  This gets us the
+<p>An offset can be passed also to the masking function. This gets us the
 indices starting on the first diagonal right of the main one:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iu1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mask_indices</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">triu</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>

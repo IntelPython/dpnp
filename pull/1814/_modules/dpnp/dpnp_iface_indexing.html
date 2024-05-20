@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+80.g1820d09f03 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+81.g34e02f37c3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9b89e051"></script>
+        <script src="../../_static/documentation_options.js?v=523eb450"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+80.g1820d09f03
+                0.15.0dev1+81.g34e02f37c3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -302,8 +302,8 @@
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
-<span class="sd">    Return</span>
-<span class="sd">    ------</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
 <span class="sd">    out : tuple of dpnp.ndarray</span>
 <span class="sd">        The indices to access the main diagonal of an array.</span>
 
@@ -363,7 +363,7 @@
 
 <div class="viewcode-block" id="diag_indices_from">
 <a class="viewcode-back" href="../../reference/generated/dpnp.diag_indices_from.html#dpnp.diag_indices_from">[docs]</a>
-<span class="k">def</span> <span class="nf">diag_indices_from</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">diag_indices_from</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices to access the main diagonal of an n-dimensional array.</span>
 
@@ -371,22 +371,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    arr : dpnp.ndarray</span>
+<span class="sd">    arr : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Array at least 2-D</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
-<span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
-<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
-<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
-<span class="sd">        or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
-<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
-<span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 
-<span class="sd">    Return</span>
-<span class="sd">    ------</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
 <span class="sd">    out : tuple of dpnp.ndarray</span>
 <span class="sd">        The indices to access the main diagonal of an n-dimensional array.</span>
 
@@ -428,20 +417,14 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;input array must be at least 2-d&quot;</span><span class="p">)</span>
 
-    <span class="n">sh0</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">sh</span> <span class="ow">in</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-        <span class="k">if</span> <span class="n">sh</span> <span class="o">!=</span> <span class="n">sh0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All dimensions of input must be of equal length&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All dimensions of input must be of equal length&quot;</span><span class="p">)</span>
 
-    <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
-    <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
-        <span class="n">arr</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
-    <span class="p">)</span>
     <span class="k">return</span> <span class="n">diag_indices</span><span class="p">(</span>
-        <span class="n">sh0</span><span class="p">,</span>
+        <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
         <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span>
-        <span class="n">usm_type</span><span class="o">=</span><span class="n">_usm_type</span><span class="p">,</span>
-        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">arr</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -652,16 +635,16 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : array, at least 2-D.</span>
-<span class="sd">        Array whose diagonal is to be filled in-place.</span>
+<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        Array whose diagonal is to be filled in-place. It must be at least 2-D.</span>
 <span class="sd">    val : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        Value(s) to write on the diagonal. If `val` is scalar, the value is</span>
-<span class="sd">        written along the diagonal. If array-like, the flattened `val` is</span>
+<span class="sd">        written along the diagonal. If array, the flattened `val` is</span>
 <span class="sd">        written along the diagonal, repeating if necessary to fill all</span>
 <span class="sd">        diagonal entries.</span>
 <span class="sd">    wrap : bool</span>
-<span class="sd">        The diagonal &quot;wrapped&quot; after N columns. You can have this behavior</span>
-<span class="sd">        with this option. This affects only tall matrices. Default: ``False``.</span>
+<span class="sd">        It enables the diagonal &quot;wrapped&quot; after N columns. This affects only</span>
+<span class="sd">        tall matrices. Default: ``False``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -700,7 +683,7 @@
 <span class="sd">           [0, 0, 0],</span>
 <span class="sd">           [0, 0, 4]])</span>
 
-<span class="sd">    The wrap option affects only tall matrices:</span>
+<span class="sd">    The `wrap` option affects only tall matrices:</span>
 
 <span class="sd">    &gt;&gt;&gt; # tall matrices no wrap</span>
 <span class="sd">    &gt;&gt;&gt; a = np.zeros((5, 3), dtype=int)</span>
@@ -748,7 +731,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;array must be at least 2-d&quot;</span><span class="p">)</span>
@@ -758,13 +741,9 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">wrap</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
             <span class="n">end</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">sh0</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">sh</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-            <span class="k">if</span> <span class="n">sh</span> <span class="o">!=</span> <span class="n">sh0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;All dimensions of input must be of equal length&quot;</span>
-                <span class="p">)</span>
-        <span class="n">step</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sh0</span><span class="o">**</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All dimensions of input must be of equal length&quot;</span><span class="p">)</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
 
     <span class="c1"># TODO: implement flatiter for slice key</span>
     <span class="c1"># a.flat[:end:step] = val</span>
@@ -915,21 +894,22 @@
 <span class="sd">    Assume `mask_func` is a function that, for a square array a of size</span>
 <span class="sd">    ``(n, n)`` with a possible offset argument `k`, when called as</span>
 <span class="sd">    ``mask_func(a, k=k)`` returns a new array with zeros in certain locations</span>
-<span class="sd">    (functions like `triu` or `tril` do precisely this). Then this function</span>
-<span class="sd">    returns the indices where the non-zero values would be located.</span>
+<span class="sd">    (functions like :obj:`dpnp.triu` or :obj:`dpnp.tril` do precisely this).</span>
+<span class="sd">    Then this function returns the indices where the non-zero values would be</span>
+<span class="sd">    located.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    n : int</span>
 <span class="sd">        The returned indices will be valid to access arrays of shape (n, n).</span>
 <span class="sd">    mask_func : callable</span>
-<span class="sd">        A function whose call signature is similar to that of `triu`, `tril`.</span>
-<span class="sd">        That is, ``mask_func(x, k=k)`` returns a boolean array, shaped like `x`.</span>
-<span class="sd">        `k` is an optional argument to the function.</span>
+<span class="sd">        A function whose call signature is similar to that of :obj:`dpnp.triu`,</span>
+<span class="sd">        :obj:`dpnp.tril`. That is, ``mask_func(x, k=k)`` returns a boolean</span>
+<span class="sd">        array, shaped like `x`.`k` is an optional argument to the function.</span>
 <span class="sd">    k : scalar</span>
 <span class="sd">        An optional argument which is passed through to `mask_func`. Functions</span>
-<span class="sd">        like `triu`, `tril` take a second argument that is interpreted as an</span>
-<span class="sd">        offset.</span>
+<span class="sd">        like :obj:`dpnp.triu`, :obj:`dpnp.tril` take a second argument that is</span>
+<span class="sd">        interpreted as an offset. Default: ``0``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -947,6 +927,15 @@
 <span class="sd">    indices : tuple of dpnp.ndarray</span>
 <span class="sd">        The `n` arrays of indices corresponding to the locations where</span>
 <span class="sd">        ``mask_func(np.ones((n, n)), k)`` is True.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.tril` : Return lower triangle of an array.</span>
+<span class="sd">    :obj:`dpnp.triu` : Return upper triangle of an array.</span>
+<span class="sd">    :obj:`dpnp.triu_indices` : Return the indices for the upper-triangle of an</span>
+<span class="sd">                               (n, m) array.</span>
+<span class="sd">    :obj:`dpnp.tril_indices` : Return the indices for the lower-triangle of an</span>
+<span class="sd">                               (n, m) array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -966,7 +955,7 @@
 <span class="sd">    &gt;&gt;&gt; a[iu]</span>
 <span class="sd">    array([0, 1, 2, 4, 5, 8])</span>
 
-<span class="sd">    An offset can be passed also to the masking function.  This gets us the</span>
+<span class="sd">    An offset can be passed also to the masking function. This gets us the</span>
 <span class="sd">    indices starting on the first diagonal right of the main one:</span>
 
 <span class="sd">    &gt;&gt;&gt; iu1 = np.mask_indices(3, np.triu, 1)</span>
@@ -1524,11 +1513,11 @@
 <span class="sd">        The row dimension of the arrays for which the returned</span>
 <span class="sd">        indices will be valid.</span>
 <span class="sd">    k : int, optional</span>
-<span class="sd">        Diagonal offset (see `tril` for details). Default: ``0``.</span>
-<span class="sd">    m : int, optional</span>
+<span class="sd">        Diagonal offset (see :obj:`dpnp.tril` for details). Default: ``0``.</span>
+<span class="sd">    m : {None, int}, optional</span>
 <span class="sd">        The column dimension of the arrays for which the returned</span>
 <span class="sd">        arrays will be valid.</span>
-<span class="sd">        By default `m` is taken equal to `n`.</span>
+<span class="sd">        By default `m` is taken equal to `n`. Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -1546,6 +1535,14 @@
 <span class="sd">    inds : tuple of dpnp.ndarray</span>
 <span class="sd">        The indices for the triangle. The returned tuple contains two arrays,</span>
 <span class="sd">        each with the indices along one dimension of the array.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.triu_indices` : similar function, for upper-triangular.</span>
+<span class="sd">    :obj:`dpnp.mask_indices` : generic function accepting an arbitrary mask</span>
+<span class="sd">                               function.</span>
+<span class="sd">    :obj:`dpnp.tril` : Return lower triangle of an array.</span>
+<span class="sd">    :obj:`dpnp.triu` : Return upper triangle of an array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1616,13 +1613,7 @@
 
 <div class="viewcode-block" id="tril_indices_from">
 <a class="viewcode-back" href="../../reference/generated/dpnp.tril_indices_from.html#dpnp.tril_indices_from">[docs]</a>
-<span class="k">def</span> <span class="nf">tril_indices_from</span><span class="p">(</span>
-    <span class="n">arr</span><span class="p">,</span>
-    <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
+<span class="k">def</span> <span class="nf">tril_indices_from</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices for the lower-triangle of arr.</span>
 
@@ -1634,24 +1625,20 @@
 <span class="sd">        The indices will be valid for square arrays whose dimensions are</span>
 <span class="sd">        the same as arr.</span>
 <span class="sd">    k : int, optional</span>
-<span class="sd">        Diagonal offset (see `tril` for details). Default: ``0``.</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
-<span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
-<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
-<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
-<span class="sd">        or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
-<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
-<span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
+<span class="sd">        Diagonal offset (see :obj:`dpnp.tril` for details). Default: ``0``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    inds : tuple of dpnp.ndarray</span>
 <span class="sd">        The indices for the triangle. The returned tuple contains two arrays,</span>
 <span class="sd">        each with the indices along one dimension of the array.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.tril_indices` : Return the indices for the lower-triangle of an</span>
+<span class="sd">                               (n, m) array.</span>
+<span class="sd">    :obj:`dpnp.tril` : Return lower triangle of an array.</span>
+<span class="sd">    :obj:`dpnp.triu_indices_from` : similar function, for upper-triangular.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1695,17 +1682,12 @@
     <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;input array must be 2-d&quot;</span><span class="p">)</span>
 
-    <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
-    <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
-        <span class="n">arr</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
-    <span class="p">)</span>
-
     <span class="k">return</span> <span class="n">tril_indices</span><span class="p">(</span>
         <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span>
         <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
         <span class="n">m</span><span class="o">=</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-        <span class="n">usm_type</span><span class="o">=</span><span class="n">_usm_type</span><span class="p">,</span>
-        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">arr</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -1731,11 +1713,11 @@
 <span class="sd">        The size of the arrays for which the returned indices will</span>
 <span class="sd">        be valid.</span>
 <span class="sd">    k : int, optional</span>
-<span class="sd">        Diagonal offset (see `triu` for details). Default: ``0``.</span>
+<span class="sd">        Diagonal offset (see :obj:`dpnp.triu` for details). Default: ``0``.</span>
 <span class="sd">    m : int, optional</span>
 <span class="sd">        The column dimension of the arrays for which the returned</span>
 <span class="sd">        arrays will be valid.</span>
-<span class="sd">        By default `m` is taken equal to `n`.</span>
+<span class="sd">        By default `m` is taken equal to `n`. Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -1752,8 +1734,16 @@
 <span class="sd">    -------</span>
 <span class="sd">    inds : tuple of dpnp.ndarray</span>
 <span class="sd">        The indices for the triangle. The returned tuple contains two arrays,</span>
-<span class="sd">        each with the indices along one dimension of the array.  Can be used</span>
+<span class="sd">        each with the indices along one dimension of the array. Can be used</span>
 <span class="sd">        to slice a ndarray of shape(`n`, `n`).</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.tril_indices` : similar function, for lower-triangular.</span>
+<span class="sd">    :obj:`dpnp.mask_indices` : generic function accepting an arbitrary mask</span>
+<span class="sd">                               function.</span>
+<span class="sd">    :obj:`dpnp.tril` : Return lower triangle of an array.</span>
+<span class="sd">    :obj:`dpnp.triu` : Return upper triangle of an array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1825,13 +1815,7 @@
 
 <div class="viewcode-block" id="triu_indices_from">
 <a class="viewcode-back" href="../../reference/generated/dpnp.triu_indices_from.html#dpnp.triu_indices_from">[docs]</a>
-<span class="k">def</span> <span class="nf">triu_indices_from</span><span class="p">(</span>
-    <span class="n">arr</span><span class="p">,</span>
-    <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
+<span class="k">def</span> <span class="nf">triu_indices_from</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices for the lower-triangle of arr.</span>
 
@@ -1843,25 +1827,21 @@
 <span class="sd">        The indices will be valid for square arrays whose dimensions are</span>
 <span class="sd">        the same as arr.</span>
 <span class="sd">    k : int, optional</span>
-<span class="sd">        Diagonal offset (see `triu` for details). Default: ``0``.</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
-<span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
-<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
-<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
-<span class="sd">        or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
-<span class="sd">        The type of SYCL USM allocation for the output array.</span>
-<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
-<span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
+<span class="sd">        Diagonal offset (see :obj:`dpnp.triu` for details). Default: ``0``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    inds : tuple of dpnp.ndarray</span>
 <span class="sd">        The indices for the triangle. The returned tuple contains two arrays,</span>
-<span class="sd">        each with the indices along one dimension of the array.  Can be used</span>
+<span class="sd">        each with the indices along one dimension of the array. Can be used</span>
 <span class="sd">        to slice a ndarray of shape(`n`, `n`).</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.triu_indices` : Return the indices for the upper-triangle of an</span>
+<span class="sd">                               (n, m) array.</span>
+<span class="sd">    :obj:`dpnp.triu` : Return upper triangle of an array.</span>
+<span class="sd">    :obj:`dpnp.tril_indices_from` : similar function, for lower-triangular.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1905,17 +1885,12 @@
     <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;input array must be 2-d&quot;</span><span class="p">)</span>
 
-    <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
-    <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
-        <span class="n">arr</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
-    <span class="p">)</span>
-
     <span class="k">return</span> <span class="n">triu_indices</span><span class="p">(</span>
         <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span>
         <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
         <span class="n">m</span><span class="o">=</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-        <span class="n">usm_type</span><span class="o">=</span><span class="n">_usm_type</span><span class="p">,</span>
-        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">arr</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 </pre></div>
