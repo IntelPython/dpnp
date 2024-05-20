@@ -364,10 +364,10 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         out : {None, dpnp.ndarray, usm_ndarray}, optional
             Output array to populate.
             Array must have the correct shape and the expected data type.
-        order : {"C", "F", "A", "K"}, optional
+        order : {None, "C", "F", "A", "K"}, optional
             Memory layout of the newly output array, Cannot be provided
             together with `out`. Default: "K".
-        dtype : dtype, optional
+        dtype : {None, dtype}, optional
             If provided, the destination array will have this dtype. Cannot be
             provided together with `out`. Default: ``None``.
 
@@ -396,10 +396,12 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         Examples
         --------
         >>> import dpnp as np
-        >>> np.multiply.outer([1, 2, 3], [4, 5, 6])
+        >>> A = np.array([1, 2, 3])
+        >>> B = np.array([4, 5, 6])
+        >>> np.multiply.outer(A, B)
         array([[ 4,  5,  6],
-            [ 8, 10, 12],
-            [12, 15, 18]])
+               [ 8, 10, 12],
+               [12, 15, 18]])
 
         A multi-dimensional example:
         >>> A = np.array([[1, 2, 3], [4, 5, 6]])
@@ -414,7 +416,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         array([[[[ 1,  2,  3,  4]],
                 [[ 2,  4,  6,  8]],
                 [[ 3,  6,  9, 12]]],
-            [[[ 4,  8, 12, 16]],
+               [[[ 4,  8, 12, 16]],
                 [[ 5, 10, 15, 20]],
                 [[ 6, 12, 18, 24]]]])
 

@@ -859,7 +859,7 @@ def outer(a, b, out=None):
         First input vector. Input is flattened if not already 1-dimensional.
     b : {dpnp.ndarray, usm_ndarray}
         Second input vector. Input is flattened if not already 1-dimensional.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         A location where the result is stored
 
     Returns
