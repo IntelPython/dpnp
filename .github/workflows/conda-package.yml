@@ -67,7 +67,7 @@ jobs:
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11']
-        os: [ubuntu-20.04, windows-latest]
+        os: [ubuntu-20.04, windows-2019]
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -77,7 +77,7 @@ jobs:
 
     defaults:
       run:
-        shell: ${{ matrix.os == 'windows-latest' && 'cmd /C CALL {0}' || 'bash -l {0}' }}
+        shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -l {0}' }}
 
     continue-on-error: true
 
@@ -88,7 +88,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
         with:
           fetch-depth: 0
 
@@ -253,11 +253,11 @@ jobs:
             python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   test_windows:
-    name: Test ['windows-latest', python='${{ matrix.python }}']
+    name: Test ['windows-2019', python='${{ matrix.python }}']
 
     needs: build
 
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     defaults:
       run:
@@ -409,7 +409,7 @@ jobs:
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11']
-        os: [ubuntu-20.04, windows-latest]
+        os: [ubuntu-20.04, windows-2019]
 
     runs-on: ${{ matrix.os }}
 
@@ -477,7 +477,7 @@ jobs:
         run: conda install anaconda-client
 
       - name: Checkout repo
-        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0
