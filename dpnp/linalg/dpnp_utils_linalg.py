@@ -147,12 +147,12 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
         )
 
         # TODO: Remove this w/a when MKLD-17201 is solved.
-        # Waiting for a host task executing an OneMKL LAPACK syevd call
+        # Waiting for a host task executing an OneMKL LAPACK syevd/heevd call
         # on CPU causes deadlock due to serialization of all host tasks
         # in the queue.
-        # We need to wait for each host tasks before calling _seyvd
+        # We need to wait for each host tasks before calling _seyvd and _heevd
         # to avoid deadlock.
-        if lapack_func == "_syevd" and is_cpu_device:
+        if is_cpu_device:
             ht_list_ev[2 * i].wait()
 
         # call LAPACK extension function to get eigenvalues and
