@@ -2144,27 +2144,11 @@ def test_histogram(weights, device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_tri_diag_indices_from_follow(func, device):
+def test_tri_diag_indices_from(func, device):
     arr = dpnp.ones((3, 3), device=device)
     res = getattr(dpnp, func)(arr)
     for x in res:
         assert_sycl_queue_equal(x.sycl_queue, arr.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "func", ["tril_indices_from", "triu_indices_from", "diag_indices_from"]
-)
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_tri_diag_indices_from(func, device):
-    sycl_queue = dpctl.SyclQueue(device)
-    arr = dpnp.ones((3, 3))
-    res = getattr(dpnp, func)(arr, sycl_queue=sycl_queue)
-    for x in res:
-        assert_sycl_queue_equal(x.sycl_queue, sycl_queue)
 
 
 @pytest.mark.parametrize(

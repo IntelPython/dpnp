@@ -1247,20 +1247,9 @@ def test_histogram(usm_type_v, usm_type_w):
     "func", ["tril_indices_from", "triu_indices_from", "diag_indices_from"]
 )
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_tri_diag_indices_from_follow(func, usm_type):
+def test_tri_diag_indices_from(func, usm_type):
     arr = dp.ones((3, 3), usm_type=usm_type)
     res = getattr(dp, func)(arr)
-    for x in res:
-        assert x.usm_type == usm_type
-
-
-@pytest.mark.parametrize(
-    "func", ["tril_indices_from", "triu_indices_from", "diag_indices_from"]
-)
-@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_tri_diag_indices_from(func, usm_type):
-    arr = dp.ones((3, 3))
-    res = getattr(dp, func)(arr, usm_type=usm_type)
     for x in res:
         assert x.usm_type == usm_type
 
