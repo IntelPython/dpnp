@@ -647,12 +647,16 @@ def fill_diagonal(a, val, wrap=False):
             raise ValueError("All dimensions of input must be of equal length")
         step = sum(a.shape[0] ** x for x in range(a.ndim))
 
+    # TODO: implement flatiter for slice key
+    # a.flat[:end:step] = val
     a_sh = a.shape
     tmp_a = dpnp.ravel(a)
     if dpnp.isscalar(val):
         tmp_a[:end:step] = val
     else:
         flat_val = val.ravel()
+        # Setitem can work only if index size equal val size.
+        # Using loop for general case without dependencies of val size.
         for i in range(0, flat_val.size):
             tmp_a[step * i : end : step * (i + 1)] = flat_val[i]
     tmp_a = dpnp.reshape(tmp_a, a_sh)
