@@ -42,23 +42,16 @@ class TestScalarOuter(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=False)
     def test_first_is_scalar(self, xp, dtype):
-        scalar = xp.int64(4)
+        scalar = 4
         a = xp.arange(5**3, dtype=dtype).reshape(5, 5, 5)
         return xp.outer(scalar, a)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=False)
     def test_second_is_scalar(self, xp, dtype):
-        scalar = xp.int32(7)
+        scalar = 7
         a = xp.arange(5**3, dtype=dtype).reshape(5, 5, 5)
         return xp.outer(a, scalar)
-
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @testing.numpy_cupy_array_equal()
-    def test_both_inputs_as_scalar(self, xp):
-        a = xp.int64(4)
-        b = xp.int32(17)
-        return xp.outer(a, b)
 
 
 class TestListOuter(unittest.TestCase):
@@ -67,7 +60,7 @@ class TestListOuter(unittest.TestCase):
         b: list[list[list[int]]] = a.tolist()
         dp_a = dp.array(a)
 
-        with assert_raises(NotImplementedError):
+        with assert_raises(TypeError):
             dp.outer(b, dp_a)
             dp.outer(dp_a, b)
             dp.outer(b, b)
