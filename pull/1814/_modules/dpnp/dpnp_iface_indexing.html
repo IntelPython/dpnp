@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+86.geda7f8bbc4 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+87.g9a9582da82 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=da9803da"></script>
+        <script src="../../_static/documentation_options.js?v=d542e9f5"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+86.geda7f8bbc4
+                0.15.0dev1+87.g9a9582da82
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -754,12 +754,16 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All dimensions of input must be of equal length&quot;</span><span class="p">)</span>
         <span class="n">step</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
 
+    <span class="c1"># TODO: implement flatiter for slice key</span>
+    <span class="c1"># a.flat[:end:step] = val</span>
     <span class="n">a_sh</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
         <span class="n">tmp_a</span><span class="p">[:</span><span class="n">end</span><span class="p">:</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">flat_val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="c1"># Setitem can work only if index size equal val size.</span>
+        <span class="c1"># Using loop for general case without dependencies of val size.</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">flat_val</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
             <span class="n">tmp_a</span><span class="p">[</span><span class="n">step</span> <span class="o">*</span> <span class="n">i</span> <span class="p">:</span> <span class="n">end</span> <span class="p">:</span> <span class="n">step</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">flat_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
     <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">tmp_a</span><span class="p">,</span> <span class="n">a_sh</span><span class="p">)</span>
