@@ -34,7 +34,7 @@ jobs:
         # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
         # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
         python: ['3.9', '3.10', '3.11', '3.12']
-        os: [ubuntu-22.04, windows-2019]
+        os: [ubuntu-22.04, windows-2022]
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -44,7 +44,7 @@ jobs:
 
     defaults:
       run:
-        shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
+        shell: ${{ matrix.os == 'windows-2022' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
 
     env:
       build-conda-pkg-env: 'environments/build_conda_pkg.yml'
@@ -264,7 +264,7 @@ jobs:
       matrix:
         # python 3.13 is blocked due to MKL issue
         python: ['3.9', '3.10', '3.11', '3.12']
-        os: [windows-2019]
+        os: [windows-2022]
 
     env:
       dpnp-repo-path: '${{ github.workspace }}\source'
@@ -422,13 +422,13 @@ jobs:
       matrix:
         # python 3.13 is blocked due to MKL issue
         python: ['3.9', '3.10', '3.11', '3.12']
-        os: [ubuntu-22.04, windows-2019]
+        os: [ubuntu-22.04, windows-2022]
 
     runs-on: ${{ matrix.os }}
 
     defaults:
       run:
-        shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
+        shell: ${{ matrix.os == 'windows-2022' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
 
     env:
       upload-conda-pkg-env: 'environments/upload_cleanup_conda_pkg.yml'
