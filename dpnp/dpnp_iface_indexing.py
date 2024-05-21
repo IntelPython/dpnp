@@ -625,6 +625,7 @@ def fill_diagonal(a, val, wrap=False):
     """
 
     dpnp.check_supported_arrays_type(a)
+    dpnp.check_supported_arrays_type(val, scalar_type=True, all_scalars=True)
 
     if a.ndim < 2:
         raise ValueError("array must be at least 2-d")
@@ -638,17 +639,16 @@ def fill_diagonal(a, val, wrap=False):
             raise ValueError("All dimensions of input must be of equal length")
         step = sum(a.shape[0] ** x for x in range(a.ndim))
 
-    # TODO: implement flatiter for slice key
-    # a.flat[:end:step] = val
-    fl = a.flat
+    a_sh = a.shape
+    tmp_a = dpnp.ravel(a)
     if dpnp.isscalar(val):
-        for idx in range(0, end, step):
-            fl[idx] = val
+        tmp_a[:end:step] = val
     else:
-        flat_val = val.flatten()
+        flat_val = val.ravel()
         for i in range(0, flat_val.size):
-            for idx in range((step * i), end, step * (1 + i)):
-                fl[idx] = flat_val[i]
+            tmp_a[step * i : end : step * (i + 1)] = flat_val[i]
+    tmp_a = dpnp.reshape(tmp_a, a_sh)
+    a[:] = tmp_a
 
 
 def indices(
