@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+83.g0e5d016f8 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+86.geda7f8bbc4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=990a151f"></script>
+        <script src="../../_static/documentation_options.js?v=da9803da"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+83.g0e5d016f8
+                0.15.0dev1+86.geda7f8bbc4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -435,6 +435,13 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return specified diagonals.</span>
 
+<span class="sd">    This function always returns a read/write view, and writing to</span>
+<span class="sd">    the returned array will alter your original array.</span>
+
+<span class="sd">    If you need to modify the array returned by this function without affecting</span>
+<span class="sd">    the original array, we suggest copying the returned array explicitly, i.e.,</span>
+<span class="sd">    use ``dpnp.diagonal(a).copy()`` instead of ``dpnp.diagonal(a)``.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.diagonal`.</span>
 
 <span class="sd">    Parameters</span>
@@ -454,6 +461,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    array_of_diagonals : dpnp.ndarray</span>
+<span class="sd">        Array is a read/write view.</span>
 <span class="sd">        If `a` is 2-D, then a 1-D array containing the diagonal and of the</span>
 <span class="sd">        same type as `a` is returned.</span>
 <span class="sd">        If ``a.ndim &gt; 2``, then the dimensions specified by `axis1` and `axis2`</span>
@@ -732,6 +740,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;array must be at least 2-d&quot;</span><span class="p">)</span>
@@ -745,17 +754,16 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All dimensions of input must be of equal length&quot;</span><span class="p">)</span>
         <span class="n">step</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
 
-    <span class="c1"># TODO: implement flatiter for slice key</span>
-    <span class="c1"># a.flat[:end:step] = val</span>
-    <span class="n">fl</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">flat</span>
+    <span class="n">a_sh</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
-            <span class="n">fl</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="n">tmp_a</span><span class="p">[:</span><span class="n">end</span><span class="p">:</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">flat_val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">flat_val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">flat_val</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">((</span><span class="n">step</span> <span class="o">*</span> <span class="n">i</span><span class="p">),</span> <span class="n">end</span><span class="p">,</span> <span class="n">step</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">i</span><span class="p">)):</span>
-                <span class="n">fl</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">flat_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
+            <span class="n">tmp_a</span><span class="p">[</span><span class="n">step</span> <span class="o">*</span> <span class="n">i</span> <span class="p">:</span> <span class="n">end</span> <span class="p">:</span> <span class="n">step</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">flat_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">tmp_a</span><span class="p">,</span> <span class="n">a_sh</span><span class="p">)</span>
+    <span class="n">a</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">tmp_a</span></div>
 
 
 

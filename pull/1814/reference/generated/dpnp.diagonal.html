@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.diagonal &mdash; Data Parallel Extension for NumPy 0.15.0dev1+83.g0e5d016f8 documentation</title>
+  <title>dpnp.diagonal &mdash; Data Parallel Extension for NumPy 0.15.0dev1+86.geda7f8bbc4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=990a151f"></script>
+        <script src="../../_static/documentation_options.js?v=da9803da"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+83.g0e5d016f8
+                0.15.0dev1+86.geda7f8bbc4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -128,6 +128,11 @@
 <dt class="sig sig-object py" id="dpnp.diagonal">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">diagonal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_indexing.html#diagonal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.diagonal" title="Link to this definition"></a></dt>
 <dd><p>Return specified diagonals.</p>
+<p>This function always returns a read/write view, and writing to
+the returned array will alter your original array.</p>
+<p>If you need to modify the array returned by this function without affecting
+the original array, we suggest copying the returned array explicitly, i.e.,
+use <code class="docutils literal notranslate"><span class="pre">dpnp.diagonal(a).copy()</span></code> instead of <code class="docutils literal notranslate"><span class="pre">dpnp.diagonal(a)</span></code>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.diagonal.html#numpy.diagonal" title="(in NumPy v1.26)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.diagonal</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -142,7 +147,8 @@ which the diagonals should be taken. Defaults to second axis (<code class="docut
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>array_of_diagonals</strong> -- If <cite>a</cite> is 2-D, then a 1-D array containing the diagonal and of the
+<dd class="field-even"><p><strong>array_of_diagonals</strong> -- Array is a read/write view.
+If <cite>a</cite> is 2-D, then a 1-D array containing the diagonal and of the
 same type as <cite>a</cite> is returned.
 If <code class="docutils literal notranslate"><span class="pre">a.ndim</span> <span class="pre">&gt;</span> <span class="pre">2</span></code>, then the dimensions specified by <cite>axis1</cite> and <cite>axis2</cite>
 are removed, and a new axis inserted at the end corresponding to the
