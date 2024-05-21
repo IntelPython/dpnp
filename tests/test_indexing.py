@@ -597,10 +597,6 @@ def test_put_1d(indices, vals, array_dtype, indices_dtype, mode):
     ind = numpy.array(indices, dtype=indices_dtype)
     iind = dpnp.array(ind)
 
-    # TODO: remove when #1382(dpctl) is solved
-    if dpnp.is_supported_array_type(vals):
-        vals = dpnp.astype(vals, ia.dtype)
-
     numpy.put(a, ind, vals, mode=mode)
     dpnp.put(ia, iind, vals, mode=mode)
     assert_array_equal(a, ia)
@@ -653,17 +649,15 @@ def test_put_2d_ind():
 @pytest.mark.parametrize(
     "shape",
     [
-        (0,),
         (3,),
         (4,),
     ],
     ids=[
-        "(0,)",
         "(3,)",
         "(4,)",
     ],
 )
-@pytest.mark.parametrize("mode", ["clip", "wrap"], ids=["clip", "wrap"])
+@pytest.mark.parametrize("mode", ["clip", "wrap"])
 def test_put_invalid_shape(shape, mode):
     a = dpnp.arange(7)
     ind = dpnp.array([2])

@@ -669,7 +669,7 @@ def nonzero(a):
            [2, 1]])
 
     A common use for ``nonzero`` is to find the indices of an array, where
-    a condition is ``True.``  Given an array `a`, the condition `a` > 3 is
+    a condition is ``True``. Given an array `a`, the condition `a` > 3 is
     a boolean array and since ``False`` is interpreted as ``0``,
     ``np.nonzero(a > 3)`` yields the indices of the `a` where the condition is
     true.
@@ -728,25 +728,33 @@ def place(x, mask, vals, /):
     return call_origin(numpy.place, x, mask, vals, dpnp_inplace=True)
 
 
-# pylint: disable=redefined-outer-name
-def put(a, indices, vals, /, *, axis=None, mode="wrap"):
+def put(a, ind, v, /, *, axis=None, mode="wrap"):
     """
     Puts values of an array into another array along a given axis.
 
     For full documentation refer to :obj:`numpy.put`.
 
-    Limitations
-    -----------
-    Parameters `a` and `indices` are supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter `indices` is supported as 1-D array of integer data type.
-    Parameter `vals` must be broadcastable to the shape of `indices`
-    and has the same data type as `a` if it is as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter `mode` is supported with ``wrap``, the default, and ``clip``
-    values.
-    Parameter `axis` is supported as integer only.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        The array the values will be put into.
+    ind : {array_like}
+        Target indices, interpreted as integers.
+    v : {scalar, array_like}
+         Values to be put into `a`. Must be broadcastable to the result shape
+         ``a.shape[:axis] + ind.shape + a.shape[axis+1:]``.
+    axis {None, int}, optional
+        The axis along which the values will be placed. If `a` is 1-D array,
+        this argument is optional.
+        Default: ``None``.
+    mode : {'wrap', 'clip'}, optional
+        Specifies how out-of-bounds indices will behave.
+
+        - 'wrap': clamps indices to (``-n <= i < n``), then wraps negative
+          indices.
+        - 'clip': clips indices to (``0 <= i < n``).
+
+        Default: ``'wrap'``.
 
     See Also
     --------
@@ -766,49 +774,46 @@ def put(a, indices, vals, /, *, axis=None, mode="wrap"):
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.arange(5)
-    >>> indices = np.array([0, 1])
-    >>> np.put(x, indices, [-44, -55])
-    >>> x
-    array([-44, -55,   2,   3,   4])
+    >>> a = np.arange(5)
+    >>> np.put(a, [0, 2], [-44, -55])
+    >>> a
+    array([-44,   1, -55,   3,   4])
 
-    >>> x = np.arange(5)
-    >>> indices = np.array([22])
-    >>> np.put(x, indices, -5, mode='clip')
-    >>> x
+    >>> a = np.arange(5)
+    >>> np.put(a, 22, -5, mode='clip')
+    >>> a
     array([ 0,  1,  2,  3, -5])
 
     """
 
-    if dpnp.is_supported_array_type(a) and dpnp.is_supported_array_type(
-        indices
-    ):
-        if indices.ndim != 1 or not dpnp.issubdtype(
-            indices.dtype, dpnp.integer
-        ):
-            pass
-        elif mode not in ("clip", "wrap"):
-            pass
-        elif axis is not None and not isinstance(axis, int):
-            raise TypeError(f"`axis` must be of integer type, got {type(axis)}")
-        # TODO: remove when #1382(dpctl) is solved
-        elif dpnp.is_supported_array_type(vals) and a.dtype != vals.dtype:
-            pass
-        else:
-            if axis is None and a.ndim > 1:
-                a = dpnp.reshape(a, -1)
-            dpt_array = dpnp.get_usm_ndarray(a)
-            dpt_indices = dpnp.get_usm_ndarray(indices)
-            dpt_vals = (
-                dpnp.get_usm_ndarray(vals)
-                if isinstance(vals, dpnp_array)
-                else vals
-            )
-            return dpt.put(
-                dpt_array, dpt_indices, dpt_vals, axis=axis, mode=mode
-            )
+    dpnp.check_supported_arrays_type(a)
 
-    return call_origin(numpy.put, a, indices, vals, mode, dpnp_inplace=True)
+    if not dpnp.is_supported_array_type(ind):
+        ind = dpnp.asarray(ind, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
+    ind = ind.ravel()
+
+    if not dpnp.is_supported_array_type(v):
+        v = dpnp.asarray(
+            v, dtype=a.dtype, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+        )
+    if v.size == 0:
+        return
+
+    if not (axis is None or isinstance(axis, int)):
+        raise TypeError(f"`axis` must be of integer type, got {type(axis)}")
+
+    if axis is None and a.ndim > 1:
+        a = dpnp.ravel(a)
+
+    if mode not in ("wrap", "clip"):
+        raise ValueError(
+            f"clipmode must be one of 'clip' or 'wrap' (got '{mode}')"
+        )
+
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_ind = dpnp.get_usm_ndarray(ind)
+    usm_v = dpnp.get_usm_ndarray(v)
+    dpt.put(usm_a, usm_ind, usm_v, axis=axis, mode=mode)
 
 
 # pylint: disable=redefined-outer-name
@@ -1186,7 +1191,7 @@ def triu_indices(n, k=0, m=None):
     -------
     inds : tuple, shape(2) of ndarrays, shape(`n`)
         The indices for the triangle. The returned tuple contains two arrays,
-        each with the indices along one dimension of the array.  Can be used
+        each with the indices along one dimension of the array. Can be used
         to slice a ndarray of shape(`n`, `n`).
     """
 
