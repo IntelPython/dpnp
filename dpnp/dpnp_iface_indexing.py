@@ -334,6 +334,13 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
     """
     Return specified diagonals.
 
+    This function always returns a read/write view, and writing to
+    the returned array will alter your original array.
+
+    If you need to modify the array returned by this function without affecting
+    the original array, we suggest copying the returned array explicitly, i.e.,
+    use ``dpnp.diagonal(a).copy()`` instead of ``dpnp.diagonal(a)``.
+
     For full documentation refer to :obj:`numpy.diagonal`.
 
     Parameters
@@ -353,6 +360,7 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
     Returns
     -------
     array_of_diagonals : dpnp.ndarray
+        Array is a read/write view.
         If `a` is 2-D, then a 1-D array containing the diagonal and of the
         same type as `a` is returned.
         If ``a.ndim > 2``, then the dimensions specified by `axis1` and `axis2`
