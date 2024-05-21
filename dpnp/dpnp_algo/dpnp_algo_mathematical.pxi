@@ -215,6 +215,11 @@ cpdef tuple dpnp_modf(utils.dpnp_descriptor x1):
 
 cpdef utils.dpnp_descriptor dpnp_trapz(utils.dpnp_descriptor y1, utils.dpnp_descriptor x1, double dx):
 
+    if not isinstance(y1, utils.dpnp_descriptor):
+        raise TypeError(f"Parameter y1 must be of dpnp_descriptor type, got {type(y1)}")
+    if not isinstance(x1, utils.dpnp_descriptor):
+        raise TypeError(f"Parameter x1 must be of dpnp_descriptor type, got {type(x1)}")
+
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(y1.dtype)
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRAPZ_EXT, param1_type, param2_type)
@@ -244,6 +249,9 @@ cpdef utils.dpnp_descriptor dpnp_trapz(utils.dpnp_descriptor y1, utils.dpnp_desc
                                                     y1.size,
                                                     x1.size,
                                                     NULL)  # dep_events_ref
+
+    if event_ref is NULL:
+        raise RuntimeError("Failed to get DPCTLEventRef in dpnp_trapz")
 
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
