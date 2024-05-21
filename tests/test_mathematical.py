@@ -2875,3 +2875,45 @@ def test_bitwise_1array_input():
     result = dpnp.add(1, x, dtype="f4")
     expected = numpy.add(1, x_np, dtype="f4")
     assert_dtype_allclose(result, expected)
+
+
+@pytest.mark.parametrize(
+    "x_shape",
+    [
+        (),
+        (2),
+        (3, 4),
+        (3, 4, 5),
+    ],
+)
+@pytest.mark.parametrize(
+    "y_shape",
+    [
+        (),
+        (2),
+        (3, 4),
+        (3, 4, 5),
+    ],
+)
+def test_elemenwise_outer(x_shape, y_shape):
+    x_np = numpy.random.random(x_shape)
+    y_np = numpy.random.random(y_shape)
+    expected = numpy.multiply.outer(x_np, y_np)
+
+    x = dpnp.asarray(x_np)
+    y = dpnp.asarray(y_np)
+    result = dpnp.multiply.outer(x, y)
+
+    assert_dtype_allclose(result, expected)
+
+    result_outer = dpnp.outer(x, y)
+    assert dpnp.allclose(result.flatten(), result_outer.flatten())
+
+
+def test_elemenwise_outer_scalar():
+    s = 5
+    x = dpnp.asarray([1, 2, 3])
+    y = dpnp.asarray(s)
+    expected = dpnp.add.outer(x, y)
+    result = dpnp.add.outer(x, s)
+    assert_dtype_allclose(result, expected)
