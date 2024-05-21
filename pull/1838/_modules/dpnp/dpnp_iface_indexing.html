@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+75.g2861b57c1a documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+77.g0bb10652ac documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=76a3195a"></script>
+        <script src="../../_static/documentation_options.js?v=f634c465"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+75.g2861b57c1a
+                0.15.0dev1+77.g0bb10652ac
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -380,6 +380,13 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return specified diagonals.</span>
 
+<span class="sd">    This function always returns a read/write view, and writing to</span>
+<span class="sd">    the returned array will alter your original array.</span>
+
+<span class="sd">    If you need to modify the array returned by this function without affecting</span>
+<span class="sd">    the original array, we suggest copying the returned array explicitly, i.e.,</span>
+<span class="sd">    use ``dpnp.diagonal(a).copy()`` instead of ``dpnp.diagonal(a)``.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.diagonal`.</span>
 
 <span class="sd">    Parameters</span>
@@ -399,6 +406,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    array_of_diagonals : dpnp.ndarray</span>
+<span class="sd">        Array is a read/write view.</span>
 <span class="sd">        If `a` is 2-D, then a 1-D array containing the diagonal and of the</span>
 <span class="sd">        same type as `a` is returned.</span>
 <span class="sd">        If ``a.ndim &gt; 2``, then the dimensions specified by `axis1` and `axis2`</span>
