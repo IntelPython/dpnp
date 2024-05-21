@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.imag
+=================
+
+.. currentmodule:: dpnp
+
+.. autoproperty:: ndarray.imag
