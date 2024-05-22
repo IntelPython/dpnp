@@ -148,6 +148,161 @@ class TestNonzero:
         assert_array_equal(a.nonzero(), ia.nonzero())
 
 
+class TestPut:
+    @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "indices", [[0, 2], [-5, 4]], ids=["[0, 2]", "[-5, 4]"]
+    )
+    @pytest.mark.parametrize("ind_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "vals",
+        [0, [1, 2], (2, 2), dpnp.array([1, 2])],
+        ids=["0", "[1, 2]", "(2, 2)", "dpnp.array([1,2])"],
+    )
+    @pytest.mark.parametrize("mode", ["clip", "wrap"])
+    def test_input_1d(self, a_dt, indices, ind_dt, vals, mode):
+        a = numpy.array([-2, -1, 0, 1, 2], dtype=a_dt)
+        b = numpy.copy(a)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        ind = numpy.array(indices, dtype=ind_dt)
+        if ind_dt == dpnp.bool and ind.all():
+            ind[0] = False  # to get rid of duplicate indices
+        iind = dpnp.array(ind)
+
+        if numpy.can_cast(ind_dt, numpy.intp, casting="safe"):
+            numpy.put(a, ind, vals, mode=mode)
+            dpnp.put(ia, iind, vals, mode=mode)
+            assert_array_equal(ia, a)
+
+            b.put(ind, vals, mode=mode)
+            ib.put(iind, vals, mode=mode)
+            assert_array_equal(ib, b)
+        else:
+            assert_raises(TypeError, numpy.put, a, ind, vals, mode=mode)
+            assert_raises(TypeError, dpnp.put, ia, iind, vals, mode=mode)
+
+            assert_raises(TypeError, b.put, ind, vals, mode=mode)
+            assert_raises(TypeError, ib.put, iind, vals, mode=mode)
+
+    @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "indices",
+        [
+            [0, 7],
+            [3, 4],
+            [-9, 8],
+        ],
+        ids=[
+            "[0, 7]",
+            "[3, 4]",
+            "[-9, 8]",
+        ],
+    )
+    @pytest.mark.parametrize("ind_dt", get_integer_dtypes())
+    @pytest.mark.parametrize("vals", [[10, 20]], ids=["[10, 20]"])
+    @pytest.mark.parametrize("mode", ["clip", "wrap"])
+    def test_input_2d(self, a_dt, indices, ind_dt, vals, mode):
+        a = numpy.array([[-1, 0, 1], [-2, -3, -4], [2, 3, 4]], dtype=a_dt)
+        ia = dpnp.array(a)
+
+        ind = numpy.array(indices, dtype=ind_dt)
+        iind = dpnp.array(ind)
+
+        numpy.put(a, ind, vals, mode=mode)
+        dpnp.put(ia, iind, vals, mode=mode)
+        assert_array_equal(ia, a)
+
+    def test_indices_2d(self):
+        a = numpy.arange(5)
+        ia = dpnp.array(a)
+        ind = numpy.array([[3, 0, 2, 1]])
+        iind = dpnp.array(ind)
+
+        numpy.put(a, ind, 10)
+        dpnp.put(ia, iind, 10)
+        assert_array_equal(ia, a)
+
+    def test_non_contiguous(self):
+        # force non C-contiguous array
+        a = numpy.arange(6).reshape(2, 3).T
+        ia = dpnp.arange(6).reshape(2, 3).T
+
+        a.put([0, 2], [44, 55])
+        ia.put([0, 2], [44, 55])
+        assert_equal(ia, a)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("mode", ["clip", "wrap"])
+    def test_empty(self, dtype, mode):
+        a = numpy.zeros(1000, dtype=dtype)
+        ia = dpnp.array(a)
+
+        numpy.put(a, [1, 2, 3], [], mode=mode)
+        dpnp.put(ia, [1, 2, 3], [], mode=mode)
+        assert_array_equal(ia, a)
+
+    # TODO: enable test for numpy also since 2.0
+    @pytest.mark.parametrize("mode", ["clip", "wrap"])
+    def test_empty_input(self, mode):
+        empty = dpnp.asarray(list())
+        with pytest.raises(IndexError):
+            empty.put(1, 1, mode=mode)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (3,),
+            (4,),
+        ],
+        ids=[
+            "(3,)",
+            "(4,)",
+        ],
+    )
+    @pytest.mark.parametrize("mode", ["clip", "wrap"])
+    def test_invalid_shape(self, shape, mode):
+        a = dpnp.arange(7)
+        ind = dpnp.array([2])
+        vals = dpnp.ones(shape, dtype=a.dtype)
+        # vals must be broadcastable to the shape of ind`
+        with pytest.raises(ValueError):
+            dpnp.put(a, ind, vals, mode=mode)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize(
+        "axis",
+        [
+            1.0,
+            (0,),
+            [0, 1],
+        ],
+        ids=[
+            "1.0",
+            "(0,)",
+            "[0, 1]",
+        ],
+    )
+    def test_invalid_axis(self, xp, axis):
+        a = xp.arange(6).reshape(2, 3)
+        ind = xp.array([1])
+        with pytest.raises(TypeError):
+            a.put(ind, [1], axis=axis)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_unsupported_input_array_type(self, xp):
+        with pytest.raises(TypeError):
+            xp.put([1, 2, 3], [0, 2], 5)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_non_writeable_input_array(self, xp):
+        a = xp.zeros(6)
+        a.flags["W"] = False
+        with pytest.raises(ValueError):
+            a.put([1, 3, 5], [1, 3, 5])
+
+
 class TestPutAlongAxis:
     @pytest.mark.parametrize(
         "arr_dt", get_all_dtypes(no_bool=True, no_none=True)
@@ -574,124 +729,6 @@ def test_place3(arr, mask, vals):
     numpy.place(a, m, vals)
     dpnp.place(ia, im, iv)
     assert_array_equal(a, ia)
-
-
-@pytest.mark.parametrize("array_dtype", get_all_dtypes())
-@pytest.mark.parametrize(
-    "indices_dtype", [dpnp.int32, dpnp.int64], ids=["int32", "int64"]
-)
-@pytest.mark.parametrize(
-    "indices", [[-2, 2], [-5, 4]], ids=["[-2, 2]", "[-5, 4]"]
-)
-@pytest.mark.parametrize(
-    "vals",
-    [0, [1, 2], (2, 2), dpnp.array([1, 2])],
-    ids=["0", "[1, 2]", "(2, 2)", "dpnp.array([1,2])"],
-)
-@pytest.mark.parametrize("mode", ["clip", "wrap"], ids=["clip", "wrap"])
-def test_put_1d(indices, vals, array_dtype, indices_dtype, mode):
-    a = numpy.array([-2, -1, 0, 1, 2], dtype=array_dtype)
-    b = numpy.copy(a)
-    ia = dpnp.array(a)
-    ib = dpnp.array(b)
-    ind = numpy.array(indices, dtype=indices_dtype)
-    iind = dpnp.array(ind)
-
-    # TODO: remove when #1382(dpctl) is solved
-    if dpnp.is_supported_array_type(vals):
-        vals = dpnp.astype(vals, ia.dtype)
-
-    numpy.put(a, ind, vals, mode=mode)
-    dpnp.put(ia, iind, vals, mode=mode)
-    assert_array_equal(a, ia)
-
-    b.put(ind, vals, mode=mode)
-    ib.put(iind, vals, mode=mode)
-    assert_array_equal(b, ib)
-
-
-@pytest.mark.parametrize("array_dtype", get_all_dtypes())
-@pytest.mark.parametrize(
-    "indices_dtype", [dpnp.int32, dpnp.int64], ids=["int32", "int64"]
-)
-@pytest.mark.parametrize("vals", [[10, 20]], ids=["[10, 20]"])
-@pytest.mark.parametrize(
-    "indices",
-    [
-        [0, 7],
-        [3, 4],
-        [-9, 8],
-    ],
-    ids=[
-        "[0, 7]",
-        "[3, 4]",
-        "[-9, 8]",
-    ],
-)
-@pytest.mark.parametrize("mode", ["clip", "wrap"], ids=["clip", "wrap"])
-def test_put_2d(array_dtype, indices_dtype, indices, vals, mode):
-    a = numpy.array([[-1, 0, 1], [-2, -3, -4], [2, 3, 4]], dtype=array_dtype)
-    ia = dpnp.array(a)
-    ind = numpy.array(indices, dtype=indices_dtype)
-    iind = dpnp.array(ind)
-    numpy.put(a, ind, vals, mode=mode)
-    dpnp.put(ia, iind, vals, mode=mode)
-    assert_array_equal(a, ia)
-
-
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-def test_put_2d_ind():
-    a = numpy.arange(5)
-    ia = dpnp.array(a)
-    ind = numpy.array([[3, 0, 2, 1]])
-    iind = dpnp.array(ind)
-    numpy.put(a, ind, 10)
-    dpnp.put(ia, iind, 10)
-    assert_array_equal(a, ia)
-
-
-@pytest.mark.parametrize(
-    "shape",
-    [
-        (0,),
-        (3,),
-        (4,),
-    ],
-    ids=[
-        "(0,)",
-        "(3,)",
-        "(4,)",
-    ],
-)
-@pytest.mark.parametrize("mode", ["clip", "wrap"], ids=["clip", "wrap"])
-def test_put_invalid_shape(shape, mode):
-    a = dpnp.arange(7)
-    ind = dpnp.array([2])
-    vals = dpnp.ones(shape, dtype=a.dtype)
-    # vals must be broadcastable to the shape of ind`
-    with pytest.raises(ValueError):
-        dpnp.put(a, ind, vals, mode=mode)
-
-
-@pytest.mark.parametrize(
-    "axis",
-    [
-        1.0,
-        (0,),
-        [0, 1],
-    ],
-    ids=[
-        "1.0",
-        "(0,)",
-        "[0, 1]",
-    ],
-)
-def test_put_invalid_axis(axis):
-    a = dpnp.arange(6).reshape(2, 3)
-    ind = dpnp.array([1])
-    vals = [1]
-    with pytest.raises(TypeError):
-        dpnp.put(a, ind, vals, axis=axis)
 
 
 @pytest.mark.parametrize("vals", [[100, 200]], ids=["[100, 200]"])
