@@ -4,7 +4,75 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.14.0] - MM/DD/2024
+## [0.15.0] - 05/DD/2024
+
+This release completes implementation of `dpnp.linalg` module and array creation routine, adds cumulative reductions and histogram functions.
+
+### Added
+
+* Implemented `dpnp.frombuffer`, `dpnp.fromfile` and `dpnp.fromstring` functions [#1727](https://github.com/IntelPython/dpnp/pull/1727)
+* Implemented `dpnp.fromfunction`, `dpnp.fromiter` and `dpnp.loadtxt` functions [#1728](https://github.com/IntelPython/dpnp/pull/1728)
+* Added implementation of `dpnp.linalg.pinv` function [#1704](https://github.com/IntelPython/dpnp/pull/1704)
+* Added implementation of `dpnp.linalg.eigvalsh` function [#1714](https://github.com/IntelPython/dpnp/pull/1714)
+* Added implementation of `dpnp.linalg.tensorinv` function [#1752](https://github.com/IntelPython/dpnp/pull/1752)
+* Added implementation of `dpnp.linalg.tensorsolve` function [#1753](https://github.com/IntelPython/dpnp/pull/1753)
+* Added implementation of `dpnp.linalg.lstsq` function [#1792](https://github.com/IntelPython/dpnp/pull/1792)
+* Added implementation of `dpnp.einsum` and `dpnp.einsum_path` functions [#1779](https://github.com/IntelPython/dpnp/pull/1779)
+* Added implementation of `dpnp.histogram` function [#1785](https://github.com/IntelPython/dpnp/pull/1785)
+* Added implementation of `dpnp.histogram_bin_edges` function [#1823](https://github.com/IntelPython/dpnp/pull/1823)
+* Extended pre-commit hooks with `pylint` configuration [#1718](https://github.com/IntelPython/dpnp/pull/1718)
+* Extended pre-commit hooks with `codespell` configuration [#1798](https://github.com/IntelPython/dpnp/pull/1798)
+* Added a Security policy page [#1730](https://github.com/IntelPython/dpnp/pull/1730)
+* Implemented `nin` and `nout` properties for `dpnp` elementwise functions [#1712](https://github.com/IntelPython/dpnp/pull/1712)
+* Implemented `outer` method for `dpnp` elementwise functions [#1813](https://github.com/IntelPython/dpnp/pull/1813)
+
+### Changed
+
+* Added support of more number of data types and dimensions for input arrays, and all keyword arguments in `dpnp.cross` function [#1715](https://github.com/IntelPython/dpnp/pull/1715)
+* Added support of more number of data types and dimensions for input array, and all keyword arguments in `dpnp.linalg.matrix_rank` function [#1717](https://github.com/IntelPython/dpnp/pull/1717)
+* Added support of more number of data types and dimensions for input arrays in `dpnp.inner` function [#1726](https://github.com/IntelPython/dpnp/pull/1726)
+* Added support of more number of data types and dimensions for input arrays in `dpnp.linalg.multi_dot` function [#1729](https://github.com/IntelPython/dpnp/pull/1729)
+* Added support of more number of data types and dimensions for input arrays in `dpnp.kron` function [#1726](https://github.com/IntelPython/dpnp/pull/1726)
+* Added support of more number of data types and dimensions for input arrays in `dpnp.linalg.matrix_power` function [#1748](https://github.com/IntelPython/dpnp/pull/1748)
+* Added support of more number of data types and dimensions for input array, and all keyword arguments in `dpnp.norm` function [#1746](https://github.com/IntelPython/dpnp/pull/1746)
+* Added support of more number of data types and dimensions for input array in `dpnp.cond` function [#1773](https://github.com/IntelPython/dpnp/pull/1773)
+* Extended `dpnp.matmul` function to support `axes` keyword argument [#1705](https://github.com/IntelPython/dpnp/pull/1705)
+* Extended `dpnp.searchsorted` function to support `side` and `sorter` keyword arguments [#1751](https://github.com/IntelPython/dpnp/pull/1751)
+* Extended `dpnp.where` function to support scalar type by `x` and `y` arrays [#1760](https://github.com/IntelPython/dpnp/pull/1760)
+* Extended `dpnp.ndarray.transpose` method to support `axes` keyword as a list [#1770](https://github.com/IntelPython/dpnp/pull/1770)
+* Extended `dpnp.nancumsum` function to support `axis`, `dtype` and `out` keyword arguments [#1781](https://github.com/IntelPython/dpnp/pull/1781)
+* Extended `dpnp.nancumprod` function to support `axis`, `dtype` and `out` keyword arguments [#1812](https://github.com/IntelPython/dpnp/pull/1812)
+* Extended `dpnp.put` function to support more number of data types and dimensions for input arrays [#1838](https://github.com/IntelPython/dpnp/pull/1838)
+* Extended `dpnp.trace` function to support `axis1`, `axis2`, `dtype` and `out` keyword arguments [#1842](https://github.com/IntelPython/dpnp/pull/1842)
+* Corrected `dpnp.ndarray.real`and `dpnp.ndarray.imag` methods to return a view of the array [#1719](https://github.com/IntelPython/dpnp/pull/1719)
+* Corrected `dpnp.nonzero` function to raise `TypeError` exception for input array of unexpected type [#1764](https://github.com/IntelPython/dpnp/pull/1764)
+* Corrected `dpnp.diagonal` function to return a view of the array [#1817](https://github.com/IntelPython/dpnp/pull/1817)
+* Removed `dpnp.find_common_type` function as it was deprecated since NumPy 1.25.0 [#1742](https://github.com/IntelPython/dpnp/pull/1742)
+* Removed use of `dpctl` queue manager API [#1735](https://github.com/IntelPython/dpnp/pull/1735)
+* Leveraged `dpctl.tensor` implementation for `dpnp.cumsum` function [#1772](https://github.com/IntelPython/dpnp/pull/1772)
+* Leveraged `dpctl.tensor` implementation for `dpnp.cumprod` function [#1811](https://github.com/IntelPython/dpnp/pull/1811)
+* Leveraged `dpctl.tensor` implementation for `dpnp.cumlogsumexp` function [#1816](https://github.com/IntelPython/dpnp/pull/1816)
+* Leveraged `dpctl.tensor` support of `out` keyword argument in reduction and `dpnp.where` functions [#1808](https://github.com/IntelPython/dpnp/pull/1808)
+* Aligned with `dpctl` interface changes per Python Array API 2023.12 specification [#1774](https://github.com/IntelPython/dpnp/pull/1774)
+* Reworked `dpnp.linalg.eig` and `dpnp.linalg.eigvals` implementations to fall back on on NumPy calculation due to a lack of required functionality in OneMKL LAPACK [#1780](https://github.com/IntelPython/dpnp/pull/1780)
+* `dpnp` uses pybind11 2.12.0 [#1783](https://github.com/IntelPython/dpctl/pull/1783)
+* Improved `dpnp.matmul` implementation to use column major `gemm` layout for F-contiguous input arrays [#1793](https://github.com/IntelPython/dpnp/pull/1793)
+* Improved performance of `dpnp.matmul` function by call of `dpnp.kron` and `dpnp.dot` for special cases [#1815](https://github.com/IntelPython/dpnp/pull/1815)
+* Improved performance of `dpnp.diag` function by use of `dpnp.diagonal` which returns a view of the array [#1822](https://github.com/IntelPython/dpnp/pull/1822)
+* Removed limitations from `diag_indices`, `1814`, `fill_diagonal`, `tril_indices`, `tril_indices_from`, `triu_indices`, `triu_indices_from` functions
+and added implementation of `dpnp.mask_indices` function [#1822](https://github.com/IntelPython/dpnp/pull/1814)
+
+### Fixed
+
+* Changed `dpnp.linalg.solve` to use a pair of `getrf` and `getrs` calls from OneMKL library instead of `gesv` one to mitigate an unexpected `RuntimeError` exception [#1763](https://github.com/IntelPython/dpnp/pull/1763)
+* Resolved a hang in batch implementation of `dpnp.linalg.solve` when computes on CPU device [#1778](https://github.com/IntelPython/dpnp/pull/1778)
+* Resolved an unexpected `TypeError` exception raised from `dpnp.random.vonmises` when used with a scalar `kappa` argument [#1799](https://github.com/IntelPython/dpnp/pull/1799)
+* Changed `dpnp.flatten` to comply with compute follows data approach [#1825](https://github.com/IntelPython/dpnp/pull/1825)
+* Resolved a hang in batch implementation of `dpnp.linalg.eigh` when computes on CPU device [#1832](https://github.com/IntelPython/dpnp/pull/1832)
+* Resolved an unexpected `ValueError` exception raised from `dpnp.linalg.pinv` due to a shape issue in `dpnp.matmul` [#1843](https://github.com/IntelPython/dpnp/pull/1843)
+
+
+## [0.14.0] - 02/16/2024
 
 This release will require DPC++ `2024.1.0`, which no longer supports Intel Gen9 integrated GPUs found in Intel CPUs of 10th generation and older.
 
