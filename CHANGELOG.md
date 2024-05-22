@@ -59,7 +59,7 @@ This release completes implementation of `dpnp.linalg` module and array creation
 * Improved `dpnp.matmul` implementation to use column major `gemm` layout for F-contiguous input arrays [#1793](https://github.com/IntelPython/dpnp/pull/1793)
 * Improved performance of `dpnp.matmul` function by call of `dpnp.kron` and `dpnp.dot` for special cases [#1815](https://github.com/IntelPython/dpnp/pull/1815)
 * Improved performance of `dpnp.diag` function by use of `dpnp.diagonal` which returns a view of the array [#1822](https://github.com/IntelPython/dpnp/pull/1822)
-* Removed limitations from `diag_indices`, `1814`, `fill_diagonal`, `tril_indices`, `tril_indices_from`, `triu_indices`, `triu_indices_from` functions
+* Removed limitations from `diag_indices`, `diag_indices_from`, `fill_diagonal`, `tril_indices`, `tril_indices_from`, `triu_indices`, `triu_indices_from` functions
 and added implementation of `dpnp.mask_indices` function [#1822](https://github.com/IntelPython/dpnp/pull/1814)
 
 ### Fixed
