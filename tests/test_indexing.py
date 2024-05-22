@@ -928,7 +928,7 @@ def test_take_over_index(indices, array_type, mode):
     "m", [None, 0, 1, 2, 3, 4], ids=["None", "0", "1", "2", "3", "4"]
 )
 @pytest.mark.parametrize(
-    "k", [0, 1, 2, 3, 4, 5], ids=["0", "1", "2", "3", "4", "5"]
+    "k", [-3, -2, -1, 0, 1, 2, 3], ids=["-3", "-2", "-1", "0", "1", "2", "3"]
 )
 @pytest.mark.parametrize(
     "n", [1, 2, 3, 4, 5, 6], ids=["1", "2", "3", "4", "5", "6"]
@@ -940,7 +940,7 @@ def test_tril_indices(n, k, m):
 
 
 @pytest.mark.parametrize(
-    "k", [0, 1, 2, 3, 4, 5], ids=["0", "1", "2", "3", "4", "5"]
+    "k", [-3, -2, -1, 0, 1, 2, 3], ids=["-3", "-2", "-1", "0", "1", "2", "3"]
 )
 @pytest.mark.parametrize(
     "array",
@@ -963,7 +963,7 @@ def test_tril_indices_from(array, k):
     "m", [None, 0, 1, 2, 3, 4], ids=["None", "0", "1", "2", "3", "4"]
 )
 @pytest.mark.parametrize(
-    "k", [0, 1, 2, 3, 4, 5], ids=["0", "1", "2", "3", "4", "5"]
+    "k", [-3, -2, -1, 0, 1, 2, 3], ids=["-3", "-2", "-1", "0", "1", "2", "3"]
 )
 @pytest.mark.parametrize(
     "n", [1, 2, 3, 4, 5, 6], ids=["1", "2", "3", "4", "5", "6"]
@@ -975,7 +975,7 @@ def test_triu_indices(n, k, m):
 
 
 @pytest.mark.parametrize(
-    "k", [0, 1, 2, 3, 4, 5], ids=["0", "1", "2", "3", "4", "5"]
+    "k", [-3, -2, -1, 0, 1, 2, 3], ids=["-3", "-2", "-1", "0", "1", "2", "3"]
 )
 @pytest.mark.parametrize(
     "array",
@@ -992,3 +992,21 @@ def test_triu_indices_from(array, k):
     result = dpnp.triu_indices_from(ia, k)
     expected = numpy.triu_indices_from(a, k)
     assert_array_equal(expected, result)
+
+
+def test_indices_from_err():
+    arr = dpnp.array([1, 2, 3])
+    with pytest.raises(ValueError):
+        dpnp.tril_indices_from(arr)
+    with pytest.raises(ValueError):
+        dpnp.triu_indices_from(arr)
+    with pytest.raises(ValueError):
+        dpnp.diag_indices_from(arr)
+    with pytest.raises(ValueError):
+        dpnp.diag_indices_from(dpnp.ones((2, 3)))
+
+
+def test_fill_diagonal_error():
+    arr = dpnp.ones((1, 2, 3))
+    with pytest.raises(ValueError):
+        dpnp.fill_diagonal(arr, 5)

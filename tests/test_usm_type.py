@@ -1246,6 +1246,35 @@ def test_histogram(usm_type_v, usm_type_w):
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
 
 
+@pytest.mark.parametrize(
+    "func", ["tril_indices_from", "triu_indices_from", "diag_indices_from"]
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_tri_diag_indices_from(func, usm_type):
+    arr = dp.ones((3, 3), usm_type=usm_type)
+    res = getattr(dp, func)(arr)
+    for x in res:
+        assert x.usm_type == usm_type
+
+
+@pytest.mark.parametrize(
+    "func", ["tril_indices", "triu_indices", "diag_indices"]
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_tri_diag_indices(func, usm_type):
+    res = getattr(dp, func)(4, usm_type=usm_type)
+    for x in res:
+        assert x.usm_type == usm_type
+
+
+@pytest.mark.parametrize("mask_func", ["tril", "triu"])
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_mask_indices(mask_func, usm_type):
+    res = dp.mask_indices(4, getattr(dp, mask_func), usm_type=usm_type)
+    for x in res:
+        assert x.usm_type == usm_type
+
+
 @pytest.mark.parametrize("usm_type_v", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_w", list_of_usm_types, ids=list_of_usm_types)
 def test_histogram_bin_edges(usm_type_v, usm_type_w):
