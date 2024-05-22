@@ -797,8 +797,12 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
     dpnp.check_supported_arrays_type(a)
 
     if not dpnp.is_supported_array_type(ind):
-        ind = dpnp.asarray(ind, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
-    ind = ind.ravel()
+        ind = dpnp.asarray(
+            ind, dtype=dpnp.intp, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+        )
+    elif not dpnp.issubdtype(ind.dtype, dpnp.integer):
+        ind = dpnp.astype(ind, dtype=dpnp.intp, casting="safe")
+    ind = dpnp.ravel(ind)
 
     if not dpnp.is_supported_array_type(v):
         v = dpnp.asarray(
@@ -810,8 +814,9 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
     if not (axis is None or isinstance(axis, int)):
         raise TypeError(f"`axis` must be of integer type, got {type(axis)}")
 
+    in_a = a
     if axis is None and a.ndim > 1:
-        a = dpnp.ravel(a)
+        a = dpnp.ravel(in_a)
 
     if mode not in ("wrap", "clip"):
         raise ValueError(
@@ -822,6 +827,8 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
     usm_ind = dpnp.get_usm_ndarray(ind)
     usm_v = dpnp.get_usm_ndarray(v)
     dpt.put(usm_a, usm_ind, usm_v, axis=axis, mode=mode)
+    if in_a is not a:
+        in_a[:] = a.reshape(in_a.shape, copy=False)
 
 
 # pylint: disable=redefined-outer-name
