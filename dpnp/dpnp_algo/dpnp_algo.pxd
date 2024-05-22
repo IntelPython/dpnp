@@ -39,7 +39,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CORRELATE_EXT
         DPNP_FN_DEGREES_EXT
         DPNP_FN_DIAG_INDICES_EXT
-        DPNP_FN_DIAGONAL_EXT
         DPNP_FN_EDIFF1D_EXT
         DPNP_FN_ERF_EXT
         DPNP_FN_FABS_EXT
@@ -90,7 +89,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_WALD_EXT
         DPNP_FN_RNG_WEIBULL_EXT
         DPNP_FN_RNG_ZIPF_EXT
-        DPNP_FN_TRACE_EXT
         DPNP_FN_TRAPZ_EXT
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import

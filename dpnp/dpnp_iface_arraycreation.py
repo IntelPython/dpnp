@@ -45,18 +45,11 @@ import numpy
 import dpnp
 from dpnp import dpnp_container
 
-# pylint: disable=no-name-in-module
-from .dpnp_algo import (
-    dpnp_trace,
-)
 from .dpnp_algo.dpnp_arraycreation import (
     dpnp_geomspace,
     dpnp_linspace,
     dpnp_logspace,
     dpnp_nd_grid,
-)
-from .dpnp_utils import (
-    call_origin,
 )
 
 __all__ = [
@@ -141,7 +134,7 @@ def arange(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -231,7 +224,7 @@ def array(
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
-    copy : {bool}, optional
+    copy : bool, optional
         If ``True`` (default), then the object is copied.
     order : {"C", "F", "A", "K"}, optional
         Memory layout of the newly output array. Default: "K".
@@ -244,7 +237,7 @@ def array(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -357,7 +350,7 @@ def asanyarray(
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
-    order : {"C", "F", "A", "K"}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array. Default: "K".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -368,7 +361,7 @@ def asanyarray(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -453,7 +446,7 @@ def asarray(
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
-    order : {"C", "F", "A", "K"}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array. Default: "K".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -464,7 +457,7 @@ def asarray(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -553,7 +546,7 @@ def ascontiguousarray(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -663,7 +656,7 @@ def asfortranarray(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -775,7 +768,7 @@ def copy(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -886,7 +879,7 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -985,7 +978,7 @@ def diagflat(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1073,7 +1066,7 @@ def empty(
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    order : {"C", "F", None}, optional
+    order : {None, "C", "F"}, optional
         Memory layout of the newly output array. Default: "C".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -1084,7 +1077,7 @@ def empty(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1164,16 +1157,16 @@ def empty_like(
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         The shape and dtype of `a` define these same attributes
         of the returned array.
     dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    order : {"C", "F", None}, optional
+    order : {None, "C", "F"}, optional
         Memory layout of the newly output array. Default: "C".
-    shape : {int, sequence of ints}
+    shape : {None, int, sequence of ints}
         Overrides the shape of the result.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -1184,7 +1177,7 @@ def empty_like(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1274,7 +1267,7 @@ def eye(
     ----------
     N : int
         Number of rows in the output.
-    M : int, optional
+    M : {None, int}, optional
         Number of columns in the output. If None, defaults to `N`.
     k : int, optional
         Index of the diagonal: 0 (the default) refers to the main diagonal,
@@ -1284,7 +1277,7 @@ def eye(
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    order : {"C", "F", None}, optional
+    order : {None, "C", "F"}, optional
         Memory layout of the newly output array. Default: "C".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -1295,7 +1288,7 @@ def eye(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1402,7 +1395,7 @@ def frombuffer(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1476,7 +1469,7 @@ def fromfile(
     Construct an array from data in a text or binary file.
 
     A highly efficient way of reading binary data with a known data-type,
-    as well as parsing simply formatted text files.  Data written using the
+    as well as parsing simply formatted text files. Data written using the
     `tofile` method can be read using this function.
 
     For full documentation refer to :obj:`numpy.fromfile`.
@@ -1512,7 +1505,7 @@ def fromfile(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1627,7 +1620,7 @@ def fromfunction(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1721,7 +1714,7 @@ def fromiter(
     dtype : data-type
         The data-type of the returned array.
     count : int, optional
-        The number of items to read from *iterable*.  The default is -1,
+        The number of items to read from *iterable*. The default is -1,
         which means all data is read.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -1732,7 +1725,7 @@ def fromiter(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1828,7 +1821,7 @@ def fromstring(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1899,7 +1892,7 @@ def full(
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    order : {"C", "F", None}, optional
+    order : {None, "C", "F"}, optional
         Memory layout of the newly output array. Default: "C".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -1910,7 +1903,7 @@ def full(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -1989,7 +1982,7 @@ def full_like(
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         The shape and dtype of `a` define these same attributes
         of the returned array.
     fill_value : {scalar, array_like}
@@ -2000,9 +1993,9 @@ def full_like(
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    order : {"C", "F", None}, optional
+    order : {None, "C", "F"}, optional
         Memory layout of the newly output array. Default: "C".
-    shape : {int, sequence of ints}
+    shape : {None, int, sequence of ints}
         Overrides the shape of the result.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -2013,7 +2006,7 @@ def full_like(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2127,13 +2120,13 @@ def geomspace(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
-    endpoint : {bool}, optional
+    endpoint : bool, optional
         If ``True``, `stop` is the last sample. Otherwise, it is not included.
         Default is ``True``.
-    axis : {int}, optional
+    axis : int, optional
         The axis in the result to store the samples. Relevant only if start or
         stop are array-like. By default (0), the samples will be along a new
         axis inserted at the beginning. Use -1 to get an axis at the end.
@@ -2237,7 +2230,7 @@ def identity(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2348,16 +2341,16 @@ def linspace(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
-    endpoint : {bool}, optional
+    endpoint : bool, optional
         If ``True``, `stop` is the last sample. Otherwise, it is not included.
         Default is ``True``.
-    retstep : {bool}, optional
+    retstep : bool, optional
         If ``True``, return (samples, step), where step is the spacing between
         samples.
-    axis : {int}, optional
+    axis : int, optional
         The axis in the result to store the samples. Relevant only if start or
         stop are array-like. By default (0), the samples will be along a new
         axis inserted at the beginning. Use -1 to get an axis at the end.
@@ -2458,7 +2451,7 @@ def loadtxt(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2566,7 +2559,7 @@ def logspace(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
     endpoint : {bool}, optional
@@ -2584,7 +2577,7 @@ def logspace(
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
-    axis : {int}, optional
+    axis : int, optional
         The axis in the result to store the samples. Relevant only if start,
         stop, or base are array-like. By default (0), the samples will be along
         a new axis inserted at the beginning. Use -1 to get an axis at the end.
@@ -2667,13 +2660,15 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
         1-D arrays representing the coordinates of a grid.
     indexing : {'xy', 'ij'}, optional
         Cartesian (``'xy'``, default) or matrix (``'ij'``) indexing of output.
-    sparse : {bool}, optional
-        If True the shape of the returned coordinate array for dimension `i`
+    sparse : bool, optional
+        If ``True`` the shape of the returned coordinate array for dimension `i`
         is reduced from ``(N1, ..., Ni, ... Nn)`` to
-        ``(1, ..., 1, Ni, 1, ..., 1)``. Default is False.
-    copy : {bool}, optional
-        If False, a view into the original arrays are returned in order to
-        conserve memory.  Default is True.
+        ``(1, ..., 1, Ni, 1, ..., 1)``.
+        Default: ``False``.
+    copy : bool, optional
+        If ``False``, a view into the original arrays are returned in order to
+        conserve memory.
+        Default: ``True``.
 
     Returns
     -------
@@ -2760,7 +2755,7 @@ class MGridClass:
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2833,7 +2828,7 @@ class OGridClass:
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -2905,7 +2900,7 @@ def ones(
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    order : {"C", "F", None}, optional
+    order : {None, "C", "F"}, optional
         Memory layout of the newly output array. Default: "C".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -2916,7 +2911,7 @@ def ones(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -3002,16 +2997,16 @@ def ones_like(
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         The shape and dtype of `a` define these same attributes
         of the returned array.
     dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    order : {"C", "F", None}, optional
+    order : {None, "C", "F"}, optional
         Memory layout of the newly output array. Default: "C".
-    shape : {int, sequence of ints}
+    shape : {None, int, sequence of ints}
         Overrides the shape of the result.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -3022,7 +3017,7 @@ def ones_like(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -3090,38 +3085,66 @@ def ones_like(
     )
 
 
-def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
+def trace(a, offset=0, axis1=0, axis2=1, dtype=None, out=None):
     """
     Return the sum along diagonals of the array.
 
     For full documentation refer to :obj:`numpy.trace`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameters `axis1`, `axis2`, `out` and `dtype` are supported only with
-    default values.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array, from which the diagonals are taken.
+    offset : int, optional
+        Offset of the diagonal from the main diagonal. Can be both positive and
+        negative.
+        Default: ``0``.
+    axis1, axis2 : int, optional
+        Axes to be used as the first and second axis of the 2-D sub-arrays from
+        which the diagonals should be taken. Defaults are the first two axes of
+        `a`.
+    dtype : dtype, optional
+        Determines the data-type of the returned array and of the accumulator
+        where the elements are summed. If `dtype` has the value ``None`` and
+        `a` is of integer type of precision less than the default integer
+        precision, then the default integer precision is used. Otherwise, the
+        precision is the same as that of `a`.
+        Default: ``None``.
+    out : {dpnp.ndarray, usm_ndarray}, optional
+        Array into which the output is placed. Its type is preserved and it
+        must be of the right shape to hold the output.
+        Default: ``None``.
+
+    Returns
+    -------
+    sum_along_diagonals : dpnp.ndarray
+        If `a` is 2-D, the sum along the diagonal is returned. If `a` has
+        larger dimensions, then an array of sums along diagonals is returned.
+
+    See Also
+    --------
+    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
+    :obj:`dpnp.diagonal` : Return specified diagonals.
+    :obj:`dpnp.diagflat` : Create a 2-D array with the flattened input as
+                           a diagonal.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.trace(np.eye(3))
+    array(3.)
+    >>> a = np.arange(8).reshape((2, 2, 2))
+    >>> np.trace(a)
+    array([6, 8])
+
+    >>> a = np.arange(24).reshape((2, 2, 2, 3))
+    >>> np.trace(a).shape
+    (2, 3)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if x1_desc.size == 0:
-            pass
-        elif x1_desc.ndim < 2:
-            pass
-        elif axis2 != 1:
-            pass
-        elif axis1 != 0:
-            pass
-        elif out is not None:
-            pass
-        else:
-            return dpnp_trace(
-                x1_desc, offset, axis1, axis2, dtype, out
-            ).get_pyobj()
-
-    return call_origin(numpy.trace, x1, offset, axis1, axis2, dtype, out)
+    d = dpnp.diagonal(a, offset=offset, axis1=axis1, axis2=axis2)
+    return dpnp.sum(d, axis=-1, dtype=dtype, out=out, keepdims=False)
 
 
 # pylint: disable=invalid-name
@@ -3145,7 +3168,7 @@ def tri(
     ----------
     N : int
         Number of rows in the array.
-    M : int, optional
+    M : {None, int}, optional
         Number of columns in the array. By default, `M` is taken equal to `N`.
     k : int, optional
         The sub-diagonal at and below which the array is filled. k = 0 is
@@ -3164,7 +3187,7 @@ def tri(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -3258,7 +3281,7 @@ def tril(m, /, *, k=0):
 
     Parameters
     ----------
-    m : {dpnp_array, usm_ndarray}, shape (…, M, N)
+    m : {dpnp.ndarray, usm_ndarray}, shape (…, M, N)
         Input array.
     k : int, optional
         Diagonal above which to zero elements. k = 0 (the default) is
@@ -3311,7 +3334,7 @@ def triu(m, /, *, k=0):
 
     Parameters
     ----------
-    m : {dpnp_array, usm_ndarray}, shape (…, M, N)
+    m : {dpnp.ndarray, usm_ndarray}, shape (…, M, N)
         Input array.
     k : int, optional
         Diagonal below which to zero elements. k = 0 (the default) is
@@ -3375,10 +3398,10 @@ def vander(
         1-D input array, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    N : int, optional
+    N : {None, int}, optional
         Number of columns in the output. If `N` is not specified, a square
         array is returned ``(N = len(x))``.
-    increasing : {bool}, optional
+    increasing : bool, optional
         Order of the powers of the columns. If ``True,`` the powers increase
         from left to right, if ``False`` (the default) they are reversed.
     device : {None, string, SyclDevice, SyclQueue}, optional
@@ -3390,7 +3413,7 @@ def vander(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -3496,7 +3519,7 @@ def zeros(
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    order : {"C", "F", None}, optional
+    order : {None, "C", "F"}, optional
         Memory layout of the newly output array. Default: "C".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -3507,7 +3530,7 @@ def zeros(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is "device".
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 
@@ -3593,16 +3616,16 @@ def zeros_like(
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         The shape and dtype of `a` define these same attributes
         of the returned array.
     dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    order : {"C", "F", None}, optional
+    order : {None, "C", "F"}, optional
         Memory layout of the newly output array. Default: "C".
-    shape : {int, sequence of ints}
+    shape : {None, int, sequence of ints}
         Overrides the shape of the result.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
@@ -3613,7 +3636,7 @@ def zeros_like(
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
-        Default is ``None``.
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying.
 

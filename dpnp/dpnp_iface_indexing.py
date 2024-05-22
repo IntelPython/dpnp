@@ -279,6 +279,13 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
     """
     Return specified diagonals.
 
+    This function always returns a read/write view, and writing to
+    the returned array will alter your original array.
+
+    If you need to modify the array returned by this function without affecting
+    the original array, we suggest copying the returned array explicitly, i.e.,
+    use ``dpnp.diagonal(a).copy()`` instead of ``dpnp.diagonal(a)``.
+
     For full documentation refer to :obj:`numpy.diagonal`.
 
     Parameters
@@ -298,6 +305,7 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
     Returns
     -------
     array_of_diagonals : dpnp.ndarray
+        Array is a read/write view.
         If `a` is 2-D, then a 1-D array containing the diagonal and of the
         same type as `a` is returned.
         If ``a.ndim > 2``, then the dimensions specified by `axis1` and `axis2`
@@ -789,8 +797,12 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
     dpnp.check_supported_arrays_type(a)
 
     if not dpnp.is_supported_array_type(ind):
-        ind = dpnp.asarray(ind, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
-    ind = ind.ravel()
+        ind = dpnp.asarray(
+            ind, dtype=dpnp.intp, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+        )
+    elif not dpnp.issubdtype(ind.dtype, dpnp.integer):
+        ind = dpnp.astype(ind, dtype=dpnp.intp, casting="safe")
+    ind = dpnp.ravel(ind)
 
     if not dpnp.is_supported_array_type(v):
         v = dpnp.asarray(
@@ -802,8 +814,9 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
     if not (axis is None or isinstance(axis, int)):
         raise TypeError(f"`axis` must be of integer type, got {type(axis)}")
 
+    in_a = a
     if axis is None and a.ndim > 1:
-        a = dpnp.ravel(a)
+        a = dpnp.ravel(in_a)
 
     if mode not in ("wrap", "clip"):
         raise ValueError(
@@ -814,6 +827,8 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
     usm_ind = dpnp.get_usm_ndarray(ind)
     usm_v = dpnp.get_usm_ndarray(v)
     dpt.put(usm_a, usm_ind, usm_v, axis=axis, mode=mode)
+    if in_a is not a:
+        in_a[:] = a.reshape(in_a.shape, copy=False)
 
 
 def put_along_axis(a, ind, values, axis):
