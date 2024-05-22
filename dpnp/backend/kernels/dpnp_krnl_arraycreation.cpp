@@ -723,15 +723,6 @@ void (*dpnp_trace_default_c)(const void *,
                              const size_t) =
     dpnp_trace_c<_DataType, _ResultType>;
 
-template <typename _DataType, typename _ResultType>
-DPCTLSyclEventRef (*dpnp_trace_ext_c)(DPCTLSyclQueueRef,
-                                      const void *,
-                                      void *,
-                                      const shape_elem_type *,
-                                      const size_t,
-                                      const DPCTLEventVectorRef) =
-    dpnp_trace_c<_DataType, _ResultType>;
-
 template <typename _DataType>
 class dpnp_tri_c_kernel;
 
@@ -1287,39 +1278,6 @@ void func_map_init_arraycreation(func_map_t &fmap)
         eft_DBL, (void *)dpnp_trace_default_c<float, double>};
     fmap[DPNPFuncName::DPNP_FN_TRACE][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_trace_default_c<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_trace_ext_c<int32_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_LNG][eft_INT] = {
-        eft_INT, (void *)dpnp_trace_ext_c<int64_t, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_FLT][eft_INT] = {
-        eft_INT, (void *)dpnp_trace_ext_c<float, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_DBL][eft_INT] = {
-        eft_INT, (void *)dpnp_trace_ext_c<double, int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_INT][eft_LNG] = {
-        eft_LNG, (void *)dpnp_trace_ext_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_trace_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_FLT][eft_LNG] = {
-        eft_LNG, (void *)dpnp_trace_ext_c<float, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_DBL][eft_LNG] = {
-        eft_LNG, (void *)dpnp_trace_ext_c<double, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_INT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_trace_ext_c<int32_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_LNG][eft_FLT] = {
-        eft_FLT, (void *)dpnp_trace_ext_c<int64_t, float>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_trace_ext_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_DBL][eft_FLT] = {
-        eft_FLT, (void *)dpnp_trace_ext_c<double, float>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_INT][eft_DBL] = {
-        eft_DBL, (void *)dpnp_trace_ext_c<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_LNG][eft_DBL] = {
-        eft_DBL, (void *)dpnp_trace_ext_c<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_FLT][eft_DBL] = {
-        eft_DBL, (void *)dpnp_trace_ext_c<float, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_trace_ext_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_TRI][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_tri_default_c<int32_t>};

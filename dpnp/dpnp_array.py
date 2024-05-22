@@ -1393,7 +1393,18 @@ class dpnp_array:
     # 'tofile',
     # 'tolist',
     # 'tostring',
-    # 'trace',
+
+    def trace(self, offset=0, axis1=0, axis2=1, dtype=None, out=None):
+        """
+        Return the sum along diagonals of the array.
+
+        Refer to :obj:`dpnp.trace` for full documentation.
+
+        """
+
+        return dpnp.trace(
+            self, offset=offset, axis1=axis1, axis2=axis2, dtype=dtype, out=out
+        )
 
     def transpose(self, *axes):
         """

@@ -294,18 +294,6 @@ void (*dpnp_diagonal_default_c)(void *,
                                 const size_t) = dpnp_diagonal_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_diagonal_ext_c)(DPCTLSyclQueueRef,
-                                         void *,
-                                         const size_t,
-                                         void *,
-                                         const size_t,
-                                         shape_elem_type *,
-                                         shape_elem_type *,
-                                         const size_t,
-                                         const DPCTLEventVectorRef) =
-    dpnp_diagonal_c<_DataType>;
-
-template <typename _DataType>
 DPCTLSyclEventRef
     dpnp_fill_diagonal_c(DPCTLSyclQueueRef q_ref,
                          void *array1_in,
@@ -926,19 +914,6 @@ void func_map_init_indexing_func(func_map_t &fmap)
         eft_FLT, (void *)dpnp_diagonal_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_diagonal_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_DIAGONAL_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_diagonal_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIAGONAL_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_diagonal_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIAGONAL_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_diagonal_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_DIAGONAL_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_diagonal_ext_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_DIAGONAL_EXT][eft_C64][eft_C64] = {
-        eft_C64, (void *)dpnp_diagonal_ext_c<std::complex<float>>};
-    fmap[DPNPFuncName::DPNP_FN_DIAGONAL_EXT][eft_C128][eft_C128] = {
-        eft_C128, (void *)dpnp_diagonal_ext_c<std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_fill_diagonal_default_c<int32_t>};

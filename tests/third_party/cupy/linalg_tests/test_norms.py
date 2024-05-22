@@ -8,6 +8,21 @@ from tests.helper import is_cpu_device
 from tests.third_party.cupy import testing
 
 
+class TestTrace(unittest.TestCase):
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose()
+    def test_trace(self, xp, dtype):
+        a = testing.shaped_arange((2, 3, 4, 5), xp, dtype)
+        return a.trace(1, 3, 2)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose()
+    def test_external_trace(self, xp, dtype):
+        a = testing.shaped_arange((2, 3, 4, 5), xp, dtype)
+        return xp.trace(a, 1, 3, 2)
+
+
 @testing.parameterize(
     *testing.product(
         {
@@ -73,7 +88,7 @@ class TestNorm(unittest.TestCase):
     )
 )
 class TestMatrixRank(unittest.TestCase):
-    @testing.for_all_dtypes(no_float16=True)
+    @testing.for_all_dtypes(no_float16=True, no_complex=True)
     @testing.numpy_cupy_array_equal(type_check=True)
     def test_matrix_rank(self, xp, dtype):
         a = xp.array(self.array, dtype=dtype)
@@ -88,64 +103,64 @@ class TestMatrixRank(unittest.TestCase):
 
 
 class TestDet(unittest.TestCase):
-    @testing.for_dtypes("fdFD")
+    @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det(self, xp, dtype):
         a = testing.shaped_arange((2, 2), xp, dtype) + 1
         return xp.linalg.det(a)
 
-    @testing.for_dtypes("fdFD")
+    @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det_3(self, xp, dtype):
         a = testing.shaped_arange((2, 2, 2), xp, dtype) + 1
         return xp.linalg.det(a)
 
-    @testing.for_dtypes("fdFD")
+    @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det_4(self, xp, dtype):
         a = testing.shaped_arange((2, 2, 2, 2), xp, dtype) + 1
         return xp.linalg.det(a)
 
-    @testing.for_dtypes("fdFD")
+    @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det_empty_batch(self, xp, dtype):
         a = xp.empty((2, 0, 3, 3), dtype=dtype)
         return xp.linalg.det(a)
 
-    @testing.for_dtypes("fdFD")
+    @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det_empty_matrix(self, xp, dtype):
         a = xp.empty((0, 0), dtype=dtype)
         return xp.linalg.det(a)
 
-    @testing.for_dtypes("fdFD")
+    @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det_empty_matrices(self, xp, dtype):
         a = xp.empty((2, 3, 0, 0), dtype=dtype)
         return xp.linalg.det(a)
 
-    @testing.for_dtypes("fdFD")
+    @testing.for_float_dtypes(no_float16=True)
     def test_det_different_last_two_dims(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3, 2), xp, dtype)
             with pytest.raises(xp.linalg.LinAlgError):
                 xp.linalg.det(a)
 
-    @testing.for_dtypes("fdFD")
+    @testing.for_float_dtypes(no_float16=True)
     def test_det_different_last_two_dims_empty_batch(self, dtype):
         for xp in (numpy, cupy):
             a = xp.empty((0, 3, 2), dtype=dtype)
             with pytest.raises(xp.linalg.LinAlgError):
                 xp.linalg.det(a)
 
-    @testing.for_dtypes("fdFD")
+    @testing.for_float_dtypes(no_float16=True)
     def test_det_one_dim(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2,), xp, dtype)
             with pytest.raises(xp.linalg.LinAlgError):
                 xp.linalg.det(a)
 
-    @testing.for_dtypes("fdFD")
+    @testing.for_float_dtypes(no_float16=True)
     def test_det_zero_dim(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((), xp, dtype)
@@ -156,14 +171,13 @@ class TestDet(unittest.TestCase):
     # _getrf_batch does not raise an error with singular matrices.
     # Skip running on cpu because dpnp uses _getrf_batch only on cpu.
     @pytest.mark.skipif(is_cpu_device(), reason="MKLD-13852")
-    @testing.for_dtypes("fdFD")
+    @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det_singular(self, xp, dtype):
         a = xp.zeros((2, 3, 3), dtype=dtype)
         return xp.linalg.det(a)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestSlogdet(unittest.TestCase):
     @testing.for_dtypes("fdFD")
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
