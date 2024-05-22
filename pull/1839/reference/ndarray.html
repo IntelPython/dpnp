@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.15.0dev1+76.gac0d8579f8 documentation</title>
+  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.15.0dev1+81.g53fb87690a documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=b5729598"></script>
+        <script src="../_static/documentation_options.js?v=43c23432"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+76.gac0d8579f8
+                0.15.0dev1+81.g53fb87690a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -129,6 +129,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.conj.html">dpnp.ndarray.conj</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.conjugate.html">dpnp.ndarray.conjugate</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.round.html">dpnp.ndarray.round</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.trace.html">dpnp.ndarray.trace</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.sum.html">dpnp.ndarray.sum</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.cumsum.html">dpnp.ndarray.cumsum</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.mean.html">dpnp.ndarray.mean</a></li>
@@ -482,31 +483,34 @@ the operation should proceed.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.round.html#dpnp.ndarray.round" title="dpnp.ndarray.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.round</span></code></a></p></td>
 <td><p>Return array with each element rounded to the given number of decimals.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.sum.html#dpnp.ndarray.sum" title="dpnp.ndarray.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.sum</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.trace.html#dpnp.ndarray.trace" title="dpnp.ndarray.trace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.trace</span></code></a></p></td>
+<td><p>Return the sum along diagonals of the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.sum.html#dpnp.ndarray.sum" title="dpnp.ndarray.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.sum</span></code></a></p></td>
 <td><p>Returns the sum along a given axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.cumsum.html#dpnp.ndarray.cumsum" title="dpnp.ndarray.cumsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.cumsum</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.cumsum.html#dpnp.ndarray.cumsum" title="dpnp.ndarray.cumsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.cumsum</span></code></a></p></td>
 <td><p>Return the cumulative sum of the elements along the given axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.mean.html#dpnp.ndarray.mean" title="dpnp.ndarray.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.mean</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.mean.html#dpnp.ndarray.mean" title="dpnp.ndarray.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.mean</span></code></a></p></td>
 <td><p>Returns the average of the array elements.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.var.html#dpnp.ndarray.var" title="dpnp.ndarray.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.var</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.var.html#dpnp.ndarray.var" title="dpnp.ndarray.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.var</span></code></a></p></td>
 <td><p>Returns the variance of the array elements, along given axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.std.html#dpnp.ndarray.std" title="dpnp.ndarray.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.std</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.std.html#dpnp.ndarray.std" title="dpnp.ndarray.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.std</span></code></a></p></td>
 <td><p>Returns the standard deviation of the array elements, along given axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.prod.html#dpnp.ndarray.prod" title="dpnp.ndarray.prod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.prod</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.prod.html#dpnp.ndarray.prod" title="dpnp.ndarray.prod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.prod</span></code></a></p></td>
 <td><p>Returns the prod along a given axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.cumprod.html#dpnp.ndarray.cumprod" title="dpnp.ndarray.cumprod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.cumprod</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.cumprod.html#dpnp.ndarray.cumprod" title="dpnp.ndarray.cumprod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.cumprod</span></code></a></p></td>
 <td><p>Return the cumulative product of the elements along the given axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.all.html#dpnp.ndarray.all" title="dpnp.ndarray.all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.all</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.all.html#dpnp.ndarray.all" title="dpnp.ndarray.all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.all</span></code></a></p></td>
 <td><p>Returns True if all elements evaluate to True.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.any.html#dpnp.ndarray.any" title="dpnp.ndarray.any"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.any</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.any.html#dpnp.ndarray.any" title="dpnp.ndarray.any"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.any</span></code></a></p></td>
 <td><p>Returns True if any of the elements of <cite>a</cite> evaluate to True.</p></td>
 </tr>
 </tbody>
