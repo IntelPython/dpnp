@@ -222,7 +222,7 @@ def digitize(x, bins, right=False):
     bins : {dpnp.ndarray, usm_ndarray}
         Array of bins. It has to be 1-dimensional and monotonic
         increasing or decreasing.
-    right : {bool}, optional
+    right : bool, optional
         Indicates whether the intervals include the right or the left bin edge.
         Default: ``False``.
 
@@ -231,9 +231,9 @@ def digitize(x, bins, right=False):
     indices : dpnp.ndarray
         Array of indices with the same shape as `x`.
 
-    Note
-    ----
-    dpnp.digitize does not raise an exception when the input array is
+    Notes
+    -----
+    This will not raise an exception when the input array is
     not monotonic.
 
     See Also
@@ -263,9 +263,9 @@ def digitize(x, bins, right=False):
 
     >>> x = np.array([1.2, 10.0, 12.4, 15.5, 20.])
     >>> bins = np.array([0, 5, 10, 15, 20])
-    >>> np.digitize(x,bins,right=True)
+    >>> np.digitize(x, bins, right=True)
     array([1, 2, 3, 4, 4])
-    >>> np.digitize(x,bins,right=False)
+    >>> np.digitize(x, bins, right=False)
     array([1, 3, 3, 4, 5])
 
     """
