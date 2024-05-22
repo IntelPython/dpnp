@@ -44,16 +44,6 @@ __all__ += [
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_choose_t)(c_dpctl.DPCTLSyclQueueRef,
                                                         void *, void * , void ** , size_t, size_t, size_t,
                                                         const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*custom_indexing_2in_1out_func_ptr_t_)(c_dpctl.DPCTLSyclQueueRef,
-                                                                          void * ,
-                                                                          const size_t,
-                                                                          void * ,
-                                                                          const size_t,
-                                                                          shape_elem_type * ,
-                                                                          shape_elem_type *,
-                                                                          const size_t,
-                                                                          const c_dpctl.DPCTLEventVectorRef)
-
 
 cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor x1, list choices1):
     cdef vector[void * ] choices
@@ -100,62 +90,6 @@ cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor x1, list choices1)
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return res_array
-
-
-cpdef utils.dpnp_descriptor dpnp_diagonal(dpnp_descriptor x1, offset=0):
-    cdef shape_type_c x1_shape = x1.shape
-
-    n = min(x1.shape[0], x1.shape[1])
-    res_shape = [None] * (x1.ndim - 1)
-
-    if x1.ndim > 2:
-        for i in range(x1.ndim - 2):
-            res_shape[i] = x1.shape[i + 2]
-
-    if (n + offset) > x1.shape[1]:
-        res_shape[-1] = x1.shape[1] - offset
-    elif (n + offset) > x1.shape[0]:
-        res_shape[-1] = x1.shape[0]
-    else:
-        res_shape[-1] = n + offset
-
-    cdef shape_type_c result_shape = res_shape
-    res_ndim = len(res_shape)
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAGONAL_EXT, param1_type, param1_type)
-
-    x1_obj = x1.get_array()
-
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=x1_obj.sycl_device,
-                                                                       usm_type=x1_obj.usm_type,
-                                                                       sycl_queue=x1_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef custom_indexing_2in_1out_func_ptr_t_ func = <custom_indexing_2in_1out_func_ptr_t_ > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    x1.get_data(),
-                                                    x1.size,
-                                                    result.get_data(),
-                                                    offset,
-                                                    x1_shape.data(),
-                                                    result_shape.data(),
-                                                    res_ndim,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
 
 
 cpdef dpnp_putmask(utils.dpnp_descriptor arr, utils.dpnp_descriptor mask, utils.dpnp_descriptor values):

@@ -113,8 +113,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_DIAG,          /**< Used in numpy.diag() impl  */
     DPNP_FN_DIAG_INDICES,  /**< Used in numpy.diag_indices() impl  */
     DPNP_FN_DIAGONAL,      /**< Used in numpy.diagonal() impl  */
-    DPNP_FN_DIAGONAL_EXT,  /**< Used in numpy.diagonal() impl, requires extra
-                              parameters */
     DPNP_FN_DIVIDE,        /**< Used in numpy.divide() impl  */
     DPNP_FN_DOT,           /**< Used in numpy.dot() impl  */
     DPNP_FN_DOT_EXT, /**< Used in numpy.dot() impl, requires extra parameters */
@@ -339,8 +337,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TANH,         /**< Used in numpy.tanh() impl  */
     DPNP_FN_TRANSPOSE,    /**< Used in numpy.transpose() impl  */
     DPNP_FN_TRACE,        /**< Used in numpy.trace() impl  */
-    DPNP_FN_TRACE_EXT,    /**< Used in numpy.trace() impl, requires extra
-                             parameters */
     DPNP_FN_TRAPZ,        /**< Used in numpy.trapz() impl  */
     DPNP_FN_TRAPZ_EXT,    /**< Used in numpy.trapz() impl, requires extra
                              parameters */

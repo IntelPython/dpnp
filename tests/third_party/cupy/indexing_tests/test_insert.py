@@ -70,24 +70,23 @@ class TestPlaceRaises(unittest.TestCase):
             "shape": [(7,), (2, 3), (4, 3, 2)],
             "mode": ["raise", "wrap", "clip"],
             # The vals shape of array must be broadcastable to the shape of indices
-            "n_vals": [1, 4],
+            "n_vals": [0, 1, 4],
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestPut(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_put(self, xp, dtype):
         a = testing.shaped_arange(self.shape, xp, dtype)
         # Take care so that actual indices don't overlap.
-        if self.mode in ("raise"):
-            inds = xp.array([2, -1, 3, 0])
+        if self.mode == "raise":
+            pytest.skip("'raise' mode is not supported")
         # `wrap` mode in dpctl.tensor.put is different from numpy.put (#1365):
         # numpy`s `wrap` mode wraps indices around for cyclic operations
         # while dpctl`s `wrap` mode restricts indices to stay within the array bounds (-n <= i < n).
-        elif self.mode in ("wrap"):
-            inds = xp.array([2, -1, 3, -6])
+        elif self.mode == "wrap":
+            inds = xp.array([2, -1, 3, 0])
         else:
             inds = xp.array([2, -8, 3, 7])
         vals = testing.shaped_random((self.n_vals,), xp, dtype)
@@ -103,13 +102,13 @@ class TestPut(unittest.TestCase):
     )
 )
 class TestPutScalars(unittest.TestCase):
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_put_index_scalar(self, xp):
         dtype = cupy.float32
         a = testing.shaped_arange(self.shape, xp, dtype)
         inds = 4
-        vals = testing.shaped_random((4,), xp, dtype)
+        # The vals shape of array must be broadcastable to the shape of indices
+        vals = testing.shaped_random((1,), xp, dtype)
         xp.put(a, inds, vals)
         return a
 
@@ -131,8 +130,8 @@ class TestPutScalars(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestPutRaises(unittest.TestCase):
+    @pytest.mark.skip("'raise' mode is not supported")
     @testing.for_all_dtypes()
     def test_put_inds_underflow_error(self, dtype):
         for xp in (numpy, cupy):
@@ -142,6 +141,7 @@ class TestPutRaises(unittest.TestCase):
             with pytest.raises(IndexError):
                 xp.put(a, inds, vals, mode="raise")
 
+    @pytest.mark.skip("'raise' mode is not supported")
     @testing.for_all_dtypes()
     def test_put_inds_overflow_error(self, dtype):
         for xp in (numpy, cupy):

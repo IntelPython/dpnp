@@ -588,6 +588,9 @@ def test_norm(usm_type, ord, axis):
             "tan", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
         pytest.param("tanh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
+        pytest.param(
+            "trace", [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+        ),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
     ],
