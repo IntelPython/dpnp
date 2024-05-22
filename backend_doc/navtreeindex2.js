@@ -1,7 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"ln_8hpp_source.html":[2,0,0,3,21],
-"log10_8hpp_source.html":[2,0,0,3,22],
 "log1p_8hpp_source.html":[2,0,0,3,23],
 "log2_8hpp_source.html":[2,0,0,3,24],
 "mul_8hpp_source.html":[2,0,0,3,25],
