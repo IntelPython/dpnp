@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+91.g58066c5ee5 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.15.0dev1+93.g35a287dfc1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=c6eafd31"></script>
+        <script src="../../_static/documentation_options.js?v=ea68d486"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+91.g58066c5ee5
+                0.15.0dev1+93.g35a287dfc1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1209,10 +1209,9 @@
 
 
 
-<span class="c1"># pylint: disable=redefined-outer-name</span>
 <div class="viewcode-block" id="put_along_axis">
 <a class="viewcode-back" href="../../reference/generated/dpnp.put_along_axis.html#dpnp.put_along_axis">[docs]</a>
-<span class="k">def</span> <span class="nf">put_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">put_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Put values into the destination array by matching 1d index and data slices.</span>
 
@@ -1222,13 +1221,13 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}, (Ni..., M, Nk...)</span>
 <span class="sd">        Destination array.</span>
-<span class="sd">    indices : {dpnp.ndarray, usm_ndarray}, (Ni..., J, Nk...)</span>
+<span class="sd">    ind : {dpnp.ndarray, usm_ndarray}, (Ni..., J, Nk...)</span>
 <span class="sd">        Indices to change along each 1d slice of `a`. This must match the</span>
 <span class="sd">        dimension of input array, but dimensions in ``Ni`` and ``Nj``</span>
 <span class="sd">        may be 1 to broadcast against `a`.</span>
 <span class="sd">    values : {scalar, array_like}, (Ni..., J, Nk...)</span>
 <span class="sd">        Values to insert at those indices. Its shape and dimension are</span>
-<span class="sd">        broadcast to match that of `indices`.</span>
+<span class="sd">        broadcast to match that of `ind`.</span>
 <span class="sd">    axis : int</span>
 <span class="sd">        The axis to take 1d slices along. If axis is ``None``, the destination</span>
 <span class="sd">        array is treated as if a flattened 1d view had been created of it.</span>
@@ -1260,16 +1259,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
-
-    <span class="c1"># TODO: remove when #1382(dpctl) is resolved</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
 
-    <span class="n">a</span><span class="p">[</span><span class="n">_build_along_axis_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">)]</span> <span class="o">=</span> <span class="n">values</span></div>
+    <span class="n">a</span><span class="p">[</span><span class="n">_build_along_axis_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">axis</span><span class="p">)]</span> <span class="o">=</span> <span class="n">values</span></div>
 
 
 
