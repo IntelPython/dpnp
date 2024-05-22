@@ -112,11 +112,9 @@ enum class DPNPFuncName : size_t
     DPNP_FN_DET,           /**< Used in numpy.linalg.det() impl  */
     DPNP_FN_DIAG,          /**< Used in numpy.diag() impl  */
     DPNP_FN_DIAG_INDICES,  /**< Used in numpy.diag_indices() impl  */
-    DPNP_FN_DIAG_INDICES_EXT, /**< Used in numpy.diag_indices() impl, requires
-                                 extra parameters */
-    DPNP_FN_DIAGONAL,         /**< Used in numpy.diagonal() impl  */
-    DPNP_FN_DIVIDE,           /**< Used in numpy.divide() impl  */
-    DPNP_FN_DOT,              /**< Used in numpy.dot() impl  */
+    DPNP_FN_DIAGONAL,      /**< Used in numpy.diagonal() impl  */
+    DPNP_FN_DIVIDE,        /**< Used in numpy.divide() impl  */
+    DPNP_FN_DOT,           /**< Used in numpy.dot() impl  */
     DPNP_FN_DOT_EXT, /**< Used in numpy.dot() impl, requires extra parameters */
     DPNP_FN_EDIFF1D, /**< Used in numpy.ediff1d() impl  */
     DPNP_FN_EDIFF1D_EXT, /**< Used in numpy.ediff1d() impl, requires extra
@@ -140,12 +138,10 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FFT_RFFT_EXT,  /**< Used in numpy.fft.rfft() impl, requires extra
                               parameters */
     DPNP_FN_FILL_DIAGONAL, /**< Used in numpy.fill_diagonal() impl  */
-    DPNP_FN_FILL_DIAGONAL_EXT, /**< Used in numpy.fill_diagonal() impl, requires
-                                  extra parameters */
-    DPNP_FN_FLATTEN,           /**< Used in numpy.flatten() impl  */
-    DPNP_FN_FLOOR,             /**< Used in numpy.floor() impl  */
-    DPNP_FN_FLOOR_DIVIDE,      /**< Used in numpy.floor_divide() impl  */
-    DPNP_FN_FMOD,              /**< Used in numpy.fmod() impl  */
+    DPNP_FN_FLATTEN,       /**< Used in numpy.flatten() impl  */
+    DPNP_FN_FLOOR,         /**< Used in numpy.floor() impl  */
+    DPNP_FN_FLOOR_DIVIDE,  /**< Used in numpy.floor_divide() impl  */
+    DPNP_FN_FMOD,          /**< Used in numpy.fmod() impl  */
     DPNP_FN_FMOD_EXT,  /**< Used in numpy.fmod() impl, requires extra parameters
                         */
     DPNP_FN_FULL,      /**< Used in numpy.full() impl  */

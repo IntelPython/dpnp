@@ -2099,7 +2099,7 @@ def dpnp_matmul(
     if numpy.prod(result_shape) == 0:
         res_shape = result_shape
     elif x1_shape[-1] == 1:
-        call_flag = "kron"
+        call_flag = "multiply"
     elif x1_is_1D and x2_is_1D:
         call_flag = "dot"
         x1 = dpnp.reshape(x1, x1_shape[-1])
@@ -2148,8 +2148,8 @@ def dpnp_matmul(
         call_flag = "gemm_batch"
         res_shape = result_shape
 
-    if call_flag == "kron":
-        res = dpnp.kron(x1, x2)
+    if call_flag == "multiply":
+        res = dpnp.multiply(x1, x2)
         res_shape = res.shape
     elif call_flag == "dot":
         if out is not None and out.shape != ():

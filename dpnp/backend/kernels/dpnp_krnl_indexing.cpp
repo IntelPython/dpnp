@@ -151,13 +151,6 @@ void (*dpnp_diag_indices_default_c)(void *,
                                     size_t) = dpnp_diag_indices_c<_DataType>;
 
 template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_diag_indices_ext_c)(DPCTLSyclQueueRef,
-                                             void *,
-                                             size_t,
-                                             const DPCTLEventVectorRef) =
-    dpnp_diag_indices_c<_DataType>;
-
-template <typename _DataType>
 DPCTLSyclEventRef dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
                                   void *array1_in,
                                   const size_t input1_size,
@@ -188,9 +181,11 @@ DPCTLSyclEventRef dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
     _DataType *array_1 = input1_ptr.get_ptr();
     _DataType *result = result_ptr.get_ptr();
 
+    const size_t res_shape_ndim_sub_1 =
+        static_cast<size_t>(res_shape[res_ndim - 1]);
+
     if (res_ndim <= 1) {
-        for (size_t i = 0; i < static_cast<size_t>(res_shape[res_ndim - 1]);
-             ++i) {
+        for (size_t i = 0; i < res_shape_ndim_sub_1; ++i) {
             result[i] = array_1[i * shape[res_ndim] + i + offset];
         }
     }
@@ -225,8 +220,7 @@ DPCTLSyclEventRef dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
             index += 1;
         }
 
-        for (size_t i = 0; i < static_cast<size_t>(res_shape[res_ndim - 1]);
-             i++) {
+        for (size_t i = 0; i < res_shape_ndim_sub_1; i++) {
             for (size_t j = 0; j < xyz.size(); j++) {
                 std::vector<size_t> ind_list = xyz[j];
                 if (ind_list.size() == 0) {
@@ -362,15 +356,6 @@ void (*dpnp_fill_diagonal_default_c)(void *,
                                      void *,
                                      shape_elem_type *,
                                      const size_t) =
-    dpnp_fill_diagonal_c<_DataType>;
-
-template <typename _DataType>
-DPCTLSyclEventRef (*dpnp_fill_diagonal_ext_c)(DPCTLSyclQueueRef,
-                                              void *,
-                                              void *,
-                                              shape_elem_type *,
-                                              const size_t,
-                                              const DPCTLEventVectorRef) =
     dpnp_fill_diagonal_c<_DataType>;
 
 template <typename _DataType>
@@ -897,15 +882,6 @@ void func_map_init_indexing_func(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_diag_indices_default_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_diag_indices_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_diag_indices_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_diag_indices_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_diag_indices_ext_c<double>};
-
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_diagonal_default_c<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_LNG][eft_LNG] = {
@@ -923,15 +899,6 @@ void func_map_init_indexing_func(func_map_t &fmap)
         eft_FLT, (void *)dpnp_fill_diagonal_default_c<float>};
     fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_fill_diagonal_default_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_fill_diagonal_ext_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_fill_diagonal_ext_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_fill_diagonal_ext_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_fill_diagonal_ext_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_NONZERO][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_nonzero_default_c<int32_t>};
