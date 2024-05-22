@@ -831,8 +831,7 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
         in_a[:] = a.reshape(in_a.shape, copy=False)
 
 
-# pylint: disable=redefined-outer-name
-def put_along_axis(a, indices, values, axis):
+def put_along_axis(a, ind, values, axis):
     """
     Put values into the destination array by matching 1d index and data slices.
 
@@ -842,13 +841,13 @@ def put_along_axis(a, indices, values, axis):
     ----------
     a : {dpnp.ndarray, usm_ndarray}, (Ni..., M, Nk...)
         Destination array.
-    indices : {dpnp.ndarray, usm_ndarray}, (Ni..., J, Nk...)
+    ind : {dpnp.ndarray, usm_ndarray}, (Ni..., J, Nk...)
         Indices to change along each 1d slice of `a`. This must match the
         dimension of input array, but dimensions in ``Ni`` and ``Nj``
         may be 1 to broadcast against `a`.
     values : {scalar, array_like}, (Ni..., J, Nk...)
         Values to insert at those indices. Its shape and dimension are
-        broadcast to match that of `indices`.
+        broadcast to match that of `ind`.
     axis : int
         The axis to take 1d slices along. If axis is ``None``, the destination
         array is treated as if a flattened 1d view had been created of it.
@@ -880,16 +879,12 @@ def put_along_axis(a, indices, values, axis):
 
     """
 
-    dpnp.check_supported_arrays_type(a, indices)
-
-    # TODO: remove when #1382(dpctl) is resolved
-    if dpnp.is_supported_array_type(values) and a.dtype != values.dtype:
-        values = values.astype(a.dtype)
+    dpnp.check_supported_arrays_type(a, ind)
 
     if axis is None:
         a = a.ravel()
 
-    a[_build_along_axis_index(a, indices, axis)] = values
+    a[_build_along_axis_index(a, ind, axis)] = values
 
 
 def putmask(x1, mask, values):
