@@ -8,6 +8,7 @@ import pytest
 from numpy.testing import (
     assert_allclose,
     assert_array_equal,
+    assert_equal,
 )
 
 import dpnp
@@ -17,6 +18,53 @@ from .helper import (
     get_all_dtypes,
     has_support_aspect64,
 )
+
+
+class TestTrace:
+    @pytest.mark.parametrize("a_sh", [(3, 4), (2, 2, 2)])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    @pytest.mark.parametrize("offset_arg", [[], [0], [1], [-1]])
+    def test_offset(self, a_sh, dtype, offset_arg):
+        a = numpy.arange(prod(a_sh), dtype=dtype).reshape(a_sh)
+        ia = dpnp.array(a)
+        assert_equal(ia.trace(*offset_arg), a.trace(*offset_arg))
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_none_offset(self, xp):
+        a = xp.arange(12).reshape((3, 4))
+        with pytest.raises(TypeError):
+            a.trace(offset=None)
+
+    @pytest.mark.parametrize(
+        "offset, axis1, axis2",
+        [
+            pytest.param(0, 0, 1),
+            pytest.param(0, 0, 2),
+            pytest.param(0, 1, 2),
+            pytest.param(1, 0, 2),
+        ],
+    )
+    def test_axis(self, offset, axis1, axis2):
+        a = numpy.arange(8).reshape((2, 2, 2))
+        ia = dpnp.array(a)
+
+        expected = a.trace(offset=offset, axis1=axis1, axis2=axis2)
+        result = ia.trace(offset=offset, axis1=axis1, axis2=axis2)
+        assert_equal(result, expected)
+
+    def test_out(self):
+        a = numpy.arange(12).reshape((3, 4))
+        out = numpy.array(1)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        expected = a.trace(out=out)
+        result = ia.trace(out=iout)
+        assert_equal(result, expected)
+        assert result is iout
 
 
 @pytest.mark.parametrize(
@@ -279,52 +327,6 @@ def test_loadtxt(dtype):
         dpnp_res = func(dpnp)
 
     assert_array_equal(dpnp_res, np_res)
-
-
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("type", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("offset", [0, 1], ids=["0", "1"])
-@pytest.mark.parametrize(
-    "array",
-    [
-        [[0, 0], [0, 0]],
-        [[1, 2], [1, 2]],
-        [[1, 2], [3, 4]],
-        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
-        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
-        [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
-        [
-            [[[1, 2], [3, 4]], [[1, 2], [2, 1]]],
-            [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
-        ],
-        [
-            [[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]],
-            [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]],
-        ],
-        [
-            [[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]],
-            [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]],
-        ],
-    ],
-    ids=[
-        "[[0, 0], [0, 0]]",
-        "[[1, 2], [1, 2]]",
-        "[[1, 2], [3, 4]]",
-        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
-        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
-        "[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]",
-        "[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]",
-        "[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]",
-        "[[[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]]]",
-    ],
-)
-def test_trace(array, offset, type, dtype):
-    create_array = lambda xp: xp.array(array, type)
-    trace_func = lambda xp, x: xp.trace(x, offset=offset, dtype=dtype)
-
-    a = create_array(numpy)
-    ia = create_array(dpnp)
-    assert_array_equal(trace_func(dpnp, ia), trace_func(numpy, a))
 
 
 @pytest.mark.parametrize("N", [0, 1, 2, 3, 4], ids=["0", "1", "2", "3", "4"])
