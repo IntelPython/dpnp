@@ -32,7 +32,7 @@ This release completes implementation of `dpnp.linalg` module and array creation
 * Added support of more number of data types and dimensions for input array, and all keyword arguments in `dpnp.linalg.matrix_rank` function [#1717](https://github.com/IntelPython/dpnp/pull/1717)
 * Added support of more number of data types and dimensions for input arrays in `dpnp.inner` function [#1726](https://github.com/IntelPython/dpnp/pull/1726)
 * Added support of more number of data types and dimensions for input arrays in `dpnp.linalg.multi_dot` function [#1729](https://github.com/IntelPython/dpnp/pull/1729)
-* Added support of more number of data types and dimensions for input arrays in `dpnp.kron` function [#1726](https://github.com/IntelPython/dpnp/pull/1726)
+* Added support of more number of data types and dimensions for input arrays in `dpnp.kron` function [#1732](https://github.com/IntelPython/dpnp/pull/1732)
 * Added support of more number of data types and dimensions for input arrays in `dpnp.linalg.matrix_power` function [#1748](https://github.com/IntelPython/dpnp/pull/1748)
 * Added support of more number of data types and dimensions for input array, and all keyword arguments in `dpnp.norm` function [#1746](https://github.com/IntelPython/dpnp/pull/1746)
 * Added support of more number of data types and dimensions for input array in `dpnp.cond` function [#1773](https://github.com/IntelPython/dpnp/pull/1773)
