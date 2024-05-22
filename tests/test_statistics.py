@@ -322,6 +322,11 @@ class TestDigitize:
             dpnp.digitize(x_np, bins_dp)
             dpnp.digitize(x_dp, bins_np)
 
+        # bins ndim < 1
+        bins_scalar = dpnp.array(1)
+        with pytest.raises(ValueError):
+            dpnp.digitize(x_dp, bins_scalar)
+
 
 class TestMean:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
