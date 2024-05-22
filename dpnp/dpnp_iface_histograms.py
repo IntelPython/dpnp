@@ -284,10 +284,14 @@ def digitize(x, bins, right=False):
     side = "left" if right else "right"
 
     # Check if bins are monotonically increasing.
+    # If bins is empty, the array is considered to be increasing.
     # If all bins are NaN, the array is considered to be decreasing.
-    bins_increasing = bins[0] <= bins[-1] or (
-        not dpnp.isnan(bins[0]) and dpnp.isnan(bins[-1])
-    )
+    if bins.size == 0:
+        bins_increasing = True
+    else:
+        bins_increasing = bins[0] <= bins[-1] or (
+            not dpnp.isnan(bins[0]) and dpnp.isnan(bins[-1])
+        )
 
     if bins_increasing:
         # Use dpnp.searchsorted directly if bins are increasing
