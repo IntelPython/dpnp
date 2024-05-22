@@ -432,7 +432,7 @@ class TestDigitizeNanInf(unittest.TestCase):
 
     @testing.numpy_cupy_array_equal()
     def test_searchsorted_inf(self, xp):
-        x = testing.shaped_arange((14,), xp, xp.float64)
+        x = testing.shaped_arange((14,), xp, cupy.default_float_type())
         x[5] = float("inf")
         bins = xp.array([0, 1, 2, 4, 10])
         y = xp.digitize(x, bins, right=self.right)
@@ -440,7 +440,7 @@ class TestDigitizeNanInf(unittest.TestCase):
 
     @testing.numpy_cupy_array_equal()
     def test_searchsorted_minf(self, xp):
-        x = testing.shaped_arange((14,), xp, xp.float64)
+        x = testing.shaped_arange((14,), xp, cupy.default_float_type())
         x[5] = float("-inf")
         bins = xp.array([0, 1, 2, 4, 10])
         y = xp.digitize(x, bins, right=self.right)
