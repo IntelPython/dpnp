@@ -606,6 +606,7 @@ def test_reduce_hypot(device):
         pytest.param("arctan2", [[-1, +1, +1, -1]], [[-1, -1, +1, +1]]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
+        pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
         pytest.param(
             "divide", [0.0, 1.0, 2.0, 3.0, 4.0], [4.0, 4.0, 4.0, 4.0, 4.0]
         ),

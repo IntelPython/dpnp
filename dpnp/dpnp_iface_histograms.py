@@ -46,6 +46,7 @@ import numpy
 import dpnp
 
 __all__ = [
+    "digitize",
     "histogram",
     "histogram_bin_edges",
 ]
@@ -208,6 +209,98 @@ def _search_sorted_inclusive(a, v):
     )
 
 
+def digitize(x, bins, right=False):
+    """
+    Return the indices of the bins to which each value in input array belongs.
+
+    For full documentation refer to :obj:`numpy.digitize`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array to be binned.
+    bins : {dpnp.ndarray, usm_ndarray}
+        Array of bins. It has to be 1-dimensional and monotonic
+        increasing or decreasing.
+    right : bool, optional
+        Indicates whether the intervals include the right or the left bin edge.
+        Default: ``False``.
+
+    Returns
+    -------
+    indices : dpnp.ndarray
+        Array of indices with the same shape as `x`.
+
+    Notes
+    -----
+    This will not raise an exception when the input array is
+    not monotonic.
+
+    See Also
+    --------
+    :obj:`dpnp.bincount` : Count number of occurrences of each value in array
+                           of non-negative integers.
+    :obj:`dpnp.histogram` : Compute the histogram of a data set.
+    :obj:`dpnp.unique` : Find the unique elements of an array.
+    :obj:`dpnp.searchsorted` : Find indices where elements should be inserted
+                               to maintain order.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([0.2, 6.4, 3.0, 1.6])
+    >>> bins = np.array([0.0, 1.0, 2.5, 4.0, 10.0])
+    >>> inds = np.digitize(x, bins)
+    >>> inds
+    array([1, 4, 3, 2])
+    >>> for n in range(x.size):
+    ...     print(bins[inds[n]-1], "<=", x[n], "<", bins[inds[n]])
+    ...
+    0. <= 0.2 < 1.
+    4. <= 6.4 < 10.
+    2.5 <= 3. < 4.
+    1. <= 1.6 < 2.5
+
+    >>> x = np.array([1.2, 10.0, 12.4, 15.5, 20.])
+    >>> bins = np.array([0, 5, 10, 15, 20])
+    >>> np.digitize(x, bins, right=True)
+    array([1, 2, 3, 4, 4])
+    >>> np.digitize(x, bins, right=False)
+    array([1, 3, 3, 4, 5])
+
+    """
+
+    dpnp.check_supported_arrays_type(x, bins)
+
+    if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
+        raise TypeError("x may not be complex")
+
+    if bins.ndim > 1:
+        raise ValueError("object too deep for desired array")
+    if bins.ndim < 1:
+        raise ValueError("object of too small depth for desired array")
+
+    # This is backwards because the arguments below are swapped
+    side = "left" if right else "right"
+
+    # Check if bins are monotonically increasing.
+    # If bins is empty, the array is considered to be increasing.
+    # If all bins are NaN, the array is considered to be decreasing.
+    if bins.size == 0:
+        bins_increasing = True
+    else:
+        bins_increasing = bins[0] <= bins[-1] or (
+            not dpnp.isnan(bins[0]) and dpnp.isnan(bins[-1])
+        )
+
+    if bins_increasing:
+        # Use dpnp.searchsorted directly if bins are increasing
+        return dpnp.searchsorted(bins, x, side=side)
+
+    # Reverse bins and adjust indices if bins are decreasing
+    return bins.size - dpnp.searchsorted(bins[::-1], x, side=side)
+
+
 def histogram(a, bins=10, range=None, density=None, weights=None):
     """
     Compute the histogram of a data set.
@@ -335,8 +428,8 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         n = dpnp.diff(cum_n)
 
     if density:
-        db = dpnp.diff(bin_edges).astype(dpnp.default_float_type())
         # pylint: disable=possibly-used-before-assignment
+        db = dpnp.diff(bin_edges).astype(dpnp.default_float_type())
         return n / db / n.sum(), bin_edges
 
     return n, bin_edges
