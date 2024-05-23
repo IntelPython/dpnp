@@ -366,8 +366,6 @@ class TestDigitize:
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_digitize(self, xp, dtype):
-        if self.shape == () and not self.increasing:
-            pytest.skip("dpctl issue #1689")
         x = testing.shaped_arange(self.shape, xp, dtype)
         bins = self.bins
         if not self.increasing:
