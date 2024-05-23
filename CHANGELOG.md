@@ -20,6 +20,7 @@ This release completes implementation of `dpnp.linalg` module and array creation
 * Added implementation of `dpnp.einsum` and `dpnp.einsum_path` functions [#1779](https://github.com/IntelPython/dpnp/pull/1779)
 * Added implementation of `dpnp.histogram` function [#1785](https://github.com/IntelPython/dpnp/pull/1785)
 * Added implementation of `dpnp.histogram_bin_edges` function [#1823](https://github.com/IntelPython/dpnp/pull/1823)
+* Added implementation of `dpnp.digitize` function [#1847](https://github.com/IntelPython/dpnp/pull/1847)
 * Extended pre-commit hooks with `pylint` configuration [#1718](https://github.com/IntelPython/dpnp/pull/1718)
 * Extended pre-commit hooks with `codespell` configuration [#1798](https://github.com/IntelPython/dpnp/pull/1798)
 * Added a Security policy page [#1730](https://github.com/IntelPython/dpnp/pull/1730)
