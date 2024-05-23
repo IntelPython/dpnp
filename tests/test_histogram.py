@@ -58,6 +58,23 @@ class TestDigitize:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
+        "dtype_x", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "dtype_bins", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("right", [True, False])
+    def test_digitize_diff_types(self, dtype_x, dtype_bins, right):
+        x = numpy.array([1, 2, 3, 4, 5], dtype=dtype_x)
+        bins = numpy.array([1, 3, 5], dtype=dtype_bins)
+        x_dp = dpnp.array(x)
+        bins_dp = dpnp.array(bins)
+
+        result = dpnp.digitize(x_dp, bins_dp, right=right)
+        expected = numpy.digitize(x, bins, right=right)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
     @pytest.mark.parametrize(
