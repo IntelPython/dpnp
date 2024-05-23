@@ -48,7 +48,8 @@ var annotated_dup =
               [ "dispatch", null, [
                 [ "Dispatch3DTableBuilder", "classdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_dispatch3_d_table_builder.html", null ],
                 [ "GaussianTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_gaussian_type_pair_support_factory.html", null ],
-                [ "TypePairDefinedEntry", "structdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_type_pair_defined_entry.html", null ]
+                [ "TypePairDefinedEntry", "structdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_type_pair_defined_entry.html", null ],
+                [ "UniformTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_uniform_type_pair_support_factory.html", null ]
               ] ],
               [ "engine", null, [
                 [ "builder", null, [

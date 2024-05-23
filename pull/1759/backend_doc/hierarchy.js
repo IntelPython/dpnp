@@ -188,6 +188,7 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::tuple_of_tuples< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::backend::ext::lapack::types::UngqrBatchTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_ungqr_batch_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::lapack::types::UngqrTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html", null ],
+    [ "dpnp::backend::ext::rng::device::dispatch::UniformTypePairSupportFactory< T, M >", "structdpnp_1_1backend_1_1ext_1_1rng_1_1device_1_1dispatch_1_1_uniform_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::sycl_ext::UsmArrayMatcher", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_usm_array_matcher.html", null ],
     [ "dpnp::backend::ext::lapack::helper::value_type_of< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of.html", null ],
     [ "dpnp::backend::ext::lapack::helper::value_type_of< std::complex< T > >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
