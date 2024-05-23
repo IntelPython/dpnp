@@ -151,6 +151,9 @@
    .. automethod:: to_device
 
 
+   .. automethod:: trace
+
+
    .. automethod:: transpose
 
 

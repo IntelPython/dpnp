@@ -1,9 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"lapack_2types__matrix_8hpp_source.html":[2,0,0,1,12],
-"linalg__exceptions_8hpp_source.html":[2,0,0,1,8],
-"ln_8hpp_source.html":[2,0,0,3,21],
-"log10_8hpp_source.html":[2,0,0,3,22],
 "log1p_8hpp_source.html":[2,0,0,3,23],
 "log2_8hpp_source.html":[2,0,0,3,24],
 "mul_8hpp_source.html":[2,0,0,3,25],
