@@ -34,10 +34,10 @@ Programming Language :: C++
 Programming Language :: Cython
 Programming Language :: Python
 Programming Language :: Python :: 3
-Programming Language :: Python :: 3.8
 Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
 Programming Language :: Python :: 3.11
+Programming Language :: Python :: 3.12
 Programming Language :: Python :: Implementation :: CPython
 Topic :: Software Development
 Topic :: Scientific/Engineering
@@ -57,6 +57,7 @@ setup(
     classifiers=[_f for _f in CLASSIFIERS.split("\n") if _f],
     keywords="sycl numpy python3 intel mkl oneapi gpu dpcpp",
     platforms=["Linux", "Windows"],
+    python_requires='>=3.9',
     author="Intel Corporation",
     url="https://github.com/IntelPython/dpnp",
     packages=[
