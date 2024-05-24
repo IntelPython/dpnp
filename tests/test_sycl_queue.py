@@ -2106,7 +2106,9 @@ def test_lstsq(m, n, nrhs, device):
     b_dp = dpnp.array(b_np, device=device)
 
     result_dp = dpnp.linalg.lstsq(a_dp, b_dp)
-    result = numpy.linalg.lstsq(a_np, b_np)
+    # if rcond is not set, FutureWarning is given.
+    # By default Numpy uses None for calculations
+    result = numpy.linalg.lstsq(a_np, b_np, rcond=None)
 
     for param_dp, param_np in zip(result_dp, result):
         assert_dtype_allclose(param_dp, param_np)
