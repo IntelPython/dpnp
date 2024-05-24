@@ -57,7 +57,7 @@ setup(
     classifiers=[_f for _f in CLASSIFIERS.split("\n") if _f],
     keywords="sycl numpy python3 intel mkl oneapi gpu dpcpp",
     platforms=["Linux", "Windows"],
-    python_requires='>=3.9',
+    python_requires=">=3.9",
     author="Intel Corporation",
     url="https://github.com/IntelPython/dpnp",
     packages=[
@@ -73,7 +73,9 @@ setup(
             "libdpnp_backend_c.so",
             "dpnp_backend_c.lib",
             "dpnp_backend_c.dll",
+            "tests/*.*",
+            "tests/third_party/cupy/*.py",
         ]
     },
-    include_package_data=True,
+    include_package_data=False,
 )
