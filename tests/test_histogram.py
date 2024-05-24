@@ -386,7 +386,8 @@ class TestHistogram:
 
         # both first and last ranges must be finite
         with assert_raises_regex(
-            ValueError, f"autodetected range of \[{min}, {max}\] is not finite"
+            ValueError,
+            f"autodetected range of \\[{min}, {max}\\] is not finite",
         ):
             xp.histogram(v)
 
