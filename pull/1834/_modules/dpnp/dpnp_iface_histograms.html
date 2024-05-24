@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.15.0dev1+71.g3a6f9e5044 documentation</title>
+  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.16.0dev0+3.gae3060a5b8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=70d19b02"></script>
+        <script src="../../_static/documentation_options.js?v=312fe554"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.15.0dev1+71.g3a6f9e5044
+                0.16.0dev0+3.gae3060a5b8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -136,6 +136,7 @@
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;digitize&quot;</span><span class="p">,</span>
     <span class="s2">&quot;histogram&quot;</span><span class="p">,</span>
     <span class="s2">&quot;histogram_bin_edges&quot;</span><span class="p">,</span>
 <span class="p">]</span>
@@ -298,6 +299,101 @@
     <span class="p">)</span>
 
 
+<div class="viewcode-block" id="digitize">
+<a class="viewcode-back" href="../../reference/generated/dpnp.digitize.html#dpnp.digitize">[docs]</a>
+<span class="k">def</span> <span class="nf">digitize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the indices of the bins to which each value in input array belongs.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.digitize`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array to be binned.</span>
+<span class="sd">    bins : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Array of bins. It has to be 1-dimensional and monotonic</span>
+<span class="sd">        increasing or decreasing.</span>
+<span class="sd">    right : bool, optional</span>
+<span class="sd">        Indicates whether the intervals include the right or the left bin edge.</span>
+<span class="sd">        Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    indices : dpnp.ndarray</span>
+<span class="sd">        Array of indices with the same shape as `x`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This will not raise an exception when the input array is</span>
+<span class="sd">    not monotonic.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.bincount` : Count number of occurrences of each value in array</span>
+<span class="sd">                           of non-negative integers.</span>
+<span class="sd">    :obj:`dpnp.histogram` : Compute the histogram of a data set.</span>
+<span class="sd">    :obj:`dpnp.unique` : Find the unique elements of an array.</span>
+<span class="sd">    :obj:`dpnp.searchsorted` : Find indices where elements should be inserted</span>
+<span class="sd">                               to maintain order.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([0.2, 6.4, 3.0, 1.6])</span>
+<span class="sd">    &gt;&gt;&gt; bins = np.array([0.0, 1.0, 2.5, 4.0, 10.0])</span>
+<span class="sd">    &gt;&gt;&gt; inds = np.digitize(x, bins)</span>
+<span class="sd">    &gt;&gt;&gt; inds</span>
+<span class="sd">    array([1, 4, 3, 2])</span>
+<span class="sd">    &gt;&gt;&gt; for n in range(x.size):</span>
+<span class="sd">    ...     print(bins[inds[n]-1], &quot;&lt;=&quot;, x[n], &quot;&lt;&quot;, bins[inds[n]])</span>
+<span class="sd">    ...</span>
+<span class="sd">    0. &lt;= 0.2 &lt; 1.</span>
+<span class="sd">    4. &lt;= 6.4 &lt; 10.</span>
+<span class="sd">    2.5 &lt;= 3. &lt; 4.</span>
+<span class="sd">    1. &lt;= 1.6 &lt; 2.5</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([1.2, 10.0, 12.4, 15.5, 20.])</span>
+<span class="sd">    &gt;&gt;&gt; bins = np.array([0, 5, 10, 15, 20])</span>
+<span class="sd">    &gt;&gt;&gt; np.digitize(x, bins, right=True)</span>
+<span class="sd">    array([1, 2, 3, 4, 4])</span>
+<span class="sd">    &gt;&gt;&gt; np.digitize(x, bins, right=False)</span>
+<span class="sd">    array([1, 3, 3, 4, 5])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;x may not be complex&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">bins</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;object too deep for desired array&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bins</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;object of too small depth for desired array&quot;</span><span class="p">)</span>
+
+    <span class="c1"># This is backwards because the arguments below are swapped</span>
+    <span class="n">side</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span> <span class="k">if</span> <span class="n">right</span> <span class="k">else</span> <span class="s2">&quot;right&quot;</span>
+
+    <span class="c1"># Check if bins are monotonically increasing.</span>
+    <span class="c1"># If bins is empty, the array is considered to be increasing.</span>
+    <span class="c1"># If all bins are NaN, the array is considered to be decreasing.</span>
+    <span class="k">if</span> <span class="n">bins</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">bins_increasing</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bins_increasing</span> <span class="o">=</span> <span class="n">bins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">bins</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">bins_increasing</span><span class="p">:</span>
+        <span class="c1"># Use dpnp.searchsorted directly if bins are increasing</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">side</span><span class="p">)</span>
+
+    <span class="c1"># Reverse bins and adjust indices if bins are decreasing</span>
+    <span class="k">return</span> <span class="n">bins</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">bins</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">side</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="histogram">
 <a class="viewcode-back" href="../../reference/generated/dpnp.histogram.html#dpnp.histogram">[docs]</a>
 <span class="k">def</span> <span class="nf">histogram</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -427,8 +523,8 @@
         <span class="n">n</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">cum_n</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">density</span><span class="p">:</span>
-        <span class="n">db</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">())</span>
         <span class="c1"># pylint: disable=possibly-used-before-assignment</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">n</span> <span class="o">/</span> <span class="n">db</span> <span class="o">/</span> <span class="n">n</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">bin_edges</span>
 
     <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="n">bin_edges</span></div>

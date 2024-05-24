@@ -1,6 +1,5 @@
 var dir_719437c54d6b79fb9761845202c39532 =
 [
-    [ "blas_utils.hpp", "blas__utils_8hpp_source.html", null ],
     [ "dot.hpp", "dot_8hpp_source.html", null ],
     [ "dot_common.hpp", "dot__common_8hpp_source.html", null ],
     [ "dotc.hpp", "dotc_8hpp_source.html", null ],
