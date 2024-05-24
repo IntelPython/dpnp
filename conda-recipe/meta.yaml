@@ -1,5 +1,5 @@
 {% set required_compiler_and_mkl_version = "2024.2.0" %}
-{% set required_dpctl_version = "0.17.0a0" %}
+{% set required_dpctl_version = "0.17.0" %}
 
 package:
     name: dpnp
