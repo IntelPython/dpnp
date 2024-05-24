@@ -606,6 +606,7 @@ def test_reduce_hypot(device):
         pytest.param("arctan2", [[-1, +1, +1, -1]], [[-1, -1, +1, +1]]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
+        pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
         pytest.param(
             "divide", [0.0, 1.0, 2.0, 3.0, 4.0], [4.0, 4.0, 4.0, 4.0, 4.0]
         ),
@@ -2137,6 +2138,49 @@ def test_histogram(weights, device):
     edges_queue = result_edges.sycl_queue
     assert_sycl_queue_equal(hist_queue, iv.sycl_queue)
     assert_sycl_queue_equal(edges_queue, iv.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "func", ["tril_indices_from", "triu_indices_from", "diag_indices_from"]
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_tri_diag_indices_from(func, device):
+    arr = dpnp.ones((3, 3), device=device)
+    res = getattr(dpnp, func)(arr)
+    for x in res:
+        assert_sycl_queue_equal(x.sycl_queue, arr.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "func", ["tril_indices", "triu_indices", "diag_indices"]
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_tri_diag_indices(func, device):
+    sycl_queue = dpctl.SyclQueue(device)
+    res = getattr(dpnp, func)(4, sycl_queue=sycl_queue)
+    for x in res:
+        assert_sycl_queue_equal(x.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize("mask_func", ["tril", "triu"])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_mask_indices(mask_func, device):
+    sycl_queue = dpctl.SyclQueue(device)
+    res = dpnp.mask_indices(4, getattr(dpnp, mask_func), sycl_queue=sycl_queue)
+    for x in res:
+        assert_sycl_queue_equal(x.sycl_queue, sycl_queue)
 
 
 @pytest.mark.parametrize("weights", [None, numpy.arange(7, 12)])

@@ -345,7 +345,6 @@ class TestHistogram(unittest.TestCase):
 # in this comment to restore the support.
 
 
-@pytest.mark.skip("digitize() is not implemented yet")
 @testing.parameterize(
     *testing.product(
         {
@@ -376,7 +375,6 @@ class TestDigitize:
         return (y,)
 
 
-@pytest.mark.skip("digitize() is not implemented yet")
 @testing.parameterize({"right": True}, {"right": False})
 class TestDigitizeNanInf(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
@@ -432,7 +430,7 @@ class TestDigitizeNanInf(unittest.TestCase):
 
     @testing.numpy_cupy_array_equal()
     def test_searchsorted_inf(self, xp):
-        x = testing.shaped_arange((14,), xp, xp.float64)
+        x = testing.shaped_arange((14,), xp, cupy.default_float_type())
         x[5] = float("inf")
         bins = xp.array([0, 1, 2, 4, 10])
         y = xp.digitize(x, bins, right=self.right)
@@ -440,25 +438,24 @@ class TestDigitizeNanInf(unittest.TestCase):
 
     @testing.numpy_cupy_array_equal()
     def test_searchsorted_minf(self, xp):
-        x = testing.shaped_arange((14,), xp, xp.float64)
+        x = testing.shaped_arange((14,), xp, cupy.default_float_type())
         x[5] = float("-inf")
         bins = xp.array([0, 1, 2, 4, 10])
         y = xp.digitize(x, bins, right=self.right)
         return (y,)
 
 
-@pytest.mark.skip("digitize() is not implemented yet")
 class TestDigitizeInvalid(unittest.TestCase):
     def test_digitize_complex(self):
         for xp in (numpy, cupy):
-            x = testing.shaped_arange((14,), xp, complex)
-            bins = xp.array([1.0, 3.0, 5.0, 8.0, 12.0], complex)
+            x = testing.shaped_arange((14,), xp, xp.complex64)
+            bins = xp.array([1.0, 3.0, 5.0, 8.0, 12.0], xp.complex64)
             with pytest.raises(TypeError):
                 xp.digitize(x, bins)
 
     def test_digitize_nd_bins(self):
         for xp in (numpy, cupy):
-            x = testing.shaped_arange((14,), xp, xp.float64)
+            x = testing.shaped_arange((14,), xp, cupy.default_float_type())
             bins = xp.array([[1], [2]])
             with pytest.raises(ValueError):
                 xp.digitize(x, bins)

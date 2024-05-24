@@ -614,6 +614,7 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("arctan2", [[-1, +1, +1, -1]], [[-1, -1, +1, +1]]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
+        pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
         # dpnp.dot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
@@ -1244,6 +1245,35 @@ def test_histogram(usm_type_v, usm_type_w):
     assert w.usm_type == usm_type_w
     assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+
+
+@pytest.mark.parametrize(
+    "func", ["tril_indices_from", "triu_indices_from", "diag_indices_from"]
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_tri_diag_indices_from(func, usm_type):
+    arr = dp.ones((3, 3), usm_type=usm_type)
+    res = getattr(dp, func)(arr)
+    for x in res:
+        assert x.usm_type == usm_type
+
+
+@pytest.mark.parametrize(
+    "func", ["tril_indices", "triu_indices", "diag_indices"]
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_tri_diag_indices(func, usm_type):
+    res = getattr(dp, func)(4, usm_type=usm_type)
+    for x in res:
+        assert x.usm_type == usm_type
+
+
+@pytest.mark.parametrize("mask_func", ["tril", "triu"])
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_mask_indices(mask_func, usm_type):
+    res = dp.mask_indices(4, getattr(dp, mask_func), usm_type=usm_type)
+    for x in res:
+        assert x.usm_type == usm_type
 
 
 @pytest.mark.parametrize("usm_type_v", list_of_usm_types, ids=list_of_usm_types)
