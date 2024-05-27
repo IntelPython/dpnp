@@ -99,8 +99,8 @@ skbuild.setup(
     ],
     package_data={
         "dpnp": [
-            "tests/*.*",
-            "tests/third_party/cupy/*.py",
+            "../tests/*.*",
+            "../tests/third_party/cupy/*.py",
             "dpnp/backend/include/*.hpp",
             "libdpnp_backend_c.so",
             "dpnp_backend_c.lib",
