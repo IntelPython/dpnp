@@ -238,16 +238,37 @@ $(document).ready(function(){initNavTree('blas_2types__matrix_8hpp_source.html',
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        dpctl_td_ns::NotDefinedEntry&gt;::is_defined;</div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>};</div>
 </div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>} <span class="comment">// namespace types</span></div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>} <span class="comment">// namespace blas</span></div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>} <span class="comment">// namespace ext</span></div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>} <span class="comment">// namespace backend</span></div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>} <span class="comment">// namespace dpnp</span></div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00177" data-start="{" data-end="};">
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno"><a class="line" href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html">  177</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html">GemvTypePairSupportFactory</a></div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>{</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> is_defined = std::disjunction&lt;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        dpctl_td_ns::TypePairDefinedEntry&lt;T, float, T, float&gt;,</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        dpctl_td_ns::TypePairDefinedEntry&lt;T, double, T, double&gt;,</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        dpctl_td_ns::TypePairDefinedEntry&lt;T,</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                                          std::complex&lt;float&gt;,</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                                          T,</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>                                          std::complex&lt;float&gt;&gt;,</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        dpctl_td_ns::TypePairDefinedEntry&lt;T,</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                                          std::complex&lt;double&gt;,</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                                          T,</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                                          std::complex&lt;double&gt;&gt;,</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="comment">// fall-through</span></div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        dpctl_td_ns::NotDefinedEntry&gt;::is_defined;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>};</div>
+</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>} <span class="comment">// namespace types</span></div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>} <span class="comment">// namespace blas</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>} <span class="comment">// namespace ext</span></div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>} <span class="comment">// namespace backend</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>} <span class="comment">// namespace dpnp</span></div>
 <div class="ttc" id="astructdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dot_type_pair_support_factory_html"><div class="ttname"><a href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html">dpnp::backend::ext::blas::types::DotTypePairSupportFactory</a></div><div class="ttdoc">A factory to define pairs of supported types for which MKL BLAS library provides support in oneapi::m...</div><div class="ttdef"><b>Definition</b> <a href="blas_2types__matrix_8hpp_source.html#l00054">types_matrix.hpp:55</a></div></div>
 <div class="ttc" id="astructdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotc_type_pair_support_factory_html"><div class="ttname"><a href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html">dpnp::backend::ext::blas::types::DotcTypePairSupportFactory</a></div><div class="ttdoc">A factory to define pairs of supported types for which MKL BLAS library provides support in oneapi::m...</div><div class="ttdef"><b>Definition</b> <a href="blas_2types__matrix_8hpp_source.html#l00071">types_matrix.hpp:72</a></div></div>
 <div class="ttc" id="astructdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory_html"><div class="ttname"><a href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html">dpnp::backend::ext::blas::types::DotuTypePairSupportFactory</a></div><div class="ttdoc">A factory to define pairs of supported types for which MKL BLAS library provides support in oneapi::m...</div><div class="ttdef"><b>Definition</b> <a href="blas_2types__matrix_8hpp_source.html#l00094">types_matrix.hpp:95</a></div></div>
 <div class="ttc" id="astructdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory_html"><div class="ttname"><a href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html">dpnp::backend::ext::blas::types::GemmBatchTypePairSupportFactory</a></div><div class="ttdoc">A factory to define pairs of supported types for which MKL BLAS library provides support in oneapi::m...</div><div class="ttdef"><b>Definition</b> <a href="blas_2types__matrix_8hpp_source.html#l00148">types_matrix.hpp:149</a></div></div>
 <div class="ttc" id="astructdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory_html"><div class="ttname"><a href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html">dpnp::backend::ext::blas::types::GemmTypePairSupportFactory</a></div><div class="ttdoc">A factory to define pairs of supported types for which MKL BLAS library provides support in oneapi::m...</div><div class="ttdef"><b>Definition</b> <a href="blas_2types__matrix_8hpp_source.html#l00118">types_matrix.hpp:119</a></div></div>
+<div class="ttc" id="astructdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemv_type_pair_support_factory_html"><div class="ttname"><a href="structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html">dpnp::backend::ext::blas::types::GemvTypePairSupportFactory</a></div><div class="ttdoc">A factory to define pairs of supported types for which MKL BLAS library provides support in oneapi::m...</div><div class="ttdef"><b>Definition</b> <a href="blas_2types__matrix_8hpp_source.html#l00177">types_matrix.hpp:178</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

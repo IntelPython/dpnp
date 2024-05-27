@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1d29beee5d3424e6aca222ed56e3f707":[0,2,2,171],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1ee2503a88e2f0fb7735e6f2b2390ed6":[0,2,2,110],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1f02e752405381ab74767a4b0b42cbaa":[0,2,2,173],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1fbafdcfb58875a7dd9b26f3acdf6600":[0,2,2,188],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "index.html":[],
 "lapack_2types__matrix_8hpp_source.html":[2,0,0,1,12],
 "linalg__exceptions_8hpp_source.html":[2,0,0,1,8],
-"ln_8hpp_source.html":[2,0,0,3,21],
-"log10_8hpp_source.html":[2,0,0,3,22]
+"ln_8hpp_source.html":[2,0,0,3,21]
 };
