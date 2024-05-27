@@ -109,13 +109,13 @@ jobs:
           echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\" '/' >> $GITHUB_ENV
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
 
-    - name: Build conda package
-      uses: prefix-dev/rattler-build-action@v0.2.9
-      with:
-        # needs to be unique for each matrix entry
-        upload-artifact: true
-        build-args: --no-test --python ${{ matrix.python }} --numpy 1.24 ${{ env.CHANNELS }}
-        artifact-name: ${{ env.PACKAGE_NAME }}-${{ runner.os }}-Python-${{ matrix.python }}
+      - name: Build conda package
+        uses: prefix-dev/rattler-build-action@v0.2.9
+        with:
+          # needs to be unique for each matrix entry
+          upload-artifact: true
+          build-args: --no-test --python ${{ matrix.python }} --numpy 1.24 ${{ env.CHANNELS }}
+          artifact-name: ${{ env.PACKAGE_NAME }}-${{ runner.os }}-Python-${{ matrix.python }}
 
       # - name: Install conda-build
       #   run: mamba install conda-build=${{ env.CONDA_BUILD_VERSION}}
