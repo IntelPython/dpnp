@@ -220,6 +220,7 @@ jobs:
           cat lockfile
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+          MAMBA_NO_LOW_SPEED_LIMIT: 1
 
       - name: Cache conda packages
         uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
@@ -237,6 +238,7 @@ jobs:
         run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+          MAMBA_NO_LOW_SPEED_LIMIT: 1
 
       - name: List installed packages
         run: mamba list
@@ -383,6 +385,7 @@ jobs:
           mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+          MAMBA_NO_LOW_SPEED_LIMIT: 1
 
       - name: List installed packages
         run: mamba list
