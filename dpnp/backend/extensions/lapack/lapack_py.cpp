@@ -183,6 +183,13 @@ PYBIND11_MODULE(_lapack_impl, m)
           py::arg("eig_vecs"), py::arg("eig_vals"),
           py::arg("depends") = py::list());
 
+    m.def("_syevd_batch", &lapack_ext::syevd_batch,
+          "Call `syevd_batch` from OneMKL LAPACK library to return "
+          "the eigenvalues and eigenvectors of a real symmetric matrix",
+          py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
+          py::arg("eig_vecs"), py::arg("eig_vals"), py::arg("eig_vecs_out"),
+          py::arg("depends") = py::list());
+
     m.def("_ungqr_batch", &lapack_ext::ungqr_batch,
           "Call `_ungqr_batch` from OneMKL LAPACK library to return "
           "the complex unitary matrices matrix Qi of the QR factorization "
