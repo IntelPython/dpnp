@@ -70,11 +70,12 @@ setup(
     ],
     package_data={
         "dpnp": [
+            "tests/*.*",
+            "tests/third_party/cupy/*.py",
+            "dpnp/backend/include/*.hpp",
             "libdpnp_backend_c.so",
             "dpnp_backend_c.lib",
             "dpnp_backend_c.dll",
-            "tests/*.*",
-            "tests/third_party/cupy/*.py",
         ]
     },
     include_package_data=False,
