@@ -81,6 +81,7 @@ var hierarchy =
     [ "func_type_pair_t< FuncType, T >", "structfunc__type__pair__t.html", null ],
     [ "dpnp::backend::ext::blas::types::GemmBatchTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::blas::types::GemmTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ],
+    [ "dpnp::backend::ext::blas::types::GemvTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::lapack::types::GeqrfBatchTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_geqrf_batch_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::lapack::types::GeqrfTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_geqrf_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::lapack::types::GesvdTypePairSupportFactory< T, RealT >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_gesvd_type_pair_support_factory.html", null ],
