@@ -140,19 +140,21 @@ def dot(a, b, out=None):
         # functions from BLAS here instead of dpnp.multiply
         return dpnp.multiply(a, b, out=out)
 
-    if a.ndim == 0 or b.ndim == 0:
+    a_ndim = a.ndim
+    b_ndim = b.ndim
+    if a_ndim == 0 or b_ndim == 0:
         # TODO: investigate usage of axpy (axpy_batch) or scal
         # functions from BLAS here instead of dpnp.multiply
         return dpnp.multiply(a, b, out=out)
 
-    if a.ndim == 1 and b.ndim == 1:
+    if a_ndim == 1 and b_ndim == 1:
         return dpnp_dot(a, b, out=out)
 
-    if a.ndim == 2 and b.ndim == 2:
+    if a_ndim == 2 and b_ndim == 2:
         # NumPy does not allow casting even if it is safe
         return dpnp.matmul(a, b, out=out, casting="no")
 
-    if a.ndim == 1 or b.ndim == 1:
+    if a_ndim == 1 or b_ndim == 1:
         # NumPy does not allow casting even if it is safe
         return dpnp.matmul(a, b, out=out, casting="no")
 
