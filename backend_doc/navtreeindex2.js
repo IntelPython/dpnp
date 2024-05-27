@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"log10_8hpp_source.html":[2,0,0,3,22],
 "log1p_8hpp_source.html":[2,0,0,3,23],
 "log2_8hpp_source.html":[2,0,0,3,24],
 "mul_8hpp_source.html":[2,0,0,3,25],
@@ -27,6 +28,7 @@ var NAVTREEINDEX2 =
 "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html":[1,0,0,0,0,0,0,2],
 "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html":[1,0,0,0,0,0,0,3],
 "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html":[1,0,0,0,0,0,0,4],
+"structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html":[1,0,0,0,0,0,0,5],
 "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of.html":[1,0,0,0,0,1,0,0],
 "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html":[1,0,0,0,0,1,0,1],
 "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_geqrf_batch_type_pair_support_factory.html":[1,0,0,0,0,1,1,0],
