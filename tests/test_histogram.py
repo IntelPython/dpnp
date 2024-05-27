@@ -38,11 +38,6 @@ class TestDigitize:
                 numpy.array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
                 numpy.array([1, 4, 6, 7]),
             ),
-            # Infinity values
-            (
-                numpy.array([-numpy.inf, -1, 0, 1, numpy.inf]),
-                numpy.array([-2, -1, 0, 1, 2]),
-            ),
             # Repeated elements
             (numpy.array([1, 2, 2, 3, 3, 3, 4, 5]), numpy.array([1, 2, 3, 4])),
         ],
@@ -50,6 +45,18 @@ class TestDigitize:
     def test_digitize(self, x, bins, dtype, right):
         x = x.astype(dtype)
         bins = bins.astype(dtype)
+        x_dp = dpnp.array(x)
+        bins_dp = dpnp.array(bins)
+
+        result = dpnp.digitize(x_dp, bins_dp, right=right)
+        expected = numpy.digitize(x, bins, right=right)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.parametrize("right", [True, False])
+    def test_digitize_inf(self, dtype, right):
+        x = numpy.array([-numpy.inf, -1, 0, 1, numpy.inf], dtype=dtype)
+        bins = numpy.array([-2, -1, 0, 1, 2], dtype=dtype)
         x_dp = dpnp.array(x)
         bins_dp = dpnp.array(bins)
 
