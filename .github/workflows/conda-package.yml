@@ -110,6 +110,10 @@ jobs:
           conda config --remove channels defaults
           conda config --show
 
+      # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
+      - name: Disable speed limit check in mamba
+        run: echo "MAMBA_NO_LOW_SPEED_LIMIT=1" >> $GITHUB_ENV
+
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
@@ -220,7 +224,6 @@ jobs:
           cat lockfile
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
-          MAMBA_NO_LOW_SPEED_LIMIT: 1
 
       - name: Cache conda packages
         uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2

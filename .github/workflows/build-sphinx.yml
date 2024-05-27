@@ -115,7 +115,7 @@ jobs:
 
       # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
       - name: Disable speed limit check in mamba
-        run: MAMBA_NO_LOW_SPEED_LIMIT=1 >> $GITHUB_ENV
+        run: echo "MAMBA_NO_LOW_SPEED_LIMIT=1" >> $GITHUB_ENV
 
       - name: Install sphinx dependencies
         run: |
