@@ -106,7 +106,7 @@ jobs:
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
-          echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\" '/' >> $GITHUB_ENV
+          echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\\\" '/' >> $GITHUB_ENV
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
 
       - name: Install conda-build
@@ -253,7 +253,7 @@ jobs:
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
-            mamba activate ${{ env.TEST_ENV_NAME }}
+            conda activate ${{ env.TEST_ENV_NAME }}
             cd ${{ env.tests-path }}
             python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
