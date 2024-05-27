@@ -109,37 +109,29 @@ jobs:
           echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\" '/' >> $GITHUB_ENV
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
 
-      - name: Build conda package
-        uses: prefix-dev/rattler-build-action@v0.2.9
+      - name: Install conda-build
+        run: mamba install conda-build=${{ env.CONDA_BUILD_VERSION}}
+
+      - name: Cache conda packages
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        env:
+          CACHE_NUMBER: 1  # Increase to reset cache
         with:
-          # needs to be unique for each matrix entry
-          upload-artifact: true
-          build-args: --no-test --python ${{ matrix.python }} --numpy 1.24 ${{ env.CHANNELS }}
-          artifact-name: ${{ env.PACKAGE_NAME }}-${{ runner.os }}-Python-${{ matrix.python }}
+          path: ${{ env.CONDA_PKGS_DIR }}
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
-      # - name: Install conda-build
-      #   run: mamba install conda-build=${{ env.CONDA_BUILD_VERSION}}
+      - name: Build conda package
+        run: conda build --no-test --python ${{ matrix.python }} --numpy 1.24 ${{ env.CHANNELS }} conda-recipe
 
-      # - name: Cache conda packages
-      #   uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
-      #   env:
-      #     CACHE_NUMBER: 1  # Increase to reset cache
-      #   with:
-      #     path: ${{ env.CONDA_PKGS_DIR }}
-      #     key:
-      #       ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
-      #       ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
-
-      # - name: Build conda package
-      #   run: mamba build --no-test --python ${{ matrix.python }} --numpy 1.24 ${{ env.CHANNELS }} conda-recipe
-
-      # - name: Upload artifact
-      #   uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
-      #   with:
-      #     name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-      #     path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+      - name: Upload artifact
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
       - name: Upload wheels artifact
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
