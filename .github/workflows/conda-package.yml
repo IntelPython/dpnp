@@ -103,6 +103,11 @@ jobs:
           python-version: ${{ matrix.python }}
           activate-environment: 'build'
 
+      # Here is an issue in conda gh-12356 causing adding defaults to the list of channels
+      # upon running conda config --append channels conda-forge, but mamba requires to have only conda-forge channel
+      - name: Remove defaults channel
+        run: conda config --remove channels defaults
+
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
@@ -186,6 +191,9 @@ jobs:
           channels: conda-forge
           python-version: ${{ matrix.python }}
           activate-environment: ${{ env.TEST_ENV_NAME }}
+
+      - name: Remove defaults channel
+        run: conda config --remove channels defaults
 
       - name: Install conda-index
         run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
@@ -312,6 +320,9 @@ jobs:
           channels: conda-forge
           python-version: ${{ matrix.python }}
           activate-environment: ${{ env.TEST_ENV_NAME }}
+
+      - name: Remove defaults channel
+        run: conda config --remove channels defaults
 
       - name: Store conda paths as envs
         run: |
@@ -451,6 +462,9 @@ jobs:
           python-version: ${{ matrix.python }}
           activate-environment: 'upload'
 
+      - name: Remove defaults channel
+        run: conda config --remove channels defaults
+
       - name: Install anaconda-client
         run: mamba install anaconda-client
 
@@ -484,6 +498,9 @@ jobs:
           run-post: false
           python-version: '3.11'
           activate-environment: 'cleanup'
+
+      - name: Remove defaults channel
+        run: conda config --remove channels defaults
 
       - name: Install anaconda-client
         run: mamba install anaconda-client
