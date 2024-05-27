@@ -104,9 +104,11 @@ jobs:
           activate-environment: 'build'
 
       # Here is an issue in conda gh-12356 causing adding defaults to the list of channels
-      # upon running conda config --append channels conda-forge, but mamba requires to have only conda-forge channel
+      # upon running `conda config --append channels conda-forge`, while mamba requires to have only conda-forge channel
       - name: Remove defaults channel
-        run: conda config --remove channels defaults
+        run: |
+          conda config --remove channels defaults
+          conda config --show
 
       - name: Store conda paths as envs
         shell: bash -l {0}
