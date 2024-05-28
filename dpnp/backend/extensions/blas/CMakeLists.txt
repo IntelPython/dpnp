@@ -29,6 +29,7 @@ set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/blas_py.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm_batch.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gemv.cpp
 )
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})

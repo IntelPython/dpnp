@@ -2594,6 +2594,70 @@ class TestMatmul:
         assert result is out
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("shape", [(8, 10)], ids=["2D"])
+    @pytest.mark.parametrize("incx", [-2, 2], ids=["-2", "2"])
+    @pytest.mark.parametrize("incy", [-2, 2], ids=["-2", "2"])
+    @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
+    def test_matmul_strided_mat_vec(self, shape, incx, incy, transpose):
+        if transpose:
+            s1 = shape[-2]
+            s2 = shape[-1]
+        else:
+            s1 = shape[-1]
+            s2 = shape[-2]
+        a = numpy.random.rand(*shape)
+        B = numpy.random.rand(2 * s1)
+        a_dp = dpnp.asarray(a)
+        if transpose:
+            a = numpy.moveaxis(a, (-2, -1), (-1, -2))
+            a_dp = dpnp.moveaxis(a_dp, (-2, -1), (-1, -2))
+        B_dp = dpnp.asarray(B)
+        b = B[::incx]
+        b_dp = B_dp[::incx]
+
+        result = dpnp.matmul(a_dp, b_dp)
+        expected = numpy.matmul(a, b)
+        assert_dtype_allclose(result, expected)
+
+        out_shape = shape[:-2] + (2 * s2,)
+        OUT = dpnp.empty(out_shape, dtype=result.dtype)
+        out = OUT[..., ::incy]
+        result = dpnp.matmul(a_dp, b_dp, out=out)
+        assert result is out
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("shape", [(8, 10)], ids=["2D"])
+    @pytest.mark.parametrize("incx", [-2, 2], ids=["-2", "2"])
+    @pytest.mark.parametrize("incy", [-2, 2], ids=["-2", "2"])
+    @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
+    def test_matmul_strided_vec_mat(self, shape, incx, incy, transpose):
+        if transpose:
+            s1 = shape[-2]
+            s2 = shape[-1]
+        else:
+            s1 = shape[-1]
+            s2 = shape[-2]
+        a = numpy.random.rand(*shape)
+        B = numpy.random.rand(2 * s2)
+        a_dp = dpnp.asarray(a)
+        if transpose:
+            a = numpy.moveaxis(a, (-2, -1), (-1, -2))
+            a_dp = dpnp.moveaxis(a_dp, (-2, -1), (-1, -2))
+        B_dp = dpnp.asarray(B)
+        b = B[::incx]
+        b_dp = B_dp[::incx]
+
+        result = dpnp.matmul(b_dp, a_dp)
+        expected = numpy.matmul(b, a)
+        assert_dtype_allclose(result, expected)
+
+        out_shape = shape[:-2] + (2 * s1,)
+        OUT = dpnp.empty(out_shape, dtype=result.dtype)
+        out = OUT[..., ::incy]
+        result = dpnp.matmul(b_dp, a_dp, out=out)
+        assert result is out
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
@@ -2631,26 +2695,24 @@ class TestMatmul:
 
     @testing.slow
     @pytest.mark.parametrize(
-        "shape",
+        "shape_pair",
         [
-            ((4096, 4096, 4, 4)),
-            ((2048, 2048, 8, 8)),
+            ((4096, 4096, 2, 2), (4096, 4096, 2, 2)),
+            ((2, 2), (4096, 4096, 2, 2)),
+            ((4096, 4096, 2, 2), (2, 2)),
         ],
     )
-    def test_matmul_large(self, shape):
-        size = numpy.prod(shape, dtype=int)
-        a = numpy.array(numpy.random.uniform(-5, 5, size)).reshape(shape)
+    def test_matmul_large(self, shape_pair):
+        shape1, shape2 = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
+        a = numpy.array(numpy.random.uniform(-5, 5, size1)).reshape(shape1)
+        b = numpy.array(numpy.random.uniform(-5, 5, size2)).reshape(shape2)
         a_dp = dpnp.asarray(a)
+        b_dp = dpnp.asarray(b)
 
-        result = dpnp.matmul(a_dp, a_dp)
-        expected = numpy.matmul(a, a)
-        assert_dtype_allclose(result, expected, factor=24)
-
-        # make the 2-d base f-contiguous
-        a = a.transpose(0, 1, 3, 2)
-        a_dp = a_dp.transpose(0, 1, 3, 2)
-        result = dpnp.matmul(a_dp, a_dp)
-        expected = numpy.matmul(a, a)
+        result = dpnp.matmul(a_dp, b_dp)
+        expected = numpy.matmul(a, b)
         assert_dtype_allclose(result, expected, factor=24)
 
 
