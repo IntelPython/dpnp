@@ -717,9 +717,15 @@ class TestDiff:
         ),
     )
 )
-@pytest.mark.skip("gradient() is not implemented yet")
 class TestGradient:
     def _gradient(self, xp, dtype, shape, spacing, axis, edge_order):
+        if (
+            not has_support_aspect64()
+            and shape == (10, 20, 30)
+            and spacing == "arrays"
+        ):
+            pytest.skip("too big values")
+
         x = testing.shaped_random(shape, xp, dtype=dtype)
         if axis is None:
             normalized_axes = tuple(range(x.ndim))
@@ -755,7 +761,9 @@ class TestGradient:
     # https://github.com/numpy/numpy/issues/15207
     @testing.with_requires("numpy>=1.18.1")
     @testing.for_int_dtypes(no_bool=True)
-    @testing.numpy_cupy_allclose(atol=1e-6, rtol=1e-5)
+    @testing.numpy_cupy_allclose(
+        atol=1e-6, rtol=1e-5, type_check=has_support_aspect64()
+    )
     def test_gradient_int(self, xp, dtype):
         return self._gradient(
             xp, dtype, self.shape, self.spacing, self.axis, self.edge_order
@@ -773,7 +781,6 @@ class TestGradient:
         )
 
 
-@pytest.mark.skip("gradient() is not implemented yet")
 class TestGradientErrors:
     def test_gradient_invalid_spacings1(self):
         # more spacings than axes

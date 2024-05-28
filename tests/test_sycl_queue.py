@@ -626,6 +626,11 @@ def test_reduce_hypot(device):
             [2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
         ),
         pytest.param(
+            "gradient",
+            [1.0, 2.0, 4.0, 7.0, 11.0, 16.0],
+            [0.0, 1.0, 1.5, 3.5, 4.0, 6.0],
+        ),
+        pytest.param(
             "histogram_bin_edges",
             [0, 0, 0, 1, 2, 3, 3, 4, 5],
             [1, 2],
@@ -691,7 +696,7 @@ def test_2in_1out(func, data1, data2, device):
     x2 = dpnp.array(data2, device=device)
     result = getattr(dpnp, func)(x1, x2)
 
-    assert_allclose(result, expected)
+    assert_dtype_allclose(result, expected)
 
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
