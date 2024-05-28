@@ -1,4 +1,5 @@
 import tempfile
+import warnings
 from math import prod
 
 import dpctl
@@ -516,6 +517,8 @@ def test_vander_seq(sequence):
     assert_allclose(vander_func(numpy, sequence), vander_func(dpnp, sequence))
 
 
+# Expected warning
+@pytest.mark.filterwarnings("ignore::numpy.ComplexWarning")
 @pytest.mark.parametrize(
     "shape",
     [(), 0, (0,), (2, 0, 3), (3, 2)],
@@ -546,7 +549,9 @@ def test_full_like(array, fill_value, dtype, order):
 
     a = numpy.array(array)
     ia = dpnp.array(array)
-    assert_array_equal(func(numpy, a), func(dpnp, ia))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", numpy.ComplexWarning)
+        assert_array_equal(func(numpy, a), func(dpnp, ia))
 
 
 @pytest.mark.parametrize("order1", ["F", "C"], ids=["F", "C"])
