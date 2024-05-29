@@ -602,6 +602,8 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_1_{ext
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_1_{external=True}::test_argpartition_zero_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestLexsort::test_F_order
 tests/third_party/cupy/sorting_tests/test_sort.py::TestLexsort::test_lexsort_dtype
+tests/third_party/cupy/sorting_tests/test_sort.py::TestLexsort::test_lexsort_one_dim
+tests/third_party/cupy/sorting_tests/test_sort.py::TestLexsort::test_lexsort_two_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestLexsort::test_lexsort_three_or_more_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestLexsort::test_nan1
 tests/third_party/cupy/sorting_tests/test_sort.py::TestLexsort::test_nan2
