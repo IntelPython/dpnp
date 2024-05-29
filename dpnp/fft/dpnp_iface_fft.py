@@ -39,14 +39,23 @@ it contains:
 
 """
 
+# pylint: disable=invalid-name
 
 from enum import Enum
 
 import numpy
 
 import dpnp
-from dpnp.dpnp_utils import *
-from dpnp.fft.dpnp_algo_fft import *
+
+# pylint: disable=no-name-in-module
+from dpnp.dpnp_utils import (
+    call_origin,
+    checker_throw_axis_error,
+)
+from dpnp.fft.dpnp_algo_fft import (
+    dpnp_fft,
+    dpnp_rfft,
+)
 
 __all__ = [
     "fft",
@@ -70,12 +79,16 @@ __all__ = [
 ]
 
 
+# TODO: remove pylint disable, once new implementation is ready
+# pylint: disable=missing-class-docstring
 class Norm(Enum):
     backward = 0
     forward = 1
     ortho = 2
 
 
+# TODO: remove pylint disable, once new implementation is ready
+# pylint: disable=missing-function-docstring
 def get_validated_norm(norm):
     if norm is None or norm == "backward":
         return Norm.backward
@@ -98,8 +111,10 @@ def fft(x, n=None, axis=-1, norm=None):
     Parameter `axis` is supported with its default value.
     Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
     `dpnp.complex128`, `dpnp.complex64` data types are supported.
-    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.
+    The `dpnp.bool` data type is not supported and will raise a `TypeError`
+    exception.
     Otherwise the function will be executed sequentially on CPU.
+
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
@@ -205,12 +220,12 @@ def fftn(x, s=None, axes=None, norm=None):
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
     if x_desc:
         if s is None:
-            boundaries = tuple([x_desc.shape[i] for i in range(x_desc.ndim)])
+            boundaries = tuple(x_desc.shape[i] for i in range(x_desc.ndim))
         else:
             boundaries = s
 
         if axes is None:
-            axes_param = tuple([i for i in range(x_desc.ndim)])
+            axes_param = list(range(x_desc.ndim))
         else:
             axes_param = axes
 
@@ -256,6 +271,8 @@ def fftshift(x, axes=None):
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    # TODO: enable implementation
+    # pylint: disable=condition-evals-to-constant
     if x_desc and 0:
         norm_ = Norm.backward
 
@@ -267,6 +284,9 @@ def fftshift(x, axes=None):
         if x_desc.size < 1:
             pass  # let fallback to handle exception
         else:
+            input_boundarie = x_desc.shape[axis_param]
+            output_boundarie = input_boundarie
+
             return dpnp_fft(
                 x_desc,
                 input_boundarie,
@@ -281,7 +301,8 @@ def fftshift(x, axes=None):
 
 def hfft(x, n=None, axis=-1, norm=None):
     """
-    Compute the one-dimensional discrete Fourier Transform of a signal that has Hermitian symmetry.
+    Compute the one-dimensional discrete Fourier Transform of a signal that has
+    Hermitian symmetry.
 
     For full documentation refer to :obj:`numpy.fft.hfft`.
 
@@ -296,6 +317,8 @@ def hfft(x, n=None, axis=-1, norm=None):
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    # TODO: enable implementation
+    # pylint: disable=condition-evals-to-constant
     if x_desc and 0:
         norm_ = get_validated_norm(norm)
 
@@ -342,7 +365,8 @@ def ifft(x, n=None, axis=-1, norm=None):
     Parameter `axis` is supported with its default value.
     Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,,
     `dpnp.complex128`, `dpnp.complex64` data types are supported.
-    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.
+    The `dpnp.bool` data type is not supported and will raise a `TypeError`
+    exception.
     Otherwise the function will be executed sequentially on CPU.
 
     """
@@ -430,6 +454,8 @@ def ifftshift(x, axes=None):
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    # TODO: enable implementation
+    # pylint: disable=condition-evals-to-constant
     if x_desc and 0:
         norm_ = Norm.backward
 
@@ -478,14 +504,16 @@ def ifftn(x, s=None, axes=None, norm=None):
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    # TODO: enable implementation
+    # pylint: disable=condition-evals-to-constant
     if x_desc and 0:
         if s is None:
-            boundaries = tuple([x_desc.shape[i] for i in range(x_desc.ndim)])
+            boundaries = tuple(x_desc.shape[i] for i in range(x_desc.ndim))
         else:
             boundaries = s
 
         if axes is None:
-            axes_param = tuple([i for i in range(x_desc.ndim)])
+            axes_param = list(range(x_desc.ndim))
         else:
             axes_param = axes
 
@@ -522,7 +550,8 @@ def ifftn(x, s=None, axes=None, norm=None):
 
 def ihfft(x, n=None, axis=-1, norm=None):
     """
-    Compute inverse one-dimensional discrete Fourier Transform of a signal that has Hermitian symmetry.
+    Compute inverse one-dimensional discrete Fourier Transform of a signal that
+    has Hermitian symmetry.
 
     For full documentation refer to :obj:`numpy.fft.ihfft`.
 
@@ -537,6 +566,8 @@ def ihfft(x, n=None, axis=-1, norm=None):
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    # TODO: enable implementation
+    # pylint: disable=condition-evals-to-constant
     if x_desc and 0:
         norm_ = get_validated_norm(norm)
 
@@ -575,7 +606,8 @@ def ihfft(x, n=None, axis=-1, norm=None):
 
 def irfft(x, n=None, axis=-1, norm=None):
     """
-    Compute the one-dimensional inverse discrete Fourier Transform for real input.
+    Compute the one-dimensional inverse discrete Fourier Transform for real
+    input.
 
     For full documentation refer to :obj:`numpy.fft.irfft`.
 
@@ -590,6 +622,8 @@ def irfft(x, n=None, axis=-1, norm=None):
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    # TODO: enable implementation
+    # pylint: disable=condition-evals-to-constant
     if x_desc and 0:
         norm_ = get_validated_norm(norm)
 
@@ -622,7 +656,8 @@ def irfft(x, n=None, axis=-1, norm=None):
                 True,
                 norm_.value,
             ).get_pyobj()
-            # TODO tmp = utils.create_output_array(result_shape, result_c_type, out)
+            # TODO:
+            # tmp = utils.create_output_array(result_shape, result_c_type, out)
             # tmp = dparray(result.shape, dtype=dpnp.float64)
             # for it in range(tmp.size):
             #     tmp[it] = result[it].real
@@ -678,14 +713,16 @@ def irfftn(x, s=None, axes=None, norm=None):
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    # TODO: enable implementation
+    # pylint: disable=condition-evals-to-constant
     if x_desc and 0:
         if s is None:
-            boundaries = tuple([x_desc.shape[i] for i in range(x_desc.ndim)])
+            boundaries = tuple(x_desc.shape[i] for i in range(x_desc.ndim))
         else:
             boundaries = s
 
         if axes is None:
-            axes_param = tuple([i for i in range(x_desc.ndim)])
+            axes_param = list(range(x_desc.ndim))
         else:
             axes_param = axes
 
@@ -732,8 +769,10 @@ def rfft(x, n=None, axis=-1, norm=None):
     Parameter `norm` is unsupported.
     Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
     `dpnp.complex128` data types are supported.
-    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.
+    The `dpnp.bool` data type is not supported and will raise a `TypeError`
+    exception.
     Otherwise the function will be executed sequentially on CPU.
+
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
@@ -844,14 +883,16 @@ def rfftn(x, s=None, axes=None, norm=None):
     """
 
     x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    # TODO: enable implementation
+    # pylint: disable=condition-evals-to-constant
     if x_desc and 0:
         if s is None:
-            boundaries = tuple([x_desc.shape[i] for i in range(x_desc.ndim)])
+            boundaries = tuple(x_desc.shape[i] for i in range(x_desc.ndim))
         else:
             boundaries = s
 
         if axes is None:
-            axes_param = tuple([i for i in range(x_desc.ndim)])
+            axes_param = list(range(x_desc.ndim))
         else:
             axes_param = axes
 
