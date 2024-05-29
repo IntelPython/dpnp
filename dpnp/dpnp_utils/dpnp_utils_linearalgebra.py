@@ -32,6 +32,7 @@ import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as tei
 import dpctl.tensor._tensor_impl as ti
+import dpctl.utils as dpu
 import numpy
 from dpctl.utils import ExecutionPlacementError
 from numpy.core.numeric import normalize_axis_tuple
@@ -44,7 +45,14 @@ from dpnp.dpnp_utils import get_usm_allocations
 _einsum_symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
-__all__ = ["dpnp_cross", "dpnp_dot", "dpnp_einsum", "dpnp_kron", "dpnp_matmul"]
+__all__ = [
+    "dpnp_cross",
+    "dpnp_dot",
+    "dpnp_einsum",
+    "dpnp_kron",
+    "dpnp_matmul",
+    "dpnp_scal",
+]
 
 
 def _calc_offset(shape, linear_id, strides):
@@ -2308,3 +2316,44 @@ def dpnp_matmul(
             # out and out_orig contain the same data but they have different shape
             return out_orig
         return result
+
+
+def dpnp_scal(a, x, out=None):
+
+    if x.ndim != 1:
+        return dpnp.multiply(a, x, out=out)
+
+    if dpnp.isscalar(a):
+        a = dpnp.array(a, sycl_queue=x.sycl_queue, usm_type=x.usm_type)
+
+    exec_q = dpu.get_execution_queue([a.sycl_queue, x.sycl_queue])
+
+    # Determine the appropriate data types
+    scal_dtype, res_dtype = _compute_res_dtype(a, x, sycl_queue=exec_q)
+
+    # input arrays should have the proper data type
+    dep_events_list = []
+    host_tasks_list = []
+    # copying is needed if dtypes of input arrays are different
+    a = _copy_array(a, dep_events_list, host_tasks_list, dtype=scal_dtype)
+    result = _copy_array(
+        x, dep_events_list, host_tasks_list, dtype=scal_dtype, copy_flag=True
+    )
+
+    ht_ev, _ = bi._scal(
+        exec_q,
+        dpnp.get_usm_ndarray(a),
+        dpnp.get_usm_ndarray(result),
+        dep_events_list,
+    )
+
+    host_tasks_list.append(ht_ev)
+    dpctl.SyclEvent.wait_for(host_tasks_list)
+
+    if scal_dtype != res_dtype:
+        result = result.astype(res_dtype, copy=False)
+
+    # int are converted to float for calculation in scal,
+    # so it should be allowed to be back to int, however,
+    # dot in general does not allow casting
+    return dpnp.get_result_array(result, out, casting="same_kind")
