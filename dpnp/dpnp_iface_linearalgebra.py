@@ -48,6 +48,7 @@ from .dpnp_utils.dpnp_utils_linearalgebra import (
     dpnp_dot,
     dpnp_kron,
     dpnp_matmul,
+    dpnp_scal,
 )
 
 __all__ = [
@@ -135,16 +136,14 @@ def dot(a, b, out=None):
         if not out.flags.c_contiguous:
             raise ValueError("Only C-contiguous array is acceptable.")
 
-    if dpnp.isscalar(a) or dpnp.isscalar(b):
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b, out=out)
+    if dpnp.isscalar(a) or a.ndim == 0:
+        return dpnp_scal(a, b, out=out)
+
+    if dpnp.isscalar(b) or b.ndim == 0:
+        return dpnp_scal(b, a, out=out)
 
     a_ndim = a.ndim
     b_ndim = b.ndim
-    if a_ndim == 0 or b_ndim == 0:
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b, out=out)
-
     if a_ndim == 1 and b_ndim == 1:
         return dpnp_dot(a, b, out=out)
 

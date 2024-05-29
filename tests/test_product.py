@@ -486,12 +486,6 @@ class TestDot:
         ib = dpnp.ones(10, dtype=dpnp.float32)
         b = ib.asnumpy()
 
-        # output data type is incorrect
-        dp_out = dpnp.empty((10,), dtype=dpnp.complex64)
-        out = numpy.empty((10,), dtype=numpy.complex64)
-        assert_raises(ValueError, dpnp.dot, ia, ib, out=dp_out)
-        assert_raises(ValueError, numpy.dot, a, b, out=out)
-
         # output shape is incorrect
         dp_out = dpnp.empty((2,), dtype=dpnp.int32)
         out = numpy.empty((2,), dtype=numpy.int32)

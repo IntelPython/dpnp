@@ -36,7 +36,7 @@ import dpnp.backend.extensions.blas._blas_impl as bi
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 
-__all__ = ["dpnp_cross", "dpnp_dot", "dpnp_kron", "dpnp_matmul"]
+__all__ = ["dpnp_cross", "dpnp_dot", "dpnp_kron", "dpnp_matmul", "dpnp_scal"]
 
 
 def _compute_res_dtype(*arrays, sycl_queue, dtype=None, casting="no"):
@@ -936,3 +936,40 @@ def dpnp_matmul(
         # out and out_orig contain the same data but they have different shape
         return out_orig
     return result
+
+
+def dpnp_scal(a, x, out=None):
+
+    if x.ndim != 1:
+        return dpnp.multiply(a, x, out=out)
+
+    if dpnp.isscalar(a):
+        a = dpnp.array(a, sycl_queue=x.sycl_queue, usm_type=x.usm_type)
+
+    exec_q = dpu.get_execution_queue([a.sycl_queue, x.sycl_queue])
+
+    # Determine the appropriate data types
+    scal_dtype, res_dtype = _compute_res_dtype(a, x, sycl_queue=exec_q)
+
+    # input arrays should have the proper data type
+    # copying is needed if dtypes of input arrays are different
+    a = _copy_array(a, dtype=scal_dtype)
+    result = _copy_array(x, dtype=scal_dtype, copy_flag=True)
+
+    _manager = dpu.SequentialOrderManager[exec_q]
+
+    ht_ev, scal_ev = bi._scal(
+        exec_q,
+        dpnp.get_usm_ndarray(a),
+        dpnp.get_usm_ndarray(result),
+        depends=_manager.submitted_events,
+    )
+    _manager.add_event_pair(ht_ev, scal_ev)
+
+    if scal_dtype != res_dtype:
+        result = result.astype(res_dtype, copy=False)
+
+    # int are converted to float for calculation in scal,
+    # so it should be allowed to be back to int, however,
+    # dot in general does not allow casting
+    return dpnp.get_result_array(result, out, casting="same_kind")
