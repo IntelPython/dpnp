@@ -168,6 +168,169 @@ def _get_reduction_res_dt(a, dtype, _out):
     return dtu._to_device_supported_dtype(dtype, a.sycl_device)
 
 
+def _gradient_build_dx(f, axes, *varargs):
+    """Build an array with distance per each dimension."""
+
+    len_axes = len(axes)
+    n = len(varargs)
+    if n == 0:
+        # no spacing argument - use 1 in all axes
+        dx = [1.0] * len_axes
+    elif n == 1 and numpy.ndim(varargs[0]) == 0:
+        dpnp.check_supported_arrays_type(
+            varargs[0], scalar_type=True, all_scalars=True
+        )
+
+        # single scalar for all axes
+        dx = varargs * len_axes
+    elif n == len_axes:
+        # scalar or 1d array for each axis
+        dx = list(varargs)
+        for i, distances in enumerate(dx):
+            dpnp.check_supported_arrays_type(
+                distances, scalar_type=True, all_scalars=True
+            )
+
+            if numpy.ndim(distances) == 0:
+                continue
+            if distances.ndim != 1:
+                raise ValueError("distances must be either scalars or 1d")
+
+            if len(distances) != f.shape[axes[i]]:
+                raise ValueError(
+                    "when 1d, distances must match "
+                    "the length of the corresponding dimension"
+                )
+
+            if dpnp.issubdtype(distances.dtype, dpnp.integer):
+                # Convert integer types to default float type to avoid modular
+                # arithmetic in dpnp.diff(distances).
+                distances = distances.astype(dpnp.default_float_type())
+            diffx = dpnp.diff(distances)
+
+            # if distances are constant reduce to the scalar case
+            # since it brings a consistent speedup
+            if (diffx == diffx[0]).all():
+                diffx = diffx[0]
+            dx[i] = diffx
+    else:
+        raise TypeError("invalid number of arguments")
+    return dx
+
+
+def _gradient_num_diff_2nd_order_interior(
+    f, ax_dx, out, slices, axis, uniform_spacing
+):
+    """Numerical differentiation: 2nd order interior."""
+
+    slice1, slice2, slice3, slice4 = slices
+    ndim = f.ndim
+
+    slice1[axis] = slice(1, -1)
+    slice2[axis] = slice(None, -2)
+    slice3[axis] = slice(1, -1)
+    slice4[axis] = slice(2, None)
+
+    if uniform_spacing:
+        out[tuple(slice1)] = (f[tuple(slice4)] - f[tuple(slice2)]) / (
+            2.0 * ax_dx
+        )
+    else:
+        dx1 = ax_dx[0:-1]
+        dx2 = ax_dx[1:]
+        a = -(dx2) / (dx1 * (dx1 + dx2))
+        b = (dx2 - dx1) / (dx1 * dx2)
+        c = dx1 / (dx2 * (dx1 + dx2))
+
+        # fix the shape for broadcasting
+        shape = [1] * ndim
+        shape[axis] = -1
+        # TODO: use shape.setter once dpctl#1699 is resolved
+        # a.shape = b.shape = c.shape = shape
+        a = a.reshape(shape)
+        b = b.reshape(shape)
+        c = c.reshape(shape)
+
+        # 1D equivalent -- out[1:-1] = a * f[:-2] + b * f[1:-1] + c * f[2:]
+        t1 = a * f[tuple(slice2)]
+        t2 = b * f[tuple(slice3)]
+        t3 = c * f[tuple(slice4)]
+        t4 = t1 + t2 + t3
+
+        out[tuple(slice1)] = t4
+        out[tuple(slice1)] = (
+            a * f[tuple(slice2)] + b * f[tuple(slice3)] + c * f[tuple(slice4)]
+        )
+
+
+def _gradient_num_diff_edges(
+    f, ax_dx, out, slices, axis, uniform_spacing, edge_order
+):
+    """Numerical differentiation: 1st and 2nd order edges."""
+
+    slice1, slice2, slice3, slice4 = slices
+
+    # Numerical differentiation: 1st order edges
+    if edge_order == 1:
+        slice1[axis] = 0
+        slice2[axis] = 1
+        slice3[axis] = 0
+        dx_0 = ax_dx if uniform_spacing else ax_dx[0]
+
+        # 1D equivalent -- out[0] = (f[1] - f[0]) / (x[1] - x[0])
+        out[tuple(slice1)] = (f[tuple(slice2)] - f[tuple(slice3)]) / dx_0
+
+        slice1[axis] = -1
+        slice2[axis] = -1
+        slice3[axis] = -2
+        dx_n = ax_dx if uniform_spacing else ax_dx[-1]
+
+        # 1D equivalent -- out[-1] = (f[-1] - f[-2]) / (x[-1] - x[-2])
+        out[tuple(slice1)] = (f[tuple(slice2)] - f[tuple(slice3)]) / dx_n
+
+    # Numerical differentiation: 2nd order edges
+    else:
+        slice1[axis] = 0
+        slice2[axis] = 0
+        slice3[axis] = 1
+        slice4[axis] = 2
+        if uniform_spacing:
+            a = -1.5 / ax_dx
+            b = 2.0 / ax_dx
+            c = -0.5 / ax_dx
+        else:
+            dx1 = ax_dx[0]
+            dx2 = ax_dx[1]
+            a = -(2.0 * dx1 + dx2) / (dx1 * (dx1 + dx2))
+            b = (dx1 + dx2) / (dx1 * dx2)
+            c = -dx1 / (dx2 * (dx1 + dx2))
+
+        # 1D equivalent -- out[0] = a * f[0] + b * f[1] + c * f[2]
+        out[tuple(slice1)] = (
+            a * f[tuple(slice2)] + b * f[tuple(slice3)] + c * f[tuple(slice4)]
+        )
+
+        slice1[axis] = -1
+        slice2[axis] = -3
+        slice3[axis] = -2
+        slice4[axis] = -1
+        if uniform_spacing:
+            a = 0.5 / ax_dx
+            b = -2.0 / ax_dx
+            c = 1.5 / ax_dx
+        else:
+            dx1 = ax_dx[-2]
+            dx2 = ax_dx[-1]
+            a = (dx2) / (dx1 * (dx1 + dx2))
+            b = -(dx2 + dx1) / (dx1 * dx2)
+            c = (2.0 * dx2 + dx1) / (dx2 * (dx1 + dx2))
+
+        # 1D equivalent -- out[-1] = a * f[-3] + b * f[-2] + c * f[-1]
+        out[tuple(slice1)] = (
+            a * f[tuple(slice2)] + b * f[tuple(slice3)] + c * f[tuple(slice4)]
+        )
+
+
 _ABS_DOCSTRING = """
 Calculates the absolute value for each element `x_i` of input array `x`.
 
@@ -1808,57 +1971,12 @@ def gradient(f, *varargs, axis=None, edge_order=1):
     else:
         axes = normalize_axis_tuple(axis, ndim)
 
-    len_axes = len(axes)
-    n = len(varargs)
-    if n == 0:
-        # no spacing argument - use 1 in all axes
-        dx = [1.0] * len_axes
-    elif n == 1 and numpy.ndim(varargs[0]) == 0:
-        dpnp.check_supported_arrays_type(
-            varargs[0], scalar_type=True, all_scalars=True
-        )
-
-        # single scalar for all axes
-        dx = varargs * len_axes
-    elif n == len_axes:
-        # scalar or 1d array for each axis
-        dx = list(varargs)
-        for i, distances in enumerate(dx):
-            dpnp.check_supported_arrays_type(
-                distances, scalar_type=True, all_scalars=True
-            )
-
-            if numpy.ndim(distances) == 0:
-                continue
-            if distances.ndim != 1:
-                raise ValueError("distances must be either scalars or 1d")
-
-            if len(distances) != f.shape[axes[i]]:
-                raise ValueError(
-                    "when 1d, distances must match "
-                    "the length of the corresponding dimension"
-                )
-
-            if dpnp.issubdtype(distances.dtype, dpnp.integer):
-                # Convert integer types to default float type to avoid modular
-                # arithmetic in dpnp.diff(distances).
-                distances = distances.astype(dpnp.default_float_type())
-            diffx = dpnp.diff(distances)
-
-            # if distances are constant reduce to the scalar case
-            # since it brings a consistent speedup
-            if (diffx == diffx[0]).all():
-                diffx = diffx[0]
-            dx[i] = diffx
-    else:
-        raise TypeError("invalid number of arguments")
-
+    dx = _gradient_build_dx(f, axes, *varargs)
     if edge_order > 2:
         raise ValueError("'edge_order' greater than 2 not supported")
 
-    # use central differences on interior and one-sided differences on the
+    # Use central differences on interior and one-sided differences on the
     # endpoints. This preserves second order-accuracy over the full domain.
-
     outvals = []
 
     # create slice objects --- initially all are [:, :, ..., :]
@@ -1896,107 +2014,25 @@ def gradient(f, *varargs, axis=None, edge_order=1):
         uniform_spacing = numpy.ndim(ax_dx) == 0
 
         # Numerical differentiation: 2nd order interior
-        slice1[axis_] = slice(1, -1)
-        slice2[axis_] = slice(None, -2)
-        slice3[axis_] = slice(1, -1)
-        slice4[axis_] = slice(2, None)
+        _gradient_num_diff_2nd_order_interior(
+            f,
+            ax_dx,
+            out,
+            (slice1, slice2, slice3, slice4),
+            axis_,
+            uniform_spacing,
+        )
 
-        if uniform_spacing:
-            out[tuple(slice1)] = (f[tuple(slice4)] - f[tuple(slice2)]) / (
-                2.0 * ax_dx
-            )
-        else:
-            dx1 = ax_dx[0:-1]
-            dx2 = ax_dx[1:]
-            a = -(dx2) / (dx1 * (dx1 + dx2))
-            b = (dx2 - dx1) / (dx1 * dx2)
-            c = dx1 / (dx2 * (dx1 + dx2))
-
-            # fix the shape for broadcasting
-            shape = [1] * ndim
-            shape[axis_] = -1
-            # TODO: use shape.setter once dpctl#1699 is resolved
-            # a.shape = b.shape = c.shape = shape
-            a = a.reshape(shape)
-            b = b.reshape(shape)
-            c = c.reshape(shape)
-
-            # 1D equivalent -- out[1:-1] = a * f[:-2] + b * f[1:-1] + c * f[2:]
-            t1 = a * f[tuple(slice2)]
-            t2 = b * f[tuple(slice3)]
-            t3 = c * f[tuple(slice4)]
-            t4 = t1 + t2 + t3
-
-            out[tuple(slice1)] = t4
-            out[tuple(slice1)] = (
-                a * f[tuple(slice2)]
-                + b * f[tuple(slice3)]
-                + c * f[tuple(slice4)]
-            )
-
-        # Numerical differentiation: 1st order edges
-        if edge_order == 1:
-            slice1[axis_] = 0
-            slice2[axis_] = 1
-            slice3[axis_] = 0
-            dx_0 = ax_dx if uniform_spacing else ax_dx[0]
-
-            # 1D equivalent -- out[0] = (f[1] - f[0]) / (x[1] - x[0])
-            out[tuple(slice1)] = (f[tuple(slice2)] - f[tuple(slice3)]) / dx_0
-
-            slice1[axis_] = -1
-            slice2[axis_] = -1
-            slice3[axis_] = -2
-            dx_n = ax_dx if uniform_spacing else ax_dx[-1]
-
-            # 1D equivalent -- out[-1] = (f[-1] - f[-2]) / (x[-1] - x[-2])
-            out[tuple(slice1)] = (f[tuple(slice2)] - f[tuple(slice3)]) / dx_n
-
-        # Numerical differentiation: 2nd order edges
-        else:
-            slice1[axis_] = 0
-            slice2[axis_] = 0
-            slice3[axis_] = 1
-            slice4[axis_] = 2
-            if uniform_spacing:
-                a = -1.5 / ax_dx
-                b = 2.0 / ax_dx
-                c = -0.5 / ax_dx
-            else:
-                dx1 = ax_dx[0]
-                dx2 = ax_dx[1]
-                a = -(2.0 * dx1 + dx2) / (dx1 * (dx1 + dx2))
-                b = (dx1 + dx2) / (dx1 * dx2)
-                c = -dx1 / (dx2 * (dx1 + dx2))
-
-            # 1D equivalent -- out[0] = a * f[0] + b * f[1] + c * f[2]
-            out[tuple(slice1)] = (
-                a * f[tuple(slice2)]
-                + b * f[tuple(slice3)]
-                + c * f[tuple(slice4)]
-            )
-
-            slice1[axis_] = -1
-            slice2[axis_] = -3
-            slice3[axis_] = -2
-            slice4[axis_] = -1
-            if uniform_spacing:
-                a = 0.5 / ax_dx
-                b = -2.0 / ax_dx
-                c = 1.5 / ax_dx
-            else:
-                dx1 = ax_dx[-2]
-                dx2 = ax_dx[-1]
-                a = (dx2) / (dx1 * (dx1 + dx2))
-                b = -(dx2 + dx1) / (dx1 * dx2)
-                c = (2.0 * dx2 + dx1) / (dx2 * (dx1 + dx2))
-
-            # 1D equivalent -- out[-1] = a * f[-3] + b * f[-2] + c * f[-1]
-            out[tuple(slice1)] = (
-                a * f[tuple(slice2)]
-                + b * f[tuple(slice3)]
-                + c * f[tuple(slice4)]
-            )
+        # Numerical differentiation: 1st and 2nd order edges
+        _gradient_num_diff_edges(
+            f,
+            ax_dx,
+            out,
+            (slice1, slice2, slice3, slice4),
+            axis_,
+            uniform_spacing,
+            edge_order,
+        )
 
         outvals.append(out)
 
@@ -2006,7 +2042,7 @@ def gradient(f, *varargs, axis=None, edge_order=1):
         slice3[axis_] = slice(None)
         slice4[axis_] = slice(None)
 
-    if len_axes == 1:
+    if len(axes) == 1:
         return outvals[0]
     return tuple(outvals)
 
