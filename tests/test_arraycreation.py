@@ -714,9 +714,7 @@ def test_linspace(start, stop, num, dtype, retstep):
     if numpy.issubdtype(dtype, dpnp.integer):
         assert_allclose(res_np, res_dp, rtol=1)
     else:
-        if dtype is None and not has_support_aspect64():
-            dtype = dpnp.float32
-        assert_allclose(res_np, res_dp, rtol=1e-06, atol=dpnp.finfo(dtype).eps)
+        assert_dtype_allclose(res_dp, res_np)
 
 
 @pytest.mark.parametrize(
