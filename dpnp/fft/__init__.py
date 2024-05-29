@@ -24,6 +24,29 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+"""
+``dpnp.fft``
+===========================
+Discrete Fourier Transform.
+
+Fourier analysis is fundamentally a method for expressing a function as a sum
+of periodic components, and for recovering the function from those components.
+When both the function and its Fourier transform are replaced with discretized
+counterparts, it is called the discrete Fourier transform (DFT). The DFT has
+become a mainstay of numerical computing in part because of a very fast
+algorithm for computing it, called the Fast Fourier Transform (FFT), which was
+known to Gauss (1805) and was brought to light in its current form by Cooley
+and Tukey.
+
+Because the discrete Fourier transform separates its input into components
+that contribute at discrete frequencies, it has a great number of applications
+in digital signal processing, e.g., for filtering, and in this context the
+discretized input to the transform is customarily referred to as a *signal*,
+which exists in the *time domain*. The output is called a *spectrum* or
+*transform* and exists in the *frequency domain*.
+
+"""
+
 from dpnp.fft.dpnp_iface_fft import *
 from dpnp.fft.dpnp_iface_fft import __all__ as __all__fft
 
