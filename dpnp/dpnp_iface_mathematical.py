@@ -1911,7 +1911,7 @@ def gradient(f, *varargs, axis=None, edge_order=1):
     array([0.5 , 0.75, 1.25, 1.75, 2.25, 2.5 ])
 
     Spacing can be also specified with an array that represents the coordinates
-    of the values F along the dimensions.
+    of the values `f` along the dimensions.
     For instance a uniform spacing:
 
     >>> x = np.arange(f.size)
