@@ -1868,7 +1868,7 @@ def gradient(f, *varargs, axis=None, edge_order=1):
         2. N scalars to specify a constant sample distance for each dimension.
            i.e. `dx`, `dy`, `dz`, ...
         3. N arrays to specify the coordinates of the values along each
-           dimension of F. The length of the array must match the size of
+           dimension of `f`. The length of the array must match the size of
            the corresponding dimension
         4. Any combination of N scalars/arrays with the meaning of 2. and 3.
 
