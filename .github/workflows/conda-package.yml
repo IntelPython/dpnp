@@ -12,7 +12,7 @@ env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
-  CONDA_BUILD_VERSION: '24.5.0'
+  CONDA_BUILD_VERSION: '24.5.1'
   CONDA_INDEX_VERSION: '0.4.0'
   TEST_ENV_NAME: 'test'
   TEST_SCOPE: >-
