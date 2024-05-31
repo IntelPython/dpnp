@@ -1,0 +1,6 @@
+﻿dpnp.ufunc.nin
+==============
+
+.. currentmodule:: dpnp
+
+.. autoproperty:: ufunc.nin

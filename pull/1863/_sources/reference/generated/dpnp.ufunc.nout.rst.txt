@@ -1,0 +1,6 @@
+﻿dpnp.ufunc.nout
+===============
+
+.. currentmodule:: dpnp
+
+.. autoproperty:: ufunc.nout
