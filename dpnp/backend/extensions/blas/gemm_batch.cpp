@@ -257,21 +257,7 @@ std::tuple<sycl::event, sycl::event, bool>
         throw py::value_error("The number of columns in B must be equal to "
                               "the number of columns in result array.");
     }
-
-    std::int64_t first_dim;
-    if (a_shape[0] == b_shape[0]) {
-        first_dim = a_shape[0];
-    }
-    else if (a_shape[0] == 1 || b_shape[0] == 1) {
-        first_dim = std::max(a_shape[0], b_shape[0]);
-    }
-    else {
-        throw py::value_error("Array shapes do not match.");
-    }
-    if (first_dim != c_shape[0]) {
-        throw py::value_error("Array shapes do not match.");
-    }
-    std::int64_t src_nelems = first_dim * m * n;
+    std::int64_t src_nelems = batch_size * m * n;
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(resultC);
     dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(resultC,
                                                                src_nelems);

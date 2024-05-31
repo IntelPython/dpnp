@@ -73,7 +73,7 @@ PYBIND11_MODULE(_blas_impl, m)
         };
 
         m.def("_dot", dot_pyapi,
-              "Call `dot` from OneMKL BLAS library to return "
+              "Call `dot` from OneMKL BLAS library to compute "
               "the dot product of two real-valued vectors.",
               py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
               py::arg("result"), py::arg("depends") = py::list());
@@ -91,7 +91,7 @@ PYBIND11_MODULE(_blas_impl, m)
         };
 
         m.def("_dotc", dotc_pyapi,
-              "Call `dotc` from OneMKL BLAS library to return "
+              "Call `dotc` from OneMKL BLAS library to compute "
               "the dot product of two complex vectors, "
               "conjugating the first vector.",
               py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
@@ -110,7 +110,7 @@ PYBIND11_MODULE(_blas_impl, m)
         };
 
         m.def("_dotu", dotu_pyapi,
-              "Call `dotu` from OneMKL BLAS library to return "
+              "Call `dotu` from OneMKL BLAS library to compute "
               "the dot product of two complex vectors.",
               py::arg("sycl_queue"), py::arg("vectorA"), py::arg("vectorB"),
               py::arg("result"), py::arg("depends") = py::list());
@@ -118,7 +118,7 @@ PYBIND11_MODULE(_blas_impl, m)
 
     {
         m.def("_gemm", &blas_ext::gemm,
-              "Call `gemm` from OneMKL BLAS library to return "
+              "Call `gemm` from OneMKL BLAS library to compute "
               "the matrix-matrix product with 2-D matrices.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
               py::arg("resultC"), py::arg("depends") = py::list());
@@ -126,7 +126,7 @@ PYBIND11_MODULE(_blas_impl, m)
 
     {
         m.def("_gemm_batch", &blas_ext::gemm_batch,
-              "Call `gemm_batch` from OneMKL BLAS library to return "
+              "Call `gemm_batch` from OneMKL BLAS library to compute "
               "the matrix-matrix product for a batch of 2-D matrices.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
               py::arg("resultC"), py::arg("depends") = py::list());
@@ -134,8 +134,8 @@ PYBIND11_MODULE(_blas_impl, m)
 
     {
         m.def("_gemv", &blas_ext::gemv,
-              "Call `gemv` from OneMKL BLAS library to return "
-              "the matrix-vector product using a general matrix.",
+              "Call `gemv` from OneMKL BLAS library to compute "
+              "the matrix-vector product with a general matrix.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("vectorX"),
               py::arg("vectorY"), py::arg("transpose"),
               py::arg("depends") = py::list());
