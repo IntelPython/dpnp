@@ -2039,10 +2039,14 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
             return w
 
         else:
+
+            print("NEW")
             orig_shape = a.shape
             # get 3d input array by reshape
             a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
             a_usm_arr = dpnp.get_usm_ndarray(a)
+
+            ht_list_ev = []
 
             # allocate a memory for dpnp array of eigenvalues
             w = dpnp.empty_like(
@@ -2054,25 +2058,35 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
             # get 2d dpnp array with eigenvalues by reshape
             w = w.reshape(-1, w_orig_shape[-1])
 
-            out = dpnp.empty_like(a,dtype=v_type, order="F")
+            a = dpnp.transpose(a,(1,2,0))
+            a_usm_arr = dpnp.get_usm_ndarray(a)
 
-            # ht_ev, _ = li._syevd_batch(
-            #     a_sycl_queue,
-            #     jobz,
-            #     uplo,
-            #     a.get_array(),
-            #     w.get_array(),
-            #     out.get_array(),
-            #     depends = [],
-            # )
+            a_copy = dpnp.empty_like(a,dtype=v_type, order="F")
 
-            # ht_ev.wait()
+            ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_usm_arr, dst=a_copy.get_array(), sycl_queue=a_sycl_queue
+            )
+            ht_list_ev.append(ht_copy_ev)
+
+
+            ht_ev, _ = li._syevd_batch(
+                a_sycl_queue,
+                jobz,
+                uplo,
+                a_copy.get_array(),
+                w.get_array(),
+                depends = [copy_ev],
+            )
+
+            ht_list_ev.append(ht_ev)
+
+            dpctl.SyclEvent.wait_for(ht_list_ev)
 
             w = w.reshape(w_orig_shape)
 
             if eigen_mode == "V":
                 # combine the list of eigenvectors into a single array
-                v = dpnp.array(out, order=a_order).reshape(orig_shape)
+                v = a_copy
                 return w, v
             return w
 

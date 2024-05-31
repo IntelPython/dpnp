@@ -61,6 +61,7 @@ void init_dispatch_vectors(void)
     lapack_ext::init_potrf_batch_dispatch_vector();
     lapack_ext::init_potrf_dispatch_vector();
     lapack_ext::init_syevd_dispatch_vector();
+    lapack_ext::init_syevd_batch_dispatch_vector();
     lapack_ext::init_ungqr_batch_dispatch_vector();
     lapack_ext::init_ungqr_dispatch_vector();
 }
@@ -187,7 +188,7 @@ PYBIND11_MODULE(_lapack_impl, m)
           "Call `syevd_batch` from OneMKL LAPACK library to return "
           "the eigenvalues and eigenvectors of a real symmetric matrix",
           py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
-          py::arg("eig_vecs"), py::arg("eig_vals"), py::arg("eig_vecs_out"),
+          py::arg("eig_vecs"), py::arg("eig_vals"),
           py::arg("depends") = py::list());
 
     m.def("_ungqr_batch", &lapack_ext::ungqr_batch,

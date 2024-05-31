@@ -47,6 +47,88 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
+typedef sycl::event (*syevd_batch_impl_fn_ptr_t)(sycl::queue,
+                                                 const oneapi::mkl::job,
+                                                 const oneapi::mkl::uplo,
+                                                 const std::int64_t,
+                                                 char *,
+                                                 char *,
+                                                 std::vector<sycl::event> &,
+                                                 const std::vector<sycl::event> &);
+
+static syevd_batch_impl_fn_ptr_t syevd_batch_dispatch_vector[dpctl_td_ns::num_types];
+
+template <typename T>
+static sycl::event syevd_batch_impl(sycl::queue exec_q,
+                              const oneapi::mkl::job jobz,
+                              const oneapi::mkl::uplo upper_lower,
+                              const std::int64_t n,
+                              char *in_a,
+                              char *out_w,
+                              std::vector<sycl::event> &host_task_events,
+                              const std::vector<sycl::event> &depends)
+{
+    type_utils::validate_type_for_device<T>(exec_q);
+
+    T *a = reinterpret_cast<T *>(in_a);
+    T *w = reinterpret_cast<T *>(out_w);
+
+    const std::int64_t lda = std::max<size_t>(1UL, n);
+    const std::int64_t scratchpad_size =
+        mkl_lapack::syevd_scratchpad_size<T>(exec_q, jobz, upper_lower, n, lda);
+    T *scratchpad = nullptr;
+
+    std::stringstream error_msg;
+    std::int64_t info = 0;
+
+    sycl::event syevd_event;
+    try {
+        scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
+
+        syevd_event = mkl_lapack::syevd(
+            exec_q,
+            jobz, // 'jobz == job::vec' means eigenvalues and eigenvectors are
+                  // computed.
+            upper_lower, // 'upper_lower == job::upper' means the upper
+                         // triangular part of A, or the lower triangular
+                         // otherwise
+            n,           // The order of the matrix A (0 <= n)
+            a, // Pointer to A, size (lda, *), where the 2nd dimension, must be
+               // at least max(1, n) If 'jobz == job::vec', then on exit it will
+               // contain the eigenvectors of A
+            lda, // The leading dimension of a, must be at least max(1, n)
+            w,   // Pointer to array of size at least n, it will contain the
+                 // eigenvalues of A in ascending order
+            scratchpad, // Pointer to scratchpad memory to be used by MKL
+                        // routine for storing intermediate results
+            scratchpad_size, depends);
+    } catch (mkl_lapack::exception const &e) {
+        error_msg
+            << "Unexpected MKL exception caught during syevd() call:\nreason: "
+            << e.what() << "\ninfo: " << e.info();
+        info = e.info();
+    } catch (sycl::exception const &e) {
+        error_msg << "Unexpected SYCL exception caught during syevd() call:\n"
+                  << e.what();
+        info = -1;
+    }
+
+    if (info != 0) // an unexpected error occurs
+    {
+        if (scratchpad != nullptr) {
+            sycl::free(scratchpad, exec_q);
+        }
+        throw std::runtime_error(error_msg.str());
+    }
+
+    sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(syevd_event);
+        auto ctx = exec_q.get_context();
+        cgh.host_task([ctx, scratchpad]() { sycl::free(scratchpad, ctx); });
+    });
+    host_task_events.push_back(clean_up_event);
+    return syevd_event;
+}
 
 std::pair<sycl::event, sycl::event>
     syevd_batch(sycl::queue exec_q,
@@ -54,14 +136,12 @@ std::pair<sycl::event, sycl::event>
                 const std::int8_t upper_lower,
                 dpctl::tensor::usm_ndarray eig_vecs,
                 dpctl::tensor::usm_ndarray eig_vals,
-                dpctl::tensor::usm_ndarray eig_vecs_out,
                 const std::vector<sycl::event> &depends)
 {
     const int eig_vecs_nd = eig_vecs.get_ndim();
     const int eig_vals_nd = eig_vals.get_ndim();
-    const int eig_vecs_out_nd = eig_vecs_out.get_ndim();
 
-    if (eig_vecs_nd != 3 || eig_vecs_out_nd != 3) {
+    if (eig_vecs_nd != 3) {
         throw py::value_error("Unexpected ndim=" + std::to_string(eig_vecs_nd) +
                               " of an output array with eigenvectors");
     }
@@ -72,30 +152,29 @@ std::pair<sycl::event, sycl::event>
 
     const py::ssize_t *eig_vecs_shape = eig_vecs.get_shape_raw();
     const py::ssize_t *eig_vals_shape = eig_vals.get_shape_raw();
-    const py::ssize_t *eig_vecs_out_shape = eig_vecs_out.get_shape_raw();
 
     const std::int64_t batch_size = eig_vecs_shape[0];
+    // const std::int64_t batch_size = eig_vecs_shape[2];
     const std::int64_t n = eig_vecs_shape[1];
 
-    if (eig_vecs_shape[1] != eig_vecs_shape[2] || eig_vecs_out_shape[1] != eig_vecs_out_shape[2]) {
-        throw py::value_error("The last two dimensions of 'eig_vecs' and 'eig_vecs_out' must be the same.");
+    if (eig_vecs_shape[1] != eig_vecs_shape[2]) {
+        throw py::value_error("The last two dimensions of 'eig_vecs' must be the same.");
     }
 
-    if (eig_vals_shape[0] != batch_size || eig_vals_shape[1] != n ||
-        eig_vecs_out_shape[0] != batch_size || eig_vecs_out_shape[1] != n) {
-        throw py::value_error("The shape of 'eig_vals' must be (batch_size, n), and 'eig_vecs_out' must match 'eig_vecs'.");
+    if (eig_vals_shape[0] != batch_size || eig_vals_shape[1] != n) {
+        throw py::value_error("The shape of 'eig_vals' must be (batch_size, n)");
     }
 
 
     // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(exec_q, {eig_vecs, eig_vals, eig_vecs_out})) {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {eig_vecs, eig_vals})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(eig_vecs, eig_vals) || overlap(eig_vecs, eig_vecs_out) || overlap(eig_vals, eig_vecs_out)) {
-        throw py::value_error("Arrays 'eig_vecs', 'eig_vals', and 'eig_vecs_out' are overlapping segments of memory");
+    if (overlap(eig_vecs, eig_vals)) {
+        throw py::value_error("Arrays 'eig_vecs' and 'eig_vals' are overlapping segments of memory");
     }
 
     // bool is_eig_vecs_f_contig = eig_vecs.is_f_contiguous();
@@ -110,88 +189,72 @@ std::pair<sycl::event, sycl::event>
     //         "An array with output eigenvalues must be C-contiguous");
     // }
 
-    // auto array_types = dpctl_td_ns::usm_ndarray_types();
-    // int eig_vecs_type_id =
-    //     array_types.typenum_to_lookup_id(eig_vecs.get_typenum());
-    // int eig_vals_type_id =
-    //     array_types.typenum_to_lookup_id(eig_vals.get_typenum());
+    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    int eig_vecs_type_id =
+        array_types.typenum_to_lookup_id(eig_vecs.get_typenum());
+    int eig_vals_type_id =
+        array_types.typenum_to_lookup_id(eig_vals.get_typenum());
 
-    // if (eig_vecs_type_id != eig_vals_type_id) {
-    //     throw py::value_error(
-    //         "Types of eigenvectors and eigenvalues are mismatched");
-    // }
+    if (eig_vecs_type_id != eig_vals_type_id) {
+        throw py::value_error(
+            "Types of eigenvectors and eigenvalues are mismatched");
+    }
 
-    // syevd_impl_fn_ptr_t syevd_fn = syevd_dispatch_vector[eig_vecs_type_id];
-    // if (syevd_fn == nullptr) {
-    //     throw py::value_error("No syevd implementation defined for a type of "
-    //                           "eigenvectors and eigenvalues");
-    // }
+    syevd_batch_impl_fn_ptr_t syevd_batch_fn = syevd_batch_dispatch_vector[eig_vecs_type_id];
+    if (syevd_batch_fn == nullptr) {
+        throw py::value_error("No syevd implementation defined for a type of "
+                              "eigenvectors and eigenvalues");
+    }
 
     char *eig_vecs_data = eig_vecs.get_data();
     char *eig_vals_data = eig_vals.get_data();
-    char *eig_vecs_out_data = eig_vecs_out.get_data();
+
+    // size_t elem_size = array_types.sizeof_typenum(eig_vecs.get_typenum());
+
+    const oneapi::mkl::job jobz_val = static_cast<oneapi::mkl::job>(jobz);
+    const oneapi::mkl::uplo uplo_val =
+        static_cast<oneapi::mkl::uplo>(upper_lower);
 
     std::vector<sycl::event> host_task_events;
 
     for (size_t i = 0; i < batch_size; ++i) {
         char *eig_vecs_batch = eig_vecs_data + i * n * n * sizeof(float);
         char *eig_vals_batch = eig_vals_data + i * n * sizeof(float);
-        char *eig_vecs_out_batch = eig_vecs_out_data + i * n * n * sizeof(float);
 
-        // get slice usm_ndarray
-        // eig_vecs_slice, eig_vecs_out_slice, eig_vals_slice
-
-        // copy from eig_vecs_slice to eig_vecs_out_slice
-        // like
-        // ht_list_ev[2 * i], copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        //     src=a_usm_arr[i],
-        //     dst=eig_vecs[i].get_array(),
-        //     sycl_queue=a_sycl_queue,
-        // )
-
-        // call syevd for slice usm_ndarray
-        // like
-        // ht_list_ev[2 * i + 1], _ = getattr(li, lapack_func)(
-        //     a_sycl_queue,
-        //     jobz,
-        //     uplo,
-        //     eig_vecs[i].get_array(),
-        //     w[i].get_array(),
-        //     depends=[copy_ev],
-        // )
-
-        // push_back host_task_events
+        sycl::event syevd_ev =
+        syevd_batch_fn(exec_q, jobz_val, uplo_val, n, eig_vecs_batch, eig_vals_batch,
+                 host_task_events, depends);
 
         }
 
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
-        exec_q, {eig_vecs, eig_vals, eig_vecs_out}, host_task_events);
+        exec_q, {eig_vecs, eig_vals}, host_task_events);
 
-    return std::make_pair(args_ev, syevd_ev);
+    return std::make_pair(args_ev,args_ev);
 }
 
-// template <typename fnT, typename T>
-// struct SyevdContigFactory
-// {
-//     fnT get()
-//     {
-//         if constexpr (types::SyevdTypePairSupportFactory<T>::is_defined) {
-//             return syevd_impl<T>;
-//         }
-//         else {
-//             return nullptr;
-//         }
-//     }
-// };
+template <typename fnT, typename T>
+struct SyevdBatchContigFactory
+{
+    fnT get()
+    {
+        if constexpr (types::SyevdBatchTypePairSupportFactory<T>::is_defined) {
+            return syevd_batch_impl<T>;
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
 
-// void init_syevd_dispatch_vector(void)
-// {
-//     dpctl_td_ns::DispatchVectorBuilder<syevd_impl_fn_ptr_t, SyevdContigFactory,
-//                                        dpctl_td_ns::num_types>
-//         contig;
-//     contig.populate_dispatch_vector(syevd_dispatch_vector);
-// }
+void init_syevd_batch_dispatch_vector(void)
+{
+    dpctl_td_ns::DispatchVectorBuilder<syevd_batch_impl_fn_ptr_t, SyevdBatchContigFactory,
+                                       dpctl_td_ns::num_types>
+        contig;
+    contig.populate_dispatch_vector(syevd_batch_dispatch_vector);
+}
 } // namespace lapack
 } // namespace ext
 } // namespace backend

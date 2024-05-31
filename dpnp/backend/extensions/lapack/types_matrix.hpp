@@ -385,6 +385,24 @@ struct SyevdTypePairSupportFactory
 
 /**
  * @brief A factory to define pairs of supported types for which
+ * MKL LAPACK library provides support in oneapi::mkl::lapack::syevd<T>
+ * function.
+ *
+ * @tparam T Type of array containing input matrix A and an output arrays with
+ * eigenvectors and eigenvectors.
+ */
+template <typename T>
+struct SyevdBatchTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
+        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+
+/**
+ * @brief A factory to define pairs of supported types for which
  * MKL LAPACK library provides support in oneapi::mkl::lapack::ungqr_batch<T>
  * function.
  *
