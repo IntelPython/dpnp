@@ -26,7 +26,7 @@
 """
 Helping functions to implement the Linear Algebra interface.
 
-These include assetion functions to validate input arrays and
+These include assertion functions to validate input arrays and
 functions with the main implementation part to fulfill the interface.
 The main computational work is performed by enabling LAPACK functions
 available as a pybind11 extension.
