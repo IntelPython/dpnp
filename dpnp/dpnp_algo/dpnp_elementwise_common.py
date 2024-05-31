@@ -43,7 +43,430 @@ __all__ = [
     "DPNPReal",
     "DPNPRound",
     "DPNPUnaryFunc",
+    "ufunc",
 ]
+
+
+import dpctl.tensor._tensor_elementwise_impl as ti
+
+import dpnp.backend.extensions.vm._vm_impl as vmi
+
+
+class ufunc:
+    """
+    ufunc(name, docs, nin, ...)
+
+    DPNP provides universal functions (a.k.a. ufuncs) to support various
+    element-wise operations.
+
+    Optional keyword arguments
+    --------------------------
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order : {None, "C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, Cannot be provided
+        together with `out`. Default: ``"K"``.
+    dtype : {None, dtype}, optional
+        If provided, the destination array will have this dtype. Cannot be
+        provided together with `out`. Default: ``None``.
+    casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
+        Controls what kind of data casting may occur. Cannot be provided
+        together with `out`. Default: ``"safe"``.
+
+    Limitations
+    -----------
+    Keyword arguments `where` and `subok` are supported with their default values.
+    Other keyword arguments is currently unsupported.
+    Otherwise ``NotImplementedError`` exception will be raised.
+
+    """
+
+    def __init__(
+        self,
+        name,
+        docs,
+        nin,
+        mkl_call=False,
+        inplace=False,
+        acceptance_fn=False,
+    ):
+        self.name_ = name
+        self.nin_ = nin
+        _name = "_" + name
+
+        dpt_result_type = getattr(ti, _name + "_result_type")
+        dpt_impl_fn = getattr(ti, _name)
+
+        if nin == 1:
+
+            def _call_func(src, dst, sycl_queue, depends=None):
+                """
+                A callback to register in UnaryElementwiseFunc class of
+                dpctl.tensor
+                """
+
+                if depends is None:
+                    depends = []
+
+                if mkl_call is True:
+                    mkl_fn_to_call = getattr(vmi, "_mkl" + _name + "_to_call")
+                    mkl_impl_fn = getattr(vmi, _name)
+                    if mkl_fn_to_call is not None and mkl_fn_to_call(
+                        sycl_queue, src, dst
+                    ):
+                        # call pybind11 extension for unary function from OneMKL VM
+                        return mkl_impl_fn(sycl_queue, src, dst, depends)
+                return dpt_impl_fn(src, dst, sycl_queue, depends)
+
+            self.func = UnaryElementwiseFunc(
+                name,
+                dpt_result_type,
+                _call_func,
+                docs,
+                acceptance_fn=acceptance_fn,
+            )
+
+        elif nin == 2:
+            if inplace is True:
+                binary_inplace_fn = getattr(ti, _name + "_inplace")
+            else:
+                binary_inplace_fn = None
+
+            def _call_func(src1, src2, dst, sycl_queue, depends=None):
+                """
+                A callback to register in UnaryElementwiseFunc class of
+                dpctl.tensor
+                """
+
+                if depends is None:
+                    depends = []
+
+                if mkl_call is True:
+                    mkl_fn_to_call = getattr(vmi, "_mkl" + _name + "_to_call")
+                    mkl_impl_fn = getattr(vmi, _name)
+                    if mkl_fn_to_call is not None and mkl_fn_to_call(
+                        sycl_queue, src1, src2, dst
+                    ):
+                        # call pybind11 extension for binary function from OneMKL VM
+                        return mkl_impl_fn(sycl_queue, src1, src2, dst, depends)
+                return dpt_impl_fn(src1, src2, dst, sycl_queue, depends)
+
+            self.func = BinaryElementwiseFunc(
+                name,
+                dpt_result_type,
+                _call_func,
+                docs,
+                binary_inplace_fn,
+                acceptance_fn=acceptance_fn,
+            )
+        else:
+            raise NotImplementedError
+
+        self.__doc__ = docs
+        self.__name__ = "ufunc"
+
+    def __call__(
+        self,
+        *args,
+        out=None,
+        where=True,
+        casting="same_kind",
+        order="K",
+        dtype=None,
+        subok=True,
+        **kwargs,
+    ):
+        dpnp.check_supported_arrays_type(
+            *args, scalar_type=True, all_scalars=False
+        )
+        if kwargs:
+            raise NotImplementedError(
+                f"Requested function={self.name_} with kwargs={kwargs} "
+                "isn't currently supported."
+            )
+        if where is not True:
+            raise NotImplementedError(
+                f"Requested function={self.name_} with where={where} "
+                "isn't currently supported."
+            )
+        if subok is not True:
+            raise NotImplementedError(
+                f"Requested function={self.name_} with subok={subok} "
+                "isn't currently supported."
+            )
+        if dtype is not None and out is not None:
+            raise TypeError(
+                f"Requested function={self.name_} only takes `out` or `dtype`"
+                "as an argument, but both were provided."
+            )
+        if order is None:
+            order = "K"
+        elif order in "afkcAFKC":
+            order = order.upper()
+        else:
+            raise ValueError(
+                f"order must be one of 'C', 'F', 'A', or 'K' (got '{order}')"
+            )
+
+        if self.nin_ == 1:
+            if out is None and len(args) == 2:
+                out = args[1]
+            x = args[0]
+            if dtype is not None:
+                x = dpnp.astype(x, dtype=dtype, casting=casting, copy=False)
+            x_usm = dpnp.get_usm_ndarray(x)
+            astype_usm_args = (x_usm,)
+        else:
+            if out is None and len(args) == 3:
+                out = args[2]
+            x1, x2 = args[0], args[1]
+            if dtype is not None:
+                if dpnp.isscalar(x1):
+                    x1 = dpnp.asarray(x1, dtype=dtype)
+                    x2 = dpnp.astype(
+                        x2, dtype=dtype, casting=casting, copy=False
+                    )
+                elif dpnp.isscalar(x2):
+                    x1 = dpnp.astype(
+                        x1, dtype=dtype, casting=casting, copy=False
+                    )
+                    x2 = dpnp.asarray(x2, dtype=dtype)
+                else:
+                    x1 = dpnp.astype(
+                        x1, dtype=dtype, casting=casting, copy=False
+                    )
+                    x2 = dpnp.astype(
+                        x2, dtype=dtype, casting=casting, copy=False
+                    )
+
+            x1_usm = dpnp.get_usm_ndarray_or_scalar(x1)
+            x2_usm = dpnp.get_usm_ndarray_or_scalar(x2)
+            astype_usm_args = x1_usm, x2_usm
+
+        out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+        res_usm = self.func.__call__(*astype_usm_args, out=out_usm, order=order)
+
+        if out is not None and isinstance(out, dpnp_array):
+            return out
+        return dpnp_array._create_from_usm_ndarray(res_usm)
+
+    @property
+    def nin(self):
+        """
+        Returns the number of arguments treated as inputs.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> np.add.nin
+        2
+        >>> np.multiply.nin
+        2
+        >>> np.power.nin
+        2
+        >>> np.exp.nin
+        1
+
+        """
+
+        return self.nin_
+
+    @property
+    def nout(self):
+        """
+        Returns the number of arguments treated as outputs.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> np.add.nin
+        1
+        >>> np.multiply.nin
+        1
+        >>> np.power.nin
+        1
+        >>> np.exp.nin
+        1
+
+        """
+
+        return 1
+
+    @property
+    def nargs(self):
+        """
+        Returns the number of arguments treated.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> np.add.nin
+        3
+        >>> np.multiply.nin
+        3
+        >>> np.power.nin
+        3
+        >>> np.exp.nin
+        2
+
+        """
+
+        return self.nin_ + 1
+
+    @property
+    def types(self):
+        """
+        Returns information about types supported by implementation function,
+        using NumPy's character encoding for data types, e.g.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> np.add.types
+        ['??->?', 'bb->b', 'BB->B', 'hh->h', 'HH->H', 'ii->i', 'II->I',
+        'll->l', 'LL->L', 'ee->e', 'ff->f', 'dd->d', 'FF->F', 'DD->D']
+
+        >>> np.multiply.types
+        ['??->?', 'bb->b', 'BB->B', 'hh->h', 'HH->H', 'ii->i', 'II->I',
+        'll->l', 'LL->L', 'ee->e', 'ff->f', 'dd->d', 'FF->F', 'DD->D']
+
+        >>> np.power.types
+        ['bb->b', 'BB->B', 'hh->h', 'HH->H', 'ii->i', 'II->I', 'll->l',
+        'LL->L', 'ee->e', 'ff->f', 'dd->d', 'FF->F', 'DD->D']
+
+        >>> np.exp.types
+        ['e->e', 'f->f', 'd->d', 'F->F', 'D->D']
+
+        >>> np.remainder.types
+        ['bb->b', 'BB->B', 'hh->h', 'HH->H', 'ii->i', 'II->I', 'll->l',
+        'LL->L', 'ee->e', 'ff->f', 'dd->d']
+
+        """
+
+        return self.func.types
+
+    @property
+    def ntypes(self):
+        """
+        The number of types.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> np.add.ntypes
+        14
+        >>> np.multiply.ntypes
+        14
+        >>> np.power.ntypes
+        13
+        >>> np.exp.ntypes
+        5
+        >>> np.remainder.ntypes
+        11
+
+        """
+
+        return len(self.func.types)
+
+    def outer(
+        self,
+        x1,
+        x2,
+        out=None,
+        where=True,
+        order="K",
+        dtype=None,
+        subok=True,
+        **kwargs,
+    ):
+        """
+        Apply the ufunc op to all pairs (a, b) with a in A and b in B.
+
+        Parameters
+        ----------
+        x1 : {dpnp.ndarray, usm_ndarray}
+            First input array.
+        x2 : {dpnp.ndarray, usm_ndarray}
+            Second input array.
+        out : {None, dpnp.ndarray, usm_ndarray}, optional
+            Output array to populate.
+            Array must have the correct shape and the expected data type.
+        **kwargs
+            For other keyword-only arguments, see the :obj:`dpnp.ufunc`.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            Output array. The data type of the returned array is determined by
+            the Type Promotion Rules.
+
+        Limitations
+        -----------
+        Parameters `where` and `subok` are supported with their default values.
+        Keyword argument `kwargs` is currently unsupported.
+        Otherwise ``NotImplementedError`` exception will be raised.
+
+        See also
+        --------
+        :obj:`dpnp.outer` : A less powerful version of dpnp.multiply.outer
+                            that ravels all inputs to 1D. This exists primarily
+                            for compatibility with old code.
+
+        :obj:`dpnp.tensordot` : dpnp.tensordot(a, b, axes=((), ())) and
+                                dpnp.multiply.outer(a, b) behave same for all
+                                dimensions of a and b.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> A = np.array([1, 2, 3])
+        >>> B = np.array([4, 5, 6])
+        >>> np.multiply.outer(A, B)
+        array([[ 4,  5,  6],
+               [ 8, 10, 12],
+               [12, 15, 18]])
+
+        A multi-dimensional example:
+
+        >>> A = np.array([[1, 2, 3], [4, 5, 6]])
+        >>> A.shape
+        (2, 3)
+        >>> B = np.array([[1, 2, 3, 4]])
+        >>> B.shape
+        (1, 4)
+        >>> C = np.multiply.outer(A, B)
+        >>> C.shape; C
+        (2, 3, 1, 4)
+        array([[[[ 1,  2,  3,  4]],
+                [[ 2,  4,  6,  8]],
+                [[ 3,  6,  9, 12]]],
+               [[[ 4,  8, 12, 16]],
+                [[ 5, 10, 15, 20]],
+                [[ 6, 12, 18, 24]]]])
+
+        """
+
+        dpnp.check_supported_arrays_type(
+            x1, x2, scalar_type=True, all_scalars=False
+        )
+        if dpnp.isscalar(x1) or dpnp.isscalar(x2):
+            _x1 = x1
+            _x2 = x2
+        else:
+            _x1 = x1[(Ellipsis,) + (None,) * x2.ndim]
+            _x2 = x2[(None,) * x1.ndim + (Ellipsis,)]
+        return self.__call__(
+            _x1,
+            _x2,
+            out=out,
+            where=where,
+            order=order,
+            dtype=dtype,
+            subok=subok,
+            **kwargs,
+        )
 
 
 class DPNPUnaryFunc(UnaryElementwiseFunc):

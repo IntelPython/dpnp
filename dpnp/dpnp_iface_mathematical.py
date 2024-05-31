@@ -83,6 +83,8 @@ from .dpnp_utils import call_origin, get_usm_allocations
 from .dpnp_utils.dpnp_utils_linearalgebra import dpnp_cross
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
+ufunc = dpnp.dpnp_algo.dpnp_elementwise_common.ufunc
+
 __all__ = [
     "abs",
     "absolute",
@@ -130,6 +132,7 @@ __all__ = [
     "trapz",
     "true_divide",
     "trunc",
+    "ufunc",
 ]
 
 
@@ -169,6 +172,8 @@ def _get_reduction_res_dt(a, dtype, _out):
 
 
 _ABS_DOCSTRING = """
+abs(x, out, **kwargs)
+
 Calculates the absolute value for each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.absolute`.
@@ -177,12 +182,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have numeric data type.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
-order : {"C", "F", "A", "K"}, optional
-    Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+**kwargs
+    For other keyword-only arguments, see the :obj:`dpnp.ufunc`.
 
 Returns
 -------
@@ -193,12 +197,6 @@ out : dpnp.ndarray
     same data type as `x`. If `x` has a complex floating-point data type,
     the returned array has a real-valued floating-point data type whose
     precision matches the precision of `x`.
-
-Limitations
------------
-Parameters `where` and `subok` are supported with their default values.
-Keyword argument `kwargs` is currently unsupported.
-Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -220,20 +218,15 @@ array([1.2, 1.2])
 array(1.5620499351813308)
 """
 
-absolute = DPNPUnaryFunc(
-    "abs",
-    ti._abs_result_type,
-    ti._abs,
-    _ABS_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_abs_to_call,
-    mkl_impl_fn=vmi._abs,
-)
+absolute = ufunc("abs", _ABS_DOCSTRING, 1, mkl_call=True)
 
 
 abs = absolute
 
 
 _ADD_DOCSTRING = """
+add(x1, x2, out, **kwargs)
+
 Calculates the sum for each element `x1_i` of the input array `x1` with
 the respective element `x2_i` of the input array `x2`.
 
@@ -245,24 +238,17 @@ x1 : {dpnp.ndarray, usm_ndarray}
     First input array, expected to have numeric data type.
 x2 : {dpnp.ndarray, usm_ndarray}
     Second input array, also expected to have numeric data type.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
-order : {"C", "F", "A", "K"}, optional
-    Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+**kwargs
+    For other keyword-only arguments, see the :obj:`dpnp.ufunc`.
 
 Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise sums. The data type of the
     returned array is determined by the Type Promotion Rules.
-
-Limitations
------------
-Parameters `where` and `subok` are supported with their default values.
-Keyword argument `kwargs` is currently unsupported.
-Otherwise ``NotImplementedError`` exception will be raised.
 
 Notes
 -----
@@ -293,15 +279,7 @@ array([[  0.,   2.,   4.],
 """
 
 
-add = DPNPBinaryFunc(
-    "add",
-    ti._add_result_type,
-    ti._add,
-    _ADD_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_add_to_call,
-    mkl_impl_fn=vmi._add,
-    binary_inplace_fn=ti._add_inplace,
-)
+add = ufunc("add", _ADD_DOCSTRING, 2, mkl_call=True, inplace=True)
 
 
 _ANGLE_DOCSTRING = """

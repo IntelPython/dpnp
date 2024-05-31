@@ -5,7 +5,29 @@ Universal Functions (ufunc)
 
 .. https://docs.scipy.org/doc/numpy/reference/ufuncs.html
 
-DPNP provides universal functions (a.k.a. ufuncs) to support various element-wise operations.
+ufuncs
+------
+.. autoclass:: dpnp.ufunc
+
+Attributes
+~~~~~~~~~~
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   dpnp.ufunc.nin
+   dpnp.ufunc.nout
+   dpnp.ufunc.nargs
+   dpnp.ufunc.types
+   dpnp.ufunc.ntypes
+
+Methods
+~~~~~~~
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   dpnp.ufunc.outer
 
 Available ufuncs
 ----------------
