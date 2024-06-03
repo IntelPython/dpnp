@@ -46,7 +46,16 @@ extern std::pair<sycl::event, sycl::event>
           dpctl::tensor::usm_ndarray eig_vals,
           const std::vector<sycl::event> &depends = {});
 
+extern std::pair<sycl::event, sycl::event>
+    syevd_batch(sycl::queue exec_q,
+                const std::int8_t jobz,
+                const std::int8_t upper_lower,
+                dpctl::tensor::usm_ndarray eig_vecs,
+                dpctl::tensor::usm_ndarray eig_vals,
+                const std::vector<sycl::event> &depends = {});
+
 extern void init_syevd_dispatch_vector(void);
+extern void init_syevd_batch_dispatch_vector(void);
 } // namespace lapack
 } // namespace ext
 } // namespace backend

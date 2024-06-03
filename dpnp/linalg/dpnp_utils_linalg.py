@@ -96,22 +96,6 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
 
     """
 
-    is_cpu_device = a.sycl_device.has_aspect_cpu
-    orig_shape = a.shape
-    # get 3d input array by reshape
-    a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
-    a_usm_arr = dpnp.get_usm_ndarray(a)
-
-    # allocate a memory for dpnp array of eigenvalues
-    w = dpnp.empty_like(
-        a,
-        shape=orig_shape[:-1],
-        dtype=w_type,
-    )
-    w_orig_shape = w.shape
-    # get 2d dpnp array with eigenvalues by reshape
-    w = w.reshape(-1, w_orig_shape[-1])
-
     # `eigen_mode` can be either "N" or "V", specifying the computation mode
     # for OneMKL LAPACK `syevd` and `heevd` routines.
     # "V" (default) means both eigenvectors and eigenvalues will be calculated
@@ -126,53 +110,127 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
     )
 
     a_sycl_queue = a.sycl_queue
-    a_order = "C" if a.flags.c_contiguous else "F"
 
-    # need to loop over the 1st dimension to get eigenvalues and
-    # eigenvectors of 3d matrix A
-    batch_size = a.shape[0]
-    eig_vecs = [None] * batch_size
-    ht_list_ev = [None] * batch_size * 2
-    for i in range(batch_size):
-        # oneMKL LAPACK assumes fortran-like array as input, so
-        # allocate a memory with 'F' order for dpnp array of eigenvectors
-        eig_vecs[i] = dpnp.empty_like(a[i], order="F", dtype=v_type)
+    new = True
 
-        # use DPCTL tensor function to fill the array of eigenvectors with
-        # content of input array
-        ht_list_ev[2 * i], copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr[i],
-            dst=eig_vecs[i].get_array(),
-            sycl_queue=a_sycl_queue,
+    if not new or lapack_func == "_heevd":
+        is_cpu_device = a.sycl_device.has_aspect_cpu
+        orig_shape = a.shape
+        # get 3d input array by reshape
+        a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+
+        # allocate a memory for dpnp array of eigenvalues
+        w = dpnp.empty_like(
+            a,
+            shape=orig_shape[:-1],
+            dtype=w_type,
         )
+        w_orig_shape = w.shape
+        # get 2d dpnp array with eigenvalues by reshape
+        w = w.reshape(-1, w_orig_shape[-1])
 
-        # TODO: Remove this w/a when MKLD-17201 is solved.
-        # Waiting for a host task executing an OneMKL LAPACK syevd/heevd call
-        # on CPU causes deadlock due to serialization of all host tasks
-        # in the queue.
-        # We need to wait for each host tasks before calling _seyvd and _heevd
-        # to avoid deadlock.
-        if is_cpu_device:
-            ht_list_ev[2 * i].wait()
+        a_order = "C" if a.flags.c_contiguous else "F"
 
-        # call LAPACK extension function to get eigenvalues and
-        # eigenvectors of a portion of matrix A
-        ht_list_ev[2 * i + 1], _ = getattr(li, lapack_func)(
-            a_sycl_queue,
-            jobz,
-            uplo,
-            eig_vecs[i].get_array(),
-            w[i].get_array(),
-            depends=[copy_ev],
-        )
+        # need to loop over the 1st dimension to get eigenvalues and
+        # eigenvectors of 3d matrix A
+        batch_size = a.shape[0]
+        eig_vecs = [None] * batch_size
+        ht_list_ev = [None] * batch_size * 2
+        for i in range(batch_size):
+            # oneMKL LAPACK assumes fortran-like array as input, so
+            # allocate a memory with 'F' order for dpnp array of eigenvectors
+            eig_vecs[i] = dpnp.empty_like(a[i], order="F", dtype=v_type)
+
+            # use DPCTL tensor function to fill the array of eigenvectors with
+            # content of input array
+            ht_list_ev[2 * i], copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_usm_arr[i],
+                dst=eig_vecs[i].get_array(),
+                sycl_queue=a_sycl_queue,
+            )
+
+            # TODO: Remove this w/a when MKLD-17201 is solved.
+            # Waiting for a host task executing an OneMKL LAPACK syevd/heevd
+            # call on CPU causes deadlock due to serialization of all host tasks
+            # in the queue.
+            # We need to wait for each host tasks before calling _seyvd and
+            # _heevd to avoid deadlock.
+            if is_cpu_device:
+                ht_list_ev[2 * i].wait()
+
+            # call LAPACK extension function to get eigenvalues and
+            # eigenvectors of a portion of matrix A
+            ht_list_ev[2 * i + 1], _ = getattr(li, lapack_func)(
+                a_sycl_queue,
+                jobz,
+                uplo,
+                eig_vecs[i].get_array(),
+                w[i].get_array(),
+                depends=[copy_ev],
+            )
+
+        dpctl.SyclEvent.wait_for(ht_list_ev)
+
+        w = w.reshape(w_orig_shape)
+
+        if eigen_mode == "V":
+            # combine the list of eigenvectors into a single array
+            v = dpnp.array(eig_vecs, order=a_order).reshape(orig_shape)
+            return w, v
+        return w
+
+    a_orig_shape = a.shape
+    # get 3d input array by reshape
+    a = a.reshape(-1, a_orig_shape[-2], a_orig_shape[-1])
+
+    # oneMKL LAPACK syevd overwrites `a` and
+    # assumes fortran-like array as input.
+    # To use C-contiguous arrays, we transpose the last two dimensions
+    # before passing to syevd.
+    # This transposition is effective because each batch
+    # in the input array `a` is square.
+    a = a.transpose((0, 2, 1))
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+
+    ht_list_ev = []
+
+    a_copy = dpnp.empty_like(a, dtype=v_type, order="C")
+
+    ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr, dst=a_copy.get_array(), sycl_queue=a_sycl_queue
+    )
+    ht_list_ev.append(ht_copy_ev)
+
+    # allocate a memory for dpnp array of eigenvalues
+    w = dpnp.empty_like(
+        a,
+        shape=a_orig_shape[:-1],
+        dtype=w_type,
+    )
+    w_orig_shape = w.shape
+    # get 2d dpnp array with eigenvalues by reshape
+    w = w.reshape(-1, w_orig_shape[-1])
+
+    ht_ev, _ = li._syevd_batch(
+        a_sycl_queue,
+        jobz,
+        uplo,
+        a_copy.get_array(),
+        w.get_array(),
+        depends=[copy_ev],
+    )
+
+    ht_list_ev.append(ht_ev)
 
     dpctl.SyclEvent.wait_for(ht_list_ev)
 
     w = w.reshape(w_orig_shape)
 
     if eigen_mode == "V":
-        # combine the list of eigenvectors into a single array
-        v = dpnp.array(eig_vecs, order=a_order).reshape(orig_shape)
+        # Transpose the last two dimensions back to their original order
+        # and reshape the array to match the input shape.
+        v = a_copy.transpose(0, 2, 1).reshape(a_orig_shape)
         return w, v
     return w
 
