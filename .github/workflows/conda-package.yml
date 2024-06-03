@@ -103,6 +103,9 @@ jobs:
           python-version: ${{ matrix.python }}
           activate-environment: 'build'
 
+      - name: List installed packages
+        run: mamba list
+
       # Here is an issue in conda gh-12356 causing adding defaults to the list of channels
       # upon running `conda config --append channels conda-forge`, while mamba requires to have only conda-forge channel
       - name: Remove defaults channel
