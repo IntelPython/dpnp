@@ -341,7 +341,9 @@ class TestSort:
 
 
 class TestSortComplex:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_complex=True) + [numpy.int8, numpy.int16]
+    )
     def test_real(self, dtype):
         # sort_complex() type casting for real input types
         a = numpy.array([5, 3, 6, 2, 1], dtype=dtype)
