@@ -228,6 +228,120 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(args_ev, heevd_ev);
 }
 
+std::pair<sycl::event, sycl::event>
+    heevd_batch(sycl::queue exec_q,
+                const std::int8_t jobz,
+                const std::int8_t upper_lower,
+                dpctl::tensor::usm_ndarray eig_vecs,
+                dpctl::tensor::usm_ndarray eig_vals,
+                const std::vector<sycl::event> &depends)
+{
+    const int eig_vecs_nd = eig_vecs.get_ndim();
+    const int eig_vals_nd = eig_vals.get_ndim();
+
+    if (eig_vecs_nd != 3) {
+        throw py::value_error("Unexpected ndim=" + std::to_string(eig_vecs_nd) +
+                              " of an output array with eigenvectors");
+    }
+    else if (eig_vals_nd != 2) {
+        throw py::value_error("Unexpected ndim=" + std::to_string(eig_vals_nd) +
+                              " of an output array with eigenvalues");
+    }
+
+    const py::ssize_t *eig_vecs_shape = eig_vecs.get_shape_raw();
+    const py::ssize_t *eig_vals_shape = eig_vals.get_shape_raw();
+
+    if (eig_vecs_shape[1] != eig_vecs_shape[2]) {
+        throw py::value_error(
+            "The last two dimensions of 'eig_vecs' must be the same.");
+    }
+    else if (eig_vecs_shape[0] != eig_vals_shape[0] ||
+             eig_vecs_shape[1] != eig_vals_shape[1])
+    {
+        throw py::value_error(
+            "The shape of 'eig_vals' must be (batch_size, n), "
+            "where batch_size = " +
+            std::to_string(eig_vecs_shape[0]) +
+            " and n = " + std::to_string(eig_vecs_shape[1]));
+    }
+
+    size_t src_nelems(1);
+
+    for (int i = 0; i < eig_vecs_nd; ++i) {
+        src_nelems *= static_cast<size_t>(eig_vecs_shape[i]);
+    }
+
+    if (src_nelems == 0) {
+        // nothing to do
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    // check compatibility of execution queue and allocation queue
+    if (!dpctl::utils::queues_are_compatible(exec_q, {eig_vecs, eig_vals})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(eig_vecs, eig_vals)) {
+        throw py::value_error("Arrays with eigenvectors and eigenvalues are "
+                              "overlapping segments of memory");
+    }
+
+    bool is_eig_vecs_c_contig = eig_vecs.is_c_contiguous();
+    bool is_eig_vals_c_contig = eig_vals.is_c_contiguous();
+    if (!is_eig_vecs_c_contig) {
+        throw py::value_error(
+            "An array with input matrix / output eigenvectors "
+            "must be C-contiguous");
+    }
+    else if (!is_eig_vals_c_contig) {
+        throw py::value_error(
+            "An array with output eigenvalues must be C-contiguous");
+    }
+
+    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    int eig_vecs_type_id =
+        array_types.typenum_to_lookup_id(eig_vecs.get_typenum());
+    int eig_vals_type_id =
+        array_types.typenum_to_lookup_id(eig_vals.get_typenum());
+
+    heevd_impl_fn_ptr_t heevd_fn =
+        heevd_dispatch_table[eig_vecs_type_id][eig_vals_type_id];
+    if (heevd_fn == nullptr) {
+        throw py::value_error("No heevd implementation defined for a pair of "
+                              "type for eigenvectors and eigenvalues");
+    }
+
+    char *eig_vecs_data = eig_vecs.get_data();
+    char *eig_vals_data = eig_vals.get_data();
+
+    const std::int64_t batch_size = eig_vecs_shape[0];
+    const std::int64_t n = eig_vecs_shape[1];
+    int vecs_elemsize = eig_vecs.get_elemsize();
+    int vals_elemsize = eig_vals.get_elemsize();
+
+    const oneapi::mkl::job jobz_val = static_cast<oneapi::mkl::job>(jobz);
+    const oneapi::mkl::uplo uplo_val =
+        static_cast<oneapi::mkl::uplo>(upper_lower);
+
+    std::vector<sycl::event> host_task_events;
+
+    for (std::int64_t i = 0; i < batch_size; ++i) {
+        char *eig_vecs_batch = eig_vecs_data + i * n * n * vecs_elemsize;
+        char *eig_vals_batch = eig_vals_data + i * n * vals_elemsize;
+
+        sycl::event heevd_ev =
+            heevd_fn(exec_q, jobz_val, uplo_val, n, eig_vecs_batch,
+                     eig_vals_batch, host_task_events, depends);
+    }
+
+    sycl::event args_ev = dpctl::utils::keep_args_alive(
+        exec_q, {eig_vecs, eig_vals}, host_task_events);
+
+    return std::make_pair(args_ev, args_ev);
+}
+
 template <typename fnT, typename T, typename RealT>
 struct HeevdContigFactory
 {

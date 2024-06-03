@@ -46,6 +46,14 @@ extern std::pair<sycl::event, sycl::event>
           dpctl::tensor::usm_ndarray eig_vals,
           const std::vector<sycl::event> &depends = {});
 
+extern std::pair<sycl::event, sycl::event>
+    heevd_batch(sycl::queue exec_q,
+                const std::int8_t jobz,
+                const std::int8_t upper_lower,
+                dpctl::tensor::usm_ndarray eig_vecs,
+                dpctl::tensor::usm_ndarray eig_vals,
+                const std::vector<sycl::event> &depends = {});
+
 extern void init_heevd_dispatch_table(void);
 } // namespace lapack
 } // namespace ext
