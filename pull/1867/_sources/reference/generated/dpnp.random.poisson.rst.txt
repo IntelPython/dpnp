@@ -1,0 +1,6 @@
+﻿dpnp.random.poisson
+===================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: poisson
