@@ -153,11 +153,12 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *eig_vecs_shape = eig_vecs.get_shape_raw();
     const py::ssize_t *eig_vals_shape = eig_vals.get_shape_raw();
 
-    const std::int64_t batch_size = eig_vecs_shape[2];
+    // const std::int64_t batch_size = eig_vecs_shape[2];
+    const std::int64_t batch_size = eig_vecs_shape[0];
     const std::int64_t n = eig_vecs_shape[1];
 
-    if (eig_vecs_shape[0] != eig_vecs_shape[1]) {
-        throw py::value_error("The first two dimensions of 'eig_vecs' must be the same.");
+    if (eig_vecs_shape[1] != eig_vecs_shape[2]) {
+        throw py::value_error("The last two dimensions of 'eig_vecs' must be the same.");
     }
 
     if (eig_vals_shape[0] != batch_size || eig_vals_shape[1] != n) {
@@ -175,12 +176,12 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Arrays 'eig_vecs' and 'eig_vals' are overlapping segments of memory");
     }
 
-    bool is_eig_vecs_f_contig = eig_vecs.is_f_contiguous();
+    bool is_eig_vecs_c_contig = eig_vecs.is_c_contiguous();
     bool is_eig_vals_c_contig = eig_vals.is_c_contiguous();
-    if (!is_eig_vecs_f_contig) {
+    if (!is_eig_vecs_c_contig) {
         throw py::value_error(
             "An array with input matrix / output eigenvectors "
-            "must be F-contiguous");
+            "must be C-contiguous");
     }
     else if (!is_eig_vals_c_contig) {
         throw py::value_error(

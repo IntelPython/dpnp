@@ -2056,10 +2056,10 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
             # get 2d dpnp array with eigenvalues by reshape
             w = w.reshape(-1, w_orig_shape[-1])
 
-            a = dpnp.transpose(a,(1,2,0))
-            a_usm_arr = dpnp.get_usm_ndarray(a)
+            # a = dpnp.transpose(a,(1,2,0))
+            # a_usm_arr = dpnp.get_usm_ndarray(a)
 
-            a_copy = dpnp.empty_like(a,dtype=v_type, order="F")
+            a_copy = dpnp.empty_like(a,dtype=v_type, order="C")
 
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=a_usm_arr, dst=a_copy.get_array(), sycl_queue=a_sycl_queue
@@ -2084,7 +2084,9 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
 
             if eigen_mode == "V":
                 # combine the list of eigenvectors into a single array
-                v = a_copy.transpose((2,0,1))
+                # v = a_copy.transpose((2,0,1))
+                # v = a_copy
+                v = a_copy.transpose((0,2,1))
                 return w, v
             return w
 
