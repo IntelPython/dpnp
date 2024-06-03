@@ -35,7 +35,6 @@ var annotated_dup =
               [ "OrgqrTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_orgqr_type_pair_support_factory.html", null ],
               [ "PotrfBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_potrf_batch_type_pair_support_factory.html", null ],
               [ "PotrfTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_potrf_type_pair_support_factory.html", null ],
-              [ "SyevdBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_batch_type_pair_support_factory.html", null ],
               [ "SyevdTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
               [ "UngqrBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_ungqr_batch_type_pair_support_factory.html", null ],
               [ "UngqrTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html", null ]

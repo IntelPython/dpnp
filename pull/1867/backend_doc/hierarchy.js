@@ -144,7 +144,6 @@ var hierarchy =
     [ "dpnp::backend::ext::vm::SubContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sub_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::types::SubOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sub_output_type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::sum_mean< InT, OutT, Mean >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1sum__mean.html", null ],
-    [ "dpnp::backend::ext::lapack::types::SyevdBatchTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_batch_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::lapack::types::SyevdTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::vm::TanContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_tan_contig_factory.html", null ],
     [ "dpnp::backend::ext::vm::TanhContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_tanh_contig_factory.html", null ],

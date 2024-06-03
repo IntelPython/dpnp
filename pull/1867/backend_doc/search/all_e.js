@@ -13,6 +13,5 @@ var searchData=
   ['subcontigfactory_10',['SubContigFactory',['../structdpnp_1_1backend_1_1ext_1_1vm_1_1_sub_contig_factory.html',1,'dpnp::backend::ext::vm']]],
   ['suboutputtype_11',['SubOutputType',['../structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sub_output_type.html',1,'dpnp::backend::ext::vm::types']]],
   ['sum_5fmean_12',['sum_mean',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1sum__mean.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['syevdbatchtypepairsupportfactory_13',['SyevdBatchTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_batch_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
-  ['syevdtypepairsupportfactory_14',['SyevdTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]]
+  ['syevdtypepairsupportfactory_13',['SyevdTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]]
 ];
