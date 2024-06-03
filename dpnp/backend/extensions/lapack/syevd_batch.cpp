@@ -47,26 +47,28 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
-typedef sycl::event (*syevd_batch_impl_fn_ptr_t)(sycl::queue,
-                                                 const oneapi::mkl::job,
-                                                 const oneapi::mkl::uplo,
-                                                 const std::int64_t,
-                                                 char *,
-                                                 char *,
-                                                 std::vector<sycl::event> &,
-                                                 const std::vector<sycl::event> &);
+typedef sycl::event (*syevd_batch_impl_fn_ptr_t)(
+    sycl::queue,
+    const oneapi::mkl::job,
+    const oneapi::mkl::uplo,
+    const std::int64_t,
+    char *,
+    char *,
+    std::vector<sycl::event> &,
+    const std::vector<sycl::event> &);
 
-static syevd_batch_impl_fn_ptr_t syevd_batch_dispatch_vector[dpctl_td_ns::num_types];
+static syevd_batch_impl_fn_ptr_t
+    syevd_batch_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
 static sycl::event syevd_batch_impl(sycl::queue exec_q,
-                              const oneapi::mkl::job jobz,
-                              const oneapi::mkl::uplo upper_lower,
-                              const std::int64_t n,
-                              char *in_a,
-                              char *out_w,
-                              std::vector<sycl::event> &host_task_events,
-                              const std::vector<sycl::event> &depends)
+                                    const oneapi::mkl::job jobz,
+                                    const oneapi::mkl::uplo upper_lower,
+                                    const std::int64_t n,
+                                    char *in_a,
+                                    char *out_w,
+                                    std::vector<sycl::event> &host_task_events,
+                                    const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
 
@@ -153,16 +155,29 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *eig_vecs_shape = eig_vecs.get_shape_raw();
     const py::ssize_t *eig_vals_shape = eig_vals.get_shape_raw();
 
-    // const std::int64_t batch_size = eig_vecs_shape[2];
-    const std::int64_t batch_size = eig_vecs_shape[0];
-    const std::int64_t n = eig_vecs_shape[1];
-
     if (eig_vecs_shape[1] != eig_vecs_shape[2]) {
-        throw py::value_error("The last two dimensions of 'eig_vecs' must be the same.");
+        throw py::value_error(
+            "The last two dimensions of 'eig_vecs' must be the same.");
+    }
+    else if (eig_vecs_shape[0] != eig_vals_shape[0] ||
+             eig_vecs_shape[1] != eig_vals_shape[1])
+    {
+        throw py::value_error(
+            "The shape of 'eig_vals' must be (batch_size, n), "
+            "where batch_size = " +
+            std::to_string(eig_vecs_shape[0]) +
+            " and n = " + std::to_string(eig_vecs_shape[1]));
     }
 
-    if (eig_vals_shape[0] != batch_size || eig_vals_shape[1] != n) {
-        throw py::value_error("The shape of 'eig_vals' must be (batch_size, n)");
+    size_t src_nelems(1);
+
+    for (int i = 0; i < eig_vecs_nd; ++i) {
+        src_nelems *= static_cast<size_t>(eig_vecs_shape[i]);
+    }
+
+    if (src_nelems == 0) {
+        // nothing to do
+        return std::make_pair(sycl::event(), sycl::event());
     }
 
     // check compatibility of execution queue and allocation queue
@@ -173,7 +188,8 @@ std::pair<sycl::event, sycl::event>
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     if (overlap(eig_vecs, eig_vals)) {
-        throw py::value_error("Arrays 'eig_vecs' and 'eig_vals' are overlapping segments of memory");
+        throw py::value_error("Arrays with eigenvectors and eigenvalues are "
+                              "overlapping segments of memory");
     }
 
     bool is_eig_vecs_c_contig = eig_vecs.is_c_contiguous();
@@ -199,7 +215,8 @@ std::pair<sycl::event, sycl::event>
             "Types of eigenvectors and eigenvalues are mismatched");
     }
 
-    syevd_batch_impl_fn_ptr_t syevd_batch_fn = syevd_batch_dispatch_vector[eig_vecs_type_id];
+    syevd_batch_impl_fn_ptr_t syevd_batch_fn =
+        syevd_batch_dispatch_vector[eig_vecs_type_id];
     if (syevd_batch_fn == nullptr) {
         throw py::value_error("No syevd implementation defined for a type of "
                               "eigenvectors and eigenvalues");
@@ -208,11 +225,13 @@ std::pair<sycl::event, sycl::event>
     char *eig_vecs_data = eig_vecs.get_data();
     char *eig_vals_data = eig_vals.get_data();
 
+    const std::int64_t batch_size = eig_vecs_shape[0];
+    const std::int64_t n = eig_vecs_shape[1];
+    int elemsize = eig_vecs.get_elemsize();
+
     const oneapi::mkl::job jobz_val = static_cast<oneapi::mkl::job>(jobz);
     const oneapi::mkl::uplo uplo_val =
         static_cast<oneapi::mkl::uplo>(upper_lower);
-
-    int elemsize = eig_vecs.get_elemsize();
 
     std::vector<sycl::event> host_task_events;
 
@@ -221,16 +240,14 @@ std::pair<sycl::event, sycl::event>
         char *eig_vals_batch = eig_vals_data + i * n * elemsize;
 
         sycl::event syevd_ev =
-        syevd_batch_fn(exec_q, jobz_val, uplo_val, n, eig_vecs_batch, eig_vals_batch,
-                 host_task_events, depends);
-
-        }
-
+            syevd_batch_fn(exec_q, jobz_val, uplo_val, n, eig_vecs_batch,
+                           eig_vals_batch, host_task_events, depends);
+    }
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {eig_vecs, eig_vals}, host_task_events);
 
-    return std::make_pair(args_ev,args_ev);
+    return std::make_pair(args_ev, args_ev);
 }
 
 template <typename fnT, typename T>
@@ -249,7 +266,8 @@ struct SyevdBatchContigFactory
 
 void init_syevd_batch_dispatch_vector(void)
 {
-    dpctl_td_ns::DispatchVectorBuilder<syevd_batch_impl_fn_ptr_t, SyevdBatchContigFactory,
+    dpctl_td_ns::DispatchVectorBuilder<syevd_batch_impl_fn_ptr_t,
+                                       SyevdBatchContigFactory,
                                        dpctl_td_ns::num_types>
         contig;
     contig.populate_dispatch_vector(syevd_batch_dispatch_vector);

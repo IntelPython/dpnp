@@ -356,7 +356,7 @@ def eig(a):
     )
 
 
-def eigh(a, UPLO="L"):
+def eigh(a, UPLO="L", new=False):
     """
     Return the eigenvalues and eigenvectors of a complex Hermitian
     (conjugate symmetric) or a real symmetric matrix.
@@ -421,7 +421,7 @@ def eigh(a, UPLO="L"):
     if UPLO not in ("L", "U"):
         raise ValueError("UPLO argument must be 'L' or 'U'")
 
-    return dpnp_eigh(a, UPLO=UPLO)
+    return dpnp_eigh(a, UPLO=UPLO, new=new)
 
 
 def eigvals(a):
