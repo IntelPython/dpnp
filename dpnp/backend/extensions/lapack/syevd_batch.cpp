@@ -153,17 +153,17 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *eig_vecs_shape = eig_vecs.get_shape_raw();
     const py::ssize_t *eig_vals_shape = eig_vals.get_shape_raw();
 
-    const std::int64_t batch_size = eig_vecs_shape[0];
-    // const std::int64_t batch_size = eig_vecs_shape[2];
+    // const std::int64_t batch_size = eig_vecs_shape[0];
+    const std::int64_t batch_size = eig_vecs_shape[2];
     const std::int64_t n = eig_vecs_shape[1];
 
-    if (eig_vecs_shape[1] != eig_vecs_shape[2]) {
-        throw py::value_error("The last two dimensions of 'eig_vecs' must be the same.");
-    }
+    // if (eig_vecs_shape[1] != eig_vecs_shape[2]) {
+    //     throw py::value_error("The last two dimensions of 'eig_vecs' must be the same.");
+    // }
 
-    if (eig_vals_shape[0] != batch_size || eig_vals_shape[1] != n) {
-        throw py::value_error("The shape of 'eig_vals' must be (batch_size, n)");
-    }
+    // if (eig_vals_shape[0] != batch_size || eig_vals_shape[1] != n) {
+    //     throw py::value_error("The shape of 'eig_vals' must be (batch_size, n)");
+    // }
 
 
     // check compatibility of execution queue and allocation queue

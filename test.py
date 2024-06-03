@@ -4,11 +4,12 @@ import dpnp
 import dpnp.linalg
 from tests.helper import generate_random_numpy_array
 
-# a = numpy.array([[[1,2],[2,3]],[[2,3],[1,2]]],dtype='f4')
-a = numpy.array([[[1,2],[2,3]],[[1,2],[2,3]]],dtype='f4')
+# a = numpy.array([[[2,3],[1,2]],[[1,2],[2,3]]],dtype='f4')
+# a = numpy.array([[[1,2],[2,3]],[[1,2],[2,3]]],dtype='f4')
 # a = numpy.array([[1,2],[2,3]],dtype='f4')
 # a = numpy.array([[[2,3],[1,2]]],dtype='f4')
 # a = numpy.array([[[1,2],[2,3]]],dtype='f4')
+a = generate_random_numpy_array((2,3,3),dtype=numpy.int32, hermitian=True, seed_value=81)
 a_dp = dpnp.array(a)
 
 res = numpy.linalg.eigh(a)

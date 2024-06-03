@@ -1974,7 +1974,7 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
 
     if a.ndim > 2:
 
-        if not new:
+        if not new or lapack_func=="_heevd":
             is_cpu_device = a.sycl_device.has_aspect_cpu
             orig_shape = a.shape
             # get 3d input array by reshape
@@ -2015,8 +2015,8 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
                 # on CPU causes deadlock due to serialization of all host tasks
                 # in the queue.
                 # We need to wait for each host tasks before calling _seyvd to avoid deadlock.
-                # if lapack_func == "_syevd" and is_cpu_device:
-                #     ht_list_ev[2 * i].wait()
+                if lapack_func == "_syevd" and is_cpu_device:
+                    ht_list_ev[2 * i].wait()
 
                 # call LAPACK extension function to get eigenvalues and eigenvectors of a portion of matrix A
                 ht_list_ev[2 * i + 1], _ = getattr(li, lapack_func)(
@@ -2039,8 +2039,6 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
             return w
 
         else:
-
-            print("NEW")
             orig_shape = a.shape
             # get 3d input array by reshape
             a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
@@ -2086,10 +2084,9 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
 
             if eigen_mode == "V":
                 # combine the list of eigenvectors into a single array
-                v = a_copy
+                v = a_copy.transpose((2,0,1))
                 return w, v
             return w
-
 
     else:
         a_usm_arr = dpnp.get_usm_ndarray(a)
