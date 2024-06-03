@@ -153,18 +153,16 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *eig_vecs_shape = eig_vecs.get_shape_raw();
     const py::ssize_t *eig_vals_shape = eig_vals.get_shape_raw();
 
-    // const std::int64_t batch_size = eig_vecs_shape[0];
     const std::int64_t batch_size = eig_vecs_shape[2];
     const std::int64_t n = eig_vecs_shape[1];
 
-    // if (eig_vecs_shape[1] != eig_vecs_shape[2]) {
-    //     throw py::value_error("The last two dimensions of 'eig_vecs' must be the same.");
-    // }
+    if (eig_vecs_shape[0] != eig_vecs_shape[1]) {
+        throw py::value_error("The first two dimensions of 'eig_vecs' must be the same.");
+    }
 
-    // if (eig_vals_shape[0] != batch_size || eig_vals_shape[1] != n) {
-    //     throw py::value_error("The shape of 'eig_vals' must be (batch_size, n)");
-    // }
-
+    if (eig_vals_shape[0] != batch_size || eig_vals_shape[1] != n) {
+        throw py::value_error("The shape of 'eig_vals' must be (batch_size, n)");
+    }
 
     // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(exec_q, {eig_vecs, eig_vals})) {
@@ -177,17 +175,17 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Arrays 'eig_vecs' and 'eig_vals' are overlapping segments of memory");
     }
 
-    // bool is_eig_vecs_f_contig = eig_vecs.is_f_contiguous();
-    // bool is_eig_vals_c_contig = eig_vals.is_c_contiguous();
-    // if (!is_eig_vecs_f_contig) {
-    //     throw py::value_error(
-    //         "An array with input matrix / output eigenvectors "
-    //         "must be F-contiguous");
-    // }
-    // else if (!is_eig_vals_c_contig) {
-    //     throw py::value_error(
-    //         "An array with output eigenvalues must be C-contiguous");
-    // }
+    bool is_eig_vecs_f_contig = eig_vecs.is_f_contiguous();
+    bool is_eig_vals_c_contig = eig_vals.is_c_contiguous();
+    if (!is_eig_vecs_f_contig) {
+        throw py::value_error(
+            "An array with input matrix / output eigenvectors "
+            "must be F-contiguous");
+    }
+    else if (!is_eig_vals_c_contig) {
+        throw py::value_error(
+            "An array with output eigenvalues must be C-contiguous");
+    }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int eig_vecs_type_id =
@@ -209,17 +207,17 @@ std::pair<sycl::event, sycl::event>
     char *eig_vecs_data = eig_vecs.get_data();
     char *eig_vals_data = eig_vals.get_data();
 
-    // size_t elem_size = array_types.sizeof_typenum(eig_vecs.get_typenum());
-
     const oneapi::mkl::job jobz_val = static_cast<oneapi::mkl::job>(jobz);
     const oneapi::mkl::uplo uplo_val =
         static_cast<oneapi::mkl::uplo>(upper_lower);
 
+    int elemsize = eig_vecs.get_elemsize();
+
     std::vector<sycl::event> host_task_events;
 
-    for (size_t i = 0; i < batch_size; ++i) {
-        char *eig_vecs_batch = eig_vecs_data + i * n * n * sizeof(float);
-        char *eig_vals_batch = eig_vals_data + i * n * sizeof(float);
+    for (std::int64_t i = 0; i < batch_size; ++i) {
+        char *eig_vecs_batch = eig_vecs_data + i * n * n * elemsize;
+        char *eig_vals_batch = eig_vals_data + i * n * elemsize;
 
         sycl::event syevd_ev =
         syevd_batch_fn(exec_q, jobz_val, uplo_val, n, eig_vecs_batch, eig_vals_batch,

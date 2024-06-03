@@ -495,7 +495,7 @@ class TestEigenvalue:
         "order",
         [
             "C",
-            # "F",
+            "F",
         ],
     )
     def test_eigenvalues(self, func, shape, dtype, order):
