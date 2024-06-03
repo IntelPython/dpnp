@@ -55,7 +55,6 @@ extern std::pair<sycl::event, sycl::event>
                 const std::vector<sycl::event> &depends = {});
 
 extern void init_syevd_dispatch_vector(void);
-extern void init_syevd_batch_dispatch_vector(void);
 } // namespace lapack
 } // namespace ext
 } // namespace backend
