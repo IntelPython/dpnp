@@ -112,28 +112,39 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
         else "_syevd_batch"
     )
 
+    a_order = "C" if a.flags.c_contiguous else "F"
     a_sycl_queue = a.sycl_queue
+
     a_orig_shape = a.shape
     # get 3d input array by reshape
     a = a.reshape(-1, a_orig_shape[-2], a_orig_shape[-1])
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
     ht_list_ev = []
+    copy_ev = dpctl.SyclEvent()
 
-    # syevd_batch/heevd_batch overwrites `a` and assumes C-contiguous
-    # array as input while oneMKL LAPACK syevd/heevd assumes fortran-like
-    # array as input.
-    # Usually, to use C-contiguous arrays, we would transpose them before
-    # passing to such OneMKL function.
-    # However, for this implementation, the input arrays are symmetric
-    # so no transpose before is required and the result should be
-    # transpose only after calculations.
-    a_copy = dpnp.empty_like(a, dtype=v_type, order="C")
+    # When `eigen_mode == "N"` (jobz == 0), OneMKL LAPACK does not
+    # overwrite the input array.
+    # If the input array 'a' is already C-contiguous and matches the target
+    # data type, we can avoid unnecessary memory allocation and data
+    # copying.
+    if eigen_mode == "N" and a_order == "C" and a.dtype == v_type:
+        a_copy = a
+    else:
+        # syevd_batch/heevd_batch overwrites `a` and assumes C-contiguous
+        # array as input while oneMKL LAPACK syevd/heevd assumes fortran-like
+        # array as input.
+        # Usually, to use C-contiguous arrays, we would transpose them before
+        # passing to such OneMKL functions.
+        # However, for this implementation, the input arrays are symmetric
+        # so no transpose before is required and the result should be
+        # transpose only after calculations.
+        a_copy = dpnp.empty_like(a, dtype=v_type, order="C")
 
-    ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_copy.get_array(), sycl_queue=a_sycl_queue
-    )
-    ht_list_ev.append(ht_copy_ev)
+        ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr, dst=a_copy.get_array(), sycl_queue=a_sycl_queue
+        )
+        ht_list_ev.append(ht_copy_ev)
 
     # allocate a memory for dpnp array of eigenvalues
     w = dpnp.empty_like(
