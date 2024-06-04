@@ -333,6 +333,10 @@ std::pair<sycl::event, sycl::event>
     std::vector<sycl::event> host_task_events;
     std::vector<sycl::event> syevd_task_events;
 
+    // Release GIL to avoid serialization of host task
+    // submissions to the same queue in OneMKL
+    py::gil_scoped_release release;
+
     for (std::int64_t i = 0; i < batch_size; ++i) {
         char *eig_vecs_batch = eig_vecs_data + i * n * n * elemsize;
         char *eig_vals_batch = eig_vals_data + i * n * elemsize;
