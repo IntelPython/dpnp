@@ -116,18 +116,18 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
     a_orig_shape = a.shape
     # get 3d input array by reshape
     a = a.reshape(-1, a_orig_shape[-2], a_orig_shape[-1])
-
-    # oneMKL LAPACK syevd/heevd overwrites `a` and assumes fortran-like array
-    # as input.
-    # To use C-contiguous arrays, we transpose the last two dimensions before
-    # passing to syevd/heevd.
-    # This transposition is effective because each batch in the input array `a`
-    # is square.
-    a = a.transpose((0, 2, 1))
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
     ht_list_ev = []
 
+    # syevd_batch/heevd_batch overwrites `a` and assumes C-contiguous
+    # array as input while oneMKL LAPACK syevd/heevd assumes fortran-like
+    # array as input.
+    # Usually, to use C-contiguous arrays, we would transpose them before
+    # passing to such OneMKL function.
+    # However, for this implementation, the input arrays are symmetric
+    # so no transpose before is required and the result should be
+    # transpose only after calculations.
     a_copy = dpnp.empty_like(a, dtype=v_type, order="C")
 
     ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
