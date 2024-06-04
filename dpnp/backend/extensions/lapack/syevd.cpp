@@ -331,6 +331,7 @@ std::pair<sycl::event, sycl::event>
         static_cast<oneapi::mkl::uplo>(upper_lower);
 
     std::vector<sycl::event> host_task_events;
+    std::vector<sycl::event> syevd_task_events;
 
     for (std::int64_t i = 0; i < batch_size; ++i) {
         char *eig_vecs_batch = eig_vecs_data + i * n * n * elemsize;
@@ -339,12 +340,17 @@ std::pair<sycl::event, sycl::event>
         sycl::event syevd_ev =
             syevd_fn(exec_q, jobz_val, uplo_val, n, eig_vecs_batch,
                      eig_vals_batch, host_task_events, depends);
+
+        syevd_task_events.push_back(syevd_ev);
     }
+
+    sycl::event combine_ev = exec_q.submit(
+        [&](sycl::handler &cgh) { cgh.depends_on(syevd_task_events); });
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {eig_vecs, eig_vals}, host_task_events);
 
-    return std::make_pair(args_ev, args_ev);
+    return std::make_pair(args_ev, combine_ev);
 }
 
 template <typename fnT, typename T>
