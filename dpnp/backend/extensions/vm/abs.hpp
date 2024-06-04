@@ -30,23 +30,23 @@
 #include "common.hpp"
 #include "types_matrix.hpp"
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace vm
+// dpctl tensor headers
+#include "utils/type_dispatch.hpp"
+
+namespace td_ns = dpctl::tensor::type_dispatch;
+
+namespace dpnp::backend::ext::vm
 {
 template <typename T>
-sycl::event abs_contig_impl(sycl::queue exec_q,
-                            const std::int64_t n,
+sycl::event abs_contig_impl(sycl::queue &exec_q,
+                            std::size_t in_n,
                             const char *in_a,
                             char *out_y,
                             const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
 
+    std::int64_t n = static_cast<std::int64_t>(in_n);
     const T *a = reinterpret_cast<const T *>(in_a);
     using resTy = typename types::AbsOutputType<T>::value_type;
     resTy *y = reinterpret_cast<resTy *>(out_y);
@@ -73,7 +73,24 @@ struct AbsContigFactory
         }
     }
 };
-} // namespace vm
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+
+template <typename fnT, typename T>
+struct AbsStridedFactory
+{
+    fnT get()
+    {
+        return nullptr;
+    }
+};
+
+template <typename fnT, typename T>
+struct AbsTypeMapFactory
+{
+    /*! @brief get typeid for output type of abs(T x) */
+    std::enable_if_t<std::is_same<fnT, int>::value, int> get()
+    {
+        using rT = typename types::AbsOutputType<T>::value_type;
+        return td_ns::GetTypeid<rT>{}.get();
+    }
+};
+} // namespace dpnp::backend::ext::vm
