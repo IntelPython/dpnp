@@ -340,6 +340,31 @@ class TestSort:
             dpnp.sort(dp_array, order=["age"])
 
 
+class TestSortComplex:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_complex=True) + [numpy.int8, numpy.int16]
+    )
+    def test_real(self, dtype):
+        # sort_complex() type casting for real input types
+        a = numpy.array([5, 3, 6, 2, 1], dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.sort_complex(ia)
+        expected = numpy.sort_complex(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_complex(self, dtype):
+        # sort_complex() handling of complex input
+        a = numpy.array([2 + 3j, 1 - 2j, 1 - 3j, 2 + 1j], dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.sort_complex(ia)
+        expected = numpy.sort_complex(a)
+        assert_equal(result, expected)
+        assert result.dtype == expected.dtype
+
+
 @pytest.mark.parametrize("kth", [0, 1], ids=["0", "1"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
 @pytest.mark.parametrize(
