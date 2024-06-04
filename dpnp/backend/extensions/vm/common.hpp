@@ -50,25 +50,6 @@ namespace type_utils = dpctl::tensor::type_utils;
 
 namespace dpnp::backend::ext::vm
 {
-typedef sycl::event (*unary_contig_impl_fn_ptr_t)(
-    sycl::queue &,
-    size_t,
-    const char *,
-    char *,
-    const std::vector<sycl::event> &);
-
-typedef sycl::event (*unary_strided_impl_fn_ptr_t)(
-    sycl::queue &,
-    size_t,
-    int,
-    const ssize_t *,
-    const char *,
-    ssize_t,
-    char *,
-    ssize_t,
-    const std::vector<sycl::event> &,
-    const std::vector<sycl::event> &);
-
 typedef sycl::event (*unary_impl_fn_ptr_t)(sycl::queue,
                                            const std::int64_t,
                                            const char *,
