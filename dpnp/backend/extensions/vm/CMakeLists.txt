@@ -23,11 +23,16 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+set(_elementwise_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/abs.cpp
+)
 
-set(python_module_name _vm_impl)
 set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/vm_py.cpp
+    ${_elementwise_sources}
 )
+
+set(python_module_name _vm_impl)
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})

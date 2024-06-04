@@ -48,13 +48,7 @@ namespace mkl_vm = oneapi::mkl::vm;
 // dpctl namespace for type utils
 namespace type_utils = dpctl::tensor::type_utils;
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace vm
+namespace dpnp::backend::ext::vm
 {
 typedef sycl::event (*unary_contig_impl_fn_ptr_t)(
     sycl::queue &,
@@ -459,17 +453,28 @@ bool need_to_call_binary_ufunc(sycl::queue exec_q,
     return true;
 }
 
+/**
+ * @brief A factory with no support provided to the implementation.
+ *
+ * @tparam fnT Type of function pointer to dispatch the implementation
+ * @tparam T Type of input vector
+ */
+template <typename fnT, typename T>
+struct NoSupportFactory
+{
+    fnT get()
+    {
+        return nullptr;
+    }
+};
+
 template <typename dispatchT,
           template <typename fnT, typename T>
-          typename factoryT>
+          typename factoryT,
+          int _num_types = dpctl_td_ns::num_types>
 void init_ufunc_dispatch_vector(dispatchT dispatch_vector[])
 {
-    dpctl_td_ns::DispatchVectorBuilder<dispatchT, factoryT,
-                                       dpctl_td_ns::num_types>
-        contig;
+    dpctl_td_ns::DispatchVectorBuilder<dispatchT, factoryT, _num_types> contig;
     contig.populate_dispatch_vector(dispatch_vector);
 }
-} // namespace vm
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::backend::ext::vm

@@ -68,19 +68,13 @@
 #include "trunc.hpp"
 #include "types_matrix.hpp"
 
-// include a local copy of elementwise common header from dpctl tensor:
-// dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
-// TODO: replace by including dpctl header once available
-#include "../elementwise_functions/elementwise_functions.hpp"
-
 namespace py = pybind11;
-namespace py_int = dpnp::backend::ext::py_internal;
 namespace vm_ext = dpnp::backend::ext::vm;
+namespace vm_ns = dpnp::extensions::vm;
 
 using vm_ext::binary_impl_fn_ptr_t;
 using vm_ext::unary_impl_fn_ptr_t;
 
-// static unary_impl_fn_ptr_t abs_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t acos_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t acosh_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t add_dispatch_vector[dpctl_td_ns::num_types];
@@ -116,56 +110,12 @@ static unary_impl_fn_ptr_t tan_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t tanh_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t trunc_dispatch_vector[dpctl_td_ns::num_types];
 
-using vm_ext::unary_contig_impl_fn_ptr_t;
-using vm_ext::unary_strided_impl_fn_ptr_t;
-
-static unary_contig_impl_fn_ptr_t
-    abs_contig_dispatch_vector[dpctl_td_ns::num_types];
-static unary_strided_impl_fn_ptr_t
-    abs_strided_dispatch_vector[dpctl_td_ns::num_types];
-
-static int abs_output_typeid_vector[td_ns::num_types];
-
 PYBIND11_MODULE(_vm_impl, m)
 {
     using arrayT = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
 
-    // UnaryUfunc: ==== Abs(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_contig_impl_fn_ptr_t,
-                                           vm_ext::AbsContigFactory>(
-            abs_contig_dispatch_vector);
-
-        vm_ext::init_ufunc_dispatch_vector<unary_strided_impl_fn_ptr_t,
-                                           vm_ext::AbsStridedFactory>(
-            abs_strided_dispatch_vector);
-
-        vm_ext::init_ufunc_dispatch_vector<int, vm_ext::AbsTypeMapFactory>(
-            abs_output_typeid_vector);
-
-        auto abs_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                             const event_vecT &depends = {}) {
-            return py_int::py_unary_ufunc(
-                src, dst, exec_q, depends, abs_output_typeid_vector,
-                abs_contig_dispatch_vector, abs_strided_dispatch_vector);
-        };
-        m.def("_abs", abs_pyapi,
-              "Call `abs` function from OneMKL VM library to compute "
-              "the absolute value of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto abs_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                          arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    abs_contig_dispatch_vector);
-        };
-        m.def("_mkl_abs_to_call", abs_need_to_call_pyapi,
-              "Check input arguments to answer if `abs` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
+    vm_ns::init_abs(m);
 
     // UnaryUfunc: ==== Acos(x) ====
     {

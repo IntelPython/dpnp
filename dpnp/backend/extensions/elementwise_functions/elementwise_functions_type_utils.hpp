@@ -26,7 +26,9 @@
 #pragma once
 
 #include "dpctl4pybind11.hpp"
-#include <sycl/sycl.hpp>
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 // dpctl tensor headers
 #include "utils/type_dispatch.hpp"
@@ -34,7 +36,7 @@
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-namespace dpnp::backend::ext::py_internal::type_utils
+namespace dpnp::extensions::py_internal::type_utils
 {
 
 /*! @brief Produce dtype from a type number */
@@ -85,4 +87,4 @@ int _result_typeid(int arg_typeid, const int *fn_output_id)
 
     return fn_output_id[arg_typeid];
 }
-} // namespace dpnp::backend::ext::py_internal::type_utils
+} // namespace dpnp::extensions::py_internal::type_utils

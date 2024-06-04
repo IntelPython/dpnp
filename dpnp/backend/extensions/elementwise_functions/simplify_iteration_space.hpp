@@ -27,9 +27,11 @@
 
 #include <vector>
 
+#include "dpctl4pybind11.hpp"
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
-namespace dpnp::backend::ext::py_internal
+namespace dpnp::extensions::py_internal
 {
 
 namespace py = pybind11;
@@ -415,4 +417,4 @@ void simplify_iteration_space_3(
         assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
     }
 }
-} // namespace dpnp::backend::ext::py_internal
+} // namespace dpnp::extensions::py_internal

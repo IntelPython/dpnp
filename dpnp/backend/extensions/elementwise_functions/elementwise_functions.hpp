@@ -25,8 +25,12 @@
 
 #pragma once
 
-#include "dpctl4pybind11.hpp"
 #include <sycl/sycl.hpp>
+
+#include "dpctl4pybind11.hpp"
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "elementwise_functions_type_utils.hpp"
 #include "simplify_iteration_space.hpp"
@@ -34,7 +38,7 @@
 // dpctl tensor headers
 #include "kernels/alignment.hpp"
 // #include "kernels/dpctl_tensor_types.hpp"
-// #include "utils/memory_overlap.hpp"
+#include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
@@ -44,7 +48,7 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 
 static_assert(std::is_same_v<py::ssize_t, dpctl::tensor::ssize_t>);
 
-namespace dpnp::backend::ext::py_internal
+namespace dpnp::extensions::py_internal
 {
 
 using dpctl::tensor::kernels::alignment_utils::is_aligned;
@@ -817,4 +821,4 @@ std::pair<sycl::event, sycl::event>
         strided_fn_ev);
 }
 
-} // namespace dpnp::backend::ext::py_internal
+} // namespace dpnp::extensions::py_internal
