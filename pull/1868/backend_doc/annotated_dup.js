@@ -86,11 +86,7 @@ var annotated_dup =
           ] ],
           [ "vm", null, [
             [ "types", null, [
-              [ "AsinhOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_asinh_output_type.html", null ],
-              [ "AsinOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_asin_output_type.html", null ],
-              [ "Atan2OutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_atan2_output_type.html", null ],
               [ "AtanhOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_atanh_output_type.html", null ],
-              [ "AtanOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_atan_output_type.html", null ],
               [ "CbrtOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_cbrt_output_type.html", null ],
               [ "CeilOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ceil_output_type.html", null ],
               [ "ConjOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_conj_output_type.html", null ],
@@ -118,11 +114,6 @@ var annotated_dup =
               [ "TanOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_tan_output_type.html", null ],
               [ "TruncOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_trunc_output_type.html", null ]
             ] ],
-            [ "AsinContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_asin_contig_factory.html", null ],
-            [ "AsinhContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_asinh_contig_factory.html", null ],
-            [ "Atan2ContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_atan2_contig_factory.html", null ],
-            [ "AtanContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_atan_contig_factory.html", null ],
-            [ "AtanhContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_atanh_contig_factory.html", null ],
             [ "CbrtContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_cbrt_contig_factory.html", null ],
             [ "CeilContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ceil_contig_factory.html", null ],
             [ "ConjContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_conj_contig_factory.html", null ],
