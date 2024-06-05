@@ -28,6 +28,7 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/acos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/acosh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/add.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/asin.cpp
 )
 
 set(_module_src

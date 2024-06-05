@@ -136,5 +136,4 @@ void init_acosh(py::module_ m)
           "OneMKL VM library can be used",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
 }
-
 } // namespace dpnp::extensions::vm

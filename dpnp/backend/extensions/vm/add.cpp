@@ -167,5 +167,4 @@ void init_add(py::module_ m)
           py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
           py::arg("dst"));
 }
-
 } // namespace dpnp::extensions::vm
