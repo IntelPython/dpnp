@@ -39,7 +39,6 @@ __all__ += [
     "dpnp_ediff1d",
     "dpnp_fabs",
     "dpnp_fmod",
-    "dpnp_gradient",
     "dpnp_fmax",
     "dpnp_fmin",
     "dpnp_modf",
@@ -121,36 +120,6 @@ cpdef utils.dpnp_descriptor dpnp_fmod(utils.dpnp_descriptor x1_obj,
                                       utils.dpnp_descriptor out=None,
                                       object where=True):
     return call_fptr_2in_1out_strides(DPNP_FN_FMOD_EXT, x1_obj, x2_obj, dtype, out, where)
-
-
-cpdef utils.dpnp_descriptor dpnp_gradient(utils.dpnp_descriptor y1, int dx=1):
-
-    cdef size_t size = y1.size
-
-    y1_obj = y1.get_array()
-
-    # create result array with type given by FPTR data
-    cdef shape_type_c result_shape = utils._object_to_tuple(size)
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape,
-                                                                             dpnp.default_float_type(y1_obj.sycl_queue),
-                                                                             None,
-                                                                             device=y1_obj.sycl_device,
-                                                                             usm_type=y1_obj.usm_type,
-                                                                             sycl_queue=y1_obj.sycl_queue)
-
-    cdef double cur = (y1.get_pyobj()[1] - y1.get_pyobj()[0]) / dx
-
-    result.get_pyobj().flat[0] = cur
-
-    cur = (y1.get_pyobj()[-1] - y1.get_pyobj()[-2]) / dx
-
-    result.get_pyobj().flat[size - 1] = cur
-
-    for i in range(1, size - 1):
-        cur = (y1.get_pyobj()[i + 1] - y1.get_pyobj()[i - 1]) / (2 * dx)
-        result.get_pyobj().flat[i] = cur
-
-    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_fmax(utils.dpnp_descriptor x1_obj,
