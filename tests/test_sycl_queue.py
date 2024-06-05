@@ -1663,6 +1663,7 @@ def test_array_creation_from_dpctl(copy, device):
     assert isinstance(result, dpnp_array)
 
 
+@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 @pytest.mark.parametrize(
     "device",
     valid_devices,
