@@ -28,6 +28,9 @@ set(_elementwise_sources
 )
 
 set(_module_src
+    # TODO: remove sources from `elementwise_functions` folder
+    ${CMAKE_CURRENT_SOURCE_DIR}/../elementwise_functions/elementwise_functions_type_utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../elementwise_functions/simplify_iteration_space.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/vm_py.cpp
     ${_elementwise_sources}
 )
