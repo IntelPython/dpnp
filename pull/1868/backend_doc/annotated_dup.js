@@ -86,7 +86,6 @@ var annotated_dup =
           ] ],
           [ "vm", null, [
             [ "types", null, [
-              [ "AddOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_add_output_type.html", null ],
               [ "AsinhOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_asinh_output_type.html", null ],
               [ "AsinOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_asin_output_type.html", null ],
               [ "Atan2OutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_atan2_output_type.html", null ],
@@ -119,7 +118,6 @@ var annotated_dup =
               [ "TanOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_tan_output_type.html", null ],
               [ "TruncOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_trunc_output_type.html", null ]
             ] ],
-            [ "AddContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_add_contig_factory.html", null ],
             [ "AsinContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_asin_contig_factory.html", null ],
             [ "AsinhContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_asinh_contig_factory.html", null ],
             [ "Atan2ContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_atan2_contig_factory.html", null ],
@@ -141,7 +139,6 @@ var annotated_dup =
             [ "Log1pContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_log1p_contig_factory.html", null ],
             [ "Log2ContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_log2_contig_factory.html", null ],
             [ "MulContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_mul_contig_factory.html", null ],
-            [ "NoSupportFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_no_support_factory.html", null ],
             [ "PowContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_pow_contig_factory.html", null ],
             [ "RoundContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_round_contig_factory.html", null ],
             [ "SinContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sin_contig_factory.html", null ],

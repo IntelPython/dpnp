@@ -1,8 +1,17 @@
 var searchData=
 [
-  ['operator_2b_2b_0',['operator++',['../class_d_p_n_p___u_s_m__iterator.html#a995480447406ffd7421ddbd4006637be',1,'DPNP_USM_iterator::operator++()'],['../class_d_p_n_p___u_s_m__iterator.html#a8f31f980fbfb90d1e9367438a7351e26',1,'DPNP_USM_iterator::operator++(int)']]],
-  ['operator_3c_3c_1',['operator&lt;&lt;',['../class_d_p_n_p___u_s_m__iterator.html#ad8717a8073f17dc82cbfc74a9fbcc777',1,'DPNP_USM_iterator::operator&lt;&lt;'],['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga2d677a923f4dc4c31e302b0c3bb692f0',1,'operator&lt;&lt;(std::ostream &amp;out, const std::vector&lt; T &gt; &amp;vec):&#160;dpnp_utils.hpp'],['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga632dede9569431596d7423005389a147',1,'operator&lt;&lt;(std::ostream &amp;out, DPNPFuncType elem):&#160;dpnp_utils.hpp']]],
-  ['operator_5b_5d_2',['operator[]',['../class_d_p_n_p_c__id.html#a2e98849be3b71da7efdfbccdcb26c010',1,'DPNPC_id']]],
-  ['orgqrbatchtypepairsupportfactory_3',['OrgqrBatchTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_orgqr_batch_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
-  ['orgqrtypepairsupportfactory_4',['OrgqrTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_orgqr_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]]
+  ['pop_5ftuple_5ftype_0',['pop_tuple_type',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1pop__tuple__type.html',1,'dpnp::backend::ext::sycl_ext']]],
+  ['pop_5ftuple_5ftype_3c_20std_3a_3atuple_3c_20t_2c_20args_2e_2e_2e_20_3e_20_3e_1',['pop_tuple_type&lt; std::tuple&lt; T, Args... &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1pop__tuple__type_3_01std_1_1tuple_3_01_t_00_01_args_8_8_8_01_4_01_4.html',1,'dpnp::backend::ext::sycl_ext']]],
+  ['populate_5ftable_2',['populate_table',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1populate__table.html',1,'dpnp::backend::ext::sycl_ext']]],
+  ['populate_5ftable_3c_20c_2c_20fnt_2c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_20_3e_3',['populate_table&lt; C, FnT, std::tuple&lt; Args... &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1populate__table_3_01_c_00_01_fn_t_00_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html',1,'dpnp::backend::ext::sycl_ext']]],
+  ['populate_5ftable_3c_20c_2c_20fnt_2c_20std_3a_3atuple_3c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_20_3e_20_3e_4',['populate_table&lt; C, FnT, std::tuple&lt; std::tuple&lt; Args... &gt; &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1populate__table_3_01_c_00_01_fn_t_00_01std_1_1tuple0f7ffe7646d3c8f7f12eca20777caefd.html',1,'dpnp::backend::ext::sycl_ext']]],
+  ['potrfbatchtypepairsupportfactory_5',['PotrfBatchTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_potrf_batch_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
+  ['potrftypepairsupportfactory_6',['PotrfTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_potrf_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
+  ['powcontigfactory_7',['PowContigFactory',['../structdpnp_1_1backend_1_1ext_1_1vm_1_1_pow_contig_factory.html',1,'dpnp::backend::ext::vm']]],
+  ['powoutputtype_8',['PowOutputType',['../structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_pow_output_type.html',1,'dpnp::backend::ext::vm::types']]],
+  ['ptr_9',['ptr',['../struct_d_p_n_p_func_data.html#af40fd22f5954384788121f817fb02f0d',1,'DPNPFuncData']]],
+  ['ptr_5fno_5ffp64_10',['ptr_no_fp64',['../struct_d_p_n_p_func_data.html#aa88f90ce507ebffe7462bba4d2df6c76',1,'DPNPFuncData']]],
+  ['py_5fnan_11',['py_nan',['../structpython__constants.html#ad34c02509443758b7257406387f7a14c',1,'python_constants']]],
+  ['py_5fnone_12',['py_none',['../structpython__constants.html#a4b321c2c3693f0fedfe18e20c317dd24',1,'python_constants']]],
+  ['python_5fconstants_13',['python_constants',['../structpython__constants.html',1,'']]]
 ];
