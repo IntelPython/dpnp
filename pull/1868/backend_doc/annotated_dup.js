@@ -86,8 +86,6 @@ var annotated_dup =
           ] ],
           [ "vm", null, [
             [ "types", null, [
-              [ "AcoshOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_acosh_output_type.html", null ],
-              [ "AcosOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_acos_output_type.html", null ],
               [ "AddOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_add_output_type.html", null ],
               [ "AsinhOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_asinh_output_type.html", null ],
               [ "AsinOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_asin_output_type.html", null ],
@@ -121,8 +119,6 @@ var annotated_dup =
               [ "TanOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_tan_output_type.html", null ],
               [ "TruncOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_trunc_output_type.html", null ]
             ] ],
-            [ "AcosContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_acos_contig_factory.html", null ],
-            [ "AcoshContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_acosh_contig_factory.html", null ],
             [ "AddContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_add_contig_factory.html", null ],
             [ "AsinContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_asin_contig_factory.html", null ],
             [ "AsinhContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_asinh_contig_factory.html", null ],
