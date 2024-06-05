@@ -27,8 +27,6 @@
 #include <sycl/sycl.hpp>
 
 #include "dpctl4pybind11.hpp"
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include "abs.hpp"
 #include "common.hpp"
@@ -64,7 +62,7 @@ namespace mkl_vm = oneapi::mkl::vm;
  * @tparam T Type of input vector `a` and of result vector `y`.
  */
 template <typename T>
-struct AbsOutputType
+struct OutputType
 {
     using value_type = typename std::disjunction<
         td_ns::TypeMapResultEntry<T, std::complex<double>, double>,
@@ -86,7 +84,7 @@ static sycl::event abs_contig_impl(sycl::queue &exec_q,
     std::int64_t n = static_cast<std::int64_t>(in_n);
     const T *a = reinterpret_cast<const T *>(in_a);
 
-    using resTy = typename AbsOutputType<T>::value_type;
+    using resTy = typename OutputType<T>::value_type;
     resTy *y = reinterpret_cast<resTy *>(out_y);
 
     return mkl_vm::abs(exec_q,
@@ -96,51 +94,14 @@ static sycl::event abs_contig_impl(sycl::queue &exec_q,
                        depends);
 }
 
-template <typename fnT, typename T>
-struct AbsContigFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_same_v<typename AbsOutputType<T>::value_type,
-                                     void>) {
-            return nullptr;
-        }
-        else {
-            return abs_contig_impl<T>;
-        }
-    }
-};
-
-template <typename fnT, typename T>
-struct AbsTypeMapFactory
-{
-    std::enable_if_t<std::is_same<fnT, int>::value, int> get()
-    {
-        using rT = typename AbsOutputType<T>::value_type;
-        return td_ns::GetTypeid<rT>{}.get();
-    }
-};
-
 using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
-static int abs_output_typeid_vector[td_ns::num_types];
-static unary_contig_impl_fn_ptr_t abs_contig_dispatch_vector[td_ns::num_types];
-static unary_strided_impl_fn_ptr_t
-    abs_strided_dispatch_vector[td_ns::num_types];
+static int output_typeid_vector[td_ns::num_types];
+static unary_contig_impl_fn_ptr_t contig_dispatch_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t strided_dispatch_vector[td_ns::num_types];
 
-static void populate_abs_dispatch_vectors(void)
-{
-    vm_ext::init_ufunc_dispatch_vector<int, AbsTypeMapFactory>(
-        abs_output_typeid_vector);
-    vm_ext::init_ufunc_dispatch_vector<unary_contig_impl_fn_ptr_t,
-                                       AbsContigFactory>(
-        abs_contig_dispatch_vector);
-    // no support of strided implementation in OneMKL
-    vm_ext::init_ufunc_dispatch_vector<unary_strided_impl_fn_ptr_t,
-                                       vm_ext::NoSupportFactory>(
-        abs_strided_dispatch_vector);
-};
+MACRO_POPULATE_DISPATCH_VECTORS(abs);
 } // namespace impl
 
 void init_abs(py::module_ m)
@@ -148,16 +109,16 @@ void init_abs(py::module_ m)
     using arrayT = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
 
-    impl::populate_abs_dispatch_vectors();
-    using impl::abs_contig_dispatch_vector;
-    using impl::abs_output_typeid_vector;
-    using impl::abs_strided_dispatch_vector;
+    impl::populate_dispatch_vectors();
+    using impl::contig_dispatch_vector;
+    using impl::output_typeid_vector;
+    using impl::strided_dispatch_vector;
 
     auto abs_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
                          const event_vecT &depends = {}) {
         return py_int::py_unary_ufunc(
-            src, dst, exec_q, depends, abs_output_typeid_vector,
-            abs_contig_dispatch_vector, abs_strided_dispatch_vector);
+            src, dst, exec_q, depends, output_typeid_vector,
+            contig_dispatch_vector, strided_dispatch_vector);
     };
     m.def("_abs", abs_pyapi,
           "Call `abs` function from OneMKL VM library to compute "
@@ -168,7 +129,7 @@ void init_abs(py::module_ m)
     auto abs_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
                                       arrayT dst) {
         return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                abs_contig_dispatch_vector);
+                                                contig_dispatch_vector);
     };
     m.def("_mkl_abs_to_call", abs_need_to_call_pyapi,
           "Check input arguments to answer if `abs` function from "

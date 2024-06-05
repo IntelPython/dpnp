@@ -449,6 +449,49 @@ struct NoSupportFactory
     }
 };
 
+/**
+ * @brief A macro used to define factories and a populating function to dispatch
+ * to a callback with proper OneMKL function within VM extension scope.
+ */
+#define MACRO_POPULATE_DISPATCH_VECTORS(__name__)                              \
+    template <typename fnT, typename T>                                        \
+    struct ContigFactory                                                       \
+    {                                                                          \
+        fnT get()                                                              \
+        {                                                                      \
+            if constexpr (std::is_same_v<typename OutputType<T>::value_type,   \
+                                         void>) {                              \
+                return nullptr;                                                \
+            }                                                                  \
+            else {                                                             \
+                return __name__##_contig_impl<T>;                              \
+            }                                                                  \
+        }                                                                      \
+    };                                                                         \
+                                                                               \
+    template <typename fnT, typename T>                                        \
+    struct TypeMapFactory                                                      \
+    {                                                                          \
+        std::enable_if_t<std::is_same<fnT, int>::value, int> get()             \
+        {                                                                      \
+            using rT = typename OutputType<T>::value_type;                     \
+            return td_ns::GetTypeid<rT>{}.get();                               \
+        }                                                                      \
+    };                                                                         \
+                                                                               \
+    static void populate_dispatch_vectors(void)                                \
+    {                                                                          \
+        vm_ext::init_ufunc_dispatch_vector<int, TypeMapFactory>(               \
+            output_typeid_vector);                                             \
+        vm_ext::init_ufunc_dispatch_vector<unary_contig_impl_fn_ptr_t,         \
+                                           ContigFactory>(                     \
+            contig_dispatch_vector);                                           \
+        /* no support of strided implementation in OneMKL */                   \
+        vm_ext::init_ufunc_dispatch_vector<unary_strided_impl_fn_ptr_t,        \
+                                           vm_ext::NoSupportFactory>(          \
+            strided_dispatch_vector);                                          \
+    };
+
 template <typename dispatchT,
           template <typename fnT, typename T>
           typename factoryT,
