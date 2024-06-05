@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+33.g3d731c3267 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+40.g8a527ecd8e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=569415d4"></script>
+        <script src="../../_static/documentation_options.js?v=18585302"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+33.g3d731c3267
+                0.16.0dev0+40.g8a527ecd8e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -136,6 +136,7 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_elementwise_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="k">as</span> <span class="nn">dtu</span>
+<span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">dpu</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">from</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="kn">import</span> <span class="n">_acceptance_fn_divide</span>
 <span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="p">(</span>
@@ -153,7 +154,6 @@
     <span class="n">dpnp_fmax</span><span class="p">,</span>
     <span class="n">dpnp_fmin</span><span class="p">,</span>
     <span class="n">dpnp_fmod</span><span class="p">,</span>
-    <span class="n">dpnp_gradient</span><span class="p">,</span>
     <span class="n">dpnp_modf</span><span class="p">,</span>
     <span class="n">dpnp_trapz</span><span class="p">,</span>
 <span class="p">)</span>
@@ -256,6 +256,169 @@
 
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dtu</span><span class="o">.</span><span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_gradient_build_dx</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build an array with distance per each dimension.&quot;&quot;&quot;</span>
+
+    <span class="n">len_axes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">varargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># no spacing argument - use 1 in all axes</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]</span> <span class="o">*</span> <span class="n">len_axes</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">varargs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span>
+            <span class="n">varargs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># single scalar for all axes</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">varargs</span> <span class="o">*</span> <span class="n">len_axes</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="n">len_axes</span><span class="p">:</span>
+        <span class="c1"># scalar or 1d array for each axis</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">varargs</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">distances</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dx</span><span class="p">):</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span>
+                <span class="n">distances</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">distances</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;distances must be either scalars or 1d&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span> <span class="o">!=</span> <span class="n">f</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;when 1d, distances must match &quot;</span>
+                    <span class="s2">&quot;the length of the corresponding dimension&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">distances</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+                <span class="c1"># Convert integer types to default float type to avoid modular</span>
+                <span class="c1"># arithmetic in dpnp.diff(distances).</span>
+                <span class="n">distances</span> <span class="o">=</span> <span class="n">distances</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">())</span>
+            <span class="n">diffx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+
+            <span class="c1"># if distances are constant reduce to the scalar case</span>
+            <span class="c1"># since it brings a consistent speedup</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">diffx</span> <span class="o">==</span> <span class="n">diffx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                <span class="n">diffx</span> <span class="o">=</span> <span class="n">diffx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">diffx</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;invalid number of arguments&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dx</span>
+
+
+<span class="k">def</span> <span class="nf">_gradient_num_diff_2nd_order_interior</span><span class="p">(</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">ax_dx</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">slices</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">uniform_spacing</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Numerical differentiation: 2nd order interior.&quot;&quot;&quot;</span>
+
+    <span class="n">slice1</span><span class="p">,</span> <span class="n">slice2</span><span class="p">,</span> <span class="n">slice3</span><span class="p">,</span> <span class="n">slice4</span> <span class="o">=</span> <span class="n">slices</span>
+    <span class="n">ndim</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">ndim</span>
+
+    <span class="n">slice1</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">slice2</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">slice3</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">slice4</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">uniform_spacing</span><span class="p">:</span>
+        <span class="n">out</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice4</span><span class="p">)]</span> <span class="o">-</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)])</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="mf">2.0</span> <span class="o">*</span> <span class="n">ax_dx</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dx1</span> <span class="o">=</span> <span class="n">ax_dx</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dx2</span> <span class="o">=</span> <span class="n">ax_dx</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">dx2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">*</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">+</span> <span class="n">dx2</span><span class="p">))</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">dx2</span> <span class="o">-</span> <span class="n">dx1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">*</span> <span class="n">dx2</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">dx1</span> <span class="o">/</span> <span class="p">(</span><span class="n">dx2</span> <span class="o">*</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">+</span> <span class="n">dx2</span><span class="p">))</span>
+
+        <span class="c1"># fix the shape for broadcasting</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">ndim</span>
+        <span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># TODO: use shape.setter once dpctl#1699 is resolved</span>
+        <span class="c1"># a.shape = b.shape = c.shape = shape</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="c1"># 1D equivalent -- out[1:-1] = a * f[:-2] + b * f[1:-1] + c * f[2:]</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)]</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice3</span><span class="p">)]</span>
+        <span class="n">t3</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice4</span><span class="p">)]</span>
+        <span class="n">t4</span> <span class="o">=</span> <span class="n">t1</span> <span class="o">+</span> <span class="n">t2</span> <span class="o">+</span> <span class="n">t3</span>
+
+        <span class="n">out</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">t4</span>
+        <span class="n">out</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">a</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)]</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice3</span><span class="p">)]</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice4</span><span class="p">)]</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_gradient_num_diff_edges</span><span class="p">(</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">ax_dx</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">slices</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">uniform_spacing</span><span class="p">,</span> <span class="n">edge_order</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Numerical differentiation: 1st and 2nd order edges.&quot;&quot;&quot;</span>
+
+    <span class="n">slice1</span><span class="p">,</span> <span class="n">slice2</span><span class="p">,</span> <span class="n">slice3</span><span class="p">,</span> <span class="n">slice4</span> <span class="o">=</span> <span class="n">slices</span>
+
+    <span class="c1"># Numerical differentiation: 1st order edges</span>
+    <span class="k">if</span> <span class="n">edge_order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">slice1</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">slice2</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">slice3</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">dx_0</span> <span class="o">=</span> <span class="n">ax_dx</span> <span class="k">if</span> <span class="n">uniform_spacing</span> <span class="k">else</span> <span class="n">ax_dx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># 1D equivalent -- out[0] = (f[1] - f[0]) / (x[1] - x[0])</span>
+        <span class="n">out</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)]</span> <span class="o">-</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice3</span><span class="p">)])</span> <span class="o">/</span> <span class="n">dx_0</span>
+
+        <span class="n">slice1</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">slice2</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">slice3</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+        <span class="n">dx_n</span> <span class="o">=</span> <span class="n">ax_dx</span> <span class="k">if</span> <span class="n">uniform_spacing</span> <span class="k">else</span> <span class="n">ax_dx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># 1D equivalent -- out[-1] = (f[-1] - f[-2]) / (x[-1] - x[-2])</span>
+        <span class="n">out</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)]</span> <span class="o">-</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice3</span><span class="p">)])</span> <span class="o">/</span> <span class="n">dx_n</span>
+
+    <span class="c1"># Numerical differentiation: 2nd order edges</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">slice1</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">slice2</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">slice3</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">slice4</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">uniform_spacing</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.5</span> <span class="o">/</span> <span class="n">ax_dx</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="n">ax_dx</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">/</span> <span class="n">ax_dx</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dx1</span> <span class="o">=</span> <span class="n">ax_dx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dx2</span> <span class="o">=</span> <span class="n">ax_dx</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">dx1</span> <span class="o">+</span> <span class="n">dx2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">*</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">+</span> <span class="n">dx2</span><span class="p">))</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">+</span> <span class="n">dx2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">*</span> <span class="n">dx2</span><span class="p">)</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="n">dx1</span> <span class="o">/</span> <span class="p">(</span><span class="n">dx2</span> <span class="o">*</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">+</span> <span class="n">dx2</span><span class="p">))</span>
+
+        <span class="c1"># 1D equivalent -- out[0] = a * f[0] + b * f[1] + c * f[2]</span>
+        <span class="n">out</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">a</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)]</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice3</span><span class="p">)]</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice4</span><span class="p">)]</span>
+        <span class="p">)</span>
+
+        <span class="n">slice1</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">slice2</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">3</span>
+        <span class="n">slice3</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+        <span class="n">slice4</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">uniform_spacing</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="n">ax_dx</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.0</span> <span class="o">/</span> <span class="n">ax_dx</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="o">/</span> <span class="n">ax_dx</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dx1</span> <span class="o">=</span> <span class="n">ax_dx</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">dx2</span> <span class="o">=</span> <span class="n">ax_dx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">dx2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">*</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">+</span> <span class="n">dx2</span><span class="p">))</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">dx2</span> <span class="o">+</span> <span class="n">dx1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">*</span> <span class="n">dx2</span><span class="p">)</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">dx2</span> <span class="o">+</span> <span class="n">dx1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">dx2</span> <span class="o">*</span> <span class="p">(</span><span class="n">dx1</span> <span class="o">+</span> <span class="n">dx2</span><span class="p">))</span>
+
+        <span class="c1"># 1D equivalent -- out[-1] = a * f[-3] + b * f[-2] + c * f[-1]</span>
+        <span class="n">out</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">a</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)]</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice3</span><span class="p">)]</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice4</span><span class="p">)]</span>
+        <span class="p">)</span>
 
 
 <span class="n">_ABS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -1810,51 +1973,206 @@
 
 <div class="viewcode-block" id="gradient">
 <a class="viewcode-back" href="../../reference/generated/dpnp.gradient.html#dpnp.gradient">[docs]</a>
-<span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the gradient of an array.</span>
+<span class="sd">    Return the gradient of an N-dimensional array.</span>
+
+<span class="sd">    The gradient is computed using second order accurate central differences</span>
+<span class="sd">    in the interior points and either first or second order accurate one-sides</span>
+<span class="sd">    (forward or backwards) differences at the boundaries.</span>
+<span class="sd">    The returned gradient hence has the same shape as the input array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.gradient`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `y1` is supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Argument `varargs[0]` is supported as `int`.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    f : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        An N-dimensional array containing samples of a scalar function.</span>
+<span class="sd">    varargs : {scalar, list of scalars, list of arrays}, optional</span>
+<span class="sd">        Spacing between `f` values. Default unitary spacing for all dimensions.</span>
+<span class="sd">        Spacing can be specified using:</span>
+
+<span class="sd">        1. Single scalar to specify a sample distance for all dimensions.</span>
+<span class="sd">        2. N scalars to specify a constant sample distance for each dimension.</span>
+<span class="sd">           i.e. `dx`, `dy`, `dz`, ...</span>
+<span class="sd">        3. N arrays to specify the coordinates of the values along each</span>
+<span class="sd">           dimension of `f`. The length of the array must match the size of</span>
+<span class="sd">           the corresponding dimension</span>
+<span class="sd">        4. Any combination of N scalars/arrays with the meaning of 2. and 3.</span>
+
+<span class="sd">        If `axis` is given, the number of `varargs` must equal the number of</span>
+<span class="sd">        axes.</span>
+<span class="sd">        Default: ``1``.</span>
+<span class="sd">    axis : {None, int, tuple of ints}, optional</span>
+<span class="sd">        Gradient is calculated only along the given axis or axes.</span>
+<span class="sd">        The default is to calculate the gradient for all the axes of the input</span>
+<span class="sd">        array. `axis` may be negative, in which case it counts from the last to</span>
+<span class="sd">        the first axis.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    edge_order : {1, 2}, optional</span>
+<span class="sd">        Gradient is calculated using N-th order accurate differences</span>
+<span class="sd">        at the boundaries.</span>
+<span class="sd">        Default: ``1``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gradient : {dpnp.ndarray, list of ndarray}</span>
+<span class="sd">        A list of :class:`dpnp.ndarray` (or a single :class:`dpnp.ndarray` if</span>
+<span class="sd">        there is only one dimension) corresponding to the derivatives of `f`</span>
+<span class="sd">        with respect to each dimension.</span>
+<span class="sd">        Each derivative has the same shape as `f`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given</span>
 <span class="sd">                       axis.</span>
+<span class="sd">    :obj:`dpnp.ediff1d` : Calculate the differences between consecutive</span>
+<span class="sd">                          elements of an array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; y = np.array([1, 2, 4, 7, 11, 16], dtype=float)</span>
-<span class="sd">    &gt;&gt;&gt; result = np.gradient(y)</span>
-<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
-<span class="sd">    [1.0, 1.5, 2.5, 3.5, 4.5, 5.0]</span>
-<span class="sd">    &gt;&gt;&gt; result = np.gradient(y, 2)</span>
-<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
-<span class="sd">    [0.5, 0.75, 1.25, 1.75, 2.25, 2.5]</span>
+<span class="sd">    &gt;&gt;&gt; f = np.array([1, 2, 4, 7, 11, 16], dtype=float)</span>
+<span class="sd">    &gt;&gt;&gt; np.gradient(f)</span>
+<span class="sd">    array([1. , 1.5, 2.5, 3.5, 4.5, 5. ])</span>
+<span class="sd">    &gt;&gt;&gt; np.gradient(f, 2)</span>
+<span class="sd">    array([0.5 , 0.75, 1.25, 1.75, 2.25, 2.5 ])</span>
+
+<span class="sd">    Spacing can be also specified with an array that represents the coordinates</span>
+<span class="sd">    of the values `f` along the dimensions.</span>
+<span class="sd">    For instance a uniform spacing:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.arange(f.size)</span>
+<span class="sd">    &gt;&gt;&gt; np.gradient(f, x)</span>
+<span class="sd">    array([1. , 1.5, 2.5, 3.5, 4.5, 5. ])</span>
+
+<span class="sd">    Or a non uniform one:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([0., 1., 1.5, 3.5, 4., 6.], dtype=float)</span>
+<span class="sd">    &gt;&gt;&gt; np.gradient(f, x)</span>
+<span class="sd">    array([1. , 3. , 3.5, 6.7, 6.9, 2.5])</span>
+
+<span class="sd">    For two dimensional arrays, the return will be two arrays ordered by</span>
+<span class="sd">    axis. In this example the first array stands for the gradient in</span>
+<span class="sd">    rows and the second one in columns direction:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.gradient(np.array([[1, 2, 6], [3, 4, 5]], dtype=float))</span>
+<span class="sd">    (array([[ 2.,  2., -1.],</span>
+<span class="sd">            [ 2.,  2., -1.]]),</span>
+<span class="sd">     array([[1. , 2.5, 4. ],</span>
+<span class="sd">            [1. , 1. , 1. ]]))</span>
+
+<span class="sd">    In this example the spacing is also specified:</span>
+<span class="sd">    uniform for axis=0 and non uniform for axis=1</span>
+
+<span class="sd">    &gt;&gt;&gt; dx = 2.</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([1., 1.5, 3.5])</span>
+<span class="sd">    &gt;&gt;&gt; np.gradient(np.array([[1, 2, 6], [3, 4, 5]], dtype=float), dx, y)</span>
+<span class="sd">    (array([[ 1. ,  1. , -0.5],</span>
+<span class="sd">            [ 1. ,  1. , -0.5]]),</span>
+<span class="sd">     array([[2. , 2. , 2. ],</span>
+<span class="sd">            [2. , 1.7, 0.5]]))</span>
+
+<span class="sd">    It is possible to specify how boundaries are treated using `edge_order`</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([0, 1, 2, 3, 4])</span>
+<span class="sd">    &gt;&gt;&gt; f = x**2</span>
+<span class="sd">    &gt;&gt;&gt; np.gradient(f, edge_order=1)</span>
+<span class="sd">    array([1., 2., 4., 6., 7.])</span>
+<span class="sd">    &gt;&gt;&gt; np.gradient(f, edge_order=2)</span>
+<span class="sd">    array([0., 2., 4., 6., 8.])</span>
+
+<span class="sd">    The `axis` keyword can be used to specify a subset of axes of which the</span>
+<span class="sd">    gradient is calculated</span>
+
+<span class="sd">    &gt;&gt;&gt; np.gradient(np.array([[1, 2, 6], [3, 4, 5]], dtype=float), axis=0)</span>
+<span class="sd">    array([[ 2.,  2., -1.],</span>
+<span class="sd">           [ 2.,  2., -1.]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">varargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">varargs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">varargs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">pass</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">ndim</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">ndim</span>  <span class="c1"># number of dimensions</span>
+
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
+
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">_gradient_build_dx</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">edge_order</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;edge_order&#39; greater than 2 not supported&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Use central differences on interior and one-sided differences on the</span>
+    <span class="c1"># endpoints. This preserves second order-accuracy over the full domain.</span>
+    <span class="n">outvals</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># create slice objects --- initially all are [:, :, ..., :]</span>
+    <span class="n">slice1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">ndim</span>
+    <span class="n">slice2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">ndim</span>
+    <span class="n">slice3</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">ndim</span>
+    <span class="n">slice4</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">ndim</span>
+
+    <span class="n">otype</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">otype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># All other types convert to floating point.</span>
+        <span class="c1"># First check if f is a dpnp integer type; if so, convert f to default</span>
+        <span class="c1"># float type to avoid modular arithmetic when computing changes in f.</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">otype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">())</span>
+        <span class="n">otype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">axis_</span><span class="p">,</span> <span class="n">ax_dx</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">dx</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis_</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">edge_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Shape of array too small to calculate a numerical gradient, &quot;</span>
+                <span class="s2">&quot;at least (edge_order + 1) elements are required.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># result allocation</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">ax_dx</span><span class="p">):</span>
+            <span class="n">usm_type</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">usm_type</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">varargs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">dpnp_gradient</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="n">usm_type</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">ax_dx</span><span class="o">.</span><span class="n">usm_type</span><span class="p">])</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">otype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">dpnp_gradient</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">varargs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+        <span class="c1"># spacing for the current axis</span>
+        <span class="n">uniform_spacing</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">ax_dx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">gradient</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="c1"># Numerical differentiation: 2nd order interior</span>
+        <span class="n">_gradient_num_diff_2nd_order_interior</span><span class="p">(</span>
+            <span class="n">f</span><span class="p">,</span>
+            <span class="n">ax_dx</span><span class="p">,</span>
+            <span class="n">out</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">slice1</span><span class="p">,</span> <span class="n">slice2</span><span class="p">,</span> <span class="n">slice3</span><span class="p">,</span> <span class="n">slice4</span><span class="p">),</span>
+            <span class="n">axis_</span><span class="p">,</span>
+            <span class="n">uniform_spacing</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Numerical differentiation: 1st and 2nd order edges</span>
+        <span class="n">_gradient_num_diff_edges</span><span class="p">(</span>
+            <span class="n">f</span><span class="p">,</span>
+            <span class="n">ax_dx</span><span class="p">,</span>
+            <span class="n">out</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">slice1</span><span class="p">,</span> <span class="n">slice2</span><span class="p">,</span> <span class="n">slice3</span><span class="p">,</span> <span class="n">slice4</span><span class="p">),</span>
+            <span class="n">axis_</span><span class="p">,</span>
+            <span class="n">uniform_spacing</span><span class="p">,</span>
+            <span class="n">edge_order</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">outvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+        <span class="c1"># reset the slice object in this dimension to &quot;:&quot;</span>
+        <span class="n">slice1</span><span class="p">[</span><span class="n">axis_</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">slice2</span><span class="p">[</span><span class="n">axis_</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">slice3</span><span class="p">[</span><span class="n">axis_</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">slice4</span><span class="p">[</span><span class="n">axis_</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">outvals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">outvals</span><span class="p">)</span></div>
 
 
 
