@@ -1,0 +1,6 @@
+﻿dpnp.fft.fftfreq
+================
+
+.. currentmodule:: dpnp.fft
+
+.. autofunction:: fftfreq
