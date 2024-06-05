@@ -23,232 +23,20 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include "simplify_iteration_space.hpp"
 #include "dpctl4pybind11.hpp"
-#include "utils/strided_iters.hpp"
+
 #include <pybind11/pybind11.h>
 #include <vector>
+
+#include "simplify_iteration_space.hpp"
+
+// dpctl tensor headers
+#include "utils/strided_iters.hpp"
 
 namespace dpnp::extensions::py_internal
 {
 namespace py = pybind11;
-
-template <class ShapeTy, class StridesTy>
-int simplify_iteration_two_strides(const int nd,
-                                   ShapeTy *shape,
-                                   StridesTy *strides1,
-                                   StridesTy *strides2,
-                                   StridesTy &disp1,
-                                   StridesTy &disp2)
-{
-    disp1 = StridesTy(0);
-    disp2 = StridesTy(0);
-    if (nd < 2)
-        return nd;
-
-    std::vector<int> pos(nd);
-    std::iota(pos.begin(), pos.end(), 0);
-
-    std::stable_sort(
-        pos.begin(), pos.end(), [&strides1, &strides2, &shape](int i1, int i2) {
-            auto abs_str1_i1 =
-                (strides1[i1] < 0) ? -strides1[i1] : strides1[i1];
-            auto abs_str1_i2 =
-                (strides1[i2] < 0) ? -strides1[i2] : strides1[i2];
-            auto abs_str2_i1 =
-                (strides2[i1] < 0) ? -strides2[i1] : strides2[i1];
-            auto abs_str2_i2 =
-                (strides2[i2] < 0) ? -strides2[i2] : strides2[i2];
-            return (abs_str2_i1 > abs_str2_i2) ||
-                   (abs_str2_i1 == abs_str2_i2 &&
-                    (abs_str1_i1 > abs_str1_i2 ||
-                     (abs_str1_i1 == abs_str1_i2 && shape[i1] > shape[i2])));
-        });
-
-    std::vector<ShapeTy> shape_w;
-    std::vector<StridesTy> strides1_w;
-    std::vector<StridesTy> strides2_w;
-
-    bool contractable = true;
-    for (int i = 0; i < nd; ++i) {
-        auto p = pos[i];
-        auto sh_p = shape[p];
-        auto str1_p = strides1[p];
-        auto str2_p = strides2[p];
-        shape_w.push_back(sh_p);
-        if (str1_p <= 0 && str2_p <= 0 && std::min(str1_p, str2_p) < 0) {
-            disp1 += str1_p * (sh_p - 1);
-            str1_p = -str1_p;
-            disp2 += str2_p * (sh_p - 1);
-            str2_p = -str2_p;
-        }
-        if (str1_p < 0 || str2_p < 0) {
-            contractable = false;
-        }
-        strides1_w.push_back(str1_p);
-        strides2_w.push_back(str2_p);
-    }
-
-    int nd_ = nd;
-    while (contractable) {
-        bool changed = false;
-        for (int i = 0; i + 1 < nd_; ++i) {
-            StridesTy str1 = strides1_w[i + 1];
-            StridesTy str2 = strides2_w[i + 1];
-            StridesTy jump1 = strides1_w[i] - (shape_w[i + 1] - 1) * str1;
-            StridesTy jump2 = strides2_w[i] - (shape_w[i + 1] - 1) * str2;
-
-            if (jump1 == str1 && jump2 == str2) {
-                changed = true;
-                shape_w[i] *= shape_w[i + 1];
-                for (int j = i; j < nd_; ++j) {
-                    strides1_w[j] = strides1_w[j + 1];
-                }
-                for (int j = i; j < nd_; ++j) {
-                    strides2_w[j] = strides2_w[j + 1];
-                }
-                for (int j = i + 1; j + 1 < nd_; ++j) {
-                    shape_w[j] = shape_w[j + 1];
-                }
-                --nd_;
-                break;
-            }
-        }
-        if (!changed)
-            break;
-    }
-    for (int i = 0; i < nd_; ++i) {
-        shape[i] = shape_w[i];
-    }
-    for (int i = 0; i < nd_; ++i) {
-        strides1[i] = strides1_w[i];
-    }
-    for (int i = 0; i < nd_; ++i) {
-        strides2[i] = strides2_w[i];
-    }
-
-    return nd_;
-}
-
-template <class ShapeTy, class StridesTy>
-int simplify_iteration_three_strides(const int nd,
-                                     ShapeTy *shape,
-                                     StridesTy *strides1,
-                                     StridesTy *strides2,
-                                     StridesTy *strides3,
-                                     StridesTy &disp1,
-                                     StridesTy &disp2,
-                                     StridesTy &disp3)
-{
-    disp1 = StridesTy(0);
-    disp2 = StridesTy(0);
-    if (nd < 2)
-        return nd;
-
-    std::vector<int> pos(nd);
-    std::iota(pos.begin(), pos.end(), 0);
-
-    std::stable_sort(pos.begin(), pos.end(),
-                     [&strides1, &strides2, &strides3, &shape](int i1, int i2) {
-                         auto abs_str1_i1 =
-                             (strides1[i1] < 0) ? -strides1[i1] : strides1[i1];
-                         auto abs_str1_i2 =
-                             (strides1[i2] < 0) ? -strides1[i2] : strides1[i2];
-                         auto abs_str2_i1 =
-                             (strides2[i1] < 0) ? -strides2[i1] : strides2[i1];
-                         auto abs_str2_i2 =
-                             (strides2[i2] < 0) ? -strides2[i2] : strides2[i2];
-                         auto abs_str3_i1 =
-                             (strides3[i1] < 0) ? -strides3[i1] : strides3[i1];
-                         auto abs_str3_i2 =
-                             (strides3[i2] < 0) ? -strides3[i2] : strides3[i2];
-                         return (abs_str3_i1 > abs_str3_i2) ||
-                                ((abs_str3_i1 == abs_str3_i2) &&
-                                 ((abs_str2_i1 > abs_str2_i2) ||
-                                  ((abs_str2_i1 == abs_str2_i2) &&
-                                   ((abs_str1_i1 > abs_str1_i2) ||
-                                    ((abs_str1_i1 == abs_str1_i2) &&
-                                     (shape[i1] > shape[i2]))))));
-                     });
-
-    std::vector<ShapeTy> shape_w;
-    std::vector<StridesTy> strides1_w;
-    std::vector<StridesTy> strides2_w;
-    std::vector<StridesTy> strides3_w;
-
-    bool contractable = true;
-    for (int i = 0; i < nd; ++i) {
-        auto p = pos[i];
-        auto sh_p = shape[p];
-        auto str1_p = strides1[p];
-        auto str2_p = strides2[p];
-        auto str3_p = strides3[p];
-        shape_w.push_back(sh_p);
-        if (str1_p <= 0 && str2_p <= 0 && str3_p <= 0 &&
-            std::min({str1_p, str2_p, str3_p}) < 0)
-        {
-            disp1 += str1_p * (sh_p - 1);
-            str1_p = -str1_p;
-            disp2 += str2_p * (sh_p - 1);
-            str2_p = -str2_p;
-            disp3 += str3_p * (sh_p - 1);
-            str3_p = -str3_p;
-        }
-        if (str1_p < 0 || str2_p < 0 || str3_p < 0) {
-            contractable = false;
-        }
-        strides1_w.push_back(str1_p);
-        strides2_w.push_back(str2_p);
-        strides3_w.push_back(str3_p);
-    }
-    int nd_ = nd;
-    while (contractable) {
-        bool changed = false;
-        for (int i = 0; i + 1 < nd_; ++i) {
-            StridesTy str1 = strides1_w[i + 1];
-            StridesTy str2 = strides2_w[i + 1];
-            StridesTy str3 = strides3_w[i + 1];
-            StridesTy jump1 = strides1_w[i] - (shape_w[i + 1] - 1) * str1;
-            StridesTy jump2 = strides2_w[i] - (shape_w[i + 1] - 1) * str2;
-            StridesTy jump3 = strides3_w[i] - (shape_w[i + 1] - 1) * str3;
-
-            if (jump1 == str1 && jump2 == str2 && jump3 == str3) {
-                changed = true;
-                shape_w[i] *= shape_w[i + 1];
-                for (int j = i; j < nd_; ++j) {
-                    strides1_w[j] = strides1_w[j + 1];
-                }
-                for (int j = i; j < nd_; ++j) {
-                    strides2_w[j] = strides2_w[j + 1];
-                }
-                for (int j = i; j < nd_; ++j) {
-                    strides3_w[j] = strides3_w[j + 1];
-                }
-                for (int j = i + 1; j + 1 < nd_; ++j) {
-                    shape_w[j] = shape_w[j + 1];
-                }
-                --nd_;
-                break;
-            }
-        }
-        if (!changed)
-            break;
-    }
-    for (int i = 0; i < nd_; ++i) {
-        shape[i] = shape_w[i];
-    }
-    for (int i = 0; i < nd_; ++i) {
-        strides1[i] = strides1_w[i];
-    }
-    for (int i = 0; i < nd_; ++i) {
-        strides2[i] = strides2_w[i];
-    }
-    for (int i = 0; i < nd_; ++i) {
-        strides3[i] = strides3_w[i];
-    }
-
-    return nd_;
-}
+namespace st_ns = dpctl::tensor::strides;
 
 void simplify_iteration_space(int &nd,
                               const py::ssize_t *const &shape,
@@ -281,7 +69,7 @@ void simplify_iteration_space(int &nd,
                                       std::end(dst_strides));
         assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
 
-        int contracted_nd = simplify_iteration_two_strides(
+        int contracted_nd = st_ns::simplify_iteration_two_strides(
             nd, simplified_shape.data(), simplified_src_strides.data(),
             simplified_dst_strides.data(),
             src_offset, // modified by reference
@@ -365,7 +153,7 @@ void simplify_iteration_space_3(
                                       std::end(dst_strides));
         assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
 
-        int contracted_nd = simplify_iteration_three_strides(
+        int contracted_nd = st_ns::simplify_iteration_three_strides(
             nd, simplified_shape.data(), simplified_src1_strides.data(),
             simplified_src2_strides.data(), simplified_dst_strides.data(),
             src1_offset, // modified by reference
