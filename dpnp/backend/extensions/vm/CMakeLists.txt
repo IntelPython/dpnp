@@ -30,6 +30,9 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/add.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/asin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/asinh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/atan.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/atan2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/atanh.cpp
 )
 
 set(_module_src

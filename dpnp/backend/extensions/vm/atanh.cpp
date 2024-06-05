@@ -28,7 +28,7 @@
 
 #include "dpctl4pybind11.hpp"
 
-#include "asinh.hpp"
+#include "atanh.hpp"
 #include "common.hpp"
 
 // include a local copy of elementwise common header from dpctl tensor:
@@ -57,7 +57,7 @@ namespace mkl_vm = oneapi::mkl::vm;
 
 /**
  * @brief A factory to define pairs of supported types for which
- * MKL VM library provides support in oneapi::mkl::vm::asinh<T> function.
+ * MKL VM library provides support in oneapi::mkl::vm::atanh<T> function.
  *
  * @tparam T Type of input vector `a` and of result vector `y`.
  */
@@ -73,7 +73,7 @@ struct OutputType
 };
 
 template <typename T>
-static sycl::event asinh_contig_impl(sycl::queue &exec_q,
+static sycl::event atanh_contig_impl(sycl::queue &exec_q,
                                      std::size_t in_n,
                                      const char *in_a,
                                      char *out_y,
@@ -87,7 +87,7 @@ static sycl::event asinh_contig_impl(sycl::queue &exec_q,
     using resTy = typename OutputType<T>::value_type;
     resTy *y = reinterpret_cast<resTy *>(out_y);
 
-    return mkl_vm::asinh(exec_q,
+    return mkl_vm::atanh(exec_q,
                          n, // number of elements to be calculated
                          a, // pointer `a` containing input vector of size n
                          y, // pointer `y` to the output vector of size n
@@ -100,10 +100,10 @@ using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 static int output_typeid_vector[td_ns::num_types];
 static unary_contig_impl_fn_ptr_t contig_dispatch_vector[td_ns::num_types];
 
-MACRO_POPULATE_DISPATCH_VECTORS(asinh);
+MACRO_POPULATE_DISPATCH_VECTORS(atanh);
 } // namespace impl
 
-void init_asinh(py::module_ m)
+void init_atanh(py::module_ m)
 {
     using arrayT = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
@@ -112,7 +112,7 @@ void init_asinh(py::module_ m)
     using impl::contig_dispatch_vector;
     using impl::output_typeid_vector;
 
-    auto asinh_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+    auto atanh_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
                            const event_vecT &depends = {}) {
         return py_int::py_unary_ufunc(
             src, dst, exec_q, depends, output_typeid_vector,
@@ -120,19 +120,19 @@ void init_asinh(py::module_ m)
             // no support of strided implementation in OneMKL
             td_ns::NullPtrVector<impl::unary_strided_impl_fn_ptr_t>{});
     };
-    m.def("_asinh", asinh_pyapi,
-          "Call `asinh` function from OneMKL VM library to compute "
-          "inverse hyperbolic sine of vector elements",
+    m.def("_atanh", atanh_pyapi,
+          "Call `atanh` function from OneMKL VM library to compute "
+          "inverse hyperbolic tangent of vector elements",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 
-    auto asinh_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+    auto atanh_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
                                         arrayT dst) {
         return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
                                                 contig_dispatch_vector);
     };
-    m.def("_mkl_asinh_to_call", asinh_need_to_call_pyapi,
-          "Check input arguments to answer if `asinh` function from "
+    m.def("_mkl_atanh_to_call", atanh_need_to_call_pyapi,
+          "Check input arguments to answer if `atanh` function from "
           "OneMKL VM library can be used",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
 }

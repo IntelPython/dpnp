@@ -59,7 +59,7 @@ namespace mkl_vm = oneapi::mkl::vm;
  * @brief A factory to define pairs of supported types for which
  * MKL VM library provides support in oneapi::mkl::vm::add<T> function.
  *
- * @tparam T Type of input vector `a` and of result vector `y`.
+ * @tparam T Type of input vectors `a` and `b` and of result vector `y`.
  */
 template <typename T1, typename T2>
 struct OutputType

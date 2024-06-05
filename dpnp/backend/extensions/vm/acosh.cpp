@@ -122,7 +122,7 @@ void init_acosh(py::module_ m)
     };
     m.def("_acosh", acosh_pyapi,
           "Call `acosh` function from OneMKL VM library to compute "
-          "inverse cosine of vector elements",
+          "inverse hyperbolic cosine of vector elements",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 

@@ -28,7 +28,7 @@
 
 #include "dpctl4pybind11.hpp"
 
-#include "asinh.hpp"
+#include "atan2.hpp"
 #include "common.hpp"
 
 // include a local copy of elementwise common header from dpctl tensor:
@@ -57,83 +57,103 @@ namespace mkl_vm = oneapi::mkl::vm;
 
 /**
  * @brief A factory to define pairs of supported types for which
- * MKL VM library provides support in oneapi::mkl::vm::asinh<T> function.
+ * MKL VM library provides support in oneapi::mkl::vm::atan2<T> function.
  *
- * @tparam T Type of input vector `a` and of result vector `y`.
+ * @tparam T Type of input vectors `a` and `b` and of result vector `y`.
  */
-template <typename T>
+template <typename T1, typename T2>
 struct OutputType
 {
     using value_type = typename std::disjunction<
-        td_ns::TypeMapResultEntry<T, std::complex<double>>,
-        td_ns::TypeMapResultEntry<T, std::complex<float>>,
-        td_ns::TypeMapResultEntry<T, double>,
-        td_ns::TypeMapResultEntry<T, float>,
+        td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, double>,
+        td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, float>,
         td_ns::DefaultResultEntry<void>>::result_type;
 };
 
-template <typename T>
-static sycl::event asinh_contig_impl(sycl::queue &exec_q,
+template <typename T1, typename T2>
+static sycl::event atan2_contig_impl(sycl::queue &exec_q,
                                      std::size_t in_n,
                                      const char *in_a,
+                                     ssize_t a_offset,
+                                     const char *in_b,
+                                     ssize_t b_offset,
                                      char *out_y,
+                                     ssize_t out_offset,
                                      const std::vector<sycl::event> &depends)
 {
-    tu_ns::validate_type_for_device<T>(exec_q);
+    tu_ns::validate_type_for_device<T1>(exec_q);
+    tu_ns::validate_type_for_device<T2>(exec_q);
+
+    if ((a_offset != 0) || (b_offset != 0) || (out_offset != 0)) {
+        throw std::runtime_error("Arrays offsets have to be equals to 0");
+    }
 
     std::int64_t n = static_cast<std::int64_t>(in_n);
-    const T *a = reinterpret_cast<const T *>(in_a);
+    const T1 *a = reinterpret_cast<const T1 *>(in_a);
+    const T2 *b = reinterpret_cast<const T2 *>(in_b);
 
-    using resTy = typename OutputType<T>::value_type;
+    using resTy = typename OutputType<T1, T2>::value_type;
     resTy *y = reinterpret_cast<resTy *>(out_y);
 
-    return mkl_vm::asinh(exec_q,
+    return mkl_vm::atan2(exec_q,
                          n, // number of elements to be calculated
-                         a, // pointer `a` containing input vector of size n
+                         a, // pointer `a` containing 1st input vector of size n
+                         b, // pointer `b` containing 2nd input vector of size n
                          y, // pointer `y` to the output vector of size n
                          depends);
 }
 
-using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
-using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
+using ew_cmn_ns::binary_contig_impl_fn_ptr_t;
+using ew_cmn_ns::binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
+using ew_cmn_ns::binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
+using ew_cmn_ns::binary_strided_impl_fn_ptr_t;
 
-static int output_typeid_vector[td_ns::num_types];
-static unary_contig_impl_fn_ptr_t contig_dispatch_vector[td_ns::num_types];
+static int output_typeid_vector[td_ns::num_types][td_ns::num_types];
+static binary_contig_impl_fn_ptr_t contig_dispatch_vector[td_ns::num_types]
+                                                         [td_ns::num_types];
 
-MACRO_POPULATE_DISPATCH_VECTORS(asinh);
+MACRO_POPULATE_DISPATCH_TABLES(atan2);
 } // namespace impl
 
-void init_asinh(py::module_ m)
+void init_atan2(py::module_ m)
 {
     using arrayT = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
 
-    impl::populate_dispatch_vectors();
+    impl::populate_dispatch_tables();
     using impl::contig_dispatch_vector;
     using impl::output_typeid_vector;
 
-    auto asinh_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                           const event_vecT &depends = {}) {
-        return py_int::py_unary_ufunc(
-            src, dst, exec_q, depends, output_typeid_vector,
+    auto atan2_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
+                           arrayT dst, const event_vecT &depends = {}) {
+        return py_int::py_binary_ufunc(
+            src1, src2, dst, exec_q, depends, output_typeid_vector,
             contig_dispatch_vector,
             // no support of strided implementation in OneMKL
-            td_ns::NullPtrVector<impl::unary_strided_impl_fn_ptr_t>{});
+            td_ns::NullPtrTable<impl::binary_strided_impl_fn_ptr_t>{},
+            // no support of C-contig row with broadcasting in OneMKL
+            td_ns::NullPtrTable<
+                impl::
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+            td_ns::NullPtrTable<
+                impl::
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
     };
-    m.def("_asinh", asinh_pyapi,
-          "Call `asinh` function from OneMKL VM library to compute "
-          "inverse hyperbolic sine of vector elements",
-          py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-          py::arg("depends") = py::list());
+    m.def("_atan2", atan2_pyapi,
+          "Call `atan2` function from OneMKL VM library to compute element "
+          "by element inverse tangent of `x1/x2`",
+          py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+          py::arg("dst"), py::arg("depends") = py::list());
 
-    auto asinh_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                        arrayT dst) {
-        return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                contig_dispatch_vector);
+    auto atan2_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
+                                        arrayT src2, arrayT dst) {
+        return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
+                                                 contig_dispatch_vector);
     };
-    m.def("_mkl_asinh_to_call", asinh_need_to_call_pyapi,
-          "Check input arguments to answer if `asinh` function from "
+    m.def("_mkl_atan2_to_call", atan2_need_to_call_pyapi,
+          "Check input arguments to answer if `atan2` function from "
           "OneMKL VM library can be used",
-          py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
+          py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
+          py::arg("dst"));
 }
 } // namespace dpnp::extensions::vm

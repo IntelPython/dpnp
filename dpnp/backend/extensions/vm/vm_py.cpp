@@ -75,9 +75,6 @@ namespace vm_ns = dpnp::extensions::vm;
 using vm_ext::binary_impl_fn_ptr_t;
 using vm_ext::unary_impl_fn_ptr_t;
 
-static unary_impl_fn_ptr_t atan_dispatch_vector[dpctl_td_ns::num_types];
-static binary_impl_fn_ptr_t atan2_dispatch_vector[dpctl_td_ns::num_types];
-static unary_impl_fn_ptr_t atanh_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t cbrt_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t ceil_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t conj_dispatch_vector[dpctl_td_ns::num_types];
@@ -116,91 +113,9 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_add(m);
     vm_ns::init_asin(m);
     vm_ns::init_asinh(m);
-
-    // UnaryUfunc: ==== Atan(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::AtanContigFactory>(
-            atan_dispatch_vector);
-
-        auto atan_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                              const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       atan_dispatch_vector);
-        };
-        m.def("_atan", atan_pyapi,
-              "Call `atan` function from OneMKL VM library to compute "
-              "inverse tangent of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto atan_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                           arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    atan_dispatch_vector);
-        };
-        m.def("_mkl_atan_to_call", atan_need_to_call_pyapi,
-              "Check input arguments to answer if `atan` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
-
-    // BinaryUfunc: ==== Atan2(x1, x2) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<binary_impl_fn_ptr_t,
-                                           vm_ext::Atan2ContigFactory>(
-            atan2_dispatch_vector);
-
-        auto atan2_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
-                               arrayT dst, const event_vecT &depends = {}) {
-            return vm_ext::binary_ufunc(exec_q, src1, src2, dst, depends,
-                                        atan2_dispatch_vector);
-        };
-        m.def("_atan2", atan2_pyapi,
-              "Call `atan2` function from OneMKL VM library to compute element "
-              "by element inverse tangent of `x1/x2`",
-              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
-              py::arg("dst"), py::arg("depends") = py::list());
-
-        auto atan2_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
-                                            arrayT src2, arrayT dst) {
-            return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
-                                                     atan2_dispatch_vector);
-        };
-        m.def("_mkl_atan2_to_call", atan2_need_to_call_pyapi,
-              "Check input arguments to answer if `atan2` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
-              py::arg("dst"));
-    }
-
-    // UnaryUfunc: ==== Atanh(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::AtanhContigFactory>(
-            atanh_dispatch_vector);
-
-        auto atanh_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                               const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       atanh_dispatch_vector);
-        };
-        m.def("_atanh", atanh_pyapi,
-              "Call `atanh` function from OneMKL VM library to compute "
-              "inverse cosine of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto atanh_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                            arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    atanh_dispatch_vector);
-        };
-        m.def("_mkl_atanh_to_call", atanh_need_to_call_pyapi,
-              "Check input arguments to answer if `atanh` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
+    vm_ns::init_atan(m);
+    vm_ns::init_atan2(m);
+    vm_ns::init_atanh(m);
 
     // UnaryUfunc: ==== Cbrt(x) ====
     {
