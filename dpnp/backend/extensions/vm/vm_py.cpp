@@ -75,7 +75,6 @@ namespace vm_ns = dpnp::extensions::vm;
 using vm_ext::binary_impl_fn_ptr_t;
 using vm_ext::unary_impl_fn_ptr_t;
 
-static unary_impl_fn_ptr_t acosh_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t add_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t asin_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t asinh_dispatch_vector[dpctl_td_ns::num_types];
@@ -116,34 +115,7 @@ PYBIND11_MODULE(_vm_impl, m)
 
     vm_ns::init_abs(m);
     vm_ns::init_acos(m);
-
-    // UnaryUfunc: ==== Acosh(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::AcoshContigFactory>(
-            acosh_dispatch_vector);
-
-        auto acosh_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                               const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       acosh_dispatch_vector);
-        };
-        m.def("_acosh", acosh_pyapi,
-              "Call `acosh` function from OneMKL VM library to compute "
-              "inverse cosine of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto acosh_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                            arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    acosh_dispatch_vector);
-        };
-        m.def("_mkl_acosh_to_call", acosh_need_to_call_pyapi,
-              "Check input arguments to answer if `acosh` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
+    vm_ns::init_acosh(m);
 
     // BinaryUfunc: ==== Add(x1, x2) ====
     {
