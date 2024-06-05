@@ -435,23 +435,9 @@ bool need_to_call_binary_ufunc(sycl::queue exec_q,
 }
 
 /**
- * @brief A factory with no support provided to the implementation.
- *
- * @tparam fnT Type of function pointer to dispatch the implementation
- * @tparam T Type of input vector
- */
-template <typename fnT, typename T>
-struct NoSupportFactory
-{
-    fnT get()
-    {
-        return nullptr;
-    }
-};
-
-/**
- * @brief A macro used to define factories and a populating function to dispatch
- * to a callback with proper OneMKL function within VM extension scope.
+ * @brief A macro used to define factories and a populating unary functions
+ * to dispatch to a callback with proper OneMKL function within VM extension
+ * scope.
  */
 #define MACRO_POPULATE_DISPATCH_VECTORS(__name__)                              \
     template <typename fnT, typename T>                                        \
@@ -486,10 +472,47 @@ struct NoSupportFactory
         vm_ext::init_ufunc_dispatch_vector<unary_contig_impl_fn_ptr_t,         \
                                            ContigFactory>(                     \
             contig_dispatch_vector);                                           \
-        /* no support of strided implementation in OneMKL */                   \
-        vm_ext::init_ufunc_dispatch_vector<unary_strided_impl_fn_ptr_t,        \
-                                           vm_ext::NoSupportFactory>(          \
-            strided_dispatch_vector);                                          \
+    };
+
+/**
+ * @brief A macro used to define factories and a populating binary functions
+ * to dispatch to a callback with proper OneMKL function within VM extension
+ * scope.
+ */
+#define MACRO_POPULATE_DISPATCH_TABLES(__name__)                               \
+    template <typename fnT, typename T1, typename T2>                          \
+    struct ContigFactory                                                       \
+    {                                                                          \
+        fnT get()                                                              \
+        {                                                                      \
+            if constexpr (std::is_same_v<                                      \
+                              typename OutputType<T1, T2>::value_type, void>)  \
+            {                                                                  \
+                return nullptr;                                                \
+            }                                                                  \
+            else {                                                             \
+                return __name__##_contig_impl<T1, T2>;                         \
+            }                                                                  \
+        }                                                                      \
+    };                                                                         \
+                                                                               \
+    template <typename fnT, typename T1, typename T2>                          \
+    struct TypeMapFactory                                                      \
+    {                                                                          \
+        std::enable_if_t<std::is_same<fnT, int>::value, int> get()             \
+        {                                                                      \
+            using rT = typename OutputType<T1, T2>::value_type;                \
+            return td_ns::GetTypeid<rT>{}.get();                               \
+        }                                                                      \
+    };                                                                         \
+                                                                               \
+    static void populate_dispatch_tables(void)                                 \
+    {                                                                          \
+        vm_ext::init_ufunc_dispatch_table<int, TypeMapFactory>(                \
+            output_typeid_vector);                                             \
+        vm_ext::init_ufunc_dispatch_table<binary_contig_impl_fn_ptr_t,         \
+                                          ContigFactory>(                      \
+            contig_dispatch_vector);                                           \
     };
 
 template <typename dispatchT,
@@ -498,7 +521,17 @@ template <typename dispatchT,
           int _num_types = dpctl_td_ns::num_types>
 void init_ufunc_dispatch_vector(dispatchT dispatch_vector[])
 {
-    dpctl_td_ns::DispatchVectorBuilder<dispatchT, factoryT, _num_types> contig;
-    contig.populate_dispatch_vector(dispatch_vector);
+    dpctl_td_ns::DispatchVectorBuilder<dispatchT, factoryT, _num_types> dvb;
+    dvb.populate_dispatch_vector(dispatch_vector);
+}
+
+template <typename dispatchT,
+          template <typename fnT, typename D, typename S>
+          typename factoryT,
+          int _num_types = dpctl_td_ns::num_types>
+void init_ufunc_dispatch_table(dispatchT dispatch_table[][_num_types])
+{
+    dpctl_td_ns::DispatchTableBuilder<dispatchT, factoryT, _num_types> dtb;
+    dtb.populate_dispatch_table(dispatch_table);
 }
 } // namespace dpnp::backend::ext::vm

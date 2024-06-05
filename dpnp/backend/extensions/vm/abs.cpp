@@ -99,7 +99,6 @@ using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
 static int output_typeid_vector[td_ns::num_types];
 static unary_contig_impl_fn_ptr_t contig_dispatch_vector[td_ns::num_types];
-static unary_strided_impl_fn_ptr_t strided_dispatch_vector[td_ns::num_types];
 
 MACRO_POPULATE_DISPATCH_VECTORS(abs);
 } // namespace impl
@@ -112,13 +111,14 @@ void init_abs(py::module_ m)
     impl::populate_dispatch_vectors();
     using impl::contig_dispatch_vector;
     using impl::output_typeid_vector;
-    using impl::strided_dispatch_vector;
 
     auto abs_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
                          const event_vecT &depends = {}) {
         return py_int::py_unary_ufunc(
             src, dst, exec_q, depends, output_typeid_vector,
-            contig_dispatch_vector, strided_dispatch_vector);
+            contig_dispatch_vector,
+            // no support of strided implementation in OneMKL
+            td_ns::NullPtrVector<impl::unary_strided_impl_fn_ptr_t>{});
     };
     m.def("_abs", abs_pyapi,
           "Call `abs` function from OneMKL VM library to compute "
