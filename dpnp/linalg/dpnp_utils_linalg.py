@@ -116,7 +116,7 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
 
     a_orig_shape = a.shape
     # get 3d input array by reshape
-    a = a.reshape(-1, a_orig_shape[-2], a_orig_shape[-1])
+    a = dpnp.reshape(a, (-1, a_orig_shape[-2], a_orig_shape[-1]))
 
     ht_list_ev = []
 
