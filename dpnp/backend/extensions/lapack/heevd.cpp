@@ -328,6 +328,9 @@ std::pair<sycl::event, sycl::event>
     std::vector<sycl::event> host_task_events;
     std::vector<sycl::event> heevd_task_events;
 
+    host_task_events.reserve(batch_size);
+    heevd_task_events.reserve(batch_size);
+
     // Release GIL to avoid serialization of host task
     // submissions to the same queue in OneMKL
     py::gil_scoped_release release;
