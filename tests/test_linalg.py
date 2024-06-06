@@ -619,6 +619,12 @@ class TestEinsum:
         with pytest.raises(TypeError):
             inp.einsum("ii->i", a, copy=False)
 
+        a = inp.ones((5, 5))
+        out = inp.empty((5,), sycl_queue=dpctl.SyclQueue())
+        # inconsistent sycl_queue
+        with pytest.raises(ExecutionPlacementError):
+            inp.einsum("ii->i", a, out=out)
+
         # unknown value for optimize keyword
         with pytest.raises(TypeError):
             inp.einsum("ii->i", a, optimize="average")

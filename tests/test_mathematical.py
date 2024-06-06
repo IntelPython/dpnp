@@ -2,6 +2,7 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
+from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
@@ -2976,19 +2977,95 @@ class TestMatmul:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
+        "order_pair",
+        [
+            ("C", "C", "C"),
+            ("C", "C", "F"),
+            ("C", "F", "C"),
+            ("C", "F", "F"),
+            ("F", "C", "C"),
+            ("F", "C", "F"),
+            ("F", "F", "F"),
+            ("F", "F", "C"),
+        ],
+    )
+    @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
-    def test_matmul_out(self, dtype):
-        a1 = numpy.arange(5 * 4, dtype=dtype).reshape(5, 4)
-        a2 = numpy.arange(7 * 4, dtype=dtype).reshape(4, 7)
+    def test_matmul_out1(self, order_pair, dtype):
+        order1, order2, out_order = order_pair
+        a1 = numpy.arange(20, dtype=dtype).reshape(5, 4)
+        a2 = numpy.arange(28, dtype=dtype).reshape(4, 7)
+
+        a1 = numpy.asarray(a1, order=order1)
+        a2 = numpy.asarray(a2, order=order2)
 
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
 
-        dpnp_out = dpnp.empty((5, 7), dtype=dtype)
+        dpnp_out = dpnp.empty((5, 7), dtype=dtype, order=out_order)
         result = dpnp.matmul(b1, b2, out=dpnp_out)
-        expected = numpy.matmul(a1, a2)
         assert result is dpnp_out
+
+        out = numpy.empty((5, 7), dtype=dtype, order=out_order)
+        expected = numpy.matmul(a1, a2, out=out)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("trans", [True, False])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    def test_matmul_out2(self, trans, dtype):
+        a1 = numpy.arange(24, dtype=dtype).reshape(2, 3, 4)
+        a2 = numpy.arange(40, dtype=dtype).reshape(2, 4, 5)
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        if trans:
+            dpnp_out = dpnp.empty((2, 5, 3), dtype=dtype).transpose(0, 2, 1)
+            out = numpy.empty((2, 5, 3), dtype=dtype).transpose(0, 2, 1)
+        else:
+            dpnp_out = dpnp.empty((2, 3, 5), dtype=dtype)
+            out = numpy.empty((2, 3, 5), dtype=dtype)
+
+        result = dpnp.matmul(b1, b2, out=dpnp_out)
+        assert result is dpnp_out
+
+        expected = numpy.matmul(a1, a2, out=out)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("trans", [True, False])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    def test_matmul_out3(self, trans, dtype):
+        a1 = numpy.arange(24, dtype=dtype).reshape(2, 4, 3)
+        a2 = numpy.arange(40, dtype=dtype).reshape(2, 5, 4)
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        a1 = numpy.asarray(a1).transpose(0, 2, 1)
+        a2 = numpy.asarray(a2).transpose(0, 2, 1)
+        b1 = b1.transpose(0, 2, 1)
+        b2 = b2.transpose(0, 2, 1)
+
+        if trans:
+            dpnp_out = dpnp.empty((2, 5, 3), dtype=dtype).transpose(0, 2, 1)
+            out = numpy.empty((2, 5, 3), dtype=dtype).transpose(0, 2, 1)
+        else:
+            dpnp_out = dpnp.empty((2, 3, 5), dtype=dtype)
+            out = numpy.empty((2, 3, 5), dtype=dtype)
+
+        result = dpnp.matmul(b1, b2, out=dpnp_out)
+        assert result is dpnp_out
+
+        expected = numpy.matmul(a1, a2, out=out)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
@@ -3107,9 +3184,14 @@ class TestMatmulInvalidCases:
     def test_exe_q(self):
         x1 = dpnp.ones((5, 4), sycl_queue=dpctl.SyclQueue())
         x2 = dpnp.ones((4, 7), sycl_queue=dpctl.SyclQueue())
-
         with pytest.raises(ValueError):
             dpnp.matmul(x1, x2)
+
+        x1 = dpnp.ones((5, 4))
+        x2 = dpnp.ones((4, 7))
+        out = dpnp.empty((5, 7), sycl_queue=dpctl.SyclQueue())
+        with pytest.raises(ExecutionPlacementError):
+            dpnp.matmul(x1, x2, out=out)
 
     def test_matmul_casting(self):
         a1 = dpnp.arange(2 * 4, dtype=dpnp.float32).reshape(2, 4)
