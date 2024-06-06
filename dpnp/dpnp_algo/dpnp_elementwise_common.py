@@ -31,6 +31,7 @@ from dpctl.tensor._elementwise_common import (
 )
 
 import dpnp
+import dpnp.dpnp_algo.dpnp_elementwise_docs as ufunc_docs
 from dpnp.dpnp_array import dpnp_array
 
 __all__ = [
@@ -44,6 +45,8 @@ __all__ = [
     "DPNPRound",
     "DPNPUnaryFunc",
     "ufunc",
+    "unary_ufunc",
+    "binary_ufunc",
 ]
 
 
@@ -54,13 +57,20 @@ import dpnp.backend.extensions.vm._vm_impl as vmi
 
 class ufunc:
     """
-    ufunc(name, docs, nin, ...)
+    ufunc()
 
-    DPNP provides universal functions (a.k.a. ufuncs) to support various
-    element-wise operations.
+    Functions that operate element by element on whole arrays.
 
-    Optional keyword arguments
-    --------------------------
+    Calling ufuncs
+    --------------
+    op(*x[, out], **kwargs)
+
+    Apply `op` to the arguments `*x` elementwise, broadcasting the arguments.
+
+    Parameters
+    ----------
+    *x : {dpnp.ndarray, usm_ndarray}
+        Input arrays.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -85,86 +95,17 @@ class ufunc:
     def __init__(
         self,
         name,
-        docs,
         nin,
-        mkl_call=False,
-        inplace=False,
-        acceptance_fn=False,
+        nout=1,
+        func=None,
+        to_usm_astype=None,
     ):
-        self.name_ = name
         self.nin_ = nin
-        _name = "_" + name
-
-        dpt_result_type = getattr(ti, _name + "_result_type")
-        dpt_impl_fn = getattr(ti, _name)
-
-        if nin == 1:
-
-            def _call_func(src, dst, sycl_queue, depends=None):
-                """
-                A callback to register in UnaryElementwiseFunc class of
-                dpctl.tensor
-                """
-
-                if depends is None:
-                    depends = []
-
-                if mkl_call is True:
-                    mkl_fn_to_call = getattr(vmi, "_mkl" + _name + "_to_call")
-                    mkl_impl_fn = getattr(vmi, _name)
-                    if mkl_fn_to_call is not None and mkl_fn_to_call(
-                        sycl_queue, src, dst
-                    ):
-                        # call pybind11 extension for unary function from OneMKL VM
-                        return mkl_impl_fn(sycl_queue, src, dst, depends)
-                return dpt_impl_fn(src, dst, sycl_queue, depends)
-
-            self.func = UnaryElementwiseFunc(
-                name,
-                dpt_result_type,
-                _call_func,
-                docs,
-                acceptance_fn=acceptance_fn,
-            )
-
-        elif nin == 2:
-            if inplace is True:
-                binary_inplace_fn = getattr(ti, _name + "_inplace")
-            else:
-                binary_inplace_fn = None
-
-            def _call_func(src1, src2, dst, sycl_queue, depends=None):
-                """
-                A callback to register in UnaryElementwiseFunc class of
-                dpctl.tensor
-                """
-
-                if depends is None:
-                    depends = []
-
-                if mkl_call is True:
-                    mkl_fn_to_call = getattr(vmi, "_mkl" + _name + "_to_call")
-                    mkl_impl_fn = getattr(vmi, _name)
-                    if mkl_fn_to_call is not None and mkl_fn_to_call(
-                        sycl_queue, src1, src2, dst
-                    ):
-                        # call pybind11 extension for binary function from OneMKL VM
-                        return mkl_impl_fn(sycl_queue, src1, src2, dst, depends)
-                return dpt_impl_fn(src1, src2, dst, sycl_queue, depends)
-
-            self.func = BinaryElementwiseFunc(
-                name,
-                dpt_result_type,
-                _call_func,
-                docs,
-                binary_inplace_fn,
-                acceptance_fn=acceptance_fn,
-            )
-        else:
-            raise NotImplementedError
-
-        self.__doc__ = docs
-        self.__name__ = "ufunc"
+        self.nout_ = nout
+        self.func = func
+        self.to_usm_astype = to_usm_astype
+        self.__name__ = name
+        self.__doc__ = getattr(ufunc_docs, name + "_docstring")
 
     def __call__(
         self,
@@ -182,23 +123,23 @@ class ufunc:
         )
         if kwargs:
             raise NotImplementedError(
-                f"Requested function={self.name_} with kwargs={kwargs} "
+                f"Requested function={self.__name__} with kwargs={kwargs} "
                 "isn't currently supported."
             )
         if where is not True:
             raise NotImplementedError(
-                f"Requested function={self.name_} with where={where} "
+                f"Requested function={self.__name__} with where={where} "
                 "isn't currently supported."
             )
         if subok is not True:
             raise NotImplementedError(
-                f"Requested function={self.name_} with subok={subok} "
+                f"Requested function={self.__name__} with subok={subok} "
                 "isn't currently supported."
             )
-        if dtype is not None and out is not None:
+        if (dtype is not None or casting != "same_kind") and out is not None:
             raise TypeError(
-                f"Requested function={self.name_} only takes `out` or `dtype`"
-                "as an argument, but both were provided."
+                f"Requested function={self.__name__} only takes `out` or "
+                "`dtype` as an argument, but both were provided."
             )
         if order is None:
             order = "K"
@@ -209,40 +150,7 @@ class ufunc:
                 f"order must be one of 'C', 'F', 'A', or 'K' (got '{order}')"
             )
 
-        if self.nin_ == 1:
-            if out is None and len(args) == 2:
-                out = args[1]
-            x = args[0]
-            if dtype is not None:
-                x = dpnp.astype(x, dtype=dtype, casting=casting, copy=False)
-            x_usm = dpnp.get_usm_ndarray(x)
-            astype_usm_args = (x_usm,)
-        else:
-            if out is None and len(args) == 3:
-                out = args[2]
-            x1, x2 = args[0], args[1]
-            if dtype is not None:
-                if dpnp.isscalar(x1):
-                    x1 = dpnp.asarray(x1, dtype=dtype)
-                    x2 = dpnp.astype(
-                        x2, dtype=dtype, casting=casting, copy=False
-                    )
-                elif dpnp.isscalar(x2):
-                    x1 = dpnp.astype(
-                        x1, dtype=dtype, casting=casting, copy=False
-                    )
-                    x2 = dpnp.asarray(x2, dtype=dtype)
-                else:
-                    x1 = dpnp.astype(
-                        x1, dtype=dtype, casting=casting, copy=False
-                    )
-                    x2 = dpnp.astype(
-                        x2, dtype=dtype, casting=casting, copy=False
-                    )
-
-            x1_usm = dpnp.get_usm_ndarray_or_scalar(x1)
-            x2_usm = dpnp.get_usm_ndarray_or_scalar(x2)
-            astype_usm_args = x1_usm, x2_usm
+        astype_usm_args = self.to_usm_astype(*args, dtype, casting)
 
         out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
@@ -292,7 +200,7 @@ class ufunc:
 
         """
 
-        return 1
+        return self.nout_
 
     @property
     def nargs(self):
@@ -313,7 +221,7 @@ class ufunc:
 
         """
 
-        return self.nin_ + 1
+        return self.nin_ + self.nout_
 
     @property
     def types(self):
@@ -467,6 +375,126 @@ class ufunc:
             subok=subok,
             **kwargs,
         )
+
+
+class unary_ufunc(ufunc):
+    def __init__(
+        self,
+        name,
+        mkl_call=False,
+        acceptance_fn=False,
+    ):
+        def _to_usm_astype(x, dtype, casting):
+            if dtype is not None:
+                x = dpnp.astype(x, dtype=dtype, casting=casting, copy=False)
+            x_usm = dpnp.get_usm_ndarray(x)
+            return (x_usm,)
+
+        _name = "_" + name
+
+        dpt_result_type = getattr(ti, _name + "_result_type")
+        dpt_impl_fn = getattr(ti, _name)
+
+        def _call_func(src, dst, sycl_queue, depends=None):
+            """
+            A callback to register in UnaryElementwiseFunc class of
+            dpctl.tensor
+            """
+
+            if depends is None:
+                depends = []
+
+            if mkl_call is True:
+                mkl_fn_to_call = getattr(vmi, "_mkl" + _name + "_to_call")
+                mkl_impl_fn = getattr(vmi, _name)
+                if mkl_fn_to_call is not None and mkl_fn_to_call(
+                    sycl_queue, src, dst
+                ):
+                    # call pybind11 extension for unary function from OneMKL VM
+                    return mkl_impl_fn(sycl_queue, src, dst, depends)
+            return dpt_impl_fn(src, dst, sycl_queue, depends)
+
+        func = UnaryElementwiseFunc(
+            name,
+            dpt_result_type,
+            _call_func,
+            self.__doc__,
+            acceptance_fn=acceptance_fn,
+        )
+
+        super().__init__(name, nin=1, func=func, to_usm_astype=_to_usm_astype)
+
+
+class binary_ufunc(ufunc):
+    def __init__(
+        self,
+        name,
+        mkl_call=False,
+        inplace=False,
+        acceptance_fn=False,
+    ):
+        def _to_usm_astype(x1, x2, dtype, casting):
+            if dtype is not None:
+                if dpnp.isscalar(x1):
+                    x1 = dpnp.asarray(x1, dtype=dtype)
+                    x2 = dpnp.astype(
+                        x2, dtype=dtype, casting=casting, copy=False
+                    )
+                elif dpnp.isscalar(x2):
+                    x1 = dpnp.astype(
+                        x1, dtype=dtype, casting=casting, copy=False
+                    )
+                    x2 = dpnp.asarray(x2, dtype=dtype)
+                else:
+                    x1 = dpnp.astype(
+                        x1, dtype=dtype, casting=casting, copy=False
+                    )
+                    x2 = dpnp.astype(
+                        x2, dtype=dtype, casting=casting, copy=False
+                    )
+            x1_usm = dpnp.get_usm_ndarray_or_scalar(x1)
+            x2_usm = dpnp.get_usm_ndarray_or_scalar(x2)
+            return x1_usm, x2_usm
+
+        _name = "_" + name
+
+        dpt_result_type = getattr(ti, _name + "_result_type")
+        dpt_impl_fn = getattr(ti, _name)
+
+        if inplace is True:
+            binary_inplace_fn = getattr(ti, _name + "_inplace")
+        else:
+            binary_inplace_fn = None
+
+        def _call_func(src1, src2, dst, sycl_queue, depends=None):
+            """
+            A callback to register in UnaryElementwiseFunc class of
+            dpctl.tensor
+            """
+
+            if depends is None:
+                depends = []
+
+            if mkl_call is True:
+                mkl_fn_to_call = getattr(vmi, "_mkl" + _name + "_to_call")
+                mkl_impl_fn = getattr(vmi, _name)
+                if mkl_fn_to_call is not None and mkl_fn_to_call(
+                    sycl_queue, src1, src2, dst
+                ):
+                    # call pybind11 extension for binary function from OneMKL VM
+                    return mkl_impl_fn(sycl_queue, src1, src2, dst, depends)
+            return dpt_impl_fn(src1, src2, dst, sycl_queue, depends)
+
+        func = BinaryElementwiseFunc(
+            name,
+            dpt_result_type,
+            _call_func,
+            self.__doc__,
+            binary_inplace_fn,
+            acceptance_fn=acceptance_fn,
+        )
+
+        super().__init__(name, nin=2, func=func, to_usm_astype=_to_usm_astype)
 
 
 class DPNPUnaryFunc(UnaryElementwiseFunc):

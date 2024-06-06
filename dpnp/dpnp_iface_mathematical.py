@@ -77,6 +77,8 @@ from .dpnp_algo.dpnp_elementwise_common import (
     acceptance_fn_positive,
     acceptance_fn_sign,
     acceptance_fn_subtract,
+    binary_ufunc,
+    unary_ufunc,
 )
 from .dpnp_array import dpnp_array
 from .dpnp_utils import call_origin, get_usm_allocations
@@ -171,115 +173,13 @@ def _get_reduction_res_dt(a, dtype, _out):
     return dtu._to_device_supported_dtype(dtype, a.sycl_device)
 
 
-_ABS_DOCSTRING = """
-abs(x, out, **kwargs)
-
-Calculates the absolute value for each element `x_i` of input array `x`.
-
-For full documentation refer to :obj:`numpy.absolute`.
-
-Parameters
-----------
-x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
-    Output array to populate.
-    Array must have the correct shape and the expected data type.
-**kwargs
-    For other keyword-only arguments, see the :obj:`dpnp.ufunc`.
-
-Returns
--------
-out : dpnp.ndarray
-    An array containing the element-wise absolute values.
-    For complex input, the absolute value is its magnitude.
-    If `x` has a real-valued data type, the returned array has the
-    same data type as `x`. If `x` has a complex floating-point data type,
-    the returned array has a real-valued floating-point data type whose
-    precision matches the precision of `x`.
-
-See Also
---------
-:obj:`dpnp.fabs` : Calculate the absolute value element-wise excluding complex types.
-
-Notes
------
-``dpnp.abs`` is a shorthand for this function.
-
-Examples
---------
->>> import dpnp as np
->>> a = np.array([-1.2, 1.2])
->>> np.absolute(a)
-array([1.2, 1.2])
-
->>> a = np.array(1.2 + 1j)
->>> np.absolute(a)
-array(1.5620499351813308)
-"""
-
-absolute = ufunc("abs", _ABS_DOCSTRING, 1, mkl_call=True)
+absolute = unary_ufunc("abs", mkl_call=True)
 
 
 abs = absolute
 
 
-_ADD_DOCSTRING = """
-add(x1, x2, out, **kwargs)
-
-Calculates the sum for each element `x1_i` of the input array `x1` with
-the respective element `x2_i` of the input array `x2`.
-
-For full documentation refer to :obj:`numpy.add`.
-
-Parameters
-----------
-x1 : {dpnp.ndarray, usm_ndarray}
-    First input array, expected to have numeric data type.
-x2 : {dpnp.ndarray, usm_ndarray}
-    Second input array, also expected to have numeric data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
-    Output array to populate.
-    Array must have the correct shape and the expected data type.
-**kwargs
-    For other keyword-only arguments, see the :obj:`dpnp.ufunc`.
-
-Returns
--------
-out : dpnp.ndarray
-    An array containing the element-wise sums. The data type of the
-    returned array is determined by the Type Promotion Rules.
-
-Notes
------
-Equivalent to `x1` + `x2` in terms of array broadcasting.
-
-Examples
---------
->>> import dpnp as np
->>> a = np.array([1, 2, 3])
->>> b = np.array([1, 2, 3])
->>> np.add(a, b)
-array([2, 4, 6])
-
->>> x1 = np.arange(9.0).reshape((3, 3))
->>> x2 = np.arange(3.0)
->>> np.add(x1, x2)
-array([[  0.,   2.,   4.],
-       [  3.,   5.,   7.],
-       [  6.,   8.,  10.]])
-
-The ``+`` operator can be used as a shorthand for ``add`` on
-:class:`dpnp.ndarray`.
-
->>> x1 + x2
-array([[  0.,   2.,   4.],
-       [  3.,   5.,   7.],
-       [  6.,   8.,  10.]])
-"""
-
-
-add = ufunc("add", _ADD_DOCSTRING, 2, mkl_call=True, inplace=True)
+add = binary_ufunc("add", mkl_call=True, inplace=True)
 
 
 _ANGLE_DOCSTRING = """
