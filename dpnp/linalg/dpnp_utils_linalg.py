@@ -267,18 +267,109 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
 
     """
 
-    a_usm_arr = dpnp.get_usm_ndarray(a)
-    b_usm_arr = dpnp.get_usm_ndarray(b)
+    new = True
 
-    b_order = "C" if b.flags.c_contiguous else "F"
-    a_shape = a.shape
-    b_shape = b.shape
+    if not new:
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+        b_usm_arr = dpnp.get_usm_ndarray(b)
 
-    is_cpu_device = exec_q.sycl_device.has_aspect_cpu
-    reshape = False
-    orig_shape_b = b_shape
-    if a.ndim > 3:
-        # get 3d input arrays by reshape
+        b_order = "C" if b.flags.c_contiguous else "F"
+        a_shape = a.shape
+        b_shape = b.shape
+
+        is_cpu_device = exec_q.sycl_device.has_aspect_cpu
+        reshape = False
+        orig_shape_b = b_shape
+        if a.ndim > 3:
+            # get 3d input arrays by reshape
+            if a.ndim == b.ndim:
+                b = b.reshape(-1, b_shape[-2], b_shape[-1])
+            else:
+                b = b.reshape(-1, b_shape[-1])
+
+            a = a.reshape(-1, a_shape[-2], a_shape[-1])
+
+            a_usm_arr = dpnp.get_usm_ndarray(a)
+            b_usm_arr = dpnp.get_usm_ndarray(b)
+            reshape = True
+
+        batch_size = a.shape[0]
+
+        coeff_vecs = [None] * batch_size
+        val_vecs = [None] * batch_size
+        a_ht_copy_ev = [None] * batch_size
+        b_ht_copy_ev = [None] * batch_size
+        ht_lapack_ev = [None] * batch_size
+
+        for i in range(batch_size):
+            # oneMKL LAPACK assumes fortran-like array as input, so allocate
+            # a memory with 'F' order for dpnp array of coefficient matrix
+            coeff_vecs[i] = dpnp.empty_like(
+                a[i], order="F", dtype=res_type, usm_type=res_usm_type
+            )
+
+            # use DPCTL tensor function to fill the coefficient matrix array
+            # with content from the input array
+            a_ht_copy_ev[i], a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_usm_arr[i],
+                dst=coeff_vecs[i].get_array(),
+                sycl_queue=a.sycl_queue,
+            )
+
+            # oneMKL LAPACK assumes fortran-like array as input, so
+            # allocate a memory with 'F' order for dpnp array of multiple
+            # dependent variables array
+            val_vecs[i] = dpnp.empty_like(
+                b[i], order="F", dtype=res_type, usm_type=res_usm_type
+            )
+
+            # use DPCTL tensor function to fill the array of multiple dependent
+            # variables with content from the input arrays
+            b_ht_copy_ev[i], b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=b_usm_arr[i],
+                dst=val_vecs[i].get_array(),
+                sycl_queue=b.sycl_queue,
+            )
+
+            # Call the LAPACK extension function _gesv to solve the system of
+            # linear equations using a portion of the coefficient square matrix
+            # and a corresponding portion of the dependent variables array.
+            ht_lapack_ev[i], _ = li._gesv(
+                exec_q,
+                coeff_vecs[i].get_array(),
+                val_vecs[i].get_array(),
+                depends=[a_copy_ev, b_copy_ev],
+            )
+
+            # TODO: Remove this w/a when MKLD-17201 is solved.
+            # Waiting for a host task executing an OneMKL LAPACK gesv call
+            # on CPU causes deadlock due to serialization of all host tasks
+            # in the queue.
+            # We need to wait for each host tasks before calling _gesv to avoid
+            # deadlock.
+            if is_cpu_device:
+                ht_lapack_ev[i].wait()
+                b_ht_copy_ev[i].wait()
+
+        for i in range(batch_size):
+            ht_lapack_ev[i].wait()
+            b_ht_copy_ev[i].wait()
+            a_ht_copy_ev[i].wait()
+
+        # combine the list of solutions into a single array
+        out_v = dpnp.array(
+            val_vecs, order=b_order, dtype=res_type, usm_type=res_usm_type
+        )
+        if reshape:
+            # shape of the out_v must be equal to the shape of the array of
+            # dependent variables
+            out_v = out_v.reshape(orig_shape_b)
+        return out_v
+
+    else:
+        a_shape = a.shape
+        b_shape = b.shape
+
         if a.ndim == b.ndim:
             b = b.reshape(-1, b_shape[-2], b_shape[-1])
         else:
@@ -286,82 +377,50 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
 
         a = a.reshape(-1, a_shape[-2], a_shape[-1])
 
+        a = a.transpose((0, 2, 1))
         a_usm_arr = dpnp.get_usm_ndarray(a)
+
+        # b = b.T
         b_usm_arr = dpnp.get_usm_ndarray(b)
-        reshape = True
 
-    batch_size = a.shape[0]
+        # a_usm_arr = dpnp.get_usm_ndarray(a)
+        # b_usm_arr = dpnp.get_usm_ndarray(b)
 
-    coeff_vecs = [None] * batch_size
-    val_vecs = [None] * batch_size
-    a_ht_copy_ev = [None] * batch_size
-    b_ht_copy_ev = [None] * batch_size
-    ht_lapack_ev = [None] * batch_size
+        ht_list_ev = []
 
-    for i in range(batch_size):
-        # oneMKL LAPACK assumes fortran-like array as input, so allocate
-        # a memory with 'F' order for dpnp array of coefficient matrix
-        coeff_vecs[i] = dpnp.empty_like(
-            a[i], order="F", dtype=res_type, usm_type=res_usm_type
-        )
+        a_copy = dpnp.empty_like(a, dtype=res_type, order="F", usm_type=res_usm_type)
 
-        # use DPCTL tensor function to fill the coefficient matrix array
-        # with content from the input array
-        a_ht_copy_ev[i], a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr[i],
-            dst=coeff_vecs[i].get_array(),
+        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr,
+            dst=a_copy.get_array(),
             sycl_queue=a.sycl_queue,
         )
+        ht_list_ev.append(a_ht_copy_ev)
 
-        # oneMKL LAPACK assumes fortran-like array as input, so
-        # allocate a memory with 'F' order for dpnp array of multiple
-        # dependent variables array
-        val_vecs[i] = dpnp.empty_like(
-            b[i], order="F", dtype=res_type, usm_type=res_usm_type
+        b_copy = dpnp.empty_like(
+            b, order="C", dtype=res_type, usm_type=res_usm_type
         )
 
-        # use DPCTL tensor function to fill the array of multiple dependent
-        # variables with content from the input arrays
-        b_ht_copy_ev[i], b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=b_usm_arr[i],
-            dst=val_vecs[i].get_array(),
+        b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=b_usm_arr,
+            dst=b_copy.get_array(),
             sycl_queue=b.sycl_queue,
         )
+        ht_list_ev.append(b_ht_copy_ev)
 
-        # Call the LAPACK extension function _gesv to solve the system of
-        # linear equations using a portion of the coefficient square matrix
-        # and a corresponding portion of the dependent variables array.
-        ht_lapack_ev[i], _ = li._gesv(
+        ht_lapack_ev, _ = li._gesv_batch(
             exec_q,
-            coeff_vecs[i].get_array(),
-            val_vecs[i].get_array(),
+            a_copy.get_array(),
+            b_copy.get_array(),
             depends=[a_copy_ev, b_copy_ev],
         )
 
-        # TODO: Remove this w/a when MKLD-17201 is solved.
-        # Waiting for a host task executing an OneMKL LAPACK gesv call
-        # on CPU causes deadlock due to serialization of all host tasks
-        # in the queue.
-        # We need to wait for each host tasks before calling _gesv to avoid
-        # deadlock.
-        if is_cpu_device:
-            ht_lapack_ev[i].wait()
-            b_ht_copy_ev[i].wait()
+        ht_list_ev.append(ht_lapack_ev)
 
-    for i in range(batch_size):
-        ht_lapack_ev[i].wait()
-        b_ht_copy_ev[i].wait()
-        a_ht_copy_ev[i].wait()
+        dpctl.SyclEvent.wait_for(ht_list_ev)
 
-    # combine the list of solutions into a single array
-    out_v = dpnp.array(
-        val_vecs, order=b_order, dtype=res_type, usm_type=res_usm_type
-    )
-    if reshape:
-        # shape of the out_v must be equal to the shape of the array of
-        # dependent variables
-        out_v = out_v.reshape(orig_shape_b)
-    return out_v
+        v = b_copy.reshape(b_shape)
+        return v
 
 
 def _batched_qr(a, mode="reduced"):

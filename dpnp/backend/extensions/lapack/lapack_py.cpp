@@ -103,6 +103,13 @@ PYBIND11_MODULE(_lapack_impl, m)
           py::arg("sycl_queue"), py::arg("coeff_matrix"),
           py::arg("dependent_vals"), py::arg("depends") = py::list());
 
+    m.def("_gesv_batch", &lapack_ext::gesv_batch,
+          "Call `gesv` from OneMKL LAPACK library to return "
+          "the batch solution of a system of linear equations with "
+          "a square coefficient matrix A and multiple dependent variables",
+          py::arg("sycl_queue"), py::arg("coeff_matrix"),
+          py::arg("dependent_vals"), py::arg("depends") = py::list());
+
     m.def("_gesvd", &lapack_ext::gesvd,
           "Call `gesvd` from OneMKL LAPACK library to return "
           "the singular value decomposition of a general rectangular matrix",
