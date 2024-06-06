@@ -39,7 +39,7 @@ namespace ext
 namespace lapack
 {
 extern std::pair<sycl::event, sycl::event>
-    syevd(sycl::queue exec_q,
+    syevd(sycl::queue &exec_q,
           const std::int8_t jobz,
           const std::int8_t upper_lower,
           dpctl::tensor::usm_ndarray eig_vecs,
@@ -47,7 +47,7 @@ extern std::pair<sycl::event, sycl::event>
           const std::vector<sycl::event> &depends = {});
 
 extern std::pair<sycl::event, sycl::event>
-    syevd_batch(sycl::queue exec_q,
+    syevd_batch(sycl::queue &exec_q,
                 const std::int8_t jobz,
                 const std::int8_t upper_lower,
                 dpctl::tensor::usm_ndarray eig_vecs,

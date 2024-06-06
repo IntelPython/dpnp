@@ -46,7 +46,7 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
-typedef sycl::event (*heevd_impl_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*heevd_impl_fn_ptr_t)(sycl::queue &,
                                            const oneapi::mkl::job,
                                            const oneapi::mkl::uplo,
                                            const std::int64_t,
@@ -59,7 +59,7 @@ static heevd_impl_fn_ptr_t heevd_dispatch_table[dpctl_td_ns::num_types]
                                                [dpctl_td_ns::num_types];
 
 template <typename T, typename RealT>
-static sycl::event heevd_impl(sycl::queue exec_q,
+static sycl::event heevd_impl(sycl::queue &exec_q,
                               const oneapi::mkl::job jobz,
                               const oneapi::mkl::uplo upper_lower,
                               const std::int64_t n,
@@ -132,7 +132,7 @@ static sycl::event heevd_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    heevd(sycl::queue exec_q,
+    heevd(sycl::queue &exec_q,
           const std::int8_t jobz,
           const std::int8_t upper_lower,
           dpctl::tensor::usm_ndarray eig_vecs,
@@ -229,7 +229,7 @@ std::pair<sycl::event, sycl::event>
 }
 
 std::pair<sycl::event, sycl::event>
-    heevd_batch(sycl::queue exec_q,
+    heevd_batch(sycl::queue &exec_q,
                 const std::int8_t jobz,
                 const std::int8_t upper_lower,
                 dpctl::tensor::usm_ndarray eig_vecs,
