@@ -159,6 +159,7 @@ void init_add(py::module_ m)
     auto add_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
                                       arrayT src2, arrayT dst) {
         return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
+                                                 output_typeid_vector,
                                                  contig_dispatch_vector);
     };
     m.def("_mkl_add_to_call", add_need_to_call_pyapi,

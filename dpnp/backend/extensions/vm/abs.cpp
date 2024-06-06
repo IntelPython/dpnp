@@ -128,8 +128,8 @@ void init_abs(py::module_ m)
 
     auto abs_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
                                       arrayT dst) {
-        return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                contig_dispatch_vector);
+        return vm_ext::need_to_call_unary_ufunc(
+            exec_q, src, dst, output_typeid_vector, contig_dispatch_vector);
     };
     m.def("_mkl_abs_to_call", abs_need_to_call_pyapi,
           "Check input arguments to answer if `abs` function from "

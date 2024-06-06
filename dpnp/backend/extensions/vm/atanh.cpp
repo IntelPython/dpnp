@@ -128,8 +128,8 @@ void init_atanh(py::module_ m)
 
     auto atanh_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
                                         arrayT dst) {
-        return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                contig_dispatch_vector);
+        return vm_ext::need_to_call_unary_ufunc(
+            exec_q, src, dst, output_typeid_vector, contig_dispatch_vector);
     };
     m.def("_mkl_atanh_to_call", atanh_need_to_call_pyapi,
           "Check input arguments to answer if `atanh` function from "
