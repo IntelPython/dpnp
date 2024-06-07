@@ -86,12 +86,6 @@ var annotated_dup =
           ] ],
           [ "vm", null, [
             [ "types", null, [
-              [ "AtanhOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_atanh_output_type.html", null ],
-              [ "CbrtOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_cbrt_output_type.html", null ],
-              [ "CeilOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ceil_output_type.html", null ],
-              [ "ConjOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_conj_output_type.html", null ],
-              [ "CoshOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_cosh_output_type.html", null ],
-              [ "CosOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_cos_output_type.html", null ],
               [ "DivOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_div_output_type.html", null ],
               [ "Exp2OutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_exp2_output_type.html", null ],
               [ "Expm1OutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_expm1_output_type.html", null ],
@@ -114,11 +108,6 @@ var annotated_dup =
               [ "TanOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_tan_output_type.html", null ],
               [ "TruncOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_trunc_output_type.html", null ]
             ] ],
-            [ "CbrtContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_cbrt_contig_factory.html", null ],
-            [ "CeilContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ceil_contig_factory.html", null ],
-            [ "ConjContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_conj_contig_factory.html", null ],
-            [ "CosContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_cos_contig_factory.html", null ],
-            [ "CoshContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_cosh_contig_factory.html", null ],
             [ "DivContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_div_contig_factory.html", null ],
             [ "Exp2ContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp2_contig_factory.html", null ],
             [ "ExpContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp_contig_factory.html", null ],

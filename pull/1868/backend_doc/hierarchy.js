@@ -1,6 +1,5 @@
 var hierarchy =
 [
-    [ "dpnp::backend::ext::vm::types::AtanhOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_atanh_output_type.html", null ],
     [ "backend_sycl", "classbackend__sycl.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product< Args >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product< std::tuple< std::tuple< FirstTupleArgs... > > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product_3_01std_1_1tuple_3_01std_1_1tupl8eeb66d10f7723d0fc0b38e3d181763c.html", null ],
@@ -9,22 +8,12 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::cartesian_product_impl< std::tuple< std::tuple< T > >, std::tuple< SecondTupleArgs... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_17b2e4d9f422d6a255a67e036ce4e46b3.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product_impl< std::tuple< std::tuple< T >, FirstTupleArgs... >, std::tuple< SecondTupleArgs... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_1eacc8a58f076baec98f1eb11bc1030e3.html", null ],
     [ "dpnp::backend::ext::sycl_ext::CartesianDispatcher< C, FnT, DispatchT, Matcher, Axis >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_cartesian_dispatcher.html", null ],
-    [ "dpnp::backend::ext::vm::CbrtContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_cbrt_contig_factory.html", null ],
-    [ "dpnp::backend::ext::vm::types::CbrtOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_cbrt_output_type.html", null ],
-    [ "dpnp::backend::ext::vm::CeilContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ceil_contig_factory.html", null ],
-    [ "dpnp::backend::ext::vm::types::CeilOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ceil_output_type.html", null ],
-    [ "dpnp::backend::ext::vm::ConjContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_conj_contig_factory.html", null ],
-    [ "dpnp::backend::ext::vm::types::ConjOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_conj_output_type.html", null ],
     [ "std::conjunction", null, [
       [ "are_same< T, Ts >", "structare__same.html", null ]
     ] ],
     [ "dpnp::backend::ext::sycl_ext::coord_in_space< DispatchT, Matcher, AxisData >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space.html", null ],
     [ "dpnp::backend::ext::sycl_ext::coord_in_space< DispatchT, Matcher, std::tuple< Axes... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_05165243a6f8dde008b6a09f3e23101f7.html", null ],
     [ "dpnp::backend::ext::sycl_ext::coord_in_space< DispatchT, Matcher, std::tuple< CurrentAxis > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_09145d8edb59d4cea6805114cb85ebe7b.html", null ],
-    [ "dpnp::backend::ext::vm::CosContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_cos_contig_factory.html", null ],
-    [ "dpnp::backend::ext::vm::CoshContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_cosh_contig_factory.html", null ],
-    [ "dpnp::backend::ext::vm::types::CoshOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_cosh_output_type.html", null ],
-    [ "dpnp::backend::ext::vm::types::CosOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_cos_output_type.html", null ],
     [ "std::disjunction", null, [
       [ "is_any< T, Ts >", "structis__any.html", null ]
     ] ],
