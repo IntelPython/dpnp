@@ -299,11 +299,11 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *coeff_matrix_shape = coeff_matrix.get_shape_raw();
     const py::ssize_t *dependent_vals_shape = dependent_vals.get_shape_raw();
 
-    if (coeff_matrix_shape[1] != coeff_matrix_shape[2]) {
+    if (coeff_matrix_shape[0] != coeff_matrix_shape[1]) {
         throw py::value_error("The coefficient matrix must be square,"
                               " but got a shape of (" +
-                              std::to_string(coeff_matrix_shape[1]) + ", " +
-                              std::to_string(coeff_matrix_shape[2]) + ").");
+                              std::to_string(coeff_matrix_shape[0]) + ", " +
+                              std::to_string(coeff_matrix_shape[1]) + ").");
     }
 
     // check compatibility of execution queue and allocation queue
@@ -354,7 +354,7 @@ std::pair<sycl::event, sycl::event>
     char *coeff_matrix_data = coeff_matrix.get_data();
     char *dependent_vals_data = dependent_vals.get_data();
 
-    const std::int64_t batch_size = coeff_matrix_shape[0];
+    const std::int64_t batch_size = coeff_matrix_shape[2];
     // const std::int64_t n = dependent_vals_shape[1];
     // const std::int64_t nrhs =
     //     (dependent_vals_nd > 2) ? dependent_vals_shape[2] : 1;
@@ -370,6 +370,7 @@ std::pair<sycl::event, sycl::event>
     std::cout << "nrhs: " << nrhs << std::endl;
     std::cout << "lda: " << n << std::endl;
     std::cout << "ldb: " << n << std::endl;
+    std::cout << "b_nd: " << dependent_vals_nd << std::endl;
 
 
     int coeff_matrix_elemsize = coeff_matrix.get_elemsize();
