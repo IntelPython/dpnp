@@ -75,12 +75,6 @@ namespace vm_ns = dpnp::extensions::vm;
 using vm_ext::binary_impl_fn_ptr_t;
 using vm_ext::unary_impl_fn_ptr_t;
 
-static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
-static unary_impl_fn_ptr_t exp_dispatch_vector[dpctl_td_ns::num_types];
-static unary_impl_fn_ptr_t exp2_dispatch_vector[dpctl_td_ns::num_types];
-static unary_impl_fn_ptr_t expm1_dispatch_vector[dpctl_td_ns::num_types];
-static unary_impl_fn_ptr_t floor_dispatch_vector[dpctl_td_ns::num_types];
-static binary_impl_fn_ptr_t hypot_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t ln_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t log10_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t log1p_dispatch_vector[dpctl_td_ns::num_types];
@@ -116,177 +110,12 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_conj(m);
     vm_ns::init_cos(m);
     vm_ns::init_cosh(m);
-
-    // BinaryUfunc: ==== Div(x1, x2) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<binary_impl_fn_ptr_t,
-                                           vm_ext::DivContigFactory>(
-            div_dispatch_vector);
-
-        auto div_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
-                             arrayT dst, const event_vecT &depends = {}) {
-            return vm_ext::binary_ufunc(exec_q, src1, src2, dst, depends,
-                                        div_dispatch_vector);
-        };
-        m.def("_div", div_pyapi,
-              "Call `div` function from OneMKL VM library to performs element "
-              "by element division of vector `src1` by vector `src2` "
-              "to resulting vector `dst`",
-              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
-              py::arg("dst"), py::arg("depends") = py::list());
-
-        auto div_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
-                                          arrayT src2, arrayT dst) {
-            return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
-                                                     div_dispatch_vector);
-        };
-        m.def("_mkl_div_to_call", div_need_to_call_pyapi,
-              "Check input arguments to answer if `div` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
-              py::arg("dst"));
-    }
-
-    // UnaryUfunc: ==== Exp(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::ExpContigFactory>(
-            exp_dispatch_vector);
-
-        auto exp_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                             const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       exp_dispatch_vector);
-        };
-        m.def("_exp", exp_pyapi,
-              "Call `exp` function from OneMKL VM library to compute "
-              "natural (base-e) exponential of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto exp_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                          arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    exp_dispatch_vector);
-        };
-        m.def("_mkl_exp_to_call", exp_need_to_call_pyapi,
-              "Check input arguments to answer if `exp` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
-
-    // UnaryUfunc: ==== exp2(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::Exp2ContigFactory>(
-            exp2_dispatch_vector);
-
-        auto exp2_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                              const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       exp2_dispatch_vector);
-        };
-        m.def("_exp2", exp2_pyapi,
-              "Call `exp2` function from OneMKL VM library to compute "
-              "the element-wise base-2 exponential of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto exp2_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                           arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    exp2_dispatch_vector);
-        };
-        m.def("_mkl_exp2_to_call", exp2_need_to_call_pyapi,
-              "Check input arguments to answer if `exp2` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
-
-    // UnaryUfunc: ==== expm1(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::Expm1ContigFactory>(
-            expm1_dispatch_vector);
-
-        auto expm1_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                               const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       expm1_dispatch_vector);
-        };
-        m.def("_expm1", expm1_pyapi,
-              "Call `expm1` function from OneMKL VM library to compute "
-              "subtraction of 1 from the exponential of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto expm1_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                            arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    expm1_dispatch_vector);
-        };
-        m.def("_mkl_expm1_to_call", expm1_need_to_call_pyapi,
-              "Check input arguments to answer if `expm1` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
-
-    // UnaryUfunc: ==== Floor(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::FloorContigFactory>(
-            floor_dispatch_vector);
-
-        auto floor_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                               const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       floor_dispatch_vector);
-        };
-        m.def("_floor", floor_pyapi,
-              "Call `floor` function from OneMKL VM library to compute "
-              "floor of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto floor_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                            arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    floor_dispatch_vector);
-        };
-        m.def("_mkl_floor_to_call", floor_need_to_call_pyapi,
-              "Check input arguments to answer if `floor` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
-
-    // BinaryUfunc: ==== Hypot(x1, x2) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<binary_impl_fn_ptr_t,
-                                           vm_ext::HypotContigFactory>(
-            hypot_dispatch_vector);
-
-        auto hypot_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
-                               arrayT dst, const event_vecT &depends = {}) {
-            return vm_ext::binary_ufunc(exec_q, src1, src2, dst, depends,
-                                        hypot_dispatch_vector);
-        };
-        m.def("_hypot", hypot_pyapi,
-              "Call `hypot` function from OneMKL VM library to compute element "
-              "by element hypotenuse of `x`",
-              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
-              py::arg("dst"), py::arg("depends") = py::list());
-
-        auto hypot_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
-                                            arrayT src2, arrayT dst) {
-            return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
-                                                     hypot_dispatch_vector);
-        };
-        m.def("_mkl_hypot_to_call", hypot_need_to_call_pyapi,
-              "Check input arguments to answer if `hypot` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
-              py::arg("dst"));
-    }
+    vm_ns::init_div(m);
+    vm_ns::init_exp(m);
+    vm_ns::init_exp2(m);
+    vm_ns::init_expm1(m);
+    vm_ns::init_floor(m);
+    vm_ns::init_hypot(m);
 
     // UnaryUfunc: ==== Ln(x) ====
     {

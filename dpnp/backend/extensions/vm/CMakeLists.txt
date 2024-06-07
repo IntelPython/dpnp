@@ -38,6 +38,12 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/conj.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/cos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/cosh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/div.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/exp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/exp2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/expm1.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/floor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/hypot.cpp
 )
 
 set(_module_src
