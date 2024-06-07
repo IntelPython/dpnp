@@ -289,7 +289,7 @@ std::pair<sycl::event, sycl::event>
                               ", but a 3-dimensional array is expected.");
     }
 
-    if (dependent_vals_nd > 2) {
+    if (dependent_vals_nd > 3) {
         throw py::value_error(
             "The dependent values array has ndim=" +
             std::to_string(dependent_vals_nd) +
@@ -355,12 +355,22 @@ std::pair<sycl::event, sycl::event>
     char *dependent_vals_data = dependent_vals.get_data();
 
     const std::int64_t batch_size = coeff_matrix_shape[0];
-    const std::int64_t n = dependent_vals_shape[0];
+    // const std::int64_t n = dependent_vals_shape[1];
+    // const std::int64_t nrhs =
+    //     (dependent_vals_nd > 2) ? dependent_vals_shape[2] : 1;
+
+    const std::int64_t n = coeff_matrix_shape[1];
     const std::int64_t nrhs =
-        (dependent_vals_nd > 1) ? dependent_vals_shape[1] : 1;
+        (dependent_vals_nd > 2) ? dependent_vals_shape[1] : 1;
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, n);
+
+    std::cout << "n: " << n << std::endl;
+    std::cout << "nrhs: " << nrhs << std::endl;
+    std::cout << "lda: " << n << std::endl;
+    std::cout << "ldb: " << n << std::endl;
+
 
     int coeff_matrix_elemsize = coeff_matrix.get_elemsize();
     int dependent_vals_elemsize = dependent_vals.get_elemsize();
@@ -373,7 +383,7 @@ std::pair<sycl::event, sycl::event>
 
     for (std::int64_t i = 0; i < batch_size; ++i) {
         char *coeff_matrix_batch = coeff_matrix_data + i * n * n * coeff_matrix_elemsize;
-        char *dependent_vals_batch = dependent_vals_data + i * n * dependent_vals_elemsize;
+        char *dependent_vals_batch = dependent_vals_data + i * n * nrhs * dependent_vals_elemsize;
 
         sycl::event gesv_ev =
         gesv_fn(exec_q, n, nrhs, coeff_matrix_batch, lda, dependent_vals_batch,

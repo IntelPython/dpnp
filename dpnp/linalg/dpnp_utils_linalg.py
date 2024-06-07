@@ -380,7 +380,10 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
         a = a.transpose((0, 2, 1))
         a_usm_arr = dpnp.get_usm_ndarray(a)
 
-        # b = b.T
+        if b.ndim > 2:
+            b = b.transpose((0,2,1))
+        else:
+            b = b
         b_usm_arr = dpnp.get_usm_ndarray(b)
 
         # a_usm_arr = dpnp.get_usm_ndarray(a)
@@ -388,7 +391,7 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
 
         ht_list_ev = []
 
-        a_copy = dpnp.empty_like(a, dtype=res_type, order="F", usm_type=res_usm_type)
+        a_copy = dpnp.empty_like(a, dtype=res_type, order="C", usm_type=res_usm_type)
 
         a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=a_usm_arr,
@@ -419,7 +422,11 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
 
         dpctl.SyclEvent.wait_for(ht_list_ev)
 
-        v = b_copy.reshape(b_shape)
+        if b.ndim > 2:
+            v = b_copy.transpose(0,2,1).reshape(b_shape)
+        else:
+            v = b_copy.reshape(b_shape)
+        # v = b_copy.reshape(b_shape)
         return v
 
 
