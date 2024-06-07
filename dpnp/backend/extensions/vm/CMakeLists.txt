@@ -48,6 +48,11 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/log10.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/log1p.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/log2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mul.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/pow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/rint.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sinh.cpp
 )
 
 set(_module_src
