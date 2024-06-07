@@ -86,12 +86,6 @@ var annotated_dup =
           ] ],
           [ "vm", null, [
             [ "types", null, [
-              [ "DivOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_div_output_type.html", null ],
-              [ "Exp2OutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_exp2_output_type.html", null ],
-              [ "Expm1OutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_expm1_output_type.html", null ],
-              [ "ExpOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_exp_output_type.html", null ],
-              [ "FloorOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_floor_output_type.html", null ],
-              [ "HypotOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_hypot_output_type.html", null ],
               [ "LnOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_ln_output_type.html", null ],
               [ "Log10OutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_log10_output_type.html", null ],
               [ "Log1pOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_log1p_output_type.html", null ],
@@ -108,12 +102,6 @@ var annotated_dup =
               [ "TanOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_tan_output_type.html", null ],
               [ "TruncOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_trunc_output_type.html", null ]
             ] ],
-            [ "DivContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_div_contig_factory.html", null ],
-            [ "Exp2ContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp2_contig_factory.html", null ],
-            [ "ExpContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp_contig_factory.html", null ],
-            [ "Expm1ContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_expm1_contig_factory.html", null ],
-            [ "FloorContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_floor_contig_factory.html", null ],
-            [ "HypotContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_hypot_contig_factory.html", null ],
             [ "LnContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_ln_contig_factory.html", null ],
             [ "Log10ContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_log10_contig_factory.html", null ],
             [ "Log1pContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_log1p_contig_factory.html", null ],

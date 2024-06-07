@@ -17,8 +17,6 @@ var hierarchy =
     [ "std::disjunction", null, [
       [ "is_any< T, Ts >", "structis__any.html", null ]
     ] ],
-    [ "dpnp::backend::ext::vm::DivContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_div_contig_factory.html", null ],
-    [ "dpnp::backend::ext::vm::types::DivOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_div_output_type.html", null ],
     [ "dpnp::backend::ext::blas::DotcContigFactory< fnT, varT >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1_dotc_contig_factory.html", null ],
     [ "dpnp::backend::ext::blas::DotContigFactory< fnT, varT >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1_dot_contig_factory.html", null ],
     [ "dpnp::backend::ext::blas::types::DotcTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html", null ],
@@ -40,16 +38,8 @@ var hierarchy =
     [ "std::exception", null, [
       [ "dpnp::backend::ext::lapack::LinAlgError", "classdpnp_1_1backend_1_1ext_1_1lapack_1_1_lin_alg_error.html", null ]
     ] ],
-    [ "dpnp::backend::ext::vm::Exp2ContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp2_contig_factory.html", null ],
-    [ "dpnp::backend::ext::vm::types::Exp2OutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_exp2_output_type.html", null ],
-    [ "dpnp::backend::ext::vm::ExpContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_exp_contig_factory.html", null ],
-    [ "dpnp::backend::ext::vm::Expm1ContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_expm1_contig_factory.html", null ],
-    [ "dpnp::backend::ext::vm::types::Expm1OutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_expm1_output_type.html", null ],
-    [ "dpnp::backend::ext::vm::types::ExpOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_exp_output_type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::extend_tuple_type< Tuple, T >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1extend__tuple__type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::extend_tuple_type< std::tuple< Args... >, T >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1extend__tuple__type_3_01std_1_1tuple_3_01_args_8_8_8_01_4_00_01_t_01_4.html", null ],
-    [ "dpnp::backend::ext::vm::FloorContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_floor_contig_factory.html", null ],
-    [ "dpnp::backend::ext::vm::types::FloorOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_floor_output_type.html", null ],
     [ "func_type_pair_t< FuncType, T >", "structfunc__type__pair__t.html", null ],
     [ "dpnp::backend::ext::blas::types::GemmBatchTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::blas::types::GemmTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ],
@@ -66,8 +56,6 @@ var hierarchy =
     [ "dpnp::backend::ext::lapack::types::GetriBatchTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::lapack::types::GetrsTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::lapack::types::HeevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
-    [ "dpnp::backend::ext::vm::HypotContigFactory< fnT, T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_hypot_contig_factory.html", null ],
-    [ "dpnp::backend::ext::vm::types::HypotOutputType< T >", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_hypot_output_type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::index_on_axis< idx, DispatchT, Matcher, Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis.html", null ],
     [ "dpnp::backend::ext::sycl_ext::index_on_axis< idx, DispatchT, Matcher, std::tuple< AxisData... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis_3_01idx_00_01_dispatch_t_00_01_matc014615cac12293ef2d15243fdee2c449.html", null ],
     [ "dpnp::backend::ext::sycl_ext::index_on_axis< idx, DispatchT, Matcher, std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis_3_01idx_00_01_dispatch_t_00_01_matcafd2cf8593c2aa4d8a9103f019cc37b1.html", null ],
