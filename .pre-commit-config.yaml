@@ -101,4 +101,4 @@ repos:
             "--disable=unused-wildcard-import",
             "--class-naming-style=snake_case"
             ]
-        files: '^dpnp/(dpnp_iface.*|linalg)'
+        files: '^dpnp/(dpnp_iface.*|fft|linalg)'

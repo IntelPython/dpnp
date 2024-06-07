@@ -13,7 +13,6 @@ Sorting
    dpnp.sort
    dpnp.lexsort
    dpnp.argsort
-   dpnp.msort
    dpnp.sort_complex
    dpnp.partition
    dpnp.argpartition

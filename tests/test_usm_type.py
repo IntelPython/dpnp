@@ -539,6 +539,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("gradient", [1, 2, 4, 7, 11, 16]),
         pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
         pytest.param(
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
@@ -580,6 +581,7 @@ def test_norm(usm_type, ord, axis):
         ),
         pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("sort", [2.0, 1.0, 7.0, 4.0]),
+        pytest.param("sort_complex", [1 + 2j, 2 - 1j, 3 - 2j, 3 - 3j, 3 + 5j]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
         pytest.param("square", [1.0, 3.0, 9.0]),
         pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
@@ -622,6 +624,9 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
         pytest.param("fmax", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
         pytest.param("fmin", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
+        pytest.param(
+            "gradient", [1, 2, 4, 7, 11, 16], [0.0, 1.0, 1.5, 3.5, 4.0, 6.0]
+        ),
         pytest.param(
             "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),

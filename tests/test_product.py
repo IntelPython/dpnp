@@ -1,6 +1,7 @@
 import dpctl
 import numpy
 import pytest
+from numpy.testing import assert_raises
 
 import dpnp
 
@@ -8,6 +9,11 @@ from .helper import assert_dtype_allclose, get_all_dtypes, get_complex_dtypes
 
 
 def _assert_selective_dtype_allclose(result, expected, dtype):
+    # For numpy.dot, numpy.vdot, numpy.kron, numpy.inner, and numpy.tensordot,
+    # when inputs are an scalar (which has the default dtype of platform) and
+    # an array, the scalar dtype precision determines the output dtype
+    # precision. In dpnp, we rely on dpnp.multiply for scalar-array product
+    # and array (not scalar) determines output dtype precision of dpnp.multiply
     if dtype in [numpy.int32, numpy.float32, numpy.complex64]:
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
     else:
@@ -244,9 +250,9 @@ class TestDot:
             ((10,), (10,)),
             ((4, 3), (3, 2)),
             ((4, 3), (3,)),
+            ((4,), (4, 2)),
             ((5, 4, 3), (3,)),
             ((4,), (5, 4, 3)),
-            ((4,), (4, 2)),
             ((5, 3, 4), (6, 4, 2)),
         ],
         ids=[
@@ -256,9 +262,9 @@ class TestDot:
             "1d_1d",
             "2d_2d",
             "2d_1d",
+            "1d_2d",
             "3d_1d",
             "1d_3d",
-            "1d_2d",
             "3d_3d",
         ],
     )
@@ -404,8 +410,9 @@ class TestDot:
             ((10,), (10,), ()),
             ((4, 3), (3, 2), (4, 2)),
             ((4, 3), (3,), (4,)),
-            ((5, 4, 3), (3,), (5, 4)),
             ((4,), (4, 2), (2,)),
+            ((5, 4, 3), (3,), (5, 4)),
+            ((4,), (5, 4, 3), (5, 3)),
             ((5, 3, 4), (6, 4, 2), (5, 3, 6, 2)),
         ],
         ids=[
@@ -415,8 +422,9 @@ class TestDot:
             "1d_1d",
             "2d_2d",
             "2d_1d",
-            "3d_1d",
             "1d_2d",
+            "3d_1d",
+            "1d_3d",
             "3d_3d",
         ],
     )
@@ -465,21 +473,22 @@ class TestDot:
         with pytest.raises(ValueError):
             dpnp.dot(a, b)
 
-    # NumPy does not raise an error for the following test.
-    # it just does not update the out keyword if it as not properly defined
-    @pytest.mark.parametrize("ia", [1, dpnp.ones((), dtype=dpnp.int32)])
+    @pytest.mark.parametrize("ia", [1, dpnp.ones((), dtype=dpnp.float32)])
     def test_dot_out_error_scalar(self, ia):
-        ib = dpnp.ones(10, dtype=dpnp.int32)
+        a = ia if dpnp.isscalar(ia) else ia.asnumpy()
+        ib = dpnp.ones(10, dtype=dpnp.float32)
+        b = ib.asnumpy()
 
         # output data type is incorrect
-        dp_out = dpnp.empty((10,), dtype=dpnp.int64)
-        with pytest.raises(ValueError):
-            dpnp.dot(ia, ib, out=dp_out)
+        dp_out = dpnp.empty((10,), dtype=dpnp.complex64)
+        out = numpy.empty((10,), dtype=numpy.complex64)
+        assert_raises(ValueError, dpnp.dot, ia, ib, out=dp_out)
+        assert_raises(ValueError, numpy.dot, a, b, out=out)
 
         # output shape is incorrect
         dp_out = dpnp.empty((2,), dtype=dpnp.int32)
-        with pytest.raises(ValueError):
-            dpnp.dot(ia, ib, out=dp_out)
+        assert_raises(ValueError, dpnp.dot, ia, ib, out=dp_out)
+        assert_raises(ValueError, numpy.dot, a, b, out=out)
 
     @pytest.mark.parametrize(
         "shape_pair",

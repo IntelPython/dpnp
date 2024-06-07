@@ -1,7 +1,3 @@
-tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array0]
-tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array1]
-tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[3.5-array2]
-
 tests/test_strides.py::test_strides_1arg[(10,)-int32-fabs]
 tests/test_strides.py::test_strides_1arg[(10,)-int64-fabs]
 tests/test_strides.py::test_strides_1arg[(10,)-None-fabs]

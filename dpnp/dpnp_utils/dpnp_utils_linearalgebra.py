@@ -108,7 +108,7 @@ def _chr(label):
         return chr(label)
 
 
-def _compute_res_dtype(*arrays, dtype, casting, sycl_queue):
+def _compute_res_dtype(*arrays, sycl_queue, dtype=None, casting="no"):
     """
     Determines the output array data type and an intermediate data type
     used in performing calculations related to a specific math function.
@@ -726,8 +726,16 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
     chunk = 2048 * 2048
     batch_size = res.shape[0]
     for i in range(0, batch_size, chunk):
-        x1_usm = dpnp.get_usm_ndarray(x1[i : i + chunk, ...])
-        x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
+        if x1.shape[0] == 1:
+            # x1 is repeatedly multiplied with each matrix in x2
+            x1_usm = dpnp.get_usm_ndarray(x1)
+            x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
+        elif x2.shape[0] == 1:
+            x1_usm = dpnp.get_usm_ndarray(x1[i : i + chunk, ...])
+            x2_usm = dpnp.get_usm_ndarray(x2)
+        else:
+            x1_usm = dpnp.get_usm_ndarray(x1[i : i + chunk, ...])
+            x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
         res_usm = dpnp.get_usm_ndarray(res[i : i + chunk, ...])
         ht_blas_ev, _, row_major = bi._gemm_batch(
             exec_q,
@@ -1740,10 +1748,7 @@ def dpnp_dot(a, b, /, out=None, *, conjugate=False):
     res_usm_type, exec_q = get_usm_allocations([a, b])
 
     # Determine the appropriate data types
-    # casting is irrelevant here since dtype is `None`
-    dot_dtype, res_dtype = _compute_res_dtype(
-        a, b, dtype=None, casting="no", sycl_queue=exec_q
-    )
+    dot_dtype, res_dtype = _compute_res_dtype(a, b, sycl_queue=exec_q)
 
     result = _create_result_array(
         a, b, out, (), dot_dtype, res_usm_type, exec_q
@@ -2090,6 +2095,7 @@ def dpnp_matmul(
     )
 
     call_flag = None
+    transpose = False
     x1_shape = x1.shape
     x2_shape = x2.shape
     x1_is_2D, x1_is_1D, x1_base_is_1D = _define_dim_flags(x1, pos=0)
@@ -2110,19 +2116,16 @@ def dpnp_matmul(
         call_flag = "gemm_batch"
         res_shape = result_shape
     elif x1_is_1D and x2_is_2D:
-        # TODO: implement gemv to use it here with transpose
-        call_flag = "gemm"
-        x1 = dpnp.reshape(x1, (1, x1.size))
+        transpose = True
+        call_flag = "gemv"
+        x1 = dpnp.reshape(x1, x1.size)
         x2 = dpnp.reshape(x2, x2_shape[-2:])
-        x1_shape = x1.shape
-        res_shape = (x1_shape[-2], x2_shape[-1])
+        res_shape = (x2_shape[-1],)
     elif x1_is_2D and x2_is_1D:
-        # TODO: implement gemv to use it here without transpose
-        call_flag = "gemm"
+        call_flag = "gemv"
         x1 = dpnp.reshape(x1, x1_shape[-2:])
-        x2 = dpnp.reshape(x2, (x2.size, 1))
-        x2_shape = x2.shape
-        res_shape = (x1_shape[-2], x2_shape[-1])
+        x2 = dpnp.reshape(x2, x2.size)
+        res_shape = (x1_shape[-2],)
     elif x1_is_2D and x2_is_2D:
         call_flag = "gemm"
         x1 = dpnp.reshape(x1, x1_shape[-2:])
@@ -2189,7 +2192,23 @@ def dpnp_matmul(
                 dtype=compute_dtype,
             )
 
-            if call_flag == "gemm":
+            if call_flag == "gemv":
+                if transpose:
+                    a_usm = dpnp.get_usm_ndarray(x2)
+                    x_usm = dpnp.get_usm_ndarray(x1)
+                else:
+                    a_usm = dpnp.get_usm_ndarray(x1)
+                    x_usm = dpnp.get_usm_ndarray(x2)
+                ht_blas_ev, _ = bi._gemv(
+                    exec_q,
+                    a_usm,
+                    x_usm,
+                    dpnp.get_usm_ndarray(res),
+                    transpose,
+                    dep_events_list,
+                )
+                host_tasks_list.append(ht_blas_ev)
+            elif call_flag == "gemm":
                 res = _gemm_matmul(
                     exec_q,
                     x1,
