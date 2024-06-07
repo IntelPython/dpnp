@@ -120,7 +120,7 @@ void init_conj(py::module_ m)
     };
     m.def("_conj", conj_pyapi,
           "Call `conj` function from OneMKL VM library to compute "
-          "conjugate of vector elements",
+          "the conjugate of vector elements",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 

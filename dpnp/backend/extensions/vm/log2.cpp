@@ -28,8 +28,8 @@
 
 #include "dpctl4pybind11.hpp"
 
-#include "acos.hpp"
 #include "common.hpp"
+#include "log2.hpp"
 
 // include a local copy of elementwise common header from dpctl tensor:
 // dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
@@ -57,23 +57,21 @@ namespace mkl_vm = oneapi::mkl::vm;
 
 /**
  * @brief A factory to define pairs of supported types for which
- * MKL VM library provides support in oneapi::mkl::vm::acos<T> function.
+ * MKL VM library provides support in oneapi::mkl::vm::log2<T> function.
  *
  * @tparam T Type of input vector `a` and of result vector `y`.
  */
 template <typename T>
 struct OutputType
 {
-    using value_type = typename std::disjunction<
-        td_ns::TypeMapResultEntry<T, std::complex<double>>,
-        td_ns::TypeMapResultEntry<T, std::complex<float>>,
-        td_ns::TypeMapResultEntry<T, double>,
-        td_ns::TypeMapResultEntry<T, float>,
-        td_ns::DefaultResultEntry<void>>::result_type;
+    using value_type =
+        typename std::disjunction<td_ns::TypeMapResultEntry<T, double>,
+                                  td_ns::TypeMapResultEntry<T, float>,
+                                  td_ns::DefaultResultEntry<void>>::result_type;
 };
 
 template <typename T>
-static sycl::event acos_contig_impl(sycl::queue &exec_q,
+static sycl::event log2_contig_impl(sycl::queue &exec_q,
                                     std::size_t in_n,
                                     const char *in_a,
                                     char *out_y,
@@ -87,7 +85,7 @@ static sycl::event acos_contig_impl(sycl::queue &exec_q,
     using resTy = typename OutputType<T>::value_type;
     resTy *y = reinterpret_cast<resTy *>(out_y);
 
-    return mkl_vm::acos(exec_q,
+    return mkl_vm::log2(exec_q,
                         n, // number of elements to be calculated
                         a, // pointer `a` containing input vector of size n
                         y, // pointer `y` to the output vector of size n
@@ -100,10 +98,10 @@ using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 static int output_typeid_vector[td_ns::num_types];
 static unary_contig_impl_fn_ptr_t contig_dispatch_vector[td_ns::num_types];
 
-MACRO_POPULATE_DISPATCH_VECTORS(acos);
+MACRO_POPULATE_DISPATCH_VECTORS(log2);
 } // namespace impl
 
-void init_acos(py::module_ m)
+void init_log2(py::module_ m)
 {
     using arrayT = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
@@ -112,7 +110,7 @@ void init_acos(py::module_ m)
     using impl::contig_dispatch_vector;
     using impl::output_typeid_vector;
 
-    auto acos_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
+    auto log2_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
                           const event_vecT &depends = {}) {
         return py_int::py_unary_ufunc(
             src, dst, exec_q, depends, output_typeid_vector,
@@ -120,19 +118,19 @@ void init_acos(py::module_ m)
             // no support of strided implementation in OneMKL
             td_ns::NullPtrVector<impl::unary_strided_impl_fn_ptr_t>{});
     };
-    m.def("_acos", acos_pyapi,
-          "Call `acos` function from OneMKL VM library to compute "
-          "the inverse cosine of vector elements",
+    m.def("_log2", log2_pyapi,
+          "Call `log2` function from OneMKL VM library to compute "
+          "the base-2 logarithm of vector elements",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 
-    auto acos_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
+    auto log2_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
                                        arrayT dst) {
         return vm_ext::need_to_call_unary_ufunc(
             exec_q, src, dst, output_typeid_vector, contig_dispatch_vector);
     };
-    m.def("_mkl_acos_to_call", acos_need_to_call_pyapi,
-          "Check input arguments to answer if `acos` function from "
+    m.def("_mkl_log2_to_call", log2_need_to_call_pyapi,
+          "Check input arguments to answer if `log2` function from "
           "OneMKL VM library can be used",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
 }

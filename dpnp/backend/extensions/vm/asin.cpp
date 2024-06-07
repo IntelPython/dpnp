@@ -122,7 +122,7 @@ void init_asin(py::module_ m)
     };
     m.def("_asin", asin_pyapi,
           "Call `asin` function from OneMKL VM library to compute "
-          "inverse sine of vector elements",
+          "the inverse sine of vector elements",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 

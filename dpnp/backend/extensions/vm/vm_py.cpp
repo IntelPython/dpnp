@@ -75,10 +75,6 @@ namespace vm_ns = dpnp::extensions::vm;
 using vm_ext::binary_impl_fn_ptr_t;
 using vm_ext::unary_impl_fn_ptr_t;
 
-static unary_impl_fn_ptr_t ln_dispatch_vector[dpctl_td_ns::num_types];
-static unary_impl_fn_ptr_t log10_dispatch_vector[dpctl_td_ns::num_types];
-static unary_impl_fn_ptr_t log1p_dispatch_vector[dpctl_td_ns::num_types];
-static unary_impl_fn_ptr_t log2_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t mul_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t pow_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t round_dispatch_vector[dpctl_td_ns::num_types];
@@ -116,118 +112,10 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_expm1(m);
     vm_ns::init_floor(m);
     vm_ns::init_hypot(m);
-
-    // UnaryUfunc: ==== Ln(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::LnContigFactory>(
-            ln_dispatch_vector);
-
-        auto ln_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                            const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       ln_dispatch_vector);
-        };
-        m.def("_ln", ln_pyapi,
-              "Call `ln` function from OneMKL VM library to compute "
-              "natural logarithm of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto ln_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                         arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    ln_dispatch_vector);
-        };
-        m.def("_mkl_ln_to_call", ln_need_to_call_pyapi,
-              "Check input arguments to answer if `ln` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
-
-    // UnaryUfunc: ==== Log10(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::Log10ContigFactory>(
-            log10_dispatch_vector);
-
-        auto log10_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                               const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       log10_dispatch_vector);
-        };
-        m.def("_log10", log10_pyapi,
-              "Call `log10` function from OneMKL VM library to compute "
-              "base-10 logarithm of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto log10_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                            arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    log10_dispatch_vector);
-        };
-        m.def("_mkl_log10_to_call", log10_need_to_call_pyapi,
-              "Check input arguments to answer if `log10` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
-
-    // UnaryUfunc: ==== Log1p(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::Log1pContigFactory>(
-            log1p_dispatch_vector);
-
-        auto log1p_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                               const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       log1p_dispatch_vector);
-        };
-        m.def("_log1p", log1p_pyapi,
-              "Call `log1p` function from OneMKL VM library to compute "
-              "natural logarithm of 1 plus vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto log1p_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                            arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    log1p_dispatch_vector);
-        };
-        m.def("_mkl_log1p_to_call", log1p_need_to_call_pyapi,
-              "Check input arguments to answer if `log1p` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
-
-    // UnaryUfunc: ==== Log2(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::Log2ContigFactory>(
-            log2_dispatch_vector);
-
-        auto log2_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                              const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       log2_dispatch_vector);
-        };
-        m.def("_log2", log2_pyapi,
-              "Call `log2` function from OneMKL VM library to compute "
-              "base-2 logarithm of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto log2_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                           arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    log2_dispatch_vector);
-        };
-        m.def("_mkl_log2_to_call", log2_need_to_call_pyapi,
-              "Check input arguments to answer if `log2` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
+    vm_ns::init_ln(m);
+    vm_ns::init_log10(m);
+    vm_ns::init_log1p(m);
+    vm_ns::init_log2(m);
 
     // BinaryUfunc: ==== Mul(x1, x2) ====
     {

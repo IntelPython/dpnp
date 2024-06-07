@@ -122,7 +122,7 @@ void init_asinh(py::module_ m)
     };
     m.def("_asinh", asinh_pyapi,
           "Call `asinh` function from OneMKL VM library to compute "
-          "inverse hyperbolic sine of vector elements",
+          "the inverse hyperbolic sine of vector elements",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 

@@ -120,7 +120,7 @@ void init_ceil(py::module_ m)
     };
     m.def("_ceil", ceil_pyapi,
           "Call `ceil` function from OneMKL VM library to compute "
-          "ceiling of vector elements",
+          "the ceiling of vector elements",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 

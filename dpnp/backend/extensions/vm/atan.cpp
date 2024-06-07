@@ -122,7 +122,7 @@ void init_atan(py::module_ m)
     };
     m.def("_atan", atan_pyapi,
           "Call `atan` function from OneMKL VM library to compute "
-          "inverse tangent of vector elements",
+          "the inverse tangent of vector elements",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 

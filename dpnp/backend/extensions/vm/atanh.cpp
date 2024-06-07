@@ -122,7 +122,7 @@ void init_atanh(py::module_ m)
     };
     m.def("_atanh", atanh_pyapi,
           "Call `atanh` function from OneMKL VM library to compute "
-          "inverse hyperbolic tangent of vector elements",
+          "the inverse hyperbolic tangent of vector elements",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 
