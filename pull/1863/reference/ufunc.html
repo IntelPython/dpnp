@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Universal Functions (ufunc) &mdash; Data Parallel Extension for NumPy 0.16.0dev0+9.gaebce16f17 documentation</title>
+  <title>Universal Functions (ufunc) &mdash; Data Parallel Extension for NumPy 0.16.0dev0+14.g644406fa7c documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -24,13 +24,13 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=8b30d277"></script>
+        <script src="../_static/documentation_options.js?v=ef139aae"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="dpnp.ufunc.nin" href="generated/dpnp.ufunc.nin.html" />
+    <link rel="next" title="dpnp.ufunc" href="generated/dpnp.ufunc.html" />
     <link rel="prev" title="dpnp.ndarray.__repr__" href="generated/dpnp.ndarray.__repr__.html" /> 
 </head>
 
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+9.gaebce16f17
+                0.16.0dev0+14.g644406fa7c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -63,7 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Universal Functions (ufunc)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#ufuncs">ufuncs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#dpnp.ufunc"><code class="docutils literal notranslate"><span class="pre">ufunc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ufunc.html">dpnp.ufunc</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#attributes">Attributes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#methods">Methods</a></li>
 </ul>
@@ -118,38 +118,39 @@
              
   <section id="universal-functions-ufunc">
 <span id="ufunc"></span><h1>Universal Functions (ufunc)<a class="headerlink" href="#universal-functions-ufunc" title="Link to this heading"></a></h1>
+<p>DPNP provides universal functions (a.k.a. ufuncs) to support various element-wise operations.
+DPNP ufunc supports following features of NumPy’s one:</p>
+<ul class="simple">
+<li><p>Broadcasting</p></li>
+<li><p>Output type determination</p></li>
+<li><p>Casting rules</p></li>
+</ul>
 <section id="ufuncs">
 <h2>ufuncs<a class="headerlink" href="#ufuncs" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="dpnp.ufunc">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">ufunc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dpnp/dpnp_algo/dpnp_elementwise_common.html#ufunc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.ufunc" title="Link to this definition"></a></dt>
-<dd><p>DPNP provides universal functions (a.k.a. ufuncs) to support various
-element-wise operations.</p>
-<section id="optional-keyword-arguments">
-<h3>Optional keyword arguments<a class="headerlink" href="#optional-keyword-arguments" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>out<span class="classifier">{None, dpnp.ndarray, usm_ndarray}, optional</span></dt><dd><p>Output array to populate.
-Array must have the correct shape and the expected data type.</p>
-</dd>
-<dt>order<span class="classifier">{None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span></dt><dd><p>Memory layout of the newly output array, Cannot be provided
-together with <cite>out</cite>. Default: <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>.</p>
-</dd>
-<dt>dtype<span class="classifier">{None, dtype}, optional</span></dt><dd><p>If provided, the destination array will have this dtype. Cannot be
-provided together with <cite>out</cite>. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</dd>
-<dt>casting<span class="classifier">{&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;}, optional</span></dt><dd><p>Controls what kind of data casting may occur. Cannot be provided
-together with <cite>out</cite>. Default: <code class="docutils literal notranslate"><span class="pre">&quot;safe&quot;</span></code>.</p>
-</dd>
-</dl>
-<p class="rubric">Limitations</p>
-<p>Keyword arguments <cite>where</cite> and <cite>subok</cite> are supported with their default values.
-Other keyword arguments is currently unsupported.
-Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
-</section>
-</dd></dl>
-
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ufunc.html#dpnp.ufunc" title="dpnp.ufunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ufunc</span></code></a>()</p></td>
+<td><p>Functions that operate element by element on whole arrays.</p></td>
+</tr>
+</tbody>
+</table>
 <section id="attributes">
 <h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h3>
+<p>There are some informational attributes that universal functions
+possess. None of the attributes can be set.</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>__doc__</strong></p></td>
+<td><p>A docstring for each ufunc. The first part of the docstring is
+dynamically generated from the number of outputs, the name, and
+the number of inputs. The second part of the docstring is
+provided at creation time and stored with the ufunc.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>__name__</strong></p></td>
+<td><p>The name of the ufunc.</p></td>
+</tr>
+</tbody>
+</table>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ufunc.nin.html#dpnp.ufunc.nin" title="dpnp.ufunc.nin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ufunc.nin</span></code></a></p></td>
@@ -174,7 +175,7 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 <h3>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ufunc.outer.html#dpnp.ufunc.outer" title="dpnp.ufunc.outer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ufunc.outer</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ufunc.outer.html#dpnp.ufunc.outer" title="dpnp.ufunc.outer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ufunc.outer</span></code></a>(x1, x2[, out, where, ...])</p></td>
 <td><p>Apply the ufunc op to all pairs (a, b) with a in A and b in B.</p></td>
 </tr>
 </tbody>
@@ -224,10 +225,10 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 <td><p>Returns the element-wise remainder of division.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.abs.html#dpnp.abs" title="dpnp.abs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.abs</span></code></a></p></td>
-<td><p>Calculates the absolute value for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
+<td><p>dpnp.absolute(x, out=None, order='K', dtype=None, casting=&quot;same_kind&quot;, <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.absolute.html#dpnp.absolute" title="dpnp.absolute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.absolute</span></code></a></p></td>
-<td><p>abs(x, out, <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs)</p></td>
+<td><p>Calculates the absolute value for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fabs.html#dpnp.fabs" title="dpnp.fabs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fabs</span></code></a></p></td>
 <td><p>Compute the absolute values element-wise.</p></td>
@@ -457,7 +458,7 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="generated/dpnp.ndarray.__repr__.html" class="btn btn-neutral float-left" title="dpnp.ndarray.__repr__" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="generated/dpnp.ufunc.nin.html" class="btn btn-neutral float-right" title="dpnp.ufunc.nin" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="generated/dpnp.ufunc.html" class="btn btn-neutral float-right" title="dpnp.ufunc" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

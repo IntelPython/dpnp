@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+9.gaebce16f17 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+14.g644406fa7c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8b30d277"></script>
+        <script src="../../_static/documentation_options.js?v=ef139aae"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+9.gaebce16f17
+                0.16.0dev0+14.g644406fa7c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -167,6 +167,8 @@
     <span class="n">acceptance_fn_positive</span><span class="p">,</span>
     <span class="n">acceptance_fn_sign</span><span class="p">,</span>
     <span class="n">acceptance_fn_subtract</span><span class="p">,</span>
+    <span class="n">binary_ufunc</span><span class="p">,</span>
+    <span class="n">unary_ufunc</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="n">call_origin</span><span class="p">,</span> <span class="n">get_usm_allocations</span>
@@ -423,116 +425,14 @@
             <span class="n">a</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)]</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice3</span><span class="p">)]</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice4</span><span class="p">)]</span>
         <span class="p">)</span>
 
-
-<span class="n">_ABS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">abs(x, out, **kwargs)</span>
-
-<span class="s2">Calculates the absolute value for each element `x_i` of input array `x`.</span>
-
-<span class="s2">For full documentation refer to :obj:`numpy.absolute`.</span>
-
-<span class="s2">Parameters</span>
-<span class="s2">----------</span>
-<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="s2">    Output array to populate.</span>
-<span class="s2">    Array must have the correct shape and the expected data type.</span>
-<span class="s2">**kwargs</span>
-<span class="s2">    For other keyword-only arguments, see the :obj:`dpnp.ufunc`.</span>
-
-<span class="s2">Returns</span>
-<span class="s2">-------</span>
-<span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise absolute values.</span>
-<span class="s2">    For complex input, the absolute value is its magnitude.</span>
-<span class="s2">    If `x` has a real-valued data type, the returned array has the</span>
-<span class="s2">    same data type as `x`. If `x` has a complex floating-point data type,</span>
-<span class="s2">    the returned array has a real-valued floating-point data type whose</span>
-<span class="s2">    precision matches the precision of `x`.</span>
-
-<span class="s2">See Also</span>
-<span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.fabs` : Calculate the absolute value element-wise excluding complex types.</span>
-
-<span class="s2">Notes</span>
-<span class="s2">-----</span>
-<span class="s2">``dpnp.abs`` is a shorthand for this function.</span>
-
-<span class="s2">Examples</span>
-<span class="s2">--------</span>
-<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
-<span class="s2">&gt;&gt;&gt; a = np.array([-1.2, 1.2])</span>
-<span class="s2">&gt;&gt;&gt; np.absolute(a)</span>
-<span class="s2">array([1.2, 1.2])</span>
-
-<span class="s2">&gt;&gt;&gt; a = np.array(1.2 + 1j)</span>
-<span class="s2">&gt;&gt;&gt; np.absolute(a)</span>
-<span class="s2">array(1.5620499351813308)</span>
-<span class="s2">&quot;&quot;&quot;</span>
-
-<span class="n">absolute</span> <span class="o">=</span> <span class="n">ufunc</span><span class="p">(</span><span class="s2">&quot;abs&quot;</span><span class="p">,</span> <span class="n">_ABS_DOCSTRING</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mkl_call</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        
+<span class="n">absolute</span> <span class="o">=</span> <span class="n">unary_ufunc</span><span class="p">(</span><span class="s2">&quot;abs&quot;</span><span class="p">,</span> <span class="n">mkl_call</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="nb">abs</span> <span class="o">=</span> <span class="n">absolute</span>
 
 
-<span class="n">_ADD_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">add(x1, x2, out, **kwargs)</span>
-
-<span class="s2">Calculates the sum for each element `x1_i` of the input array `x1` with</span>
-<span class="s2">the respective element `x2_i` of the input array `x2`.</span>
-
-<span class="s2">For full documentation refer to :obj:`numpy.add`.</span>
-
-<span class="s2">Parameters</span>
-<span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="s2">    Output array to populate.</span>
-<span class="s2">    Array must have the correct shape and the expected data type.</span>
-<span class="s2">**kwargs</span>
-<span class="s2">    For other keyword-only arguments, see the :obj:`dpnp.ufunc`.</span>
-
-<span class="s2">Returns</span>
-<span class="s2">-------</span>
-<span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise sums. The data type of the</span>
-<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
-
-<span class="s2">Notes</span>
-<span class="s2">-----</span>
-<span class="s2">Equivalent to `x1` + `x2` in terms of array broadcasting.</span>
-
-<span class="s2">Examples</span>
-<span class="s2">--------</span>
-<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
-<span class="s2">&gt;&gt;&gt; a = np.array([1, 2, 3])</span>
-<span class="s2">&gt;&gt;&gt; b = np.array([1, 2, 3])</span>
-<span class="s2">&gt;&gt;&gt; np.add(a, b)</span>
-<span class="s2">array([2, 4, 6])</span>
-
-<span class="s2">&gt;&gt;&gt; x1 = np.arange(9.0).reshape((3, 3))</span>
-<span class="s2">&gt;&gt;&gt; x2 = np.arange(3.0)</span>
-<span class="s2">&gt;&gt;&gt; np.add(x1, x2)</span>
-<span class="s2">array([[  0.,   2.,   4.],</span>
-<span class="s2">       [  3.,   5.,   7.],</span>
-<span class="s2">       [  6.,   8.,  10.]])</span>
-
-<span class="s2">The ``+`` operator can be used as a shorthand for ``add`` on</span>
-<span class="s2">:class:`dpnp.ndarray`.</span>
-
-<span class="s2">&gt;&gt;&gt; x1 + x2</span>
-<span class="s2">array([[  0.,   2.,   4.],</span>
-<span class="s2">       [  3.,   5.,   7.],</span>
-<span class="s2">       [  6.,   8.,  10.]])</span>
-<span class="s2">&quot;&quot;&quot;</span>
-
-
-<span class="n">add</span> <span class="o">=</span> <span class="n">ufunc</span><span class="p">(</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="n">_ADD_DOCSTRING</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">mkl_call</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">add</span> <span class="o">=</span> <span class="n">binary_ufunc</span><span class="p">(</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="n">mkl_call</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="n">_ANGLE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>

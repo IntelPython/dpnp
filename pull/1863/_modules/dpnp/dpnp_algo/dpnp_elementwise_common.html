@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_algo.dpnp_elementwise_common &mdash; Data Parallel Extension for NumPy 0.16.0dev0+9.gaebce16f17 documentation</title>
+  <title>dpnp.dpnp_algo.dpnp_elementwise_common &mdash; Data Parallel Extension for NumPy 0.16.0dev0+14.g644406fa7c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=8b30d277"></script>
+        <script src="../../../_static/documentation_options.js?v=ef139aae"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+9.gaebce16f17
+                0.16.0dev0+14.g644406fa7c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -121,6 +121,7 @@
 <span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="kn">import</span> <span class="nn">dpnp.dpnp_algo.dpnp_elementwise_docs</span> <span class="k">as</span> <span class="nn">ufunc_docs</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -134,6 +135,8 @@
     <span class="s2">&quot;DPNPRound&quot;</span><span class="p">,</span>
     <span class="s2">&quot;DPNPUnaryFunc&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ufunc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;unary_ufunc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;binary_ufunc&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -143,16 +146,23 @@
 
 
 <div class="viewcode-block" id="ufunc">
-<a class="viewcode-back" href="../../../reference/ufunc.html#dpnp.ufunc">[docs]</a>
+<a class="viewcode-back" href="../../../reference/generated/dpnp.ufunc.html#dpnp.ufunc">[docs]</a>
 <span class="k">class</span> <span class="nc">ufunc</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    ufunc(name, docs, nin, ...)</span>
+<span class="sd">    ufunc()</span>
 
-<span class="sd">    DPNP provides universal functions (a.k.a. ufuncs) to support various</span>
-<span class="sd">    element-wise operations.</span>
+<span class="sd">    Functions that operate element by element on whole arrays.</span>
 
-<span class="sd">    Optional keyword arguments</span>
-<span class="sd">    --------------------------</span>
+<span class="sd">    Calling ufuncs</span>
+<span class="sd">    --------------</span>
+<span class="sd">    op(*x[, out], **kwargs)</span>
+
+<span class="sd">    Apply `op` to the arguments `*x` elementwise, broadcasting the arguments.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    *x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input arrays.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Output array to populate.</span>
 <span class="sd">        Array must have the correct shape and the expected data type.</span>
@@ -177,86 +187,17 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">,</span>
-        <span class="n">docs</span><span class="p">,</span>
         <span class="n">nin</span><span class="p">,</span>
-        <span class="n">mkl_call</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">acceptance_fn</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">nout</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">to_usm_astype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name_</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nin_</span> <span class="o">=</span> <span class="n">nin</span>
-        <span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">name</span>
-
-        <span class="n">dpt_result_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">_name</span> <span class="o">+</span> <span class="s2">&quot;_result_type&quot;</span><span class="p">)</span>
-        <span class="n">dpt_impl_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">_name</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">nin</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-
-            <span class="k">def</span> <span class="nf">_call_func</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                A callback to register in UnaryElementwiseFunc class of</span>
-<span class="sd">                dpctl.tensor</span>
-<span class="sd">                &quot;&quot;&quot;</span>
-
-                <span class="k">if</span> <span class="n">depends</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">depends</span> <span class="o">=</span> <span class="p">[]</span>
-
-                <span class="k">if</span> <span class="n">mkl_call</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="n">mkl_fn_to_call</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">vmi</span><span class="p">,</span> <span class="s2">&quot;_mkl&quot;</span> <span class="o">+</span> <span class="n">_name</span> <span class="o">+</span> <span class="s2">&quot;_to_call&quot;</span><span class="p">)</span>
-                    <span class="n">mkl_impl_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">vmi</span><span class="p">,</span> <span class="n">_name</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">mkl_fn_to_call</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">mkl_fn_to_call</span><span class="p">(</span>
-                        <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span>
-                    <span class="p">):</span>
-                        <span class="c1"># call pybind11 extension for unary function from OneMKL VM</span>
-                        <span class="k">return</span> <span class="n">mkl_impl_fn</span><span class="p">(</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">depends</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">dpt_impl_fn</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">UnaryElementwiseFunc</span><span class="p">(</span>
-                <span class="n">name</span><span class="p">,</span>
-                <span class="n">dpt_result_type</span><span class="p">,</span>
-                <span class="n">_call_func</span><span class="p">,</span>
-                <span class="n">docs</span><span class="p">,</span>
-                <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn</span><span class="p">,</span>
-            <span class="p">)</span>
-
-        <span class="k">elif</span> <span class="n">nin</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">inplace</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">binary_inplace_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">_name</span> <span class="o">+</span> <span class="s2">&quot;_inplace&quot;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">binary_inplace_fn</span> <span class="o">=</span> <span class="kc">None</span>
-
-            <span class="k">def</span> <span class="nf">_call_func</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="n">src2</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                A callback to register in UnaryElementwiseFunc class of</span>
-<span class="sd">                dpctl.tensor</span>
-<span class="sd">                &quot;&quot;&quot;</span>
-
-                <span class="k">if</span> <span class="n">depends</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">depends</span> <span class="o">=</span> <span class="p">[]</span>
-
-                <span class="k">if</span> <span class="n">mkl_call</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="n">mkl_fn_to_call</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">vmi</span><span class="p">,</span> <span class="s2">&quot;_mkl&quot;</span> <span class="o">+</span> <span class="n">_name</span> <span class="o">+</span> <span class="s2">&quot;_to_call&quot;</span><span class="p">)</span>
-                    <span class="n">mkl_impl_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">vmi</span><span class="p">,</span> <span class="n">_name</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">mkl_fn_to_call</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">mkl_fn_to_call</span><span class="p">(</span>
-                        <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">src1</span><span class="p">,</span> <span class="n">src2</span><span class="p">,</span> <span class="n">dst</span>
-                    <span class="p">):</span>
-                        <span class="c1"># call pybind11 extension for binary function from OneMKL VM</span>
-                        <span class="k">return</span> <span class="n">mkl_impl_fn</span><span class="p">(</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">src1</span><span class="p">,</span> <span class="n">src2</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">depends</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">dpt_impl_fn</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="n">src2</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">BinaryElementwiseFunc</span><span class="p">(</span>
-                <span class="n">name</span><span class="p">,</span>
-                <span class="n">dpt_result_type</span><span class="p">,</span>
-                <span class="n">_call_func</span><span class="p">,</span>
-                <span class="n">docs</span><span class="p">,</span>
-                <span class="n">binary_inplace_fn</span><span class="p">,</span>
-                <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">docs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;ufunc&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nout_</span> <span class="o">=</span> <span class="n">nout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_usm_astype</span> <span class="o">=</span> <span class="n">to_usm_astype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ufunc_docs</span><span class="p">,</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_docstring&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -274,23 +215,23 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Requested function=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name_</span><span class="si">}</span><span class="s2"> with kwargs=</span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Requested function=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with kwargs=</span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2"> &quot;</span>
                 <span class="s2">&quot;isn&#39;t currently supported.&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Requested function=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name_</span><span class="si">}</span><span class="s2"> with where=</span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Requested function=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with where=</span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2"> &quot;</span>
                 <span class="s2">&quot;isn&#39;t currently supported.&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Requested function=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name_</span><span class="si">}</span><span class="s2"> with subok=</span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Requested function=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with subok=</span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2"> &quot;</span>
                 <span class="s2">&quot;isn&#39;t currently supported.&quot;</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">casting</span> <span class="o">!=</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Requested function=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name_</span><span class="si">}</span><span class="s2"> only takes `out` or `dtype`&quot;</span>
-                <span class="s2">&quot;as an argument, but both were provided.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Requested function=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> only takes `out` or &quot;</span>
+                <span class="s2">&quot;`dtype` as an argument, but both were provided.&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span>
@@ -301,40 +242,7 @@
                 <span class="sa">f</span><span class="s2">&quot;order must be one of &#39;C&#39;, &#39;F&#39;, &#39;A&#39;, or &#39;K&#39; (got &#39;</span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nin_</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="n">out</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">x_usm</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-            <span class="n">astype_usm_args</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_usm</span><span class="p">,)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-                <span class="n">out</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-            <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
-                    <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
-                    <span class="n">x2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
-                        <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span>
-                    <span class="p">)</span>
-                <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">):</span>
-                    <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
-                        <span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span>
-                    <span class="p">)</span>
-                    <span class="n">x2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
-                        <span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span>
-                    <span class="p">)</span>
-                    <span class="n">x2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
-                        <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span>
-                    <span class="p">)</span>
-
-            <span class="n">x1_usm</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
-            <span class="n">x2_usm</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
-            <span class="n">astype_usm_args</span> <span class="o">=</span> <span class="n">x1_usm</span><span class="p">,</span> <span class="n">x2_usm</span>
+        <span class="n">astype_usm_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_usm_astype</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="p">)</span>
 
         <span class="n">out_usm</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
@@ -384,7 +292,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nout_</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nargs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -405,7 +313,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nin_</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nin_</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nout_</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -563,6 +471,126 @@
         <span class="p">)</span></div>
 </div>
 
+
+
+<span class="k">class</span> <span class="nc">unary_ufunc</span><span class="p">(</span><span class="n">ufunc</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">mkl_call</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">acceptance_fn</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">def</span> <span class="nf">_to_usm_astype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">x_usm</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">x_usm</span><span class="p">,)</span>
+
+        <span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">name</span>
+
+        <span class="n">dpt_result_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">_name</span> <span class="o">+</span> <span class="s2">&quot;_result_type&quot;</span><span class="p">)</span>
+        <span class="n">dpt_impl_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">_name</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_call_func</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            A callback to register in UnaryElementwiseFunc class of</span>
+<span class="sd">            dpctl.tensor</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="k">if</span> <span class="n">depends</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">depends</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">if</span> <span class="n">mkl_call</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">mkl_fn_to_call</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">vmi</span><span class="p">,</span> <span class="s2">&quot;_mkl&quot;</span> <span class="o">+</span> <span class="n">_name</span> <span class="o">+</span> <span class="s2">&quot;_to_call&quot;</span><span class="p">)</span>
+                <span class="n">mkl_impl_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">vmi</span><span class="p">,</span> <span class="n">_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">mkl_fn_to_call</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">mkl_fn_to_call</span><span class="p">(</span>
+                    <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span>
+                <span class="p">):</span>
+                    <span class="c1"># call pybind11 extension for unary function from OneMKL VM</span>
+                    <span class="k">return</span> <span class="n">mkl_impl_fn</span><span class="p">(</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">depends</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpt_impl_fn</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="p">)</span>
+
+        <span class="n">func</span> <span class="o">=</span> <span class="n">UnaryElementwiseFunc</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">dpt_result_type</span><span class="p">,</span>
+            <span class="n">_call_func</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+            <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">nin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">to_usm_astype</span><span class="o">=</span><span class="n">_to_usm_astype</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">binary_ufunc</span><span class="p">(</span><span class="n">ufunc</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">mkl_call</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">acceptance_fn</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">def</span> <span class="nf">_to_usm_astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+                    <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+                    <span class="n">x2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                        <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x2</span><span class="p">):</span>
+                    <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                        <span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">)</span>
+                    <span class="n">x2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                        <span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">)</span>
+                    <span class="n">x2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                        <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">)</span>
+            <span class="n">x1_usm</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+            <span class="n">x2_usm</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">x1_usm</span><span class="p">,</span> <span class="n">x2_usm</span>
+
+        <span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">name</span>
+
+        <span class="n">dpt_result_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">_name</span> <span class="o">+</span> <span class="s2">&quot;_result_type&quot;</span><span class="p">)</span>
+        <span class="n">dpt_impl_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">inplace</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">binary_inplace_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">_name</span> <span class="o">+</span> <span class="s2">&quot;_inplace&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">binary_inplace_fn</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">def</span> <span class="nf">_call_func</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="n">src2</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            A callback to register in UnaryElementwiseFunc class of</span>
+<span class="sd">            dpctl.tensor</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="k">if</span> <span class="n">depends</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">depends</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">if</span> <span class="n">mkl_call</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">mkl_fn_to_call</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">vmi</span><span class="p">,</span> <span class="s2">&quot;_mkl&quot;</span> <span class="o">+</span> <span class="n">_name</span> <span class="o">+</span> <span class="s2">&quot;_to_call&quot;</span><span class="p">)</span>
+                <span class="n">mkl_impl_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">vmi</span><span class="p">,</span> <span class="n">_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">mkl_fn_to_call</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">mkl_fn_to_call</span><span class="p">(</span>
+                    <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">src1</span><span class="p">,</span> <span class="n">src2</span><span class="p">,</span> <span class="n">dst</span>
+                <span class="p">):</span>
+                    <span class="c1"># call pybind11 extension for binary function from OneMKL VM</span>
+                    <span class="k">return</span> <span class="n">mkl_impl_fn</span><span class="p">(</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">src1</span><span class="p">,</span> <span class="n">src2</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">depends</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpt_impl_fn</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="n">src2</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="p">)</span>
+
+        <span class="n">func</span> <span class="o">=</span> <span class="n">BinaryElementwiseFunc</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">dpt_result_type</span><span class="p">,</span>
+            <span class="n">_call_func</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+            <span class="n">binary_inplace_fn</span><span class="p">,</span>
+            <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">nin</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">to_usm_astype</span><span class="o">=</span><span class="n">_to_usm_astype</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">DPNPUnaryFunc</span><span class="p">(</span><span class="n">UnaryElementwiseFunc</span><span class="p">):</span>
