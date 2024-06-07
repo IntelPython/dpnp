@@ -33,6 +33,11 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/atan.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/atan2.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/atanh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cbrt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ceil.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/conj.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cos.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cosh.cpp
 )
 
 set(_module_src

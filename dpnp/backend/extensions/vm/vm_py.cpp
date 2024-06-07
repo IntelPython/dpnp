@@ -75,11 +75,6 @@ namespace vm_ns = dpnp::extensions::vm;
 using vm_ext::binary_impl_fn_ptr_t;
 using vm_ext::unary_impl_fn_ptr_t;
 
-static unary_impl_fn_ptr_t cbrt_dispatch_vector[dpctl_td_ns::num_types];
-static unary_impl_fn_ptr_t ceil_dispatch_vector[dpctl_td_ns::num_types];
-static unary_impl_fn_ptr_t conj_dispatch_vector[dpctl_td_ns::num_types];
-static unary_impl_fn_ptr_t cos_dispatch_vector[dpctl_td_ns::num_types];
-static unary_impl_fn_ptr_t cosh_dispatch_vector[dpctl_td_ns::num_types];
 static binary_impl_fn_ptr_t div_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t exp_dispatch_vector[dpctl_td_ns::num_types];
 static unary_impl_fn_ptr_t exp2_dispatch_vector[dpctl_td_ns::num_types];
@@ -116,146 +111,11 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_atan(m);
     vm_ns::init_atan2(m);
     vm_ns::init_atanh(m);
-
-    // UnaryUfunc: ==== Cbrt(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::CbrtContigFactory>(
-            cbrt_dispatch_vector);
-
-        auto cbrt_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                              const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       cbrt_dispatch_vector);
-        };
-        m.def("_cbrt", cbrt_pyapi,
-              "Call `cbrt` function from OneMKL VM library to compute "
-              "the element-wise cube root of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto cbrt_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                           arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    cbrt_dispatch_vector);
-        };
-        m.def("_mkl_cbrt_to_call", cbrt_need_to_call_pyapi,
-              "Check input arguments to answer if `cbrt` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
-
-    // UnaryUfunc: ==== Ceil(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::CeilContigFactory>(
-            ceil_dispatch_vector);
-
-        auto ceil_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                              const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       ceil_dispatch_vector);
-        };
-        m.def("_ceil", ceil_pyapi,
-              "Call `ceil` function from OneMKL VM library to compute "
-              "ceiling of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto ceil_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                           arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    ceil_dispatch_vector);
-        };
-        m.def("_mkl_ceil_to_call", ceil_need_to_call_pyapi,
-              "Check input arguments to answer if `ceil` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
-
-    // UnaryUfunc: ==== Conj(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::ConjContigFactory>(
-            conj_dispatch_vector);
-
-        auto conj_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                              const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       conj_dispatch_vector);
-        };
-        m.def("_conj", conj_pyapi,
-              "Call `conj` function from OneMKL VM library to compute "
-              "conjugate of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto conj_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                           arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    conj_dispatch_vector);
-        };
-        m.def("_mkl_conj_to_call", conj_need_to_call_pyapi,
-              "Check input arguments to answer if `conj` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
-
-    // UnaryUfunc: ==== Cos(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::CosContigFactory>(
-            cos_dispatch_vector);
-
-        auto cos_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                             const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       cos_dispatch_vector);
-        };
-        m.def("_cos", cos_pyapi,
-              "Call `cos` function from OneMKL VM library to compute "
-              "cosine of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto cos_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                          arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    cos_dispatch_vector);
-        };
-        m.def("_mkl_cos_to_call", cos_need_to_call_pyapi,
-              "Check input arguments to answer if `cos` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
-
-    // UnaryUfunc: ==== Cosh(x) ====
-    {
-        vm_ext::init_ufunc_dispatch_vector<unary_impl_fn_ptr_t,
-                                           vm_ext::CoshContigFactory>(
-            cosh_dispatch_vector);
-
-        auto cosh_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                              const event_vecT &depends = {}) {
-            return vm_ext::unary_ufunc(exec_q, src, dst, depends,
-                                       cosh_dispatch_vector);
-        };
-        m.def("_cosh", cosh_pyapi,
-              "Call `cosh` function from OneMKL VM library to compute "
-              "inverse cosine of vector elements",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
-              py::arg("depends") = py::list());
-
-        auto cosh_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                           arrayT dst) {
-            return vm_ext::need_to_call_unary_ufunc(exec_q, src, dst,
-                                                    cosh_dispatch_vector);
-        };
-        m.def("_mkl_cosh_to_call", cosh_need_to_call_pyapi,
-              "Check input arguments to answer if `cosh` function from "
-              "OneMKL VM library can be used",
-              py::arg("sycl_queue"), py::arg("src"), py::arg("dst"));
-    }
+    vm_ns::init_cbrt(m);
+    vm_ns::init_ceil(m);
+    vm_ns::init_conj(m);
+    vm_ns::init_cos(m);
+    vm_ns::init_cosh(m);
 
     // BinaryUfunc: ==== Div(x1, x2) ====
     {
