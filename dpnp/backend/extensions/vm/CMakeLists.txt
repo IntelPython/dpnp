@@ -53,6 +53,12 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/rint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sinh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sqr.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sqrt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sub.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tan.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tanh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/trunc.cpp
 )
 
 set(_module_src
