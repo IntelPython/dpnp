@@ -2977,7 +2977,7 @@ class TestMatmul:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "order_pair",
+        "order1, order2, out_order",
         [
             ("C", "C", "C"),
             ("C", "C", "F"),
@@ -2992,13 +2992,10 @@ class TestMatmul:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
-    def test_matmul_out1(self, order_pair, dtype):
-        order1, order2, out_order = order_pair
-        a1 = numpy.arange(20, dtype=dtype).reshape(5, 4)
-        a2 = numpy.arange(28, dtype=dtype).reshape(4, 7)
-
-        a1 = numpy.asarray(a1, order=order1)
-        a2 = numpy.asarray(a2, order=order2)
+    def test_matmul_out1(self, order1, order2, out_order, dtype):
+        # test gemm with out keyword
+        a1 = numpy.arange(20, dtype=dtype).reshape(5, 4, order=order1)
+        a2 = numpy.arange(28, dtype=dtype).reshape(4, 7, order=order2)
 
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
@@ -3018,6 +3015,9 @@ class TestMatmul:
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
     def test_matmul_out2(self, trans, dtype):
+        # test gemm_batch with out keyword
+        # the base of input arrays is c-contiguous
+        # the base of output array is c-contiguous or f-contiguous
         a1 = numpy.arange(24, dtype=dtype).reshape(2, 3, 4)
         a2 = numpy.arange(40, dtype=dtype).reshape(2, 4, 5)
         b1 = dpnp.asarray(a1)
@@ -3043,6 +3043,9 @@ class TestMatmul:
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
     def test_matmul_out3(self, trans, dtype):
+        # test gemm_batch with out keyword
+        # the base of input arrays is f-contiguous
+        # the base of output array is c-contiguous or f-contiguous
         a1 = numpy.arange(24, dtype=dtype).reshape(2, 4, 3)
         a2 = numpy.arange(40, dtype=dtype).reshape(2, 5, 4)
         b1 = dpnp.asarray(a1)
@@ -3077,6 +3080,9 @@ class TestMatmul:
         ],
     )
     def test_matmul_out_0D(self, out_shape):
+        # for matmul of 0-D arrays with out keyword,
+        # NumPy repeats the data to match the shape
+        # of output array
         a = numpy.arange(3)
         b = dpnp.asarray(a)
 

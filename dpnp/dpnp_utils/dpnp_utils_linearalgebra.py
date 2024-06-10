@@ -757,12 +757,14 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
     if row_major:
         if res_is_f_contig:
             res = dpnp.reshape(
-                res.ravel("F"), (res_shape[1], res_shape[2], batch_size)
+                dpnp.ravel(res, order="F"),
+                (res_shape[1], res_shape[2], batch_size),
             ).transpose(2, 0, 1)
     else:
         if res_is_c_contig:
             res = dpnp.reshape(
-                res.ravel(), (batch_size, res_shape[2], res_shape[1])
+                dpnp.ravel(res, order="C"),
+                (batch_size, res_shape[2], res_shape[1]),
             ).transpose(0, 2, 1)
 
     if res_shape != orig_shape:
@@ -784,11 +786,11 @@ def _gemm_matmul(exec_q, x1, x2, res, dev_tasks_list):
     if row_major:
         if res.flags.f_contiguous is True:
             # read data in "F" order and write it in "C" order
-            res = dpnp.reshape(res.ravel(order="F"), res.shape, order="C")
+            res = dpnp.reshape(dpnp.ravel(res, order="F"), res.shape, order="C")
     else:
         if res.flags.c_contiguous is True:
             # read data in "C" order and write it in "F" order
-            res = dpnp.reshape(res.ravel(), res.shape, order="F")
+            res = dpnp.reshape(dpnp.ravel(res, order="C"), res.shape, order="F")
 
     return dpnp.ascontiguousarray(res)
 
