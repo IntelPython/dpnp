@@ -21,7 +21,7 @@ jobs:
 
     env:
       python-ver: '3.10'
-      CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+      CHANNELS: '-c dppy/label/coverage -c intel -c conda-forge --override-channels'
       # Install the latest oneAPI compiler to work around an issue
       INSTALL_ONE_API: 'yes'
 
