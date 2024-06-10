@@ -14,6 +14,7 @@ env:
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   CONDA_BUILD_VERSION: '24.5.1'
   CONDA_INDEX_VERSION: '0.4.0'
+  RUN_TESTS_MAX_ATTEMPTS: 2
   TEST_ENV_NAME: 'test'
   TEST_SCOPE: >-
       test_absolute.py
@@ -264,7 +265,7 @@ jobs:
         with:
           shell: bash
           timeout_minutes: 10
-          max_attempts: 5
+          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
@@ -420,7 +421,7 @@ jobs:
         with:
           shell: cmd
           timeout_minutes: 15
-          max_attempts: 5
+          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
