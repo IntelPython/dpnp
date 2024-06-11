@@ -219,7 +219,7 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True, device=None):
         string, an instance of :class:`dpctl.SyclDevice` corresponding to
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property. Default: `None`.
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property. Default: ``None``.
 
     Returns
     -------

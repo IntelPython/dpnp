@@ -611,7 +611,7 @@ class dpnp_array:
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
             or a `Device` object returned by
-            :obj:`dpnp.dpnp_array.dpnp_array.device` property. Default: `None`.
+            :obj:`dpnp.dpnp_array.dpnp_array.device` property. Default: ``None``.
 
         Returns
         -------

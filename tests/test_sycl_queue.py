@@ -2224,5 +2224,6 @@ def test_astype(device_x, device_y):
     x = dpnp.array([1, 2, 3], dtype="i4", device=device_x)
     y = dpnp.astype(x, dtype="f4")
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
-    y = dpnp.astype(x, dtype="f4", device=device_y)
-    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+    sycl_queue = dpctl.SyclQueue(device_y)
+    y = dpnp.astype(x, dtype="f4", device=sycl_queue)
+    assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
