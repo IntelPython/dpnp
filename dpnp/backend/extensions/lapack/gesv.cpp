@@ -273,7 +273,6 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(args_ev, gesv_ev);
 }
 
-
 std::pair<sycl::event, sycl::event>
     gesv_batch(sycl::queue exec_q,
                dpctl::tensor::usm_ndarray coeff_matrix,
@@ -289,21 +288,53 @@ std::pair<sycl::event, sycl::event>
                               ", but a 3-dimensional array is expected.");
     }
 
-    if (dependent_vals_nd > 3) {
+    if (dependent_vals_nd < 2 || dependent_vals_nd > 3) {
         throw py::value_error(
             "The dependent values array has ndim=" +
             std::to_string(dependent_vals_nd) +
-            ", but more than 2-dimensional array is expected.");
+            ", but a 2-dimensional or 3-dimensional array is expected.");
     }
 
     const py::ssize_t *coeff_matrix_shape = coeff_matrix.get_shape_raw();
     const py::ssize_t *dependent_vals_shape = dependent_vals.get_shape_raw();
+
+    // The coeff_matrix and dependent_vals arrays must be F-contiguous arrays
+    // with the shapes (n,n,batch_size) and (n,nrhs,batch_size) or
+    // (n,batch_size) respectively.
 
     if (coeff_matrix_shape[0] != coeff_matrix_shape[1]) {
         throw py::value_error("The coefficient matrix must be square,"
                               " but got a shape of (" +
                               std::to_string(coeff_matrix_shape[0]) + ", " +
                               std::to_string(coeff_matrix_shape[1]) + ").");
+    }
+
+    if (coeff_matrix_shape[0] != dependent_vals_shape[0]) {
+        throw py::value_error("The first dimension (n) of coeff_matrix and"
+                              " dependent_vals must be the same, but got " +
+                              std::to_string(coeff_matrix_shape[0]) + " and " +
+                              std::to_string(dependent_vals_shape[0]) + ".");
+    }
+
+    if (dependent_vals_nd == 2) {
+        if (coeff_matrix_shape[2] != dependent_vals_shape[1]) {
+            throw py::value_error(
+                "The batch_size of "
+                " coeff_matrix and dependent_vals must be"
+                " the same, but got " +
+                std::to_string(coeff_matrix_shape[2]) + " and " +
+                std::to_string(dependent_vals_shape[1]) + ".");
+        }
+    }
+    else if (dependent_vals_nd == 3) {
+        if (coeff_matrix_shape[2] != dependent_vals_shape[2]) {
+            throw py::value_error(
+                "The batch_size of "
+                " coeff_matrix and dependent_vals must be"
+                " the same, but got " +
+                std::to_string(coeff_matrix_shape[2]) + " and " +
+                std::to_string(dependent_vals_shape[2]) + ".");
+        }
     }
 
     // check compatibility of execution queue and allocation queue
@@ -321,17 +352,17 @@ std::pair<sycl::event, sycl::event>
             "are overlapping segments of memory");
     }
 
-    // bool is_coeff_matrix_f_contig = coeff_matrix.is_f_contiguous();
-    // if (!is_coeff_matrix_f_contig) {
-    //     throw py::value_error("The coefficient matrix "
-    //                           "must be F-contiguous");
-    // }
+    bool is_coeff_matrix_f_contig = coeff_matrix.is_f_contiguous();
+    if (!is_coeff_matrix_f_contig) {
+        throw py::value_error("The coefficient matrix "
+                              "must be F-contiguous");
+    }
 
-    // bool is_dependent_vals_f_contig = dependent_vals.is_f_contiguous();
-    // if (!is_dependent_vals_f_contig) {
-    //     throw py::value_error("The array of dependent variables "
-    //                           "must be F-contiguous");
-    // }
+    bool is_dependent_vals_f_contig = dependent_vals.is_f_contiguous();
+    if (!is_dependent_vals_f_contig) {
+        throw py::value_error("The array of dependent variables "
+                              "must be F-contiguous");
+    }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int coeff_matrix_type_id =
@@ -355,23 +386,12 @@ std::pair<sycl::event, sycl::event>
     char *dependent_vals_data = dependent_vals.get_data();
 
     const std::int64_t batch_size = coeff_matrix_shape[2];
-    // const std::int64_t n = dependent_vals_shape[1];
-    // const std::int64_t nrhs =
-    //     (dependent_vals_nd > 2) ? dependent_vals_shape[2] : 1;
-
     const std::int64_t n = coeff_matrix_shape[1];
     const std::int64_t nrhs =
         (dependent_vals_nd > 2) ? dependent_vals_shape[1] : 1;
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, n);
-
-    std::cout << "n: " << n << std::endl;
-    std::cout << "nrhs: " << nrhs << std::endl;
-    std::cout << "lda: " << n << std::endl;
-    std::cout << "ldb: " << n << std::endl;
-    std::cout << "b_nd: " << dependent_vals_nd << std::endl;
-
 
     int coeff_matrix_elemsize = coeff_matrix.get_elemsize();
     int dependent_vals_elemsize = dependent_vals.get_elemsize();
@@ -383,19 +403,20 @@ std::pair<sycl::event, sycl::event>
     gesv_task_events.reserve(batch_size);
 
     for (std::int64_t i = 0; i < batch_size; ++i) {
-        char *coeff_matrix_batch = coeff_matrix_data + i * n * n * coeff_matrix_elemsize;
-        char *dependent_vals_batch = dependent_vals_data + i * n * nrhs * dependent_vals_elemsize;
+        char *coeff_matrix_batch =
+            coeff_matrix_data + i * n * n * coeff_matrix_elemsize;
+        char *dependent_vals_batch =
+            dependent_vals_data + i * n * nrhs * dependent_vals_elemsize;
 
         sycl::event gesv_ev =
-        gesv_fn(exec_q, n, nrhs, coeff_matrix_batch, lda, dependent_vals_batch,
-                ldb, host_task_events, depends);
+            gesv_fn(exec_q, n, nrhs, coeff_matrix_batch, lda,
+                    dependent_vals_batch, ldb, host_task_events, depends);
 
         gesv_task_events.push_back(gesv_ev);
     }
 
     sycl::event combine_ev = exec_q.submit(
         [&](sycl::handler &cgh) { cgh.depends_on(gesv_task_events); });
-
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {coeff_matrix, dependent_vals}, host_task_events);
