@@ -92,18 +92,6 @@ var NAVTREEINDEX2 =
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples.html":[1,0,0,0,0,2,37],
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html":[1,0,0,0,0,2,38],
 "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_t_01_4_01_4.html":[1,0,0,0,0,2,39],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1_sqr_contig_factory.html":[1,0,0,0,0,3,1],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1_sqrt_contig_factory.html":[1,0,0,0,0,3,2],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1_sub_contig_factory.html":[1,0,0,0,0,3,3],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1_tan_contig_factory.html":[1,0,0,0,0,3,4],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1_tanh_contig_factory.html":[1,0,0,0,0,3,5],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1_trunc_contig_factory.html":[1,0,0,0,0,3,6],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sqr_output_type.html":[1,0,0,0,0,3,0,0],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sqrt_output_type.html":[1,0,0,0,0,3,0,1],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sub_output_type.html":[1,0,0,0,0,3,0,2],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_tan_output_type.html":[1,0,0,0,0,3,0,4],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_tanh_output_type.html":[1,0,0,0,0,3,0,3],
-"structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_trunc_output_type.html":[1,0,0,0,0,3,0,5],
 "structengine__struct.html":[1,0,8],
 "structfunc__type__map__factory__t.html":[1,0,9],
 "structfunc__type__pair__t.html":[1,0,10],
@@ -120,6 +108,5 @@ var NAVTREEINDEX2 =
 "topics.html":[0],
 "trunc_8hpp_source.html":[2,0,0,4,35],
 "ungqr_8hpp_source.html":[2,0,0,2,13],
-"verbose_8hpp_source.html":[2,0,2,8],
-"vm_2types__matrix_8hpp_source.html":[2,0,0,4,36]
+"verbose_8hpp_source.html":[2,0,2,8]
 };

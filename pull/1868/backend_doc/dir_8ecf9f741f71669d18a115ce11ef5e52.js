@@ -35,6 +35,5 @@ var dir_8ecf9f741f71669d18a115ce11ef5e52 =
     [ "sub.hpp", "sub_8hpp_source.html", null ],
     [ "tan.hpp", "tan_8hpp_source.html", null ],
     [ "tanh.hpp", "tanh_8hpp_source.html", null ],
-    [ "trunc.hpp", "trunc_8hpp_source.html", null ],
-    [ "types_matrix.hpp", "vm_2types__matrix_8hpp_source.html", null ]
+    [ "trunc.hpp", "trunc_8hpp_source.html", null ]
 ];

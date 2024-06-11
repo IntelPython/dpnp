@@ -83,22 +83,6 @@ var annotated_dup =
             [ "tuple_of_tuples< std::tuple< Args... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html", null ],
             [ "tuple_of_tuples< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
             [ "UsmArrayMatcher", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_usm_array_matcher.html", null ]
-          ] ],
-          [ "vm", null, [
-            [ "types", null, [
-              [ "SqrOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sqr_output_type.html", null ],
-              [ "SqrtOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sqrt_output_type.html", null ],
-              [ "SubOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_sub_output_type.html", null ],
-              [ "TanhOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_tanh_output_type.html", null ],
-              [ "TanOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_tan_output_type.html", null ],
-              [ "TruncOutputType", "structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_trunc_output_type.html", null ]
-            ] ],
-            [ "SqrContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sqr_contig_factory.html", null ],
-            [ "SqrtContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sqrt_contig_factory.html", null ],
-            [ "SubContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_sub_contig_factory.html", null ],
-            [ "TanContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_tan_contig_factory.html", null ],
-            [ "TanhContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_tanh_contig_factory.html", null ],
-            [ "TruncContigFactory", "structdpnp_1_1backend_1_1ext_1_1vm_1_1_trunc_contig_factory.html", null ]
           ] ]
         ] ]
       ] ]
