@@ -5,17 +5,18 @@ import dpnp.linalg
 from tests.helper import generate_random_numpy_array
 
 # a = numpy.array([[[2,3],[1,2]],[[1,2],[2,3]]],dtype='f4')
-# a = numpy.array([[[1,2],[2,3]],[[1,2],[2,3]]],dtype='f4')
+a = numpy.array([[[1,2],[3,5]],[[1,2],[3,5]],[[1,2],[3,5]]], dtype='f4')
+b = numpy.array([[1,2],[1,2],[1,2]], dtype='f4')
 # a = numpy.array([[1,2],[2,3]],dtype='f4')
 # a = numpy.array([[[2,3],[1,2]]],dtype='f4')
 # a = numpy.array([[[1,2],[2,3]]],dtype='f4')
-a = generate_random_numpy_array(
-    (2, 3, 3), dtype='f4', hermitian=False, seed_value=81
-)
+# a = generate_random_numpy_array(
+#     (2, 3, 3), dtype='f4', hermitian=False, seed_value=81
+# )
 
-b = generate_random_numpy_array(
-    (2, 3), dtype='f4', hermitian=False, seed_value=76
-)
+# b = generate_random_numpy_array(
+#     (2, 3, 2), dtype='f4', hermitian=False, seed_value=76
+# )
 # a = numpy.array(
 #             [
 #                 [[1, 0, 3], [0, 5, 0], [7, 0, 9]],

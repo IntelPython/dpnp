@@ -381,21 +381,23 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
         m,n = b.shape[-2:]
 
         a = dpnp.moveaxis(a,(-2,-1),(0,1))
-        a = dpnp.array(a, dtype=res_type, order="F", copy=True)
-        a = dpnp.reshape(a,(n_a,n_a,-1))
+        # a_f = dpnp.array(a, dtype=res_type, order="F", copy=True)
+        # a = dpnp.reshape(a,(n_a,n_a,-1))
 
         if b.ndim > 2:
             b = dpnp.moveaxis(b,(-2,-1),(0,1))
         else:
             b = b.T
-        b = dpnp.array(b, dtype=res_type, order="F", copy=True)
-        if b.ndim > 2:
-            b = dpnp.reshape(b,(m,n,-1))
-        else:
-            b = b.T
+        # b_f = dpnp.array(b, dtype=res_type, order="F", copy=True)
+        # if b.ndim > 2:
+        #     # b = dpnp.reshape(b,(m,n,-1))
+        #     b = b
+        # else:
+        #     # b = b.T
+        #     b = b
 
-        a_usm_arr = dpnp.get_usm_ndarray(a)
-        b_usm_arr = dpnp.get_usm_ndarray(b)
+        # a_usm_arr = dpnp.get_usm_ndarray(a)
+        # b_usm_arr = dpnp.get_usm_ndarray(b)
 
 
         # a = a.reshape(-1, a_shape[-2], a_shape[-1])
@@ -409,37 +411,36 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
         #     b = b
         # b_usm_arr = dpnp.get_usm_ndarray(b)
 
-        # a_usm_arr = dpnp.get_usm_ndarray(a)
-        # b_usm_arr = dpnp.get_usm_ndarray(b)
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+        b_usm_arr = dpnp.get_usm_ndarray(b)
 
         ht_list_ev = []
 
-        # a_copy = dpnp.empty_like(a, dtype=res_type, order="C", usm_type=res_usm_type)
+        a_f = dpnp.empty_like(a, dtype=res_type, order="F", usm_type=res_usm_type)
 
-        # a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        #     src=a_usm_arr,
-        #     dst=a_copy.get_array(),
-        #     sycl_queue=a.sycl_queue,
-        # )
-        # ht_list_ev.append(a_ht_copy_ev)
+        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr,
+            dst=a_f.get_array(),
+            sycl_queue=a.sycl_queue,
+        )
+        ht_list_ev.append(a_ht_copy_ev)
 
-        # b_copy = dpnp.empty_like(
-        #     b, order="C", dtype=res_type, usm_type=res_usm_type
-        # )
+        b_f = dpnp.empty_like(
+            b, order="F", dtype=res_type, usm_type=res_usm_type
+        )
 
-        # b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        #     src=b_usm_arr,
-        #     dst=b_copy.get_array(),
-        #     sycl_queue=b.sycl_queue,
-        # )
-        # ht_list_ev.append(b_ht_copy_ev)
+        b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=b_usm_arr,
+            dst=b_f.get_array(),
+            sycl_queue=b.sycl_queue,
+        )
+        ht_list_ev.append(b_ht_copy_ev)
 
         ht_lapack_ev, _ = li._gesv_batch(
             exec_q,
-            a.get_array(),
-            b.get_array(),
-            # depends=[a_copy_ev, b_copy_ev],
-            depends=[],
+            a_f.get_array(),
+            b_f.get_array(),
+            depends=[a_copy_ev, b_copy_ev],
         )
 
         ht_list_ev.append(ht_lapack_ev)
@@ -451,10 +452,14 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
         # else:
         #     v = b_copy.reshape(b_shape)
         if b.ndim > 2:
-            v = dpnp.moveaxis(b, -1 , 0)
+            v = dpnp.moveaxis(b_f, -1 , 0)
             v = v.reshape(b_shape)
         else:
-            v = b.reshape(b_shape)
+            v = dpnp.moveaxis(b_f,-1,0)
+            v = v.reshape(b_shape)
+
+        # v = dpnp.copy(dpnp.moveaxis(b_f, -1, 0), order="C").reshape(b_shape)
+
         return v
 
 
