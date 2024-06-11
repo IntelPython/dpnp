@@ -39,13 +39,13 @@ namespace ext
 namespace lapack
 {
 extern std::pair<sycl::event, sycl::event>
-    gesv(sycl::queue exec_q,
+    gesv(sycl::queue &exec_q,
          dpctl::tensor::usm_ndarray coeff_matrix,
          dpctl::tensor::usm_ndarray dependent_vals,
          const std::vector<sycl::event> &depends);
 
 extern std::pair<sycl::event, sycl::event>
-    gesv_batch(sycl::queue exec_q,
+    gesv_batch(sycl::queue &exec_q,
                dpctl::tensor::usm_ndarray coeff_matrix,
                dpctl::tensor::usm_ndarray dependent_vals,
                const std::vector<sycl::event> &depends);

@@ -48,7 +48,7 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
-typedef sycl::event (*gesv_impl_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*gesv_impl_fn_ptr_t)(sycl::queue &,
                                           const std::int64_t,
                                           const std::int64_t,
                                           char *,
@@ -61,7 +61,7 @@ typedef sycl::event (*gesv_impl_fn_ptr_t)(sycl::queue,
 static gesv_impl_fn_ptr_t gesv_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
-static sycl::event gesv_impl(sycl::queue exec_q,
+static sycl::event gesv_impl(sycl::queue &exec_q,
                              const std::int64_t n,
                              const std::int64_t nrhs,
                              char *in_a,
@@ -176,7 +176,7 @@ static sycl::event gesv_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    gesv(sycl::queue exec_q,
+    gesv(sycl::queue &exec_q,
          dpctl::tensor::usm_ndarray coeff_matrix,
          dpctl::tensor::usm_ndarray dependent_vals,
          const std::vector<sycl::event> &depends)
@@ -274,7 +274,7 @@ std::pair<sycl::event, sycl::event>
 }
 
 std::pair<sycl::event, sycl::event>
-    gesv_batch(sycl::queue exec_q,
+    gesv_batch(sycl::queue &exec_q,
                dpctl::tensor::usm_ndarray coeff_matrix,
                dpctl::tensor::usm_ndarray dependent_vals,
                const std::vector<sycl::event> &depends)
