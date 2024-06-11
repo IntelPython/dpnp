@@ -38,7 +38,6 @@
 #include "atanh.hpp"
 #include "cbrt.hpp"
 #include "ceil.hpp"
-#include "common.hpp"
 #include "conj.hpp"
 #include "cos.hpp"
 #include "cosh.hpp"

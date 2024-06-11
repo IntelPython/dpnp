@@ -48,7 +48,6 @@ namespace py = pybind11;
 namespace py_int = dpnp::extensions::py_internal;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
-namespace vm_ext = dpnp::backend::ext::vm;
 
 namespace impl
 {
@@ -147,9 +146,9 @@ void init_atan2(py::module_ m)
 
     auto atan2_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
                                         arrayT src2, arrayT dst) {
-        return vm_ext::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
-                                                 output_typeid_vector,
-                                                 contig_dispatch_vector);
+        return py_internal::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
+                                                      output_typeid_vector,
+                                                      contig_dispatch_vector);
     };
     m.def("_mkl_atan2_to_call", atan2_need_to_call_pyapi,
           "Check input arguments to answer if `atan2` function from "
