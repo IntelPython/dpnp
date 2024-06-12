@@ -32,14 +32,14 @@
 
 #include "c2c.hpp"
 
-namespace fft_ext = dpnp::extensions::fft;
+namespace fft_ns = dpnp::extensions::fft;
 namespace mkl_dft = oneapi::mkl::dft;
 namespace py = pybind11;
 
 template <mkl_dft::precision prec>
 void register_complex_descriptor(py::module &m, const char *name)
 {
-    using DwT = fft_ext::ComplexDescriptorWrapper<prec>;
+    using DwT = fft_ns::ComplexDescriptorWrapper<prec>;
     py::class_<DwT>(m, name)
         .def(py::init<std::int64_t>())
         .def(py::init<std::vector<std::int64_t>>())
@@ -67,7 +67,7 @@ PYBIND11_MODULE(_fft_impl, m)
 {
     constexpr mkl_dft::precision single_prec = mkl_dft::precision::SINGLE;
     register_complex_descriptor<single_prec>(m, "Complex64Descriptor");
-    m.def("compute_fft", &fft_ext::compute_fft<single_prec>,
+    m.def("compute_fft", &fft_ns::compute_fft<single_prec>,
           "Compute forward/backward fft using OneMKL DFT library for complex "
           "float data types.",
           py::arg("descriptor"), py::arg("input"), py::arg("output"),
@@ -75,7 +75,7 @@ PYBIND11_MODULE(_fft_impl, m)
 
     constexpr mkl_dft::precision double_prec = mkl_dft::precision::DOUBLE;
     register_complex_descriptor<double_prec>(m, "Complex128Descriptor");
-    m.def("compute_fft", &fft_ext::compute_fft<double_prec>,
+    m.def("compute_fft", &fft_ns::compute_fft<double_prec>,
           "Compute forward/backward fft using OneMKL DFT library for complex "
           "double data types.",
           py::arg("descriptor"), py::arg("input"), py::arg("output"),
