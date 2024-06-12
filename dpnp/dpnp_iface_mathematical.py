@@ -1392,6 +1392,8 @@ fabs = DPNPUnaryFunc(
     ufi._fabs_result_type,
     ufi._fabs,
     _FABS_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_abs_to_call,
+    mkl_impl_fn=vmi._abs,
 )
 
 
