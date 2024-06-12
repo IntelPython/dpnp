@@ -1093,7 +1093,7 @@ def qr(a, mode="reduced"):
     return dpnp_qr(a, mode)
 
 
-def solve(a, b):
+def solve(a, b, new=False):
     """
     Solve a linear matrix equation, or system of linear scalar equations.
 
@@ -1143,7 +1143,7 @@ def solve(a, b):
             "or (..., M, K)"
         )
 
-    return dpnp_solve(a, b)
+    return dpnp_solve(a, b, new=new)
 
 
 def svd(a, full_matrices=True, compute_uv=True, hermitian=False):

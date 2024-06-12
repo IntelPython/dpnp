@@ -257,7 +257,7 @@ def _batched_inv(a, res_type):
     return a_h.reshape(orig_shape)
 
 
-def _batched_solve(a, b, exec_q, res_usm_type, res_type):
+def _batched_solve(a, b, exec_q, res_usm_type, res_type, new=False):
     """
     _batched_solve(a, b, exec_q, res_usm_type, res_type)
 
@@ -266,8 +266,6 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
     variables array `b`.
 
     """
-
-    new = True
 
     if not new:
         a_usm_arr = dpnp.get_usm_ndarray(a)
@@ -366,101 +364,76 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
             out_v = out_v.reshape(orig_shape_b)
         return out_v
 
+    a_shape = a.shape
+    b_shape = b.shape
+
+    # gesv_batch expects `a` to be a 3D array and
+    # `b` to be either a 2D or 3D array.
+    if a.ndim == b.ndim:
+        b = b.reshape(-1, b_shape[-2], b_shape[-1])
     else:
-        a_shape = a.shape
-        b_shape = b.shape
+        b = b.reshape(-1, b_shape[-1])
 
-        if a.ndim == b.ndim:
-            b = b.reshape(-1, b_shape[-2], b_shape[-1])
-        else:
-            b = b.reshape(-1, b_shape[-1])
+    a = a.reshape(-1, a_shape[-2], a_shape[-1])
 
-        a = a.reshape(-1, a_shape[-2], a_shape[-1])
+    # Reorder the elements by moving the last two axes of `a`` to the front
+    # to match fortran-like array order which is assumed by gesv.
+    a = dpnp.moveaxis(a, (-2, -1), (0, 1))
+    # The same for `b` if it is 3D;
+    # if it is 2D, transpose it.
+    if b.ndim > 2:
+        b = dpnp.moveaxis(b, (-2, -1), (0, 1))
+    else:
+        b = b.T
 
-        n_a = a.shape[1]
-        m,n = b.shape[-2:]
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+    b_usm_arr = dpnp.get_usm_ndarray(b)
 
-        a = dpnp.moveaxis(a,(-2,-1),(0,1))
-        # a_f = dpnp.array(a, dtype=res_type, order="F", copy=True)
-        # a = dpnp.reshape(a,(n_a,n_a,-1))
+    ht_list_ev = []
 
-        if b.ndim > 2:
-            b = dpnp.moveaxis(b,(-2,-1),(0,1))
-        else:
-            b = b.T
-        # b_f = dpnp.array(b, dtype=res_type, order="F", copy=True)
-        # if b.ndim > 2:
-        #     # b = dpnp.reshape(b,(m,n,-1))
-        #     b = b
-        # else:
-        #     # b = b.T
-        #     b = b
+    # oneMKL LAPACK gesv destroys `a` and assumes fortran-like array
+    # as input.
+    a_f = dpnp.empty_like(a, dtype=res_type, order="F", usm_type=res_usm_type)
 
-        # a_usm_arr = dpnp.get_usm_ndarray(a)
-        # b_usm_arr = dpnp.get_usm_ndarray(b)
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr,
+        dst=a_f.get_array(),
+        sycl_queue=exec_q,
+    )
+    ht_list_ev.append(a_ht_copy_ev)
 
+    # oneMKL LAPACK gesv overwrites `b` and assumes fortran-like array
+    # as input.
+    b_f = dpnp.empty_like(b, order="F", dtype=res_type, usm_type=res_usm_type)
 
-        # a = a.reshape(-1, a_shape[-2], a_shape[-1])
+    b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=b_usm_arr,
+        dst=b_f.get_array(),
+        sycl_queue=exec_q,
+    )
+    ht_list_ev.append(b_ht_copy_ev)
 
-        # a = a.transpose((0, 2, 1))
-        # a_usm_arr = dpnp.get_usm_ndarray(a)
+    ht_lapack_ev, _ = li._gesv_batch(
+        exec_q,
+        a_f.get_array(),
+        b_f.get_array(),
+        depends=[a_copy_ev, b_copy_ev],
+    )
 
-        # if b.ndim > 2:
-        #     b = b.transpose((0,2,1))
-        # else:
-        #     b = b
-        # b_usm_arr = dpnp.get_usm_ndarray(b)
+    ht_list_ev.append(ht_lapack_ev)
 
-        a_usm_arr = dpnp.get_usm_ndarray(a)
-        b_usm_arr = dpnp.get_usm_ndarray(b)
+    dpctl.SyclEvent.wait_for(ht_list_ev)
 
-        ht_list_ev = []
+    # Gesv call overwtires `b` in Fortran order, reorder the axes
+    # to match C order by moving the last axis to the front and
+    # reshape it back to the original shape of `b`.
+    v = dpnp.moveaxis(b_f, -1, 0).reshape(b_shape)
 
-        a_f = dpnp.empty_like(a, dtype=res_type, order="F", usm_type=res_usm_type)
+    # dpnp.moveaxis can make the array non-contiguous if it is not 2D
+    if b.ndim > 2:
+        v = dpnp.ascontiguousarray(v)
 
-        a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr,
-            dst=a_f.get_array(),
-            sycl_queue=a.sycl_queue,
-        )
-        ht_list_ev.append(a_ht_copy_ev)
-
-        b_f = dpnp.empty_like(
-            b, order="F", dtype=res_type, usm_type=res_usm_type
-        )
-
-        b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=b_usm_arr,
-            dst=b_f.get_array(),
-            sycl_queue=b.sycl_queue,
-        )
-        ht_list_ev.append(b_ht_copy_ev)
-
-        ht_lapack_ev, _ = li._gesv_batch(
-            exec_q,
-            a_f.get_array(),
-            b_f.get_array(),
-            depends=[a_copy_ev, b_copy_ev],
-        )
-
-        ht_list_ev.append(ht_lapack_ev)
-
-        dpctl.SyclEvent.wait_for(ht_list_ev)
-
-        # if b.ndim > 2:
-        #     v = b_copy.transpose(0,2,1).reshape(b_shape)
-        # else:
-        #     v = b_copy.reshape(b_shape)
-        if b.ndim > 2:
-            v = dpnp.moveaxis(b_f, -1 , 0)
-            v = v.reshape(b_shape)
-        else:
-            v = dpnp.moveaxis(b_f,-1,0)
-            v = v.reshape(b_shape)
-
-        # v = dpnp.copy(dpnp.moveaxis(b_f, -1, 0), order="C").reshape(b_shape)
-
-        return v
+    return v
 
 
 def _batched_qr(a, mode="reduced"):
@@ -2543,7 +2516,7 @@ def dpnp_qr(a, mode="reduced"):
     return (q, r)
 
 
-def dpnp_solve(a, b):
+def dpnp_solve(a, b, new=False):
     """
     dpnp_solve(a, b)
 
@@ -2560,7 +2533,7 @@ def dpnp_solve(a, b):
         return dpnp.empty_like(b, dtype=res_type, usm_type=res_usm_type)
 
     if a.ndim > 2:
-        return _batched_solve(a, b, exec_q, res_usm_type, res_type)
+        return _batched_solve(a, b, exec_q, res_usm_type, res_type, new=new)
 
     a_usm_arr = dpnp.get_usm_ndarray(a)
     b_usm_arr = dpnp.get_usm_ndarray(b)
