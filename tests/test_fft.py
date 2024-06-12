@@ -109,10 +109,9 @@ class TestFft:
         # n is not int
         if xp == dpnp:
             # dpnp and vanilla NumPy return TypeError
+            # Intel® NumPy returns SystemError for Python 3.10 and 3.11
+            # and no error for Python 3.9
             assert_raises(TypeError, xp.fft.fft, a, n=5.0)
-        else:
-            # Intel® NumPy returns SystemError
-            assert_raises(SystemError, xp.fft.fft, a, n=5.0)
 
         # Invalid number of FFT point for incorrect n value
         assert_raises(ValueError, xp.fft.fft, a, n=-5)

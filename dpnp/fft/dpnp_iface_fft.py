@@ -119,7 +119,7 @@ def fft(a, n=None, axis=-1, norm=None):
         Default: ``None``.
     axis : int, optional
         Axis over which to compute the FFT. If not given, the last axis is
-        used. Default: `-1`.
+        used. Default: ``-1``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`numpy.fft`).
         Indicates which direction of the forward/backward pair of transforms
@@ -141,6 +141,13 @@ def fft(a, n=None, axis=-1, norm=None):
     :obj:`dpnp.fft.fftn` : The `n`-dimensional FFT.
     :obj:`dpnp.fft.rfftn` : The `n`-dimensional FFT of real input.
     :obj:`dpnp.fft.fftfreq` : Frequency bins for given FFT parameters.
+
+    Notes
+    -----
+    FFT (Fast Fourier Transform) refers to a way the discrete Fourier
+    Transform (DFT) can be calculated efficiently, by using symmetries in the
+    calculated terms. The symmetry is highest when `n` is a power of 2, and
+    the transform is therefore most efficient for these sizes.
 
     Examples
     --------
@@ -364,15 +371,15 @@ def ifft(a, n=None, axis=-1, norm=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array, can be complex.
-    n :  {None, int}, optional
+    n : {None, int}, optional
         Length of the transformed axis of the output.
         If `n` is smaller than the length of the input, the input is cropped.
         If it is larger, the input is padded with zeros. If `n` is not given,
         the length of the input along the axis specified by `axis` is used.
         Default: ``None``.
     axis : int, optional
-        Axis over which to compute the inverse DFT. If not given, the last
-        axis is used. Default: `-1`.
+        Axis over which to compute the inverse FFT. If not given, the last
+        axis is used. Default: ``-1``.
     norm : {"backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`numpy.fft`).
         Indicates which direction of the forward/backward pair of transforms
@@ -393,6 +400,13 @@ def ifft(a, n=None, axis=-1, norm=None):
                           of which :obj:`dpnp.fft.ifft` is the inverse.
     :obj:`dpnp.fft.ifft2` : The two-dimensional inverse FFT.
     :obj:`dpnp.fft.ifftn` : The `n`-dimensional inverse FFT.
+
+    Notes
+    -----
+    If the input parameter `n` is larger than the size of the input, the input
+    is padded by appending zeros at the end. Even though this is the common
+    approach, it might lead to surprising results. If a different padding is
+    desired, it must be performed before calling :obj:`dpnp.fft.ifft`.
 
     Examples
     --------
