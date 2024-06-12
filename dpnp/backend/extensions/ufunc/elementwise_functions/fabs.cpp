@@ -23,40 +23,39 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include "dpctl4pybind11.hpp"
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 #include <sycl/sycl.hpp>
-#include <vector>
+
+#include "dpctl4pybind11.hpp"
 
 #include "fabs.hpp"
-// #include "elementwise_functions.hpp"
-#include "utils/type_dispatch.hpp"
-
 #include "kernels/elementwise_functions/fabs.hpp"
 
+// include a local copy of elementwise common header from dpctl tensor:
+// dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
+// TODO: replace by including dpctl header once available
+#include "../../elementwise_functions/elementwise_functions.hpp"
+
 // dpctl tensor headers
-dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
 #include "kernels/elementwise_functions/common.hpp"
+#include "utils/type_dispatch.hpp"
 
 namespace py = pybind11;
 
-namespace dpnp::backend::ext::ufunc
+namespace dpnp::extensions::ufunc
 {
-
+namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+namespace py_int = dpnp::extensions::py_internal;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-namespace py_int = dpctl::tensor::py_internal;
-
-namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
 using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
 namespace impl
 {
+namespace fabs_fn_ns = dpnp::kernels::fabs;
 
-namespace fabs_fn_ns = dpnp::backend::kernels::fabs;
+using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
+using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
 static unary_contig_impl_fn_ptr_t fabs_contig_dispatch_vector[td_ns::num_types];
 static int fabs_output_typeid_vector[td_ns::num_types];
@@ -84,7 +83,6 @@ void populate_fabs_dispatch_vectors(void)
     DispatchVectorBuilder<int, FabsTypeMapFactory, num_types> dvb3;
     dvb3.populate_dispatch_vector(fabs_output_typeid_vector);
 };
-
 } // namespace impl
 
 void init_fabs(py::module_ m)
@@ -108,10 +106,10 @@ void init_fabs(py::module_ m)
               py::arg("sycl_queue"), py::arg("depends") = py::list());
 
         auto fabs_result_type_pyapi = [&](const py::dtype &dtype) {
-            return py_int::py_unary_ufunc_result_type(dtype, fabs_output_typeid_vector);
+            return py_int::py_unary_ufunc_result_type(
+                dtype, fabs_output_typeid_vector);
         };
         m.def("_fabs_result_type", fabs_result_type_pyapi);
     }
 }
-
-} // namespace dpnp::backend::ext::ufunc
+} // namespace dpnp::extensions::ufunc

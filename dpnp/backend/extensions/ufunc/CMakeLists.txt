@@ -24,11 +24,16 @@
 # *****************************************************************************
 
 set(_elementwise_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/common.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fabs.cpp
 )
 
 set(python_module_name _ufunc_impl)
+
 set(_module_src
+    # TODO: remove sources from `elementwise_functions` folder
+    ${CMAKE_CURRENT_SOURCE_DIR}/../elementwise_functions/elementwise_functions_type_utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../elementwise_functions/simplify_iteration_space.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ufunc_py.cpp
     ${_elementwise_sources}
 )
@@ -68,12 +73,6 @@ target_link_options(${python_module_name} PUBLIC -fsycl-device-code-split=per_ke
 if (DPNP_GENERATE_COVERAGE)
     target_link_options(${python_module_name} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 endif()
-
-# if (MKL_VERSION_2024)
-#     target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::VM)
-# else()
-#     target_link_libraries(${python_module_name} PUBLIC MKL::MKL_DPCPP)
-# endif()
 
 install(TARGETS ${python_module_name}
   DESTINATION "dpnp/backend/extensions/ufunc"

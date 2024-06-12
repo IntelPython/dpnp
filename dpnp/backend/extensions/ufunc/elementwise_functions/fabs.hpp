@@ -24,12 +24,12 @@
 //*****************************************************************************
 
 #pragma once
+
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 
-namespace dpnp::backend::ext::ufunc
+namespace dpnp::extensions::ufunc
 {
-extern void init_fabs(py::module_ m);
-
-} // namespace dpnp::backend::ext::ufunc
+void init_fabs(py::module_ m);
+} // namespace dpnp::extensions::ufunc
