@@ -212,26 +212,26 @@ std::pair<sycl::event, sycl::event>
                                              {coeff_matrix, dependent_vals}))
     {
         throw py::value_error(
-            "Execution queue is not compatible with allocation queues");
+            "Execution queue is not compatible with allocation queues.");
     }
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     if (overlap(coeff_matrix, dependent_vals)) {
         throw py::value_error(
             "The arrays of coefficients and dependent variables "
-            "are overlapping segments of memory");
+            "are overlapping segments of memory.");
     }
 
     bool is_coeff_matrix_f_contig = coeff_matrix.is_f_contiguous();
     if (!is_coeff_matrix_f_contig) {
         throw py::value_error("The coefficient matrix "
-                              "must be F-contiguous");
+                              "must be F-contiguous.");
     }
 
     bool is_dependent_vals_f_contig = dependent_vals.is_f_contiguous();
     if (!is_dependent_vals_f_contig) {
         throw py::value_error("The array of dependent variables "
-                              "must be F-contiguous");
+                              "must be F-contiguous.");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
@@ -242,7 +242,7 @@ std::pair<sycl::event, sycl::event>
 
     if (coeff_matrix_type_id != dependent_vals_type_id) {
         throw py::value_error("The types of the coefficient matrix and "
-                              "dependent variables are mismatched");
+                              "dependent variables are mismatched.");
     }
 
     gesv_impl_fn_ptr_t gesv_fn = gesv_dispatch_vector[coeff_matrix_type_id];
@@ -300,8 +300,7 @@ std::pair<sycl::event, sycl::event>
 
     // The coeff_matrix and dependent_vals arrays must be F-contiguous arrays
     // with the shapes (n,n,batch_size) and (n,nrhs,batch_size) or
-    // (n,batch_size) respectively.
-
+    // (n,batch_size) respectively
     if (coeff_matrix_shape[0] != coeff_matrix_shape[1]) {
         throw py::value_error("The coefficient matrix must be square,"
                               " but got a shape of (" +
@@ -342,26 +341,26 @@ std::pair<sycl::event, sycl::event>
                                              {coeff_matrix, dependent_vals}))
     {
         throw py::value_error(
-            "Execution queue is not compatible with allocation queues");
+            "Execution queue is not compatible with allocation queues.");
     }
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     if (overlap(coeff_matrix, dependent_vals)) {
         throw py::value_error(
             "The arrays of coefficients and dependent variables "
-            "are overlapping segments of memory");
+            "are overlapping segments of memory.");
     }
 
     bool is_coeff_matrix_f_contig = coeff_matrix.is_f_contiguous();
     if (!is_coeff_matrix_f_contig) {
         throw py::value_error("The coefficient matrix "
-                              "must be F-contiguous");
+                              "must be F-contiguous.");
     }
 
     bool is_dependent_vals_f_contig = dependent_vals.is_f_contiguous();
     if (!is_dependent_vals_f_contig) {
         throw py::value_error("The array of dependent variables "
-                              "must be F-contiguous");
+                              "must be F-contiguous.");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
@@ -372,7 +371,7 @@ std::pair<sycl::event, sycl::event>
 
     if (coeff_matrix_type_id != dependent_vals_type_id) {
         throw py::value_error("The types of the coefficient matrix and "
-                              "dependent variables are mismatched");
+                              "dependent variables are mismatched.");
     }
 
     gesv_impl_fn_ptr_t gesv_fn = gesv_dispatch_vector[coeff_matrix_type_id];
@@ -402,17 +401,23 @@ std::pair<sycl::event, sycl::event>
     host_task_events.reserve(batch_size);
     gesv_task_events.reserve(batch_size);
 
-    for (std::int64_t i = 0; i < batch_size; ++i) {
-        char *coeff_matrix_batch =
-            coeff_matrix_data + i * n * n * coeff_matrix_elemsize;
-        char *dependent_vals_batch =
-            dependent_vals_data + i * n * nrhs * dependent_vals_elemsize;
+    {
+        // Release GIL to allow other Python threads to run during the loop
+        // as the operations in the loop do not require GIL
+        py::gil_scoped_release release;
 
-        sycl::event gesv_ev =
-            gesv_fn(exec_q, n, nrhs, coeff_matrix_batch, lda,
-                    dependent_vals_batch, ldb, host_task_events, depends);
+        for (std::int64_t i = 0; i < batch_size; ++i) {
+            char *coeff_matrix_batch =
+                coeff_matrix_data + i * n * n * coeff_matrix_elemsize;
+            char *dependent_vals_batch =
+                dependent_vals_data + i * n * nrhs * dependent_vals_elemsize;
 
-        gesv_task_events.push_back(gesv_ev);
+            sycl::event gesv_ev =
+                gesv_fn(exec_q, n, nrhs, coeff_matrix_batch, lda,
+                        dependent_vals_batch, ldb, host_task_events, depends);
+
+            gesv_task_events.push_back(gesv_ev);
+        }
     }
 
     sycl::event combine_ev = exec_q.submit(
