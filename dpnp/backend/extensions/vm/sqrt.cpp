@@ -111,8 +111,8 @@ void init_sqrt(py::module_ m)
     using impl::contig_dispatch_vector;
     using impl::output_typeid_vector;
 
-    auto sqrt_pyapi = [&](sycl::queue exec_q, arrayT src, arrayT dst,
-                          const event_vecT &depends = {}) {
+    auto sqrt_pyapi = [&](sycl::queue &exec_q, const arrayT &src,
+                          const arrayT &dst, const event_vecT &depends = {}) {
         return py_int::py_unary_ufunc(
             src, dst, exec_q, depends, output_typeid_vector,
             contig_dispatch_vector,
@@ -126,8 +126,8 @@ void init_sqrt(py::module_ m)
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 
-    auto sqrt_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src,
-                                       arrayT dst) {
+    auto sqrt_need_to_call_pyapi = [&](sycl::queue &exec_q, const arrayT &src,
+                                       const arrayT &dst) {
         return py_internal::need_to_call_unary_ufunc(
             exec_q, src, dst, output_typeid_vector, contig_dispatch_vector);
     };

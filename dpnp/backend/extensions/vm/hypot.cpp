@@ -123,8 +123,9 @@ void init_hypot(py::module_ m)
     using impl::contig_dispatch_vector;
     using impl::output_typeid_vector;
 
-    auto hypot_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
-                           arrayT dst, const event_vecT &depends = {}) {
+    auto hypot_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,
+                           const arrayT &src2, const arrayT &dst,
+                           const event_vecT &depends = {}) {
         return py_int::py_binary_ufunc(
             src1, src2, dst, exec_q, depends, output_typeid_vector,
             contig_dispatch_vector,
@@ -144,8 +145,8 @@ void init_hypot(py::module_ m)
           py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
           py::arg("dst"), py::arg("depends") = py::list());
 
-    auto hypot_need_to_call_pyapi = [&](sycl::queue exec_q, arrayT src1,
-                                        arrayT src2, arrayT dst) {
+    auto hypot_need_to_call_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,
+                                        const arrayT &src2, const arrayT &dst) {
         return py_internal::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
                                                       output_typeid_vector,
                                                       contig_dispatch_vector);

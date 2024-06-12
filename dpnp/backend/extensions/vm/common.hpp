@@ -47,8 +47,8 @@ namespace dpnp::extensions::vm::py_internal
 {
 template <typename output_typesT, typename contig_dispatchT>
 bool need_to_call_unary_ufunc(sycl::queue &exec_q,
-                              dpctl::tensor::usm_ndarray &src,
-                              dpctl::tensor::usm_ndarray &dst,
+                              const dpctl::tensor::usm_ndarray &src,
+                              const dpctl::tensor::usm_ndarray &dst,
                               const output_typesT &output_type_vec,
                               const contig_dispatchT &contig_dispatch_vector)
 {
@@ -140,9 +140,9 @@ bool need_to_call_unary_ufunc(sycl::queue &exec_q,
 
 template <typename output_typesT, typename contig_dispatchT>
 bool need_to_call_binary_ufunc(sycl::queue &exec_q,
-                               dpctl::tensor::usm_ndarray &src1,
-                               dpctl::tensor::usm_ndarray &src2,
-                               dpctl::tensor::usm_ndarray &dst,
+                               const dpctl::tensor::usm_ndarray &src1,
+                               const dpctl::tensor::usm_ndarray &src2,
+                               const dpctl::tensor::usm_ndarray &dst,
                                const output_typesT &output_type_table,
                                const contig_dispatchT &contig_dispatch_table)
 {
