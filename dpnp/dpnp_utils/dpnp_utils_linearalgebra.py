@@ -108,7 +108,7 @@ def _chr(label):
         return chr(label)
 
 
-def _compute_res_dtype(*arrays, dtype, casting, sycl_queue):
+def _compute_res_dtype(*arrays, sycl_queue, dtype=None, casting="no"):
     """
     Determines the output array data type and an intermediate data type
     used in performing calculations related to a specific math function.
@@ -1748,10 +1748,7 @@ def dpnp_dot(a, b, /, out=None, *, conjugate=False):
     res_usm_type, exec_q = get_usm_allocations([a, b])
 
     # Determine the appropriate data types
-    # casting is irrelevant here since dtype is `None`
-    dot_dtype, res_dtype = _compute_res_dtype(
-        a, b, dtype=None, casting="no", sycl_queue=exec_q
-    )
+    dot_dtype, res_dtype = _compute_res_dtype(a, b, sycl_queue=exec_q)
 
     result = _create_result_array(
         a, b, out, (), dot_dtype, res_usm_type, exec_q

@@ -21,7 +21,7 @@ jobs:
 
     env:
       python-ver: '3.10'
-      CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+      CHANNELS: '-c dppy/label/coverage -c intel -c conda-forge --override-channels'
       # Install the latest oneAPI compiler to work around an issue
       INSTALL_ONE_API: 'yes'
 
@@ -81,13 +81,13 @@ jobs:
         if: env.INSTALL_ONE_API == 'yes'
         run: |
           mamba install cython llvm cmake">=3.21" scikit-build ninja pytest pytest-cov coverage[toml] \
-              dpctl">=0.17.0dev0" onedpl-devel ${{ env.CHANNELS }}
+              dpctl">=0.18.0dev0" onedpl-devel ${{ env.CHANNELS }}
 
       - name: Install dpnp dependencies
         if: env.INSTALL_ONE_API != 'yes'
         run: |
           mamba install cython llvm cmake">=3.21" scikit-build ninja pytest pytest-cov coverage[toml] \
-              dpctl">=0.17.0dev0" dpcpp_linux-64 mkl-devel-dpcpp tbb-devel onedpl-devel ${{ env.CHANNELS }}
+              dpctl">=0.18.0dev0" dpcpp_linux-64 mkl-devel-dpcpp tbb-devel onedpl-devel ${{ env.CHANNELS }}
 
       - name: Conda info
         run: |
