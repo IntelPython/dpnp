@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.16.0dev0+40.g8a527ecd8e documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.16.0dev0+47.g42c2533603 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=18585302"></script>
+        <script src="../../_static/documentation_options.js?v=10a72719"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+40.g8a527ecd8e
+                0.16.0dev0+47.g42c2533603
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -228,32 +228,29 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only C-contiguous array is acceptable.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
-        <span class="c1"># TODO: investigate usage of axpy (axpy_batch) or scal</span>
-        <span class="c1"># functions from BLAS here instead of dpnp.multiply</span>
+        <span class="c1"># TODO: use specific scalar-vector kernel</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
 
     <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
     <span class="n">b_ndim</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">if</span> <span class="n">a_ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">b_ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c1"># TODO: investigate usage of axpy (axpy_batch) or scal</span>
-        <span class="c1"># functions from BLAS here instead of dpnp.multiply</span>
+        <span class="c1"># TODO: use specific scalar-vector kernel</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">a_ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">b_ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp_dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
 
+    <span class="c1"># NumPy does not allow casting even if it is safe</span>
+    <span class="c1"># casting=&quot;no&quot; is used in the following</span>
     <span class="k">if</span> <span class="n">a_ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">b_ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="c1"># NumPy does not allow casting even if it is safe</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;no&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">a_ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">b_ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="c1"># NumPy does not allow casting even if it is safe</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;no&quot;</span><span class="p">)</span>
 
     <span class="c1"># TODO: investigate usage of matmul for some possible</span>
     <span class="c1"># use cases instead of dpnp.tensordot</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">))</span>
-    <span class="c1"># NumPy does not allow casting even if it is safe</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;no&quot;</span><span class="p">)</span></div>
 
 
@@ -720,9 +717,11 @@
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="c1"># TODO: use specific scalar-vector kernel</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># TODO: use specific scalar-vector kernel</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
@@ -800,11 +799,13 @@
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="c1"># TODO: use specific scalar-vector kernel</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
     <span class="n">b_ndim</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">if</span> <span class="n">a_ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">b_ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># TODO: use specific scalar-vector kernel</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_kron</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">b_ndim</span><span class="p">)</span></div>
@@ -1112,6 +1113,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;One of the inputs is scalar, axes should be zero.&quot;</span>
             <span class="p">)</span>
+        <span class="c1"># TODO: use specific scalar-vector kernel</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -1141,6 +1143,7 @@
     <span class="n">axes_b</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axes_b</span><span class="p">,</span> <span class="n">b_ndim</span><span class="p">,</span> <span class="s2">&quot;axis_b&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># TODO: use specific scalar-vector kernel</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
@@ -1228,14 +1231,16 @@
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The first array should be of size one.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The second array should be of size one.&quot;</span><span class="p">)</span>
-        <span class="n">a_conj</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="c1"># TODO: investigate usage of axpy (axpy_batch) or scal</span>
-        <span class="c1"># functions from BLAS here instead of dpnp.multiply</span>
+        <span class="n">a_conj</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a_conj</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The first array should be of size one.&quot;</span><span class="p">)</span>
+        <span class="n">a_conj</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a_conj</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
