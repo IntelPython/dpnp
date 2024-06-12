@@ -2,7 +2,7 @@
 {% set excluded_compiler_version1 = "2024.0.1" %}
 {% set excluded_compiler_version2 = "2024.0.2" %}
 {% set excluded_compiler_version3 = "2024.0.3" %}
-{% set required_dpctl_version = "0.16.0" %}
+{% set required_dpctl_version = "0.17.0" %}
 
 package:
     name: dpnp
