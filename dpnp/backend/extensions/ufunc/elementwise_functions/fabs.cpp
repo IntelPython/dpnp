@@ -29,6 +29,7 @@
 
 #include "fabs.hpp"
 #include "kernels/elementwise_functions/fabs.hpp"
+#include "populate.hpp"
 
 // include a local copy of elementwise common header from dpctl tensor:
 // dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
@@ -52,7 +53,39 @@ using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
 namespace impl
 {
-namespace fabs_fn_ns = dpnp::kernels::fabs;
+/**
+ * @brief A factory to define pairs of supported types for which
+ * sycl::fabs<T> function is available.
+ *
+ * @tparam T Type of input vector `a` and of result vector `y`.
+ */
+template <typename T>
+struct OutputType
+{
+    using value_type =
+        typename std::disjunction<td_ns::TypeMapResultEntry<T, sycl::half>,
+                                  td_ns::TypeMapResultEntry<T, float>,
+                                  td_ns::TypeMapResultEntry<T, double>,
+                                  td_ns::DefaultResultEntry<void>>::result_type;
+};
+
+using dpnp::kernels::fabs::FabsFunctor;
+
+template <typename argT,
+          typename resT = argT,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using ContigFunctor = ew_cmn_ns::UnaryContigFunctor<argT,
+                                                    resT,
+                                                    FabsFunctor<argT, resT>,
+                                                    vec_sz,
+                                                    n_vecs,
+                                                    enable_sg_loadstore>;
+
+template <typename argTy, typename resTy, typename IndexerT>
+using StridedFunctor = ew_cmn_ns::
+    UnaryStridedFunctor<argTy, resTy, IndexerT, FabsFunctor<argTy, resTy>>;
 
 using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
@@ -62,27 +95,7 @@ static int fabs_output_typeid_vector[td_ns::num_types];
 static unary_strided_impl_fn_ptr_t
     fabs_strided_dispatch_vector[td_ns::num_types];
 
-void populate_fabs_dispatch_vectors(void)
-{
-    using namespace td_ns;
-    namespace fn_ns = fabs_fn_ns;
-
-    using fn_ns::FabsContigFactory;
-    DispatchVectorBuilder<unary_contig_impl_fn_ptr_t, FabsContigFactory,
-                          num_types>
-        dvb1;
-    dvb1.populate_dispatch_vector(fabs_contig_dispatch_vector);
-
-    using fn_ns::FabsStridedFactory;
-    DispatchVectorBuilder<unary_strided_impl_fn_ptr_t, FabsStridedFactory,
-                          num_types>
-        dvb2;
-    dvb2.populate_dispatch_vector(fabs_strided_dispatch_vector);
-
-    using fn_ns::FabsTypeMapFactory;
-    DispatchVectorBuilder<int, FabsTypeMapFactory, num_types> dvb3;
-    dvb3.populate_dispatch_vector(fabs_output_typeid_vector);
-};
+MACRO_POPULATE_DISPATCH_VECTORS(fabs);
 } // namespace impl
 
 void init_fabs(py::module_ m)
