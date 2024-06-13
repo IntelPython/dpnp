@@ -27,6 +27,7 @@
 
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
 
 #include "common_helpers.hpp"
@@ -299,6 +300,17 @@ std::pair<sycl::event, sycl::event>
         }
     }
 
+    size_t src_nelems(1);
+
+    for (int i = 0; i < dependent_vals_nd; ++i) {
+        src_nelems *= static_cast<size_t>(dependent_vals_shape[i]);
+    }
+
+    if (src_nelems == 0) {
+        // nothing to do
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
     // Check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(exec_q,
                                              {coeff_matrix, dependent_vals}))
@@ -313,6 +325,9 @@ std::pair<sycl::event, sycl::event>
             "The arrays of coefficients and dependent variables "
             "are overlapping segments of memory.");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(
+        dependent_vals);
 
     bool is_coeff_matrix_f_contig = coeff_matrix.is_f_contiguous();
     if (!is_coeff_matrix_f_contig) {
