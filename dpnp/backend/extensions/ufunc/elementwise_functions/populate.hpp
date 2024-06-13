@@ -26,7 +26,8 @@
 #pragma once
 
 /**
- * @brief A macro used to define factories and a populating universal functions.
+ * @brief A macro used to define factories and a populating unary universal
+ * functions.
  */
 #define MACRO_POPULATE_DISPATCH_VECTORS(__name__)                              \
     template <typename T1, typename T2, unsigned int vec_sz,                   \
@@ -119,4 +120,111 @@
         td_ns::DispatchVectorBuilder<int, TypeMapFactory, td_ns::num_types>    \
             dvb3;                                                              \
         dvb3.populate_dispatch_vector(__name__##_output_typeid_vector);        \
+    };
+
+/**
+ * @brief A macro used to define factories and a populating binary universal
+ * functions.
+ */
+#define MACRO_POPULATE_DISPATCH_TABLES(__name__)                               \
+    template <typename argT1, typename argT2, typename resT,                   \
+              unsigned int vec_sz, unsigned int n_vecs>                        \
+    class __name__##_contig_kernel;                                            \
+                                                                               \
+    template <typename argTy1, typename argTy2>                                \
+    sycl::event __name__##_contig_impl(                                        \
+        sycl::queue &exec_q, size_t nelems, const char *arg1_p,                \
+        py::ssize_t arg1_offset, const char *arg2_p, py::ssize_t arg2_offset,  \
+        char *res_p, py::ssize_t res_offset,                                   \
+        const std::vector<sycl::event> &depends = {})                          \
+    {                                                                          \
+        return ew_cmn_ns::binary_contig_impl<argTy1, argTy2, OutputType,       \
+                                             ContigFunctor,                    \
+                                             __name__##_contig_kernel>(        \
+            exec_q, nelems, arg1_p, arg1_offset, arg2_p, arg2_offset, res_p,   \
+            res_offset, depends);                                              \
+    }                                                                          \
+                                                                               \
+    template <typename fnT, typename T1, typename T2>                          \
+    struct ContigFactory                                                       \
+    {                                                                          \
+        fnT get()                                                              \
+        {                                                                      \
+            if constexpr (std::is_same_v<                                      \
+                              typename OutputType<T1, T2>::value_type, void>)  \
+            {                                                                  \
+                                                                               \
+                fnT fn = nullptr;                                              \
+                return fn;                                                     \
+            }                                                                  \
+            else {                                                             \
+                fnT fn = __name__##_contig_impl<T1, T2>;                       \
+                return fn;                                                     \
+            }                                                                  \
+        }                                                                      \
+    };                                                                         \
+                                                                               \
+    template <typename fnT, typename T1, typename T2>                          \
+    struct TypeMapFactory                                                      \
+    {                                                                          \
+        std::enable_if_t<std::is_same<fnT, int>::value, int> get()             \
+        {                                                                      \
+            using rT = typename OutputType<T1, T2>::value_type;                \
+            return td_ns::GetTypeid<rT>{}.get();                               \
+        }                                                                      \
+    };                                                                         \
+                                                                               \
+    template <typename T1, typename T2, typename resT, typename IndexerT>      \
+    class __name__##_strided_kernel;                                           \
+                                                                               \
+    template <typename argTy1, typename argTy2>                                \
+    sycl::event __name__##_strided_impl(                                       \
+        sycl::queue &exec_q, size_t nelems, int nd,                            \
+        const ssize_t *shape_and_strides, const char *arg1_p,                  \
+        py::ssize_t arg1_offset, const char *arg2_p, py::ssize_t arg2_offset,  \
+        char *res_p, py::ssize_t res_offset,                                   \
+        const std::vector<sycl::event> &depends,                               \
+        const std::vector<sycl::event> &additional_depends)                    \
+    {                                                                          \
+        return ew_cmn_ns::binary_strided_impl<argTy1, argTy2, OutputType,      \
+                                              StridedFunctor,                  \
+                                              __name__##_strided_kernel>(      \
+            exec_q, nelems, nd, shape_and_strides, arg1_p, arg1_offset,        \
+            arg2_p, arg2_offset, res_p, res_offset, depends,                   \
+            additional_depends);                                               \
+    }                                                                          \
+                                                                               \
+    template <typename fnT, typename T1, typename T2>                          \
+    struct StridedFactory                                                      \
+    {                                                                          \
+        fnT get()                                                              \
+        {                                                                      \
+            if constexpr (std::is_same_v<                                      \
+                              typename OutputType<T1, T2>::value_type, void>)  \
+            {                                                                  \
+                fnT fn = nullptr;                                              \
+                return fn;                                                     \
+            }                                                                  \
+            else {                                                             \
+                fnT fn = __name__##_strided_impl<T1, T2>;                      \
+                return fn;                                                     \
+            }                                                                  \
+        }                                                                      \
+    };                                                                         \
+                                                                               \
+    void populate_##__name__##_dispatch_tables(void)                           \
+    {                                                                          \
+        td_ns::DispatchTableBuilder<binary_contig_impl_fn_ptr_t,               \
+                                    ContigFactory, td_ns::num_types>           \
+            dvb1;                                                              \
+        dvb1.populate_dispatch_table(__name__##_contig_dispatch_table);        \
+                                                                               \
+        td_ns::DispatchTableBuilder<binary_strided_impl_fn_ptr_t,              \
+                                    StridedFactory, td_ns::num_types>          \
+            dvb2;                                                              \
+        dvb2.populate_dispatch_table(__name__##_strided_dispatch_table);       \
+                                                                               \
+        td_ns::DispatchTableBuilder<int, TypeMapFactory, td_ns::num_types>     \
+            dvb3;                                                              \
+        dvb3.populate_dispatch_table(__name__##_output_typeid_table);          \
     };

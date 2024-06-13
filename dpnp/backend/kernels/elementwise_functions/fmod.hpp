@@ -23,21 +23,43 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
 
-#include "fabs.hpp"
-#include "fmod.hpp"
+#include <sycl/sycl.hpp>
 
-namespace py = pybind11;
-
-namespace dpnp::extensions::ufunc
+namespace dpnp::kernels::fmod
 {
-/**
- * @brief Add elementwise functions to Python module
- */
-void init_elementwise_functions(py::module_ m)
+template <typename argT1, typename argT2, typename resT>
+struct FmodFunctor
 {
-    init_fabs(m);
-    init_fmod(m);
-}
-} // namespace dpnp::extensions::ufunc
+    // using supports_sg_loadstore = std::negation<
+    //     std::disjunction<tu_ns::is_complex<argT1>,
+    //     tu_ns::is_complex<argT2>>>;
+    // using supports_vec = std::negation<
+    //     std::disjunction<tu_ns::is_complex<argT1>,
+    //     tu_ns::is_complex<argT2>>>;
+
+    using supports_sg_loadstore = typename std::false_type;
+    using supports_vec = typename std::false_type;
+
+    resT operator()(const argT1 &in1, const argT2 &in2) const
+    {
+        if constexpr (std::is_integral<argT1>::value &&
+                      std::is_integral<argT2>::value) {
+            if (in2 == argT2(0)) {
+                return resT(0);
+            }
+            return in1 % in2;
+        }
+        else if constexpr (std::is_integral<argT1>::value) {
+            return sycl::fmod(argT2(in1), in2);
+        }
+        else if constexpr (std::is_integral<argT2>::value) {
+            return sycl::fmod(in1, argT1(in2));
+        }
+        else {
+            return sycl::fmod(in1, in2);
+        }
+    }
+};
+} // namespace dpnp::kernels::fmod
