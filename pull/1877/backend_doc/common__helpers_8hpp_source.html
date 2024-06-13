@@ -152,11 +152,19 @@ $(document).ready(function(){initNavTree('common__helpers_8hpp_source.html','');
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">using </span>type = T;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>};</div>
 </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>} <span class="comment">// namespace helper</span></div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>} <span class="comment">// namespace lapack</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>} <span class="comment">// namespace ext</span></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>} <span class="comment">// namespace backend</span></div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>} <span class="comment">// namespace dpnp</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment">// Rounds up the number `value` to the nearest multiple of `mult`.</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> <span class="keywordtype">int</span>T&gt;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>intT round_up_mult(intT value, intT mult)</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>{</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    intT q = (value + (mult - 1)) / mult;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">return</span> q * mult;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>} <span class="comment">// namespace helper</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>} <span class="comment">// namespace lapack</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>} <span class="comment">// namespace ext</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>} <span class="comment">// namespace backend</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>} <span class="comment">// namespace dpnp</span></div>
 <div class="ttc" id="astructdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of_html"><div class="ttname"><a href="structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of.html">dpnp::backend::ext::lapack::helper::value_type_of</a></div><div class="ttdef"><b>Definition</b> <a href="common__helpers_8hpp_source.html#l00041">common_helpers.hpp:42</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
