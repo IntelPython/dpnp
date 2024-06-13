@@ -1748,116 +1748,125 @@ def fmin(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
     )
 
 
-def fmod(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
-    """
-    Returns the element-wise remainder of division.
+fmod = DPNPBinaryFunc(
+    "fmod",
+    ufi._fmod_result_type,
+    ufi._fmod,
+    "",
+    # mkl_fn_to_call=vmi._mkl_mul_to_call,
+    # mkl_impl_fn=vmi._mul,
+    # binary_inplace_fn=ti._multiply_inplace,
+)
+# def fmod(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
+#     """
+#     Returns the element-wise remainder of division.
 
-    For full documentation refer to :obj:`numpy.fmod`.
+#     For full documentation refer to :obj:`numpy.fmod`.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The remainder of the division of `x1` by `x2`.
+#     Returns
+#     -------
+#     out : dpnp.ndarray
+#         The remainder of the division of `x1` by `x2`.
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar,
-    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`
-    and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default
-    values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+#     Limitations
+#     -----------
+#     Parameters `x1` and `x2` are supported as either scalar,
+#     :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`
+#     and `x2` can not be scalars at the same time.
+#     Parameters `where`, `dtype` and `subok` are supported with their default
+#     values.
+#     Keyword argument `kwargs` is currently unsupported.
+#     Otherwise the function will be executed sequentially on CPU.
+#     Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    See Also
-    --------
-    :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
-    :obj:`dpnp.divide` : Standard division.
+#     See Also
+#     --------
+#     :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
+#     :obj:`dpnp.divide` : Standard division.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.array([-3, -2, -1, 1, 2, 3])
-    >>> np.fmod(a, 2)
-    array([-1,  0, -1,  1,  0,  1])
-    >>> np.remainder(a, 2)
-    array([1, 0, 1, 1, 0, 1])
+#     Examples
+#     --------
+#     >>> import dpnp as np
+#     >>> a = np.array([-3, -2, -1, 1, 2, 3])
+#     >>> np.fmod(a, 2)
+#     array([-1,  0, -1,  1,  0,  1])
+#     >>> np.remainder(a, 2)
+#     array([1, 0, 1, 1, 0, 1])
 
-    >>> a = np.array([5, 3])
-    >>> b = np.array([2, 2.])
-    >>> np.fmod(a, b)
-    array([1., 1.])
+#     >>> a = np.array([5, 3])
+#     >>> b = np.array([2, 2.])
+#     >>> np.fmod(a, b)
+#     array([1., 1.])
 
-    >>> a = np.arange(-3, 3).reshape(3, 2)
-    >>> a
-    array([[-3, -2],
-           [-1,  0],
-           [ 1,  2]])
-    >>> b = np.array([2, 2])
-    >>> np.fmod(a, b)
-    array([[-1,  0],
-           [-1,  0],
-           [ 1,  0]])
+#     >>> a = np.arange(-3, 3).reshape(3, 2)
+#     >>> a
+#     array([[-3, -2],
+#            [-1,  0],
+#            [ 1,  2]])
+#     >>> b = np.array([2, 2])
+#     >>> np.fmod(a, b)
+#     array([[-1,  0],
+#            [-1,  0],
+#            [ 1,  0]])
 
-    """
+#     """
 
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into
-        # a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
+#     if kwargs:
+#         pass
+#     elif where is not True:
+#         pass
+#     elif dtype is not None:
+#         pass
+#     elif subok is not True:
+#         pass
+#     elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
+#         # at least either x1 or x2 has to be an array
+#         pass
+#     else:
+#         # get USM type and queue to copy scalar from the host memory into
+#         # a USM allocation
+#         usm_type, queue = (
+#             get_usm_allocations([x1, x2])
+#             if dpnp.isscalar(x1) or dpnp.isscalar(x2)
+#             else (None, None)
+#         )
 
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            if out is not None:
-                if not dpnp.is_supported_array_type(out):
-                    raise TypeError(
-                        "return array must be of supported array type"
-                    )
-                out_desc = (
-                    dpnp.get_dpnp_descriptor(
-                        out, copy_when_nondefault_queue=False
-                    )
-                    or None
-                )
-            else:
-                out_desc = None
+#         x1_desc = dpnp.get_dpnp_descriptor(
+#             x1,
+#             copy_when_strides=False,
+#             copy_when_nondefault_queue=False,
+#             alloc_usm_type=usm_type,
+#             alloc_queue=queue,
+#         )
+#         x2_desc = dpnp.get_dpnp_descriptor(
+#             x2,
+#             copy_when_strides=False,
+#             copy_when_nondefault_queue=False,
+#             alloc_usm_type=usm_type,
+#             alloc_queue=queue,
+#         )
+#         if x1_desc and x2_desc:
+#             if out is not None:
+#                 if not dpnp.is_supported_array_type(out):
+#                     raise TypeError(
+#                         "return array must be of supported array type"
+#                     )
+#                 out_desc = (
+#                     dpnp.get_dpnp_descriptor(
+#                         out, copy_when_nondefault_queue=False
+#                     )
+#                     or None
+#                 )
+#             else:
+#                 out_desc = None
 
-            return dpnp_fmod(
-                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
-            ).get_pyobj()
+#             return dpnp_fmod(
+#                 x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
+#             ).get_pyobj()
 
-    return call_origin(
-        numpy.fmod, x1, x2, dtype=dtype, out=out, where=where, **kwargs
-    )
+#     return call_origin(
+#         numpy.fmod, x1, x2, dtype=dtype, out=out, where=where, **kwargs
+#     )
 
 
 def gradient(f, *varargs, axis=None, edge_order=1):

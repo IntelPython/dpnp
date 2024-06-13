@@ -32,15 +32,9 @@ namespace dpnp::kernels::fmod
 template <typename argT1, typename argT2, typename resT>
 struct FmodFunctor
 {
-    // using supports_sg_loadstore = std::negation<
-    //     std::disjunction<tu_ns::is_complex<argT1>,
-    //     tu_ns::is_complex<argT2>>>;
-    // using supports_vec = std::negation<
-    //     std::disjunction<tu_ns::is_complex<argT1>,
-    //     tu_ns::is_complex<argT2>>>;
-
-    using supports_sg_loadstore = typename std::false_type;
-    using supports_vec = typename std::false_type;
+    using supports_sg_loadstore = typename std::true_type;
+    using supports_vec = std::negation<
+        std::conjunction<std::is_integral<argT1>, std::is_integral<argT2>>>;
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
@@ -51,15 +45,17 @@ struct FmodFunctor
             }
             return in1 % in2;
         }
-        else if constexpr (std::is_integral<argT1>::value) {
-            return sycl::fmod(argT2(in1), in2);
-        }
-        else if constexpr (std::is_integral<argT2>::value) {
-            return sycl::fmod(in1, argT1(in2));
-        }
         else {
             return sycl::fmod(in1, in2);
         }
+    }
+
+    template <int vec_sz>
+    sycl::vec<resT, vec_sz>
+        operator()(const sycl::vec<argT1, vec_sz> &in1,
+                   const sycl::vec<argT2, vec_sz> &in2) const
+    {
+        return sycl::fmod(in1, in2);
     }
 };
 } // namespace dpnp::kernels::fmod
