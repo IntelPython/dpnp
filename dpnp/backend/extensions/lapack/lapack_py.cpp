@@ -146,6 +146,14 @@ PYBIND11_MODULE(_lapack_impl, m)
           py::arg("eig_vecs"), py::arg("eig_vals"),
           py::arg("depends") = py::list());
 
+    m.def("_heevd_batch", &lapack_ext::heevd_batch,
+          "Call `heevd` from OneMKL LAPACK library in a loop to return "
+          "the eigenvalues and eigenvectors of a batch of complex Hermitian "
+          "matrices",
+          py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
+          py::arg("eig_vecs"), py::arg("eig_vals"),
+          py::arg("depends") = py::list());
+
     m.def("_orgqr_batch", &lapack_ext::orgqr_batch,
           "Call `_orgqr_batch` from OneMKL LAPACK library to return "
           "the real orthogonal matrix Qi of the QR factorization "
@@ -179,6 +187,14 @@ PYBIND11_MODULE(_lapack_impl, m)
     m.def("_syevd", &lapack_ext::syevd,
           "Call `syevd` from OneMKL LAPACK library to return "
           "the eigenvalues and eigenvectors of a real symmetric matrix",
+          py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
+          py::arg("eig_vecs"), py::arg("eig_vals"),
+          py::arg("depends") = py::list());
+
+    m.def("_syevd_batch", &lapack_ext::syevd_batch,
+          "Call `syevd` from OneMKL LAPACK library in a loop to return "
+          "the eigenvalues and eigenvectors of a batch of real symmetric "
+          "matrices",
           py::arg("sycl_queue"), py::arg("jobz"), py::arg("upper_lower"),
           py::arg("eig_vecs"), py::arg("eig_vals"),
           py::arg("depends") = py::list());
