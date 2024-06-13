@@ -48,6 +48,14 @@ struct value_type_of<std::complex<T>>
 {
     using type = T;
 };
+
+// Rounds up the number `value` to the nearest multiple of `mult`.
+template <typename intT>
+intT round_up_mult(intT value, intT mult)
+{
+    intT q = (value + (mult - 1)) / mult;
+    return q * mult;
+}
 } // namespace helper
 } // namespace lapack
 } // namespace ext
