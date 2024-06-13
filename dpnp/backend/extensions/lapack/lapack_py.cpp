@@ -51,6 +51,7 @@ void init_dispatch_vectors(void)
 {
     lapack_ext::init_geqrf_batch_dispatch_vector();
     lapack_ext::init_geqrf_dispatch_vector();
+    lapack_ext::init_gesv_batch_dispatch_vector();
     lapack_ext::init_gesv_dispatch_vector();
     lapack_ext::init_getrf_batch_dispatch_vector();
     lapack_ext::init_getrf_dispatch_vector();
