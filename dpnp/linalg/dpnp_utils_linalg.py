@@ -333,6 +333,7 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
     v = dpnp.moveaxis(b_f, -1, 0).reshape(b_shape)
 
     # dpnp.moveaxis can make the array non-contiguous if it is not 2D
+    # Convert to contiguous to align with NumPy
     if b.ndim > 2:
         v = dpnp.ascontiguousarray(v)
 
