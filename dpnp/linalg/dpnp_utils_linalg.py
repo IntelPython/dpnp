@@ -267,101 +267,77 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
 
     """
 
-    a_usm_arr = dpnp.get_usm_ndarray(a)
-    b_usm_arr = dpnp.get_usm_ndarray(b)
-
-    b_order = "C" if b.flags.c_contiguous else "F"
     a_shape = a.shape
     b_shape = b.shape
 
-    is_cpu_device = exec_q.sycl_device.has_aspect_cpu
-    reshape = False
-    orig_shape_b = b_shape
-    if a.ndim > 3:
-        # get 3d input arrays by reshape
-        if a.ndim == b.ndim:
-            b = b.reshape(-1, b_shape[-2], b_shape[-1])
-        else:
-            b = b.reshape(-1, b_shape[-1])
+    # gesv_batch expects `a` to be a 3D array and
+    # `b` to be either a 2D or 3D array.
+    if a.ndim == b.ndim:
+        b = b.reshape(-1, b_shape[-2], b_shape[-1])
+    else:
+        b = b.reshape(-1, b_shape[-1])
 
-        a = a.reshape(-1, a_shape[-2], a_shape[-1])
+    a = a.reshape(-1, a_shape[-2], a_shape[-1])
 
-        a_usm_arr = dpnp.get_usm_ndarray(a)
-        b_usm_arr = dpnp.get_usm_ndarray(b)
-        reshape = True
+    # Reorder the elements by moving the last two axes of `a` to the front
+    # to match fortran-like array order which is assumed by gesv.
+    a = dpnp.moveaxis(a, (-2, -1), (0, 1))
+    # The same for `b` if it is 3D;
+    # if it is 2D, transpose it.
+    if b.ndim > 2:
+        b = dpnp.moveaxis(b, (-2, -1), (0, 1))
+    else:
+        b = b.T
 
-    batch_size = a.shape[0]
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+    b_usm_arr = dpnp.get_usm_ndarray(b)
 
-    coeff_vecs = [None] * batch_size
-    val_vecs = [None] * batch_size
-    a_ht_copy_ev = [None] * batch_size
-    b_ht_copy_ev = [None] * batch_size
-    ht_lapack_ev = [None] * batch_size
+    ht_list_ev = []
 
-    for i in range(batch_size):
-        # oneMKL LAPACK assumes fortran-like array as input, so allocate
-        # a memory with 'F' order for dpnp array of coefficient matrix
-        coeff_vecs[i] = dpnp.empty_like(
-            a[i], order="F", dtype=res_type, usm_type=res_usm_type
-        )
+    # oneMKL LAPACK gesv destroys `a` and assumes fortran-like array
+    # as input.
+    a_f = dpnp.empty_like(a, dtype=res_type, order="F", usm_type=res_usm_type)
 
-        # use DPCTL tensor function to fill the coefficient matrix array
-        # with content from the input array
-        a_ht_copy_ev[i], a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr[i],
-            dst=coeff_vecs[i].get_array(),
-            sycl_queue=a.sycl_queue,
-        )
-
-        # oneMKL LAPACK assumes fortran-like array as input, so
-        # allocate a memory with 'F' order for dpnp array of multiple
-        # dependent variables array
-        val_vecs[i] = dpnp.empty_like(
-            b[i], order="F", dtype=res_type, usm_type=res_usm_type
-        )
-
-        # use DPCTL tensor function to fill the array of multiple dependent
-        # variables with content from the input arrays
-        b_ht_copy_ev[i], b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=b_usm_arr[i],
-            dst=val_vecs[i].get_array(),
-            sycl_queue=b.sycl_queue,
-        )
-
-        # Call the LAPACK extension function _gesv to solve the system of
-        # linear equations using a portion of the coefficient square matrix
-        # and a corresponding portion of the dependent variables array.
-        ht_lapack_ev[i], _ = li._gesv(
-            exec_q,
-            coeff_vecs[i].get_array(),
-            val_vecs[i].get_array(),
-            depends=[a_copy_ev, b_copy_ev],
-        )
-
-        # TODO: Remove this w/a when MKLD-17201 is solved.
-        # Waiting for a host task executing an OneMKL LAPACK gesv call
-        # on CPU causes deadlock due to serialization of all host tasks
-        # in the queue.
-        # We need to wait for each host tasks before calling _gesv to avoid
-        # deadlock.
-        if is_cpu_device:
-            ht_lapack_ev[i].wait()
-            b_ht_copy_ev[i].wait()
-
-    for i in range(batch_size):
-        ht_lapack_ev[i].wait()
-        b_ht_copy_ev[i].wait()
-        a_ht_copy_ev[i].wait()
-
-    # combine the list of solutions into a single array
-    out_v = dpnp.array(
-        val_vecs, order=b_order, dtype=res_type, usm_type=res_usm_type
+    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr,
+        dst=a_f.get_array(),
+        sycl_queue=exec_q,
     )
-    if reshape:
-        # shape of the out_v must be equal to the shape of the array of
-        # dependent variables
-        out_v = out_v.reshape(orig_shape_b)
-    return out_v
+    ht_list_ev.append(a_ht_copy_ev)
+
+    # oneMKL LAPACK gesv overwrites `b` and assumes fortran-like array
+    # as input.
+    b_f = dpnp.empty_like(b, order="F", dtype=res_type, usm_type=res_usm_type)
+
+    b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=b_usm_arr,
+        dst=b_f.get_array(),
+        sycl_queue=exec_q,
+    )
+    ht_list_ev.append(b_ht_copy_ev)
+
+    ht_lapack_ev, _ = li._gesv_batch(
+        exec_q,
+        a_f.get_array(),
+        b_f.get_array(),
+        depends=[a_copy_ev, b_copy_ev],
+    )
+
+    ht_list_ev.append(ht_lapack_ev)
+
+    dpctl.SyclEvent.wait_for(ht_list_ev)
+
+    # Gesv call overwtires `b` in Fortran order, reorder the axes
+    # to match C order by moving the last axis to the front and
+    # reshape it back to the original shape of `b`.
+    v = dpnp.moveaxis(b_f, -1, 0).reshape(b_shape)
+
+    # dpnp.moveaxis can make the array non-contiguous if it is not 2D
+    # Convert to contiguous to align with NumPy
+    if b.ndim > 2:
+        v = dpnp.ascontiguousarray(v)
+
+    return v
 
 
 def _batched_qr(a, mode="reduced"):

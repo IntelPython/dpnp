@@ -27,6 +27,7 @@
 
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
 
 #include "common_helpers.hpp"
@@ -48,7 +49,7 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
-typedef sycl::event (*gesv_impl_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*gesv_impl_fn_ptr_t)(sycl::queue &,
                                           const std::int64_t,
                                           const std::int64_t,
                                           char *,
@@ -61,7 +62,7 @@ typedef sycl::event (*gesv_impl_fn_ptr_t)(sycl::queue,
 static gesv_impl_fn_ptr_t gesv_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
-static sycl::event gesv_impl(sycl::queue exec_q,
+static sycl::event gesv_impl(sycl::queue &exec_q,
                              const std::int64_t n,
                              const std::int64_t nrhs,
                              char *in_a,
@@ -176,7 +177,7 @@ static sycl::event gesv_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    gesv(sycl::queue exec_q,
+    gesv(sycl::queue &exec_q,
          dpctl::tensor::usm_ndarray coeff_matrix,
          dpctl::tensor::usm_ndarray dependent_vals,
          const std::vector<sycl::event> &depends)
@@ -207,31 +208,45 @@ std::pair<sycl::event, sycl::event>
                               std::to_string(coeff_matrix_shape[1]) + ").");
     }
 
+    size_t src_nelems(1);
+
+    for (int i = 0; i < dependent_vals_nd; ++i) {
+        src_nelems *= static_cast<size_t>(dependent_vals_shape[i]);
+    }
+
+    if (src_nelems == 0) {
+        // nothing to do
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
     // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(exec_q,
                                              {coeff_matrix, dependent_vals}))
     {
         throw py::value_error(
-            "Execution queue is not compatible with allocation queues");
+            "Execution queue is not compatible with allocation queues.");
     }
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     if (overlap(coeff_matrix, dependent_vals)) {
         throw py::value_error(
             "The arrays of coefficients and dependent variables "
-            "are overlapping segments of memory");
+            "are overlapping segments of memory.");
     }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(
+        dependent_vals);
 
     bool is_coeff_matrix_f_contig = coeff_matrix.is_f_contiguous();
     if (!is_coeff_matrix_f_contig) {
         throw py::value_error("The coefficient matrix "
-                              "must be F-contiguous");
+                              "must be F-contiguous.");
     }
 
     bool is_dependent_vals_f_contig = dependent_vals.is_f_contiguous();
     if (!is_dependent_vals_f_contig) {
         throw py::value_error("The array of dependent variables "
-                              "must be F-contiguous");
+                              "must be F-contiguous.");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
@@ -242,7 +257,7 @@ std::pair<sycl::event, sycl::event>
 
     if (coeff_matrix_type_id != dependent_vals_type_id) {
         throw py::value_error("The types of the coefficient matrix and "
-                              "dependent variables are mismatched");
+                              "dependent variables are mismatched.");
     }
 
     gesv_impl_fn_ptr_t gesv_fn = gesv_dispatch_vector[coeff_matrix_type_id];
