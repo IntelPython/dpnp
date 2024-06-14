@@ -92,7 +92,7 @@ class TestConvolve:
         d = dpnp.ones(100)
         k = dpnp.ones(3)
         default_mode = dpnp.convolve(d, k, mode="full")
-        full_mode = dpnp.convolve(d, k, mode="f")
+        full_mode = dpnp.convolve(d, k, mode="full")
         assert_array_equal(full_mode, default_mode)
         # integer mode
         with assert_raises(ValueError):

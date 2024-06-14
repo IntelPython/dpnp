@@ -199,7 +199,7 @@ def test_array_creation_from_2d_array(func, args, usm_type_x, usm_type_y):
             "fromfunction", [(lambda i, j: i + j), (3, 3)], {"dtype": dp.int32}
         ),
         pytest.param("fromiter", [[1, 2, 3, 4]], {"dtype": dp.int64}),
-        pytest.param("fromstring", ["1, 2"], {"dtype": int, "sep": " "}),
+        pytest.param("fromstring", ["1 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
         pytest.param("geomspace", [1, 4, 8], {}),
