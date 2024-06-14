@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+16.g69cee5b86f documentation</title>
+  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+19.gda7553e19b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=819629bb"></script>
+        <script src="../../../_static/documentation_options.js?v=3b86a60e"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+16.g69cee5b86f
+                0.16.0dev0+19.gda7553e19b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -211,7 +211,7 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis over which to compute the FFT. If not given, the last axis is</span>
-<span class="sd">        used. Default: `-1`.</span>
+<span class="sd">        used. Default: ``-1``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`numpy.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
@@ -233,6 +233,13 @@
 <span class="sd">    :obj:`dpnp.fft.fftn` : The `n`-dimensional FFT.</span>
 <span class="sd">    :obj:`dpnp.fft.rfftn` : The `n`-dimensional FFT of real input.</span>
 <span class="sd">    :obj:`dpnp.fft.fftfreq` : Frequency bins for given FFT parameters.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    FFT (Fast Fourier Transform) refers to a way the discrete Fourier</span>
+<span class="sd">    Transform (DFT) can be calculated efficiently, by using symmetries in the</span>
+<span class="sd">    calculated terms. The symmetry is highest when `n` is a power of 2, and</span>
+<span class="sd">    the transform is therefore most efficient for these sizes.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -474,15 +481,15 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array, can be complex.</span>
-<span class="sd">    n :  {None, int}, optional</span>
+<span class="sd">    n : {None, int}, optional</span>
 <span class="sd">        Length of the transformed axis of the output.</span>
 <span class="sd">        If `n` is smaller than the length of the input, the input is cropped.</span>
 <span class="sd">        If it is larger, the input is padded with zeros. If `n` is not given,</span>
 <span class="sd">        the length of the input along the axis specified by `axis` is used.</span>
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    axis : int, optional</span>
-<span class="sd">        Axis over which to compute the inverse DFT. If not given, the last</span>
-<span class="sd">        axis is used. Default: `-1`.</span>
+<span class="sd">        Axis over which to compute the inverse FFT. If not given, the last</span>
+<span class="sd">        axis is used. Default: ``-1``.</span>
 <span class="sd">    norm : {&quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`numpy.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
@@ -503,6 +510,13 @@
 <span class="sd">                          of which :obj:`dpnp.fft.ifft` is the inverse.</span>
 <span class="sd">    :obj:`dpnp.fft.ifft2` : The two-dimensional inverse FFT.</span>
 <span class="sd">    :obj:`dpnp.fft.ifftn` : The `n`-dimensional inverse FFT.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If the input parameter `n` is larger than the size of the input, the input</span>
+<span class="sd">    is padded by appending zeros at the end. Even though this is the common</span>
+<span class="sd">    approach, it might lead to surprising results. If a different padding is</span>
+<span class="sd">    desired, it must be performed before calling :obj:`dpnp.fft.ifft`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
