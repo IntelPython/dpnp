@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.\_\_rshift\_\_
-===========================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.__rshift__
