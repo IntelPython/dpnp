@@ -87,30 +87,25 @@ def test_usm_ndarray_linalg_batch(func, gen_kwargs, func_kwargs):
         (2, 2, 3, 3) if func not in ["tensorinv", "tensorsolve"] else (4, 2, 2)
     )
 
-    if func in ["lstsq", "solve", "tensorsolve"]:
-        if func == "tensorsolve":
-            shape_b = (4,)
-            dpt_args = [
-                dpt.asarray(
-                    generate_random_numpy_array(
-                        shape, seed_value=81, **gen_kwargs
-                    )
-                ),
-                dpt.asarray(
-                    generate_random_numpy_array(
-                        shape_b, seed_value=81, **gen_kwargs
-                    )
-                ),
-            ]
-        else:
-            dpt_args = [
-                dpt.asarray(
-                    generate_random_numpy_array(
-                        shape, seed_value=81, **gen_kwargs
-                    )
+    if func == "tensorsolve":
+        shape_b = (4,)
+        dpt_args = [
+            dpt.asarray(
+                generate_random_numpy_array(shape, seed_value=81, **gen_kwargs)
+            ),
+            dpt.asarray(
+                generate_random_numpy_array(
+                    shape_b, seed_value=81, **gen_kwargs
                 )
-                for _ in range(2)
-            ]
+            ),
+        ]
+    elif func in ["lstsq", "solve"]:
+        dpt_args = [
+            dpt.asarray(
+                generate_random_numpy_array(shape, seed_value=81, **gen_kwargs)
+            )
+            for _ in range(2)
+        ]
     else:
         dpt_args = [
             dpt.asarray(generate_random_numpy_array(shape, **gen_kwargs))
