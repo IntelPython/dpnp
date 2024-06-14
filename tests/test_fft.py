@@ -292,10 +292,12 @@ class TestFft:
         a_np = numpy.empty((10, 0, 4), dtype=numpy.complex64)
         a = dpnp.array(a_np)
 
+        # returns empty array, a.size=0
         result = dpnp.fft.fft(a, axis=0)
         expected = numpy.fft.fft(a_np, axis=0)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
+        # calculates FFT, a.size become non-zero because of n=2
         result = dpnp.fft.fft(a, axis=1, n=2)
         expected = numpy.fft.fft(a_np, axis=1, n=2)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
@@ -343,6 +345,66 @@ class TestFft:
         assert_raises(TypeError, dpnp.fft.fft, a, out=out)
 
 
+class TestFft2:
+    def setup_method(self):
+        numpy.random.seed(42)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_fft2(self, dtype):
+        x1 = numpy.random.uniform(-10, 10, 24)
+        a_np = numpy.array(x1).reshape(2, 3, 4)
+        a = dpnp.asarray(a_np)
+
+        result = dpnp.fft.fft2(a)
+        expected = numpy.fft.fft2(a_np)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+        iresult = dpnp.fft.ifft2(result)
+        iexpected = numpy.fft.ifft2(expected)
+        assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize("axes", [(0, 1), (1, 2), (0, 2), (2, 1), (2, 0)])
+    @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_fft2_complex(self, dtype, axes, norm, order):
+        x1 = numpy.random.uniform(-10, 10, 24)
+        x2 = numpy.random.uniform(-10, 10, 24)
+        a_np = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(
+            2, 3, 4, order=order
+        )
+        a = dpnp.asarray(a_np)
+
+        result = dpnp.fft.fft2(a, axes=axes, norm=norm)
+        expected = numpy.fft.fft2(a_np, axes=axes, norm=norm)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+        iresult = dpnp.fft.ifft2(result, axes=axes, norm=norm)
+        iexpected = numpy.fft.ifft2(expected, axes=axes, norm=norm)
+        assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
+
+    @pytest.mark.parametrize("s", [None, (3, 3), (10, 10), (3, 10)])
+    def test_fft2_s(self, s):
+        x1 = numpy.random.uniform(-10, 10, 48)
+        x2 = numpy.random.uniform(-10, 10, 48)
+        a_np = numpy.array(x1 + 1j * x2, dtype=numpy.complex64).reshape(6, 8)
+        a = dpnp.asarray(a_np)
+
+        result = dpnp.fft.fft2(a, s=s)
+        expected = numpy.fft.fft2(a_np, s=s)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+        iresult = dpnp.fft.ifft2(result, s=s)
+        iexpected = numpy.fft.ifft2(expected, s=s)
+        assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_fft_error(self, xp):
+        # 0-D input
+        a = xp.ones(())
+        assert_raises(IndexError, xp.fft.fft2, a)
+
+
 class TestFftfreq:
     @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
     @pytest.mark.parametrize("n", [10, 20])
@@ -359,6 +421,134 @@ class TestFftfreq:
 
         # d should be an scalar
         assert_raises(ValueError, getattr(dpnp.fft, func), 10, (2,))
+
+
+class TestFftn:
+    def setup_method(self):
+        numpy.random.seed(42)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize(
+        "axes", [None, (0, 1, 2), (-1, -4, -2), (-2, -4, -1, -3)]
+    )
+    @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_fftn(self, dtype, axes, norm, order):
+        x1 = numpy.random.uniform(-10, 10, 120)
+        x2 = numpy.random.uniform(-10, 10, 120)
+        a_np = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(
+            2, 3, 4, 5, order=order
+        )
+        a = dpnp.asarray(a_np)
+
+        result = dpnp.fft.fftn(a, axes=axes, norm=norm)
+        expected = numpy.fft.fftn(a_np, axes=axes, norm=norm)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+        iresult = dpnp.fft.ifftn(result, axes=axes, norm=norm)
+        iexpected = numpy.fft.ifftn(expected, axes=axes, norm=norm)
+        assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
+
+    @pytest.mark.parametrize("axes", [(2, 0, 2, 0), (0, 1, 1)])
+    def test_fftn_repeated_axes(self, axes):
+        x1 = numpy.random.uniform(-10, 10, 120)
+        x2 = numpy.random.uniform(-10, 10, 120)
+        a_np = numpy.array(x1 + 1j * x2, dtype=numpy.complex64).reshape(
+            2, 3, 4, 5
+        )
+        a = dpnp.asarray(a_np)
+
+        result = dpnp.fft.fftn(a, axes=axes)
+        # Intel® NumPy ignores repeated axes, handle it one by one
+        expected = a_np
+        for ii in axes:
+            expected = numpy.fft.fft(expected, axis=ii)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+        iresult = dpnp.fft.ifftn(result, axes=axes)
+        iexpected = expected
+        for ii in axes:
+            iexpected = numpy.fft.ifft(iexpected, axis=ii)
+        assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
+
+    @pytest.mark.parametrize("axes", [(2, 3, 3, 2), (0, 0, 3, 3)])
+    @pytest.mark.parametrize("s", [(5, 4, 3, 3), (7, 8, 10, 7)])
+    def test_fftn_repeated_axes_with_s(self, axes, s):
+        x1 = numpy.random.uniform(-10, 10, 120)
+        x2 = numpy.random.uniform(-10, 10, 120)
+        a_np = numpy.array(x1 + 1j * x2, dtype=numpy.complex64).reshape(
+            2, 3, 4, 5
+        )
+        a = dpnp.asarray(a_np)
+
+        result = dpnp.fft.fftn(a, axes=axes)
+        # Intel® NumPy ignores repeated axes, handle it one by one
+        expected = a_np
+        for ii in axes:
+            expected = numpy.fft.fft(expected, axis=ii)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+        iresult = dpnp.fft.ifftn(result, axes=axes)
+        iexpected = expected
+        for ii in axes:
+            iexpected = numpy.fft.ifft(iexpected, axis=ii)
+        assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
+
+    def test_fftn_empty_array(self):
+        a_np = numpy.empty((10, 0, 4), dtype=numpy.complex64)
+        a = dpnp.array(a_np)
+
+        result = dpnp.fft.fftn(a, axes=(0, 2))
+        expected = numpy.fft.fftn(a_np, axes=(0, 2))
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+        result = dpnp.fft.fftn(a, axes=(0, 1, 2), s=(5, 2, 4))
+        expected = numpy.fft.fftn(a_np, axes=(0, 1, 2), s=(5, 2, 4))
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_fftn_0D(self, dtype):
+        # 0-D input
+        a = dpnp.array(3, dtype=dtype)
+        a_np = a.asnumpy()
+        result = dpnp.fft.fftn(a)
+        expected = numpy.fft.fftn(a_np, axes=())
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_fftn_empty_axes(self, dtype):
+        a = dpnp.ones((2, 3, 4), dtype=dtype)
+        a_np = a.asnumpy()
+
+        result = dpnp.fft.fftn(a, axes=())
+        expected = numpy.fft.fftn(a_np, axes=())
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_fft_error(self, xp):
+        # s is not int
+        a = xp.ones((4, 3))
+        # dpnp and stock NumPy return TypeError
+        # Intel® NumPy returns ValueError
+        assert_raises(
+            (TypeError, ValueError), xp.fft.fftn, a, s=(5.0,), axes=(0,)
+        )
+
+        # s is not sequence
+        assert_raises(TypeError, xp.fft.fftn, a, s=5, axes=(0,))
+
+        # Invalid number of FFT point, invalid s value
+        assert_raises(ValueError, xp.fft.fftn, a, s=(-5,), axes=(0,))
+
+        # TODO: should be added in future versions
+        # axes should be given if s is not None
+        # dpnp and stock NumPy will returns TypeError in future versions
+        # Intel® NumPy returns TypeError for a different reason:
+        # when given, axes and shape arguments have to be of the same length
+        # assert_raises(ValueError, xp.fft.fftn, a, s=(5,))
+
+        # axes and s should have the same length
+        assert_raises(ValueError, xp.fft.fftn, a, s=(5, 5), axes=(0,))
 
 
 class TestFftshift:
