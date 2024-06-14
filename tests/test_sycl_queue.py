@@ -2211,3 +2211,22 @@ def test_histogram_bin_edges(weights, device):
 
     edges_queue = result_edges.sycl_queue
     assert_sycl_queue_equal(edges_queue, iv.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device_x",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "device_y",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_astype(device_x, device_y):
+    x = dpnp.array([1, 2, 3], dtype="i4", device=device_x)
+    y = dpnp.astype(x, dtype="f4")
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+    sycl_queue = dpctl.SyclQueue(device_y)
+    y = dpnp.astype(x, dtype="f4", device=sycl_queue)
+    assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
