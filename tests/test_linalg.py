@@ -780,7 +780,9 @@ class TestLstsq:
         b_dp = inp.array(b_np)
 
         result = inp.linalg.lstsq(a_dp, b_dp)
-        expected = numpy.linalg.lstsq(a_np, b_np)
+        # if rcond is not set, FutureWarning is given.
+        # By default Numpy uses None for calculations
+        expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
 
         for param_dp, param_np in zip(result, expected):
             assert_dtype_allclose(param_dp, param_np)
@@ -794,7 +796,9 @@ class TestLstsq:
         a_dp = inp.array(a_np)
         b_dp = inp.array(b_np)
 
-        expected = numpy.linalg.lstsq(a_np, b_np)
+        # if rcond is not set, FutureWarning is given.
+        # By default Numpy uses None for calculations
+        expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
         result = inp.linalg.lstsq(a_dp, b_dp)
 
         for param_dp, param_np in zip(result, expected):
@@ -813,7 +817,9 @@ class TestLstsq:
         b_dp = inp.array(b_np)
 
         result = inp.linalg.lstsq(a_dp, b_dp)
-        expected = numpy.linalg.lstsq(a_np, b_np)
+        # if rcond is not set, FutureWarning is given.
+        # By default Numpy uses None for calculations
+        expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
 
         for param_dp, param_np in zip(result, expected):
             assert_dtype_allclose(param_dp, param_np)
