@@ -1371,7 +1371,7 @@ Returns
 -------
 out : dpnp.ndarray
     The absolute values of `x`, the returned values are always floats.
-    If `x` does not have a real-valued data type, the returned array
+    If `x` does not have a floating point data type, the returned array
     will have a data type that depends on the capabilities of the device
     on which the array resides.
 
