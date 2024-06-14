@@ -64,7 +64,7 @@ template <typename T1, typename T2>
 struct OutputType
 {
     using value_type = typename std::disjunction<
-        td_ns::BinaryTypeMapResultEntry<T1, bool, T2, bool, std::uint8_t>,
+        td_ns::BinaryTypeMapResultEntry<T1, bool, T2, bool, std::int8_t>,
         td_ns::BinaryTypeMapResultEntry<T1,
                                         std::uint8_t,
                                         T2,
