@@ -1813,8 +1813,8 @@ fmod = DPNPBinaryFunc(
     ufi._fmod_result_type,
     ufi._fmod,
     _FMOD_DOCSTRING,
-    # mkl_fn_to_call=vmi._mkl_mul_to_call,
-    # mkl_impl_fn=vmi._mul,
+    mkl_fn_to_call=vmi._mkl_fmod_to_call,
+    mkl_impl_fn=vmi._fmod,
 )
 
 
