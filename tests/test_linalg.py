@@ -57,6 +57,8 @@ def vvsort(val, vec, size, xp):
         vec[:, imax] = temp
 
 
+# check linear algebra functions from dpnp.linalg
+# with multidimensional usm_ndarray as input
 @pytest.mark.parametrize(
     "func, gen_kwargs, func_kwargs",
     [
@@ -80,7 +82,7 @@ def vvsort(val, vec, size, xp):
         pytest.param("tensorsolve", {}, {}),
     ],
 )
-def test_usm_ndarray_input_batch(func, gen_kwargs, func_kwargs):
+def test_usm_ndarray_linalg_batch(func, gen_kwargs, func_kwargs):
     shape = (
         (2, 2, 3, 3) if func not in ["tensorinv", "tensorsolve"] else (4, 2, 2)
     )
@@ -121,6 +123,24 @@ def test_usm_ndarray_input_batch(func, gen_kwargs, func_kwargs):
             assert isinstance(res, inp.ndarray)
     else:
         assert isinstance(result, inp.ndarray)
+
+
+# check linear algebra functions from dpnp
+# with multidimensional usm_ndarray as input
+@pytest.mark.parametrize(
+    "func", ["dot", "inner", "kron", "matmul", "outer", "tensordot", "vdot"]
+)
+def test_usm_ndarray_linearalgebra_batch(func):
+    shape = (2, 2, 2, 2)
+
+    dpt_args = [
+        dpt.asarray(generate_random_numpy_array(shape, seed_value=81))
+        for _ in range(2)
+    ]
+
+    result = getattr(inp, func)(*dpt_args)
+
+    assert isinstance(result, inp.ndarray)
 
 
 class TestCholesky:
