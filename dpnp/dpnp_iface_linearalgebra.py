@@ -893,13 +893,13 @@ def outer(a, b, out=None):
     dpnp.check_supported_arrays_type(a, b, scalar_type=True, all_scalars=False)
     if dpnp.isscalar(a):
         x1 = a
-        x2 = b.ravel()[None, :]
+        x2 = dpnp.ravel(b)[None, :]
     elif dpnp.isscalar(b):
-        x1 = a.ravel()[:, None]
+        x1 = dpnp.ravel(a)[:, None]
         x2 = b
     else:
-        x1 = a.ravel()
-        x2 = b.ravel()
+        x1 = dpnp.ravel(a)
+        x2 = dpnp.ravel(b)
 
     return dpnp.multiply.outer(x1, x2, out=out)
 
@@ -1057,8 +1057,8 @@ def tensordot(a, b, axes=2):
     newshape_b = (n1, n2)
     oldb = [b_shape[axis] for axis in notin]
 
-    at = a.transpose(newaxes_a).reshape(newshape_a)
-    bt = b.transpose(newaxes_b).reshape(newshape_b)
+    at = dpnp.transpose(a, newaxes_a).reshape(newshape_a)
+    bt = dpnp.transpose(b, newaxes_b).reshape(newshape_b)
     res = dpnp.matmul(at, bt)
 
     return res.reshape(olda + oldb)
