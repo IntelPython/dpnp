@@ -275,12 +275,12 @@ class ArithmeticBinaryBase:
                 # TODO: Fix this: array(3, dtype=uint) / -2
                 #     numpy => -1.5
                 #     cupy => 0.01181102
-                pytest.skip("TODO: add gh issue")
+                pytest.skip("due to dpctl gh-1711")
             if dtype2.kind in "u" and xp.isscalar(arg1) and arg1 < 0:
                 # TODO: Fix this: 2 / array(3, dtype=uint)
                 #     numpy => -0.666667
                 #     cupy => 84.666667
-                pytest.skip("TODO: add gh issue")
+                pytest.skip("due to dpctl gh-1711")
 
         if isinstance(arg1, numpy.ndarray):
             arg1 = xp.asarray(arg1)
