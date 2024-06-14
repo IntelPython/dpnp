@@ -66,6 +66,50 @@ def _check_norm(norm):
         )
 
 
+def _cook_nd_args(a, s=None, axes=None, invreal=0):
+    if axes is not None:
+        # np.take also check it, to checkout the axes are valid
+        # normalize_axis_tuple(list(set(axes)), a.ndim, "axes")
+        try:
+            iter(axes)
+        except Exception as e:
+            raise TypeError("Axes must be a sequence of integers.") from e
+
+        for i in axes:
+            if not isinstance(i, int):
+                raise TypeError("Axes must be a sequence of integers.")
+
+    if s is None:
+        shapeless = 1
+        if axes is None:
+            s = list(a.shape)
+        else:
+            s = numpy.take(a.shape, axes).tolist()
+    else:
+        shapeless = 0
+        try:
+            iter(s)
+        except Exception as e:
+            raise TypeError("s must be None or a sequence of integers.") from e
+
+        for i in s:
+            if not isinstance(i, int):
+                raise TypeError("s must be None or a sequence of integers.")
+            if i < 1:
+                raise ValueError(
+                    f"Invalid number of FFT data points ({s}) specified"
+                )
+
+    if axes is None:
+        axes = list(range(-len(s), 0))
+    if len(s) != len(axes):
+        raise ValueError("Shape and axes have different lengths.")
+
+    if invreal and shapeless:
+        s[-1] = (a.shape[axes[-1]] - 1) * 2
+    return s, axes
+
+
 def _commit_descriptor(a, in_place, a_strides, index, axes):
     """Commit the FFT descriptor for the input array."""
 
@@ -310,6 +354,63 @@ def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
         forward=forward,
         in_place=in_place,
         axes=axis,
+        hev_list=copy_ht_ev,
+        dev_list=copy_dp_ev,
+    )
+
+
+def dpnp_fftn(a, s=None, axes=None, norm=None, is_forward=True):
+    """Calculates N-D FFT of the input array along axes"""
+
+    dpnp.check_supported_arrays_type(a)
+    _check_norm(norm)
+    if not dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        if a.dtype == dpnp.float32:
+            dtype = dpnp.complex64
+        else:
+            dtype = map_dtype_to_device(dpnp.complex128, a.sycl_device)
+        a = dpnp.astype(a, dtype, copy=False)
+
+    if a.ndim == 0:
+        if axes is not None:
+            raise ValueError(
+                "While input array is 0-dimensional, axes is given."
+            )
+
+        return a
+
+    s, axes = _cook_nd_args(a, s, axes)
+    len_axes = len(axes)
+    if len_axes > 3 or len(set(axes)) < len_axes:  # repeated axes
+        itl = list(range(len_axes))
+        itl.reverse()
+        for ii in itl:
+            a, copy_ht_ev, copy_dp_ev = _truncate_or_pad(a, s[ii], axes[ii])
+            a = _fft(
+                a,
+                norm=norm,
+                is_forward=is_forward,
+                axes=axes[ii],
+                hev_list=copy_ht_ev,
+                dev_list=copy_dp_ev,
+            )
+        return a
+
+    a, copy_ht_ev, copy_dp_ev = _truncate_or_pad(a, s, axes)
+    if a.ndim == len_axes:  # axes is None will never be axes None
+        return _fft(
+            a,
+            norm=norm,
+            is_forward=is_forward,
+            hev_list=copy_ht_ev,
+            dev_list=copy_dp_ev,
+        )
+
+    return _fft(
+        a,
+        norm=norm,
+        is_forward=is_forward,
+        axes=axes,
         hev_list=copy_ht_ev,
         dev_list=copy_dp_ev,
     )
