@@ -613,11 +613,27 @@ class TestEinsum:
         expected = numpy.einsum("i,i,i", b_np, b_np, b_np, optimize="greedy")
         assert_dtype_allclose(result, expected)
 
+    def test_einsum_out(self):
+        a = inp.ones((5, 5))
+        a_np = a.asnumpy()
+        out = inp.empty((5,))
+        out_np = out.asnumpy()
+        result = inp.einsum("ii->i", a, out=out)
+        assert result is out
+        expected = numpy.einsum("ii->i", a_np, out=out_np)
+        assert_dtype_allclose(result, expected)
+
     def test_einsum_error(self):
         a = inp.ones((5, 5))
         # unknown keyword argument
         with pytest.raises(TypeError):
             inp.einsum("ii->i", a, copy=False)
+
+        a = inp.ones((5, 5))
+        out = inp.empty((5,), sycl_queue=dpctl.SyclQueue())
+        # inconsistent sycl_queue
+        with pytest.raises(ExecutionPlacementError):
+            inp.einsum("ii->i", a, out=out)
 
         # unknown value for optimize keyword
         with pytest.raises(TypeError):
@@ -780,7 +796,9 @@ class TestLstsq:
         b_dp = inp.array(b_np)
 
         result = inp.linalg.lstsq(a_dp, b_dp)
-        expected = numpy.linalg.lstsq(a_np, b_np)
+        # if rcond is not set, FutureWarning is given.
+        # By default Numpy uses None for calculations
+        expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
 
         for param_dp, param_np in zip(result, expected):
             assert_dtype_allclose(param_dp, param_np)
@@ -794,7 +812,9 @@ class TestLstsq:
         a_dp = inp.array(a_np)
         b_dp = inp.array(b_np)
 
-        expected = numpy.linalg.lstsq(a_np, b_np)
+        # if rcond is not set, FutureWarning is given.
+        # By default Numpy uses None for calculations
+        expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
         result = inp.linalg.lstsq(a_dp, b_dp)
 
         for param_dp, param_np in zip(result, expected):
@@ -813,7 +833,9 @@ class TestLstsq:
         b_dp = inp.array(b_np)
 
         result = inp.linalg.lstsq(a_dp, b_dp)
-        expected = numpy.linalg.lstsq(a_np, b_np)
+        # if rcond is not set, FutureWarning is given.
+        # By default Numpy uses None for calculations
+        expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
 
         for param_dp, param_np in zip(result, expected):
             assert_dtype_allclose(param_dp, param_np)

@@ -103,7 +103,7 @@ def vvsort(val, vec, size, xp):
             {"dtype": dpnp.int32},
         ),
         pytest.param("fromiter", [[1, 2, 3, 4]], {"dtype": dpnp.int64}),
-        pytest.param("fromstring", ["1, 2"], {"dtype": int, "sep": " "}),
+        pytest.param("fromstring", ["1 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
         pytest.param("geomspace", [1, 4, 8], {}),
@@ -1686,6 +1686,7 @@ def test_from_dlpack(arr_dtype, shape, device):
         assert V.strides == W.strides
 
 
+@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 @pytest.mark.parametrize(
     "device",
     valid_devices,
@@ -2112,7 +2113,9 @@ def test_lstsq(m, n, nrhs, device):
     b_dp = dpnp.array(b_np, device=device)
 
     result_dp = dpnp.linalg.lstsq(a_dp, b_dp)
-    result = numpy.linalg.lstsq(a_np, b_np)
+    # if rcond is not set, FutureWarning is given.
+    # By default Numpy uses None for calculations
+    result = numpy.linalg.lstsq(a_np, b_np, rcond=None)
 
     for param_dp, param_np in zip(result_dp, result):
         assert_dtype_allclose(param_dp, param_np)
@@ -2208,3 +2211,22 @@ def test_histogram_bin_edges(weights, device):
 
     edges_queue = result_edges.sycl_queue
     assert_sycl_queue_equal(edges_queue, iv.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device_x",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "device_y",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_astype(device_x, device_y):
+    x = dpnp.array([1, 2, 3], dtype="i4", device=device_x)
+    y = dpnp.astype(x, dtype="f4")
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+    sycl_queue = dpctl.SyclQueue(device_y)
+    y = dpnp.astype(x, dtype="f4", device=sycl_queue)
+    assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
