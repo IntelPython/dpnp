@@ -1,11 +1,4 @@
-tests/test_strides.py::test_strides_1arg[(10,)-int32-fabs]
-tests/test_strides.py::test_strides_1arg[(10,)-int64-fabs]
-tests/test_strides.py::test_strides_1arg[(10,)-None-fabs]
-
 tests/test_umath.py::test_umaths[('floor_divide', 'ff')]
-
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fabs
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fabs_negative
 
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
 
