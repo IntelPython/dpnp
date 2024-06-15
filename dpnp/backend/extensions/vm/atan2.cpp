@@ -73,11 +73,11 @@ template <typename T1, typename T2>
 static sycl::event atan2_contig_impl(sycl::queue &exec_q,
                                      std::size_t in_n,
                                      const char *in_a,
-                                     ssize_t a_offset,
+                                     py::ssize_t a_offset,
                                      const char *in_b,
-                                     ssize_t b_offset,
+                                     py::ssize_t b_offset,
                                      char *out_y,
-                                     ssize_t out_offset,
+                                     py::ssize_t out_offset,
                                      const std::vector<sycl::event> &depends)
 {
     tu_ns::validate_type_for_device<T1>(exec_q);
