@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+50.ge6a5e50e2e documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+56.g7eab62aca4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=ef76bb10"></script>
+        <script src="../../_static/documentation_options.js?v=a12a3f51"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+50.ge6a5e50e2e
+                0.16.0dev0+56.g7eab62aca4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -429,12 +429,12 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -497,12 +497,12 @@
 <span class="s2">    First input array, expected to have numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -566,12 +566,12 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a complex-valued floating-point data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -625,10 +625,9 @@
 <span class="sd">        Number of decimal places to round to (default: 0). If decimals is</span>
 <span class="sd">        negative, it specifies the number of positions to the left of the</span>
 <span class="sd">        decimal point.</span>
-<span class="sd">    out : {None, dpnp.ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Output array to populate.</span>
 <span class="sd">        Array must have the correct shape and the expected data type.</span>
-
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -647,6 +646,7 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This function works the same as :obj:`dpnp.round`.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">decimals</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
@@ -662,12 +662,12 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a real-valued data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -725,7 +725,7 @@
 <span class="sd">        output. Its type is preserved.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array, if parameter `out` is `None`.</span>
-<span class="sd">        If `order` is ``None``, the default value &quot;K&quot; will be used.</span>
+<span class="sd">        If `order` is ``None``, the default value ``&quot;K&quot;`` will be used.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -791,12 +791,12 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -870,7 +870,7 @@
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1350,12 +1350,12 @@
 <span class="s2">    First input array, expected to have numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1521,12 +1521,12 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a real-valued data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1580,12 +1580,12 @@
 <span class="s2">    First input array, expected to have numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2152,12 +2152,12 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2209,12 +2209,12 @@
 <span class="s2">    First input array, expected to have numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2281,12 +2281,12 @@
 <span class="s2">    First input array, expected to have numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2341,66 +2341,6 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="mod">
-<a class="viewcode-back" href="../../reference/generated/dpnp.mod.html#dpnp.mod">[docs]</a>
-<span class="k">def</span> <span class="nf">mod</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute element-wise remainder of division.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.mod`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        The element-wise remainder of the quotient `floor_divide(x1, x2)`.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar,</span>
-<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`</span>
-<span class="sd">    and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default</span>
-<span class="sd">    values.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division</span>
-<span class="sd">    :obj:`dpnp.remainder` : Remainder complementary to floor_divide.</span>
-<span class="sd">    :obj:`dpnp.divide` : Standard division.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This function works the same as :obj:`dpnp.remainder`.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
 <div class="viewcode-block" id="modf">
 <a class="viewcode-back" href="../../reference/generated/dpnp.modf.html#dpnp.modf">[docs]</a>
 <span class="k">def</span> <span class="nf">modf</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2446,12 +2386,12 @@
 <span class="s2">    First input array, expected to have numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2512,12 +2452,12 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2567,12 +2507,12 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2629,12 +2569,12 @@
 <span class="s2">    First input array, expected to have numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate. Array must have the correct</span>
 <span class="s2">    shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2654,7 +2594,6 @@
 <span class="s2">:obj:`dpnp.fmax` : Element-wise maximum of array elements.</span>
 <span class="s2">:obj:`dpnp.fmin` : Element-wise minimum of array elements.</span>
 <span class="s2">:obj:`dpnp.fmod` : Calculate the element-wise remainder of division.</span>
-
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -2813,12 +2752,12 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2901,7 +2840,7 @@
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2911,7 +2850,7 @@
 <span class="s2">    array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
-<span class="s2">----------</span>
+<span class="s2">-----------</span>
 <span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
@@ -2923,6 +2862,12 @@
 <span class="s2">:obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.</span>
 <span class="s2">:obj:`dpnp.floor_divide` : Compute the largest integer smaller or equal to the division of the inputs.</span>
 <span class="s2">:obj:`dpnp.mod` : Calculate the element-wise remainder of division.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">Returns ``0`` when `x2` is ``0`` and both `x1` and `x2` are (arrays of)</span>
+<span class="s2">integers.</span>
+<span class="s2">:obj:`dpnp.mod` is an alias of :obj:`dpnp.remainder`.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -2949,6 +2894,8 @@
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_remainder_inplace</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="n">mod</span> <span class="o">=</span> <span class="n">remainder</span>
+
 
 <span class="n">_RINT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Rounds each element `x_i` of the input array `x` to</span>
@@ -2963,12 +2910,12 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3022,7 +2969,7 @@
 <span class="s2">decimals : int, optional</span>
 <span class="s2">    Number of decimal places to round to (default: 0). If decimals is negative,</span>
 <span class="s2">    it specifies the number of positions to the left of the decimal point.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 
@@ -3078,12 +3025,12 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3132,12 +3079,12 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3185,12 +3132,12 @@
 <span class="s2">    First input array, expected to have numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3474,12 +3421,12 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a real-valued data type.</span>
-<span class="s2">out : {None, dpnp.ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="s2">    Default: &quot;K&quot;.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
