@@ -2245,63 +2245,6 @@ minimum = DPNPBinaryFunc(
 )
 
 
-def mod(
-    x1,
-    x2,
-    /,
-    out=None,
-    *,
-    where=True,
-    order="K",
-    dtype=None,
-    subok=True,
-    **kwargs,
-):
-    """
-    Compute element-wise remainder of division.
-
-    For full documentation refer to :obj:`numpy.mod`.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The element-wise remainder of the quotient `floor_divide(x1, x2)`.
-
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar,
-    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`
-    and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default
-    values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division
-    :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
-    :obj:`dpnp.divide` : Standard division.
-
-    Notes
-    -----
-    This function works the same as :obj:`dpnp.remainder`.
-
-    """
-
-    return dpnp.remainder(
-        x1,
-        x2,
-        out=out,
-        where=where,
-        order=order,
-        dtype=dtype,
-        subok=subok,
-        **kwargs,
-    )
-
-
 def modf(x1, **kwargs):
     """
     Return the fractional and integral parts of an array, element-wise.
@@ -2818,6 +2761,12 @@ See Also
 :obj:`dpnp.floor_divide` : Compute the largest integer smaller or equal to the division of the inputs.
 :obj:`dpnp.mod` : Calculate the element-wise remainder of division.
 
+Notes
+-----
+Returns ``0`` when `x2` is ``0`` and both `x1` and `x2` are (arrays of)
+integers.
+:obj:`dpnp.mod` is an alias of :obj:`dpnp.remainder`.
+
 Examples
 --------
 >>> import dpnp as np
@@ -2842,6 +2791,8 @@ remainder = DPNPBinaryFunc(
     _REMAINDER_DOCSTRING,
     binary_inplace_fn=ti._remainder_inplace,
 )
+
+mod = remainder
 
 
 _RINT_DOCSTRING = """
