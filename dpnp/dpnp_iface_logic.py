@@ -317,12 +317,12 @@ x1 : {dpnp.ndarray, usm_ndarray}
     First input array, expected to have numeric data type.
 x2 : {dpnp.ndarray, usm_ndarray}
     Second input array, also expected to have numeric data type.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+    Default: ``"K"``.
 
 Returns
 -------
@@ -386,12 +386,12 @@ x1 : {dpnp.ndarray, usm_ndarray}
     First input array, expected to have numeric data type.
 x2 : {dpnp.ndarray, usm_ndarray}
     Second input array, also expected to have numeric data type.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+    Default: ``"K"``.
 
 Returns
 -------
@@ -449,12 +449,12 @@ x1 : {dpnp.ndarray, usm_ndarray}
     First input array, expected to have numeric data type.
 x2 : {dpnp.ndarray, usm_ndarray}
     Second input array, also expected to have numeric data type.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+    Default: ``"K"``.
 
 Returns
 -------
@@ -553,12 +553,12 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have numeric data type.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+    Default: ``"K"``.
 
 Returns
 -------
@@ -612,12 +612,12 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have numeric data type.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+    Default: ``"K"``.
 
 Returns
 -------
@@ -665,12 +665,12 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have numeric data type.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+    Default: ``"K"``.
 
 Returns
 -------
@@ -722,12 +722,12 @@ x1 : {dpnp.ndarray, usm_ndarray}
     First input array, expected to have numeric data type.
 x2 : {dpnp.ndarray, usm_ndarray}
     Second input array, also expected to have numeric data type.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+    Default: ``"K"``.
 
 Returns
 -------
@@ -739,6 +739,7 @@ Limitations
 -----------
 Parameters `where` and `subok` are supported with their default values.
 Otherwise ``NotImplementedError`` exception will be raised.
+
 See Also
 --------
 :obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
@@ -784,12 +785,12 @@ x1 : {dpnp.ndarray, usm_ndarray}
     First input array, expected to have numeric data type.
 x2 : {dpnp.ndarray, usm_ndarray}
     Second input array, also expected to have numeric data type.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+    Default: ``"K"``.
 
 Returns
 -------
@@ -847,12 +848,12 @@ x1 : {dpnp.ndarray, usm_ndarray}
     First input array.
 x2 : {dpnp.ndarray, usm_ndarray}
     Second input array.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+    Default: ``"K"``.
 
 Returns
 -------
@@ -909,12 +910,12 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+    Default: ``"K"``.
 
 Returns
 -------
@@ -964,12 +965,12 @@ x1 : {dpnp.ndarray, usm_ndarray}
     First input array.
 x2 : {dpnp.ndarray, usm_ndarray}
     Second input array.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+    Default: ``"K"``.
 
 Returns
 -------
@@ -1029,12 +1030,12 @@ x1 : {dpnp.ndarray, usm_ndarray}
     First input array.
 x2 : {dpnp.ndarray, usm_ndarray}
     Second input array.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+    Default: ``"K"``.
 
 Returns
 -------
@@ -1092,12 +1093,12 @@ x1 : {dpnp.ndarray, usm_ndarray}
     First input array, expected to have numeric data type.
 x2 : {dpnp.ndarray, usm_ndarray}
     Second input array, also expected to have numeric data type.
-out : {None, dpnp.ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: "K".
+    Default: ``"K"``.
 
 Returns
 -------

@@ -180,7 +180,7 @@ def asnumpy(a, order="C"):
 
 
 # pylint: disable=redefined-outer-name
-def astype(x1, dtype, order="K", casting="unsafe", copy=True):
+def astype(x1, dtype, order="K", casting="unsafe", copy=True, device=None):
     """
     Copy the array with data type casting.
 
@@ -213,6 +213,13 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True):
         By default, ``astype`` always returns a newly allocated array. If this
         is set to ``False``, and the `dtype`, `order`, and `subok` requirements
         are satisfied, the input array is returned instead of a copy.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property. Default: ``None``.
 
     Returns
     -------
@@ -228,7 +235,7 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True):
 
     x1_obj = dpnp.get_usm_ndarray(x1)
     array_obj = dpt.astype(
-        x1_obj, dtype, order=order, casting=casting, copy=copy
+        x1_obj, dtype, order=order, casting=casting, copy=copy, device=device
     )
 
     # return x1 if dpctl returns a zero copy of x1_obj
