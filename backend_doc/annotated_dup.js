@@ -85,6 +85,11 @@ var annotated_dup =
             [ "UsmArrayMatcher", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_usm_array_matcher.html", null ]
           ] ]
         ] ]
+      ] ],
+      [ "kernels", null, [
+        [ "fabs", null, [
+          [ "FabsFunctor", "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html", null ]
+        ] ]
       ] ]
     ] ],
     [ "are_same", "structare__same.html", null ],
