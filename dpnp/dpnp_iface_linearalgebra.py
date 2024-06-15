@@ -821,7 +821,6 @@ def matmul(
 
     """
 
-    dpnp.check_supported_arrays_type(x1, x2)
     if subok is False:
         raise NotImplementedError(
             "subok keyword argument is only supported by its default value."
