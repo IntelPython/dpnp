@@ -458,10 +458,6 @@ DPCTLSyclEventRef (*dpnp_dot_ext_c)(DPCTLSyclQueueRef,
                                     const DPCTLEventVectorRef) =
     dpnp_dot_c<_DataType_output, _DataType_input1, _DataType_input2>;
 
-
-
-
-
 template <typename _DataType>
 class dpnp_initval_c_kernel;
 
@@ -515,8 +511,6 @@ DPCTLSyclEventRef (*dpnp_initval_ext_c)(DPCTLSyclQueueRef,
                                         size_t,
                                         const DPCTLEventVectorRef) =
     dpnp_initval_c<_DataType>;
-
-
 
 void func_map_init_linalg(func_map_t &fmap)
 {
@@ -587,8 +581,6 @@ void func_map_init_linalg(func_map_t &fmap)
         eft_DBL, (void *)dpnp_dot_ext_c<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_DOT_EXT][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_dot_ext_c<double, double, double>};
-
-
 
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_BLN][eft_BLN] = {
         eft_BLN, (void *)dpnp_initval_default_c<bool>};
