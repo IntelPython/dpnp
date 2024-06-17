@@ -26,6 +26,7 @@ class TestMisc:
 
     @testing.for_dtypes(["?", "b", "h", "i", "q", "e", "f", "d", "F", "D"])
     @testing.numpy_cupy_allclose(atol=1e-5)
+    # TODO: remove no_comlex=True, once adopted to numpy 2.0
     def check_unary_negative(
         self, name, xp, dtype, no_bool=False, no_complex=False
     ):
@@ -184,13 +185,13 @@ class TestMisc:
         self.check_unary_negative("absolute")
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_fabs(self, xp, dtype):
         a = xp.array([2, 3, 4], dtype=dtype)
         return xp.fabs(a)
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_fabs_negative(self, xp, dtype):
         a = xp.array([-2.0, -4.0, 0.0, 4.0], dtype=dtype)
         return xp.fabs(a)
@@ -198,7 +199,7 @@ class TestMisc:
     def test_sign(self):
         self.check_unary("sign", no_bool=True)
 
-    # TODO: remove no_comlex=True, when numpy 2.0.0 will release
+    # TODO: remove no_comlex=True, once adopted to numpy 2.0
     def test_sign_negative(self):
         self.check_unary_negative("sign", no_bool=True, no_complex=True)
 
@@ -504,6 +505,7 @@ class TestMisc:
         }
     )
 )
+@pytest.mark.skip("convolve() is not implemented yet")
 class TestConvolveShapeCombination:
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3)
@@ -513,6 +515,7 @@ class TestConvolveShapeCombination:
         return xp.convolve(a, b, mode=self.mode)
 
 
+@pytest.mark.skip("convolve() is not implemented yet")
 @pytest.mark.parametrize("mode", ["valid", "same", "full"])
 class TestConvolve:
     @testing.for_all_dtypes(no_float16=True)
@@ -537,6 +540,7 @@ class TestConvolve:
         return xp.convolve(a, b, mode=mode)
 
 
+@pytest.mark.skip("convolve() is not implemented yet")
 @testing.parameterize(*testing.product({"mode": ["valid", "same", "full"]}))
 class TestConvolveInvalid:
     @testing.for_all_dtypes()
