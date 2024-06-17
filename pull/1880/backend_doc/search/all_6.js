@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['gemmbatchtypepairsupportfactory_0',['GemmBatchTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html',1,'dpnp::backend::ext::blas::types']]],
-  ['gemmtypepairsupportfactory_1',['GemmTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html',1,'dpnp::backend::ext::blas::types']]],
-  ['gemvtypepairsupportfactory_2',['GemvTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html',1,'dpnp::backend::ext::blas::types']]],
+  ['gemmbatchtypepairsupportfactory_0',['GemmBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html',1,'dpnp::extensions::blas::types']]],
+  ['gemmtypepairsupportfactory_1',['GemmTypePairSupportFactory',['../structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html',1,'dpnp::extensions::blas::types']]],
+  ['gemvtypepairsupportfactory_2',['GemvTypePairSupportFactory',['../structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html',1,'dpnp::extensions::blas::types']]],
   ['geqrfbatchtypepairsupportfactory_3',['GeqrfBatchTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_geqrf_batch_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
   ['geqrftypepairsupportfactory_4',['GeqrfTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_geqrf_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],
   ['gesvdtypepairsupportfactory_5',['GesvdTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_gesvd_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]],

@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.16.0dev0+22.gdcbb6c4c65 documentation</title>
+  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.16.0dev0+32.g143a45dbbf documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8d527f6a"></script>
+        <script src="../../_static/documentation_options.js?v=228db145"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+22.gdcbb6c4c65
+                0.16.0dev0+32.g143a45dbbf
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -213,7 +213,7 @@ methods to be compliant with original NumPy.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.astype">
-<span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unsafe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.astype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.astype" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unsafe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.astype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.astype" title="Link to this definition"></a></dt>
 <dd><p>Copy the array with data type casting.</p>
 <p>Refer to <a class="reference internal" href="dpnp.astype.html#dpnp.astype" title="dpnp.astype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.astype</span></code></a> for full documentation.</p>
 <dl class="field-list simple">
@@ -241,6 +241,12 @@ float64 to float32, are allowed.</p></li>
 this is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, and the <cite>dtype</cite>, <cite>order</cite>, and <cite>subok</cite>
 requirements are satisfied, the input array is returned instead of
 a copy.</p></li>
+<li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) -- An array API concept of device where the output array is created.
+The <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), an OneAPI filter selector
+string, an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code> corresponding to
+a non-partitioned SYCL device, an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code>,
+or a <cite>Device</cite> object returned by
+<a class="reference internal" href="#dpnp.dpnp_array.dpnp_array.device" title="dpnp.dpnp_array.dpnp_array.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dpnp_array.dpnp_array.device</span></code></a> property. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
