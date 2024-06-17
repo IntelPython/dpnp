@@ -33,15 +33,7 @@
 // dpctl namespace for operations with types
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace blas
-{
-namespace types
+namespace dpnp::extensions::blas::types
 {
 /**
  * @brief A factory to define pairs of supported types for which
@@ -190,8 +182,4 @@ struct GemvTypePairSupportFactory
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
-} // namespace types
-} // namespace blas
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::blas::types
