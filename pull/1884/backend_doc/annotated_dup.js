@@ -87,6 +87,11 @@ var annotated_dup =
           [ "DotContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dot_contig_factory.html", null ],
           [ "DotuContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dotu_contig_factory.html", null ]
         ] ]
+      ] ],
+      [ "kernels", null, [
+        [ "fabs", null, [
+          [ "FabsFunctor", "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html", null ]
+        ] ]
       ] ]
     ] ],
     [ "are_same", "structare__same.html", null ],
