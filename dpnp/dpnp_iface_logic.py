@@ -725,7 +725,9 @@ def isneginf(x, out=None):
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         A location into which the result is stored. If provided, it must have a
         shape that the input broadcasts to and a boolean data type.
-        If not provided or None, a freshly-allocated boolean array is returned
+        If not provided or ``None``, a freshly-allocated boolean array
+        is returned.
+        Default: ``None``.
 
     Returns
     -------
@@ -763,17 +765,27 @@ def isneginf(x, out=None):
 
     """
 
-    is_inf = dpnp.isinf(x)
-    try:
-        signbit = dpnp.signbit(x)
-    except ValueError as e:
-        dtype = x.dtype
-        raise TypeError(
-            f"This operation is not supported for {dtype} values "
-            "because it would be ambiguous."
-        ) from e
+    dpnp.check_supported_arrays_type(x)
 
-    return dpnp.logical_and(is_inf, signbit, out)
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        out_dtype = out.dtype
+        if not dpnp.issubdtype(out_dtype, dpnp.bool):
+            raise TypeError(
+                f"Output array data type must be boolean, got {out.dtype}"
+            )
+
+    x_dtype = x.dtype
+    if dpnp.issubdtype(x_dtype, dpnp.complexfloating):
+        raise TypeError(
+            f"This operation is not supported for {x_dtype} values "
+            "because it would be ambiguous."
+        )
+
+    is_inf = dpnp.isinf(x)
+    signbit = dpnp.signbit(x)
+
+    return dpnp.logical_and(is_inf, signbit, out=out)
 
 
 def isposinf(x, out=None):
@@ -789,7 +801,9 @@ def isposinf(x, out=None):
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         A location into which the result is stored. If provided, it must have a
         shape that the input broadcasts to and a boolean data type.
-        If not provided or None, a freshly-allocated boolean array is returned
+        If not provided or ``None``, a freshly-allocated boolean array
+        is returned.
+        Default: ``None``.
 
     Returns
     -------
@@ -827,17 +841,27 @@ def isposinf(x, out=None):
 
     """
 
-    is_inf = dpnp.isinf(x)
-    try:
-        signbit = ~dpnp.signbit(x)
-    except ValueError as e:
-        dtype = x.dtype
-        raise TypeError(
-            f"This operation is not supported for {dtype} values "
-            "because it would be ambiguous."
-        ) from e
+    dpnp.check_supported_arrays_type(x)
 
-    return dpnp.logical_and(is_inf, signbit, out)
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        out_dtype = out.dtype
+        if not dpnp.issubdtype(out_dtype, dpnp.bool):
+            raise TypeError(
+                f"Output array data type must be boolean, got {out.dtype}"
+            )
+
+    x_dtype = x.dtype
+    if dpnp.issubdtype(x_dtype, dpnp.complexfloating):
+        raise TypeError(
+            f"This operation is not supported for {x_dtype} values "
+            "because it would be ambiguous."
+        )
+
+    is_inf = dpnp.isinf(x)
+    signbit = ~dpnp.signbit(x)
+
+    return dpnp.logical_and(is_inf, signbit, out=out)
 
 
 _LESS_DOCSTRING = """
