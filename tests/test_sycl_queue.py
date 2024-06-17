@@ -478,6 +478,15 @@ def test_meshgrid(device_x, device_y):
         pytest.param("trapz", [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
+        # logic functions
+        pytest.param("all", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
+        pytest.param("any", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
+        pytest.param("isfinite", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
+        pytest.param("isinf", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
+        pytest.param("isnan", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
+        pytest.param("isneginf", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
+        pytest.param("isposinf", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
+        pytest.param("logical_not", [-dpnp.inf, -1.0, 0.0, dpnp.inf, dpnp.nan]),
     ],
 )
 @pytest.mark.parametrize(
@@ -681,6 +690,62 @@ def test_reduce_hypot(device):
         pytest.param("vdot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
         pytest.param("vdot", [3, 4, 5], [1, 2, 3]),
         pytest.param("vdot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
+        # logic functions
+        pytest.param(
+            "allclose",
+            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
+            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan],
+        ),
+        pytest.param(
+            "equal",
+            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
+            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan],
+        ),
+        pytest.param(
+            "greater",
+            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf],
+            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf],
+        ),
+        pytest.param(
+            "greater_equal",
+            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf],
+            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf],
+        ),
+        # TODO: unblock when dpnp.isclose() is updated
+        # pytest.param("isclose",
+        #              [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
+        #              [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan]
+        # ),
+        pytest.param(
+            "less",
+            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf],
+            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf],
+        ),
+        pytest.param(
+            "less_equal",
+            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf],
+            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf],
+        ),
+        pytest.param(
+            "logical_and",
+            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
+            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan],
+        ),
+        pytest.param(
+            "logical_or",
+            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
+            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan],
+        ),
+        pytest.param(
+            "logical_xor",
+            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
+            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan],
+        ),
+        pytest.param(
+            "not_equal",
+            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
+            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan],
+        ),
     ],
 )
 @pytest.mark.parametrize(
