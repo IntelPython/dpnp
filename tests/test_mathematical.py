@@ -1316,6 +1316,7 @@ def test_float_remainder_magnitude(dtype):
     assert_equal(result, expected)
 
 
+@pytest.mark.usefixtures("suppress_divide_numpy_warnings")
 @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 @pytest.mark.parametrize("func", ["remainder", "fmod"])
 @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))

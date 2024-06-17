@@ -127,14 +127,16 @@ class TestArithmeticUnary:
         if self.name in ("reciprocal") and xp is numpy:
             # In NumPy, for integer arguments with absolute value larger than 1 the result is always zero.
             # We need to convert the input data type to float then compare the output with DPNP.
-            if arg1.dtype.char in "bB":  # int8
-                arg1 = xp.asarray(arg1, dtype=numpy.float16)
-            elif arg1.dtype.char in "hH":  # int16
-                arg1 = xp.asarray(arg1, dtype=numpy.float32)
-            elif arg1.dtype.char in "iIlL":  # int32, int64
-                np_dtype = (
-                    numpy.float64 if has_support_aspect64() else numpy.float32
-                )
+            if numpy.issubdtype(arg1.dtype, numpy.integer):
+                if arg1.dtype.char in "bB":  # int8
+                    np_dtype = numpy.float16
+                elif arg1.dtype.char in "hH":  # int16
+                    np_dtype = numpy.float32
+                else:  # int32, int64
+                    if has_support_aspect64():
+                        np_dtype = numpy.float64
+                    else:
+                        np_dtype = numpy.float32
                 arg1 = xp.asarray(arg1, dtype=np_dtype)
 
         if self.name in {"angle"}:
