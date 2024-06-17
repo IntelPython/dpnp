@@ -395,7 +395,7 @@ def test_finite(op, data, dtype):
     assert_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("func", ["isneginf"], ids=["isneginf"])
+@pytest.mark.parametrize("func", ["isneginf", "isposinf"])
 @pytest.mark.parametrize(
     "data",
     [
@@ -403,8 +403,8 @@ def test_finite(op, data, dtype):
         [[dpnp.inf, dpnp.nan], [dpnp.nan, 0], [1, -dpnp.inf]],
     ],
     ids=[
-        "[dpnp.inf, -1, 0, 1, dpnp.nan, -dpnp.inf]",
-        "[[dpnp.inf, dpnp.nan], [dpnp.nan, 0], [1, -dpnp.inf]]",
+        "1D array",
+        "2D array",
     ],
 )
 @pytest.mark.parametrize("dtype", get_float_complex_dtypes())

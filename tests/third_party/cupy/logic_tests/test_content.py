@@ -40,5 +40,5 @@ class TestUfuncLike(unittest.TestCase):
     def test_isneginf(self):
         self.check_unary("isneginf")
 
-    # def test_isposinf(self):
-    #     self.check_unary("isposinf")
+    def test_isposinf(self):
+        self.check_unary("isposinf")
