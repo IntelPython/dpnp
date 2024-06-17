@@ -23,31 +23,14 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#pragma once
+#include <pybind11/pybind11.h>
 
-#include <oneapi/mkl.hpp>
-#include <sycl/sycl.hpp>
+#include "elementwise_functions/common.hpp"
 
-#include <dpctl4pybind11.hpp>
+namespace py = pybind11;
+namespace ufunc_ns = dpnp::extensions::ufunc;
 
-namespace dpnp::extensions::blas
+PYBIND11_MODULE(_ufunc_impl, m)
 {
-extern std::pair<sycl::event, sycl::event>
-    gemv(sycl::queue &exec_q,
-         const dpctl::tensor::usm_ndarray &matrixA,
-         const dpctl::tensor::usm_ndarray &vectorX,
-         const dpctl::tensor::usm_ndarray &vectorY,
-         const bool transpose,
-         const std::vector<sycl::event> &depends);
-
-extern std::pair<sycl::event, sycl::event>
-    gemv_batch(sycl::queue &exec_q,
-               const dpctl::tensor::usm_ndarray &matrixA,
-               const dpctl::tensor::usm_ndarray &vectorX,
-               const dpctl::tensor::usm_ndarray &vectorY,
-               const bool transpose,
-               const std::vector<sycl::event> &depends);
-
-extern void init_gemv_dispatch_vector(void);
-extern void init_gemv_batch_dispatch_vector(void);
-} // namespace dpnp::extensions::blas
+    ufunc_ns::init_elementwise_functions(m);
+}

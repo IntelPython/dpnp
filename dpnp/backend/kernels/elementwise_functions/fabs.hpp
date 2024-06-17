@@ -25,29 +25,25 @@
 
 #pragma once
 
-#include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
-
-namespace dpnp::extensions::blas
+namespace dpnp::kernels::fabs
 {
-extern std::pair<sycl::event, sycl::event>
-    gemv(sycl::queue &exec_q,
-         const dpctl::tensor::usm_ndarray &matrixA,
-         const dpctl::tensor::usm_ndarray &vectorX,
-         const dpctl::tensor::usm_ndarray &vectorY,
-         const bool transpose,
-         const std::vector<sycl::event> &depends);
+template <typename argT, typename resT>
+struct FabsFunctor
+{
+    // is function constant for given argT
+    using is_constant = typename std::false_type;
+    // constant value, if constant
+    // constexpr resT constant_value = resT{};
+    // is function defined for sycl::vec
+    using supports_vec = typename std::false_type;
+    // do both argT and resT support sugroup store/load operation
+    using supports_sg_loadstore = typename std::true_type;
 
-extern std::pair<sycl::event, sycl::event>
-    gemv_batch(sycl::queue &exec_q,
-               const dpctl::tensor::usm_ndarray &matrixA,
-               const dpctl::tensor::usm_ndarray &vectorX,
-               const dpctl::tensor::usm_ndarray &vectorY,
-               const bool transpose,
-               const std::vector<sycl::event> &depends);
-
-extern void init_gemv_dispatch_vector(void);
-extern void init_gemv_batch_dispatch_vector(void);
-} // namespace dpnp::extensions::blas
+    resT operator()(const argT &x) const
+    {
+        return sycl::fabs(x);
+    }
+};
+} // namespace dpnp::kernels::fabs

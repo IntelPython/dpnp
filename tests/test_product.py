@@ -1,6 +1,7 @@
 import dpctl
 import numpy
 import pytest
+from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_raises
 
 import dpnp
@@ -473,6 +474,12 @@ class TestDot:
         with pytest.raises(ValueError):
             dpnp.dot(a, b)
 
+        a = dpnp.ones((5,))
+        b = dpnp.ones((5,))
+        out = dpnp.empty((), sycl_queue=dpctl.SyclQueue())
+        with pytest.raises(ExecutionPlacementError):
+            dpnp.dot(a, b, out=out)
+
     @pytest.mark.parametrize("ia", [1, dpnp.ones((), dtype=dpnp.float32)])
     def test_dot_out_error_scalar(self, ia):
         a = ia if dpnp.isscalar(ia) else ia.asnumpy()
@@ -487,6 +494,7 @@ class TestDot:
 
         # output shape is incorrect
         dp_out = dpnp.empty((2,), dtype=dpnp.int32)
+        out = numpy.empty((2,), dtype=numpy.int32)
         assert_raises(ValueError, dpnp.dot, ia, ib, out=dp_out)
         assert_raises(ValueError, numpy.dot, a, b, out=out)
 

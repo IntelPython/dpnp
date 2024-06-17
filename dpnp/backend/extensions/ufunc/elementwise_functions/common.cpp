@@ -23,31 +23,19 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#pragma once
+#include <pybind11/pybind11.h>
 
-#include <oneapi/mkl.hpp>
-#include <sycl/sycl.hpp>
+#include "fabs.hpp"
 
-#include <dpctl4pybind11.hpp>
+namespace py = pybind11;
 
-namespace dpnp::extensions::blas
+namespace dpnp::extensions::ufunc
 {
-extern std::pair<sycl::event, sycl::event>
-    gemv(sycl::queue &exec_q,
-         const dpctl::tensor::usm_ndarray &matrixA,
-         const dpctl::tensor::usm_ndarray &vectorX,
-         const dpctl::tensor::usm_ndarray &vectorY,
-         const bool transpose,
-         const std::vector<sycl::event> &depends);
-
-extern std::pair<sycl::event, sycl::event>
-    gemv_batch(sycl::queue &exec_q,
-               const dpctl::tensor::usm_ndarray &matrixA,
-               const dpctl::tensor::usm_ndarray &vectorX,
-               const dpctl::tensor::usm_ndarray &vectorY,
-               const bool transpose,
-               const std::vector<sycl::event> &depends);
-
-extern void init_gemv_dispatch_vector(void);
-extern void init_gemv_batch_dispatch_vector(void);
-} // namespace dpnp::extensions::blas
+/**
+ * @brief Add elementwise functions to Python module
+ */
+void init_elementwise_functions(py::module_ m)
+{
+    init_fabs(m);
+}
+} // namespace dpnp::extensions::ufunc
