@@ -7,6 +7,7 @@ import dpnp
 from .helper import (
     get_all_dtypes,
     get_float_complex_dtypes,
+    get_float_dtypes,
 )
 
 
@@ -407,18 +408,37 @@ def test_finite(op, data, dtype):
         "2D array",
     ],
 )
-@pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+@pytest.mark.parametrize("dtype", get_float_dtypes())
 def test_infinity_sign(func, data, dtype):
     x = dpnp.asarray(data, dtype=dtype)
-    if dpnp.issubdtype(dtype, dpnp.complexfloating):
-        with pytest.raises(TypeError):
-            dpnp_res = getattr(dpnp, func)(x)
-    else:
-        np_res = getattr(numpy, func)(x.asnumpy())
-        dpnp_res = getattr(dpnp, func)(x)
-        assert_equal(dpnp_res, np_res)
+    np_res = getattr(numpy, func)(x.asnumpy())
+    dpnp_res = getattr(dpnp, func)(x)
+    assert_equal(dpnp_res, np_res)
 
-        dp_out = dpnp.empty(np_res.shape, dtype=dpnp.bool)
-        dpnp_res = getattr(dpnp, func)(x, out=dp_out)
-        assert dp_out is dpnp_res
-        assert_equal(dpnp_res, np_res)
+    dp_out = dpnp.empty(np_res.shape, dtype=dpnp.bool)
+    dpnp_res = getattr(dpnp, func)(x, out=dp_out)
+    assert dp_out is dpnp_res
+    assert_equal(dpnp_res, np_res)
+
+
+@pytest.mark.parametrize("func", ["isneginf", "isposinf"])
+def test_infinity_sign_errors(func):
+    data = [dpnp.inf, 0, -dpnp.inf]
+
+    # unsupported data type
+    x = dpnp.asarray(data, dtype="c8")
+    x_np = dpnp.asnumpy(x)
+    with pytest.raises(TypeError):
+        getattr(dpnp, func)(x)
+        getattr(numpy, func)(x_np)
+
+    # unsupported type
+    with pytest.raises(TypeError):
+        getattr(dpnp, func)(data)  # list
+        getattr(dpnp, func)(x_np)  # numpy array
+
+    # unsupported `out` data type
+    x = dpnp.asarray(data, dtype=dpnp.default_float_type())
+    out = dpnp.empty_like(x, dtype="int32")
+    with pytest.raises(TypeError):
+        getattr(dpnp, func)(x, out=out)
