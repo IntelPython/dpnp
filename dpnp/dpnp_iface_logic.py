@@ -66,6 +66,7 @@ __all__ = [
     "isfinite",
     "isinf",
     "isnan",
+    "isneginf",
     "less",
     "less_equal",
     "logical_and",
@@ -708,6 +709,70 @@ isnan = DPNPUnaryFunc(
     ti._isnan,
     _ISNAN_DOCSTRING,
 )
+
+
+def isneginf(x, out=None):
+    """
+    Test element-wise for negative infinity, return result as bool array.
+
+    For full documentation refer to :obj:`numpy.isneginf`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        A location into which the result is stored. If provided, it must have a
+        shape that the input broadcasts to and a boolean data type.
+        If not provided or None, a freshly-allocated boolean array is returned
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Boolean array of same shape as ``x``.
+
+    See Also
+    --------
+    :obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.
+    :obj:`dpnp.isposinf` : Test element-wise for positive infinity,
+                            return result as bool array.
+    :obj:`dpnp.isnan` : Test element-wise for NaN and
+                    return result as a boolean array.
+    :obj:`dpnp.isfinite` : Test element-wise for finiteness.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array(np.inf)
+    >>> np.isneginf(-x)
+    array(True)
+    >>> np.isneginf(x)
+    array(False)
+
+    >>> x = np.array([-np.inf, 0., np.inf])
+    >>> np.isneginf(x)
+    array([ True, False, False])
+
+    >>> x = np.array([-np.inf, 0., np.inf])
+    >>> y = np.zeros(x.shape, dtype='bool')
+    >>> np.isneginf(x, y)
+    array([ True, False, False])
+    >>> y
+    array([ True, False, False])
+
+    """
+
+    is_inf = dpnp.isinf(x)
+    try:
+        signbit = dpnp.signbit(x)
+    except ValueError as e:
+        dtype = x.dtype
+        raise TypeError(
+            f"This operation is not supported for {dtype} values "
+            "because it would be ambiguous."
+        ) from e
+
+    return dpnp.logical_and(is_inf, signbit, out)
 
 
 _LESS_DOCSTRING = """
