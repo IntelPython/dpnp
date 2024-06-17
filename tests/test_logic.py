@@ -7,7 +7,6 @@ import dpnp
 from .helper import (
     get_all_dtypes,
     get_float_complex_dtypes,
-    has_support_aspect64,
 )
 
 
@@ -394,3 +393,32 @@ def test_finite(op, data, dtype):
     dpnp_res = getattr(dpnp, op)(x, out=dp_out)
     assert dp_out is dpnp_res
     assert_equal(dpnp_res, np_res)
+
+
+@pytest.mark.parametrize("func", ["isneginf"], ids=["isneginf"])
+@pytest.mark.parametrize(
+    "data",
+    [
+        [dpnp.inf, -1, 0, 1, dpnp.nan, -dpnp.inf],
+        [[dpnp.inf, dpnp.nan], [dpnp.nan, 0], [1, -dpnp.inf]],
+    ],
+    ids=[
+        "[dpnp.inf, -1, 0, 1, dpnp.nan, -dpnp.inf]",
+        "[[dpnp.inf, dpnp.nan], [dpnp.nan, 0], [1, -dpnp.inf]]",
+    ],
+)
+@pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+def test_infinity_sign(func, data, dtype):
+    x = dpnp.asarray(data, dtype=dtype)
+    if dpnp.issubdtype(dtype, dpnp.complexfloating):
+        with pytest.raises(TypeError):
+            dpnp_res = getattr(dpnp, func)(x)
+    else:
+        np_res = getattr(numpy, func)(x.asnumpy())
+        dpnp_res = getattr(dpnp, func)(x)
+        assert_equal(dpnp_res, np_res)
+
+        dp_out = dpnp.empty(np_res.shape, dtype=dpnp.bool)
+        dpnp_res = getattr(dpnp, func)(x, out=dp_out)
+        assert dp_out is dpnp_res
+        assert_equal(dpnp_res, np_res)
