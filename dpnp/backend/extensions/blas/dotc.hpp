@@ -27,13 +27,7 @@
 
 #include "dot_common.hpp"
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace blas
+namespace dpnp::extensions::blas
 {
 namespace mkl_blas = oneapi::mkl::blas;
 namespace type_utils = dpctl::tensor::type_utils;
@@ -41,17 +35,17 @@ namespace type_utils = dpctl::tensor::type_utils;
 template <typename T>
 static sycl::event dotc_impl(sycl::queue &exec_q,
                              const std::int64_t n,
-                             char *vectorX,
+                             const char *vectorX,
                              const std::int64_t incx,
-                             char *vectorY,
+                             const char *vectorY,
                              const std::int64_t incy,
                              char *result,
                              const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
 
-    T *x = reinterpret_cast<T *>(vectorX);
-    T *y = reinterpret_cast<T *>(vectorY);
+    const T *x = reinterpret_cast<const T *>(vectorX);
+    const T *y = reinterpret_cast<const T *>(vectorY);
     T *res = reinterpret_cast<T *>(result);
 
     std::stringstream error_msg;
@@ -100,7 +94,4 @@ struct DotcContigFactory
     }
 };
 
-} // namespace blas
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::blas
