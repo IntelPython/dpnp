@@ -180,7 +180,7 @@
     template <typename argTy1, typename argTy2>                                \
     sycl::event __name__##_strided_impl(                                       \
         sycl::queue &exec_q, size_t nelems, int nd,                            \
-        const ssize_t *shape_and_strides, const char *arg1_p,                  \
+        const py::ssize_t *shape_and_strides, const char *arg1_p,              \
         py::ssize_t arg1_offset, const char *arg2_p, py::ssize_t arg2_offset,  \
         char *res_p, py::ssize_t res_offset,                                   \
         const std::vector<sycl::event> &depends,                               \
