@@ -83,6 +83,7 @@
 
 #endif // _SECTION_DOCUMENTATION_GENERATION_
 
+MACRO_1ARG_1TYPE_OP(dpnp_copy_c, input_elem, q.submit(kernel_func))
 MACRO_1ARG_1TYPE_OP(dpnp_erf_c,
                     dispatch_erf_op(input_elem),
                     oneapi::mkl::vm::erf(q, input1_size, input1_data, result))
