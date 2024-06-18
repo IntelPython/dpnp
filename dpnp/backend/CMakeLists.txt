@@ -25,7 +25,6 @@
 
 set(DPNP_SRC
     kernels/dpnp_krnl_arraycreation.cpp
-    kernels/dpnp_krnl_bitwise.cpp
     kernels/dpnp_krnl_common.cpp
     kernels/dpnp_krnl_elemwise.cpp
     kernels/dpnp_krnl_fft.cpp
