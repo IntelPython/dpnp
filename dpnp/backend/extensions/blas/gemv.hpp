@@ -25,38 +25,29 @@
 
 #pragma once
 
-#include <CL/sycl.hpp>
 #include <oneapi/mkl.hpp>
+#include <sycl/sycl.hpp>
 
 #include <dpctl4pybind11.hpp>
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace blas
+namespace dpnp::extensions::blas
 {
 extern std::pair<sycl::event, sycl::event>
     gemv(sycl::queue &exec_q,
-         dpctl::tensor::usm_ndarray matrixA,
-         dpctl::tensor::usm_ndarray vectorX,
-         dpctl::tensor::usm_ndarray vectorY,
-         bool transpose,
+         const dpctl::tensor::usm_ndarray &matrixA,
+         const dpctl::tensor::usm_ndarray &vectorX,
+         const dpctl::tensor::usm_ndarray &vectorY,
+         const bool transpose,
          const std::vector<sycl::event> &depends);
 
 extern std::pair<sycl::event, sycl::event>
     gemv_batch(sycl::queue &exec_q,
-               dpctl::tensor::usm_ndarray matrixA,
-               dpctl::tensor::usm_ndarray vectorX,
-               dpctl::tensor::usm_ndarray vectorY,
-               bool transpose,
+               const dpctl::tensor::usm_ndarray &matrixA,
+               const dpctl::tensor::usm_ndarray &vectorX,
+               const dpctl::tensor::usm_ndarray &vectorY,
+               const bool transpose,
                const std::vector<sycl::event> &depends);
 
 extern void init_gemv_dispatch_vector(void);
 extern void init_gemv_batch_dispatch_vector(void);
-} // namespace blas
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::blas

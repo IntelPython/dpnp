@@ -36,21 +36,13 @@
 
 #include "types_matrix.hpp"
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace blas
-{
-namespace dot
+namespace dpnp::extensions::blas::dot
 {
 typedef sycl::event (*dot_impl_fn_ptr_t)(sycl::queue &,
                                          const std::int64_t,
-                                         char *,
+                                         const char *,
                                          const std::int64_t,
-                                         char *,
+                                         const char *,
                                          const std::int64_t,
                                          char *,
                                          const std::vector<sycl::event> &);
@@ -61,9 +53,9 @@ namespace py = pybind11;
 template <typename dispatchT>
 std::pair<sycl::event, sycl::event>
     dot_func(sycl::queue &exec_q,
-             dpctl::tensor::usm_ndarray vectorX,
-             dpctl::tensor::usm_ndarray vectorY,
-             dpctl::tensor::usm_ndarray result,
+             const dpctl::tensor::usm_ndarray &vectorX,
+             const dpctl::tensor::usm_ndarray &vectorY,
+             const dpctl::tensor::usm_ndarray &result,
              const std::vector<sycl::event> &depends,
              const dispatchT &dot_dispatch_vector)
 {
@@ -109,22 +101,22 @@ std::pair<sycl::event, sycl::event>
             "USM allocations are not compatible with the execution queue.");
     }
 
-    size_t src_nelems = 1;
+    const int src_nelems = 1;
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(result);
     dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(result,
                                                                src_nelems);
 
-    py::ssize_t x_size = vectorX.get_size();
-    py::ssize_t y_size = vectorY.get_size();
+    const py::ssize_t x_size = vectorX.get_size();
+    const py::ssize_t y_size = vectorY.get_size();
     const std::int64_t n = x_size;
     if (x_size != y_size) {
         throw py::value_error("The size of the first input array must be "
                               "equal to the size of the second input array.");
     }
 
-    int vectorX_typenum = vectorX.get_typenum();
-    int vectorY_typenum = vectorY.get_typenum();
-    int result_typenum = result.get_typenum();
+    const int vectorX_typenum = vectorX.get_typenum();
+    const int vectorY_typenum = vectorY.get_typenum();
+    const int result_typenum = result.get_typenum();
 
     if (result_typenum != vectorX_typenum || result_typenum != vectorY_typenum)
     {
@@ -132,7 +124,7 @@ std::pair<sycl::event, sycl::event>
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int type_id = array_types.typenum_to_lookup_id(vectorX_typenum);
+    const int type_id = array_types.typenum_to_lookup_id(vectorX_typenum);
 
     dot_impl_fn_ptr_t dot_fn = dot_dispatch_vector[type_id];
     if (dot_fn == nullptr) {
@@ -144,8 +136,8 @@ std::pair<sycl::event, sycl::event>
     char *y_typeless_ptr = vectorY.get_data();
     char *r_typeless_ptr = result.get_data();
 
-    std::vector<py::ssize_t> x_stride = vectorX.get_strides_vector();
-    std::vector<py::ssize_t> y_stride = vectorY.get_strides_vector();
+    const std::vector<py::ssize_t> x_stride = vectorX.get_strides_vector();
+    const std::vector<py::ssize_t> y_stride = vectorY.get_strides_vector();
     const int x_elemsize = vectorX.get_elemsize();
     const int y_elemsize = vectorY.get_elemsize();
 
@@ -184,8 +176,4 @@ void init_dot_dispatch_vector(dispatchT dot_dispatch_vector[])
         contig;
     contig.populate_dispatch_vector(dot_dispatch_vector);
 }
-} // namespace dot
-} // namespace blas
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::blas::dot
