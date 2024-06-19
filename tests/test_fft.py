@@ -102,11 +102,8 @@ class TestFft:
         a = xp.array(3)
         assert_raises(ValueError, xp.fft.fft, a)
 
-        # axis is not int
-        a = xp.ones((4, 3))
-        assert_raises(TypeError, xp.fft.fft, a, axis=(0, 1))
-
         # n is not int
+        a = xp.ones((4, 3))
         if xp == dpnp:
             # dpnp and vanilla NumPy return TypeError
             # Intel® NumPy returns SystemError for Python 3.10 and 3.11

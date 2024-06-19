@@ -41,6 +41,7 @@ import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import numpy
+from numpy.core.numeric import normalize_axis_index
 
 import dpnp
 import dpnp.backend.extensions.fft._fft_impl as fi
@@ -164,7 +165,6 @@ def _truncate_or_pad(a, shape, axes):
 def dpnp_fft(a, is_forward, n=None, axis=-1, norm=None):
     """Calculates 1-D FFT of the input array along axis"""
 
-    dpnp.check_supported_arrays_type(a)
     _check_norm(norm)
     if not dpnp.issubdtype(a.dtype, dpnp.complexfloating):
         if a.dtype == dpnp.float32:
@@ -175,9 +175,8 @@ def dpnp_fft(a, is_forward, n=None, axis=-1, norm=None):
 
     if a.ndim == 0:
         raise ValueError("Input array must be at least 1D")
-    if not isinstance(axis, int):
-        raise TypeError("Axis should be an integer")
 
+    axis = normalize_axis_index(axis, a.ndim)
     if n is None:
         n = a.shape[axis]
     if not isinstance(n, int):
