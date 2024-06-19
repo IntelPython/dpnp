@@ -239,7 +239,6 @@ class TestNormal:
         [
             dpnp.float16,
             float,
-            dpnp.integer,
             dpnp.int64,
             dpnp.int32,
             dpnp.int,
@@ -253,7 +252,6 @@ class TestNormal:
         ids=[
             "dpnp.float16",
             "float",
-            "dpnp.integer",
             "dpnp.int64",
             "dpnp.int32",
             "dpnp.int",
@@ -366,8 +364,8 @@ class TestRand:
 class TestRandInt:
     @pytest.mark.parametrize(
         "dtype",
-        [int, dpnp.int32, dpnp.int, dpnp.integer],
-        ids=["int", "dpnp.int32", "dpnp.int", "dpnp.integer"],
+        [int, dpnp.int32, dpnp.int],
+        ids=["int", "dpnp.int32", "dpnp.int"],
     )
     @pytest.mark.parametrize(
         "usm_type",
@@ -379,7 +377,7 @@ class TestRandInt:
         low = 1
         high = 10
 
-        if dtype in (dpnp.int, dpnp.integer) and dtype != dpnp.dtype("int32"):
+        if dtype == dpnp.int and dtype != dpnp.dtype("int32"):
             pytest.skip(
                 "dtype isn't alias on dpnp.int32 on the target OS, so there will be a fallback"
             )
@@ -566,11 +564,10 @@ class TestRandInt:
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype",
-        [dpnp.int64, dpnp.int, dpnp.integer, dpnp.bool, dpnp.bool_, bool],
+        [dpnp.int64, dpnp.int, dpnp.bool, dpnp.bool_, bool],
         ids=[
             "dpnp.int64",
             "dpnp.int",
-            "dpnp.integer",
             "dpnp.bool",
             "dpnp.bool_",
             "bool",
@@ -582,7 +579,7 @@ class TestRandInt:
         high = 37 if not dtype in {dpnp.bool_, bool} else 2
         size = (3, 2, 5)
 
-        if dtype in (dpnp.int, dpnp.integer) and dtype == dpnp.dtype("int32"):
+        if dtype == dpnp.int and dtype == dpnp.dtype("int32"):
             pytest.skip(
                 "dtype is alias on dpnp.int32 on the target OS, so no fallback here"
             )
@@ -1157,7 +1154,6 @@ class TestUniform:
         [
             dpnp.float16,
             float,
-            dpnp.integer,
             dpnp.int64,
             dpnp.int,
             int,
@@ -1170,7 +1166,6 @@ class TestUniform:
         ids=[
             "dpnp.float16",
             "float",
-            "dpnp.integer",
             "dpnp.int64",
             "dpnp.int",
             "int",
@@ -1182,7 +1177,7 @@ class TestUniform:
         ],
     )
     def test_invalid_dtype(self, dtype):
-        if dtype in (dpnp.int, dpnp.integer) and dtype == dpnp.dtype("int32"):
+        if dtype == dpnp.int and dtype == dpnp.dtype("int32"):
             pytest.skip(
                 "dtype is alias on dpnp.int32 on the target OS, so no error here"
             )

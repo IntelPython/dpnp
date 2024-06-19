@@ -516,6 +516,7 @@ def test_vander_seq(sequence):
     assert_allclose(vander_func(numpy, sequence), vander_func(dpnp, sequence))
 
 
+@pytest.mark.usefixtures("suppress_complex_warning")
 @pytest.mark.parametrize(
     "shape",
     [(), 0, (0,), (2, 0, 3), (3, 2)],
@@ -531,6 +532,7 @@ def test_full(shape, fill_value, dtype, order):
     assert_array_equal(func(numpy), func(dpnp))
 
 
+@pytest.mark.usefixtures("suppress_complex_warning")
 @pytest.mark.parametrize(
     "array",
     [[], 0, [1, 2, 3], [[1, 2], [3, 4]]],
@@ -709,9 +711,7 @@ def test_linspace(start, stop, num, dtype, retstep):
     if numpy.issubdtype(dtype, dpnp.integer):
         assert_allclose(res_np, res_dp, rtol=1)
     else:
-        if dtype is None and not has_support_aspect64():
-            dtype = dpnp.float32
-        assert_allclose(res_np, res_dp, rtol=1e-06, atol=dpnp.finfo(dtype).eps)
+        assert_dtype_allclose(res_dp, res_np)
 
 
 @pytest.mark.parametrize(

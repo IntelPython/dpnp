@@ -23,11 +23,53 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+set(_elementwise_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/abs.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/acos.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/acosh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/add.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/asin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/asinh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/atan.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/atan2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/atanh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cbrt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ceil.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/conj.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cos.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cosh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/div.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/exp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/exp2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/expm1.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/floor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/hypot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ln.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/log10.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/log1p.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/log2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mul.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/pow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/rint.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sinh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sqr.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sqrt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sub.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tan.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tanh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/trunc.cpp
+)
+
+set(_module_src
+    # TODO: remove sources from `elementwise_functions` folder
+    ${CMAKE_CURRENT_SOURCE_DIR}/../elementwise_functions/elementwise_functions_type_utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../elementwise_functions/simplify_iteration_space.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/vm_py.cpp
+    ${_elementwise_sources}
+)
 
 set(python_module_name _vm_impl)
-set(_module_src
-    ${CMAKE_CURRENT_SOURCE_DIR}/vm_py.cpp
-)
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})

@@ -846,6 +846,7 @@ def test_asfarray(dtype, data):
     assert_array_equal(result, expected)
 
 
+@pytest.mark.usefixtures("suppress_complex_warning")
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 @pytest.mark.parametrize("data", [[1.0, 2.0, 3.0]], ids=["[1., 2., 3.]"])
 @pytest.mark.parametrize("data_dtype", get_all_dtypes(no_none=True))

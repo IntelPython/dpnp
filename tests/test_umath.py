@@ -398,6 +398,7 @@ class TestSquare:
 
 
 class TestReciprocal:
+    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_reciprocal(self, dtype):
         np_array, expected = _get_numpy_arrays_1in_1out(

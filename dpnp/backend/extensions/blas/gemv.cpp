@@ -35,13 +35,7 @@
 
 #include "dpnp_utils.hpp"
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace blas
+namespace dpnp::extensions::blas
 {
 namespace mkl_blas = oneapi::mkl::blas;
 namespace py = pybind11;
@@ -51,13 +45,13 @@ typedef sycl::event (*gemv_impl_fn_ptr_t)(sycl::queue &,
                                           oneapi::mkl::transpose,
                                           const std::int64_t,
                                           const std::int64_t,
-                                          char *,
+                                          const char *,
+                                          const std::int64_t,
+                                          const char *,
                                           const std::int64_t,
                                           char *,
                                           const std::int64_t,
-                                          char *,
-                                          const std::int64_t,
-                                          bool,
+                                          const bool,
                                           const std::vector<sycl::event> &);
 
 static gemv_impl_fn_ptr_t gemv_dispatch_vector[dpctl_td_ns::num_types];
@@ -67,19 +61,19 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
                              oneapi::mkl::transpose transA,
                              const std::int64_t m,
                              const std::int64_t n,
-                             char *matrixA,
+                             const char *matrixA,
                              const std::int64_t lda,
-                             char *vectorX,
+                             const char *vectorX,
                              const std::int64_t incx,
                              char *vectorY,
                              const std::int64_t incy,
-                             bool is_row_major,
+                             const bool is_row_major,
                              const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
 
-    T *a = reinterpret_cast<T *>(matrixA);
-    T *x = reinterpret_cast<T *>(vectorX);
+    const T *a = reinterpret_cast<const T *>(matrixA);
+    const T *x = reinterpret_cast<const T *>(vectorX);
     T *y = reinterpret_cast<T *>(vectorY);
 
     std::stringstream error_msg;
@@ -88,9 +82,10 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
     sycl::event gemv_event;
     try {
         auto gemv_func =
-            [&](sycl::queue &q, oneapi::mkl::transpose transA, std::int64_t m,
-                std::int64_t n, T alpha, const T *a, std::int64_t lda,
-                const T *x, std::int64_t incx, T beta, T *y, std::int64_t incy,
+            [&](sycl::queue &q, oneapi::mkl::transpose transA,
+                const std::int64_t m, const std::int64_t n, T alpha, const T *a,
+                const std::int64_t lda, const T *x, const std::int64_t incx,
+                T beta, T *y, const std::int64_t incy,
                 const std::vector<sycl::event> &deps) -> sycl::event {
             if (is_row_major) {
                 return mkl_blas::row_major::gemv(q, transA, m, n, alpha, a, lda,
@@ -141,10 +136,10 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
 
 std::pair<sycl::event, sycl::event>
     gemv(sycl::queue &exec_q,
-         dpctl::tensor::usm_ndarray matrixA,
-         dpctl::tensor::usm_ndarray vectorX,
-         dpctl::tensor::usm_ndarray vectorY,
-         bool transpose,
+         const dpctl::tensor::usm_ndarray &matrixA,
+         const dpctl::tensor::usm_ndarray &vectorX,
+         const dpctl::tensor::usm_ndarray &vectorY,
+         const bool transpose,
          const std::vector<sycl::event> &depends)
 {
     const int matrixA_nd = matrixA.get_ndim();
@@ -173,8 +168,8 @@ std::pair<sycl::event, sycl::event>
             "USM allocations are not compatible with the execution queue.");
     }
 
-    bool is_matrixA_f_contig = matrixA.is_f_contiguous();
-    bool is_matrixA_c_contig = matrixA.is_c_contiguous();
+    const bool is_matrixA_f_contig = matrixA.is_f_contiguous();
+    const bool is_matrixA_c_contig = matrixA.is_c_contiguous();
 
     if (!is_matrixA_f_contig and !is_matrixA_c_contig) {
         throw py::value_error(
@@ -194,7 +189,7 @@ std::pair<sycl::event, sycl::event>
     const std::int64_t lda = is_row_major ? n : m;
 
     oneapi::mkl::transpose transA;
-    size_t src_nelems;
+    std::size_t src_nelems;
     if (transpose) {
         transA = oneapi::mkl::transpose::T;
         src_nelems = n;
@@ -223,9 +218,9 @@ std::pair<sycl::event, sycl::event>
     dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(vectorY,
                                                                src_nelems);
 
-    int matrixA_typenum = matrixA.get_typenum();
-    int vectorX_typenum = vectorX.get_typenum();
-    int vectorY_typenum = vectorY.get_typenum();
+    const int matrixA_typenum = matrixA.get_typenum();
+    const int vectorX_typenum = vectorX.get_typenum();
+    const int vectorY_typenum = vectorY.get_typenum();
 
     if (matrixA_typenum != vectorX_typenum ||
         matrixA_typenum != vectorY_typenum) {
@@ -233,7 +228,7 @@ std::pair<sycl::event, sycl::event>
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int type_id = array_types.typenum_to_lookup_id(matrixA_typenum);
+    const int type_id = array_types.typenum_to_lookup_id(matrixA_typenum);
 
     gemv_impl_fn_ptr_t gemv_fn = gemv_dispatch_vector[type_id];
     if (gemv_fn == nullptr) {
@@ -245,8 +240,8 @@ std::pair<sycl::event, sycl::event>
     char *x_typeless_ptr = vectorX.get_data();
     char *y_typeless_ptr = vectorY.get_data();
 
-    std::vector<py::ssize_t> x_stride = vectorX.get_strides_vector();
-    std::vector<py::ssize_t> y_stride = vectorY.get_strides_vector();
+    const std::vector<py::ssize_t> x_stride = vectorX.get_strides_vector();
+    const std::vector<py::ssize_t> y_stride = vectorY.get_strides_vector();
     const int x_elemsize = vectorX.get_elemsize();
     const int y_elemsize = vectorY.get_elemsize();
     const std::int64_t incx = x_stride[0];
@@ -289,7 +284,4 @@ void init_gemv_dispatch_vector(void)
         contig;
     contig.populate_dispatch_vector(gemv_dispatch_vector);
 }
-} // namespace blas
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::blas

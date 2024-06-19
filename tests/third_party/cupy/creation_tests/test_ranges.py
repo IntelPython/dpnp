@@ -176,9 +176,9 @@ class TestRanges(unittest.TestCase):
     def test_linspace_float_underflow(self, xp):
         # find minimum subnormal number
         dtype = cupy.default_float_type()
-        x = xp.finfo(dtype).min
-        while x / 2 > 0:
-            x /= 2
+        # use .tiny instead of .min and while to get
+        # minimum subnormal number directly and avoid RuntimeWarning
+        x = xp.finfo(dtype).tiny
         return xp.linspace(0.0, x, 10, dtype=dtype)
 
     @testing.with_requires("numpy>=1.16")

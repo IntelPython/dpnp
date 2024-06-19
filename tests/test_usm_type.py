@@ -199,7 +199,7 @@ def test_array_creation_from_2d_array(func, args, usm_type_x, usm_type_y):
             "fromfunction", [(lambda i, j: i + j), (3, 3)], {"dtype": dp.int32}
         ),
         pytest.param("fromiter", [[1, 2, 3, 4]], {"dtype": dp.int64}),
-        pytest.param("fromstring", ["1, 2"], {"dtype": int, "sep": " "}),
+        pytest.param("fromstring", ["1 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
         pytest.param("geomspace", [1, 4, 8], {}),
@@ -538,6 +538,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
+        pytest.param("fabs", [-1.2, 1.2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1, 2, 4, 7, 11, 16]),
         pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),

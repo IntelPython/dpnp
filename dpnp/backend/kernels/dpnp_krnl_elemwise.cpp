@@ -462,15 +462,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_FABS][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_fabs_c_default<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_FABS_EXT][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_fabs_c_ext<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_FABS_EXT][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_fabs_c_ext<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_FABS_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_fabs_c_ext<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_FABS_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_fabs_c_ext<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_FLOOR][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_floor_c_default<int32_t, double>};
     fmap[DPNPFuncName::DPNP_FN_FLOOR][eft_LNG][eft_LNG] = {

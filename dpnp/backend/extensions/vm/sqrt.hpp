@@ -25,55 +25,11 @@
 
 #pragma once
 
-#include <CL/sycl.hpp>
+#include <pybind11/pybind11.h>
 
-#include "common.hpp"
-#include "types_matrix.hpp"
+namespace py = pybind11;
 
-namespace dpnp
+namespace dpnp::extensions::vm
 {
-namespace backend
-{
-namespace ext
-{
-namespace vm
-{
-template <typename T>
-sycl::event sqrt_contig_impl(sycl::queue exec_q,
-                             const std::int64_t n,
-                             const char *in_a,
-                             char *out_y,
-                             const std::vector<sycl::event> &depends)
-{
-    type_utils::validate_type_for_device<T>(exec_q);
-
-    const T *a = reinterpret_cast<const T *>(in_a);
-    using resTy = typename types::SqrtOutputType<T>::value_type;
-    resTy *y = reinterpret_cast<resTy *>(out_y);
-
-    return mkl_vm::sqrt(exec_q,
-                        n, // number of elements to be calculated
-                        a, // pointer `a` containing input vector of size n
-                        y, // pointer `y` to the output vector of size n
-                        depends);
-}
-
-template <typename fnT, typename T>
-struct SqrtContigFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_same_v<
-                          typename types::SqrtOutputType<T>::value_type, void>)
-        {
-            return nullptr;
-        }
-        else {
-            return sqrt_contig_impl<T>;
-        }
-    }
-};
-} // namespace vm
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+void init_sqrt(py::module_ m);
+} // namespace dpnp::extensions::vm

@@ -25,58 +25,11 @@
 
 #pragma once
 
-#include <CL/sycl.hpp>
+#include <pybind11/pybind11.h>
 
-#include "common.hpp"
-#include "types_matrix.hpp"
+namespace py = pybind11;
 
-namespace dpnp
+namespace dpnp::extensions::vm
 {
-namespace backend
-{
-namespace ext
-{
-namespace vm
-{
-template <typename T>
-sycl::event add_contig_impl(sycl::queue exec_q,
-                            const std::int64_t n,
-                            const char *in_a,
-                            const char *in_b,
-                            char *out_y,
-                            const std::vector<sycl::event> &depends)
-{
-    type_utils::validate_type_for_device<T>(exec_q);
-
-    const T *a = reinterpret_cast<const T *>(in_a);
-    const T *b = reinterpret_cast<const T *>(in_b);
-    using resTy = typename types::AddOutputType<T>::value_type;
-    resTy *y = reinterpret_cast<resTy *>(out_y);
-
-    return mkl_vm::add(exec_q,
-                       n, // number of elements to be calculated
-                       a, // pointer `a` containing 1st input vector of size n
-                       b, // pointer `b` containing 2nd input vector of size n
-                       y, // pointer `y` to the output vector of size n
-                       depends);
-}
-
-template <typename fnT, typename T>
-struct AddContigFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_same_v<
-                          typename types::AddOutputType<T>::value_type, void>)
-        {
-            return nullptr;
-        }
-        else {
-            return add_contig_impl<T>;
-        }
-    }
-};
-} // namespace vm
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+void init_add(py::module_ m);
+} // namespace dpnp::extensions::vm

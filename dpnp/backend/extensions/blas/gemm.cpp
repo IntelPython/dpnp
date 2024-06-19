@@ -35,13 +35,7 @@
 
 #include "dpnp_utils.hpp"
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace blas
+namespace dpnp::extensions::blas
 {
 namespace mkl_blas = oneapi::mkl::blas;
 namespace py = pybind11;
@@ -53,13 +47,13 @@ typedef sycl::event (*gemm_impl_fn_ptr_t)(sycl::queue &,
                                           const std::int64_t,
                                           const std::int64_t,
                                           const std::int64_t,
-                                          char *,
+                                          const char *,
+                                          const std::int64_t,
+                                          const char *,
                                           const std::int64_t,
                                           char *,
                                           const std::int64_t,
-                                          char *,
-                                          const std::int64_t,
-                                          bool,
+                                          const bool,
                                           const std::vector<sycl::event> &);
 
 static gemm_impl_fn_ptr_t gemm_dispatch_table[dpctl_td_ns::num_types]
@@ -72,20 +66,20 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
                              const std::int64_t m,
                              const std::int64_t n,
                              const std::int64_t k,
-                             char *matrixA,
+                             const char *matrixA,
                              const std::int64_t lda,
-                             char *matrixB,
+                             const char *matrixB,
                              const std::int64_t ldb,
                              char *resultC,
                              const std::int64_t ldc,
-                             bool is_row_major,
+                             const bool is_row_major,
                              const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<Tab>(exec_q);
     type_utils::validate_type_for_device<Tc>(exec_q);
 
-    Tab *a = reinterpret_cast<Tab *>(matrixA);
-    Tab *b = reinterpret_cast<Tab *>(matrixB);
+    const Tab *a = reinterpret_cast<const Tab *>(matrixA);
+    const Tab *b = reinterpret_cast<const Tab *>(matrixB);
     Tc *res = reinterpret_cast<Tc *>(resultC);
 
     std::stringstream error_msg;
@@ -95,10 +89,10 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
     try {
         auto gemm_func =
             [&](sycl::queue &q, oneapi::mkl::transpose transA,
-                oneapi::mkl::transpose transB, std::int64_t m, std::int64_t n,
-                std::int64_t k, Tab alpha, const Tab *a, std::int64_t lda,
-                const Tab *b, std::int64_t ldb, Tab beta, Tc *c,
-                std::int64_t ldc,
+                oneapi::mkl::transpose transB, const std::int64_t m,
+                const std::int64_t n, const std::int64_t k, Tab alpha,
+                const Tab *a, const std::int64_t lda, const Tab *b,
+                const std::int64_t ldb, Tab beta, Tc *c, const std::int64_t ldc,
                 const std::vector<sycl::event> &deps) -> sycl::event {
             if (is_row_major) {
                 return mkl_blas::row_major::gemm(q, transA, transB, m, n, k,
@@ -152,9 +146,9 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
 
 std::tuple<sycl::event, sycl::event, bool>
     gemm(sycl::queue &exec_q,
-         dpctl::tensor::usm_ndarray matrixA,
-         dpctl::tensor::usm_ndarray matrixB,
-         dpctl::tensor::usm_ndarray resultC,
+         const dpctl::tensor::usm_ndarray &matrixA,
+         const dpctl::tensor::usm_ndarray &matrixB,
+         const dpctl::tensor::usm_ndarray &resultC,
          const std::vector<sycl::event> &depends)
 {
     const int matrixA_nd = matrixA.get_ndim();
@@ -204,17 +198,17 @@ std::tuple<sycl::event, sycl::event, bool>
                               "the number of columns in result array.");
     }
 
-    size_t src_nelems = m * n;
+    const std::size_t src_nelems = m * n;
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(resultC);
     dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(resultC,
                                                                src_nelems);
 
-    bool is_matrixA_f_contig = matrixA.is_f_contiguous();
-    bool is_matrixB_f_contig = matrixB.is_f_contiguous();
-    bool is_resultC_f_contig = resultC.is_f_contiguous();
-    bool is_matrixA_c_contig = matrixA.is_c_contiguous();
-    bool is_matrixB_c_contig = matrixB.is_c_contiguous();
-    bool is_resultC_c_contig = resultC.is_c_contiguous();
+    const bool is_matrixA_f_contig = matrixA.is_f_contiguous();
+    const bool is_matrixB_f_contig = matrixB.is_f_contiguous();
+    const bool is_resultC_f_contig = resultC.is_f_contiguous();
+    const bool is_matrixA_c_contig = matrixA.is_c_contiguous();
+    const bool is_matrixB_c_contig = matrixB.is_c_contiguous();
+    const bool is_resultC_c_contig = resultC.is_c_contiguous();
 
     if (!is_matrixA_f_contig and !is_matrixA_c_contig) {
         throw py::value_error(
@@ -267,17 +261,19 @@ std::tuple<sycl::event, sycl::event, bool>
     }
     const std::int64_t ldc = is_row_major ? n : m;
 
-    int matrixA_typenum = matrixA.get_typenum();
-    int matrixB_typenum = matrixB.get_typenum();
-    int resultC_typenum = resultC.get_typenum();
+    const int matrixA_typenum = matrixA.get_typenum();
+    const int matrixB_typenum = matrixB.get_typenum();
+    const int resultC_typenum = resultC.get_typenum();
 
     if (matrixA_typenum != matrixB_typenum) {
         throw py::value_error("matrixA and matrixB must be of the same type.");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int matrixAB_type_id = array_types.typenum_to_lookup_id(matrixA_typenum);
-    int resultC_type_id = array_types.typenum_to_lookup_id(resultC_typenum);
+    const int matrixAB_type_id =
+        array_types.typenum_to_lookup_id(matrixA_typenum);
+    const int resultC_type_id =
+        array_types.typenum_to_lookup_id(resultC_typenum);
 
     gemm_impl_fn_ptr_t gemm_fn =
         gemm_dispatch_table[matrixAB_type_id][resultC_type_id];
@@ -286,8 +282,8 @@ std::tuple<sycl::event, sycl::event, bool>
             "Types of input matrices and result matrix are mismatched.");
     }
 
-    char *a_typeless_ptr = matrixA.get_data();
-    char *b_typeless_ptr = matrixB.get_data();
+    const char *a_typeless_ptr = matrixA.get_data();
+    const char *b_typeless_ptr = matrixB.get_data();
     char *r_typeless_ptr = resultC.get_data();
 
     sycl::event gemm_ev = gemm_fn(exec_q, transA, transB, m, n, k,
@@ -321,7 +317,4 @@ void init_gemm_dispatch_table(void)
         contig;
     contig.populate_dispatch_table(gemm_dispatch_table);
 }
-} // namespace blas
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::blas

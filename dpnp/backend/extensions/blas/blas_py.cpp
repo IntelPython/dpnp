@@ -37,17 +37,17 @@
 #include "gemm.hpp"
 #include "gemv.hpp"
 
-namespace blas_ext = dpnp::backend::ext::blas;
+namespace blas_ns = dpnp::extensions::blas;
 namespace py = pybind11;
-namespace dot_ext = blas_ext::dot;
-using dot_ext::dot_impl_fn_ptr_t;
+namespace dot_ns = blas_ns::dot;
+using dot_ns::dot_impl_fn_ptr_t;
 
 // populate dispatch vectors and tables
 void init_dispatch_vectors_tables(void)
 {
-    blas_ext::init_gemm_batch_dispatch_table();
-    blas_ext::init_gemm_dispatch_table();
-    blas_ext::init_gemv_dispatch_vector();
+    blas_ns::init_gemm_batch_dispatch_table();
+    blas_ns::init_gemm_dispatch_table();
+    blas_ns::init_gemv_dispatch_vector();
 }
 
 static dot_impl_fn_ptr_t dot_dispatch_vector[dpctl_td_ns::num_types];
@@ -62,14 +62,15 @@ PYBIND11_MODULE(_blas_impl, m)
     using event_vecT = std::vector<sycl::event>;
 
     {
-        dot_ext::init_dot_dispatch_vector<dot_impl_fn_ptr_t,
-                                          blas_ext::DotContigFactory>(
+        dot_ns::init_dot_dispatch_vector<dot_impl_fn_ptr_t,
+                                         blas_ns::DotContigFactory>(
             dot_dispatch_vector);
 
-        auto dot_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
-                             arrayT dst, const event_vecT &depends = {}) {
-            return dot_ext::dot_func(exec_q, src1, src2, dst, depends,
-                                     dot_dispatch_vector);
+        auto dot_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,
+                             const arrayT &src2, const arrayT &dst,
+                             const event_vecT &depends = {}) {
+            return dot_ns::dot_func(exec_q, src1, src2, dst, depends,
+                                    dot_dispatch_vector);
         };
 
         m.def("_dot", dot_pyapi,
@@ -80,14 +81,15 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
-        dot_ext::init_dot_dispatch_vector<dot_impl_fn_ptr_t,
-                                          blas_ext::DotcContigFactory>(
+        dot_ns::init_dot_dispatch_vector<dot_impl_fn_ptr_t,
+                                         blas_ns::DotcContigFactory>(
             dotc_dispatch_vector);
 
-        auto dotc_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
-                              arrayT dst, const event_vecT &depends = {}) {
-            return dot_ext::dot_func(exec_q, src1, src2, dst, depends,
-                                     dotc_dispatch_vector);
+        auto dotc_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,
+                              const arrayT &src2, const arrayT &dst,
+                              const event_vecT &depends = {}) {
+            return dot_ns::dot_func(exec_q, src1, src2, dst, depends,
+                                    dotc_dispatch_vector);
         };
 
         m.def("_dotc", dotc_pyapi,
@@ -99,14 +101,15 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
-        dot_ext::init_dot_dispatch_vector<dot_impl_fn_ptr_t,
-                                          blas_ext::DotuContigFactory>(
+        dot_ns::init_dot_dispatch_vector<dot_impl_fn_ptr_t,
+                                         blas_ns::DotuContigFactory>(
             dotu_dispatch_vector);
 
-        auto dotu_pyapi = [&](sycl::queue exec_q, arrayT src1, arrayT src2,
-                              arrayT dst, const event_vecT &depends = {}) {
-            return dot_ext::dot_func(exec_q, src1, src2, dst, depends,
-                                     dotu_dispatch_vector);
+        auto dotu_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,
+                              const arrayT &src2, const arrayT &dst,
+                              const event_vecT &depends = {}) {
+            return dot_ns::dot_func(exec_q, src1, src2, dst, depends,
+                                    dotu_dispatch_vector);
         };
 
         m.def("_dotu", dotu_pyapi,
@@ -117,7 +120,7 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
-        m.def("_gemm", &blas_ext::gemm,
+        m.def("_gemm", &blas_ns::gemm,
               "Call `gemm` from OneMKL BLAS library to compute "
               "the matrix-matrix product with 2-D matrices.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
@@ -125,7 +128,7 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
-        m.def("_gemm_batch", &blas_ext::gemm_batch,
+        m.def("_gemm_batch", &blas_ns::gemm_batch,
               "Call `gemm_batch` from OneMKL BLAS library to compute "
               "the matrix-matrix product for a batch of 2-D matrices.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("matrixB"),
@@ -133,7 +136,7 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
-        m.def("_gemv", &blas_ext::gemv,
+        m.def("_gemv", &blas_ns::gemv,
               "Call `gemv` from OneMKL BLAS library to compute "
               "the matrix-vector product with a general matrix.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("vectorX"),

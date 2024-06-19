@@ -117,21 +117,19 @@ enum class DPNPFuncName : size_t
     DPNP_FN_DOT,           /**< Used in numpy.dot() impl  */
     DPNP_FN_DOT_EXT, /**< Used in numpy.dot() impl, requires extra parameters */
     DPNP_FN_EDIFF1D, /**< Used in numpy.ediff1d() impl  */
-    DPNP_FN_EDIFF1D_EXT, /**< Used in numpy.ediff1d() impl, requires extra
-                            parameters */
-    DPNP_FN_EIG,         /**< Used in numpy.linalg.eig() impl  */
-    DPNP_FN_EIGVALS,     /**< Used in numpy.linalg.eigvals() impl  */
-    DPNP_FN_ERF,         /**< Used in scipy.special.erf impl  */
-    DPNP_FN_ERF_EXT,     /**< Used in scipy.special.erf impl, requires extra
-                            parameters */
-    DPNP_FN_EYE,         /**< Used in numpy.eye() impl  */
-    DPNP_FN_EXP,         /**< Used in numpy.exp() impl  */
-    DPNP_FN_EXP2,        /**< Used in numpy.exp2() impl  */
-    DPNP_FN_EXPM1,       /**< Used in numpy.expm1() impl  */
-    DPNP_FN_FABS,        /**< Used in numpy.fabs() impl  */
-    DPNP_FN_FABS_EXT, /**< Used in numpy.fabs() impl, requires extra parameters
-                       */
-    DPNP_FN_FFT_FFT,  /**< Used in numpy.fft.fft() impl  */
+    DPNP_FN_EDIFF1D_EXT,   /**< Used in numpy.ediff1d() impl, requires extra
+                              parameters */
+    DPNP_FN_EIG,           /**< Used in numpy.linalg.eig() impl  */
+    DPNP_FN_EIGVALS,       /**< Used in numpy.linalg.eigvals() impl  */
+    DPNP_FN_ERF,           /**< Used in scipy.special.erf impl  */
+    DPNP_FN_ERF_EXT,       /**< Used in scipy.special.erf impl, requires extra
+                              parameters */
+    DPNP_FN_EYE,           /**< Used in numpy.eye() impl  */
+    DPNP_FN_EXP,           /**< Used in numpy.exp() impl  */
+    DPNP_FN_EXP2,          /**< Used in numpy.exp2() impl  */
+    DPNP_FN_EXPM1,         /**< Used in numpy.expm1() impl  */
+    DPNP_FN_FABS,          /**< Used in numpy.fabs() impl  */
+    DPNP_FN_FFT_FFT,       /**< Used in numpy.fft.fft() impl  */
     DPNP_FN_FFT_FFT_EXT,   /**< Used in numpy.fft.fft() impl, requires extra
                               parameters */
     DPNP_FN_FFT_RFFT,      /**< Used in numpy.fft.rfft() impl  */
