@@ -769,11 +769,6 @@ def isneginf(x, out=None):
 
     if out is not None:
         dpnp.check_supported_arrays_type(out)
-        out_dtype = out.dtype
-        if not dpnp.issubdtype(out_dtype, dpnp.bool):
-            raise TypeError(
-                f"Output array data type must be boolean, got {out.dtype}"
-            )
 
     x_dtype = x.dtype
     if dpnp.issubdtype(x_dtype, dpnp.complexfloating):
@@ -845,11 +840,6 @@ def isposinf(x, out=None):
 
     if out is not None:
         dpnp.check_supported_arrays_type(out)
-        out_dtype = out.dtype
-        if not dpnp.issubdtype(out_dtype, dpnp.bool):
-            raise TypeError(
-                f"Output array data type must be boolean, got {out.dtype}"
-            )
 
     x_dtype = x.dtype
     if dpnp.issubdtype(x_dtype, dpnp.complexfloating):
