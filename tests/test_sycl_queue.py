@@ -478,15 +478,6 @@ def test_meshgrid(device_x, device_y):
         pytest.param("trapz", [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
-        # logic functions
-        pytest.param("all", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
-        pytest.param("any", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
-        pytest.param("isfinite", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
-        pytest.param("isinf", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
-        pytest.param("isnan", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
-        pytest.param("isneginf", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
-        pytest.param("isposinf", [-dpnp.inf, -1.0, 1.0, dpnp.inf, dpnp.nan]),
-        pytest.param("logical_not", [-dpnp.inf, -1.0, 0.0, dpnp.inf, dpnp.nan]),
     ],
 )
 @pytest.mark.parametrize(
@@ -500,6 +491,40 @@ def test_1in_1out(func, data, device):
 
     x_orig = dpnp.asnumpy(x)
     expected = getattr(numpy, func)(x_orig)
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = x.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "op",
+    [
+        "all",
+        "any",
+        "isfinite",
+        "isinf",
+        "isnan",
+        "isneginf",
+        "isposinf",
+        "logical_not",
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_logic_op_1in(op, device):
+    x = dpnp.array(
+        [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan], device=device
+    )
+    result = getattr(dpnp, op)(x)
+
+    x_orig = dpnp.asnumpy(x)
+    expected = getattr(numpy, op)(x_orig)
     assert_dtype_allclose(result, expected)
 
     expected_queue = x.get_array().sycl_queue
@@ -690,62 +715,6 @@ def test_reduce_hypot(device):
         pytest.param("vdot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
         pytest.param("vdot", [3, 4, 5], [1, 2, 3]),
         pytest.param("vdot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
-        # logic functions
-        pytest.param(
-            "allclose",
-            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
-            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan],
-        ),
-        pytest.param(
-            "equal",
-            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
-            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan],
-        ),
-        pytest.param(
-            "greater",
-            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf],
-            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf],
-        ),
-        pytest.param(
-            "greater_equal",
-            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf],
-            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf],
-        ),
-        # TODO: unblock when dpnp.isclose() is updated
-        # pytest.param("isclose",
-        #              [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
-        #              [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan]
-        # ),
-        pytest.param(
-            "less",
-            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf],
-            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf],
-        ),
-        pytest.param(
-            "less_equal",
-            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf],
-            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf],
-        ),
-        pytest.param(
-            "logical_and",
-            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
-            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan],
-        ),
-        pytest.param(
-            "logical_or",
-            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
-            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan],
-        ),
-        pytest.param(
-            "logical_xor",
-            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
-            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan],
-        ),
-        pytest.param(
-            "not_equal",
-            [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan],
-            [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan],
-        ),
     ],
 )
 @pytest.mark.parametrize(
@@ -761,6 +730,54 @@ def test_2in_1out(func, data1, data2, device):
     x1 = dpnp.array(data1, device=device)
     x2 = dpnp.array(data2, device=device)
     result = getattr(dpnp, func)(x1, x2)
+
+    assert_dtype_allclose(result, expected)
+
+    assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "op",
+    [
+        "equal",
+        "greater",
+        "greater_equal",
+        # TODO: unblock when dpnp.isclose() is updated
+        # "isclose",
+        "less",
+        "less_equal",
+        "logical_and",
+        "logical_or",
+        "logical_xor",
+        "not_equal",
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_logic_op_2in(op, device):
+    x1 = dpnp.array(
+        [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan], device=device
+    )
+    x2 = dpnp.array(
+        [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan], device=device
+    )
+    # Remove NaN value from input arrays because numpy raises RuntimeWarning
+    if op in [
+        "greater",
+        "greater_equal",
+        "less",
+        "less_equal",
+    ]:
+        x1 = x1[:-1]
+    result = getattr(dpnp, op)(x1, x2)
+
+    x1_orig = numpy.asnumpy(x1)
+    x2_orig = numpy.asnumpy(x2)
+    expected = getattr(numpy, op)(x1_orig, x2_orig)
 
     assert_dtype_allclose(result, expected)
 

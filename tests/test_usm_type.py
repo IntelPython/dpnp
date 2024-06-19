@@ -366,16 +366,6 @@ def test_tril_triu(func, usm_type):
         "isposinf",
         "logical_not",
     ],
-    ids=[
-        "all",
-        "any",
-        "isfinite",
-        "isinf",
-        "isnan",
-        "isneginf",
-        "isposinf",
-        "logical_not",
-    ],
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 def test_coerced_usm_types_logic_op_1in(op, usm_type_x):
@@ -391,17 +381,8 @@ def test_coerced_usm_types_logic_op_1in(op, usm_type_x):
         "equal",
         "greater",
         "greater_equal",
-        "less",
-        "less_equal",
-        "logical_and",
-        "logical_or",
-        "logical_xor",
-        "not_equal",
-    ],
-    ids=[
-        "equal",
-        "greater",
-        "greater_equal",
+        # TODO: unblock when dpnp.isclose() is updated
+        # "isclose",
         "less",
         "less_equal",
         "logical_and",

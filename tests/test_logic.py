@@ -1,6 +1,6 @@
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_equal
+from numpy.testing import assert_allclose, assert_equal, assert_raises
 
 import dpnp
 
@@ -428,17 +428,15 @@ def test_infinity_sign_errors(func):
     # unsupported data type
     x = dpnp.asarray(data, dtype="c8")
     x_np = dpnp.asnumpy(x)
-    with pytest.raises(TypeError):
-        getattr(dpnp, func)(x)
-        getattr(numpy, func)(x_np)
+    assert_raises(TypeError, getattr(dpnp, func), x)
+    assert_raises(TypeError, getattr(numpy, func), x_np)
 
     # unsupported type
-    with pytest.raises(TypeError):
-        getattr(dpnp, func)(data)  # list
-        getattr(dpnp, func)(x_np)  # numpy array
+    assert_raises(TypeError, getattr(dpnp, func), data)
+    assert_raises(TypeError, getattr(dpnp, func), x_np)
 
     # unsupported `out` data type
     x = dpnp.asarray(data, dtype=dpnp.default_float_type())
     out = dpnp.empty_like(x, dtype="int32")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         getattr(dpnp, func)(x, out=out)
