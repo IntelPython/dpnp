@@ -92,6 +92,8 @@ def _fft(a, norm, is_forward, hev_list, dev_list, axes=None):
         dsc.number_of_transforms = numpy.prod(a.shape[0])
     dsc.commit(a.sycl_queue)
 
+    # TODO: replace with dpnp.empty_like when its bug is fixed
+    # and it returns arrays with the same stride as input array
     res = dpt.usm_ndarray(
         a.shape,
         dtype=a.dtype,
