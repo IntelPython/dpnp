@@ -121,7 +121,7 @@ def fft(a, n=None, axis=-1, norm=None):
         Axis over which to compute the FFT. If not given, the last axis is
         used. Default: ``-1``.
     norm : {None, "backward", "ortho", "forward"}, optional
-        Normalization mode (see :obj:`numpy.fft`).
+        Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option "backward".
@@ -135,7 +135,7 @@ def fft(a, n=None, axis=-1, norm=None):
 
     See Also
     --------
-    :obj:`numpy.fft` : For definition of the DFT and conventions used.
+    :obj:`dpnp.fft` : For definition of the DFT and conventions used.
     :obj:`dpnp.fft.ifft` : The inverse of :obj:`dpnp.fft.fft`.
     :obj:`dpnp.fft.fft2` : The two-dimensional FFT.
     :obj:`dpnp.fft.fftn` : The `n`-dimensional FFT.
@@ -382,7 +382,7 @@ def ifft(a, n=None, axis=-1, norm=None):
         Axis over which to compute the inverse FFT. If not given, the last
         axis is used. Default: ``-1``.
     norm : {"backward", "ortho", "forward"}, optional
-        Normalization mode (see :obj:`numpy.fft`).
+        Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option "backward".
@@ -396,7 +396,7 @@ def ifft(a, n=None, axis=-1, norm=None):
 
     See Also
     --------
-    :obj:`numpy.fft` : For definition of the DFT and conventions used.
+    :obj:`dpnp.fft` : For definition of the DFT and conventions used.
     :obj:`dpnp.fft.fft` : The one-dimensional (forward) FFT,
                           of which :obj:`dpnp.fft.ifft` is the inverse.
     :obj:`dpnp.fft.ifft2` : The two-dimensional inverse FFT.
