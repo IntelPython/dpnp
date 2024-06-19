@@ -187,17 +187,20 @@ static sycl::event dpnp_allclose(sycl::queue &q,
                     continue;
                 }
                 else if (array1[i] ==
-                         -std::numeric_limits<_DataType1>::infinity()) {
+                         -std::numeric_limits<_DataType1>::infinity())
+                {
                     partial &= (array1[i] == array2[i]);
                     continue;
                 }
                 else if (array2[i] ==
-                         std::numeric_limits<_DataType2>::infinity()) {
+                         std::numeric_limits<_DataType2>::infinity())
+                {
                     partial &= (array1[i] == array2[i]);
                     continue;
                 }
                 else if (array2[i] ==
-                         -std::numeric_limits<_DataType2>::infinity()) {
+                         -std::numeric_limits<_DataType2>::infinity())
+                {
                     partial &= (array1[i] == array2[i]);
                     continue;
                 }

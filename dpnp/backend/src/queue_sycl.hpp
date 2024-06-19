@@ -27,10 +27,10 @@
 #ifndef QUEUE_SYCL_H // Cython compatibility
 #define QUEUE_SYCL_H
 
-//#pragma clang diagnostic push
-//#pragma clang diagnostic ignored "-Wpass-failed"
+// #pragma clang diagnostic push
+// #pragma clang diagnostic ignored "-Wpass-failed"
 #include <sycl/sycl.hpp>
-//#pragma clang diagnostic pop
+// #pragma clang diagnostic pop
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"

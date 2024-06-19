@@ -108,7 +108,8 @@ void *get_backend_function_name(const char *func_name, const char *type_name)
     /** of coerce it will be converted into std::map later */
     if (!strncmp(func_name, supported_func_name, strlen(supported_func_name))) {
         if (!strncmp(type_name, supported_type1_name,
-                     strlen(supported_type1_name))) {
+                     strlen(supported_type1_name)))
+        {
             return reinterpret_cast<void *>(
                 dpnp_dot_default_c<double, double, double>);
         }

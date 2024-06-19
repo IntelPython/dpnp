@@ -968,7 +968,8 @@ DPCTLSyclEventRef dpnp_nanvar_c(DPCTLSyclQueueRef q_ref,
     DPCTLSyclEventRef event_ref = nullptr;
 
     if ((array1_in == nullptr) || (mask_arr1 == nullptr) ||
-        (result1 == nullptr)) {
+        (result1 == nullptr))
+    {
         return event_ref;
     }
 

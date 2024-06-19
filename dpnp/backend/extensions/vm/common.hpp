@@ -255,7 +255,8 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
         fnT get()                                                              \
         {                                                                      \
             if constexpr (std::is_same_v<typename OutputType<T>::value_type,   \
-                                         void>) {                              \
+                                         void>)                                \
+            {                                                                  \
                 return nullptr;                                                \
             }                                                                  \
             else {                                                             \

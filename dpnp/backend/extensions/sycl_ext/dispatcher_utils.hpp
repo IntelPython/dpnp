@@ -330,10 +330,7 @@ struct elements_count
 template <typename T>
 struct elements_count<std::tuple<T>>
 {
-    static constexpr int count()
-    {
-        return std::tuple_size_v<T>;
-    }
+    static constexpr int count() { return std::tuple_size_v<T>; }
 };
 
 template <typename T, typename... Axis>
@@ -354,10 +351,7 @@ struct get_linear_id
 template <typename T>
 struct get_linear_id<std::tuple<T>>
 {
-    static int get(const int *data)
-    {
-        return data[0];
-    }
+    static int get(const int *data) { return data[0]; }
 };
 
 template <typename T, typename... Axis>

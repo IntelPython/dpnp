@@ -69,15 +69,9 @@ public:
 
     DPNP_USM_iterator() = delete;
 
-    inline reference operator*() const
-    {
-        return *ptr();
-    }
+    inline reference operator*() const { return *ptr(); }
 
-    inline pointer operator->() const
-    {
-        return ptr();
-    }
+    inline pointer operator->() const { return ptr(); }
 
     /// prefix increment
     inline DPNP_USM_iterator &operator++()
@@ -116,10 +110,7 @@ public:
     // TODO need more operators
 
     // Random access iterator requirements
-    inline reference operator[](size_type __n) const
-    {
-        return *ptr(__n);
-    }
+    inline reference operator[](size_type __n) const { return *ptr(__n); }
 
     inline difference_type operator-(const DPNP_USM_iterator &__rhs) const
     {
@@ -151,10 +142,7 @@ public:
     }
 
 private:
-    inline pointer ptr() const
-    {
-        return ptr(iter_id);
-    }
+    inline pointer ptr() const { return ptr(iter_id); }
 
     inline pointer ptr(size_type iteration_id) const
     {
@@ -163,7 +151,8 @@ private:
         if (iteration_shape_size > 0) {
             long reminder = iteration_id;
             for (size_t it = 0; it < static_cast<size_t>(iteration_shape_size);
-                 ++it) {
+                 ++it)
+            {
                 const size_type axis_val = iteration_shape_strides[it];
                 size_type xyz_id = reminder / axis_val;
                 offset += (xyz_id * axes_shape_strides[it]);
@@ -275,16 +264,10 @@ public:
 
     DPNPC_id() = delete;
 
-    ~DPNPC_id()
-    {
-        free_memory();
-    }
+    ~DPNPC_id() { free_memory(); }
 
     /// this function return number of elements in output
-    inline size_type get_output_size() const
-    {
-        return output_size;
-    }
+    inline size_type get_output_size() const { return output_size; }
 
     inline void broadcast_to_shape(const size_type *__shape,
                                    const size_type __shape_size)
@@ -371,10 +354,7 @@ public:
      *
      * @param [in]  __axis    Axis in a shape of input array.
      */
-    inline void set_axis(shape_elem_type __axis)
-    {
-        set_axes({__axis});
-    }
+    inline void set_axis(shape_elem_type __axis) { set_axes({__axis}); }
 
     inline void set_axes(const shape_elem_type *__axes, const size_t axes_ndim)
     {
@@ -458,7 +438,8 @@ public:
             axes_shape_strides = reinterpret_cast<size_type *>(
                 dpnp_memory_alloc_c(queue_ref, iteration_shape_size_in_bytes));
             for (size_t i = 0; i < static_cast<size_t>(iteration_shape_size);
-                 ++i) {
+                 ++i)
+            {
                 axes_shape_strides[i] = input_shape_strides[axes[i]];
             }
         }
@@ -603,7 +584,8 @@ private:
                 size_type *broadcast_axes_end =
                     broadcast_axes + broadcast_axes_size;
                 if (std::find(broadcast_axes, broadcast_axes_end, orit) ==
-                    broadcast_axes_end) {
+                    broadcast_axes_end)
+                {
                     const size_type output_xyz_id = get_xyz_id_by_id_inkernel(
                         output_global_id, output_shape_strides,
                         output_shape_size, orit);
@@ -617,10 +599,7 @@ private:
     }
 
     /// this function is designed for SYCL environment execution
-    size_type get_iteration_size() const
-    {
-        return iteration_size;
-    }
+    size_type get_iteration_size() const { return iteration_size; }
 
     void free_axes_memory()
     {

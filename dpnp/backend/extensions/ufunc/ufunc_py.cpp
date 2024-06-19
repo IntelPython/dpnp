@@ -30,7 +30,4 @@
 namespace py = pybind11;
 namespace ufunc_ns = dpnp::extensions::ufunc;
 
-PYBIND11_MODULE(_ufunc_impl, m)
-{
-    ufunc_ns::init_elementwise_functions(m);
-}
+PYBIND11_MODULE(_ufunc_impl, m) { ufunc_ns::init_elementwise_functions(m); }

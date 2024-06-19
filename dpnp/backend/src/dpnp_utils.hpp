@@ -409,7 +409,8 @@ static inline std::vector<shape_elem_type>
 
         if (!__allow_duplicate) {
             if (std::find(result.begin(), result.end(), positive_axis) !=
-                result.end()) { // find axis duplication
+                result.end())
+            { // find axis duplication
                 goto err;
             }
         }

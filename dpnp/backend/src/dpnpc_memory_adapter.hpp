@@ -137,7 +137,8 @@ public:
                 return true;
             }
             else if (target_no_queue &&
-                     src_ptr_type == sycl::usm::alloc::device) {
+                     src_ptr_type == sycl::usm::alloc::device)
+            {
                 return true;
             }
         }

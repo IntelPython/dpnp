@@ -358,7 +358,8 @@ struct GemmBatchContigFactory
     fnT get()
     {
         if constexpr (types::GemmBatchTypePairSupportFactory<Tab,
-                                                             Tc>::is_defined) {
+                                                             Tc>::is_defined)
+        {
             return gemm_batch_impl<Tab, Tc>;
         }
         else {
