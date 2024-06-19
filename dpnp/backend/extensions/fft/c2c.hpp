@@ -61,6 +61,8 @@ template <mkl_dft::precision prec>
 class ComplexDescriptorWrapper
 {
 public:
+    using descr_type = mkl_dft::descriptor<prec, mkl_dft::domain::COMPLEX>;
+
     ComplexDescriptorWrapper(std::int64_t n) : descr_(n), queue_ptr_{} {}
     ComplexDescriptorWrapper(std::vector<std::int64_t> dimensions)
         : descr_(dimensions), queue_ptr_{}
@@ -82,10 +84,7 @@ public:
         queue_ptr_ = std::make_unique<sycl::queue>(q);
     }
 
-    mkl_dft::descriptor<prec, mkl_dft::domain::COMPLEX> &get_descriptor()
-    {
-        return descr_;
-    }
+    descr_type &get_descriptor() { return descr_; }
 
     const sycl::queue &get_queue() const
     {
@@ -120,7 +119,7 @@ public:
     }
 
     template <typename valT = std::int64_t>
-    void set_number_of_transforms(valT num)
+    void set_number_of_transforms(const valT num)
     {
         descr_.set_value(mkl_dft::config_param::NUMBER_OF_TRANSFORMS, num);
     }
@@ -129,7 +128,7 @@ public:
     template <typename valT = std::vector<std::int64_t>>
     valT get_fwd_strides()
     {
-        size_t dim = get_dim();
+        const typename valT::value_type dim = get_dim();
 
         valT fwd_strides(dim + 1);
         // TODO: Replace INPUT_STRIDES with FWD_STRIDES in MKL=2024.2
@@ -141,10 +140,9 @@ public:
     template <typename valT = std::vector<std::int64_t>>
     void set_fwd_strides(const valT &strides)
     {
-        std::int64_t dims{};
-        descr_.get_value(mkl_dft::config_param::DIMENSION, &dims);
+        const typename valT::value_type dim = get_dim();
 
-        if (static_cast<size_t>(dims + 1) != strides.size()) {
+        if (static_cast<size_t>(dim + 1) != strides.size()) {
             throw py::value_error(
                 "Strides length does not match descriptor's dimension");
         }
@@ -156,7 +154,7 @@ public:
     template <typename valT = std::vector<std::int64_t>>
     valT get_bwd_strides()
     {
-        size_t dim = get_dim();
+        const typename valT::value_type dim = get_dim();
 
         valT bwd_strides(dim + 1);
         // TODO: Replace OUTPUT_STRIDES with BWD_STRIDES in MKL=2024.2
@@ -168,10 +166,9 @@ public:
     template <typename valT = std::vector<std::int64_t>>
     void set_bwd_strides(const valT &strides)
     {
-        std::int64_t dims{};
-        descr_.get_value(mkl_dft::config_param::DIMENSION, &dims);
+        const typename valT::value_type dim = get_dim();
 
-        if (static_cast<size_t>(dims + 1) != strides.size()) {
+        if (static_cast<size_t>(dim + 1) != strides.size()) {
             throw py::value_error(
                 "Strides length does not match descriptor's dimension");
         }
@@ -190,7 +187,7 @@ public:
     }
 
     template <typename valT = std::int64_t>
-    void set_fwd_distance(valT dist)
+    void set_fwd_distance(const valT dist)
     {
         descr_.set_value(mkl_dft::config_param::FWD_DISTANCE, dist);
     }
@@ -206,7 +203,7 @@ public:
     }
 
     template <typename valT = std::int64_t>
-    void set_bwd_distance(valT dist)
+    void set_bwd_distance(const valT dist)
     {
         descr_.set_value(mkl_dft::config_param::BWD_DISTANCE, dist);
     }
@@ -220,7 +217,7 @@ public:
         return (placement == DFTI_CONFIG_VALUE::DFTI_INPLACE);
     }
 
-    void set_in_place(bool in_place_request)
+    void set_in_place(const bool in_place_request)
     {
         descr_.set_value(mkl_dft::config_param::PLACEMENT,
                          (in_place_request)
@@ -268,8 +265,8 @@ std::pair<sycl::event, sycl::event>
     const bool in_place = descr.get_in_place();
     if (in_place) {
         throw py::value_error(
-            "Descriptor is in-place while config_param::PLACEMENT is set to be "
-            "out-of-place.");
+            "Descriptor is defined for in-place FFT while this function is set "
+            "to compute out-of-place FFT.");
     }
 
     const int in_nd = in.get_ndim();

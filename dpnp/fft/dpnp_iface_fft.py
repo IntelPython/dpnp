@@ -161,6 +161,7 @@ def fft(a, n=None, axis=-1, norm=None):
 
     """
 
+    dpnp.check_supported_arrays_type(a)
     return dpnp_fft(a, is_forward=True, n=n, axis=axis, norm=norm)
 
 
@@ -417,6 +418,7 @@ def ifft(a, n=None, axis=-1, norm=None):
 
     """
 
+    dpnp.check_supported_arrays_type(a)
     return dpnp_fft(a, is_forward=False, n=n, axis=axis, norm=norm)
 
 
