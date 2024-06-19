@@ -342,6 +342,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -403,13 +404,16 @@ For full documentation refer to :obj:`numpy.add`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have numeric data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -479,6 +483,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -536,6 +541,7 @@ def around(x, /, decimals=0, out=None):
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Output array to populate.
         Array must have the correct shape and the expected data type.
+        Default: ``None``.
 
     Returns
     -------
@@ -572,6 +578,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -698,6 +705,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -761,14 +769,17 @@ For full documentation refer to :obj:`numpy.copysign`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have a real floating-point data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have a real floating-point data
     type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -1235,13 +1246,16 @@ For full documentation refer to :obj:`numpy.divide`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have numeric data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -1362,6 +1376,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -1410,6 +1425,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -1462,13 +1478,16 @@ For full documentation refer to :obj:`numpy.floor_divide`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have numeric data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -1758,13 +1777,16 @@ For full documentation refer to :obj:`numpy.fmod`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have a real-valued data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have a real-valued data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -2032,6 +2054,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -2082,13 +2105,16 @@ For full documentation refer to :obj:`numpy.maximum`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have numeric data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -2154,13 +2180,16 @@ For full documentation refer to :obj:`numpy.minimum`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have numeric data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -2256,13 +2285,16 @@ For full documentation refer to :obj:`numpy.multiply`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have numeric data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -2329,6 +2361,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -2384,6 +2417,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -2439,13 +2473,16 @@ For full documentation refer to :obj:`numpy.power`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have numeric data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
-    Output array to populate. Array must have the correct
-    shape and the expected data type.
+    Output array to populate. Array must have the correct shape and
+    the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -2626,6 +2663,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -2702,13 +2740,16 @@ For full documentation refer to :obj:`numpy.remainder`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have a real-valued data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have a real-valued data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -2784,6 +2825,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -2843,6 +2885,7 @@ decimals : int, optional
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 
 Returns
 -------
@@ -2899,6 +2942,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -2953,6 +2997,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -2999,13 +3044,16 @@ For full documentation refer to :obj:`numpy.subtract`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have numeric data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -3289,6 +3337,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
