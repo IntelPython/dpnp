@@ -30,32 +30,10 @@
 
 #include <dpctl4pybind11.hpp>
 
-// dpctl tensor headers
-#include "utils/memory_overlap.hpp"
-#include "utils/output_validation.hpp"
-
 namespace dpnp::extensions::fft
 {
 namespace mkl_dft = oneapi::mkl::dft;
 namespace py = pybind11;
-
-template <mkl_dft::precision prec>
-struct ScaleType
-{
-    using value_type = void;
-};
-
-template <>
-struct ScaleType<mkl_dft::precision::SINGLE>
-{
-    using value_type = float;
-};
-
-template <>
-struct ScaleType<mkl_dft::precision::DOUBLE>
-{
-    using value_type = double;
-};
 
 template <mkl_dft::precision prec>
 class ComplexDescriptorWrapper
@@ -254,87 +232,6 @@ std::pair<sycl::event, sycl::event>
                 const dpctl::tensor::usm_ndarray &in,
                 const dpctl::tensor::usm_ndarray &out,
                 const bool is_forward,
-                const std::vector<sycl::event> &depends)
-{
-    // TODO: activate in MKL=2024.2
-    // bool committed = descr.is_committed();
-    // if (!committed) {
-    //    throw py::value_error("Descriptor is not committed");
-    //}
+                const std::vector<sycl::event> &depends);
 
-    const bool in_place = descr.get_in_place();
-    if (in_place) {
-        throw py::value_error(
-            "Descriptor is defined for in-place FFT while this function is set "
-            "to compute out-of-place FFT.");
-    }
-
-    const int in_nd = in.get_ndim();
-    const int out_nd = out.get_ndim();
-    if ((in_nd != out_nd)) {
-        throw py::value_error(
-            "The input and output arrays must have the same dimension.");
-    }
-
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(in, out)) {
-        throw py::value_error("The input and output arrays are overlapping "
-                              "segments of memory");
-    }
-
-    sycl::queue exec_q = descr.get_queue();
-    if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {in.get_queue(), out.get_queue()}))
-    {
-        throw py::value_error(
-            "USM allocations are not compatible with the execution queue.");
-    }
-
-    py::ssize_t in_size = in.get_size();
-    py::ssize_t out_size = out.get_size();
-    if (in_size != out_size) {
-        throw py::value_error("The size of the input vector must be "
-                              "equal to the size of the output vector.");
-    }
-
-    size_t src_nelems = in_size;
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(out);
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(out, src_nelems);
-
-    using ScaleT = typename ScaleType<prec>::value_type;
-    std::complex<ScaleT> *in_ptr = in.get_data<std::complex<ScaleT>>();
-    std::complex<ScaleT> *out_ptr = out.get_data<std::complex<ScaleT>>();
-
-    sycl::event fft_event = {};
-    std::stringstream error_msg;
-    bool is_exception_caught = false;
-
-    try {
-        if (is_forward) {
-            fft_event = oneapi::mkl::dft::compute_forward(
-                descr.get_descriptor(), in_ptr, out_ptr, depends);
-        }
-        else {
-            fft_event = oneapi::mkl::dft::compute_backward(
-                descr.get_descriptor(), in_ptr, out_ptr, depends);
-        }
-    } catch (oneapi::mkl::exception const &e) {
-        error_msg
-            << "Unexpected MKL exception caught during FFT() call:\nreason: "
-            << e.what();
-        is_exception_caught = true;
-    } catch (sycl::exception const &e) {
-        error_msg << "Unexpected SYCL exception caught during FFT() call:\n"
-                  << e.what();
-        is_exception_caught = true;
-    }
-    if (is_exception_caught) {
-        throw std::runtime_error(error_msg.str());
-    }
-
-    sycl::event args_ev =
-        dpctl::utils::keep_args_alive(exec_q, {in, out}, {fft_event});
-
-    return std::make_pair(fft_event, args_ev);
-}
 } // namespace dpnp::extensions::fft
