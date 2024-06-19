@@ -3,19 +3,6 @@ var annotated_dup =
     [ "dpnp", null, [
       [ "backend", null, [
         [ "ext", null, [
-          [ "blas", null, [
-            [ "types", null, [
-              [ "DotcTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html", null ],
-              [ "DotTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html", null ],
-              [ "DotuTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
-              [ "GemmBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
-              [ "GemmTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ],
-              [ "GemvTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html", null ]
-            ] ],
-            [ "DotcContigFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1_dotc_contig_factory.html", null ],
-            [ "DotContigFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1_dot_contig_factory.html", null ],
-            [ "DotuContigFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1_dotu_contig_factory.html", null ]
-          ] ],
           [ "lapack", null, [
             [ "helper", null, [
               [ "value_type_of", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of.html", null ],
@@ -87,11 +74,29 @@ var annotated_dup =
         ] ]
       ] ],
       [ "extensions", null, [
+        [ "blas", null, [
+          [ "types", null, [
+            [ "DotcTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html", null ],
+            [ "DotTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html", null ],
+            [ "DotuTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
+            [ "GemmBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
+            [ "GemmTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ],
+            [ "GemvTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html", null ]
+          ] ],
+          [ "DotcContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dotc_contig_factory.html", null ],
+          [ "DotContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dot_contig_factory.html", null ],
+          [ "DotuContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dotu_contig_factory.html", null ]
+        ] ],
         [ "fft", null, [
           [ "ComplexDescriptorWrapper", "classdpnp_1_1extensions_1_1fft_1_1_complex_descriptor_wrapper.html", null ],
           [ "ScaleType", "structdpnp_1_1extensions_1_1fft_1_1_scale_type.html", null ],
           [ "ScaleType< mkl_dft::precision::DOUBLE >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html", null ],
           [ "ScaleType< mkl_dft::precision::SINGLE >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html", null ]
+        ] ]
+      ] ],
+      [ "kernels", null, [
+        [ "fabs", null, [
+          [ "FabsFunctor", "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html", null ]
         ] ]
       ] ]
     ] ],

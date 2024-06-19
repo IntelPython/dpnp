@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+19.gda7553e19b documentation</title>
+  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+33.g5c4d4ce8c3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=3b86a60e"></script>
+        <script src="../../../_static/documentation_options.js?v=469c5bdd"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+19.gda7553e19b
+                0.16.0dev0+33.g5c4d4ce8c3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -213,7 +213,7 @@
 <span class="sd">        Axis over which to compute the FFT. If not given, the last axis is</span>
 <span class="sd">        used. Default: ``-1``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
-<span class="sd">        Normalization mode (see :obj:`numpy.fft`).</span>
+<span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option &quot;backward&quot;.</span>
@@ -227,7 +227,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`numpy.fft` : For definition of the DFT and conventions used.</span>
+<span class="sd">    :obj:`dpnp.fft` : For definition of the DFT and conventions used.</span>
 <span class="sd">    :obj:`dpnp.fft.ifft` : The inverse of :obj:`dpnp.fft.fft`.</span>
 <span class="sd">    :obj:`dpnp.fft.fft2` : The two-dimensional FFT.</span>
 <span class="sd">    :obj:`dpnp.fft.fftn` : The `n`-dimensional FFT.</span>
@@ -253,6 +253,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">is_forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span></div>
 
 
@@ -491,7 +492,7 @@
 <span class="sd">        Axis over which to compute the inverse FFT. If not given, the last</span>
 <span class="sd">        axis is used. Default: ``-1``.</span>
 <span class="sd">    norm : {&quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
-<span class="sd">        Normalization mode (see :obj:`numpy.fft`).</span>
+<span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option &quot;backward&quot;.</span>
@@ -505,7 +506,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`numpy.fft` : For definition of the DFT and conventions used.</span>
+<span class="sd">    :obj:`dpnp.fft` : For definition of the DFT and conventions used.</span>
 <span class="sd">    :obj:`dpnp.fft.fft` : The one-dimensional (forward) FFT,</span>
 <span class="sd">                          of which :obj:`dpnp.fft.ifft` is the inverse.</span>
 <span class="sd">    :obj:`dpnp.fft.ifft2` : The two-dimensional inverse FFT.</span>
@@ -527,6 +528,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">is_forward</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span></div>
 
 
