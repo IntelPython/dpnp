@@ -929,6 +929,17 @@ def test_eigenvalue(func, shape, usm_type):
     assert a.usm_type == dp_val.usm_type
 
 
+@pytest.mark.parametrize("func", ["fft", "ifft"])
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_fft(func, usm_type):
+    data = numpy.arange(100, dtype=numpy.complex128)
+    dpnp_data = dp.array(data, usm_type=usm_type)
+    result = getattr(dp.fft, func)(dpnp_data)
+
+    assert dpnp_data.usm_type == usm_type
+    assert result.usm_type == usm_type
+
+
 @pytest.mark.parametrize(
     "usm_type_matrix", list_of_usm_types, ids=list_of_usm_types
 )
