@@ -1,5 +1,7 @@
+import dpctl
 import numpy
 import pytest
+from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_raises
 
 import dpnp
@@ -8,6 +10,9 @@ from .helper import assert_dtype_allclose, get_all_dtypes, get_complex_dtypes
 
 
 class TestFft:
+    def setup_method(self):
+        numpy.random.seed(42)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
         "shape", [(64,), (8, 8), (4, 16), (4, 4, 4), (2, 4, 4, 2)]
@@ -96,6 +101,90 @@ class TestFft:
         iexpected = numpy.fft.ifft(expected, n=n, axis=axis, norm=norm)
         assert_dtype_allclose(iresult, iexpected)
 
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize("n", [None, 5, 20])
+    @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
+    def test_fft_1D_out(self, dtype, n, norm):
+        x = dpnp.linspace(-1, 1, 11)
+        a = dpnp.sin(x) + 1j * dpnp.cos(x)
+        a = dpnp.asarray(a, dtype=dtype)
+        a_np = dpnp.asnumpy(a)
+        out_shape = (n,) if n is not None else a.shape
+        out = dpnp.empty(out_shape, dtype=a.dtype)
+
+        result = dpnp.fft.fft(a, n=n, norm=norm, out=out)
+        assert out is result
+        expected = numpy.fft.fft(a_np, n=n, norm=norm)
+        assert_dtype_allclose(result, expected)
+
+        iresult = dpnp.fft.ifft(result, n=n, norm=norm, out=out)
+        assert out is iresult
+        iexpected = numpy.fft.ifft(expected, n=n, norm=norm)
+        assert_dtype_allclose(iresult, iexpected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize("n", [None, 5, 8])
+    @pytest.mark.parametrize("axis", [-1, 0])
+    @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_fft_1D_on_2D_array_out(self, dtype, n, axis, norm, order):
+        a_np = numpy.arange(12, dtype=dtype).reshape(3, 4, order=order)
+        a = dpnp.asarray(a_np)
+        out_shape = list(a.shape)
+        if n is not None:
+            out_shape[axis] = n
+        out_shape = tuple(out_shape)
+        out = dpnp.empty(out_shape, dtype=a.dtype)
+
+        result = dpnp.fft.fft(a, n=n, axis=axis, norm=norm, out=out)
+        assert out is result
+        expected = numpy.fft.fft(a_np, n=n, axis=axis, norm=norm)
+        assert_dtype_allclose(result, expected)
+
+        iresult = dpnp.fft.ifft(result, n=n, axis=axis, norm=norm, out=out)
+        assert out is iresult
+        iexpected = numpy.fft.ifft(expected, n=n, axis=axis, norm=norm)
+        assert_dtype_allclose(iresult, iexpected)
+
+    @pytest.mark.parametrize("stride", [-1, -3, 2, 5])
+    def test_fft_strided_1D(self, stride):
+        x1 = numpy.random.uniform(-10, 10, 20)
+        x2 = numpy.random.uniform(-10, 10, 20)
+        A_np = numpy.array(x1 + 1j * x2, dtype=numpy.complex64)
+        A = dpnp.asarray(A_np)
+        a_np = A_np[::stride]
+        a = A[::stride]
+
+        result = dpnp.fft.fft(a)
+        expected = numpy.fft.fft(a_np)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("stride_x", [-1, -3, 2, 3])
+    @pytest.mark.parametrize("stride_y", [-1, -3, 2, 3])
+    def test_fft_strided_2D(self, stride_x, stride_y):
+        x1 = numpy.random.uniform(-10, 10, 120)
+        x2 = numpy.random.uniform(-10, 10, 120)
+        a_np = numpy.array(x1 + 1j * x2, dtype=numpy.complex64).reshape(12, 10)
+        a = dpnp.asarray(a_np)
+        a_np = a_np[::stride_x, ::stride_y]
+        a = a[::stride_x, ::stride_y]
+
+        result = dpnp.fft.fft(a)
+        expected = numpy.fft.fft(a_np)
+        assert_dtype_allclose(result, expected)
+
+    def test_fft_empty_array(self):
+        a_np = numpy.empty((10, 0, 4), dtype=numpy.complex64)
+        a = dpnp.array(a_np)
+
+        result = dpnp.fft.fft(a, axis=0)
+        expected = numpy.fft.fft(a_np, axis=0)
+        assert_dtype_allclose(result, expected)
+
+        result = dpnp.fft.fft(a, axis=1, n=2)
+        expected = numpy.fft.fft(a_np, axis=1, n=2)
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_fft_error(self, xp):
         # 0-D input
@@ -119,6 +208,22 @@ class TestFft:
         # Invalid number of FFT point for empty arrays
         a = xp.ones((5, 0, 4))
         assert_raises(ValueError, xp.fft.fft, a, axis=1)
+
+    def test_fft_validate_out(self):
+        # Inconsistent sycl_queue
+        a = dpnp.ones((10,), dtype=dpnp.complex64, sycl_queue=dpctl.SyclQueue())
+        out = dpnp.empty((10,), sycl_queue=dpctl.SyclQueue())
+        assert_raises(ExecutionPlacementError, dpnp.fft.fft, a, out=out)
+
+        # Invalid shape
+        a = dpnp.ones((10,), dtype=dpnp.complex64)
+        out = dpnp.empty((11,), dtype=dpnp.complex64)
+        assert_raises(ValueError, dpnp.fft.fft, a, out=out)
+
+        # Invalid dtype
+        a = dpnp.ones((10,), dtype=dpnp.complex64)
+        out = dpnp.empty((11,), dtype=dpnp.float32)
+        assert_raises(ValueError, dpnp.fft.fft, a, out=out)
 
 
 class TestRfft:
