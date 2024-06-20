@@ -101,7 +101,7 @@ def get_validated_norm(norm):
     raise ValueError("Unknown norm value.")
 
 
-def fft(a, n=None, axis=-1, norm=None):
+def fft(a, n=None, axis=-1, norm=None, out=None):
     """
     Compute the one-dimensional discrete Fourier Transform.
 
@@ -126,6 +126,9 @@ def fft(a, n=None, axis=-1, norm=None):
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option "backward".
         Default: "backward".
+    out : dpnp.ndarray of complex dtype, optional
+        If provided, the result will be placed in this array. It should be
+        of the appropriate shape and dtype.
 
     Returns
     -------
@@ -162,7 +165,7 @@ def fft(a, n=None, axis=-1, norm=None):
     """
 
     dpnp.check_supported_arrays_type(a)
-    return dpnp_fft(a, is_forward=True, n=n, axis=axis, norm=norm)
+    return dpnp_fft(a, is_forward=True, n=n, axis=axis, norm=norm, out=out)
 
 
 def fft2(x, s=None, axes=(-2, -1), norm=None):
@@ -362,7 +365,7 @@ def hfft(x, n=None, axis=-1, norm=None):
     return call_origin(numpy.fft.hfft, x, n, axis, norm)
 
 
-def ifft(a, n=None, axis=-1, norm=None):
+def ifft(a, n=None, axis=-1, norm=None, out=None):
     """
     Compute the one-dimensional inverse discrete Fourier Transform.
 
@@ -387,6 +390,9 @@ def ifft(a, n=None, axis=-1, norm=None):
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option "backward".
         Default: "backward"
+    out : dpnp.ndarray of complex dtype, optional
+        If provided, the result will be placed in this array. It should be
+        of the appropriate shape and dtype.
 
     Returns
     -------
@@ -419,7 +425,7 @@ def ifft(a, n=None, axis=-1, norm=None):
     """
 
     dpnp.check_supported_arrays_type(a)
-    return dpnp_fft(a, is_forward=False, n=n, axis=axis, norm=norm)
+    return dpnp_fft(a, is_forward=False, n=n, axis=axis, norm=norm, out=out)
 
 
 def ifft2(x, s=None, axes=(-2, -1), norm=None):
