@@ -55,9 +55,10 @@ typedef sycl::event (*syevd_impl_fn_ptr_t)(sycl::queue,
                                            std::vector<sycl::event> &,
                                            const std::vector<sycl::event> &);
 
-static syevd_impl_fn_ptr_t syevd_dispatch_vector[dpctl_td_ns::num_types];
+static syevd_impl_fn_ptr_t syevd_dispatch_table[dpctl_td_ns::num_types]
+                                               [dpctl_td_ns::num_types];
 
-template <typename T>
+template <typename T, typename RealT>
 static sycl::event syevd_impl(sycl::queue exec_q,
                               const oneapi::mkl::job jobz,
                               const oneapi::mkl::uplo upper_lower,
@@ -68,9 +69,10 @@ static sycl::event syevd_impl(sycl::queue exec_q,
                               const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
+    type_utils::validate_type_for_device<RealT>(exec_q);
 
     T *a = reinterpret_cast<T *>(in_a);
-    T *w = reinterpret_cast<T *>(out_w);
+    RealT *w = reinterpret_cast<T *>(out_w);
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t scratchpad_size =
@@ -206,7 +208,8 @@ std::pair<sycl::event, sycl::event>
             "Types of eigenvectors and eigenvalues are mismatched");
     }
 
-    syevd_impl_fn_ptr_t syevd_fn = syevd_dispatch_vector[eig_vecs_type_id];
+    syevd_impl_fn_ptr_t syevd_fn =
+        syevd_dispatch_table[eig_vecs_type_id][eig_vals_type_id];
     if (syevd_fn == nullptr) {
         throw py::value_error("No syevd implementation defined for a type of "
                               "eigenvectors and eigenvalues");
@@ -230,13 +233,14 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(args_ev, syevd_ev);
 }
 
-template <typename fnT, typename T>
+template <typename fnT, typename T, typename RealT>
 struct SyevdContigFactory
 {
     fnT get()
     {
-        if constexpr (types::SyevdTypePairSupportFactory<T>::is_defined) {
-            return syevd_impl<T>;
+        if constexpr (types::SyevdTypePairSupportFactory<T, RealT>::is_defined)
+        {
+            return syevd_impl<T, RealT>;
         }
         else {
             return nullptr;
@@ -244,12 +248,12 @@ struct SyevdContigFactory
     }
 };
 
-void init_syevd_dispatch_vector(void)
+void init_syevd_dispatch_table(void)
 {
-    dpctl_td_ns::DispatchVectorBuilder<syevd_impl_fn_ptr_t, SyevdContigFactory,
-                                       dpctl_td_ns::num_types>
+    dpctl_td_ns::DispatchTableBuilder<syevd_impl_fn_ptr_t, SyevdContigFactory,
+                                      dpctl_td_ns::num_types>
         contig;
-    contig.populate_dispatch_vector(syevd_dispatch_vector);
+    contig.populate_dispatch_table(syevd_dispatch_table);
 }
 } // namespace lapack
 } // namespace ext

@@ -43,6 +43,30 @@ namespace lapack
 {
 namespace types
 {
+// /**
+//  * @brief A factory to define pairs of supported types for which
+//  * MKL LAPACK library provides support in oneapi::mkl::lapack::syevd/heevd<T,
+//  RealT>
+//  * function.
+//  *
+//  * @tparam T Type of array containing input matrix A and an output array with
+//  * eigenvectors.
+//  * @tparam RealT Type of output array containing eigenvalues of A.
+//  */
+// template <typename T, typename RealT>
+// struct EvdTypePairSupportFactory
+// {
+//     static constexpr bool is_defined = std::disjunction<
+//         dpctl_td_ns::TypePairDefinedEntry<T, double, RealT, double>,
+//         dpctl_td_ns::TypePairDefinedEntry<T, float, RealT, float>,
+//         dpctl_td_ns::
+//             TypePairDefinedEntry<T, std::complex<double>, RealT, double>,
+//         dpctl_td_ns::TypePairDefinedEntry<T, std::complex<float>, RealT,
+//         float>,
+//         // fall-through
+//         dpctl_td_ns::NotDefinedEntry>::is_defined;
+// };
+
 /**
  * @brief A factory to define pairs of supported types for which
  * MKL LAPACK library provides support in oneapi::mkl::lapack::geqrf_batch<T>
@@ -373,12 +397,12 @@ struct PotrfBatchTypePairSupportFactory
  * @tparam T Type of array containing input matrix A and an output arrays with
  * eigenvectors and eigenvectors.
  */
-template <typename T>
+template <typename T, typename RealT>
 struct SyevdTypePairSupportFactory
 {
     static constexpr bool is_defined = std::disjunction<
-        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
-        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
+        dpctl_td_ns::TypePairDefinedEntry<T, double, RealT, double>,
+        dpctl_td_ns::TypePairDefinedEntry<T, float, RealT, float>,
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };

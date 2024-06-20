@@ -60,7 +60,7 @@ void init_dispatch_vectors(void)
     lapack_ext::init_orgqr_dispatch_vector();
     lapack_ext::init_potrf_batch_dispatch_vector();
     lapack_ext::init_potrf_dispatch_vector();
-    lapack_ext::init_syevd_dispatch_vector();
+    //     lapack_ext::init_syevd_dispatch_vector();
     lapack_ext::init_ungqr_batch_dispatch_vector();
     lapack_ext::init_ungqr_dispatch_vector();
 }
@@ -70,6 +70,7 @@ void init_dispatch_tables(void)
 {
     lapack_ext::init_gesvd_dispatch_table();
     lapack_ext::init_heevd_dispatch_table();
+    lapack_ext::init_syevd_dispatch_table();
 }
 
 PYBIND11_MODULE(_lapack_impl, m)

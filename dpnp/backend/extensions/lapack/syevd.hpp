@@ -46,7 +46,7 @@ extern std::pair<sycl::event, sycl::event>
           dpctl::tensor::usm_ndarray eig_vals,
           const std::vector<sycl::event> &depends = {});
 
-extern void init_syevd_dispatch_vector(void);
+extern void init_syevd_dispatch_table(void);
 } // namespace lapack
 } // namespace ext
 } // namespace backend
