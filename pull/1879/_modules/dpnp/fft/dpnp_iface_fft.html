@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+33.g5c4d4ce8c3 documentation</title>
+  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+38.g04988ffba9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=469c5bdd"></script>
+        <script src="../../../_static/documentation_options.js?v=f35f5d7a"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+33.g5c4d4ce8c3
+                0.16.0dev0+38.g04988ffba9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -193,7 +193,7 @@
 
 <div class="viewcode-block" id="fft">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.fft.fft.html#dpnp.fft.fft">[docs]</a>
-<span class="k">def</span> <span class="nf">fft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">fft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the one-dimensional discrete Fourier Transform.</span>
 
@@ -218,6 +218,9 @@
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option &quot;backward&quot;.</span>
 <span class="sd">        Default: &quot;backward&quot;.</span>
+<span class="sd">    out : dpnp.ndarray of complex dtype, optional</span>
+<span class="sd">        If provided, the result will be placed in this array. It should be</span>
+<span class="sd">        of the appropriate shape and dtype.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -254,7 +257,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">is_forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">is_forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
 
 
 
@@ -472,7 +475,7 @@
 
 <div class="viewcode-block" id="ifft">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ifft.html#dpnp.fft.ifft">[docs]</a>
-<span class="k">def</span> <span class="nf">ifft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">ifft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the one-dimensional inverse discrete Fourier Transform.</span>
 
@@ -497,6 +500,9 @@
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option &quot;backward&quot;.</span>
 <span class="sd">        Default: &quot;backward&quot;</span>
+<span class="sd">    out : dpnp.ndarray of complex dtype, optional</span>
+<span class="sd">        If provided, the result will be placed in this array. It should be</span>
+<span class="sd">        of the appropriate shape and dtype.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -529,7 +535,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">is_forward</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">is_forward</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
 
 
 
