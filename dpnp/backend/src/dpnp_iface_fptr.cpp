@@ -171,7 +171,6 @@ static func_map_t func_map_init()
     func_map_init_fft_func(fmap);
     func_map_init_indexing_func(fmap);
     func_map_init_linalg(fmap);
-    func_map_init_linalg_func(fmap);
     func_map_init_logic(fmap);
     func_map_init_manipulation(fmap);
     func_map_init_mathematical(fmap);
