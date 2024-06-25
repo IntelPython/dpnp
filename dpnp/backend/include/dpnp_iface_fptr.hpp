@@ -58,20 +58,20 @@
  */
 enum class DPNPFuncName : size_t
 {
-    DPNP_FN_NONE,         /**< Very first element of the enumeration */
-    DPNP_FN_ALL,          /**< Used in numpy.all() impl  */
-    DPNP_FN_ALLCLOSE,     /**< Used in numpy.allclose() impl  */
-    DPNP_FN_ALLCLOSE_EXT, /**< Used in numpy.allclose() impl, requires extra
-                             parameters */
-    DPNP_FN_ANY,          /**< Used in numpy.any() impl  */
-    DPNP_FN_ARANGE,       /**< Used in numpy.arange() impl  */
-    DPNP_FN_ARGMAX,       /**< Used in numpy.argmax() impl  */
-    DPNP_FN_ARGMIN,       /**< Used in numpy.argmin() impl  */
-    DPNP_FN_ARGSORT,      /**< Used in numpy.argsort() impl  */
-    DPNP_FN_CHOOSE,       /**< Used in numpy.choose() impl  */
-    DPNP_FN_CHOOSE_EXT,   /**< Used in numpy.choose() impl, requires extra
-                             parameters */
-    DPNP_FN_COPYTO,   /**< Used in numpy.copyto() impl  */
+    DPNP_FN_NONE,          /**< Very first element of the enumeration */
+    DPNP_FN_ALL,           /**< Used in numpy.all() impl  */
+    DPNP_FN_ALLCLOSE,      /**< Used in numpy.allclose() impl  */
+    DPNP_FN_ALLCLOSE_EXT,  /**< Used in numpy.allclose() impl, requires extra
+                              parameters */
+    DPNP_FN_ANY,           /**< Used in numpy.any() impl  */
+    DPNP_FN_ARANGE,        /**< Used in numpy.arange() impl  */
+    DPNP_FN_ARGMAX,        /**< Used in numpy.argmax() impl  */
+    DPNP_FN_ARGMIN,        /**< Used in numpy.argmin() impl  */
+    DPNP_FN_ARGSORT,       /**< Used in numpy.argsort() impl  */
+    DPNP_FN_CHOOSE,        /**< Used in numpy.choose() impl  */
+    DPNP_FN_CHOOSE_EXT,    /**< Used in numpy.choose() impl, requires extra
+                              parameters */
+    DPNP_FN_COPYTO,        /**< Used in numpy.copyto() impl  */
     DPNP_FN_COPYTO_EXT,    /**< Used in numpy.copyto() impl, requires extra
                               parameters */
     DPNP_FN_CORRELATE,     /**< Used in numpy.correlate() impl  */
