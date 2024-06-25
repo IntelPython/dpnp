@@ -780,6 +780,7 @@ def isneginf(x, out=None):
     is_inf = dpnp.isinf(x)
     signbit = dpnp.signbit(x)
 
+    # TODO: support different out dtype #1717(dpctl)
     return dpnp.logical_and(is_inf, signbit, out=out)
 
 
@@ -851,6 +852,7 @@ def isposinf(x, out=None):
     is_inf = dpnp.isinf(x)
     signbit = ~dpnp.signbit(x)
 
+    # TODO: support different out dtype #1717(dpctl)
     return dpnp.logical_and(is_inf, signbit, out=out)
 
 
