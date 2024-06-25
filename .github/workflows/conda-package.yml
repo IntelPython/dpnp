@@ -89,6 +89,24 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
+      - name: Debug step on Linux with python 3.10
+        run: |
+          echo ${{ matrix.os }}
+          echo ${{ matrix.python }}
+          echo ${{ matrix.os == 'ubuntu-20.04' }}
+          echo ${{ matrix.python == '3.10' }}
+          echo ${{ matrix.os == 'ubuntu-20.04' && matrix.python == '3.10' }}
+        if: ${{ matrix.os == 'ubuntu-20.04' && matrix.python == '3.10' }} == 'true'
+
+      - name: Debug step
+        run: |
+          echo ${{ matrix.os }}
+          echo ${{ matrix.python }}
+          echo ${{ matrix.os == 'ubuntu-20.04' }}
+          echo ${{ matrix.python == '3.10' }}
+          echo ${{ matrix.os == 'ubuntu-20.04' && matrix.python == '3.10' }}
+        if: ${{ matrix.os == 'ubuntu-20.04' && matrix.python == '3.10' }} != 'true'
+
       - name: Checkout DPNP repo
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
@@ -137,12 +155,12 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Build conda package
-        if: (${{ matrix.os }} == 'ubuntu-20.04') && (${{ matrix.python }} == '3.10')
-        run: conda build --no-test --python ${{ matrix.python }} --numpy 1.24 -c dppy/label/coverage ${{ env.CHANNELS }} conda-recipe
-
-      - name: Build conda package
-        if: (${{ matrix.os }} != 'ubuntu-20.04') || (${{ matrix.python }} != '3.10')
         run: conda build --no-test --python ${{ matrix.python }} --numpy 1.24 ${{ env.CHANNELS }} conda-recipe
+        if: ${{ matrix.os == 'ubuntu-20.04' && matrix.python == '3.10' }} == 'false'
+
+      - name: Build conda package on Linux with python 3.10
+        run: conda build --no-test --python ${{ matrix.python }} --numpy 1.24 -c dppy/label/coverage ${{ env.CHANNELS }} conda-recipe
+        if: ${{ matrix.os == 'ubuntu-20.04' && matrix.python == '3.10' }} == 'true'
 
       - name: Upload artifact
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
