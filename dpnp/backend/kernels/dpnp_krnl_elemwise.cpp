@@ -607,34 +607,6 @@ constexpr auto dispatch_fmod_op(T elem1, T elem2)
 
 static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_COPY][eft_BLN][eft_BLN] = {
-        eft_BLN, (void *)dpnp_copy_c_default<bool>};
-    fmap[DPNPFuncName::DPNP_FN_COPY][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_copy_c_default<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_COPY][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_copy_c_default<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_COPY][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_copy_c_default<float>};
-    fmap[DPNPFuncName::DPNP_FN_COPY][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_copy_c_default<double>};
-    fmap[DPNPFuncName::DPNP_FN_COPY][eft_C128][eft_C128] = {
-        eft_C128, (void *)dpnp_copy_c_default<std::complex<double>>};
-
-    fmap[DPNPFuncName::DPNP_FN_COPY_EXT][eft_BLN][eft_BLN] = {
-        eft_BLN, (void *)dpnp_copy_c_ext<bool>};
-    fmap[DPNPFuncName::DPNP_FN_COPY_EXT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_copy_c_ext<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_COPY_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_copy_c_ext<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_COPY_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_copy_c_ext<float>};
-    fmap[DPNPFuncName::DPNP_FN_COPY_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_copy_c_ext<double>};
-    fmap[DPNPFuncName::DPNP_FN_COPY_EXT][eft_C64][eft_C64] = {
-        eft_C64, (void *)dpnp_copy_c_ext<std::complex<float>>};
-    fmap[DPNPFuncName::DPNP_FN_COPY_EXT][eft_C128][eft_C128] = {
-        eft_C128, (void *)dpnp_copy_c_ext<std::complex<double>>};
-
     fmap[DPNPFuncName::DPNP_FN_ERF][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_erf_c_default<int32_t>};
     fmap[DPNPFuncName::DPNP_FN_ERF][eft_LNG][eft_LNG] = {
@@ -1128,7 +1100,7 @@ static void func_map_elemwise_2arg_3type_short_helper(func_map_t &fmap)
 
 static void func_map_init_elemwise_2arg_3type(func_map_t &fmap)
 {
-
+    // Used in dpnp_dot_c
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_BLN][eft_BLN] = {
         eft_BLN, (void *)dpnp_multiply_c_default<bool, bool, bool>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_BLN][eft_INT] = {

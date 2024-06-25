@@ -35,7 +35,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_ALLCLOSE_EXT
         DPNP_FN_CHOOSE_EXT
-        DPNP_FN_COPY_EXT
         DPNP_FN_CORRELATE_EXT
         DPNP_FN_DEGREES_EXT
         DPNP_FN_EDIFF1D_EXT
@@ -172,11 +171,6 @@ Logic functions
 cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input2,
                                    double rtol=*, double atol=*, cpp_bool equal_nan=*)
 
-
-"""
-Array creation routines
-"""
-cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 
 """
 Mathematical functions
