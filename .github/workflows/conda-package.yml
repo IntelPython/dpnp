@@ -240,6 +240,14 @@ jobs:
 
       - name: Install dpnp
         run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        if: ${{ matrix.python }} == '3.10'
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} -c dppy/label/coverage ${{ env.CHANNELS }}'
+          MAMBA_NO_LOW_SPEED_LIMIT: 1
+
+      - name: Install dpnp
+        run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        if: ${{ matrix.python }} != '3.10'
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -271,7 +279,7 @@ jobs:
             . $CONDA/etc/profile.d/conda.sh
             conda activate ${{ env.TEST_ENV_NAME }}
             cd ${{ env.tests-path }}
-            python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+            python -m pytest -q -ra -v --durations=10 ${{ env.TEST_SCOPE }}
 
   test_windows:
     name: Test ['windows-2019', python='${{ matrix.python }}']
@@ -426,7 +434,7 @@ jobs:
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
             & cd ${{ env.tests-path }}
-            & python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+            & python -m pytest -q -ra -v --durations=10 ${{ env.TEST_SCOPE }}
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
