@@ -137,6 +137,11 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Build conda package
+        if: (${{ matrix.os }} == 'ubuntu-20.04') && (${{ matrix.python }} == '3.10')
+        run: conda build --no-test --python ${{ matrix.python }} --numpy 1.24 -c dppy/label/coverage ${{ env.CHANNELS }} conda-recipe
+
+      - name: Build conda package
+        if: (${{ matrix.os }} != 'ubuntu-20.04') || (${{ matrix.python }} != '3.10')
         run: conda build --no-test --python ${{ matrix.python }} --numpy 1.24 ${{ env.CHANNELS }} conda-recipe
 
       - name: Upload artifact
