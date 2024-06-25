@@ -1,6 +1,0 @@
-﻿dpnp.conj
-=========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: conj
