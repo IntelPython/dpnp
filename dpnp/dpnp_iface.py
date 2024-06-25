@@ -36,7 +36,7 @@ it contains:
  - The functions parameters check
 
 """
-
+# pylint: disable=protected-access
 
 import os
 
@@ -54,6 +54,7 @@ from dpnp.linalg import *
 from dpnp.random import *
 
 __all__ = [
+    "are_same_logical_tensors",
     "array_equal",
     "asnumpy",
     "astype",
@@ -127,6 +128,67 @@ __all__ += __all__searching
 __all__ += __all__sorting
 __all__ += __all__statistics
 __all__ += __all__trigonometric
+
+
+def are_same_logical_tensors(ar1, ar2):
+    """
+    Check if two arrays are logical views into the same memory.
+
+    Parameters
+    ----------
+    ar1 : {dpnp_array, usm_ndarray}
+        First input array.
+    ar2 : {dpnp_array, usm_ndarray}
+        Second input array.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if two arrays are logical views into the same memory,
+        ``False`` otherwise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> b = a[:]
+    >>> a is b
+    False
+    >>> np.are_same_logical_tensors(a, b)
+    True
+    >>> b[0] = 0
+    >>> a
+    array([0, 2, 3])
+
+    >>> c = a.copy()
+    >>> np.are_same_logical_tensors(a, c)
+    False
+
+    """
+    check_supported_arrays_type(ar1, ar2)
+    # Same ndim
+    nd1 = ar1.ndim
+    if nd1 != ar2.ndim:
+        return False
+
+    # Same dtype
+    if ar1.dtype != ar2.dtype:
+        return False
+
+    # Same pointer
+    if ar1.get_array()._pointer != ar2.get_array()._pointer:
+        return False
+
+    # Same shape
+    if ar1.shape != ar2.shape:
+        return False
+
+    # Same strides
+    if ar1.strides != ar2.strides:
+        return False
+
+    # All checks passed: arrays are logical views into the same memory
+    return True
 
 
 def array_equal(a1, a2, equal_nan=False):
@@ -587,7 +649,7 @@ def get_result_array(a, out=None, casting="safe"):
     if out is None:
         return a
 
-    if a is out:
+    if a is out or dpnp.are_same_logical_tensors(a, out):
         return out
 
     dpnp.check_supported_arrays_type(out)

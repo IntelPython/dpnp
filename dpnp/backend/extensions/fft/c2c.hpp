@@ -222,12 +222,20 @@ private:
     std::unique_ptr<sycl::queue> queue_ptr_;
 };
 
+// forward declaration
 template <mkl_dft::precision prec>
 std::pair<sycl::event, sycl::event>
-    compute_fft(ComplexDescriptorWrapper<prec> &descr,
-                const dpctl::tensor::usm_ndarray &in,
-                const dpctl::tensor::usm_ndarray &out,
-                const bool is_forward,
-                const std::vector<sycl::event> &depends);
+    compute_fft_out_of_place(ComplexDescriptorWrapper<prec> &descr,
+                             const dpctl::tensor::usm_ndarray &in,
+                             const dpctl::tensor::usm_ndarray &out,
+                             const bool is_forward,
+                             const std::vector<sycl::event> &depends);
+
+template <mkl_dft::precision prec>
+std::pair<sycl::event, sycl::event>
+    compute_fft_in_place(ComplexDescriptorWrapper<prec> &descr,
+                         const dpctl::tensor::usm_ndarray &in_out,
+                         const bool is_forward,
+                         const std::vector<sycl::event> &depends);
 
 } // namespace dpnp::extensions::fft

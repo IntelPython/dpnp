@@ -67,17 +67,33 @@ PYBIND11_MODULE(_fft_impl, m)
 {
     constexpr mkl_dft::precision single_prec = mkl_dft::precision::SINGLE;
     register_complex_descriptor<single_prec>(m, "Complex64Descriptor");
-    m.def("compute_fft", &fft_ns::compute_fft<single_prec>,
-          "Compute forward/backward fft using OneMKL DFT library for complex "
-          "float data types.",
+
+    m.def("compute_fft_out_of_place",
+          &fft_ns::compute_fft_out_of_place<single_prec>,
+          "Compute out-of-place fft using OneMKL DFT library for complex64 "
+          "data types.",
           py::arg("descriptor"), py::arg("input"), py::arg("output"),
           py::arg("is_forward"), py::arg("depends") = py::list());
 
+    m.def("compute_fft_in_place", &fft_ns::compute_fft_in_place<single_prec>,
+          "Compute in-place fft using OneMKL DFT library for complex64 data "
+          "types.",
+          py::arg("descriptor"), py::arg("input-output"), py::arg("is_forward"),
+          py::arg("depends") = py::list());
+
     constexpr mkl_dft::precision double_prec = mkl_dft::precision::DOUBLE;
     register_complex_descriptor<double_prec>(m, "Complex128Descriptor");
-    m.def("compute_fft", &fft_ns::compute_fft<double_prec>,
-          "Compute forward/backward fft using OneMKL DFT library for complex "
-          "double data types.",
+
+    m.def("compute_fft_out_of_place",
+          &fft_ns::compute_fft_out_of_place<double_prec>,
+          "Compute out-of-place fft using OneMKL DFT library for complex128 "
+          "data types.",
           py::arg("descriptor"), py::arg("input"), py::arg("output"),
           py::arg("is_forward"), py::arg("depends") = py::list());
+
+    m.def("compute_fft_in_place", &fft_ns::compute_fft_in_place<double_prec>,
+          "Compute in-place fft using OneMKL DFT library for complex128 data "
+          "types.",
+          py::arg("descriptor"), py::arg("input-output"), py::arg("is_forward"),
+          py::arg("depends") = py::list());
 }

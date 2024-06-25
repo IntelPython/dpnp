@@ -122,6 +122,84 @@ class TestFft:
         iexpected = numpy.fft.ifft(expected, n=n, norm=norm)
         assert_dtype_allclose(iresult, iexpected)
 
+    @pytest.mark.parametrize("axis", [0, 1])
+    def test_fft_inplace_out(self, axis):
+        # Test some weirder in-place combinations
+        y = dpnp.random.rand(20, 20) + 1j * dpnp.random.rand(20, 20)
+        y_np = y.asnumpy()
+        # Fully in-place.
+        y1 = y.copy()
+        expected1 = numpy.fft.fft(y1.asnumpy(), axis=axis)
+        result1 = dpnp.fft.fft(y1, axis=axis, out=y1)
+        assert result1 is y1
+        assert_dtype_allclose(result1, expected1)
+
+        # In-place of part of the array; rest should be unchanged.
+        y2 = y.copy()
+        out2 = y2[:10] if axis == 0 else y2[:, :10]
+        expected2 = numpy.fft.fft(y2.asnumpy(), n=10, axis=axis)
+        result2 = dpnp.fft.fft(y2, n=10, axis=axis, out=out2)
+        assert result2 is out2
+        assert_dtype_allclose(out2, expected2)
+        assert_dtype_allclose(result2, expected2)
+        if axis == 0:
+            assert_dtype_allclose(y2[10:], y_np[10:])
+        else:
+            assert_dtype_allclose(y2[:, 10:], y_np[:, 10:])
+
+        # In-place of another part of the array.
+        y3 = y.copy()
+        y3_sel = y3[5:] if axis == 0 else y3[:, 5:]
+        out3 = y3[5:15] if axis == 0 else y3[:, 5:15]
+        expected3 = numpy.fft.fft(y3_sel.asnumpy(), n=10, axis=axis)
+        result3 = dpnp.fft.fft(y3_sel, n=10, axis=axis, out=out3)
+        assert result3 is out3
+        assert_dtype_allclose(result3, expected3)
+        if axis == 0:
+            assert_dtype_allclose(y3[:5], y_np[:5])
+            assert_dtype_allclose(y3[15:], y_np[15:])
+        else:
+            assert_dtype_allclose(y3[:, :5], y_np[:, :5])
+            assert_dtype_allclose(y3[:, 15:], y_np[:, 15:])
+
+        # In-place with n > nin; rest should be unchanged.
+        # for this case, out-of-place FFT is called with a temporary
+        # buffer for output array in FFT call
+        y4 = y.copy()
+        y4_sel = y4[:10] if axis == 0 else y4[:, :10]
+        out4 = y4[:15] if axis == 0 else y4[:, :15]
+        expected4 = numpy.fft.fft(y4_sel.asnumpy(), n=15, axis=axis)
+        result4 = dpnp.fft.fft(y4_sel, n=15, axis=axis, out=out4)
+        assert result4 is out4
+        assert_dtype_allclose(result4, expected4)
+        if axis == 0:
+            assert_dtype_allclose(y4[15:], y_np[15:])
+        else:
+            assert_dtype_allclose(y4[:, 15:], y_np[:, 15:])
+
+        # Overwrite in a transpose.
+        # for this case, out-of-place FFT is called with a temporary
+        # buffer for output array in FFT call
+        y5 = y.copy()
+        out5 = y5.T
+        result5 = dpnp.fft.fft(y5, axis=axis, out=out5)
+        assert result5 is out5
+        assert_dtype_allclose(y5, expected1.T)
+        assert_dtype_allclose(result5, expected1)
+
+        # Reverse strides.
+        # for this case, out-of-place FFT is called with a temporary
+        # buffer for output array in FFT call
+        y6 = y.copy()
+        out6 = y6[::-1] if axis == 0 else y6[:, ::-1]
+        result6 = dpnp.fft.fft(y6, axis=axis, out=out6)
+        assert result6 is out6
+        assert_dtype_allclose(result6, expected1)
+        if axis == 0:
+            assert_dtype_allclose(y6, expected1[::-1])
+        else:
+            assert_dtype_allclose(y6, expected1[:, ::-1])
+
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 8])
     @pytest.mark.parametrize("axis", [-1, 0])
