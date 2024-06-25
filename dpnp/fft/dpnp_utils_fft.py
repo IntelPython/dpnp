@@ -66,7 +66,7 @@ def _check_norm(norm):
         )
 
 
-def _commit_descriptor(a, a_strides, index, axes):
+def _commit_descriptor(a, in_place, a_strides, index, axes):
     """Commit the FFT descriptor for the input array."""
 
     a_shape = a.shape
@@ -79,7 +79,7 @@ def _commit_descriptor(a, a_strides, index, axes):
 
     dsc.fwd_strides = strides
     dsc.bwd_strides = dsc.fwd_strides
-    dsc.transform_in_place = False
+    dsc.transform_in_place = in_place
     if axes is not None:  # batch_fft
         dsc.fwd_distance = a_strides[0]
         dsc.bwd_distance = dsc.fwd_distance
@@ -89,28 +89,35 @@ def _commit_descriptor(a, a_strides, index, axes):
     return dsc
 
 
-def _compute_result(dsc, a, out, is_forward, a_strides, hev_list, dev_list):
+def _compute_result(dsc, a, out, forward, a_strides, hev_list, dev_list):
     """Compute the result of the FFT."""
 
     a_usm = a.get_array()
-    if (
-        out is not None
-        and out.strides == a_strides
-        and not ti._array_overlap(a_usm, out.get_array())
-    ):
-        res_usm = out.get_array()
+    if dsc.transform_in_place:
+        # in-place transform
+        fft_event, _ = fi.compute_fft_in_place(dsc, a_usm, forward, dev_list)
+        res_usm = a_usm
     else:
-        # Result array that is used in OneMKL must have the exact same
-        # stride as input array
-        res_usm = dpt.usm_ndarray(
-            a.shape,
-            dtype=a.dtype,
-            buffer=a.usm_type,
-            strides=a_strides,
-            offset=0,
-            buffer_ctor_kwargs={"queue": a.sycl_queue},
+        if (
+            out is not None
+            and out.strides == a_strides
+            and not ti._array_overlap(a_usm, out.get_array())
+        ):
+            res_usm = out.get_array()
+        else:
+            # Result array that is used in OneMKL must have the exact same
+            # stride as input array
+            res_usm = dpt.usm_ndarray(
+                a.shape,
+                dtype=a.dtype,
+                buffer=a.usm_type,
+                strides=a_strides,
+                offset=0,
+                buffer_ctor_kwargs={"queue": a.sycl_queue},
+            )
+        fft_event, _ = fi.compute_fft_out_of_place(
+            dsc, a_usm, res_usm, forward, dev_list
         )
-    fft_event, _ = fi.compute_fft(dsc, a_usm, res_usm, is_forward, dev_list)
     hev_list.append(fft_event)
     dpctl.SyclEvent.wait_for(hev_list)
 
@@ -122,7 +129,8 @@ def _compute_result(dsc, a, out, is_forward, a_strides, hev_list, dev_list):
 def _copy_array(x, dep_events, host_events):
     """
     Creating a C-contiguous copy of input array if input array has a negative
-    stride or it does not have a complex data types.
+    stride or it does not have a complex data types. In this situation, an
+    in-place FFT can be performed.
     """
     dtype = x.dtype
     copy_flag = False
@@ -146,14 +154,17 @@ def _copy_array(x, dep_events, host_events):
         )
         dep_events.append(copy_ev)
         host_events.append(ht_copy_ev)
-        return x_copy
-    return x
+        # if copying is done, FFT can be in-place (copy_flag = in_place flag)
+        return x_copy, copy_flag
+    return x, copy_flag
 
 
-def _fft(a, norm, out, is_forward, hev_list, dev_list, axes=None):
+def _fft(a, norm, out, forward, in_place, hev_list, dev_list, axes=None):
     """Calculates FFT of the input array along the specified axes."""
 
     index = 0
+    if not in_place and out is not None:
+        in_place = dpnp.are_same_logical_tensors(a, out)
     if axes is not None:  # batch_fft
         len_axes = 1 if isinstance(axes, int) else len(axes)
         local_axes = numpy.arange(-len_axes, 0)
@@ -164,29 +175,35 @@ def _fft(a, norm, out, is_forward, hev_list, dev_list, axes=None):
         index = 1
 
     a_strides = _standardize_strides_to_nonzero(a.strides, a.shape)
-    dsc = _commit_descriptor(a, a_strides, index, axes)
-    res = _compute_result(
-        dsc, a, out, is_forward, a_strides, hev_list, dev_list
-    )
+    dsc = _commit_descriptor(a, in_place, a_strides, index, axes)
+    res = _compute_result(dsc, a, out, forward, a_strides, hev_list, dev_list)
+    res = _scale_result(res, norm, forward, index)
 
-    scale = numpy.prod(a.shape[index:], dtype=a.real.dtype)
-    norm_factor = 1
-    if norm == "ortho":
-        norm_factor = numpy.sqrt(scale)
-    elif norm == "forward" and is_forward:
-        norm_factor = scale
-    elif norm in [None, "backward"] and not is_forward:
-        norm_factor = scale
-
-    res /= norm_factor
     if axes is not None:  # batch_fft
         res = dpnp.reshape(res, a_shape_orig)
         res = dpnp.moveaxis(res, local_axes, axes)
 
     result = dpnp.get_result_array(res, out=out, casting="same_kind")
-    if not (result.flags.c_contiguous or result.flags.f_contiguous):
+    if out is None and not (
+        result.flags.c_contiguous or result.flags.f_contiguous
+    ):
         result = dpnp.ascontiguousarray(result)
     return result
+
+
+def _scale_result(res, norm, forward, index):
+    """Scale the result of the FFT according to `norm`."""
+    scale = numpy.prod(res.shape[index:], dtype=res.real.dtype)
+    norm_factor = 1
+    if norm == "ortho":
+        norm_factor = numpy.sqrt(scale)
+    elif norm == "forward" and forward:
+        norm_factor = scale
+    elif norm in [None, "backward"] and not forward:
+        norm_factor = scale
+
+    res /= norm_factor
+    return res
 
 
 def _truncate_or_pad(a, shape, axes, copy_ht_ev, copy_dp_ev):
@@ -209,7 +226,7 @@ def _truncate_or_pad(a, shape, axes, copy_ht_ev, copy_dp_ev):
             exec_q = a.sycl_queue
             index[axis] = slice(0, a_shape[axis])  # orig shape
             a_shape[axis] = s  # modified shape
-            order = "F" if a.flags.f_contiguous else "C"
+            order = "F" if a.flags.fnc else "C"
             z = dpnp.zeros(
                 a_shape,
                 dtype=a.dtype,
@@ -249,14 +266,14 @@ def _validate_out_keyword(a, out):
             raise TypeError("output array has incorrect data type.")
 
 
-def dpnp_fft(a, is_forward, n=None, axis=-1, norm=None, out=None):
+def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
     """Calculates 1-D FFT of the input array along axis"""
 
     _check_norm(norm)
     a_ndim = a.ndim
     copy_ht_ev = []
     copy_dp_ev = []
-    a = _copy_array(a, copy_ht_ev, copy_dp_ev)
+    a, in_place = _copy_array(a, copy_ht_ev, copy_dp_ev)
 
     if a_ndim == 0:
         raise ValueError("Input array must be at least 1D")
@@ -280,7 +297,8 @@ def dpnp_fft(a, is_forward, n=None, axis=-1, norm=None, out=None):
             a,
             norm=norm,
             out=out,
-            is_forward=is_forward,
+            forward=forward,
+            in_place=in_place,
             hev_list=copy_ht_ev,
             dev_list=copy_dp_ev,
         )
@@ -289,7 +307,8 @@ def dpnp_fft(a, is_forward, n=None, axis=-1, norm=None, out=None):
         a,
         norm=norm,
         out=out,
-        is_forward=is_forward,
+        forward=forward,
+        in_place=in_place,
         axes=axis,
         hev_list=copy_ht_ev,
         dev_list=copy_dp_ev,

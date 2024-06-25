@@ -39,13 +39,14 @@ namespace dpnp::extensions::fft
 namespace mkl_dft = oneapi::mkl::dft;
 namespace py = pybind11;
 
+// out-of-place FFT computation
 template <mkl_dft::precision prec>
 std::pair<sycl::event, sycl::event>
-    compute_fft(ComplexDescriptorWrapper<prec> &descr,
-                const dpctl::tensor::usm_ndarray &in,
-                const dpctl::tensor::usm_ndarray &out,
-                const bool is_forward,
-                const std::vector<sycl::event> &depends)
+    compute_fft_out_of_place(ComplexDescriptorWrapper<prec> &descr,
+                             const dpctl::tensor::usm_ndarray &in,
+                             const dpctl::tensor::usm_ndarray &out,
+                             const bool is_forward,
+                             const std::vector<sycl::event> &depends)
 {
     bool committed = descr.is_committed();
     if (!committed) {
@@ -129,18 +130,18 @@ std::pair<sycl::event, sycl::event>
 }
 
 // Explicit instantiations
-template std::pair<sycl::event, sycl::event>
-    compute_fft(ComplexDescriptorWrapper<mkl_dft::precision::SINGLE> &descr,
-                const dpctl::tensor::usm_ndarray &in,
-                const dpctl::tensor::usm_ndarray &out,
-                const bool is_forward,
-                const std::vector<sycl::event> &depends);
+template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
+    ComplexDescriptorWrapper<mkl_dft::precision::SINGLE> &descr,
+    const dpctl::tensor::usm_ndarray &in,
+    const dpctl::tensor::usm_ndarray &out,
+    const bool is_forward,
+    const std::vector<sycl::event> &depends);
 
-template std::pair<sycl::event, sycl::event>
-    compute_fft(ComplexDescriptorWrapper<mkl_dft::precision::DOUBLE> &descr,
-                const dpctl::tensor::usm_ndarray &in,
-                const dpctl::tensor::usm_ndarray &out,
-                const bool is_forward,
-                const std::vector<sycl::event> &depends);
+template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
+    ComplexDescriptorWrapper<mkl_dft::precision::DOUBLE> &descr,
+    const dpctl::tensor::usm_ndarray &in,
+    const dpctl::tensor::usm_ndarray &out,
+    const bool is_forward,
+    const std::vector<sycl::event> &depends);
 
 } // namespace dpnp::extensions::fft
