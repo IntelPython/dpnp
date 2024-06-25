@@ -128,7 +128,7 @@ def all(a, /, axis=None, out=None, keepdims=False, *, where=True):
     Notes
     -----
     Not a Number (NaN), positive infinity and negative infinity
-    evaluate to `True` because these are not equal to zero.
+    evaluate to ``True`` because these are not equal to zero.
 
     Examples
     --------
@@ -156,11 +156,10 @@ def all(a, /, axis=None, out=None, keepdims=False, *, where=True):
     >>> z is o
     True
     >>> id(z), id(o) # identity of `z` and `o`
-    (139884456208480, 139884456208480, array(True)) # may vary
+    (139884456208480, 139884456208480) # may vary
 
     """
 
-    dpnp.check_supported_arrays_type(a)
     dpnp.check_limitations(where=where)
 
     dpt_array = dpnp.get_usm_ndarray(a)
@@ -319,7 +318,7 @@ def any(a, /, axis=None, out=None, keepdims=False, *, where=True):
     Notes
     -----
     Not a Number (NaN), positive infinity and negative infinity evaluate
-    to `True` because these are not equal to zero.
+    to ``True`` because these are not equal to zero.
 
     Examples
     --------
@@ -351,7 +350,6 @@ def any(a, /, axis=None, out=None, keepdims=False, *, where=True):
 
     """
 
-    dpnp.check_supported_arrays_type(a)
     dpnp.check_limitations(where=where)
 
     dpt_array = dpnp.get_usm_ndarray(a)
