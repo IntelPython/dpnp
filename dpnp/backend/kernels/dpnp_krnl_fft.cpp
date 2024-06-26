@@ -123,7 +123,8 @@ static void dpnp_fft_fft_sycl_c(DPCTLSyclQueueRef q_ref,
 
             if (it < input_shape[axis]) {
                 if constexpr (std::is_same<_DataType_input,
-                                           std::complex<double>>::value) {
+                                           std::complex<double>>::value)
+                {
                     const _DataType_input *cmplx_ptr = array_1 + input_it;
                     const double *dbl_ptr =
                         reinterpret_cast<const double *>(cmplx_ptr);
@@ -131,7 +132,8 @@ static void dpnp_fft_fft_sycl_c(DPCTLSyclQueueRef q_ref,
                     in_imag = *(dbl_ptr + 1);
                 }
                 else if constexpr (std::is_same<_DataType_input,
-                                                std::complex<float>>::value) {
+                                                std::complex<float>>::value)
+                {
                     const _DataType_input *cmplx_ptr = array_1 + input_it;
                     const float *dbl_ptr =
                         reinterpret_cast<const float *>(cmplx_ptr);

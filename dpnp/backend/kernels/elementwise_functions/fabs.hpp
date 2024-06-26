@@ -41,9 +41,6 @@ struct FabsFunctor
     // do both argT and resT support sugroup store/load operation
     using supports_sg_loadstore = typename std::true_type;
 
-    resT operator()(const argT &x) const
-    {
-        return sycl::fabs(x);
-    }
+    resT operator()(const argT &x) const { return sycl::fabs(x); }
 };
 } // namespace dpnp::kernels::fabs

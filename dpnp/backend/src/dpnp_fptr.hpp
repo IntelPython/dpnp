@@ -257,7 +257,8 @@ public:
                 ret = (b.imag() != b.imag() && a.imag() == a.imag());
             }
             else if (a.real() == b.real() ||
-                     (a.real() != a.real() && b.real() != b.real())) {
+                     (a.real() != a.real() && b.real() != b.real()))
+            {
                 ret = (a.imag() < b.imag() ||
                        (b.imag() != b.imag() && a.imag() == a.imag()));
             }

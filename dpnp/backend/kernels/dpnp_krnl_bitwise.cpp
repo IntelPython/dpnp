@@ -101,7 +101,8 @@ DPCTLSyclEventRef dpnp_invert_c(DPCTLSyclQueueRef q_ref,
         }
         else {
             for (size_t k = start + sg.get_local_id()[0]; k < size;
-                 k += max_sg_size) {
+                 k += max_sg_size)
+            {
                 if constexpr (std::is_same_v<_DataType, bool>) {
                     result[k] = !(input_data[k]);
                 }

@@ -33,10 +33,7 @@
 template <typename _DataType, typename _idx_DataType>
 struct _argsort_less
 {
-    _argsort_less(_DataType *data_ptr)
-    {
-        _data_ptr = data_ptr;
-    }
+    _argsort_less(_DataType *data_ptr) { _data_ptr = data_ptr; }
 
     inline bool operator()(const _idx_DataType &idx1, const _idx_DataType &idx2)
     {
@@ -136,7 +133,8 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
     DPCTLSyclEventRef event_ref = nullptr;
 
     if ((array1_in == nullptr) || (array2_in == nullptr) ||
-        (result1 == nullptr)) {
+        (result1 == nullptr))
+    {
         return event_ref;
     }
 

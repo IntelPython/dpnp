@@ -181,7 +181,8 @@ void simplify_iteration_space_3(
         simplified_dst_strides.reserve(nd);
 
         if ((src1_strides[0] < 0) && (src2_strides[0] < 0) &&
-            (dst_strides[0] < 0)) {
+            (dst_strides[0] < 0))
+        {
             simplified_src1_strides.push_back(-src1_strides[0]);
             simplified_src2_strides.push_back(-src2_strides[0]);
             simplified_dst_strides.push_back(-dst_strides[0]);

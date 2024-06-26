@@ -13,9 +13,9 @@ jobs:
     steps:
       - name: Set up clang-format
         run: |
-          sudo apt-get install -y clang-format-12
+          sudo apt-get install -y clang-format-15
           sudo unlink /usr/bin/clang-format
-          sudo ln -s /usr/bin/clang-format-12 /usr/bin/clang-format
+          sudo ln -s /usr/bin/clang-format-15 /usr/bin/clang-format
           clang-format --version
 
       - name: Set up pip packages
