@@ -23,21 +23,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
 
-#include "fabs.hpp"
-#include "fmod.hpp"
+#include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 
 namespace dpnp::extensions::ufunc
 {
-/**
- * @brief Add elementwise functions to Python module
- */
-void init_elementwise_functions(py::module_ m)
-{
-    init_fabs(m);
-    init_fmod(m);
-}
+void init_fmod(py::module_ m);
 } // namespace dpnp::extensions::ufunc
