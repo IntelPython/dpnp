@@ -283,6 +283,11 @@ jobs:
           python -c "import dpnp, dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
 
+      - name: Run faulty random tests
+        run: |
+          python -m pytest -q -ra --disable-warnings -vv test_random_state.py::TestNormal::test_distr
+        working-directory: ${{ env.tests-path }}
+
       # TODO: run the whole scope once the issues on CPU are resolved
       # - name: Run tests
         # run: |
