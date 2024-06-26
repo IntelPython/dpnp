@@ -1,47 +1,85 @@
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_equal
+from numpy.testing import assert_allclose, assert_equal, assert_raises
 
 import dpnp
 
 from .helper import (
     get_all_dtypes,
     get_float_complex_dtypes,
-    has_support_aspect64,
 )
 
 
-@pytest.mark.parametrize("type", get_all_dtypes())
-@pytest.mark.parametrize(
-    "shape",
-    [(0,), (4,), (2, 3), (2, 2, 2)],
-    ids=["(0,)", "(4,)", "(2,3)", "(2,2,2)"],
-)
-def test_all(type, shape):
-    size = 1
-    for i in range(len(shape)):
-        size *= shape[i]
+class TestAllAny:
+    @pytest.mark.parametrize("func", ["all", "any"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_all_any(self, func, dtype, axis, keepdims):
+        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
+        np_array = dpnp.asnumpy(dp_array)
 
-    for i in range(2**size):
-        t = i
+        expected = getattr(numpy, func)(np_array, axis=axis, keepdims=keepdims)
+        result = getattr(dpnp, func)(dp_array, axis=axis, keepdims=keepdims)
+        assert_allclose(result, expected)
 
-        a = numpy.empty(size, dtype=type)
+    @pytest.mark.parametrize("func", ["all", "any"])
+    @pytest.mark.parametrize("a_dtype", get_all_dtypes())
+    @pytest.mark.parametrize("out_dtype", get_all_dtypes())
+    def test_all_any_out(self, func, a_dtype, out_dtype):
+        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=a_dtype)
+        np_array = dpnp.asnumpy(dp_array)
 
-        for j in range(size):
-            a[j] = 0 if t % 2 == 0 else j + 1
-            t = t >> 1
+        expected = getattr(numpy, func)(np_array)
+        out = dpnp.empty(expected.shape, dtype=out_dtype)
+        result = getattr(dpnp, func)(dp_array, out=out)
+        assert out is result
+        assert_allclose(result, expected)
 
-        a = a.reshape(shape)
+    @pytest.mark.parametrize("func", ["all", "any"])
+    @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
+    @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
+    def test_all_any_empty(self, func, axis, shape):
+        dp_array = dpnp.empty(shape, dtype=dpnp.int64)
+        np_array = dpnp.asnumpy(dp_array)
 
-        ia = dpnp.array(a)
+        result = getattr(dpnp, func)(dp_array, axis=axis)
+        expected = getattr(numpy, func)(np_array, axis=axis)
+        assert_allclose(result, expected)
 
-        np_res = numpy.all(a)
-        dpnp_res = dpnp.all(ia)
-        assert_allclose(dpnp_res, np_res)
+    @pytest.mark.parametrize("func", ["all", "any"])
+    def test_all_any_scalar(self, func):
+        dp_array = dpnp.array(0)
+        np_array = dpnp.asnumpy(dp_array)
 
-        np_res = a.all()
-        dpnp_res = ia.all()
-        assert_allclose(dpnp_res, np_res)
+        result = getattr(dp_array, func)()
+        expected = getattr(np_array, func)()
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("func", ["all", "any"])
+    @pytest.mark.parametrize("axis", [None, 0, 1])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_all_any_nan_inf(self, func, axis, keepdims):
+        dp_array = dpnp.array([[dpnp.nan, 1, 2], [dpnp.inf, -dpnp.inf, 0]])
+        np_array = dpnp.asnumpy(dp_array)
+
+        expected = getattr(numpy, func)(np_array, axis=axis, keepdims=keepdims)
+        result = getattr(dpnp, func)(dp_array, axis=axis, keepdims=keepdims)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("func", ["all", "any"])
+    def test_all_any_error(self, func):
+        def check_raises(func_name, exception, *args, **kwargs):
+            assert_raises(
+                exception, lambda: getattr(dpnp, func_name)(*args, **kwargs)
+            )
+
+        a = dpnp.arange(5)
+        # unsupported where parameter
+        check_raises(func, NotImplementedError, a, where=False)
+        # unsupported type
+        check_raises(func, TypeError, dpnp.asnumpy(a))
+        check_raises(func, TypeError, [0, 1, 2, 3])
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))

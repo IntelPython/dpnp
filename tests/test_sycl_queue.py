@@ -394,6 +394,8 @@ def test_meshgrid(device_x, device_y):
 @pytest.mark.parametrize(
     "func,data",
     [
+        pytest.param("all", [-1.0, 0.0, 1.0]),
+        pytest.param("any", [-1.0, 0.0, 1.0]),
         pytest.param("average", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("abs", [-1.2, 1.2]),
         pytest.param("angle", [[1.0 + 1.0j, 2.0 + 3.0j]]),
