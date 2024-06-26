@@ -775,10 +775,11 @@ def test_logic_op_2in(op, device):
         "less_equal",
     ]:
         x1 = x1[:-1]
+        x2 = x2[:-1]
     result = getattr(dpnp, op)(x1, x2)
 
-    x1_orig = numpy.asnumpy(x1)
-    x2_orig = numpy.asnumpy(x2)
+    x1_orig = dpnp.asnumpy(x1)
+    x2_orig = dpnp.asnumpy(x2)
     expected = getattr(numpy, op)(x1_orig, x2_orig)
 
     assert_dtype_allclose(result, expected)
