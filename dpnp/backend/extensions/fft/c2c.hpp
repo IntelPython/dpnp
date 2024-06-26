@@ -109,8 +109,7 @@ public:
         const typename valT::value_type dim = get_dim();
 
         valT fwd_strides(dim + 1);
-        // TODO: Replace INPUT_STRIDES with FWD_STRIDES in MKL=2024.2
-        descr_.get_value(mkl_dft::config_param::INPUT_STRIDES,
+        descr_.get_value(mkl_dft::config_param::FWD_STRIDES,
                          fwd_strides.data());
         return fwd_strides;
     }
@@ -124,8 +123,7 @@ public:
             throw py::value_error(
                 "Strides length does not match descriptor's dimension");
         }
-        // TODO: Replace INPUT_STRIDES with FWD_STRIDES in MKL=2024.2
-        descr_.set_value(mkl_dft::config_param::INPUT_STRIDES, strides.data());
+        descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides.data());
     }
 
     // config_param::BWD_STRIDES
@@ -135,8 +133,7 @@ public:
         const typename valT::value_type dim = get_dim();
 
         valT bwd_strides(dim + 1);
-        // TODO: Replace OUTPUT_STRIDES with BWD_STRIDES in MKL=2024.2
-        descr_.get_value(mkl_dft::config_param::OUTPUT_STRIDES,
+        descr_.get_value(mkl_dft::config_param::BWD_STRIDES,
                          bwd_strides.data());
         return bwd_strides;
     }
@@ -150,8 +147,7 @@ public:
             throw py::value_error(
                 "Strides length does not match descriptor's dimension");
         }
-        // TODO: Replace OUTPUT_STRIDES with BWD_STRIDES in MKL=2024.2
-        descr_.set_value(mkl_dft::config_param::OUTPUT_STRIDES, strides.data());
+        descr_.set_value(mkl_dft::config_param::BWD_STRIDES, strides.data());
     }
 
     // config_param::FWD_DISTANCE
