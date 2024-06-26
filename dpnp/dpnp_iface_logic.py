@@ -66,6 +66,8 @@ __all__ = [
     "isfinite",
     "isinf",
     "isnan",
+    "isneginf",
+    "isposinf",
     "less",
     "less_equal",
     "logical_and",
@@ -775,6 +777,150 @@ isnan = DPNPUnaryFunc(
     tei._isnan,
     _ISNAN_DOCSTRING,
 )
+
+
+def isneginf(x, out=None):
+    """
+    Test element-wise for negative infinity, return result as bool array.
+
+    For full documentation refer to :obj:`numpy.isneginf`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        A location into which the result is stored. If provided, it must have a
+        shape that the input broadcasts to and a boolean data type.
+        If not provided or ``None``, a freshly-allocated boolean array
+        is returned.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Boolean array of same shape as ``x``.
+
+    See Also
+    --------
+    :obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.
+    :obj:`dpnp.isposinf` : Test element-wise for positive infinity,
+                            return result as bool array.
+    :obj:`dpnp.isnan` : Test element-wise for NaN and
+                    return result as a boolean array.
+    :obj:`dpnp.isfinite` : Test element-wise for finiteness.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array(np.inf)
+    >>> np.isneginf(-x)
+    array(True)
+    >>> np.isneginf(x)
+    array(False)
+
+    >>> x = np.array([-np.inf, 0., np.inf])
+    >>> np.isneginf(x)
+    array([ True, False, False])
+
+    >>> x = np.array([-np.inf, 0., np.inf])
+    >>> y = np.zeros(x.shape, dtype='bool')
+    >>> np.isneginf(x, y)
+    array([ True, False, False])
+    >>> y
+    array([ True, False, False])
+
+    """
+
+    dpnp.check_supported_arrays_type(x)
+
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+
+    x_dtype = x.dtype
+    if dpnp.issubdtype(x_dtype, dpnp.complexfloating):
+        raise TypeError(
+            f"This operation is not supported for {x_dtype} values "
+            "because it would be ambiguous."
+        )
+
+    is_inf = dpnp.isinf(x)
+    signbit = dpnp.signbit(x)
+
+    # TODO: support different out dtype #1717(dpctl)
+    return dpnp.logical_and(is_inf, signbit, out=out)
+
+
+def isposinf(x, out=None):
+    """
+    Test element-wise for positive infinity, return result as bool array.
+
+    For full documentation refer to :obj:`numpy.isposinf`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        A location into which the result is stored. If provided, it must have a
+        shape that the input broadcasts to and a boolean data type.
+        If not provided or ``None``, a freshly-allocated boolean array
+        is returned.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Boolean array of same shape as ``x``.
+
+    See Also
+    --------
+    :obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.
+    :obj:`dpnp.isneginf` : Test element-wise for negative infinity,
+                            return result as bool array.
+    :obj:`dpnp.isnan` : Test element-wise for NaN and
+                    return result as a boolean array.
+    :obj:`dpnp.isfinite` : Test element-wise for finiteness.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array(np.inf)
+    >>> np.isposinf(x)
+    array(True)
+    >>> np.isposinf(-x)
+    array(False)
+
+    >>> x = np.array([-np.inf, 0., np.inf])
+    >>> np.isposinf(x)
+    array([False, False,  True])
+
+    >>> x = np.array([-np.inf, 0., np.inf])
+    >>> y = np.zeros(x.shape, dtype='bool')
+    >>> np.isposinf(x, y)
+    array([False, False,  True])
+    >>> y
+    array([False, False,  True])
+
+    """
+
+    dpnp.check_supported_arrays_type(x)
+
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+
+    x_dtype = x.dtype
+    if dpnp.issubdtype(x_dtype, dpnp.complexfloating):
+        raise TypeError(
+            f"This operation is not supported for {x_dtype} values "
+            "because it would be ambiguous."
+        )
+
+    is_inf = dpnp.isinf(x)
+    signbit = ~dpnp.signbit(x)
+
+    # TODO: support different out dtype #1717(dpctl)
+    return dpnp.logical_and(is_inf, signbit, out=out)
 
 
 _LESS_DOCSTRING = """
