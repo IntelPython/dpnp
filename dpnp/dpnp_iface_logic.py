@@ -46,7 +46,7 @@ it contains:
 
 
 import dpctl.tensor as dpt
-import dpctl.tensor._tensor_elementwise_impl as ti
+import dpctl.tensor._tensor_elementwise_impl as tei
 import numpy
 
 import dpnp
@@ -78,25 +78,48 @@ __all__ = [
 ]
 
 
-def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
+def all(a, /, axis=None, out=None, keepdims=False, *, where=True):
     """
     Test whether all array elements along a given axis evaluate to True.
 
     For full documentation refer to :obj:`numpy.all`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int, tuple of ints}, optional
+        Axis or axes along which a logical AND reduction is performed.
+        The default is to perform a logical AND over all the dimensions
+        of the input array.`axis` may be negative, in which case it counts
+        from the last to the first axis.
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have
+        the same shape as the expected output but the type (of the returned
+        values) will be cast if necessary.
+        Default: ``None``.
+    keepdims : bool, optional
+        If ``True``, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input array according to Array Broadcasting
+        rules. Otherwise, if ``False``, the reduced axes are not included in
+        the returned array.
+        Default: ``False``.
+
     Returns
     -------
     out : dpnp.ndarray
         An array with a data type of `bool`
-        containing the results of the logical AND reduction.
+        containing the results of the logical AND reduction is returned
+        unless `out` is specified. Otherwise, a reference to `out` is returned.
+        The result has the same shape as `a` if `axis` is not ``None``
+        or `a` is a 0-d array.
 
     Limitations
     -----------
-    Parameters `x` is supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `out` and `where` are supported with default value.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters `where` is only supported with its default value.
+    Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
@@ -107,7 +130,7 @@ def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
     Notes
     -----
     Not a Number (NaN), positive infinity and negative infinity
-    evaluate to `True` because these are not equal to zero.
+    evaluate to ``True`` because these are not equal to zero.
 
     Examples
     --------
@@ -127,22 +150,27 @@ def all(x, /, axis=None, out=None, keepdims=False, *, where=True):
     >>> np.all(x3)
     array(True)
 
+    >>> o = np.array(False)
+    >>> z = np.all(x2, out=o)
+    >>> z, o
+    (array(True), array(True))
+    >>> # Check now that `z` is a reference to `o`
+    >>> z is o
+    True
+    >>> id(z), id(o) # identity of `z` and `o`
+    (139884456208480, 139884456208480) # may vary
+
     """
 
-    if dpnp.is_supported_array_type(x):
-        if out is not None:
-            pass
-        elif where is not True:
-            pass
-        else:
-            dpt_array = dpnp.get_usm_ndarray(x)
-            return dpnp_array._create_from_usm_ndarray(
-                dpt.all(dpt_array, axis=axis, keepdims=keepdims)
-            )
+    dpnp.check_limitations(where=where)
 
-    return call_origin(
-        numpy.all, x, axis=axis, out=out, keepdims=keepdims, where=where
+    dpt_array = dpnp.get_usm_ndarray(a)
+    result = dpnp_array._create_from_usm_ndarray(
+        dpt.all(dpt_array, axis=axis, keepdims=keepdims)
     )
+    # TODO: temporary solution until dpt.all supports out parameter
+    result = dpnp.get_result_array(result, out)
+    return result
 
 
 def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
@@ -240,25 +268,48 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     return call_origin(numpy.allclose, a, b, rtol=rtol, atol=atol, **kwargs)
 
 
-def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
+def any(a, /, axis=None, out=None, keepdims=False, *, where=True):
     """
     Test whether any array element along a given axis evaluates to True.
 
     For full documentation refer to :obj:`numpy.any`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int, tuple of ints}, optional
+        Axis or axes along which a logical OR reduction is performed.
+        The default is to perform a logical OR over all the dimensions
+        of the input array.`axis` may be negative, in which case it counts
+        from the last to the first axis.
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have
+        the same shape as the expected output but the type (of the returned
+        values) will be cast if necessary.
+        Default: ``None``.
+    keepdims : bool, optional
+        If ``True``, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input array according to Array Broadcasting
+        rules. Otherwise, if ``False``, the reduced axes are not included in
+        the returned array.
+        Default: ``False``.
+
     Returns
     -------
     out : dpnp.ndarray
         An array with a data type of `bool`
-        containing the results of the logical OR reduction.
+        containing the results of the logical OR reduction is returned
+        unless `out` is specified. Otherwise, a reference to `out` is returned.
+        The result has the same shape as `a` if `axis` is not ``None``
+        or `a` is a 0-d array.
 
     Limitations
     -----------
-    Parameters `x` is supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameters `out` and `where` are supported with default value.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters `where` is only supported with its default value.
+    Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
@@ -269,7 +320,7 @@ def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
     Notes
     -----
     Not a Number (NaN), positive infinity and negative infinity evaluate
-    to `True` because these are not equal to zero.
+    to ``True`` because these are not equal to zero.
 
     Examples
     --------
@@ -281,30 +332,35 @@ def any(x, /, axis=None, out=None, keepdims=False, *, where=True):
     >>> np.any(x, axis=0)
     array([ True,  True])
 
-    >>> x2 = np.array([0, 0, 0])
+    >>> x2 = np.array([-1, 0, 5])
     >>> np.any(x2)
-    array(False)
+    array(True)
 
     >>> x3 = np.array([1.0, np.nan])
     >>> np.any(x3)
     array(True)
 
+    >>> o = np.array(False)
+    >>> z = np.any(x2, out=o)
+    >>> z, o
+    (array(True), array(True))
+    >>> # Check now that `z` is a reference to `o`
+    >>> z is o
+    True
+    >>> id(z), id(o) # identity of `z` and `o`
+    >>> (140053638309840, 140053638309840) # may vary
+
     """
 
-    if dpnp.is_supported_array_type(x):
-        if out is not None:
-            pass
-        elif where is not True:
-            pass
-        else:
-            dpt_array = dpnp.get_usm_ndarray(x)
-            return dpnp_array._create_from_usm_ndarray(
-                dpt.any(dpt_array, axis=axis, keepdims=keepdims)
-            )
+    dpnp.check_limitations(where=where)
 
-    return call_origin(
-        numpy.any, x, axis=axis, out=out, keepdims=keepdims, where=where
+    dpt_array = dpnp.get_usm_ndarray(a)
+    result = dpnp_array._create_from_usm_ndarray(
+        dpt.any(dpt_array, axis=axis, keepdims=keepdims)
     )
+    # TODO: temporary solution until dpt.any supports out parameter
+    result = dpnp.get_result_array(result, out)
+    return result
 
 
 _EQUAL_DOCSTRING = """
@@ -370,8 +426,8 @@ array([ True,  True, False])
 
 equal = DPNPBinaryFunc(
     "equal",
-    ti._equal_result_type,
-    ti._equal,
+    tei._equal_result_type,
+    tei._equal,
     _EQUAL_DOCSTRING,
 )
 
@@ -433,8 +489,8 @@ array([ True, False])
 
 greater = DPNPBinaryFunc(
     "greater",
-    ti._greater_result_type,
-    ti._greater,
+    tei._greater_result_type,
+    tei._greater,
     _GREATER_DOCSTRING,
 )
 
@@ -497,8 +553,8 @@ array([ True,  True, False])
 
 greater_equal = DPNPBinaryFunc(
     "greater",
-    ti._greater_equal_result_type,
-    ti._greater_equal,
+    tei._greater_equal_result_type,
+    tei._greater_equal,
     _GREATER_EQUAL_DOCSTRING,
 )
 
@@ -599,8 +655,8 @@ array([False,  True, False])
 
 isfinite = DPNPUnaryFunc(
     "isfinite",
-    ti._isfinite_result_type,
-    ti._isfinite,
+    tei._isfinite_result_type,
+    tei._isfinite,
     _ISFINITE_DOCSTRING,
 )
 
@@ -652,8 +708,8 @@ array([ True, False,  True])
 
 isinf = DPNPUnaryFunc(
     "isinf",
-    ti._isinf_result_type,
-    ti._isinf,
+    tei._isinf_result_type,
+    tei._isinf,
     _ISINF_DOCSTRING,
 )
 
@@ -706,8 +762,8 @@ array([False, False,  True])
 
 isnan = DPNPUnaryFunc(
     "isnan",
-    ti._isnan_result_type,
-    ti._isnan,
+    tei._isnan_result_type,
+    tei._isnan,
     _ISNAN_DOCSTRING,
 )
 
@@ -913,8 +969,8 @@ array([ True, False])
 
 less = DPNPBinaryFunc(
     "less",
-    ti._less_result_type,
-    ti._less,
+    tei._less_result_type,
+    tei._less,
     _LESS_DOCSTRING,
 )
 
@@ -976,8 +1032,8 @@ array([False,  True,  True])
 
 less_equal = DPNPBinaryFunc(
     "less_equal",
-    ti._less_equal_result_type,
-    ti._less_equal,
+    tei._less_equal_result_type,
+    tei._less_equal,
     _LESS_EQUAL_DOCSTRING,
 )
 
@@ -1041,8 +1097,8 @@ array([False, False])
 
 logical_and = DPNPBinaryFunc(
     "logical_and",
-    ti._logical_and_result_type,
-    ti._logical_and,
+    tei._logical_and_result_type,
+    tei._logical_and,
     _LOGICAL_AND_DOCSTRING,
 )
 
@@ -1093,8 +1149,8 @@ array([False, False, False,  True,  True])
 
 logical_not = DPNPUnaryFunc(
     "logical_not",
-    ti._logical_not_result_type,
-    ti._logical_not,
+    tei._logical_not_result_type,
+    tei._logical_not,
     _LOGICAL_NOT_DOCSTRING,
 )
 
@@ -1158,8 +1214,8 @@ array([ True, False])
 
 logical_or = DPNPBinaryFunc(
     "logical_or",
-    ti._logical_or_result_type,
-    ti._logical_or,
+    tei._logical_or_result_type,
+    tei._logical_or,
     _LOGICAL_OR_DOCSTRING,
 )
 
@@ -1221,8 +1277,8 @@ array([[ True, False],
 
 logical_xor = DPNPBinaryFunc(
     "logical_xor",
-    ti._logical_xor_result_type,
-    ti._logical_xor,
+    tei._logical_xor_result_type,
+    tei._logical_xor,
     _LOGICAL_XOR_DOCSTRING,
 )
 
@@ -1284,7 +1340,7 @@ array([False,  True])
 
 not_equal = DPNPBinaryFunc(
     "not_equal",
-    ti._not_equal_result_type,
-    ti._not_equal,
+    tei._not_equal_result_type,
+    tei._not_equal,
     _NOT_EQUAL_DOCSTRING,
 )
