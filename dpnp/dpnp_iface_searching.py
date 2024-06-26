@@ -329,7 +329,7 @@ def where(condition, x=None, y=None, /, *, order="K", out=None):
         Values from which to choose. `x`, `y` and `condition` need to be
         broadcastable to some shape.
     order : {"K", "C", "F", "A"}, optional
-        Memory layout of the new output arra, if keyword `out` is ``None``.
+        Memory layout of the new output array, if keyword `out` is ``None``.
         Default: ``"K"``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         The array into which the result is written. The data type of `out` must
