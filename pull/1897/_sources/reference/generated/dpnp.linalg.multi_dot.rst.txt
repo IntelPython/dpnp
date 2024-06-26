@@ -1,0 +1,6 @@
+﻿dpnp.linalg.multi\_dot
+======================
+
+.. currentmodule:: dpnp.linalg
+
+.. autofunction:: multi_dot
