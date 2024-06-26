@@ -47,11 +47,10 @@ std::pair<sycl::event, sycl::event>
                 const bool is_forward,
                 const std::vector<sycl::event> &depends)
 {
-    // TODO: activate in MKL=2024.2
-    // bool committed = descr.is_committed();
-    // if (!committed) {
-    //    throw py::value_error("Descriptor is not committed");
-    //}
+    bool committed = descr.is_committed();
+    if (!committed) {
+        throw py::value_error("Descriptor is not committed");
+    }
 
     const bool in_place = descr.get_in_place();
     if (in_place) {
