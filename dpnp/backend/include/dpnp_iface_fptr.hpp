@@ -140,12 +140,10 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FLOOR,         /**< Used in numpy.floor() impl  */
     DPNP_FN_FLOOR_DIVIDE,  /**< Used in numpy.floor_divide() impl  */
     DPNP_FN_FMOD,          /**< Used in numpy.fmod() impl  */
-    DPNP_FN_FMOD_EXT,  /**< Used in numpy.fmod() impl, requires extra parameters
-                        */
-    DPNP_FN_FULL,      /**< Used in numpy.full() impl  */
-    DPNP_FN_FULL_LIKE, /**< Used in numpy.full_like() impl  */
-    DPNP_FN_HYPOT,     /**< Used in numpy.hypot() impl  */
-    DPNP_FN_IDENTITY,  /**< Used in numpy.identity() impl  */
+    DPNP_FN_FULL,          /**< Used in numpy.full() impl  */
+    DPNP_FN_FULL_LIKE,     /**< Used in numpy.full_like() impl  */
+    DPNP_FN_HYPOT,         /**< Used in numpy.hypot() impl  */
+    DPNP_FN_IDENTITY,      /**< Used in numpy.identity() impl  */
     DPNP_FN_INITVAL, /**< Used in numpy ones, ones_like, zeros, zeros_like impls
                       */
     DPNP_FN_INITVAL_EXT, /**< Used in numpy ones, ones_like, zeros, zeros_like
