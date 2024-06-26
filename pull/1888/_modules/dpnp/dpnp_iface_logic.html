@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.16.0dev0+46.gb7bacd83bc documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.16.0dev0+48.gfd86f55ac3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=36e64117"></script>
+        <script src="../../_static/documentation_options.js?v=cd16180e"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+46.gb7bacd83bc
+                0.16.0dev0+48.gfd86f55ac3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -470,10 +470,12 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array have the correct shape and the expected data type.</span>
@@ -539,13 +541,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -602,13 +607,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -716,6 +724,7 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -775,6 +784,7 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -828,6 +838,7 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -1028,13 +1039,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -1091,13 +1105,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -1154,13 +1171,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -1223,6 +1243,7 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -1271,13 +1292,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -1336,13 +1360,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -1399,13 +1426,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
