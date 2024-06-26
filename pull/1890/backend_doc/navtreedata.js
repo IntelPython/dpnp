@@ -46,8 +46,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "abs_8hpp_source.html",
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a673b312ec7e9a40fa18483ed02d3649d",
-"tanh_8hpp_source.html"
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a62f2665bbd701478639f3701b16a6cf1",
+"sum__mean_8hpp_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
