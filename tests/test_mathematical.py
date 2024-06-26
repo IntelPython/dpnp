@@ -1040,12 +1040,11 @@ class TestMathematical:
     def test_fmin(self, dtype, lhs, rhs):
         self._test_mathematical("fmin", dtype, lhs, rhs, check_type=False)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
     def test_fmod(self, dtype, lhs, rhs):
-        if rhs == 0.3:
+        if rhs == 0.3 and not has_support_aspect64():
             """
             Due to accuracy reason, the results are different for `float32` and `float64`
                 >>> numpy.fmod(numpy.array([3.9], dtype=numpy.float32), 0.3)
@@ -1053,7 +1052,7 @@ class TestMathematical:
 
                 >>> numpy.fmod(numpy.array([3.9], dtype=numpy.float64), 0.3)
                 array([9.53674318e-08])
-            On a gpu without support for `float64`, dpnp produces results similar to the second one.
+            On a gpu without fp64 support, dpnp produces results similar to the second one.
             """
             pytest.skip("Due to accuracy reason, the results are different.")
         self._test_mathematical("fmod", dtype, lhs, rhs, check_type=False)
@@ -1298,6 +1297,52 @@ def test_positive_boolean():
 
     with pytest.raises(TypeError):
         dpnp.positive(dpnp_a)
+
+
+@pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+def test_float_remainder_magnitude(dtype):
+    b = numpy.array(1.0, dtype=dtype)
+    a = numpy.nextafter(numpy.array(0.0, dtype=dtype), -b)
+
+    ia = dpnp.array(a)
+    ib = dpnp.array(b)
+
+    result = dpnp.remainder(ia, ib)
+    expected = numpy.remainder(a, b)
+    assert_equal(result, expected)
+
+    result = dpnp.remainder(-ia, -ib)
+    expected = numpy.remainder(-a, -b)
+    assert_equal(result, expected)
+
+
+@pytest.mark.usefixtures("suppress_divide_numpy_warnings")
+@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+@pytest.mark.parametrize("func", ["remainder", "fmod"])
+@pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+@pytest.mark.parametrize(
+    "lhs, rhs",
+    [
+        pytest.param(1.0, 0.0, id="one-zero"),
+        pytest.param(1.0, numpy.inf, id="one-inf"),
+        pytest.param(numpy.inf, 1.0, id="inf-one"),
+        pytest.param(numpy.inf, numpy.inf, id="inf-inf"),
+        pytest.param(numpy.inf, 0.0, id="inf-zero"),
+        pytest.param(1.0, numpy.nan, id="one-nan"),
+        pytest.param(numpy.nan, 0.0, id="nan-zero"),
+        pytest.param(numpy.nan, 1.0, id="nan-one"),
+    ],
+)
+def test_float_remainder_fmod_nans_inf(func, dtype, lhs, rhs):
+    a = numpy.array(lhs, dtype=dtype)
+    b = numpy.array(rhs, dtype=dtype)
+
+    ia = dpnp.array(a)
+    ib = dpnp.array(b)
+
+    result = getattr(dpnp, func)(ia, ib)
+    expected = getattr(numpy, func)(a, b)
+    assert_equal(result, expected)
 
 
 class TestProd:
