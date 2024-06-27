@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.16.0dev0+32.g94c5a47c31 documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.16.0dev0+36.gb6a38828fa documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=069b06cc"></script>
+        <script src="../../_static/documentation_options.js?v=b33af216"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+32.g94c5a47c31
+                0.16.0dev0+36.gb6a38828fa
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -156,6 +156,8 @@
     <span class="s2">&quot;isfinite&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isinf&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isnan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isneginf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isposinf&quot;</span><span class="p">,</span>
     <span class="s2">&quot;less&quot;</span><span class="p">,</span>
     <span class="s2">&quot;less_equal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;logical_and&quot;</span><span class="p">,</span>
@@ -468,10 +470,12 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array have the correct shape and the expected data type.</span>
@@ -537,13 +541,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -600,13 +607,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -714,6 +724,7 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -773,6 +784,7 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -826,6 +838,7 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -868,6 +881,156 @@
 <span class="p">)</span>
 
 
+<div class="viewcode-block" id="isneginf">
+<a class="viewcode-back" href="../../reference/generated/dpnp.isneginf.html#dpnp.isneginf">[docs]</a>
+<span class="k">def</span> <span class="nf">isneginf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test element-wise for negative infinity, return result as bool array.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.isneginf`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have a</span>
+<span class="sd">        shape that the input broadcasts to and a boolean data type.</span>
+<span class="sd">        If not provided or ``None``, a freshly-allocated boolean array</span>
+<span class="sd">        is returned.</span>
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Boolean array of same shape as ``x``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.</span>
+<span class="sd">    :obj:`dpnp.isposinf` : Test element-wise for positive infinity,</span>
+<span class="sd">                            return result as bool array.</span>
+<span class="sd">    :obj:`dpnp.isnan` : Test element-wise for NaN and</span>
+<span class="sd">                    return result as a boolean array.</span>
+<span class="sd">    :obj:`dpnp.isfinite` : Test element-wise for finiteness.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array(np.inf)</span>
+<span class="sd">    &gt;&gt;&gt; np.isneginf(-x)</span>
+<span class="sd">    array(True)</span>
+<span class="sd">    &gt;&gt;&gt; np.isneginf(x)</span>
+<span class="sd">    array(False)</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
+<span class="sd">    &gt;&gt;&gt; np.isneginf(x)</span>
+<span class="sd">    array([ True, False, False])</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.zeros(x.shape, dtype=&#39;bool&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; np.isneginf(x, y)</span>
+<span class="sd">    array([ True, False, False])</span>
+<span class="sd">    &gt;&gt;&gt; y</span>
+<span class="sd">    array([ True, False, False])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="n">x_dtype</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x_dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;This operation is not supported for </span><span class="si">{</span><span class="n">x_dtype</span><span class="si">}</span><span class="s2"> values &quot;</span>
+            <span class="s2">&quot;because it would be ambiguous.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">is_inf</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">signbit</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">signbit</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># TODO: support different out dtype #1717(dpctl)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">is_inf</span><span class="p">,</span> <span class="n">signbit</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="isposinf">
+<a class="viewcode-back" href="../../reference/generated/dpnp.isposinf.html#dpnp.isposinf">[docs]</a>
+<span class="k">def</span> <span class="nf">isposinf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test element-wise for positive infinity, return result as bool array.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.isposinf`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have a</span>
+<span class="sd">        shape that the input broadcasts to and a boolean data type.</span>
+<span class="sd">        If not provided or ``None``, a freshly-allocated boolean array</span>
+<span class="sd">        is returned.</span>
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Boolean array of same shape as ``x``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.</span>
+<span class="sd">    :obj:`dpnp.isneginf` : Test element-wise for negative infinity,</span>
+<span class="sd">                            return result as bool array.</span>
+<span class="sd">    :obj:`dpnp.isnan` : Test element-wise for NaN and</span>
+<span class="sd">                    return result as a boolean array.</span>
+<span class="sd">    :obj:`dpnp.isfinite` : Test element-wise for finiteness.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array(np.inf)</span>
+<span class="sd">    &gt;&gt;&gt; np.isposinf(x)</span>
+<span class="sd">    array(True)</span>
+<span class="sd">    &gt;&gt;&gt; np.isposinf(-x)</span>
+<span class="sd">    array(False)</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
+<span class="sd">    &gt;&gt;&gt; np.isposinf(x)</span>
+<span class="sd">    array([False, False,  True])</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.zeros(x.shape, dtype=&#39;bool&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; np.isposinf(x, y)</span>
+<span class="sd">    array([False, False,  True])</span>
+<span class="sd">    &gt;&gt;&gt; y</span>
+<span class="sd">    array([False, False,  True])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="n">x_dtype</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x_dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;This operation is not supported for </span><span class="si">{</span><span class="n">x_dtype</span><span class="si">}</span><span class="s2"> values &quot;</span>
+            <span class="s2">&quot;because it would be ambiguous.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">is_inf</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">signbit</span> <span class="o">=</span> <span class="o">~</span><span class="n">dpnp</span><span class="o">.</span><span class="n">signbit</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># TODO: support different out dtype #1717(dpctl)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">is_inf</span><span class="p">,</span> <span class="n">signbit</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+
+
+
 <span class="n">_LESS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the less-than test results for each element `x1_i` of</span>
 <span class="s2">the input array `x1` with the respective element `x2_i` of the input array `x2`.</span>
@@ -876,13 +1039,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -939,13 +1105,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -1002,13 +1171,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -1071,6 +1243,7 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -1119,13 +1292,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -1184,13 +1360,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
@@ -1247,13 +1426,16 @@
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
-<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
