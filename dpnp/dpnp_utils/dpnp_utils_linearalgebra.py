@@ -150,7 +150,6 @@ def _create_result_array(
         if (
             out.dtype == dtype
             and out.shape == shape
-            and out.usm_type == usm_type
             and contig_flag
             and not ti._array_overlap(x1_usm, out_usm)
             and not ti._array_overlap(x2_usm, out_usm)
@@ -325,10 +324,13 @@ def _get_result_shape(x1, x2, out, np_flag):
 
 def _gemm_batch_matmul(exec_q, x1, x2, res):
     # arrays here are already at least 3D, make them 3D
-    x1 = dpnp.reshape(x1, (-1, x1.shape[-2], x1.shape[-1]))
-    x2 = dpnp.reshape(x2, (-1, x2.shape[-2], x2.shape[-1]))
+    x1_shape = x1.shape
+    x2_shape = x2.shape
+    x1 = dpnp.reshape(x1, (-1, x1_shape[-2], x1_shape[-1]))
+    x2 = dpnp.reshape(x2, (-1, x2_shape[-2], x2_shape[-1]))
     orig_shape = res.shape
-    res = dpnp.reshape(res, (-1, res.shape[-2], res.shape[-1]))
+    res = dpnp.reshape(res, (-1, orig_shape[-2], orig_shape[-1]))
+    res_shape = res.shape
 
     # gemm_batch does not handle negative strides, make a copy if needed
     x1 = _copy_array(x1, copy_flag=x1.strides[0] < 0)
@@ -338,16 +340,16 @@ def _gemm_batch_matmul(exec_q, x1, x2, res):
     _manager = dpu.SequentialOrderManager[exec_q]
 
     # onemkl::blas::gemm_bacth throws an exception (Provided range is out
-    # of integer limits) if the batch_size is too large (>=4096*4096), so
-    # we need to split the batch into smaller chunks
-    chunk = 2048 * 2048
-    batch_size = res.shape[0]
+    # of integer limits) if the batch_size is too large, so we need to
+    # split the batch into smaller chunks, the size depnends on device
+    chunk = 4096 * 4096 - 2
+    batch_size = res_shape[0]
     for i in range(0, batch_size, chunk):
-        if x1.shape[0] == 1:
+        if x1_shape[0] == 1:
             # x1 is repeatedly multiplied with each matrix in x2
             x1_usm = dpnp.get_usm_ndarray(x1)
             x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
-        elif x2.shape[0] == 1:
+        elif x2_shape[0] == 1:
             x1_usm = dpnp.get_usm_ndarray(x1[i : i + chunk, ...])
             x2_usm = dpnp.get_usm_ndarray(x2)
         else:
@@ -364,7 +366,6 @@ def _gemm_batch_matmul(exec_q, x1, x2, res):
         )
         _manager.add_event_pair(ht_ev, blas_ev)
 
-    res_shape = res.shape
     _, res_is_c_contig, res_is_f_contig = _define_contig_flag(res)
     if row_major:
         if res_is_f_contig:
@@ -767,9 +768,8 @@ def dpnp_matmul(
         call_flag = "multiply"
     elif x1_is_1D and x2_is_1D:
         call_flag = "dot"
-        x1 = dpnp.reshape(x1, x1_shape[-1])
-        if x2_ndim != 1:
-            x2 = dpnp.reshape(x2, x2_shape[-2])
+        x1 = dpnp.reshape(x1, x1.size)
+        x2 = dpnp.reshape(x2, x2.size)
     elif x1_base_is_1D and x2_base_is_1D:
         # TODO: implement a batch version of dot to use it here
         call_flag = "gemm_batch"
@@ -914,10 +914,6 @@ def dpnp_matmul(
             return dpnp.array(result, copy=False, order=order)
         return result
 
-    # TODO: There is opportunity to improve performance when out keyword is
-    # present. For some cases, out is NOT result but they have the same base
-    # (They are views of the same data). In this case, we can avoid copyign
-    # result to out.
     result = dpnp.get_result_array(result, out, casting=casting)
     if axes is not None and out is result:
         # out and out_orig contain the same data but they have different shape
