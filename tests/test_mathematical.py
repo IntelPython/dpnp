@@ -2962,6 +2962,7 @@ class TestMatmul:
     @pytest.mark.parametrize("incy", [-2, 2], ids=["-2", "2"])
     @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
     def test_matmul_strided_mat_vec(self, shape, incx, incy, transpose):
+        # vector is strided
         if transpose:
             s1 = shape[-2]
             s2 = shape[-1]
@@ -2994,6 +2995,7 @@ class TestMatmul:
     @pytest.mark.parametrize("incy", [-2, 2], ids=["-2", "2"])
     @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
     def test_matmul_strided_vec_mat(self, shape, incx, incy, transpose):
+        # vector is strided
         if transpose:
             s1 = shape[-2]
             s2 = shape[-1]
@@ -3142,9 +3144,9 @@ class TestMatmul:
     @pytest.mark.parametrize(
         "shape_pair",
         [
-            ((4096, 4096, 2, 2), (4096, 4096, 2, 2)),
-            ((2, 2), (4096, 4096, 2, 2)),
-            ((4096, 4096, 2, 2), (2, 2)),
+            ((5000, 5000, 2, 2), (5000, 5000, 2, 2)),
+            ((2, 2), (5000, 5000, 2, 2)),
+            ((5000, 5000, 2, 2), (2, 2)),
         ],
     )
     def test_matmul_large(self, shape_pair):

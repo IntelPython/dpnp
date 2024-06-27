@@ -40,14 +40,6 @@ extern std::pair<sycl::event, sycl::event>
          const bool transpose,
          const std::vector<sycl::event> &depends);
 
-extern std::pair<sycl::event, sycl::event>
-    gemv_batch(sycl::queue &exec_q,
-               const dpctl::tensor::usm_ndarray &matrixA,
-               const dpctl::tensor::usm_ndarray &vectorX,
-               const dpctl::tensor::usm_ndarray &vectorY,
-               const bool transpose,
-               const std::vector<sycl::event> &depends);
-
 extern void init_gemv_dispatch_vector(void);
 extern void init_gemv_batch_dispatch_vector(void);
 } // namespace dpnp::extensions::blas

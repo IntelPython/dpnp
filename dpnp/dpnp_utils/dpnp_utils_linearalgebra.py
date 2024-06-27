@@ -709,10 +709,13 @@ def _get_result_shape(x1, x2, out, np_flag):
 
 def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
     # arrays here are already at least 3D, make them 3D
-    x1 = dpnp.reshape(x1, (-1, x1.shape[-2], x1.shape[-1]))
-    x2 = dpnp.reshape(x2, (-1, x2.shape[-2], x2.shape[-1]))
+    x1_shape = x1.shape
+    x2_shape = x2.shape
+    x1 = dpnp.reshape(x1, (-1, x1_shape[-2], x1_shape[-1]))
+    x2 = dpnp.reshape(x2, (-1, x2_shape[-2], x2_shape[-1]))
     orig_shape = res.shape
-    res = dpnp.reshape(res, (-1, res.shape[-2], res.shape[-1]))
+    res = dpnp.reshape(res, (-1, orig_shape[-2], orig_shape[-1]))
+    res_shape = res.shape
 
     ht_tasks_list = []
     # gemm_batch does not handle negative strides, make a copy if needed
@@ -726,16 +729,16 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
         res, dev_tasks_list, ht_tasks_list, copy_flag=res.strides[0] < 0
     )
     # onemkl::blas::gemm_bacth throws an exception (Provided range is out
-    # of integer limits) if the batch_size is too large (>=4096*4096), so
-    # we need to split the batch into smaller chunks
-    chunk = 2048 * 2048
-    batch_size = res.shape[0]
+    # of integer limits) if the batch_size is too large, so we need to
+    # split the batch into smaller chunks, the size depnends on device
+    chunk = 4096 * 4096 - 2
+    batch_size = res_shape[0]
     for i in range(0, batch_size, chunk):
-        if x1.shape[0] == 1:
+        if x1_shape[0] == 1:
             # x1 is repeatedly multiplied with each matrix in x2
             x1_usm = dpnp.get_usm_ndarray(x1)
             x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
-        elif x2.shape[0] == 1:
+        elif x2_shape[0] == 1:
             x1_usm = dpnp.get_usm_ndarray(x1[i : i + chunk, ...])
             x2_usm = dpnp.get_usm_ndarray(x2)
         else:
@@ -752,7 +755,6 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
         ht_tasks_list.append(ht_blas_ev)
     dpctl.SyclEvent.wait_for(ht_tasks_list)
 
-    res_shape = res.shape
     _, res_is_c_contig, res_is_f_contig = _define_contig_flag(res)
     if row_major:
         if res_is_f_contig:
@@ -2143,9 +2145,8 @@ def dpnp_matmul(
         call_flag = "multiply"
     elif x1_is_1D and x2_is_1D:
         call_flag = "dot"
-        x1 = dpnp.reshape(x1, x1_shape[-1])
-        if x2_ndim != 1:
-            x2 = dpnp.reshape(x2, x2_shape[-2])
+        x1 = dpnp.reshape(x1, x1.size)
+        x2 = dpnp.reshape(x2, x2.size)
     elif x1_base_is_1D and x2_base_is_1D:
         # TODO: implement a batch version of dot to use it here
         call_flag = "gemm_batch"

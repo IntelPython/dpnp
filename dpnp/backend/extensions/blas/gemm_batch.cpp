@@ -346,10 +346,10 @@ std::tuple<sycl::event, sycl::event, bool>
                       strideb, stridec, transA, transB, a_typeless_ptr,
                       b_typeless_ptr, r_typeless_ptr, is_row_major, depends);
 
-    sycl::event args_batch_ev = dpctl::utils::keep_args_alive(
+    sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {matrixA, matrixB, resultC}, {gemm_batch_ev});
 
-    return std::make_tuple(args_batch_ev, gemm_batch_ev, is_row_major);
+    return std::make_tuple(args_ev, gemm_batch_ev, is_row_major);
 }
 
 template <typename fnT, typename Tab, typename Tc>
