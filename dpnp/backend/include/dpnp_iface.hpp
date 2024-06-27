@@ -178,32 +178,6 @@ INP_DLLEXPORT void
 
 /**
  * @ingroup BACKEND_API
- * @brief Array initialization
- *
- * Input array, step based, initialization procedure.
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  start               Start of initialization sequence
- * @param [in]  step                Step for initialization sequence
- * @param [out] result1             Output array.
- * @param [in]  size                Number of elements in input arrays.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_arange_c(DPCTLSyclQueueRef q_ref,
-                  size_t start,
-                  size_t step,
-                  void *result1,
-                  size_t size,
-                  const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_arange_c(size_t start, size_t step, void *result1, size_t size);
-
-/**
- * @ingroup BACKEND_API
  * @brief Copy of the array, cast to a specified type.
  *
  * @param [in]  q_ref               Reference to SYCL queue.
@@ -223,48 +197,6 @@ INP_DLLEXPORT DPCTLSyclEventRef
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void
     dpnp_astype_c(const void *array, void *result, const size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief Implementation of full function
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array_in            Input one-element array.
- * @param [out] result              Output array.
- * @param [in]  size                Number of elements in the output array.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_full_c(DPCTLSyclQueueRef q_ref,
-                void *array_in,
-                void *result,
-                const size_t size,
-                const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_full_c(void *array_in, void *result, const size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief Implementation of full_like function
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array_in            Input one-element array.
- * @param [out] result              Output array.
- * @param [in]  size                Number of elements in the output array.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_full_like_c(DPCTLSyclQueueRef q_ref,
-                     void *array_in,
-                     void *result,
-                     size_t size,
-                     const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_full_like_c(void *array_in, void *result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -790,56 +722,6 @@ INP_DLLEXPORT void dpnp_prod_c(void *result_out,
 
 /**
  * @ingroup BACKEND_API
- * @brief Range of values (maximum - minimum) along an axis.
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [out] result_out          Output array.
- * @param [in]  result_size         Size of output array.
- * @param [in]  result_ndim         Number of output array dimensions.
- * @param [in]  result_shape        Shape of output array.
- * @param [in]  result_strides      Strides of output array.
- * @param [in]  input_in            First input array.
- * @param [in]  input_size          Size of first input array.
- * @param [in]  input_ndim          Number of first input array dimensions.
- * @param [in]  input_shape         Shape of first input array.
- * @param [in]  input_strides       Strides of first input array.
- * @param [in]  axis                Axis.
- * @param [in]  naxis               Number of elements in axis.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_ptp_c(DPCTLSyclQueueRef q_ref,
-               void *result_out,
-               const size_t result_size,
-               const size_t result_ndim,
-               const shape_elem_type *result_shape,
-               const shape_elem_type *result_strides,
-               const void *input_in,
-               const size_t input_size,
-               const size_t input_ndim,
-               const shape_elem_type *input_shape,
-               const shape_elem_type *input_strides,
-               const shape_elem_type *axis,
-               const size_t naxis,
-               const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_ptp_c(void *result_out,
-                              const size_t result_size,
-                              const size_t result_ndim,
-                              const shape_elem_type *result_shape,
-                              const shape_elem_type *result_strides,
-                              const void *input_in,
-                              const size_t input_size,
-                              const size_t input_ndim,
-                              const shape_elem_type *input_shape,
-                              const shape_elem_type *input_strides,
-                              const shape_elem_type *axis,
-                              const size_t naxis);
-
-/**
- * @ingroup BACKEND_API
  * @brief Replaces specified elements of an array with given values.
  *
  * @param [in]  q_ref               Reference to SYCL queue.
@@ -957,29 +839,6 @@ INP_DLLEXPORT DPCTLSyclEventRef
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void
     dpnp_eigvals_c(const void *array_in, void *result1, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief Return a 2-D array with ones on the diagonal and zeros elsewhere.
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [out] result              The eigenvalues, each repeated according to
- * its multiplicity
- * @param [in]  k                   Index of the diagonal
- * @param [in]  shape               Shape of result
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_eye_c(DPCTLSyclQueueRef q_ref,
-               void *result,
-               int k,
-               const shape_elem_type *res_shape,
-               const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_eye_c(void *result, int k, const shape_elem_type *res_shape);
 
 /**
  * @ingroup BACKEND_API
@@ -1215,60 +1074,6 @@ INP_DLLEXPORT void dpnp_choose_c(void *result1,
 
 /**
  * @ingroup BACKEND_API
- * @brief Extract a diagonal or construct a diagonal array.
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array               Input array with data.
- * @param [out] result              Output array.
- * @param [in]  k                   Diagonal in question.
- * @param [in]  shape               Shape of input array.
- * @param [in]  res_shape           Shape of result array.
- * @param [in]  ndim                Number of elements in shape of input array.
- * @param [in]  res_ndim            Number of elements in shape of result array.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_diag_c(DPCTLSyclQueueRef q_ref,
-                void *array,
-                void *result,
-                const int k,
-                shape_elem_type *shape,
-                shape_elem_type *res_shape,
-                const size_t ndim,
-                const size_t res_ndim,
-                const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_diag_c(void *array,
-                               void *result,
-                               const int k,
-                               shape_elem_type *shape,
-                               shape_elem_type *res_shape,
-                               const size_t ndim,
-                               const size_t res_ndim);
-
-/**
- * @ingroup BACKEND_API
- * @brief Return the indices to access the main diagonal of an array.
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [out] result1             Output array.
- * @param [in]  size                Size of array.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_diag_indices_c(DPCTLSyclQueueRef q_ref,
-                        void *result1,
-                        size_t size,
-                        const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_diag_indices_c(void *result1, size_t size);
-
-/**
- * @ingroup BACKEND_API
  * @brief math library implementation of diagonal function
  *
  * @param [in]  q_ref               Reference to SYCL queue.
@@ -1302,26 +1107,6 @@ INP_DLLEXPORT void dpnp_diagonal_c(void *array1_in,
                                    shape_elem_type *shape,
                                    shape_elem_type *res_shape,
                                    const size_t res_ndim);
-
-/**
- * @ingroup BACKEND_API
- * @brief Implementation of identity function
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [out] result1             Output array.
- * @param [in]  n                   Number of rows (and columns) in n x n
- * output.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_identity_c(DPCTLSyclQueueRef q_ref,
-                    void *result1,
-                    const size_t n,
-                    const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_identity_c(void *result1, const size_t n);
 
 /**
  * @ingroup BACKEND_API
@@ -1662,128 +1447,6 @@ INP_DLLEXPORT void dpnp_take_c(void *array,
                                void *indices,
                                void *result,
                                size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of trace function
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array               Input array with data.
- * @param [out] result              Output array.
- * @param [in]  shape               Shape of input array.
- * @param [in]  ndim                Number of elements in array.shape.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_trace_c(DPCTLSyclQueueRef q_ref,
-                 const void *array,
-                 void *result,
-                 const shape_elem_type *shape,
-                 const size_t ndim,
-                 const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_trace_c(const void *array,
-                                void *result,
-                                const shape_elem_type *shape,
-                                const size_t ndim);
-
-/**
- * @ingroup BACKEND_API
- * @brief An array with ones at and below the given diagonal and zeros
- * elsewhere.
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [out] result              Output array.
- * @param [in]  N                   Number of rows in the array.
- * @param [in]  M                   Number of columns in the array.
- * @param [in]  k                   The sub-diagonal at and below which the
- * array is filled.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_tri_c(DPCTLSyclQueueRef q_ref,
-               void *result,
-               const size_t N,
-               const size_t M,
-               const int k,
-               const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_tri_c(void *result, const size_t N, const size_t M, const int k);
-
-/**
- * @ingroup BACKEND_API
- * @brief Lower triangle of an array.
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array               Input array with data.
- * @param [out] result              Output array.
- * @param [in]  k                   Diagonal above which to zero elements.
- * @param [in]  shape               Shape of input array.
- * @param [in]  res_shape           Shape of result array.
- * @param [in]  ndim                Number of elements in array.shape.
- * @param [in]  res_ndim            Number of elements in res_shape.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_tril_c(DPCTLSyclQueueRef q_ref,
-                void *array,
-                void *result,
-                const int k,
-                shape_elem_type *shape,
-                shape_elem_type *res_shape,
-                const size_t ndim,
-                const size_t res_ndim,
-                const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_tril_c(void *array,
-                               void *result,
-                               const int k,
-                               shape_elem_type *shape,
-                               shape_elem_type *res_shape,
-                               const size_t ndim,
-                               const size_t res_ndim);
-
-/**
- * @ingroup BACKEND_API
- * @brief Upper triangle of an array.
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array               Input array with data.
- * @param [out] result              Output array.
- * @param [in]  k                   Diagonal above which to zero elements.
- * @param [in]  shape               Shape of input array.
- * @param [in]  res_shape           Shape of result array.
- * @param [in]  ndim                Number of elements in array.shape.
- * @param [in]  res_ndim            Number of elements in res_shape.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_triu_c(DPCTLSyclQueueRef q_ref,
-                void *array,
-                void *result,
-                const int k,
-                shape_elem_type *shape,
-                shape_elem_type *res_shape,
-                const size_t ndim,
-                const size_t res_ndim,
-                const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_triu_c(void *array,
-                               void *result,
-                               const int k,
-                               shape_elem_type *shape,
-                               shape_elem_type *res_shape,
-                               const size_t ndim,
-                               const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -2181,36 +1844,6 @@ INP_DLLEXPORT void dpnp_trapz_c(const void *array1_in,
                                 double dx,
                                 size_t array1_size,
                                 size_t array2_size);
-
-/**
- * @ingroup BACKEND_API
- * @brief Implementation of vander function
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array_in            Input array.
- * @param [out] result              Output array.
- * @param [in]  size_in             Number of elements in the input array.
- * @param [in]  N                   Number of columns in the output.
- * @param [in]  increasing          Order of the powers of the columns.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- *
- */
-template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_vander_c(DPCTLSyclQueueRef q_ref,
-                  const void *array1_in,
-                  void *result1,
-                  const size_t size_in,
-                  const size_t N,
-                  const int increasing,
-                  const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT void dpnp_vander_c(const void *array1_in,
-                                 void *result1,
-                                 const size_t size_in,
-                                 const size_t N,
-                                 const int increasing);
 
 /**
  * @ingroup BACKEND_API
