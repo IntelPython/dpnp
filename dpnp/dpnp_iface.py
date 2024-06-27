@@ -43,6 +43,7 @@ import os
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.utils as dpu
+import dpctl.tensor._tensor_impl as ti
 import numpy
 from dpctl.tensor._device import normalize_queue_device
 
@@ -165,30 +166,10 @@ def are_same_logical_tensors(ar1, ar2):
     False
 
     """
-    check_supported_arrays_type(ar1, ar2)
-    # Same ndim
-    nd1 = ar1.ndim
-    if nd1 != ar2.ndim:
-        return False
 
-    # Same dtype
-    if ar1.dtype != ar2.dtype:
-        return False
-
-    # Same pointer
-    if ar1.get_array()._pointer != ar2.get_array()._pointer:
-        return False
-
-    # Same shape
-    if ar1.shape != ar2.shape:
-        return False
-
-    # Same strides
-    if ar1.strides != ar2.strides:
-        return False
-
-    # All checks passed: arrays are logical views into the same memory
-    return True
+    return ti._same_logical_tensors(
+        dpnp.get_usm_ndarray(ar1), dpnp.get_usm_ndarray(ar2)
+    )
 
 
 def array_equal(a1, a2, equal_nan=False):
