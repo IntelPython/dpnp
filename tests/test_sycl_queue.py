@@ -394,6 +394,8 @@ def test_meshgrid(device_x, device_y):
 @pytest.mark.parametrize(
     "func,data",
     [
+        pytest.param("all", [-1.0, 0.0, 1.0]),
+        pytest.param("any", [-1.0, 0.0, 1.0]),
         pytest.param("average", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("abs", [-1.2, 1.2]),
         pytest.param("angle", [[1.0 + 1.0j, 2.0 + 3.0j]]),
@@ -491,6 +493,40 @@ def test_1in_1out(func, data, device):
 
     x_orig = dpnp.asnumpy(x)
     expected = getattr(numpy, func)(x_orig)
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = x.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "op",
+    [
+        "all",
+        "any",
+        "isfinite",
+        "isinf",
+        "isnan",
+        "isneginf",
+        "isposinf",
+        "logical_not",
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_logic_op_1in(op, device):
+    x = dpnp.array(
+        [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan], device=device
+    )
+    result = getattr(dpnp, op)(x)
+
+    x_orig = dpnp.asnumpy(x)
+    expected = getattr(numpy, op)(x_orig)
     assert_dtype_allclose(result, expected)
 
     expected_queue = x.get_array().sycl_queue
@@ -696,6 +732,55 @@ def test_2in_1out(func, data1, data2, device):
     x1 = dpnp.array(data1, device=device)
     x2 = dpnp.array(data2, device=device)
     result = getattr(dpnp, func)(x1, x2)
+
+    assert_dtype_allclose(result, expected)
+
+    assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "op",
+    [
+        "equal",
+        "greater",
+        "greater_equal",
+        # TODO: unblock when dpnp.isclose() is updated
+        # "isclose",
+        "less",
+        "less_equal",
+        "logical_and",
+        "logical_or",
+        "logical_xor",
+        "not_equal",
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_logic_op_2in(op, device):
+    x1 = dpnp.array(
+        [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan], device=device
+    )
+    x2 = dpnp.array(
+        [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan], device=device
+    )
+    # Remove NaN value from input arrays because numpy raises RuntimeWarning
+    if op in [
+        "greater",
+        "greater_equal",
+        "less",
+        "less_equal",
+    ]:
+        x1 = x1[:-1]
+        x2 = x2[:-1]
+    result = getattr(dpnp, op)(x1, x2)
+
+    x1_orig = dpnp.asnumpy(x1)
+    x2_orig = dpnp.asnumpy(x2)
+    expected = getattr(numpy, op)(x1_orig, x2_orig)
 
     assert_dtype_allclose(result, expected)
 
