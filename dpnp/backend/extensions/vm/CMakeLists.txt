@@ -43,6 +43,7 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/exp2.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/expm1.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/floor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/fmod.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/hypot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ln.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/log10.cpp

@@ -26,6 +26,7 @@
 set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/common.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fabs.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmod.cpp
 )
 
 set(python_module_name _ufunc_impl)

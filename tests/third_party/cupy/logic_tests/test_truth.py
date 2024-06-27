@@ -1,7 +1,6 @@
 import unittest
 
 import numpy
-import pytest
 
 from tests.third_party.cupy import testing
 
@@ -47,7 +46,6 @@ class TestAllAny(unittest.TestCase):
         x = xp.asarray(self.x).astype(dtype)
         return getattr(xp, self.f)(x, self.axis, None, self.keepdims)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_with_out(self, xp, dtype):
@@ -80,7 +78,6 @@ class TestAllAnyWithNaN(unittest.TestCase):
         x = xp.asarray(self.x).astype(dtype)
         return getattr(xp, self.f)(x, self.axis, None, self.keepdims)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_dtypes((*testing._loops._float_dtypes, numpy.bool_))
     @testing.numpy_cupy_array_equal()
     def test_with_out(self, xp, dtype):

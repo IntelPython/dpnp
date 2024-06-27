@@ -26,6 +26,8 @@ Infinities and NaNs
    dpnp.isfinite
    dpnp.isinf
    dpnp.isnan
+   dpnp.isneginf
+   dpnp.isposinf
 
 
 Array type testing

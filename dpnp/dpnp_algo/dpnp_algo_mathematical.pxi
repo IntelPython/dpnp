@@ -37,7 +37,6 @@ and the rest of the library
 
 __all__ += [
     "dpnp_ediff1d",
-    "dpnp_fmod",
     "dpnp_fmax",
     "dpnp_fmin",
     "dpnp_modf",
@@ -107,14 +106,6 @@ cpdef utils.dpnp_descriptor dpnp_ediff1d(utils.dpnp_descriptor x1):
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result
-
-
-cpdef utils.dpnp_descriptor dpnp_fmod(utils.dpnp_descriptor x1_obj,
-                                      utils.dpnp_descriptor x2_obj,
-                                      object dtype=None,
-                                      utils.dpnp_descriptor out=None,
-                                      object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_FMOD_EXT, x1_obj, x2_obj, dtype, out, where)
 
 
 cpdef utils.dpnp_descriptor dpnp_fmax(utils.dpnp_descriptor x1_obj,
