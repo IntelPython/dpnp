@@ -84,12 +84,7 @@ if(DPNP_GENERATE_COVERAGE)
     target_link_options(${_trgt} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 endif()
 
-if (MKL_VERSION_2024)
-    target_link_libraries(${_trgt} PUBLIC MKL::MKL_SYCL)
-else()
-    target_link_libraries(${_trgt} PUBLIC MKL::MKL_DPCPP)
-endif()
-
+target_link_libraries(${_trgt} PUBLIC MKL::MKL_SYCL)
 target_link_libraries(${_trgt} PUBLIC oneDPL)
 
 if (UNIX)
