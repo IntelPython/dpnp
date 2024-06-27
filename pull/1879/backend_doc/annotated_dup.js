@@ -97,6 +97,9 @@ var annotated_dup =
       [ "kernels", null, [
         [ "fabs", null, [
           [ "FabsFunctor", "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html", null ]
+        ] ],
+        [ "fmod", null, [
+          [ "FmodFunctor", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ]
         ] ]
       ] ]
     ] ],
