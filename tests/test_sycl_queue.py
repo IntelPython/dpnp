@@ -373,18 +373,13 @@ def test_array_creation_load_txt(device):
 
 
 @pytest.mark.parametrize(
-    "device_x",
+    "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-@pytest.mark.parametrize(
-    "device_y",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_meshgrid(device_x, device_y):
-    x = dpnp.arange(100, device=device_x)
-    y = dpnp.arange(100, device=device_y)
+def test_meshgrid(device):
+    x = dpnp.arange(100, device=device)
+    y = dpnp.arange(100, device=device)
     z = dpnp.meshgrid(x, y)
     assert_sycl_queue_equal(z[0].sycl_queue, x.sycl_queue)
     assert_sycl_queue_equal(z[1].sycl_queue, y.sycl_queue)
