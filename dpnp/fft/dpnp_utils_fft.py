@@ -92,7 +92,7 @@ def _commit_descriptor(a, in_place, a_strides, index, axes):
 def _compute_result(dsc, a, out, forward, a_strides, hev_list, dev_list):
     """Compute the result of the FFT."""
 
-    a_usm = a.get_array()
+    a_usm = dpnp.get_usm_ndarray(a)
     if dsc.transform_in_place:
         # in-place transform
         fft_event, _ = fi.compute_fft_in_place(dsc, a_usm, forward, dev_list)
@@ -101,9 +101,9 @@ def _compute_result(dsc, a, out, forward, a_strides, hev_list, dev_list):
         if (
             out is not None
             and out.strides == a_strides
-            and not ti._array_overlap(a_usm, out.get_array())
+            and not ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
         ):
-            res_usm = out.get_array()
+            res_usm = dpnp.get_usm_ndarray(out)
         else:
             # Result array that is used in OneMKL must have the exact same
             # stride as input array
@@ -235,7 +235,7 @@ def _truncate_or_pad(a, shape, axes, copy_ht_ev, copy_dp_ev):
                 sycl_queue=exec_q,
             )
             ht_ev, dp_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=a.get_array(),
+                src=dpnp.get_usm_ndarray(a),
                 dst=z.get_array()[tuple(index)],
                 sycl_queue=exec_q,
                 depends=copy_dp_ev,

@@ -631,7 +631,10 @@ def get_result_array(a, out=None, casting="safe"):
         return a
 
     if a is out or dpnp.are_same_logical_tensors(a, out):
-        return out
+        if isinstance(out, dpnp_array):
+            return out
+        # out is usm_ndarray
+        return dpnp_array._create_from_usm_ndarray(out)
 
     dpnp.check_supported_arrays_type(out)
     if out.shape != a.shape:
