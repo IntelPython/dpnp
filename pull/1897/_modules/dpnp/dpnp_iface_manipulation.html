@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+31.g8c241a7265 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+41.g9c397a2083 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=f9dcd997"></script>
+        <script src="../../_static/documentation_options.js?v=57322603"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+31.g8c241a7265
+                0.16.0dev0+41.g9c397a2083
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1398,12 +1398,16 @@
 <span class="sd">    ----------</span>
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    repeat : int or array of int</span>
+<span class="sd">    repeats : {int, tuple, list, range, dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        The number of repetitions for each element. `repeats` is broadcasted to</span>
 <span class="sd">        fit the shape of the given axis.</span>
-<span class="sd">    axis : int, optional</span>
+<span class="sd">        If `repeats` is an array, it must have an integer data type.</span>
+<span class="sd">        Otherwise, `repeats` must be a Python integer or sequence of Python</span>
+<span class="sd">        integers (i.e., a tuple, list, or range).</span>
+<span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        The axis along which to repeat values. By default, use the flattened</span>
 <span class="sd">        input array, and return a flat output array.</span>
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1413,8 +1417,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.tile` : Construct an array by repeating A the number of times</span>
-<span class="sd">                       given by reps.</span>
+<span class="sd">    :obj:`dpnp.tile` : Tile an array.</span>
+<span class="sd">    :obj:`dpnp.unique` : Find the unique elements of an array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1436,14 +1440,15 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">rep</span> <span class="o">=</span> <span class="n">repeats</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repeats</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
-        <span class="n">rep</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">repeats</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repeats</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">range</span><span class="p">)):</span>
+        <span class="n">repeats</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">repeats</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">usm_arr</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">usm_arr</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">usm_arr</span><span class="p">,</span> <span class="n">rep</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="n">usm_arr</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">usm_arr</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
 
     <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">usm_res</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">]</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span></div>
