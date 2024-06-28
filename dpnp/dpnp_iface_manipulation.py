@@ -1248,7 +1248,7 @@ def repeat(a, repeats, axis=None):
     ----------
     x : {dpnp.ndarray, usm_ndarray}
         Input array.
-    repeat : {int, tuple, list, range, dpnp.ndarray, usm_ndarray}
+    repeats : {int, tuple, list, range, dpnp.ndarray, usm_ndarray}
         The number of repetitions for each element. `repeats` is broadcasted to
         fit the shape of the given axis.
         If `repeats` is an array, it must have an integer data type.
