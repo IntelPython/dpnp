@@ -1248,12 +1248,16 @@ def repeat(a, repeats, axis=None):
     ----------
     x : {dpnp.ndarray, usm_ndarray}
         Input array.
-    repeat : int or array of int
+    repeats : {int, tuple, list, range, dpnp.ndarray, usm_ndarray}
         The number of repetitions for each element. `repeats` is broadcasted to
         fit the shape of the given axis.
-    axis : int, optional
+        If `repeats` is an array, it must have an integer data type.
+        Otherwise, `repeats` must be a Python integer or sequence of Python
+        integers (i.e., a tuple, list, or range).
+    axis : {None, int}, optional
         The axis along which to repeat values. By default, use the flattened
         input array, and return a flat output array.
+        Default: ``None``.
 
     Returns
     -------
@@ -1263,8 +1267,8 @@ def repeat(a, repeats, axis=None):
 
     See Also
     --------
-    :obj:`dpnp.tile` : Construct an array by repeating A the number of times
-                       given by reps.
+    :obj:`dpnp.tile` : Tile an array.
+    :obj:`dpnp.unique` : Find the unique elements of an array.
 
     Examples
     --------
@@ -1286,14 +1290,15 @@ def repeat(a, repeats, axis=None):
 
     """
 
-    rep = repeats
-    if isinstance(repeats, dpnp_array):
-        rep = dpnp.get_usm_ndarray(repeats)
+    dpnp.check_supported_arrays_type(a)
+    if not isinstance(repeats, (int, tuple, list, range)):
+        repeats = dpnp.get_usm_ndarray(repeats)
+
     if axis is None and a.ndim > 1:
-        usm_arr = dpnp.get_usm_ndarray(a.flatten())
-    else:
-        usm_arr = dpnp.get_usm_ndarray(a)
-    usm_arr = dpt.repeat(usm_arr, rep, axis=axis)
+        a = dpnp.ravel(a)
+
+    usm_arr = dpnp.get_usm_ndarray(a)
+    usm_arr = dpt.repeat(usm_arr, repeats, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_arr)
 
 
