@@ -16,7 +16,6 @@ from tests.third_party.cupy import testing
     {"repeats": [1, 2, 3], "axis": 1},
     {"repeats": [1, 2, 3], "axis": -2},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRepeat(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_array_repeat(self, xp):
@@ -42,7 +41,6 @@ class TestRepeatRepeatsNdarray(unittest.TestCase):
     {"repeats": [2], "axis": None},
     {"repeats": [2], "axis": 1},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRepeatListBroadcast(unittest.TestCase):
     """Test for `repeats` argument using single element list.
 
@@ -62,7 +60,6 @@ class TestRepeatListBroadcast(unittest.TestCase):
     {"repeats": [1, 2, 3, 4], "axis": None},
     {"repeats": [1, 2, 3, 4], "axis": 0},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRepeat1D(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_array_repeat(self, xp):
@@ -91,7 +88,6 @@ class TestRepeat1DListBroadcast(unittest.TestCase):
     {"repeats": 2, "axis": -4},
     {"repeats": 2, "axis": 3},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRepeatFailure(unittest.TestCase):
     def test_repeat_failure(self):
         for xp in (numpy, cupy):

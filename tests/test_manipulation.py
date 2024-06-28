@@ -1,6 +1,7 @@
+import dpctl.tensor as dpt
 import numpy
 import pytest
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_equal, assert_raises
 
 import dpnp
 
@@ -58,20 +59,6 @@ def test_copyto_where_raises(where):
         dpnp.copyto(a, b, where=where)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize(
-    "arr",
-    [[], [1, 2, 3, 4], [[1, 2], [3, 4]], [[[1], [2]], [[3], [4]]]],
-    ids=["[]", "[1, 2, 3, 4]", "[[1, 2], [3, 4]]", "[[[1], [2]], [[3], [4]]]"],
-)
-def test_repeat(arr):
-    a = numpy.array(arr)
-    dpnp_a = dpnp.array(arr)
-    expected = numpy.repeat(a, 2)
-    result = dpnp.repeat(dpnp_a, 2)
-    assert_array_equal(expected, result)
-
-
 def test_result_type():
     X = [dpnp.ones((2), dtype=dpnp.int64), dpnp.int32, "float32"]
     X_np = [numpy.ones((2), dtype=numpy.int64), numpy.int32, "float32"]
@@ -112,6 +99,225 @@ def test_unique(array):
     expected = numpy.unique(np_a)
     result = dpnp.unique(dpnp_a)
     assert_array_equal(expected, result)
+
+
+class TestRepeat:
+    @pytest.mark.parametrize(
+        "data",
+        [[], [1, 2, 3, 4], [[1, 2], [3, 4]], [[[1], [2]], [[3], [4]]]],
+        ids=[
+            "[]",
+            "[1, 2, 3, 4]",
+            "[[1, 2], [3, 4]]",
+            "[[[1], [2]], [[3], [4]]]",
+        ],
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_data(self, data, dtype):
+        a = numpy.array(data, dtype=dtype)
+        ia = dpnp.array(a)
+
+        expected = numpy.repeat(a, 2)
+        result = dpnp.repeat(ia, 2)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "repeats", [2, (2, 2, 2, 2, 2)], ids=["scalar", "tuple"]
+    )
+    def test_scalar_sequence_agreement(self, repeats):
+        a = numpy.arange(5, dtype="i4")
+        ia = dpnp.array(a)
+
+        expected = numpy.repeat(a, repeats)
+        result = dpnp.repeat(ia, repeats)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("axis", [0, 1])
+    def test_broadcasting(self, axis):
+        reps = 5
+        a = numpy.arange(reps, dtype="i4")
+        if axis == 0:
+            sh = (reps, 1)
+        else:
+            sh = (1, reps)
+        a = a.reshape(sh)
+        ia = dpnp.array(a)
+
+        expected = numpy.repeat(a, reps)
+        result = dpnp.repeat(ia, reps)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("axis", [0, 1])
+    def test_axes(self, axis):
+        reps = 2
+        a = numpy.arange(5 * 10, dtype="i4").reshape((5, 10))
+        ia = dpnp.array(a)
+
+        expected = numpy.repeat(a, reps, axis=axis)
+        result = dpnp.repeat(ia, reps, axis=axis)
+        assert_array_equal(expected, result)
+
+    def test_size_0_outputs(self):
+        reps = 10
+        a = dpnp.ones((3, 0, 5), dtype="i4")
+        ia = dpnp.array(a)
+
+        expected = numpy.repeat(a, reps, axis=0)
+        result = dpnp.repeat(ia, reps, axis=0)
+        assert_array_equal(expected, result)
+
+        expected = numpy.repeat(a, reps, axis=1)
+        result = dpnp.repeat(ia, reps, axis=1)
+        assert_array_equal(expected, result)
+
+        reps = (2, 2, 2)
+        expected = numpy.repeat(a, reps, axis=0)
+        result = dpnp.repeat(ia, reps, axis=0)
+        assert_array_equal(expected, result)
+
+        a = numpy.ones((3, 2, 5))
+        ia = dpnp.array(a)
+
+        reps = 0
+        expected = numpy.repeat(a, reps, axis=1)
+        result = dpnp.repeat(ia, reps, axis=1)
+        assert_array_equal(expected, result)
+
+        reps = (0, 0)
+        expected = numpy.repeat(a, reps, axis=1)
+        result = dpnp.repeat(ia, reps, axis=1)
+        assert_array_equal(expected, result)
+
+    def test_strides_0(self):
+        reps = 2
+        a = numpy.arange(10 * 10, dtype="i4").reshape((10, 10))
+        ia = dpnp.array(a)
+
+        a = a[::-2, :]
+        ia = ia[::-2, :]
+
+        expected = numpy.repeat(a, reps, axis=0)
+        result = dpnp.repeat(ia, reps, axis=0)
+        assert_array_equal(expected, result)
+
+        expected = numpy.repeat(a, (reps,) * a.shape[0], axis=0)
+        result = dpnp.repeat(ia, (reps,) * ia.shape[0], axis=0)
+        assert_array_equal(expected, result)
+
+    def test_strides_1(self):
+        reps = 2
+        a = numpy.arange(10 * 10, dtype="i4").reshape((10, 10))
+        ia = dpnp.array(a)
+
+        a = a[:, ::-2]
+        ia = ia[:, ::-2]
+
+        expected = numpy.repeat(a, reps, axis=1)
+        result = dpnp.repeat(ia, reps, axis=1)
+        assert_array_equal(expected, result)
+
+        expected = numpy.repeat(a, (reps,) * a.shape[1], axis=1)
+        result = dpnp.repeat(ia, (reps,) * ia.shape[1], axis=1)
+        assert_array_equal(expected, result)
+
+    def test_casting(self):
+        a = numpy.arange(5, dtype="i4")
+        ia = dpnp.array(a)
+
+        # i4 is cast to i8
+        reps = numpy.ones(5, dtype="i4")
+        ireps = dpnp.array(reps)
+
+        expected = numpy.repeat(a, reps)
+        result = dpnp.repeat(ia, ireps)
+        assert_array_equal(expected, result)
+
+    def test_strided_repeats(self):
+        a = numpy.arange(5, dtype="i4")
+        ia = dpnp.array(a)
+
+        reps = numpy.ones(10, dtype="i8")
+        reps[::2] = 0
+        ireps = dpnp.array(reps)
+
+        reps = reps[::-2]
+        ireps = ireps[::-2]
+
+        expected = numpy.repeat(a, reps)
+        result = dpnp.repeat(ia, ireps)
+        assert_array_equal(expected, result)
+
+    def test_usm_ndarray_as_input_array(self):
+        reps = [1, 3, 2, 1, 1, 2]
+        a = numpy.array([[1, 2, 3, 4, 5, 6]])
+        ia = dpt.asarray(a)
+
+        expected = numpy.repeat(a, reps)
+        result = dpnp.repeat(ia, reps)
+        assert_array_equal(expected, result)
+        assert isinstance(result, dpnp.ndarray)
+
+    def test_scalar_as_input_array(self):
+        assert_raises(TypeError, dpnp.repeat, 3, 2)
+
+    def test_usm_ndarray_as_repeats(self):
+        a = numpy.array([1, 2, 3, 4, 5, 6]).reshape((2, 3))
+        ia = dpnp.asarray(a)
+
+        reps = numpy.array([1, 3, 2])
+        ireps = dpt.asarray(reps)
+
+        expected = a.repeat(reps, axis=1)
+        result = ia.repeat(ireps, axis=1)
+        assert_array_equal(expected, result)
+        assert isinstance(result, dpnp.ndarray)
+
+    def test_unsupported_array_as_repeats(self):
+        assert_raises(TypeError, dpnp.arange(5, dtype="i4"), numpy.array(3))
+
+    @pytest.mark.parametrize(
+        "data, dtype",
+        [
+            pytest.param([1, 2**7 - 1, -(2**7)], numpy.int8, id="int8"),
+            pytest.param([1, 2**15 - 1, -(2**15)], numpy.int16, id="int16"),
+            pytest.param([1, 2**31 - 1, -(2**31)], numpy.int32, id="int32"),
+            pytest.param([1, 2**63 - 1, -(2**63)], numpy.int64, id="int64"),
+        ],
+    )
+    def test_maximum_signed_integers(self, data, dtype):
+        reps = 129
+        a = numpy.array(data, dtype=dtype)
+        ia = dpnp.asarray(a)
+
+        expected = a.repeat(reps)
+        result = ia.repeat(reps)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "data, dtype",
+        [
+            pytest.param(
+                [1, -(2**7), -(2**7) + 1, 2**7 - 1], numpy.int8, id="int8"
+            ),
+            pytest.param(
+                [1, -(2**15), -(2**15) + 1, 2**15 - 1], numpy.int16, id="int16"
+            ),
+            pytest.param(
+                [1, -(2**31), -(2**31) + 1, 2**31 - 1], numpy.int32, id="int32"
+            ),
+            pytest.param(
+                [1, -(2**63), -(2**63) + 1, 2**63 - 1], numpy.int64, id="int64"
+            ),
+        ],
+    )
+    def test_minimum_signed_integers(self, data, dtype):
+        reps = 129
+        a = numpy.array(data, dtype=dtype)
+        ia = dpnp.asarray(a)
+
+        expected = a.repeat(reps)
+        result = ia.repeat(reps)
+        assert_array_equal(expected, result)
 
 
 class TestTranspose:
