@@ -81,7 +81,7 @@ def arange(
         sycl_queue=sycl_queue_normalized,
     )
 
-    dpu.SequentialOrderManager[array_obj.sycl_queue].wait()
+    dpnp.synchronize_array_data(array_obj)
     return dpnp_array(array_obj.shape, buffer=array_obj)
 
 
@@ -134,7 +134,7 @@ def asarray(
         if array_obj is x1_obj and isinstance(x1, dpnp_array):
             return x1
 
-    dpu.SequentialOrderManager[array_obj.sycl_queue].wait()
+    dpnp.synchronize_array_data(array_obj)
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
 
 
@@ -144,7 +144,7 @@ def copy(x1, /, *, order="K"):
         order = "K"
 
     array_obj = dpt.copy(dpnp.get_usm_ndarray(x1), order=order)
-    dpu.SequentialOrderManager[array_obj.sycl_queue].wait()
+    dpnp.synchronize_array_data(array_obj)
     return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
 
 
@@ -206,7 +206,7 @@ def eye(
         usm_type=usm_type,
         sycl_queue=sycl_queue_normalized,
     )
-    dpu.SequentialOrderManager[array_obj.sycl_queue].wait()
+    dpnp.synchronize_array_data(array_obj)
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
 
 
@@ -241,7 +241,7 @@ def full(
         usm_type=usm_type,
         sycl_queue=sycl_queue_normalized,
     )
-    dpu.SequentialOrderManager[array_obj.sycl_queue].wait()
+    dpnp.synchronize_array_data(array_obj)
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
 
 
@@ -273,7 +273,7 @@ def linspace(
         sycl_queue=sycl_queue_normalized,
         endpoint=endpoint,
     )
-    dpu.SequentialOrderManager[array_obj.sycl_queue].wait()
+    dpnp.synchronize_array_data(array_obj)
     return dpnp_array(array_obj.shape, buffer=array_obj)
 
 
@@ -302,21 +302,21 @@ def ones(
         usm_type=usm_type,
         sycl_queue=sycl_queue_normalized,
     )
-    dpu.SequentialOrderManager[array_obj.sycl_queue].wait()
+    dpnp.synchronize_array_data(array_obj)
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
 
 
 def tril(x1, /, *, k=0):
     """Creates `dpnp_array` as lower triangular part of an input array."""
     array_obj = dpt.tril(dpnp.get_usm_ndarray(x1), k=k)
-    dpu.SequentialOrderManager[array_obj.sycl_queue].wait()
+    dpnp.synchronize_array_data(array_obj)
     return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
 
 
 def triu(x1, /, *, k=0):
     """Creates `dpnp_array` as upper triangular part of an input array."""
     array_obj = dpt.triu(dpnp.get_usm_ndarray(x1), k=k)
-    dpu.SequentialOrderManager[array_obj.sycl_queue].wait()
+    dpnp.synchronize_array_data(array_obj)
     return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
 
 
@@ -346,5 +346,5 @@ def zeros(
         sycl_queue=sycl_queue_normalized,
     )
     # TODO: uncomment once dpctl implements asynchronous call
-    # dpu.SequentialOrderManager[array_obj.sycl_queue].wait()
+    # dpnp.synchronize_array_data(array_obj)
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)

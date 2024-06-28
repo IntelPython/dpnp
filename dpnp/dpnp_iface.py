@@ -42,6 +42,7 @@ import os
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._device import normalize_queue_device
 
@@ -69,6 +70,7 @@ __all__ = [
     "get_usm_ndarray_or_scalar",
     "is_supported_array_or_scalar",
     "is_supported_array_type",
+    "synchronize_array_data",
 ]
 
 from dpnp import float64, isscalar
@@ -699,3 +701,16 @@ def is_supported_array_type(a):
     """
 
     return isinstance(a, (dpnp_array, dpt.usm_ndarray))
+
+
+def synchronize_array_data(a):
+    """
+    The dpctl interface was reworked to make asynchronous execution.
+    That function makes a synchronization call to ensure array data is valid
+    before exit from dpnp interface function.
+
+    """
+
+    if hasattr(dpu, "SequentialOrderManager"):
+        check_supported_arrays_type(a)
+        dpu.SequentialOrderManager[a.sycl_queue].wait()

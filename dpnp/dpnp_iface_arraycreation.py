@@ -41,7 +41,6 @@ it contains:
 import operator
 
 import dpctl.tensor as dpt
-import dpctl.utils as dpu
 import numpy
 
 import dpnp
@@ -2736,7 +2735,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     ]
 
     # input arrays must be allocated on the same queue
-    _, exec_q = get_usm_allocations(output)
+    _, _ = get_usm_allocations(output)
 
     if indexing == "xy" and ndim > 1:
         output[0] = dpt.reshape(output[0], (1, -1) + s0[2:])
@@ -2748,7 +2747,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     if copy:
         output = [dpt.copy(x) for x in output]
 
-    dpu.SequentialOrderManager[exec_q].wait()
+    dpnp.synchronize_array_data(output[0])
     output = [dpnp_array._create_from_usm_ndarray(x) for x in output]
     return output
 

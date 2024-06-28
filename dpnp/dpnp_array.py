@@ -25,7 +25,6 @@
 # *****************************************************************************
 
 import dpctl.tensor as dpt
-import dpctl.utils as dpu
 
 import dpnp
 
@@ -260,7 +259,7 @@ class dpnp_array:
         res._array_obj = item
 
         if self._array_obj.usm_data is not res._array_obj.usm_data:
-            dpu.SequentialOrderManager[self.sycl_queue].wait()
+            dpnp.synchronize_array_data(self)
         return res
 
     def __gt__(self, other):
@@ -457,7 +456,7 @@ class dpnp_array:
             val = val.get_array()
 
         self._array_obj.__setitem__(key, val)
-        dpu.SequentialOrderManager[self.sycl_queue].wait()
+        dpnp.synchronize_array_data(self)
 
     # '__setstate__',
     # '__sizeof__',
