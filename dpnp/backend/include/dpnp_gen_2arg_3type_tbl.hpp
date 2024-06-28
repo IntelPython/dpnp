@@ -103,40 +103,6 @@
 
 #endif
 
-MACRO_2ARG_3TYPES_OP(dpnp_add_c,
-                     input1_elem + input2_elem,
-                     x1 + x2,
-                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
-                     oneapi::mkl::vm::add,
-                     MACRO_UNPACK_TYPES(float,
-                                        double,
-                                        std::complex<float>,
-                                        std::complex<double>))
-
-MACRO_2ARG_3TYPES_OP(dpnp_arctan2_c,
-                     sycl::atan2(input1_elem, input2_elem),
-                     sycl::atan2(x1, x2),
-                     MACRO_UNPACK_TYPES(float, double),
-                     oneapi::mkl::vm::atan2,
-                     MACRO_UNPACK_TYPES(float, double))
-
-MACRO_2ARG_3TYPES_OP(dpnp_copysign_c,
-                     sycl::copysign(input1_elem, input2_elem),
-                     sycl::copysign(x1, x2),
-                     MACRO_UNPACK_TYPES(float, double),
-                     oneapi::mkl::vm::copysign,
-                     MACRO_UNPACK_TYPES(float, double))
-
-MACRO_2ARG_3TYPES_OP(dpnp_divide_c,
-                     input1_elem / input2_elem,
-                     x1 / x2,
-                     MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
-                     oneapi::mkl::vm::div,
-                     MACRO_UNPACK_TYPES(float,
-                                        double,
-                                        std::complex<float>,
-                                        std::complex<double>))
-
 MACRO_2ARG_3TYPES_OP(
     dpnp_fmod_c,
     dispatch_fmod_op(input1_elem, input2_elem),
@@ -144,13 +110,6 @@ MACRO_2ARG_3TYPES_OP(
     MACRO_UNPACK_TYPES(std::int32_t, std::int64_t, float, double),
     oneapi::mkl::vm::fmod,
     MACRO_UNPACK_TYPES(float, double))
-
-MACRO_2ARG_3TYPES_OP(dpnp_hypot_c,
-                     sycl::hypot(input1_elem, input2_elem),
-                     sycl::hypot(x1, x2),
-                     MACRO_UNPACK_TYPES(float, double),
-                     oneapi::mkl::vm::hypot,
-                     MACRO_UNPACK_TYPES(float, double))
 
 MACRO_2ARG_3TYPES_OP(dpnp_maximum_c,
                      sycl::max(input1_elem, input2_elem),
@@ -176,17 +135,6 @@ MACRO_2ARG_3TYPES_OP(dpnp_multiply_c,
                      x1 *x2,
                      MACRO_UNPACK_TYPES(bool, std::int32_t, std::int64_t),
                      oneapi::mkl::vm::mul,
-                     MACRO_UNPACK_TYPES(float,
-                                        double,
-                                        std::complex<float>,
-                                        std::complex<double>))
-
-MACRO_2ARG_3TYPES_OP(dpnp_power_c,
-                     static_cast<_DataType_output>(std::pow(input1_elem,
-                                                            input2_elem)),
-                     sycl::pow(x1, x2),
-                     MACRO_UNPACK_TYPES(float, double),
-                     oneapi::mkl::vm::pow,
                      MACRO_UNPACK_TYPES(float,
                                         double,
                                         std::complex<float>,
