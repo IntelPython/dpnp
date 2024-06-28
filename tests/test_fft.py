@@ -1,4 +1,5 @@
 import dpctl
+import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.utils import ExecutionPlacementError
@@ -100,6 +101,26 @@ class TestFft:
         iresult = dpnp.fft.ifft(result, n=n, axis=axis, norm=norm)
         iexpected = numpy.fft.ifft(expected, n=n, axis=axis, norm=norm)
         assert_dtype_allclose(iresult, iexpected)
+
+    @pytest.mark.parametrize("n", [None, 5, 20])
+    def test_fft_usm_ndarray(self, n):
+        x = dpnp.linspace(-1, 1, 11)
+        a = dpnp.sin(x) + 1j * dpnp.cos(x)
+        a_usm = dpt.asarray(a, dtype=dpnp.complex64)
+        a_np = dpnp.asnumpy(a_usm)
+        out_shape = (n,) if n is not None else a.shape
+        out = dpt.empty(out_shape, dtype=a.dtype)
+
+        result = dpnp.fft.fft(a_usm, n=n, out=out)
+        assert out is result.get_array()
+        expected = numpy.fft.fft(a_np, n=n)
+        assert_dtype_allclose(result, expected)
+
+        # in-place
+        if n is None:
+            result = dpnp.fft.fft(a_usm, n=n, out=a_usm)
+            assert a_usm is result.get_array()
+            assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 20])
