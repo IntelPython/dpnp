@@ -597,6 +597,7 @@ INP_DLLEXPORT void dpnp_put_along_axis_c(void *arr_in,
 
 /**
  * @ingroup BACKEND_API
+
  * @brief math library implementation of argsort function
  *
  * @param [in]  q_ref               Reference to SYCL queue.
