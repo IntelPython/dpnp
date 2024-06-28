@@ -3,7 +3,6 @@ import unittest
 import numpy
 import pytest
 
-import dpnp as cupy
 from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
@@ -87,7 +86,7 @@ class TestRoundHalfway(unittest.TestCase):
         a -= a.size + 1
         scale = 10 ** abs(self.decimals)
         if self.decimals < 0:
-            a *= xp.array(scale, dtype=dtype)
+            a *= xp.array(scale).astype(dtype)
         a >>= 1
 
         return a.round(self.decimals)
