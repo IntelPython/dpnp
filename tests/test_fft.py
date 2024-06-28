@@ -108,8 +108,8 @@ class TestFft:
         a = dpnp.sin(x) + 1j * dpnp.cos(x)
         a_usm = dpt.asarray(a, dtype=dpnp.complex64)
         a_np = dpnp.asnumpy(a_usm)
-        out_shape = (n,) if n is not None else a.shape
-        out = dpt.empty(out_shape, dtype=a.dtype)
+        out_shape = (n,) if n is not None else a_usm.shape
+        out = dpt.empty(out_shape, dtype=a_usm.dtype)
 
         result = dpnp.fft.fft(a_usm, n=n, out=out)
         assert out is result.get_array()
