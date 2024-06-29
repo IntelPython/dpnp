@@ -26,26 +26,19 @@
 #pragma once
 
 #include <oneapi/mkl.hpp>
+#include <sycl/sycl.hpp>
+
+#include <dpctl4pybind11.hpp>
 
 namespace dpnp::extensions::fft
 {
 namespace mkl_dft = oneapi::mkl::dft;
 
-template <mkl_dft::precision prec>
-struct ScaleType
-{
-    using value_type = void;
-};
+template <mkl_dft::precision prec, mkl_dft::domain dom>
+std::pair<sycl::event, sycl::event>
+    compute_fft_in_place(DescriptorWrapper<prec, dom> &descr,
+                         const dpctl::tensor::usm_ndarray &in_out,
+                         const bool is_forward,
+                         const std::vector<sycl::event> &depends);
 
-template <>
-struct ScaleType<mkl_dft::precision::SINGLE>
-{
-    using value_type = float;
-};
-
-template <>
-struct ScaleType<mkl_dft::precision::DOUBLE>
-{
-    using value_type = double;
-};
 } // namespace dpnp::extensions::fft
