@@ -67,21 +67,20 @@ std::pair<sycl::event, sycl::event>
 
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(in_out);
 
-    // in-place is only used for c2c FFT at this time, passing true or false is
-    // indifferent
-    using ScaleT = typename ScaleType<prec, dom, true>::type_in;
-    ScaleT *in_out_ptr = in_out.get_data<ScaleT>();
-
     sycl::event fft_event = {};
     std::stringstream error_msg;
     bool is_exception_caught = false;
 
     try {
         if (is_forward) {
+            using ScaleT = typename ScaleType<prec, dom, true>::type_in;
+            ScaleT *in_out_ptr = in_out.get_data<ScaleT>();
             fft_event = mkl_dft::compute_forward(descr.get_descriptor(),
                                                  in_out_ptr, depends);
         }
         else {
+            using ScaleT = typename ScaleType<prec, dom, false>::type_in;
+            ScaleT *in_out_ptr = in_out.get_data<ScaleT>();
             fft_event = mkl_dft::compute_backward(descr.get_descriptor(),
                                                   in_out_ptr, depends);
         }
@@ -118,6 +117,19 @@ template std::pair<sycl::event, sycl::event> compute_fft_in_place(
 template std::pair<sycl::event, sycl::event> compute_fft_in_place(
     DescriptorWrapper<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX>
         &descr,
+    const dpctl::tensor::usm_ndarray &in_out,
+    const bool is_forward,
+    const std::vector<sycl::event> &depends);
+
+// r2c/c2r FFT
+template std::pair<sycl::event, sycl::event> compute_fft_in_place(
+    DescriptorWrapper<mkl_dft::precision::SINGLE, mkl_dft::domain::REAL> &descr,
+    const dpctl::tensor::usm_ndarray &in_out,
+    const bool is_forward,
+    const std::vector<sycl::event> &depends);
+
+template std::pair<sycl::event, sycl::event> compute_fft_in_place(
+    DescriptorWrapper<mkl_dft::precision::DOUBLE, mkl_dft::domain::REAL> &descr,
     const dpctl::tensor::usm_ndarray &in_out,
     const bool is_forward,
     const std::vector<sycl::event> &depends);

@@ -124,4 +124,17 @@ PYBIND11_MODULE(_fft_impl, m)
           "for complex128 data types.",
           py::arg("descriptor"), py::arg("input-output"), py::arg("is_forward"),
           py::arg("depends") = py::list());
+
+    // in-place r2c/c2r FFT
+    m.def("_fft_in_place", &fft_ns::compute_fft_in_place<single_prec, real_dom>,
+          "Compute in-place complex-to-real fft using OneMKL DFT library for "
+          "complex64 data types.",
+          py::arg("descriptor"), py::arg("input-output"), py::arg("is_forward"),
+          py::arg("depends") = py::list());
+
+    m.def("_fft_in_place", &fft_ns::compute_fft_in_place<double_prec, real_dom>,
+          "Compute in-place complex-to-real fft using OneMKL DFT library for "
+          "complex128 data types.",
+          py::arg("descriptor"), py::arg("input-output"), py::arg("is_forward"),
+          py::arg("depends") = py::list());
 }
