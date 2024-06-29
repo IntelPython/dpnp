@@ -326,9 +326,7 @@ class TestFft:
 
 
 class TestRfft:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
         "shape", [(64,), (8, 8), (4, 16), (4, 4, 4), (2, 4, 4, 2)]
     )
@@ -340,15 +338,3 @@ class TestRfft:
         dpnp_res = dpnp.fft.rfft(dpnp_data)
 
         assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
-
-    @pytest.mark.parametrize(
-        "func_name",
-        [
-            "rfft",
-        ],
-    )
-    def test_fft_invalid_dtype(self, func_name):
-        a = dpnp.array([True, False, True])
-        dpnp_func = getattr(dpnp.fft, func_name)
-        with pytest.raises(TypeError):
-            dpnp_func(a)

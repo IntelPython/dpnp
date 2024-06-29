@@ -84,18 +84,22 @@ std::pair<sycl::event, sycl::event>
 
     py::ssize_t in_size = in.get_size();
     py::ssize_t out_size = out.get_size();
-    if (in_size != out_size) {
-        throw py::value_error("The size of the input vector must be "
-                              "equal to the size of the output vector.");
+    if (dom == mkl_dft::domain::REAL && is_forward) {
+        const int M = in_size / 2 + 1; // integer divide
+        if (M != out_size) {
+            throw py::value_error("The size of the output vector is not "
+                                  "correct for real to complex transform.");
+        }
     }
-
-    size_t src_nelems = in_size;
+    else {
+        // c2c and c2r FFT. For c2r FFT, python input is padded with zero to
+        // have the same size as output before calling this function
+        if (in_size != out_size) {
+            throw py::value_error("The size of the input vector must be "
+                                  "equal to the size of the output vector.");
+        }
+    }
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(out);
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(out, src_nelems);
-
-    using ScaleT = typename ScaleType<prec>::value_type;
-    std::complex<ScaleT> *in_ptr = in.get_data<std::complex<ScaleT>>();
-    std::complex<ScaleT> *out_ptr = out.get_data<std::complex<ScaleT>>();
 
     sycl::event fft_event = {};
     std::stringstream error_msg;
@@ -103,10 +107,22 @@ std::pair<sycl::event, sycl::event>
 
     try {
         if (is_forward) {
+            using ScaleT_in =
+                typename ScaleType<prec, dom, true>::value_type_in;
+            using ScaleT_out =
+                typename ScaleType<prec, dom, true>::value_type_out;
+            ScaleT_in *in_ptr = in.get_data<ScaleT_in>();
+            ScaleT_out *out_ptr = out.get_data<ScaleT_out>();
             fft_event = oneapi::mkl::dft::compute_forward(
                 descr.get_descriptor(), in_ptr, out_ptr, depends);
         }
         else {
+            using ScaleT_in =
+                typename ScaleType<prec, dom, false>::value_type_in;
+            using ScaleT_out =
+                typename ScaleType<prec, dom, false>::value_type_out;
+            ScaleT_in *in_ptr = in.get_data<ScaleT_in>();
+            ScaleT_out *out_ptr = out.get_data<ScaleT_out>();
             fft_event = oneapi::mkl::dft::compute_backward(
                 descr.get_descriptor(), in_ptr, out_ptr, depends);
         }
@@ -131,6 +147,7 @@ std::pair<sycl::event, sycl::event>
 }
 
 // Explicit instantiations
+// c2c FFT
 template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
     DescriptorWrapper<mkl_dft::precision::SINGLE, mkl_dft::domain::COMPLEX>
         &descr,
@@ -147,4 +164,18 @@ template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
     const bool is_forward,
     const std::vector<sycl::event> &depends);
 
+// r2c/c2r FFT
+template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
+    DescriptorWrapper<mkl_dft::precision::SINGLE, mkl_dft::domain::REAL> &descr,
+    const dpctl::tensor::usm_ndarray &in,
+    const dpctl::tensor::usm_ndarray &out,
+    const bool is_forward,
+    const std::vector<sycl::event> &depends);
+
+template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
+    DescriptorWrapper<mkl_dft::precision::DOUBLE, mkl_dft::domain::REAL> &descr,
+    const dpctl::tensor::usm_ndarray &in,
+    const dpctl::tensor::usm_ndarray &out,
+    const bool is_forward,
+    const std::vector<sycl::event> &depends);
 } // namespace dpnp::extensions::fft

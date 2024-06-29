@@ -31,21 +31,40 @@ namespace dpnp::extensions::fft
 {
 namespace mkl_dft = oneapi::mkl::dft;
 
-template <mkl_dft::precision prec>
+template <mkl_dft::precision prec, mkl_dft::domain dom, bool is_forward>
 struct ScaleType
 {
-    using value_type = void;
+    using value_type_in = void;
+    using value_type_out = void;
 };
 
-template <>
-struct ScaleType<mkl_dft::precision::SINGLE>
+// for r2c FFT
+template <mkl_dft::precision prec>
+struct ScaleType<prec, mkl_dft::domain::REAL, true>
 {
-    using value_type = float;
+    using prec_type = typename std::
+        conditional<prec == mkl_dft::precision::SINGLE, float, double>::type;
+    using value_type_in = prec_type;
+    using value_type_out = std::complex<prec_type>;
 };
 
-template <>
-struct ScaleType<mkl_dft::precision::DOUBLE>
+// for c2r FFT
+template <mkl_dft::precision prec>
+struct ScaleType<prec, mkl_dft::domain::REAL, false>
 {
-    using value_type = double;
+    using prec_type = typename std::
+        conditional<prec == mkl_dft::precision::SINGLE, float, double>::type;
+    using value_type_in = std::complex<prec_type>;
+    using value_type_out = prec_type;
+};
+
+// for c2c FFT
+template <mkl_dft::precision prec, bool is_fwd>
+struct ScaleType<prec, mkl_dft::domain::COMPLEX, is_fwd>
+{
+    using prec_type = typename std::
+        conditional<prec == mkl_dft::precision::SINGLE, float, double>::type;
+    using value_type_in = std::complex<prec_type>;
+    using value_type_out = std::complex<prec_type>;
 };
 } // namespace dpnp::extensions::fft

@@ -55,6 +55,7 @@ from ..dpnp_utils import map_dtype_to_device
 
 __all__ = [
     "dpnp_fft",
+    "dpnp_rfft",
 ]
 
 
@@ -95,7 +96,7 @@ def _compute_result(dsc, a, out, forward, a_strides, hev_list, dev_list):
     a_usm = dpnp.get_usm_ndarray(a)
     if dsc.transform_in_place:
         # in-place transform
-        fft_event, _ = fi.compute_fft_in_place(dsc, a_usm, forward, dev_list)
+        fft_event, _ = fi._fft_in_place(dsc, a_usm, forward, dev_list)
         res_usm = a_usm
     else:
         if (
@@ -115,7 +116,7 @@ def _compute_result(dsc, a, out, forward, a_strides, hev_list, dev_list):
                 offset=0,
                 buffer_ctor_kwargs={"queue": a.sycl_queue},
             )
-        fft_event, _ = fi.compute_fft_out_of_place(
+        fft_event, _ = fi._fft_out_of_place(
             dsc, a_usm, res_usm, forward, dev_list
         )
     hev_list.append(fft_event)
@@ -313,3 +314,116 @@ def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
         hev_list=copy_ht_ev,
         dev_list=copy_dp_ev,
     )
+
+
+def dpnp_rfft(a, forward, n=None, axis=-1, norm=None, out=None):
+    """Calculates 1-D real FFT of the input array along axis"""
+
+    if forward and isinstance(a, dpnp.complexfloating):
+        raise TypeError("Input array must be real")
+
+    _check_norm(norm)
+    copy_ht_ev = []
+    copy_dp_ev = []
+    return _rfft(
+        a,
+        norm=norm,
+        out=out,
+        forward=forward,
+        in_place=False,
+        hev_list=copy_ht_ev,
+        dev_list=copy_dp_ev,
+    )
+
+def _rfft(a, norm, out, forward, in_place, hev_list, dev_list, axes=None):
+
+    index = 0
+    if not in_place and out is not None:
+        in_place = dpnp.are_same_logical_tensors(a, out)
+    if axes is not None:  # batch_fft
+        len_axes = 1 if isinstance(axes, int) else len(axes)
+        local_axes = numpy.arange(-len_axes, 0)
+        a = dpnp.moveaxis(a, axes, local_axes)
+        a_shape_orig = a.shape
+        local_shape = (-1,) + a_shape_orig[-len_axes:]
+        a = dpnp.reshape(a, local_shape)
+        index = 1
+
+    a_strides = _standardize_strides_to_nonzero(a.strides, a.shape)
+    dsc = _rcommit_descriptor(a, in_place, a_strides, index, axes)
+    res = _rcompute_result(dsc, a, out, forward, a_strides, hev_list, dev_list)
+    res = _scale_result(res, norm, forward, index)
+
+    if axes is not None:  # batch_fft
+        res = dpnp.reshape(res, a_shape_orig)
+        res = dpnp.moveaxis(res, local_axes, axes)
+
+    result = dpnp.get_result_array(res, out=out, casting="same_kind")
+    if out is None and not (
+        result.flags.c_contiguous or result.flags.f_contiguous
+    ):
+        result = dpnp.ascontiguousarray(result)
+    return result
+
+def _rcommit_descriptor(a, in_place, a_strides, index, axes):
+    """Commit the FFT descriptor for the input array."""
+
+    a_shape = a.shape
+    shape = a_shape[index:]
+    strides = (0,) + a_strides[index:]
+    if a.dtype == dpnp.float32:
+        dsc = fi.Real32Descriptor(shape)
+    else:
+        dsc = fi.Real64Descriptor(shape)
+
+    dsc.fwd_strides = strides
+    dsc.bwd_strides = dsc.fwd_strides
+    dsc.transform_in_place = in_place
+    if axes is not None:  # batch_fft
+        dsc.fwd_distance = a_strides[0]
+        dsc.bwd_distance = dsc.fwd_distance
+        dsc.number_of_transforms = numpy.prod(a_shape[0])
+    dsc.commit(a.sycl_queue)
+
+    return dsc
+
+
+def _rcompute_result(dsc, a, out, forward, a_strides, hev_list, dev_list):
+    """Compute the result of the FFT."""
+
+    a_usm = dpnp.get_usm_ndarray(a)
+    if dsc.transform_in_place:
+        # in-place transform
+        fft_event, _ = fi._rfft_in_place(dsc, a_usm, forward, dev_list)
+        res_usm = a_usm
+    else:
+        if (
+            out is not None
+            and out.strides == a_strides
+            and not ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
+        ):
+            res_usm = dpnp.get_usm_ndarray(out)
+        else:
+            # Result array that is used in OneMKL must have the exact same
+            # stride as input array
+            print(a.shape)
+            M = numpy.floor_divide(a.shape[-1], 2) + 1
+            out_shape = (M,)
+            print(out_shape)
+            res_usm = dpt.usm_ndarray(
+                out_shape,
+                dtype=dpnp.complex64,
+                buffer=a.usm_type,
+                strides=a_strides,
+                offset=0,
+                buffer_ctor_kwargs={"queue": a.sycl_queue},
+            )
+        fft_event, _ = fi._rfft_out_of_place(
+            dsc, a_usm, res_usm, forward, dev_list
+        )
+    hev_list.append(fft_event)
+    dpctl.SyclEvent.wait_for(hev_list)
+
+    res = dpnp_array._create_from_usm_ndarray(res_usm)
+
+    return res

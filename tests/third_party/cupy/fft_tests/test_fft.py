@@ -1,5 +1,4 @@
 import functools
-import string
 import unittest
 
 import numpy as np
@@ -210,16 +209,16 @@ class TestFftn(unittest.TestCase):
         {
             "n": [None, 5, 10, 15],
             "shape": [(10,), (10, 10)],
-            "norm": [None, "ortho"],
+            "norm": [None, "ortho", ""],  # skip forward and backward
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRfft:
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
+        accept_error=ValueError,
         type_check=has_support_aspect64(),
     )
     def test_rfft(self, xp, dtype):
@@ -232,6 +231,7 @@ class TestRfft:
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
+        accept_error=ValueError,
         type_check=has_support_aspect64(),
     )
     def test_irfft(self, xp, dtype):
