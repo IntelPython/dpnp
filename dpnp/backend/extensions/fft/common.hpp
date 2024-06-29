@@ -26,27 +26,26 @@
 #pragma once
 
 #include <oneapi/mkl.hpp>
+#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
-
-#include <dpctl4pybind11.hpp>
 
 namespace dpnp::extensions::fft
 {
 namespace mkl_dft = oneapi::mkl::dft;
 namespace py = pybind11;
 
-template <mkl_dft::precision prec>
-class ComplexDescriptorWrapper
+template <mkl_dft::precision prec, mkl_dft::domain dom>
+class DescriptorWrapper
 {
 public:
-    using descr_type = mkl_dft::descriptor<prec, mkl_dft::domain::COMPLEX>;
+    using descr_type = mkl_dft::descriptor<prec, dom>;
 
-    ComplexDescriptorWrapper(std::int64_t n) : descr_(n), queue_ptr_{} {}
-    ComplexDescriptorWrapper(std::vector<std::int64_t> dimensions)
+    DescriptorWrapper(std::int64_t n) : descr_(n), queue_ptr_{} {}
+    DescriptorWrapper(std::vector<std::int64_t> dimensions)
         : descr_(dimensions), queue_ptr_{}
     {
     }
-    ~ComplexDescriptorWrapper() {}
+    ~DescriptorWrapper() {}
 
     void commit(sycl::queue &q)
     {
@@ -230,24 +229,8 @@ public:
     }
 
 private:
-    mkl_dft::descriptor<prec, mkl_dft::domain::COMPLEX> descr_;
+    mkl_dft::descriptor<prec, dom> descr_;
     std::unique_ptr<sycl::queue> queue_ptr_;
 };
-
-// forward declaration
-template <mkl_dft::precision prec>
-std::pair<sycl::event, sycl::event>
-    compute_fft_out_of_place(ComplexDescriptorWrapper<prec> &descr,
-                             const dpctl::tensor::usm_ndarray &in,
-                             const dpctl::tensor::usm_ndarray &out,
-                             const bool is_forward,
-                             const std::vector<sycl::event> &depends);
-
-template <mkl_dft::precision prec>
-std::pair<sycl::event, sycl::event>
-    compute_fft_in_place(ComplexDescriptorWrapper<prec> &descr,
-                         const dpctl::tensor::usm_ndarray &in_out,
-                         const bool is_forward,
-                         const std::vector<sycl::event> &depends);
 
 } // namespace dpnp::extensions::fft
