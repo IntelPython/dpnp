@@ -698,20 +698,6 @@ void (*dpnp_fft_rfft_default_c)(const void *,
                                 const size_t) =
     dpnp_fft_rfft_c<_DataType_input, _DataType_output>;
 
-template <typename _DataType_input, typename _DataType_output>
-DPCTLSyclEventRef (*dpnp_fft_rfft_ext_c)(DPCTLSyclQueueRef,
-                                         const void *,
-                                         void *,
-                                         const shape_elem_type *,
-                                         const shape_elem_type *,
-                                         size_t,
-                                         long,
-                                         long,
-                                         size_t,
-                                         const size_t,
-                                         const DPCTLEventVectorRef) =
-    dpnp_fft_rfft_c<_DataType_input, _DataType_output>;
-
 void func_map_init_fft_func(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_INT][eft_INT] = {
@@ -761,17 +747,6 @@ void func_map_init_fft_func(func_map_t &fmap)
     fmap[DPNPFuncName::DPNP_FN_FFT_RFFT][eft_DBL][eft_DBL] = {
         eft_C128,
         (void *)dpnp_fft_rfft_default_c<double, std::complex<double>>};
-
-    fmap[DPNPFuncName::DPNP_FN_FFT_RFFT_EXT][eft_INT][eft_INT] = {
-        eft_C128, (void *)dpnp_fft_rfft_ext_c<int32_t, std::complex<double>>,
-        eft_C64, (void *)dpnp_fft_rfft_ext_c<int32_t, std::complex<float>>};
-    fmap[DPNPFuncName::DPNP_FN_FFT_RFFT_EXT][eft_LNG][eft_LNG] = {
-        eft_C128, (void *)dpnp_fft_rfft_ext_c<int64_t, std::complex<double>>,
-        eft_C64, (void *)dpnp_fft_rfft_ext_c<int64_t, std::complex<float>>};
-    fmap[DPNPFuncName::DPNP_FN_FFT_RFFT_EXT][eft_FLT][eft_FLT] = {
-        eft_C64, (void *)dpnp_fft_rfft_ext_c<float, std::complex<float>>};
-    fmap[DPNPFuncName::DPNP_FN_FFT_RFFT_EXT][eft_DBL][eft_DBL] = {
-        eft_C128, (void *)dpnp_fft_rfft_ext_c<double, std::complex<double>>};
 
     return;
 }
