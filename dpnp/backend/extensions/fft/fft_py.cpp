@@ -28,6 +28,7 @@
 //*****************************************************************************
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "common.hpp"
 #include "in_place.hpp"
