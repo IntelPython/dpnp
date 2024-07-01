@@ -240,10 +240,10 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True, device=None):
         x1_obj, dtype, order=order, casting=casting, copy=copy, device=device
     )
 
-    # return x1 if dpctl returns a zero copy of x1_obj
+    dpnp.synchronize_array_data(x1)
     if array_obj is x1_obj and isinstance(x1, dpnp_array):
+        # return x1 if dpctl returns a zero copy of x1_obj
         return x1
-
     return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
