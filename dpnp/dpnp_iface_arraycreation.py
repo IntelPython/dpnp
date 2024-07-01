@@ -2188,7 +2188,7 @@ def geomspace(
 
     """
 
-    return dpnp_geomspace(
+    res = dpnp_geomspace(
         start,
         stop,
         num,
@@ -2199,6 +2199,10 @@ def geomspace(
         endpoint=endpoint,
         axis=axis,
     )
+
+    dpnp.synchronize_array_data(res)
+    res = dpnp_array._create_from_usm_ndarray(res)
+    return res
 
 
 def identity(
@@ -2407,7 +2411,7 @@ def linspace(
 
     """
 
-    return dpnp_linspace(
+    res = dpnp_linspace(
         start,
         stop,
         num,
@@ -2419,6 +2423,14 @@ def linspace(
         retstep=retstep,
         axis=axis,
     )
+
+    if isinstance(res, tuple):  # (result, step) is returning
+        dpnp.synchronize_array_data(res[0])
+        res = tuple(dpnp_array._create_from_usm_ndarray(x) for x in res)
+    else:
+        dpnp.synchronize_array_data(res)
+        res = dpnp_array._create_from_usm_ndarray(res)
+    return res
 
 
 def loadtxt(
@@ -2634,7 +2646,7 @@ def logspace(
 
     """
 
-    return dpnp_logspace(
+    res = dpnp_logspace(
         start,
         stop,
         num=num,
@@ -2646,6 +2658,10 @@ def logspace(
         dtype=dtype,
         axis=axis,
     )
+
+    dpnp.synchronize_array_data(res)
+    res = dpnp_array._create_from_usm_ndarray(res)
+    return res
 
 
 # pylint: disable=redefined-outer-name
