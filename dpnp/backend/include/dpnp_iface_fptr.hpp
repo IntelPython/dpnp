@@ -101,7 +101,6 @@ enum class DPNPFuncName : size_t
                       */
     DPNP_FN_INITVAL_EXT, /**< Used in numpy ones, ones_like, zeros, zeros_like
                             impls  */
-    DPNP_FN_INVERT,      /**< Used in numpy.invert() impl  */
     DPNP_FN_MAX,         /**< Used in numpy.max() impl  */
     DPNP_FN_MAXIMUM_EXT, /**< Used in numpy.fmax() impl , requires extra
                             parameters */
@@ -130,7 +129,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RADIANS,        /**< Used in numpy.radians() impl  */
     DPNP_FN_RADIANS_EXT,    /**< Used in numpy.radians() impl, requires extra
                                parameters */
-    DPNP_FN_REPEAT,         /**< Used in numpy.repeat() impl  */
     DPNP_FN_RNG_BETA,       /**< Used in numpy.random.beta() impl  */
     DPNP_FN_RNG_BETA_EXT, /**< Used in numpy.random.beta() impl, requires extra
                              parameters */
@@ -254,17 +252,12 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SQRT_EXT, /**< Used in numpy.sqrt() impl, requires extra parameters
                        */
     DPNP_FN_STD,      /**< Used in numpy.std() impl  */
-    DPNP_FN_SUBTRACT_EXT, /**< Used in numpy.subtract() impl, requires extra
-                             parameters */
-    DPNP_FN_SUM,          /**< Used in numpy.sum() impl  */
-    DPNP_FN_TAKE,         /**< Used in numpy.take() impl  */
-    DPNP_FN_TRANSPOSE,    /**< Used in numpy.transpose() impl  */
-    DPNP_FN_TRAPZ_EXT,    /**< Used in numpy.trapz() impl, requires extra
-                             parameters */
-    DPNP_FN_VAR,          /**< Used in numpy.var() impl  */
-    DPNP_FN_ZEROS,        /**< Used in numpy.zeros() impl */
-    DPNP_FN_ZEROS_LIKE,   /**< Used in numpy.zeros_like() impl */
-    DPNP_FN_LAST,         /**< The latest element of the enumeration */
+    DPNP_FN_SUM,      /**< Used in numpy.sum() impl  */
+    DPNP_FN_TAKE,     /**< Used in numpy.take() impl  */
+    DPNP_FN_VAR,      /**< Used in numpy.var() impl  */
+    DPNP_FN_ZEROS,    /**< Used in numpy.zeros() impl */
+    DPNP_FN_ZEROS_LIKE, /**< Used in numpy.zeros_like() impl */
+    DPNP_FN_LAST,       /**< The latest element of the enumeration */
 };
 
 /**

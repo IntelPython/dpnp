@@ -1275,32 +1275,6 @@ INP_DLLEXPORT void dpnp_ones_like_c(void *result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief repeat elements of an array.
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array_in            Input array.
- * @param [out] result              Output array.
- * @param [in]  repeats             The number of repetitions for each element.
- * @param [in]  size                Number of elements in input arrays.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_repeat_c(DPCTLSyclQueueRef q_ref,
-                  const void *array_in,
-                  void *result,
-                  const size_t repeats,
-                  const size_t size,
-                  const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_repeat_c(const void *array_in,
-                                 void *result,
-                                 const size_t repeats,
-                                 const size_t size);
-
-/**
- * @ingroup BACKEND_API
  * @brief Implementation of zeros function
  *
  * @param [in]  q_ref               Reference to SYCL queue.
