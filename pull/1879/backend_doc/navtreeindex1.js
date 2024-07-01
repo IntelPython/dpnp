@@ -130,6 +130,7 @@ var NAVTREEINDEX1 =
 "heevd_8hpp_source.html":[2,0,0,3,7],
 "hierarchy.html":[1,2],
 "hypot_8hpp_source.html":[2,0,0,6,21],
+"in__place_8hpp_source.html":[2,0,0,2,2],
 "index.html":[],
 "kernels_2elementwise__functions_2fabs_8hpp_source.html":[2,0,2,0,0],
 "kernels_2elementwise__functions_2fmod_8hpp_source.html":[2,0,2,0,1],
@@ -141,6 +142,7 @@ var NAVTREEINDEX1 =
 "log2_8hpp_source.html":[2,0,0,6,25],
 "mul_8hpp_source.html":[2,0,0,6,26],
 "orgqr_8hpp_source.html":[2,0,0,3,9],
+"out__of__place_8hpp_source.html":[2,0,0,2,3],
 "pages.html":[],
 "populate_8hpp_source.html":[2,0,0,5,0,3],
 "potrf_8hpp_source.html":[2,0,0,3,10],
@@ -247,7 +249,5 @@ var NAVTREEINDEX1 =
 "topics.html":[0],
 "trunc_8hpp_source.html":[2,0,0,6,36],
 "ufunc_2elementwise__functions_2common_8hpp_source.html":[2,0,0,5,0,0],
-"ungqr_8hpp_source.html":[2,0,0,3,13],
-"verbose_8hpp_source.html":[2,0,3,8],
-"vm_2common_8hpp_source.html":[2,0,0,6,11]
+"ungqr_8hpp_source.html":[2,0,0,3,13]
 };

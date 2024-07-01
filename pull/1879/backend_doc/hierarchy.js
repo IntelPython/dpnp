@@ -8,13 +8,13 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::cartesian_product_impl< std::tuple< std::tuple< T > >, std::tuple< SecondTupleArgs... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_17b2e4d9f422d6a255a67e036ce4e46b3.html", null ],
     [ "dpnp::backend::ext::sycl_ext::cartesian_product_impl< std::tuple< std::tuple< T >, FirstTupleArgs... >, std::tuple< SecondTupleArgs... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_1eacc8a58f076baec98f1eb11bc1030e3.html", null ],
     [ "dpnp::backend::ext::sycl_ext::CartesianDispatcher< C, FnT, DispatchT, Matcher, Axis >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_cartesian_dispatcher.html", null ],
-    [ "dpnp::extensions::fft::ComplexDescriptorWrapper< prec >", "classdpnp_1_1extensions_1_1fft_1_1_complex_descriptor_wrapper.html", null ],
     [ "std::conjunction", null, [
       [ "are_same< T, Ts >", "structare__same.html", null ]
     ] ],
     [ "dpnp::backend::ext::sycl_ext::coord_in_space< DispatchT, Matcher, AxisData >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space.html", null ],
     [ "dpnp::backend::ext::sycl_ext::coord_in_space< DispatchT, Matcher, std::tuple< Axes... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_05165243a6f8dde008b6a09f3e23101f7.html", null ],
     [ "dpnp::backend::ext::sycl_ext::coord_in_space< DispatchT, Matcher, std::tuple< CurrentAxis > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_09145d8edb59d4cea6805114cb85ebe7b.html", null ],
+    [ "dpnp::extensions::fft::DescriptorWrapper< prec, dom >", "classdpnp_1_1extensions_1_1fft_1_1_descriptor_wrapper.html", null ],
     [ "std::disjunction", null, [
       [ "is_any< T, Ts >", "structis__any.html", null ]
     ] ],
