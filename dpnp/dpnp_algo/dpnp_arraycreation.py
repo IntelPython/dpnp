@@ -90,7 +90,7 @@ def dpnp_geomspace(
         dtype=dtype,
         usm_type=_usm_type,
         sycl_queue=sycl_queue_normalized,
-    )
+    ).get_array()
 
     if num > 0:
         res[0] = start
@@ -102,7 +102,8 @@ def dpnp_geomspace(
     if axis != 0:
         res = dpt.moveaxis(res, 0, axis)
 
-    return dpt.astype(res, dtype, copy=False)
+    res = dpt.astype(res, dtype, copy=False)
+    return dpnp_array._create_from_usm_ndarray(res)
 
 
 def dpnp_linspace(
@@ -200,12 +201,14 @@ def dpnp_linspace(
         dpt.floor(usm_res, out=usm_res)
 
     res = dpt.astype(usm_res, dtype, copy=False)
+    res = dpnp_array._create_from_usm_ndarray(res)
+
     if retstep is True:
         if dpnp.isscalar(step):
             step = dpt.asarray(
                 step, usm_type=res.usm_type, sycl_queue=res.sycl_queue
             )
-        return (res, step)
+        return res, dpnp_array._create_from_usm_ndarray(step)
     return res
 
 
@@ -254,12 +257,12 @@ def dpnp_logspace(
         sycl_queue=sycl_queue,
         endpoint=endpoint,
         axis=axis,
-    )
+    ).get_array()
 
     dpt.pow(base, res, out=res)
     if dtype is not None:
         res = dpt.astype(res, dtype, copy=False)
-    return res
+    return dpnp_array._create_from_usm_ndarray(res)
 
 
 class dpnp_nd_grid:

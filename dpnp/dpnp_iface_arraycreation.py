@@ -2201,7 +2201,6 @@ def geomspace(
     )
 
     dpnp.synchronize_array_data(res)
-    res = dpnp_array._create_from_usm_ndarray(res)
     return res
 
 
@@ -2426,10 +2425,8 @@ def linspace(
 
     if isinstance(res, tuple):  # (result, step) is returning
         dpnp.synchronize_array_data(res[0])
-        res = tuple(dpnp_array._create_from_usm_ndarray(x) for x in res)
     else:
         dpnp.synchronize_array_data(res)
-        res = dpnp_array._create_from_usm_ndarray(res)
     return res
 
 
@@ -2660,7 +2657,6 @@ def logspace(
     )
 
     dpnp.synchronize_array_data(res)
-    res = dpnp_array._create_from_usm_ndarray(res)
     return res
 
 

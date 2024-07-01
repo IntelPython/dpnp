@@ -198,7 +198,7 @@ def _get_bin_edges(a, bins, range, usm_type):
             dtype=bin_type,
             sycl_queue=sycl_queue,
             usm_type=usm_type,
-        )
+        ).get_array()
         return bin_edges, (first_edge, last_edge, n_equal_bins)
     return bin_edges, None
 
