@@ -90,6 +90,24 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
+      - name: Debug step on Linux with python 3.10
+        run: |
+          echo ${{ matrix.os }}
+          echo ${{ matrix.python }}
+          echo ${{ matrix.os == 'ubuntu-20.04' }}
+          echo ${{ matrix.python == '3.10' }}
+          echo ${{ matrix.os == 'ubuntu-20.04' && matrix.python == '3.10' }}
+        if: ${{ matrix.os == 'ubuntu-20.04' && matrix.python == '3.10' }} == 'true'
+
+      - name: Debug step
+        run: |
+          echo ${{ matrix.os }}
+          echo ${{ matrix.python }}
+          echo ${{ matrix.os == 'ubuntu-20.04' }}
+          echo ${{ matrix.python == '3.10' }}
+          echo ${{ matrix.os == 'ubuntu-20.04' && matrix.python == '3.10' }}
+        if: ${{ matrix.os == 'ubuntu-20.04' && matrix.python == '3.10' }} != 'true'
+
       - name: Checkout DPNP repo
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
@@ -139,6 +157,11 @@ jobs:
 
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} --numpy 1.24 ${{ env.CHANNELS }} conda-recipe
+        if: ${{ matrix.os == 'ubuntu-20.04' && matrix.python == '3.10' }} == 'false'
+
+      - name: Build conda package on Linux with python 3.10
+        run: conda build --no-test --python ${{ matrix.python }} --numpy 1.24 -c dppy/label/coverage ${{ env.CHANNELS }} conda-recipe
+        if: ${{ matrix.os == 'ubuntu-20.04' && matrix.python == '3.10' }} == 'true'
 
       - name: Upload artifact
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
@@ -241,6 +264,14 @@ jobs:
 
       - name: Install dpnp
         run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        if: ${{ matrix.python }} == '3.10'
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} -c dppy/label/coverage ${{ env.CHANNELS }}'
+          MAMBA_NO_LOW_SPEED_LIMIT: 1
+
+      - name: Install dpnp
+        run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        if: ${{ matrix.python }} != '3.10'
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -252,6 +283,11 @@ jobs:
         run: |
           python -c "import dpnp, dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
+
+      - name: Run faulty random tests
+        run: |
+          python -m pytest -q -ra --disable-warnings -vv test_random_state.py::TestNormal::test_distr
+        working-directory: ${{ env.tests-path }}
 
       # TODO: run the whole scope once the issues on CPU are resolved
       # - name: Run tests
@@ -272,7 +308,7 @@ jobs:
             . $CONDA/etc/profile.d/conda.sh
             conda activate ${{ env.TEST_ENV_NAME }}
             cd ${{ env.tests-path }}
-            python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+            python -m pytest -q -ra -v --durations=10 ${{ env.TEST_SCOPE }}
 
   test_windows:
     name: Test ['windows-2019', python='${{ matrix.python }}']
@@ -427,7 +463,7 @@ jobs:
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
             & cd ${{ env.tests-path }}
-            & python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+            & python -m pytest -q -ra -v --durations=10 ${{ env.TEST_SCOPE }}
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
