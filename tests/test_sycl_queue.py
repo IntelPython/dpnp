@@ -1215,21 +1215,21 @@ def test_out_multi_dot(device):
         assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
 
-@pytest.mark.parametrize("type", ["complex128"])
+@pytest.mark.parametrize("func", ["fft", "ifft"])
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_fft(type, device):
-    data = numpy.arange(100, dtype=numpy.dtype(type))
+def test_fft(func, device):
+    data = numpy.arange(100, dtype=numpy.complex128)
 
     dpnp_data = dpnp.array(data, device=device)
 
-    expected = numpy.fft.fft(data)
-    result = dpnp.fft.fft(dpnp_data)
+    expected = getattr(numpy.fft, func)(data)
+    result = getattr(dpnp.fft, func)(dpnp_data)
 
-    assert_allclose(result, expected, rtol=1e-4, atol=1e-7)
+    assert_dtype_allclose(result, expected)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue

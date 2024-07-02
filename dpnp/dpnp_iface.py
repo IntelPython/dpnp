@@ -36,13 +36,14 @@ it contains:
  - The functions parameters check
 
 """
-
+# pylint: disable=protected-access
 
 import os
 
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.utils as dpu
+import dpctl.tensor._tensor_impl as ti
 import numpy
 from dpctl.tensor._device import normalize_queue_device
 
@@ -54,6 +55,7 @@ from dpnp.linalg import *
 from dpnp.random import *
 
 __all__ = [
+    "are_same_logical_tensors",
     "array_equal",
     "asnumpy",
     "astype",
@@ -127,6 +129,47 @@ __all__ += __all__searching
 __all__ += __all__sorting
 __all__ += __all__statistics
 __all__ += __all__trigonometric
+
+
+def are_same_logical_tensors(ar1, ar2):
+    """
+    Check if two arrays are logical views into the same memory.
+
+    Parameters
+    ----------
+    ar1 : {dpnp_array, usm_ndarray}
+        First input array.
+    ar2 : {dpnp_array, usm_ndarray}
+        Second input array.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if two arrays are logical views into the same memory,
+        ``False`` otherwise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> b = a[:]
+    >>> a is b
+    False
+    >>> np.are_same_logical_tensors(a, b)
+    True
+    >>> b[0] = 0
+    >>> a
+    array([0, 2, 3])
+
+    >>> c = a.copy()
+    >>> np.are_same_logical_tensors(a, c)
+    False
+
+    """
+
+    return ti._same_logical_tensors(
+        dpnp.get_usm_ndarray(ar1), dpnp.get_usm_ndarray(ar2)
+    )
 
 
 def array_equal(a1, a2, equal_nan=False):
@@ -587,8 +630,11 @@ def get_result_array(a, out=None, casting="safe"):
     if out is None:
         return a
 
-    if a is out:
-        return out
+    if a is out or dpnp.are_same_logical_tensors(a, out):
+        if isinstance(out, dpnp_array):
+            return out
+        # out is usm_ndarray
+        return dpnp_array._create_from_usm_ndarray(out)
 
     dpnp.check_supported_arrays_type(out)
     if out.shape != a.shape:
