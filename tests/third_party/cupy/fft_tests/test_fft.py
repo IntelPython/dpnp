@@ -282,8 +282,7 @@ class TestHfft(unittest.TestCase):
     {"n": 10, "d": 0.5},
     {"n": 100, "d": 2},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestFftfreq(unittest.TestCase):
+class TestFftfreq:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
