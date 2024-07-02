@@ -40,6 +40,7 @@ it contains:
 
 import operator
 
+import dpctl.tensor as dpt
 import numpy
 
 import dpnp
@@ -51,6 +52,10 @@ from .dpnp_algo.dpnp_arraycreation import (
     dpnp_logspace,
     dpnp_nd_grid,
 )
+from .dpnp_array import dpnp_array
+
+# pylint: disable=no-name-in-module
+from .dpnp_utils import get_usm_allocations, map_dtype_to_device
 
 __all__ = [
     "arange",
@@ -2183,7 +2188,7 @@ def geomspace(
 
     """
 
-    return dpnp_geomspace(
+    res = dpnp_geomspace(
         start,
         stop,
         num,
@@ -2194,6 +2199,9 @@ def geomspace(
         endpoint=endpoint,
         axis=axis,
     )
+
+    dpnp.synchronize_array_data(res)
+    return res
 
 
 def identity(
@@ -2402,7 +2410,7 @@ def linspace(
 
     """
 
-    return dpnp_linspace(
+    res = dpnp_linspace(
         start,
         stop,
         num,
@@ -2414,6 +2422,12 @@ def linspace(
         retstep=retstep,
         axis=axis,
     )
+
+    if isinstance(res, tuple):  # (result, step) is returning
+        dpnp.synchronize_array_data(res[0])
+    else:
+        dpnp.synchronize_array_data(res)
+    return res
 
 
 def loadtxt(
@@ -2629,7 +2643,7 @@ def logspace(
 
     """
 
-    return dpnp_logspace(
+    res = dpnp_logspace(
         start,
         stop,
         num=num,
@@ -2641,6 +2655,9 @@ def logspace(
         dtype=dtype,
         axis=axis,
     )
+
+    dpnp.synchronize_array_data(res)
+    return res
 
 
 # pylint: disable=redefined-outer-name
@@ -2720,21 +2737,30 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
             "Unrecognized indexing keyword value, expecting 'xy' or 'ij'."
         )
 
+    if ndim < 1:
+        return []
+
     s0 = (1,) * ndim
     output = [
-        dpnp.reshape(x, s0[:i] + (-1,) + s0[i + 1 :]) for i, x in enumerate(xi)
+        dpt.reshape(dpnp.get_usm_ndarray(x), s0[:i] + (-1,) + s0[i + 1 :])
+        for i, x in enumerate(xi)
     ]
 
+    # input arrays must be allocated on the same queue
+    _, _ = get_usm_allocations(output)
+
     if indexing == "xy" and ndim > 1:
-        output[0] = output[0].reshape((1, -1) + s0[2:])
-        output[1] = output[1].reshape((-1, 1) + s0[2:])
+        output[0] = dpt.reshape(output[0], (1, -1) + s0[2:])
+        output[1] = dpt.reshape(output[1], (-1, 1) + s0[2:])
 
     if not sparse:
-        output = dpnp.broadcast_arrays(*output)
+        output = dpt.broadcast_arrays(*output)
 
     if copy:
-        output = [x.copy() for x in output]
+        output = [dpt.copy(x) for x in output]
 
+    dpnp.synchronize_array_data(output[0])
+    output = [dpnp_array._create_from_usm_ndarray(x) for x in output]
     return output
 
 
@@ -3261,7 +3287,10 @@ def tri(
 
     _dtype = dpnp.default_float_type() if dtype in (dpnp.float, None) else dtype
 
-    m = dpnp.ones(
+    if usm_type is None:
+        usm_type = "device"
+
+    m = dpt.ones(
         (N, M),
         dtype=_dtype,
         device=device,
@@ -3469,28 +3498,34 @@ def vander(
             [125,  25,   5,   1]]), Device(level_zero:gpu:0), 'host')
     """
 
-    x = dpnp.asarray(x, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
+    if dpnp.is_supported_array_type(x):
+        x = dpnp.get_usm_ndarray(x)
+    usm_x = dpt.asarray(
+        x, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
+
+    x_sycl_queue = usm_x.sycl_queue
+    x_usm_type = usm_x.usm_type
 
     if N is not None and not isinstance(N, int):
         raise TypeError(f"An integer is required, but got {type(N)}")
 
-    if x.ndim != 1:
+    if usm_x.ndim != 1:
         raise ValueError("`x` must be a one-dimensional array or sequence.")
 
     if N is None:
-        N = x.size
+        N = usm_x.size
 
-    _dtype = int if x.dtype == bool else x.dtype
-    m = empty(
-        (x.size, N),
-        dtype=_dtype,
-        usm_type=x.usm_type,
-        sycl_queue=x.sycl_queue,
-    )
+    _dtype = numpy.promote_types(usm_x.dtype, int)
+    _dtype = map_dtype_to_device(_dtype, x_sycl_queue.sycl_device)
+    m = dpnp.empty_like(usm_x, shape=(usm_x.size, N), dtype=_dtype)
+
     tmp = m[:, ::-1] if not increasing else m
     dpnp.power(
-        x.reshape(-1, 1),
-        dpnp.arange(N, dtype=_dtype, sycl_queue=x.sycl_queue),
+        dpt.reshape(usm_x, (-1, 1)),
+        dpt.arange(
+            N, dtype=_dtype, usm_type=x_usm_type, sycl_queue=x_sycl_queue
+        ),
         out=tmp,
     )
     return m
