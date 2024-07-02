@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2023-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,36 +25,11 @@
 
 #pragma once
 
-#include <sycl/sycl.hpp>
+#include <pybind11/pybind11.h>
 
-namespace dpnp::kernels::fmod
+namespace py = pybind11;
+
+namespace dpnp::extensions::vm
 {
-template <typename argT1, typename argT2, typename resT>
-struct FmodFunctor
-{
-    using supports_sg_loadstore = typename std::true_type;
-    using supports_vec = std::negation<
-        std::conjunction<std::is_integral<argT1>, std::is_integral<argT2>>>;
-
-    resT operator()(const argT1 &in1, const argT2 &in2) const
-    {
-        if constexpr (std::is_integral_v<argT1> && std::is_integral_v<argT2>) {
-            if (in2 == argT2(0)) {
-                return resT(0);
-            }
-            return in1 % in2;
-        }
-        else {
-            return sycl::fmod(in1, in2);
-        }
-    }
-
-    template <int vec_sz>
-    sycl::vec<resT, vec_sz>
-        operator()(const sycl::vec<argT1, vec_sz> &in1,
-                   const sycl::vec<argT2, vec_sz> &in2) const
-    {
-        return sycl::fmod(in1, in2);
-    }
-};
-} // namespace dpnp::kernels::fmod
+void init_fmin(py::module_ m);
+} // namespace dpnp::extensions::vm

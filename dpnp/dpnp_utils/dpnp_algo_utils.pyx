@@ -33,8 +33,6 @@ This module contains different helpers and utilities
 """
 
 import dpctl
-import dpctl.tensor._copy_utils as dpt_cu
-import dpctl.tensor._tensor_impl as dpt_ti
 import dpctl.utils as dpu
 import numpy
 
@@ -381,32 +379,6 @@ cpdef long _get_linear_index(key, tuple shape, int ndim):
     return li
 
 
-cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input2_shape) except *:
-    cdef shape_type_c input1_shape_orig = input1_shape
-    cdef shape_type_c input2_shape_orig = input2_shape
-    cdef shape_type_c result_shape
-
-    # ex (8, 1, 6, 1) and (7, 1, 5) -> (8, 1, 6, 1) and (1, 7, 1, 5)
-    cdef size_t max_shape_size = max(input1_shape.size(), input2_shape.size())
-    input1_shape.insert(input1_shape.begin(), max_shape_size - input1_shape.size(), 1)
-    input2_shape.insert(input2_shape.begin(), max_shape_size - input2_shape.size(), 1)
-
-    # ex result (8, 7, 6, 5)
-    for it in range(max_shape_size):
-        if input1_shape[it] == input2_shape[it]:
-            result_shape.push_back(input1_shape[it])
-        elif input1_shape[it] == 1:
-            result_shape.push_back(input2_shape[it])
-        elif input2_shape[it] == 1:
-            result_shape.push_back(input1_shape[it])
-        else:
-            err_msg = f"{ERROR_PREFIX} in function get_common_shape(): "
-            err_msg += f"operands could not be broadcast together with shapes {input1_shape_orig} {input2_shape_orig}"
-            raise ValueError(err_msg)
-
-    return result_shape
-
-
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
                                               dpnp_descriptor requested_out,
@@ -572,10 +544,9 @@ cdef (DPNPFuncType, void *) get_ret_type_and_func(DPNPFuncData kernel_data,
 
 
 cdef class dpnp_descriptor:
-    def __init__(self, obj, dpnp_descriptor orig_desc=None):
+    def __init__(self, obj):
         """ Initialize variables """
         self.origin_pyobj = None
-        self.origin_desc = None
         self.descriptor = None
         self.dpnp_descriptor_data_size = 0
         self.dpnp_descriptor_is_scalar = True
@@ -593,10 +564,6 @@ cdef class dpnp_descriptor:
                 return
 
         self.origin_pyobj = obj
-
-        """ Keep track of a descriptor with original data """
-        if orig_desc is not None and orig_desc.is_valid:
-            self.origin_desc = orig_desc
 
         """ array size calculation """
         cdef Py_ssize_t shape_it = 0
@@ -658,14 +625,6 @@ cdef class dpnp_descriptor:
         return self.dpnp_descriptor_is_scalar
 
     @property
-    def is_temporary(self):
-        """
-        Non-none descriptor of original data means the current descriptor
-        holds a temporary allocated data.
-        """
-        return self.origin_desc is not None
-
-    @property
     def data(self):
         if self.is_valid:
             data_tuple = self.descriptor["data"]
@@ -696,15 +655,6 @@ cdef class dpnp_descriptor:
 
         return interface_dict
 
-    def _copy_array_from(self, other_desc):
-        """
-        Fill array data with usm_ndarray of the same shape from other DPNP descriptor
-        """
-        if not isinstance(other_desc, dpnp_descriptor):
-            raise TypeError("expected dpnp_descriptor, got {}".format(type(other_desc)))
-
-        dpt_cu._copy_same_shape(self.get_array(), other_desc.get_array())
-
     def get_pyobj(self):
         return self.origin_pyobj
 
@@ -717,29 +667,6 @@ cdef class dpnp_descriptor:
         raise TypeError(
             "expected either dpctl.tensor.usm_ndarray or dpnp.dpnp_array.dpnp_array, got {}"
             "".format(type(self.origin_pyobj)))
-
-    def get_result_desc(self, result_desc=None):
-        """
-        Copy the result data into an original array
-        """
-        if self.is_temporary:
-            # Original descriptor is not None, so copy the array data into it and return
-            from_desc = self if result_desc is None else result_desc
-            self.origin_desc._copy_array_from(from_desc)
-            return self.origin_desc
-        elif result_desc is not None:
-            # A temporary result descriptor was allocated, needs to copy data back into 'out' descriptor
-            self._copy_array_from(result_desc)
-        return self
-
-    def is_array_overlapped(self, other_desc):
-        """
-        Check if usm_ndarray overlaps an array from other DPNP descriptor
-        """
-        if not isinstance(other_desc, dpnp_descriptor):
-            raise TypeError("expected dpnp_descriptor, got {}".format(type(other_desc)))
-
-        return dpt_ti._array_overlap(self.get_array(), other_desc.get_array())
 
     cdef void * get_data(self):
         cdef Py_ssize_t item_size = 0
@@ -754,9 +681,6 @@ cdef class dpnp_descriptor:
             return < void * > data_ptr
 
         return < void * > val
-
-    cdef cpp_bool match_ctype(self, DPNPFuncType ctype):
-        return self.dtype == dpnp_DPNPFuncType_to_dtype(< size_t > ctype)
 
     def __bool__(self):
         return self.is_valid

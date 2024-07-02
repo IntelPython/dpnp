@@ -278,8 +278,6 @@ tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_ldexp
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_combination
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_float
 
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fmax_nan
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fmin_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_negative
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_for_old_numpy

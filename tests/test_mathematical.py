@@ -24,6 +24,7 @@ from .helper import (
     get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_dtypes,
+    has_support_aspect16,
     has_support_aspect64,
 )
 from .test_umath import (
@@ -1951,6 +1952,80 @@ class TestDivide:
 
         assert_raises(TypeError, dpnp.divide, a, 2, out)
         assert_raises(TypeError, numpy.divide, a.asnumpy(), 2, out)
+
+
+class TestFmaxFmin:
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
+    @pytest.mark.parametrize("func", ["fmax", "fmin"])
+    def test_half(self, func):
+        a = numpy.array([0, 1, 2, 4, 2], dtype=numpy.float16)
+        b = numpy.array([-2, 5, 1, 4, 3], dtype=numpy.float16)
+        c = numpy.array([0, -1, -numpy.inf, numpy.nan, 6], dtype=numpy.float16)
+        ia, ib, ic = dpnp.array(a), dpnp.array(b), dpnp.array(c)
+
+        result = getattr(dpnp, func)(ia, ib)
+        expected = getattr(numpy, func)(a, b)
+        assert_equal(result, expected)
+
+        result = getattr(dpnp, func)(ib, ic)
+        expected = getattr(numpy, func)(b, c)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("func", ["fmax", "fmin"])
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_float_nans(self, func, dtype):
+        a = numpy.array([0, numpy.nan, numpy.nan], dtype=dtype)
+        b = numpy.array([numpy.nan, 0, numpy.nan], dtype=dtype)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = getattr(dpnp, func)(ia, ib)
+        expected = getattr(numpy, func)(a, b)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("func", ["fmax", "fmin"])
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize(
+        "nan_val",
+        [
+            complex(numpy.nan, 0),
+            complex(0, numpy.nan),
+            complex(numpy.nan, numpy.nan),
+        ],
+        ids=["nan+0j", "nanj", "nan+nanj"],
+    )
+    def test_complex_nans(self, func, dtype, nan_val):
+        a = numpy.array([0, nan_val, nan_val], dtype=dtype)
+        b = numpy.array([nan_val, 0, nan_val], dtype=dtype)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = getattr(dpnp, func)(ia, ib)
+        expected = getattr(numpy, func)(a, b)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("func", ["fmax", "fmin"])
+    @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+    def test_precision(self, func, dtype):
+        dtmin = numpy.finfo(dtype).min
+        dtmax = numpy.finfo(dtype).max
+        d1 = dtype(0.1)
+        d1_next = numpy.nextafter(d1, numpy.inf)
+
+        test_cases = [
+            # v1     v2
+            (dtmin, -numpy.inf),
+            (dtmax, -numpy.inf),
+            (d1, d1_next),
+            (dtmax, numpy.nan),
+        ]
+
+        for v1, v2 in test_cases:
+            a = numpy.array([v1])
+            b = numpy.array([v2])
+            ia, ib = dpnp.array(a), dpnp.array(b)
+
+            result = getattr(dpnp, func)(ia, ib)
+            expected = getattr(numpy, func)(a, b)
+            assert_allclose(result, expected)
 
 
 class TestFloorDivide:

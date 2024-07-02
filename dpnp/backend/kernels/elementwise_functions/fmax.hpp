@@ -27,25 +27,48 @@
 
 #include <sycl/sycl.hpp>
 
-namespace dpnp::kernels::fmod
+// dpctl tensor headers
+#include "utils/math_utils.hpp"
+#include "utils/type_utils.hpp"
+
+namespace dpnp::kernels::fmax
 {
+namespace mu_ns = dpctl::tensor::math_utils;
+namespace tu_ns = dpctl::tensor::type_utils;
+
 template <typename argT1, typename argT2, typename resT>
-struct FmodFunctor
+struct FmaxFunctor
 {
-    using supports_sg_loadstore = typename std::true_type;
-    using supports_vec = std::negation<
-        std::conjunction<std::is_integral<argT1>, std::is_integral<argT2>>>;
+    using supports_sg_loadstore = std::negation<
+        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
+    using supports_vec =
+        std::conjunction<std::is_same<argT1, argT2>,
+                         std::disjunction<std::is_floating_point<argT1>,
+                                          std::is_same<argT1, sycl::half>>>;
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         if constexpr (std::is_integral_v<argT1> && std::is_integral_v<argT2>) {
-            if (in2 == argT2(0)) {
-                return resT(0);
+            return in1 >= in2 ? in1 : in2;
+        }
+        else if constexpr (tu_ns::is_complex<argT1>::value &&
+                           tu_ns::is_complex<argT2>::value)
+        {
+            static_assert(std::is_same_v<argT1, argT2>);
+
+            using realT = typename argT1::value_type;
+            const realT in2r = std::real(in2);
+            const realT in2i = std::imag(in2);
+
+            if (sycl::isnan(in2r) || sycl::isnan(in2i) ||
+                mu_ns::greater_equal_complex<argT1>(in1, in2))
+            {
+                return in1;
             }
-            return in1 % in2;
+            return in2;
         }
         else {
-            return sycl::fmod(in1, in2);
+            return sycl::fmax(in1, in2);
         }
     }
 
@@ -54,7 +77,7 @@ struct FmodFunctor
         operator()(const sycl::vec<argT1, vec_sz> &in1,
                    const sycl::vec<argT2, vec_sz> &in2) const
     {
-        return sycl::fmod(in1, in2);
+        return sycl::fmax(in1, in2);
     }
 };
-} // namespace dpnp::kernels::fmod
+} // namespace dpnp::kernels::fmax
