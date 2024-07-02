@@ -24,6 +24,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import dpctl.tensor as dpt
 import numpy
 from dpctl.tensor._elementwise_common import (
     BinaryElementwiseFunc,
@@ -161,24 +162,27 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
                 f"Requested function={self.name_} only takes `out` or `dtype`"
                 "as an argument, but both were provided."
             )
+
+        if order is None:
+            order = "K"
+        elif order in "afkcAFKC":
+            order = order.upper()
         else:
-            if order is None:
-                order = "K"
-            elif order in "afkcAFKC":
-                order = order.upper()
-            else:
-                raise ValueError(
-                    "order must be one of 'C', 'F', 'A', or 'K' "
-                    f"(got '{order}')"
-                )
-            if dtype is not None:
-                x = dpnp.astype(x, dtype=dtype, copy=False)
-            x_usm = dpnp.get_usm_ndarray(x)
-            out_usm = None if out is None else dpnp.get_usm_ndarray(out)
-            res_usm = super().__call__(x_usm, out=out_usm, order=order)
-            if out is not None and isinstance(out, dpnp_array):
-                return out
-            return dpnp_array._create_from_usm_ndarray(res_usm)
+            raise ValueError(
+                "order must be one of 'C', 'F', 'A', or 'K' " f"(got '{order}')"
+            )
+
+        x_usm = dpnp.get_usm_ndarray(x)
+        if dtype is not None:
+            x_usm = dpt.astype(x_usm, dtype, copy=False)
+
+        out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+        res_usm = super().__call__(x_usm, out=out_usm, order=order)
+
+        dpnp.synchronize_array_data(res_usm)
+        if out is not None and isinstance(out, dpnp_array):
+            return out
+        return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
 class DPNPBinaryFunc(BinaryElementwiseFunc):
@@ -311,35 +315,47 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                 f"Requested function={self.name_} only takes `out` or `dtype`"
                 "as an argument, but both were provided."
             )
+
+        if order is None:
+            order = "K"
+        elif order in "afkcAFKC":
+            order = order.upper()
         else:
-            if order is None:
-                order = "K"
-            elif order in "afkcAFKC":
-                order = order.upper()
-            else:
-                raise ValueError(
-                    "order must be one of 'C', 'F', 'A', or 'K' "
-                    f"(got '{order}')"
+            raise ValueError(
+                "order must be one of 'C', 'F', 'A', or 'K' (got '{order}')"
+            )
+
+        x1_usm = dpnp.get_usm_ndarray_or_scalar(x1)
+        x2_usm = dpnp.get_usm_ndarray_or_scalar(x2)
+
+        if dtype is not None:
+            if dpnp.isscalar(x1):
+                x1_usm = dpt.asarray(
+                    x1,
+                    dtype=dtype,
+                    sycl_queue=x2.sycl_queue,
+                    usm_type=x2.usm_type,
                 )
-            if dtype is not None:
-                if dpnp.isscalar(x1):
-                    x1 = dpnp.asarray(x1, dtype=dtype)
-                    x2 = dpnp.astype(x2, dtype=dtype, copy=False)
-                elif dpnp.isscalar(x2):
-                    x1 = dpnp.astype(x1, dtype=dtype, copy=False)
-                    x2 = dpnp.asarray(x2, dtype=dtype)
-                else:
-                    x1 = dpnp.astype(x1, dtype=dtype, copy=False)
-                    x2 = dpnp.astype(x2, dtype=dtype, copy=False)
+                x2_usm = dpt.astype(x2_usm, dtype, copy=False)
+            elif dpnp.isscalar(x2):
+                x1_usm = dpt.astype(x1_usm, dtype, copy=False)
+                x2_usm = dpt.asarray(
+                    x2,
+                    dtype=dtype,
+                    sycl_queue=x1.sycl_queue,
+                    usm_type=x1.usm_type,
+                )
+            else:
+                x1_usm = dpt.astype(x1_usm, dtype, copy=False)
+                x2_usm = dpt.astype(x2_usm, dtype, copy=False)
 
-            x1_usm = dpnp.get_usm_ndarray_or_scalar(x1)
-            x2_usm = dpnp.get_usm_ndarray_or_scalar(x2)
+        out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+        res_usm = super().__call__(x1_usm, x2_usm, out=out_usm, order=order)
 
-            out_usm = None if out is None else dpnp.get_usm_ndarray(out)
-            res_usm = super().__call__(x1_usm, x2_usm, out=out_usm, order=order)
-            if out is not None and isinstance(out, dpnp_array):
-                return out
-            return dpnp_array._create_from_usm_ndarray(res_usm)
+        dpnp.synchronize_array_data(res_usm)
+        if out is not None and isinstance(out, dpnp_array):
+            return out
+        return dpnp_array._create_from_usm_ndarray(res_usm)
 
     def outer(
         self,
@@ -463,7 +479,7 @@ class DPNPAngle(DPNPUnaryFunc):
     def __call__(self, x, deg=False):
         res = super().__call__(x)
         if deg is True:
-            res = res * (180 / dpnp.pi)
+            res *= 180 / dpnp.pi
         return res
 
 
@@ -513,14 +529,21 @@ class DPNPRound(DPNPUnaryFunc):
 
     def __call__(self, x, decimals=0, out=None, dtype=None):
         if decimals != 0:
-            if dpnp.issubdtype(x.dtype, dpnp.integer) and dtype is None:
-                dtype = x.dtype
-            res = dpnp.true_divide(
-                dpnp.rint(x * 10**decimals, out=out), 10**decimals, out=out
-            )
+            x_usm = dpnp.get_usm_ndarray(x)
+            if dpnp.issubdtype(x_usm.dtype, dpnp.integer) and dtype is None:
+                dtype = x_usm.dtype
+
+            out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+            x_usm = dpt.round(x_usm * 10**decimals, out=out_usm)
+            res_usm = dpt.divide(x_usm, 10**decimals, out=out_usm)
+
             if dtype is not None:
-                res = res.astype(dtype)
-            return res
+                res_usm = dpt.astype(res_usm, dtype, copy=False)
+
+            dpnp.synchronize_array_data(res_usm)
+            if out is not None and isinstance(out, dpnp_array):
+                return out
+            return dpnp_array._create_from_usm_ndarray(res_usm)
         else:
             return super().__call__(x, out=out, dtype=dtype)
 
