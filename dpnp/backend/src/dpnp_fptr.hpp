@@ -331,7 +331,6 @@ void func_map_init_fft_func(func_map_t &fmap);
 void func_map_init_indexing_func(func_map_t &fmap);
 void func_map_init_linalg(func_map_t &fmap);
 void func_map_init_logic(func_map_t &fmap);
-void func_map_init_manipulation(func_map_t &fmap);
 void func_map_init_mathematical(func_map_t &fmap);
 void func_map_init_random(func_map_t &fmap);
 void func_map_init_reduction(func_map_t &fmap);

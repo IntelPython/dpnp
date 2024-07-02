@@ -126,31 +126,6 @@ DPCTLSyclEventRef (*dpnp_choose_ext_c)(DPCTLSyclQueueRef,
     dpnp_choose_c<_DataType1, _DataType2>;
 
 template <typename _DataType>
-DPCTLSyclEventRef
-    dpnp_diag_indices_c(DPCTLSyclQueueRef q_ref,
-                        void *result1,
-                        size_t size,
-                        const DPCTLEventVectorRef dep_event_vec_ref)
-{
-    return dpnp_arange_c<_DataType>(q_ref, 0, 1, result1, size,
-                                    dep_event_vec_ref);
-}
-
-template <typename _DataType>
-void dpnp_diag_indices_c(void *result1, size_t size)
-{
-    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
-    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref =
-        dpnp_diag_indices_c<_DataType>(q_ref, result1, size, dep_event_vec_ref);
-    DPCTLEvent_WaitAndThrow(event_ref);
-}
-
-template <typename _DataType>
-void (*dpnp_diag_indices_default_c)(void *,
-                                    size_t) = dpnp_diag_indices_c<_DataType>;
-
-template <typename _DataType>
 DPCTLSyclEventRef dpnp_diagonal_c(DPCTLSyclQueueRef q_ref,
                                   void *array1_in,
                                   const size_t input1_size,
@@ -872,15 +847,6 @@ void func_map_init_indexing_func(func_map_t &fmap)
         eft_FLT, (void *)dpnp_choose_ext_c<int64_t, float>};
     fmap[DPNPFuncName::DPNP_FN_CHOOSE_EXT][eft_LNG][eft_DBL] = {
         eft_DBL, (void *)dpnp_choose_ext_c<int64_t, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_diag_indices_default_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_diag_indices_default_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_diag_indices_default_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_diag_indices_default_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_INT][eft_INT] = {
         eft_INT, (void *)dpnp_diagonal_default_c<int32_t>};
