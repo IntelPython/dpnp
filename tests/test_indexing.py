@@ -7,6 +7,7 @@ from numpy.testing import (
     assert_array_equal,
     assert_equal,
     assert_raises,
+    assert_raises_regex,
 )
 
 import dpnp
@@ -27,6 +28,159 @@ def _add_keepdims(func):
         return dpnp.expand_dims(res, axis=axis)
 
     return wrapped
+
+
+class TestDiagonal:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("offset", [-3, -1, 0, 1, 3])
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2), (3, 3), (2, 5), (3, 2, 2), (2, 2, 2, 2), (2, 2, 2, 3)],
+        ids=[
+            "(2,2)",
+            "(3,3)",
+            "(2,5)",
+            "(3,2,2)",
+            "(2,2,2,2)",
+            "(2,2,2,3)",
+        ],
+    )
+    def test_diagonal_offset(self, shape, dtype, offset):
+        a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+        a_dp = dpnp.array(a)
+        expected = numpy.diagonal(a, offset)
+        result = dpnp.diagonal(a_dp, offset)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape, axis_pairs",
+        [
+            ((3, 4), [(0, 1), (1, 0)]),
+            ((3, 4, 5), [(0, 1), (1, 2), (0, 2)]),
+            ((4, 3, 5, 2), [(0, 1), (1, 2), (2, 3), (0, 3)]),
+        ],
+    )
+    def test_diagonal_axes(self, shape, axis_pairs, dtype):
+        a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+        a_dp = dpnp.array(a)
+        for axis1, axis2 in axis_pairs:
+            expected = numpy.diagonal(a, axis1=axis1, axis2=axis2)
+            result = dpnp.diagonal(a_dp, axis1=axis1, axis2=axis2)
+            assert_array_equal(expected, result)
+
+    def test_diagonal_errors(self):
+        a = dpnp.arange(12).reshape(3, 4)
+
+        # unsupported type
+        a_np = dpnp.asnumpy(a)
+        assert_raises(TypeError, dpnp.diagonal, a_np)
+
+        # a.ndim < 2
+        a_ndim_1 = a.flatten()
+        assert_raises(ValueError, dpnp.diagonal, a_ndim_1)
+
+        # unsupported type `offset`
+        assert_raises(TypeError, dpnp.diagonal, a, offset=1.0)
+        assert_raises(TypeError, dpnp.diagonal, a, offset=[0])
+
+        # axes are out of bounds
+        assert_raises(numpy.AxisError, a.diagonal, axis1=0, axis2=5)
+        assert_raises(numpy.AxisError, a.diagonal, axis1=5, axis2=0)
+        assert_raises(numpy.AxisError, a.diagonal, axis1=5, axis2=5)
+
+        # same axes
+        assert_raises(ValueError, a.diagonal, axis1=1, axis2=1)
+        assert_raises(ValueError, a.diagonal, axis1=1, axis2=-1)
+
+
+class TestExtins:
+    @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("cond_dt", get_all_dtypes(no_none=True))
+    def test_extract_diff_dtypes(self, a_dt, cond_dt):
+        a = numpy.array([-2, -1, 0, 1, 2, 3], dtype=a_dt)
+        cond = numpy.array([1, -1, 2, 0, -2, 3], dtype=cond_dt)
+        ia, icond = dpnp.array(a), dpnp.array(cond)
+
+        result = dpnp.extract(icond, ia)
+        expected = numpy.extract(cond, a)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_extract(self, dt):
+        a = numpy.array([1, 3, 2, 1, 2, 3, 3], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.extract(ia > 1, ia)
+        expected = numpy.extract(a > 1, a)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_place(self, dt):
+        a = numpy.array([1, 4, 3, 2, 5, 8, 7], dtype=dt)
+        ia = dpnp.array(a)
+
+        dpnp.place(ia, [0, 1, 0, 1, 0, 1, 0], [2, 4, 6])
+        numpy.place(a, [0, 1, 0, 1, 0, 1, 0], [2, 4, 6])
+        assert_array_equal(ia, a)
+
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    def test_place_broadcast_vals(self):
+        a = numpy.array([1, 4, 3, 2, 5, 8, 7])
+        ia = dpnp.array(a)
+
+        dpnp.place(ia, [1, 0, 1, 0, 1, 0, 1], [8, 9])
+        numpy.place(a, [1, 0, 1, 0, 1, 0, 1], [8, 9])
+        assert_array_equal(ia, a)
+
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    def test_place_empty_vals(self):
+        a = numpy.array([1, 4, 3, 2, 5, 8, 7])
+        mask = numpy.zeros(7)
+        ia, imask = dpnp.array(a), dpnp.array(mask)
+        vals = []
+
+        dpnp.place(ia, imask, vals)
+        numpy.place(a, mask, vals)
+        assert_array_equal(ia, a)
+
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_place_insert_from_empty_vals(self, xp):
+        a = xp.array([1, 4, 3, 2, 5, 8, 7])
+        assert_raises_regex(
+            ValueError,
+            "Cannot insert from an empty array",
+            lambda: xp.place(a, [0, 0, 0, 0, 0, 1, 0], []),
+        )
+
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_place_wrong_array_type(self, xp):
+        assert_raises(TypeError, xp.place, [1, 2, 3], [True, False], [0, 1])
+
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_both(self, dt):
+        a = numpy.random.rand(10).astype(dt)
+        mask = a > 0.5
+        ia, imask = dpnp.array(a), dpnp.array(mask)
+
+        result = dpnp.extract(imask, ia)
+        expected = numpy.extract(mask, a)
+        assert_array_equal(result, expected)
+
+        ic = dpnp.extract(imask, ia)
+        c = numpy.extract(mask, a)
+        assert_array_equal(ic, c)
+
+        dpnp.place(ia, imask, 0)
+        dpnp.place(ia, imask, ic)
+
+        numpy.place(a, mask, 0)
+        numpy.place(a, mask, c)
+        assert_array_equal(ia, a)
 
 
 class TestIndexing:
@@ -474,82 +628,6 @@ def test_choose():
 
     expected = numpy.choose([0, 0, 0, 0], [a, b, c])
     result = dpnp.choose([0, 0, 0, 0], [ia, ib, ic])
-    assert_array_equal(expected, result)
-
-
-class TestDiagonal:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize("offset", [-3, -1, 0, 1, 3])
-    @pytest.mark.parametrize(
-        "shape",
-        [(2, 2), (3, 3), (2, 5), (3, 2, 2), (2, 2, 2, 2), (2, 2, 2, 3)],
-        ids=[
-            "(2,2)",
-            "(3,3)",
-            "(2,5)",
-            "(3,2,2)",
-            "(2,2,2,2)",
-            "(2,2,2,3)",
-        ],
-    )
-    def test_diagonal_offset(self, shape, dtype, offset):
-        a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
-        a_dp = dpnp.array(a)
-        expected = numpy.diagonal(a, offset)
-        result = dpnp.diagonal(a_dp, offset)
-        assert_array_equal(expected, result)
-
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize(
-        "shape, axis_pairs",
-        [
-            ((3, 4), [(0, 1), (1, 0)]),
-            ((3, 4, 5), [(0, 1), (1, 2), (0, 2)]),
-            ((4, 3, 5, 2), [(0, 1), (1, 2), (2, 3), (0, 3)]),
-        ],
-    )
-    def test_diagonal_axes(self, shape, axis_pairs, dtype):
-        a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
-        a_dp = dpnp.array(a)
-        for axis1, axis2 in axis_pairs:
-            expected = numpy.diagonal(a, axis1=axis1, axis2=axis2)
-            result = dpnp.diagonal(a_dp, axis1=axis1, axis2=axis2)
-            assert_array_equal(expected, result)
-
-    def test_diagonal_errors(self):
-        a = dpnp.arange(12).reshape(3, 4)
-
-        # unsupported type
-        a_np = dpnp.asnumpy(a)
-        assert_raises(TypeError, dpnp.diagonal, a_np)
-
-        # a.ndim < 2
-        a_ndim_1 = a.flatten()
-        assert_raises(ValueError, dpnp.diagonal, a_ndim_1)
-
-        # unsupported type `offset`
-        assert_raises(TypeError, dpnp.diagonal, a, offset=1.0)
-        assert_raises(TypeError, dpnp.diagonal, a, offset=[0])
-
-        # axes are out of bounds
-        assert_raises(numpy.AxisError, a.diagonal, axis1=0, axis2=5)
-        assert_raises(numpy.AxisError, a.diagonal, axis1=5, axis2=0)
-        assert_raises(numpy.AxisError, a.diagonal, axis1=5, axis2=5)
-
-        # same axes
-        assert_raises(ValueError, a.diagonal, axis1=1, axis2=1)
-        assert_raises(ValueError, a.diagonal, axis1=1, axis2=-1)
-
-
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes())
-@pytest.mark.parametrize("cond_dtype", get_all_dtypes())
-def test_extract_1d(arr_dtype, cond_dtype):
-    a = numpy.array([-2, -1, 0, 1, 2, 3], dtype=arr_dtype)
-    ia = dpnp.array(a)
-    cond = numpy.array([1, -1, 2, 0, -2, 3], dtype=cond_dtype)
-    icond = dpnp.array(cond)
-    expected = numpy.extract(cond, a)
-    result = dpnp.extract(icond, ia)
     assert_array_equal(expected, result)
 
 
