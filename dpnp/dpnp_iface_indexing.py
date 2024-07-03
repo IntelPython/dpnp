@@ -496,7 +496,7 @@ def extract(condition, a):
 
     This is equivalent to
     ``dpnp.compress(dpnp.ravel(condition), dpnp.ravel(a))``. If `condition`
-    is boolean :obj:`dpnp.dpnp.extract` is equivalent to ``a[condition]``.
+    is boolean :obj:`dpnp.extract` is equivalent to ``a[condition]``.
 
     Note that :obj:`dpnp.place` does the exact opposite of :obj:`dpnp.extract`.
 
