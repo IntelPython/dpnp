@@ -29,6 +29,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <complex>
 #include <iostream>
 #include <iterator>
 
