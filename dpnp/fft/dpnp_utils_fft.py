@@ -40,6 +40,7 @@ available as a pybind11 extension.
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
+import dpctl.utils as dpu
 import numpy
 from dpctl.utils import ExecutionPlacementError
 from numpy.core.numeric import normalize_axis_index
@@ -89,13 +90,19 @@ def _commit_descriptor(a, in_place, a_strides, index, axes):
     return dsc
 
 
-def _compute_result(dsc, a, out, forward, a_strides, hev_list, dev_list):
+def _compute_result(dsc, a, out, forward, a_strides):
     """Compute the result of the FFT."""
+
+    exec_q = a.sycl_queue
+    _manager = dpu.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
 
     a_usm = dpnp.get_usm_ndarray(a)
     if dsc.transform_in_place:
         # in-place transform
-        fft_event, _ = fi._fft_in_place(dsc, a_usm, forward, dev_list)
+        ht_fft_event, fft_event = fi._fft_in_place(
+            dsc, a_usm, forward, depends=dep_evs
+        )
         res_usm = a_usm
     else:
         if (
@@ -115,18 +122,15 @@ def _compute_result(dsc, a, out, forward, a_strides, hev_list, dev_list):
                 offset=0,
                 buffer_ctor_kwargs={"queue": a.sycl_queue},
             )
-        fft_event, _ = fi._fft_out_of_place(
-            dsc, a_usm, res_usm, forward, dev_list
+        ht_fft_event, fft_event = fi._fft_out_of_place(
+            dsc, a_usm, res_usm, forward, depends=dep_evs
         )
-    hev_list.append(fft_event)
-    dpctl.SyclEvent.wait_for(hev_list)
+    _manager.add_event_pair(ht_fft_event, fft_event)
 
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-
-    return res
+    return res_usm
 
 
-def _copy_array(x, dep_events, host_events):
+def _copy_array(x):
     """
     Creating a C-contiguous copy of input array if input array has a negative
     stride or it does not have a complex data types. In this situation, an
@@ -147,19 +151,25 @@ def _copy_array(x, dep_events, host_events):
 
     if copy_flag:
         x_copy = dpnp.empty_like(x, dtype=dtype, order="C")
+
+        exec_q = x.sycl_queue
+        _manager = dpu.SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
+
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=dpnp.get_usm_ndarray(x),
             dst=x_copy.get_array(),
-            sycl_queue=x.sycl_queue,
+            sycl_queue=exec_q,
+            depends=dep_evs,
         )
-        dep_events.append(copy_ev)
-        host_events.append(ht_copy_ev)
+        _manager.add_event_pair(ht_copy_ev, copy_ev)
+
         # if copying is done, FFT can be in-place (copy_flag = in_place flag)
         return x_copy, copy_flag
     return x, copy_flag
 
 
-def _fft(a, norm, out, forward, in_place, hev_list, dev_list, axes=None):
+def _fft(a, norm, out, forward, in_place, axes=None):
     """Calculates FFT of the input array along the specified axes."""
 
     index = 0
@@ -171,16 +181,16 @@ def _fft(a, norm, out, forward, in_place, hev_list, dev_list, axes=None):
         a = dpnp.moveaxis(a, axes, local_axes)
         a_shape_orig = a.shape
         local_shape = (-1,) + a_shape_orig[-len_axes:]
-        a = dpnp.reshape(a, local_shape)
+        a = dpt.reshape(a.get_array(), local_shape)
         index = 1
 
     a_strides = _standardize_strides_to_nonzero(a.strides, a.shape)
     dsc = _commit_descriptor(a, in_place, a_strides, index, axes)
-    res = _compute_result(dsc, a, out, forward, a_strides, hev_list, dev_list)
-    res = _scale_result(res, norm, forward, index)
+    res_usm = _compute_result(dsc, a, out, forward, a_strides)
+    res = _scale_result(res_usm, norm, forward, index)
 
     if axes is not None:  # batch_fft
-        res = dpnp.reshape(res, a_shape_orig)
+        res = dpt.reshape(res.get_array(), a_shape_orig)
         res = dpnp.moveaxis(res, local_axes, axes)
 
     result = dpnp.get_result_array(res, out=out, casting="same_kind")
@@ -188,13 +198,14 @@ def _fft(a, norm, out, forward, in_place, hev_list, dev_list, axes=None):
         result.flags.c_contiguous or result.flags.f_contiguous
     ):
         result = dpnp.ascontiguousarray(result)
-
+    else:
+        dpnp.synchronize_array_data(result)
     return result
 
 
-def _scale_result(res, norm, forward, index):
+def _scale_result(res_usm, norm, forward, index):
     """Scale the result of the FFT according to `norm`."""
-    scale = numpy.prod(res.shape[index:], dtype=res.real.dtype)
+    scale = numpy.prod(res_usm.shape[index:], dtype=res_usm.real.dtype)
     norm_factor = 1
     if norm == "ortho":
         norm_factor = numpy.sqrt(scale)
@@ -203,11 +214,11 @@ def _scale_result(res, norm, forward, index):
     elif norm in [None, "backward"] and not forward:
         norm_factor = scale
 
-    res /= norm_factor
-    return res
+    res_usm /= norm_factor
+    return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
-def _truncate_or_pad(a, shape, axes, copy_ht_ev, copy_dp_ev):
+def _truncate_or_pad(a, shape, axes):
     """Truncating or zero-padding the input array along the specified axes."""
 
     shape = (shape,) if isinstance(shape, int) else shape
@@ -225,6 +236,8 @@ def _truncate_or_pad(a, shape, axes, copy_ht_ev, copy_dp_ev):
         else:
             # zero-padding
             exec_q = a.sycl_queue
+            _manager = dpu.SequentialOrderManager[exec_q]
+            dep_evs = _manager.submitted_events
             index[axis] = slice(0, a_shape[axis])  # orig shape
             a_shape[axis] = s  # modified shape
             order = "F" if a.flags.fnc else "C"
@@ -235,14 +248,13 @@ def _truncate_or_pad(a, shape, axes, copy_ht_ev, copy_dp_ev):
                 usm_type=a.usm_type,
                 sycl_queue=exec_q,
             )
-            ht_ev, dp_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=dpnp.get_usm_ndarray(a),
                 dst=z.get_array()[tuple(index)],
                 sycl_queue=exec_q,
-                depends=copy_dp_ev,
+                depends=dep_evs,
             )
-            copy_ht_ev.append(ht_ev)
-            copy_dp_ev.append(dp_ev)
+            _manager.add_event_pair(ht_copy_ev, copy_ev)
             a = z
 
     return a
@@ -282,11 +294,9 @@ def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
     if n < 1:
         raise ValueError(f"Invalid number of FFT data points ({n}) specified")
 
-    copy_ht_ev = []
-    copy_dp_ev = []
-    a = _truncate_or_pad(a, n, axis, copy_ht_ev, copy_dp_ev)
+    a = _truncate_or_pad(a, n, axis)
     _validate_out_keyword(a, out)
-    a, in_place = _copy_array(a, copy_ht_ev, copy_dp_ev)
+    a, in_place = _copy_array(a)
     _check_norm(norm)
 
     if a.size == 0:
@@ -296,6 +306,8 @@ def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
     # non-batch FFT
     axis = None if a_ndim == 1 else axis
 
+    _check_norm(norm)
+    a, in_place = _copy_array(a)
     return _fft(
         a,
         norm=norm,
@@ -303,6 +315,4 @@ def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
         forward=forward,
         in_place=in_place,
         axes=axis,
-        hev_list=copy_ht_ev,
-        dev_list=copy_dp_ev,
     )
