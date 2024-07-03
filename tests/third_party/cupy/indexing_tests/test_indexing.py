@@ -4,6 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -35,8 +36,10 @@ class TestIndexing(unittest.TestCase):
         return a.take(b)
 
     # see cupy#3017
+    # mark slow as NumPy could go OOM on the Windows CI
+    @testing.slow
     @testing.for_int_dtypes(no_bool=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_take_index_range_overflow(self, xp, dtype):
         # Skip for too large dimensions
         if numpy.dtype(dtype) in (numpy.int64, numpy.uint64):
@@ -46,7 +49,7 @@ class TestIndexing(unittest.TestCase):
         if dtype in (numpy.int32, numpy.uint32):
             pytest.skip()
         iinfo = numpy.iinfo(dtype)
-        a = xp.broadcast_to(xp.ones(1, dtype=dtype), (iinfo.max + 1,))
+        a = xp.broadcast_to(xp.ones(1), (iinfo.max + 1,))
         b = xp.array([0], dtype=dtype)
         return a.take(b)
 
@@ -62,18 +65,21 @@ class TestIndexing(unittest.TestCase):
         b = testing.shaped_random((30,), xp, dtype="int64", scale=24)
         return xp.take_along_axis(a, b, axis=None)
 
+    @pytest.mark.skip("compress() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_compress(self, xp):
         a = testing.shaped_arange((3, 4, 5), xp)
         b = xp.array([True, False, True])
         return xp.compress(b, a, axis=1)
 
+    @pytest.mark.skip("compress() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_compress_no_axis(self, xp):
         a = testing.shaped_arange((3, 4, 5), xp)
         b = xp.array([True, False, True])
         return xp.compress(b, a)
 
+    @pytest.mark.skip("compress() is not implemented yet")
     @testing.for_int_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_compress_no_bool(self, xp, dtype):
@@ -81,16 +87,32 @@ class TestIndexing(unittest.TestCase):
         b = testing.shaped_arange((3,), xp, dtype)
         return xp.compress(b, a, axis=1)
 
+    @pytest.mark.skip("compress() is not implemented yet")
+    @testing.numpy_cupy_array_equal()
+    def test_compress_overrun_false(self, xp):
+        a = testing.shaped_arange((3,), xp)
+        b = xp.array([True, False, True, False, False, False])
+        return xp.compress(b, a)
+
+    @pytest.mark.skip("compress() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_compress_empty_1dim(self, xp):
         a = testing.shaped_arange((3, 4, 5), xp)
         b = xp.array([])
         return xp.compress(b, a, axis=1)
 
+    @pytest.mark.skip("compress() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_compress_empty_1dim_no_axis(self, xp):
         a = testing.shaped_arange((3, 4, 5), xp)
         b = xp.array([])
+        return xp.compress(b, a)
+
+    @pytest.mark.skip("compress() is not implemented yet")
+    @testing.numpy_cupy_array_equal()
+    def test_compress_0dim(self, xp):
+        a = xp.array(3)
+        b = xp.array([True])
         return xp.compress(b, a)
 
     @testing.for_all_dtypes()
@@ -162,28 +184,24 @@ class TestIndexing(unittest.TestCase):
         b = xp.array([[1, 0, 1], [0, 1, 0], [1, 0, 1]], dtype=dtype)
         return xp.extract(b, a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_extract_shape_mismatch(self, xp):
         a = testing.shaped_arange((2, 3), xp)
         b = xp.array([[True, False], [True, False], [True, False]])
         return xp.extract(b, a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_extract_size_mismatch(self, xp):
         a = testing.shaped_arange((3, 3), xp)
         b = xp.array([[True, False, True], [False, True, False]])
         return xp.extract(b, a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_extract_size_mismatch2(self, xp):
         a = testing.shaped_arange((3, 3), xp)
         b = xp.array([[True, False, True, False], [False, True, False, True]])
         return xp.extract(b, a)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_extract_empty_1dim(self, xp):
         a = testing.shaped_arange((3, 3), xp)
@@ -191,7 +209,6 @@ class TestIndexing(unittest.TestCase):
         return xp.extract(b, a)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestChoose(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -200,13 +217,15 @@ class TestChoose(unittest.TestCase):
         c = testing.shaped_arange((3, 4), xp, dtype)
         return a.choose(c)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose_broadcast(self, xp, dtype):
         a = xp.array([[1, 0, 1], [0, 1, 0], [1, 0, 1]])
-        c = xp.array([-10, 10], dtype=dtype)
+        c = xp.array([-10, 10]).astype(dtype)
         return a.choose(c)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose_broadcast2(self, xp, dtype):
@@ -214,6 +233,7 @@ class TestChoose(unittest.TestCase):
         c = testing.shaped_arange((3, 5, 2), xp, dtype)
         return a.choose(c)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose_wrap(self, xp, dtype):
@@ -221,6 +241,7 @@ class TestChoose(unittest.TestCase):
         c = testing.shaped_arange((3, 4), xp, dtype)
         return a.choose(c, mode="wrap")
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose_clip(self, xp, dtype):
@@ -228,6 +249,7 @@ class TestChoose(unittest.TestCase):
         c = testing.shaped_arange((3, 4), xp, dtype)
         return a.choose(c, mode="clip")
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.19")
     def test_unknown_clip(self):
         for xp in (numpy, cupy):
@@ -236,12 +258,14 @@ class TestChoose(unittest.TestCase):
             with pytest.raises(ValueError):
                 a.choose(c, mode="unknown")
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_raise(self):
         a = cupy.array([2])
         c = cupy.array([[0, 1]])
         with self.assertRaises(ValueError):
             a.choose(c)
 
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     def test_choose_broadcast_fail(self, dtype):
         for xp in (numpy, cupy):
@@ -370,3 +394,10 @@ class TestSelect(unittest.TestCase):
         choicelist = [a, b]
         with pytest.raises(TypeError):
             cupy.select(condlist, choicelist, [dtype(2)])
+
+    @pytest.mark.skip("as_strided() is not implemented yet")
+    @testing.numpy_cupy_array_equal()
+    def test_indexing_overflows(self, xp):
+        a = xp.arange(2, dtype=xp.int32)
+        a = xp.lib.stride_tricks.as_strided(a, shape=(2, 2**32), strides=(4, 0))
+        return a[xp.array([1]), xp.array([1])]

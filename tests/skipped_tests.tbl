@@ -124,11 +124,6 @@ tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test_i
 tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test_invalid_index
 tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test_invalid_order
 
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_empty_1dim
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_empty_1dim_no_axis
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_no_axis
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_no_bool
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_1D_choicelist
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_choicelist_condlist_broadcast
