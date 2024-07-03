@@ -61,7 +61,10 @@ public:
         queue_ptr_ = std::make_unique<sycl::queue>(q);
     }
 
-    descr_type &get_descriptor() { return descr_; }
+    descr_type &get_descriptor()
+    {
+        return descr_;
+    }
 
     const sycl::queue &get_queue() const
     {
@@ -76,7 +79,7 @@ public:
 
     // config_param::DIMENSION
     template <typename valT = std::int64_t>
-    valT get_dim()
+    const valT get_dim()
     {
         valT dim = -1;
         descr_.get_value(mkl_dft::config_param::DIMENSION, &dim);
@@ -86,7 +89,7 @@ public:
 
     // config_param::NUMBER_OF_TRANSFORMS
     template <typename valT = std::int64_t>
-    valT get_number_of_transforms()
+    const valT get_number_of_transforms()
     {
         valT transforms_count{};
 
@@ -96,14 +99,14 @@ public:
     }
 
     template <typename valT = std::int64_t>
-    void set_number_of_transforms(const valT num)
+    void set_number_of_transforms(const valT &num)
     {
         descr_.set_value(mkl_dft::config_param::NUMBER_OF_TRANSFORMS, num);
     }
 
     // config_param::FWD_STRIDES
     template <typename valT = std::vector<std::int64_t>>
-    valT get_fwd_strides()
+    const valT get_fwd_strides()
     {
         const typename valT::value_type dim = get_dim();
 
@@ -127,7 +130,7 @@ public:
 
     // config_param::BWD_STRIDES
     template <typename valT = std::vector<std::int64_t>>
-    valT get_bwd_strides()
+    const valT get_bwd_strides()
     {
         const typename valT::value_type dim = get_dim();
 
@@ -151,7 +154,7 @@ public:
 
     // config_param::FWD_DISTANCE
     template <typename valT = std::int64_t>
-    valT get_fwd_distance()
+    const valT get_fwd_distance()
     {
         valT dist = 0;
 
@@ -160,14 +163,14 @@ public:
     }
 
     template <typename valT = std::int64_t>
-    void set_fwd_distance(const valT dist)
+    void set_fwd_distance(const valT &dist)
     {
         descr_.set_value(mkl_dft::config_param::FWD_DISTANCE, dist);
     }
 
     // config_param::BWD_DISTANCE
     template <typename valT = std::int64_t>
-    valT get_bwd_distance()
+    const valT get_bwd_distance()
     {
         valT dist = 0;
 
@@ -176,7 +179,7 @@ public:
     }
 
     template <typename valT = std::int64_t>
-    void set_bwd_distance(const valT dist)
+    void set_bwd_distance(const valT &dist)
     {
         descr_.set_value(mkl_dft::config_param::BWD_DISTANCE, dist);
     }
@@ -194,7 +197,7 @@ public:
         return (placement == DFTI_CONFIG_VALUE::DFTI_INPLACE);
     }
 
-    void set_in_place(const bool in_place_request)
+    void set_in_place(const bool &in_place_request)
     {
         // TODO: replace when MKLD-10506 is implemented
         // descr_.set_value(mkl_dft::config_param::PLACEMENT, (in_place_request)

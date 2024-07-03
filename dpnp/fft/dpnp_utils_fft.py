@@ -46,12 +46,12 @@ from numpy.core.numeric import normalize_axis_index
 
 import dpnp
 import dpnp.backend.extensions.fft._fft_impl as fi
-from dpnp.dpnp_utils.dpnp_utils_linearalgebra import (
-    _standardize_strides_to_nonzero,
-)
 
 from ..dpnp_array import dpnp_array
 from ..dpnp_utils import map_dtype_to_device
+from ..dpnp_utils.dpnp_utils_linearalgebra import (
+    _standardize_strides_to_nonzero,
+)
 
 __all__ = [
     "dpnp_fft",
@@ -95,7 +95,7 @@ def _compute_result(dsc, a, out, forward, a_strides, hev_list, dev_list):
     a_usm = dpnp.get_usm_ndarray(a)
     if dsc.transform_in_place:
         # in-place transform
-        fft_event, _ = fi.compute_fft_in_place(dsc, a_usm, forward, dev_list)
+        fft_event, _ = fi._fft_in_place(dsc, a_usm, forward, dev_list)
         res_usm = a_usm
     else:
         if (
@@ -115,7 +115,7 @@ def _compute_result(dsc, a, out, forward, a_strides, hev_list, dev_list):
                 offset=0,
                 buffer_ctor_kwargs={"queue": a.sycl_queue},
             )
-        fft_event, _ = fi.compute_fft_out_of_place(
+        fft_event, _ = fi._fft_out_of_place(
             dsc, a_usm, res_usm, forward, dev_list
         )
     hev_list.append(fft_event)
@@ -188,6 +188,7 @@ def _fft(a, norm, out, forward, in_place, hev_list, dev_list, axes=None):
         result.flags.c_contiguous or result.flags.f_contiguous
     ):
         result = dpnp.ascontiguousarray(result)
+
     return result
 
 
@@ -269,12 +270,7 @@ def _validate_out_keyword(a, out):
 def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
     """Calculates 1-D FFT of the input array along axis"""
 
-    _check_norm(norm)
     a_ndim = a.ndim
-    copy_ht_ev = []
-    copy_dp_ev = []
-    a, in_place = _copy_array(a, copy_ht_ev, copy_dp_ev)
-
     if a_ndim == 0:
         raise ValueError("Input array must be at least 1D")
 
@@ -286,22 +282,19 @@ def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
     if n < 1:
         raise ValueError(f"Invalid number of FFT data points ({n}) specified")
 
+    copy_ht_ev = []
+    copy_dp_ev = []
     a = _truncate_or_pad(a, n, axis, copy_ht_ev, copy_dp_ev)
     _validate_out_keyword(a, out)
+    a, in_place = _copy_array(a, copy_ht_ev, copy_dp_ev)
+    _check_norm(norm)
 
     if a.size == 0:
-        return a
+        dpnp.get_result_array(a, out=out, casting="same_kind")
+        return out
 
-    if a_ndim == 1:
-        return _fft(
-            a,
-            norm=norm,
-            out=out,
-            forward=forward,
-            in_place=in_place,
-            hev_list=copy_ht_ev,
-            dev_list=copy_dp_ev,
-        )
+    # non-batch FFT
+    axis = None if a_ndim == 1 else axis
 
     return _fft(
         a,

@@ -61,8 +61,8 @@ std::pair<sycl::event, sycl::event>
 
     sycl::queue exec_q = descr.get_queue();
     if (!dpctl::utils::queues_are_compatible(exec_q, {in_out.get_queue()})) {
-        throw py::value_error(
-            "USM allocations are not compatible with the execution queue.");
+        throw py::value_error("SYCL queue of the descriptor is not compatible "
+                              "with the execution queue of input array.");
     }
 
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(in_out);

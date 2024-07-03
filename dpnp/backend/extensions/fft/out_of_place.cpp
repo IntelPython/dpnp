@@ -69,17 +69,18 @@ std::pair<sycl::event, sycl::event>
     }
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(in, out)) {
-        throw py::value_error("The input and output arrays are overlapping "
-                              "segments of memory");
+    auto const &same_logical_tensors =
+        dpctl::tensor::overlap::SameLogicalTensors();
+    if (overlap(in, out) && !same_logical_tensors(in, out)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
     }
 
     sycl::queue exec_q = descr.get_queue();
     if (!dpctl::utils::queues_are_compatible(exec_q,
                                              {in.get_queue(), out.get_queue()}))
     {
-        throw py::value_error(
-            "USM allocations are not compatible with the execution queue.");
+        throw py::value_error("USM allocations are not compatible with the "
+                              "execution queue of the descriptor.");
     }
 
     py::ssize_t in_size = in.get_size();

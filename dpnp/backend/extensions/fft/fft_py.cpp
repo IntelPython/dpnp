@@ -75,31 +75,35 @@ PYBIND11_MODULE(_fft_impl, m)
     register_descriptor<single_prec, complex_dom>(m, "Complex64Descriptor");
     register_descriptor<double_prec, complex_dom>(m, "Complex128Descriptor");
 
-    m.def("compute_fft_out_of_place",
+    // out-of-place c2c FFT, both SINGLE and DOUBLE precisions are supported
+    // with overloading of "_fft_out_of_place" function on python side
+    m.def("_fft_out_of_place",
           &fft_ns::compute_fft_out_of_place<single_prec, complex_dom>,
-          "Compute out-of-place fft using OneMKL DFT library for complex64 "
-          "data types.",
+          "Compute out-of-place complex-to-complex fft using OneMKL DFT "
+          "library for complex64 data types.",
           py::arg("descriptor"), py::arg("input"), py::arg("output"),
           py::arg("is_forward"), py::arg("depends") = py::list());
 
-    m.def("compute_fft_out_of_place",
+    m.def("_fft_out_of_place",
           &fft_ns::compute_fft_out_of_place<double_prec, complex_dom>,
-          "Compute out-of-place fft using OneMKL DFT library for complex128 "
-          "data types.",
+          "Compute out-of-place complex-to-complex fft using OneMKL DFT "
+          "library for complex128 data types.",
           py::arg("descriptor"), py::arg("input"), py::arg("output"),
           py::arg("is_forward"), py::arg("depends") = py::list());
 
-    m.def("compute_fft_in_place",
+    // in-place c2c FFT, both SINGLE and DOUBLE precisions are supported with
+    // overloading of "_fft_in_place" function on python side
+    m.def("_fft_in_place",
           &fft_ns::compute_fft_in_place<single_prec, complex_dom>,
-          "Compute in-place fft using OneMKL DFT library for complex64 data "
-          "types.",
+          "Compute in-place complex-to-complex fft using OneMKL DFT library "
+          "for complex64 data types.",
           py::arg("descriptor"), py::arg("input-output"), py::arg("is_forward"),
           py::arg("depends") = py::list());
 
-    m.def("compute_fft_in_place",
+    m.def("_fft_in_place",
           &fft_ns::compute_fft_in_place<double_prec, complex_dom>,
-          "Compute in-place fft using OneMKL DFT library for complex128 data "
-          "types.",
+          "Compute in-place complex-to-complex fft using OneMKL DFT library "
+          "for complex128 data types.",
           py::arg("descriptor"), py::arg("input-output"), py::arg("is_forward"),
           py::arg("depends") = py::list());
 }
