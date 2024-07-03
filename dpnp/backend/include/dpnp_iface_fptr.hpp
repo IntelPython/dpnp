@@ -361,14 +361,4 @@ void *get_dpnp_function_ptr1(
     DPNPFuncType first_type,
     DPNPFuncType second_type = DPNPFuncType::DPNP_FT_NONE);
 
-/**
- * DEPRECATED.
- * Experimental interface. DO NOT USE IT!
- *
- * parameter @ref type_name will be converted into var_args or char *[] with
- * extra length parameter
- */
-INP_DLLEXPORT
-void *get_backend_function_name(const char *func_name, const char *type_name);
-
 #endif // BACKEND_IFACE_FPTR_H

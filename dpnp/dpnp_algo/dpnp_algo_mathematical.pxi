@@ -46,9 +46,6 @@ __all__ += [
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_2out_t)(c_dpctl.DPCTLSyclQueueRef,
                                                      void * , void * , void * , size_t,
                                                      const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*ftpr_custom_trapz_2in_1out_with_2size_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                             void *, void * , void * , double, size_t, size_t,
-                                                                             const c_dpctl.DPCTLEventVectorRef)
 
 
 cpdef utils.dpnp_descriptor dpnp_ediff1d(utils.dpnp_descriptor x1):
