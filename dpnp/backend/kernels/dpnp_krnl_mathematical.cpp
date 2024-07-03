@@ -205,8 +205,8 @@ DPCTLSyclEventRef dpnp_modf_c(DPCTLSyclQueueRef q_ref,
         auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
             size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
             {
-                _DataType_input input_elem1 = array1[i];
-                result2[i] = sycl::modf(double(input_elem1), &result1[i]);
+                double input_elem1 = static_cast<double>(array1[i]);
+                result2[i] = sycl::modf(input_elem1, &result1[i]);
             }
         };
 
