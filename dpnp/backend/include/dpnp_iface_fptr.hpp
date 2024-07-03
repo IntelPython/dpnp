@@ -84,17 +84,17 @@ enum class DPNPFuncName : size_t
     DPNP_FN_DOT,           /**< Used in numpy.dot() impl  */
     DPNP_FN_DOT_EXT, /**< Used in numpy.dot() impl, requires extra parameters */
     DPNP_FN_EDIFF1D, /**< Used in numpy.ediff1d() impl  */
-    DPNP_FN_EDIFF1D_EXT,   /**< Used in numpy.ediff1d() impl, requires extra
-                              parameters */
-    DPNP_FN_ERF,           /**< Used in scipy.special.erf impl  */
-    DPNP_FN_ERF_EXT,       /**< Used in scipy.special.erf impl, requires extra
-                              parameters */
-    DPNP_FN_FFT_FFT,       /**< Used in numpy.fft.fft() impl  */
-    DPNP_FN_FFT_FFT_EXT,   /**< Used in numpy.fft.fft() impl, requires extra
-                              parameters */
-    DPNP_FN_FFT_RFFT,      /**< Used in numpy.fft.rfft() impl  */
-    DPNP_FN_FFT_RFFT_EXT,  /**< Used in numpy.fft.rfft() impl, requires extra
-                              parameters */
+    DPNP_FN_EDIFF1D_EXT,  /**< Used in numpy.ediff1d() impl, requires extra
+                             parameters */
+    DPNP_FN_ERF,          /**< Used in scipy.special.erf impl  */
+    DPNP_FN_ERF_EXT,      /**< Used in scipy.special.erf impl, requires extra
+                             parameters */
+    DPNP_FN_FFT_FFT,      /**< Used in numpy.fft.fft() impl  */
+    DPNP_FN_FFT_FFT_EXT,  /**< Used in numpy.fft.fft() impl, requires extra
+                             parameters */
+    DPNP_FN_FFT_RFFT,     /**< Used in numpy.fft.rfft() impl  */
+    DPNP_FN_FFT_RFFT_EXT, /**< Used in numpy.fft.rfft() impl, requires extra
+                             parameters */
     DPNP_FN_INITVAL, /**< Used in numpy ones, ones_like, zeros, zeros_like impls
                       */
     DPNP_FN_INITVAL_EXT, /**< Used in numpy ones, ones_like, zeros, zeros_like
@@ -117,16 +117,16 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ONES,      /**< Used in numpy.ones() impl */
     DPNP_FN_ONES_LIKE, /**< Used in numpy.ones_like() impl */
     DPNP_FN_PARTITION, /**< Used in numpy.partition() impl */
-    DPNP_FN_PARTITION_EXT,  /**< Used in numpy.partition() impl, requires extra
-                               parameters */
-    DPNP_FN_PROD,           /**< Used in numpy.prod() impl  */
-    DPNP_FN_RADIANS,        /**< Used in numpy.radians() impl  */
-    DPNP_FN_RADIANS_EXT,    /**< Used in numpy.radians() impl, requires extra
-                               parameters */
-    DPNP_FN_RNG_BETA,       /**< Used in numpy.random.beta() impl  */
-    DPNP_FN_RNG_BETA_EXT, /**< Used in numpy.random.beta() impl, requires extra
-                             parameters */
-    DPNP_FN_RNG_BINOMIAL, /**< Used in numpy.random.binomial() impl  */
+    DPNP_FN_PARTITION_EXT, /**< Used in numpy.partition() impl, requires extra
+                              parameters */
+    DPNP_FN_PROD,          /**< Used in numpy.prod() impl  */
+    DPNP_FN_RADIANS,       /**< Used in numpy.radians() impl  */
+    DPNP_FN_RADIANS_EXT,   /**< Used in numpy.radians() impl, requires extra
+                              parameters */
+    DPNP_FN_RNG_BETA,      /**< Used in numpy.random.beta() impl  */
+    DPNP_FN_RNG_BETA_EXT,  /**< Used in numpy.random.beta() impl, requires extra
+                              parameters */
+    DPNP_FN_RNG_BINOMIAL,  /**< Used in numpy.random.binomial() impl  */
     DPNP_FN_RNG_BINOMIAL_EXT,  /**< Used in numpy.random.binomial() impl,
                                   requires extra parameters */
     DPNP_FN_RNG_CHISQUARE,     /**< Used in numpy.random.chisquare() impl  */
