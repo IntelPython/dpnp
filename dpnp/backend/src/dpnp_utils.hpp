@@ -32,7 +32,7 @@
 #include <iostream>
 #include <iterator>
 
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 #include <dpnp_iface_fptr.hpp>
 
