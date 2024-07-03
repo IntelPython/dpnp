@@ -96,45 +96,6 @@ void (*dpnp_dot_default_c)(void *,
                            const shape_elem_type *) =
     dpnp_dot_c<_DataType_output, _DataType_input1, _DataType_input2>;
 
-void *get_backend_function_name(const char *func_name, const char *type_name)
-{
-    /** Implement it in this way to allow easier play with it */
-    const char *supported_func_name = "dpnp_dot";
-    const char *supported_type1_name = "double";
-    const char *supported_type2_name = "float";
-    const char *supported_type3_name = "long";
-    const char *supported_type4_name = "int";
-
-    /** of coerce it will be converted into std::map later */
-    if (!strncmp(func_name, supported_func_name, strlen(supported_func_name))) {
-        if (!strncmp(type_name, supported_type1_name,
-                     strlen(supported_type1_name))) {
-            return reinterpret_cast<void *>(
-                dpnp_dot_default_c<double, double, double>);
-        }
-        else if (!strncmp(type_name, supported_type2_name,
-                          strlen(supported_type2_name)))
-        {
-            return reinterpret_cast<void *>(
-                dpnp_dot_default_c<float, float, float>);
-        }
-        else if (!strncmp(type_name, supported_type3_name,
-                          strlen(supported_type3_name)))
-        {
-            return reinterpret_cast<void *>(
-                dpnp_dot_default_c<int64_t, int64_t, int64_t>);
-        }
-        else if (!strncmp(type_name, supported_type4_name,
-                          strlen(supported_type4_name)))
-        {
-            return reinterpret_cast<void *>(
-                dpnp_dot_default_c<int32_t, int32_t, int32_t>);
-        }
-    }
-
-    throw std::runtime_error("DPNP Error: Unsupported function call");
-}
-
 /**
  * This operator is needed for compatibility with Cython 0.29 which has a bug in
  * Enum handling
@@ -172,7 +133,6 @@ static func_map_t func_map_init()
     func_map_init_indexing_func(fmap);
     func_map_init_linalg(fmap);
     func_map_init_logic(fmap);
-    func_map_init_manipulation(fmap);
     func_map_init_mathematical(fmap);
     func_map_init_random(fmap);
     func_map_init_reduction(fmap);
