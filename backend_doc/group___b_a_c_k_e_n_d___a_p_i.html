@@ -160,10 +160,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga09e5c5f507183e0dcd9153acdf970d61"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga09e5c5f507183e0dcd9153acdf970d61">dpnp_nanvar_c</a> (DPCTLSyclQueueRef q_ref, void *array, void *mask_arr, void *result, const size_t result_size, size_t size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:ga09e5c5f507183e0dcd9153acdf970d61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the variance along the specified axis, while ignoring NaNs.  <br /></td></tr>
 <tr class="separator:ga09e5c5f507183e0dcd9153acdf970d61"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabd0be93cfdb154bc2bb8a16b7838b69e" id="r_gabd0be93cfdb154bc2bb8a16b7838b69e"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:gabd0be93cfdb154bc2bb8a16b7838b69e"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gabd0be93cfdb154bc2bb8a16b7838b69e">dpnp_nonzero_c</a> (DPCTLSyclQueueRef q_ref, const void *array1, void *result1, const size_t result_size, const shape_elem_type *shape, const size_t ndim, const size_t j, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
-<tr class="memdesc:gabd0be93cfdb154bc2bb8a16b7838b69e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the indices of the elements that are non-zero.  <br /></td></tr>
-<tr class="separator:gabd0be93cfdb154bc2bb8a16b7838b69e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaddbabf7c091b81ba8ce90ebc54cdffc8" id="r_gaddbabf7c091b81ba8ce90ebc54cdffc8"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_output , typename _DataType_input1 , typename _DataType_input2 &gt; </td></tr>
 <tr class="memitem:gaddbabf7c091b81ba8ce90ebc54cdffc8"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaddbabf7c091b81ba8ce90ebc54cdffc8">dpnp_dot_c</a> (DPCTLSyclQueueRef q_ref, void *result_out, const size_t result_size, const size_t result_ndim, const shape_elem_type *result_shape, const shape_elem_type *result_strides, const void *input1_in, const size_t input1_size, const size_t input1_ndim, const shape_elem_type *input1_shape, const shape_elem_type *input1_strides, const void *input2_in, const size_t input2_size, const size_t input2_ndim, const shape_elem_type *input2_shape, const shape_elem_type *input2_strides, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:gaddbabf7c091b81ba8ce90ebc54cdffc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom implementation of dot function.  <br /></td></tr>
@@ -184,22 +180,10 @@ Functions</h2></td></tr>
 <tr class="memitem:gad6b710733eb11c4f51e92cab7e34dcb5"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gad6b710733eb11c4f51e92cab7e34dcb5">dpnp_partition_c</a> (DPCTLSyclQueueRef q_ref, void *array, void *array2, void *result, const size_t kth, const shape_elem_type *shape, const size_t ndim, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:gad6b710733eb11c4f51e92cab7e34dcb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a partitioned copy of an array.  <br /></td></tr>
 <tr class="separator:gad6b710733eb11c4f51e92cab7e34dcb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6ea86e672805912caea98b28bdaa853e" id="r_ga6ea86e672805912caea98b28bdaa853e"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga6ea86e672805912caea98b28bdaa853e"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga6ea86e672805912caea98b28bdaa853e">dpnp_place_c</a> (DPCTLSyclQueueRef q_ref, void *arr, long *mask, void *vals, const size_t arr_size, const size_t vals_size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
-<tr class="memdesc:ga6ea86e672805912caea98b28bdaa853e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place of array elements.  <br /></td></tr>
-<tr class="separator:ga6ea86e672805912caea98b28bdaa853e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6610de7cc5611443e025d9cd7d08b74c" id="r_ga6610de7cc5611443e025d9cd7d08b74c"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_output , typename _DataType_input &gt; </td></tr>
 <tr class="memitem:ga6610de7cc5611443e025d9cd7d08b74c"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga6610de7cc5611443e025d9cd7d08b74c">dpnp_prod_c</a> (DPCTLSyclQueueRef q_ref, void *result_out, const void *input_in, const shape_elem_type *input_shape, const size_t input_shape_ndim, const shape_elem_type *axes, const size_t axes_ndim, const void *initial, const long *where, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:ga6610de7cc5611443e025d9cd7d08b74c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute Product of input array elements.  <br /></td></tr>
 <tr class="separator:ga6610de7cc5611443e025d9cd7d08b74c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa6078a448077da00df8dca66aec48648" id="r_gaa6078a448077da00df8dca66aec48648"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _IndecesType , typename _ValueType &gt; </td></tr>
-<tr class="memitem:gaa6078a448077da00df8dca66aec48648"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa6078a448077da00df8dca66aec48648">dpnp_put_c</a> (DPCTLSyclQueueRef q_ref, void *array, void *ind, void *v, const size_t size, const size_t size_ind, const size_t size_v, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
-<tr class="memdesc:gaa6078a448077da00df8dca66aec48648"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces specified elements of an array with given values.  <br /></td></tr>
-<tr class="separator:gaa6078a448077da00df8dca66aec48648"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga26d668721f9475ff3fa8449e4680e4a6" id="r_ga26d668721f9475ff3fa8449e4680e4a6"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga26d668721f9475ff3fa8449e4680e4a6"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga26d668721f9475ff3fa8449e4680e4a6">dpnp_put_along_axis_c</a> (DPCTLSyclQueueRef q_ref, void *arr_in, long *indices_in, void *values_in, size_t axis, const shape_elem_type *shape, size_t ndim, size_t size_indices, size_t values_size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
-<tr class="memdesc:ga26d668721f9475ff3fa8449e4680e4a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Put values into the destination array by matching 1d index and data slices.  <br /></td></tr>
-<tr class="separator:ga26d668721f9475ff3fa8449e4680e4a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad7ba17bf5aab9a319b59429718622322" id="r_gad7ba17bf5aab9a319b59429718622322"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _idx_DataType &gt; </td></tr>
 <tr class="memitem:gad7ba17bf5aab9a319b59429718622322"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gad7ba17bf5aab9a319b59429718622322">dpnp_argsort_c</a> (DPCTLSyclQueueRef q_ref, void *array, void *result, size_t size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:gad7ba17bf5aab9a319b59429718622322"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of argsort function  <br /></td></tr>
@@ -224,10 +208,6 @@ Functions</h2></td></tr>
 <tr class="memitem:gade43dedf9297ae8a75c812cf1e59d2c1"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gade43dedf9297ae8a75c812cf1e59d2c1">dpnp_choose_c</a> (DPCTLSyclQueueRef q_ref, void *result1, void *array1_in, void **choices, size_t size, size_t choices_size, size_t choice_size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:gade43dedf9297ae8a75c812cf1e59d2c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an array from an index array and a list of arrays to choose from.  <br /></td></tr>
 <tr class="separator:gade43dedf9297ae8a75c812cf1e59d2c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad9b06144535933e90c9982234598d8e0" id="r_gad9b06144535933e90c9982234598d8e0"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:gad9b06144535933e90c9982234598d8e0"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gad9b06144535933e90c9982234598d8e0">dpnp_diagonal_c</a> (DPCTLSyclQueueRef q_ref, void *array1_in, const size_t input1_size, void *result1, const size_t offset, shape_elem_type *shape, shape_elem_type *res_shape, const size_t res_ndim, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
-<tr class="memdesc:gad9b06144535933e90c9982234598d8e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of diagonal function  <br /></td></tr>
-<tr class="separator:gad9b06144535933e90c9982234598d8e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2c1f63f22354673088112c4f248c98a2" id="r_ga2c1f63f22354673088112c4f248c98a2"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga2c1f63f22354673088112c4f248c98a2"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga2c1f63f22354673088112c4f248c98a2">dpnp_initval_c</a> (DPCTLSyclQueueRef q_ref, void *result1, void *value, size_t size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:ga2c1f63f22354673088112c4f248c98a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">implementation of creating filled with value array function  <br /></td></tr>
@@ -260,18 +240,10 @@ Functions</h2></td></tr>
 <tr class="memitem:ga41839ae42b40874e5405889e50e13358"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga41839ae42b40874e5405889e50e13358">dpnp_std_c</a> (DPCTLSyclQueueRef q_ref, void *array, void *result, const shape_elem_type *shape, size_t ndim, const shape_elem_type *axis, size_t naxis, size_t ddof, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:ga41839ae42b40874e5405889e50e13358"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of std function  <br /></td></tr>
 <tr class="separator:ga41839ae42b40874e5405889e50e13358"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga19af9eda007e32192dde484f867ed0fb" id="r_ga19af9eda007e32192dde484f867ed0fb"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _IndecesType &gt; </td></tr>
-<tr class="memitem:ga19af9eda007e32192dde484f867ed0fb"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga19af9eda007e32192dde484f867ed0fb">dpnp_take_c</a> (DPCTLSyclQueueRef q_ref, void *array, const size_t array1_size, void *indices, void *result, size_t size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
-<tr class="memdesc:ga19af9eda007e32192dde484f867ed0fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of take function  <br /></td></tr>
-<tr class="separator:ga19af9eda007e32192dde484f867ed0fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga91baef74014e4e8b8ce22013cc361a66" id="r_ga91baef74014e4e8b8ce22013cc361a66"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _ResultType &gt; </td></tr>
 <tr class="memitem:ga91baef74014e4e8b8ce22013cc361a66"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga91baef74014e4e8b8ce22013cc361a66">dpnp_var_c</a> (DPCTLSyclQueueRef q_ref, void *array, void *result, const shape_elem_type *shape, size_t ndim, const shape_elem_type *axis, size_t naxis, size_t ddof, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:ga91baef74014e4e8b8ce22013cc361a66"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of var function  <br /></td></tr>
 <tr class="separator:ga91baef74014e4e8b8ce22013cc361a66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga50d28c3885364b1167754ee54803dca1" id="r_ga50d28c3885364b1167754ee54803dca1"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga50d28c3885364b1167754ee54803dca1"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga50d28c3885364b1167754ee54803dca1">dpnp_fill_diagonal_c</a> (DPCTLSyclQueueRef q_ref, void *array1_in, void *val, shape_elem_type *shape, const size_t ndim, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
-<tr class="memdesc:ga50d28c3885364b1167754ee54803dca1"><td class="mdescLeft">&#160;</td><td class="mdescRight">fill_diagonal function.  <br /></td></tr>
-<tr class="separator:ga50d28c3885364b1167754ee54803dca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab66364798efa3d954afdc1659383ee54" id="r_gab66364798efa3d954afdc1659383ee54"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input , typename _DataType_output &gt; </td></tr>
 <tr class="memitem:gab66364798efa3d954afdc1659383ee54"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gab66364798efa3d954afdc1659383ee54">dpnp_modf_c</a> (DPCTLSyclQueueRef q_ref, void *array1_in, void *result1_out, void *result2_out, size_t size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:gab66364798efa3d954afdc1659383ee54"><td class="mdescLeft">&#160;</td><td class="mdescRight">modf function.  <br /></td></tr>
@@ -1260,94 +1232,6 @@ template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
 
 </div>
 </div>
-<a id="gad9b06144535933e90c9982234598d8e0" name="gad9b06144535933e90c9982234598d8e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad9b06144535933e90c9982234598d8e0">&#9670;&#160;</a></span>dpnp_diagonal_c()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">DPCTLSyclEventRef dpnp_diagonal_c </td>
-          <td>(</td>
-          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
-          <td class="paramname"><em>q_ref</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>array1_in</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>input1_size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>result1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>offset</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">shape_elem_type *&#160;</td>
-          <td class="paramname"><em>shape</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">shape_elem_type *&#160;</td>
-          <td class="paramname"><em>res_shape</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>res_ndim</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DPCTLEventVectorRef&#160;</td>
-          <td class="paramname"><em>dep_event_vec_ref</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>math library implementation of diagonal function </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array1_in</td><td>Input array with data. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">input1_size</td><td>Input1 data size. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">offset</td><td>Offset of the diagonal from the main diagonal. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>Shape of input array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">res_shape</td><td>Shape of output array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">res_ndim</td><td>Number of elements in shape. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="gaddbabf7c091b81ba8ce90ebc54cdffc8" name="gaddbabf7c091b81ba8ce90ebc54cdffc8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gaddbabf7c091b81ba8ce90ebc54cdffc8">&#9670;&#160;</a></span>dpnp_dot_c()</h2>
 
@@ -1601,73 +1485,6 @@ template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">input1_shape</td><td>Shape of first input array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">input1_strides</td><td>Strides of first input array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">where</td><td>Mask array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga50d28c3885364b1167754ee54803dca1" name="ga50d28c3885364b1167754ee54803dca1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga50d28c3885364b1167754ee54803dca1">&#9670;&#160;</a></span>dpnp_fill_diagonal_c()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">DPCTLSyclEventRef dpnp_fill_diagonal_c </td>
-          <td>(</td>
-          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
-          <td class="paramname"><em>q_ref</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>array1_in</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>val</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">shape_elem_type *&#160;</td>
-          <td class="paramname"><em>shape</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>ndim</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DPCTLEventVectorRef&#160;</td>
-          <td class="paramname"><em>dep_event_vec_ref</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>fill_diagonal function. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array1_in</td><td>Input array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">val</td><td>Value to write on the diagonal. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>Input shape. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">ndim</td><td>Number of elements in shape. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
   </table>
   </dd>
@@ -2857,87 +2674,6 @@ template&lt;typename _DataType &gt; </div>
 
 </div>
 </div>
-<a id="gabd0be93cfdb154bc2bb8a16b7838b69e" name="gabd0be93cfdb154bc2bb8a16b7838b69e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gabd0be93cfdb154bc2bb8a16b7838b69e">&#9670;&#160;</a></span>dpnp_nonzero_c()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">DPCTLSyclEventRef dpnp_nonzero_c </td>
-          <td>(</td>
-          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
-          <td class="paramname"><em>q_ref</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const void *&#160;</td>
-          <td class="paramname"><em>array1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>result1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>result_size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const shape_elem_type *&#160;</td>
-          <td class="paramname"><em>shape</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>ndim</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>j</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DPCTLEventVectorRef&#160;</td>
-          <td class="paramname"><em>dep_event_vec_ref</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Return the indices of the elements that are non-zero. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array1</td><td>Input array. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">result_size</td><td>Output array size. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>Shape of input array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">ndim</td><td>Number of elements in shape. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">j</td><td>Number input array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="ga709d9a7ac1174112ecc6d807e0c0a1e4" name="ga709d9a7ac1174112ecc6d807e0c0a1e4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga709d9a7ac1174112ecc6d807e0c0a1e4">&#9670;&#160;</a></span>dpnp_ones_c()</h2>
 
@@ -3125,80 +2861,6 @@ template&lt;typename _DataType &gt; </div>
 
 </div>
 </div>
-<a id="ga6ea86e672805912caea98b28bdaa853e" name="ga6ea86e672805912caea98b28bdaa853e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga6ea86e672805912caea98b28bdaa853e">&#9670;&#160;</a></span>dpnp_place_c()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">DPCTLSyclEventRef dpnp_place_c </td>
-          <td>(</td>
-          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
-          <td class="paramname"><em>q_ref</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>arr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">long *&#160;</td>
-          <td class="paramname"><em>mask</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>vals</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>arr_size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>vals_size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DPCTLEventVectorRef&#160;</td>
-          <td class="paramname"><em>dep_event_vec_ref</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Place of array elements. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">arr</td><td>Input array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">mask</td><td>Mask array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">vals</td><td>Vals array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">arr_size</td><td>Number of input elements in <code>arr</code>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">vals_size</td><td>Number of input elements in <code>vals</code>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="ga6610de7cc5611443e025d9cd7d08b74c" name="ga6610de7cc5611443e025d9cd7d08b74c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga6610de7cc5611443e025d9cd7d08b74c">&#9670;&#160;</a></span>dpnp_prod_c()</h2>
 
@@ -3289,182 +2951,6 @@ template&lt;typename _DataType_output , typename _DataType_input &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">axes_ndim</td><td>Number of elements in axes </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">initial</td><td>Pointer to initial value for the algorithm. _DataType_input is expected </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">where</td><td>mask array </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga26d668721f9475ff3fa8449e4680e4a6" name="ga26d668721f9475ff3fa8449e4680e4a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga26d668721f9475ff3fa8449e4680e4a6">&#9670;&#160;</a></span>dpnp_put_along_axis_c()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">DPCTLSyclEventRef dpnp_put_along_axis_c </td>
-          <td>(</td>
-          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
-          <td class="paramname"><em>q_ref</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>arr_in</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">long *&#160;</td>
-          <td class="paramname"><em>indices_in</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>values_in</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>axis</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const shape_elem_type *&#160;</td>
-          <td class="paramname"><em>shape</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>ndim</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>size_indices</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>values_size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DPCTLEventVectorRef&#160;</td>
-          <td class="paramname"><em>dep_event_vec_ref</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Put values into the destination array by matching 1d index and data slices. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">arr_in</td><td>Input array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">indices_in</td><td>Indices to change along each 1d slice of arr. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">values_in</td><td>Values to insert at those indices. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">axis</td><td>The axis to take 1d slices along. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>Shape of input array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">ndim</td><td>Number of input array dimensions. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">size_indices</td><td>Size of indices. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">values_size</td><td>Size of values. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gaa6078a448077da00df8dca66aec48648" name="gaa6078a448077da00df8dca66aec48648"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaa6078a448077da00df8dca66aec48648">&#9670;&#160;</a></span>dpnp_put_c()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType , typename _IndecesType , typename _ValueType &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">DPCTLSyclEventRef dpnp_put_c </td>
-          <td>(</td>
-          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
-          <td class="paramname"><em>q_ref</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>array</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>ind</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>v</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>size_ind</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>size_v</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DPCTLEventVectorRef&#160;</td>
-          <td class="paramname"><em>dep_event_vec_ref</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Replaces specified elements of an array with given values. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">ind</td><td>Target indices, interpreted as integers. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>Values to place in array at target indices. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of input elements in <code>array</code>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">size_ind</td><td>Number of input elements in <code>ind</code>. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">size_v</td><td>Number of input elements in <code>v</code>. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
   </table>
   </dd>
@@ -4091,80 +3577,6 @@ template&lt;typename _DataType_output , typename _DataType_input &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">axes_ndim</td><td>Number of elements in axes </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">initial</td><td>Pointer to initial value for the algorithm. _DataType_input is expected </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">where</td><td>mask array </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga19af9eda007e32192dde484f867ed0fb" name="ga19af9eda007e32192dde484f867ed0fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga19af9eda007e32192dde484f867ed0fb">&#9670;&#160;</a></span>dpnp_take_c()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType , typename _IndecesType &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">DPCTLSyclEventRef dpnp_take_c </td>
-          <td>(</td>
-          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
-          <td class="paramname"><em>q_ref</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>array</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>array1_size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>indices</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>result</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DPCTLEventVectorRef&#160;</td>
-          <td class="paramname"><em>dep_event_vec_ref</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>math library implementation of take function </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array with data. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array1_size</td><td>Input array size. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">indices</td><td>Input array with indices. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the input array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
   </table>
   </dd>
