@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.16.0dev0+44.g95acf4dec5 documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.16.0dev0+51.g5b4b58008a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=17202e7e"></script>
+        <script src="../../_static/documentation_options.js?v=cc1014e4"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+44.g95acf4dec5
+                0.16.0dev0+51.g5b4b58008a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -540,11 +540,6 @@
     <span class="k">if</span> <span class="n">use_origin_backend</span><span class="p">():</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="c1"># It&#39;s required to keep track of input object if a non-strided copy is</span>
-    <span class="c1"># going to be created. Thus there will be an extra descriptor allocated</span>
-    <span class="c1"># to refer on original input.</span>
-    <span class="n">orig_desc</span> <span class="o">=</span> <span class="kc">None</span>
-
     <span class="c1"># If input object is a scalar, it means it was allocated on host memory.</span>
     <span class="c1"># We need to copy it to USM memory according to compute follows data.</span>
     <span class="k">if</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">):</span>
@@ -575,7 +570,6 @@
             <span class="n">ext_obj_offset</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="k">if</span> <span class="n">ext_obj</span><span class="o">.</span><span class="n">strides</span> <span class="o">!=</span> <span class="n">shape_offsets</span> <span class="ow">or</span> <span class="n">ext_obj_offset</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">orig_desc</span> <span class="o">=</span> <span class="n">dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">)</span>
             <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
 
     <span class="c1"># while dpnp functions are based on DPNP_QUEUE</span>
@@ -592,7 +586,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">queue_is_default</span><span class="p">:</span>
             <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">default_queue</span><span class="p">)</span>
 
-    <span class="n">dpnp_desc</span> <span class="o">=</span> <span class="n">dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">orig_desc</span><span class="p">)</span>
+    <span class="n">dpnp_desc</span> <span class="o">=</span> <span class="n">dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp_desc</span><span class="o">.</span><span class="n">is_valid</span><span class="p">:</span>  <span class="c1"># pylint: disable=using-constant-test</span>
         <span class="k">return</span> <span class="n">dpnp_desc</span>
 
