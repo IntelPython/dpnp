@@ -115,6 +115,16 @@ class TestExtins:
         expected = numpy.extract(a > 1, a)
         assert_array_equal(result, expected)
 
+    @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
+    def test_extract_list_cond(self, a_dt):
+        a = numpy.array([-2, -1, 0, 1, 2, 3], dtype=a_dt)
+        cond = [1, -1, 2, 0, -2, 3]
+        ia = dpnp.array(a)
+
+        result = dpnp.extract(cond, ia)
+        expected = numpy.extract(cond, a)
+        assert_array_equal(result, expected)
+
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
     def test_place(self, dt):
