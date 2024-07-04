@@ -1026,25 +1026,6 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
 
 #include <dpnp_gen_2arg_3type_tbl.hpp>
 
-template <DPNPFuncType FT1, DPNPFuncType... FTs>
-static void func_map_elemwise_2arg_3type_core(func_map_t &fmap)
-{
-    // dpnp_subtract_c_ext is implicitly used by dpnp_ptp_c
-    ((fmap[DPNPFuncName::DPNP_FN_SUBTRACT_EXT][FT1][FTs] =
-          {populate_func_types<FT1, FTs>(),
-           (void *)dpnp_subtract_c_ext<
-               func_type_map_t::find_type<populate_func_types<FT1, FTs>()>,
-               func_type_map_t::find_type<FT1>,
-               func_type_map_t::find_type<FTs>>}),
-     ...);
-}
-
-template <DPNPFuncType... FTs>
-static void func_map_elemwise_2arg_3type_helper(func_map_t &fmap)
-{
-    ((func_map_elemwise_2arg_3type_core<FTs, FTs...>(fmap)), ...);
-}
-
 static void func_map_init_elemwise_2arg_3type(func_map_t &fmap)
 {
     // Used in dpnp_dot_c
@@ -1149,9 +1130,6 @@ static void func_map_init_elemwise_2arg_3type(func_map_t &fmap)
         eft_C128,
         (void *)dpnp_multiply_c_default<
             std::complex<double>, std::complex<double>, std::complex<double>>};
-
-    func_map_elemwise_2arg_3type_helper<eft_BLN, eft_INT, eft_LNG, eft_FLT,
-                                        eft_DBL, eft_C64, eft_C128>(fmap);
 
     return;
 }

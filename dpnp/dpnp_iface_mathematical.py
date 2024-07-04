@@ -62,7 +62,6 @@ from .backend.extensions.sycl_ext import _sycl_ext_impl
 from .dpnp_algo import (
     dpnp_ediff1d,
     dpnp_modf,
-    dpnp_trapz,
 )
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPAngle,
@@ -3236,36 +3235,6 @@ def trapz(y1, x1=None, dx=1.0, axis=-1):
     8.0
 
     """
-
-    y_desc = dpnp.get_dpnp_descriptor(y1, copy_when_nondefault_queue=False)
-    if y_desc:
-        if y_desc.ndim > 1:
-            pass
-        else:
-            y_obj = y_desc.get_array()
-            if x1 is None:
-                x_obj = dpnp.empty(
-                    y_desc.shape,
-                    dtype=y_desc.dtype,
-                    device=y_obj.sycl_device,
-                    usm_type=y_obj.usm_type,
-                    sycl_queue=y_obj.sycl_queue,
-                )
-            else:
-                x_obj = x1
-
-            x_desc = dpnp.get_dpnp_descriptor(
-                x_obj, copy_when_nondefault_queue=False
-            )
-            # TODO: change to "not x_desc"
-            if x_desc:
-                pass
-            elif y_desc.size != x_desc.size:
-                pass
-            elif y_desc.shape != x_desc.shape:
-                pass
-            else:
-                return dpnp_trapz(y_desc, x_desc, dx).get_pyobj()
 
     return call_origin(numpy.trapz, y1, x1, dx, axis)
 

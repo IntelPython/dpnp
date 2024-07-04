@@ -82,7 +82,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_WALD_EXT
         DPNP_FN_RNG_WEIBULL_EXT
         DPNP_FN_RNG_ZIPF_EXT
-        DPNP_FN_TRAPZ_EXT
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
