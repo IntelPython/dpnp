@@ -61,8 +61,6 @@ import dpnp.backend.extensions.vm._vm_impl as vmi
 from .backend.extensions.sycl_ext import _sycl_ext_impl
 from .dpnp_algo import (
     dpnp_ediff1d,
-    dpnp_fmax,
-    dpnp_fmin,
     dpnp_modf,
 )
 from .dpnp_algo.dpnp_elementwise_common import (
@@ -1537,232 +1535,174 @@ floor_divide = DPNPBinaryFunc(
 )
 
 
-def fmax(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
-    """
-    Element-wise maximum of array elements.
+_FMAX_DOCSTRING = """
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise maxima.
 
-    For full documentation refer to :obj:`numpy.fmax`.
+If one of the elements being compared is a NaN, then the non-nan element is
+returned. If both elements are NaNs then the first is returned. The latter
+distinction is important for complex NaNs, which are defined as at least one of
+the real or imaginary parts being a NaN. The net effect is that NaNs are
+ignored when possible.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The maximum of `x1` and `x2`, element-wise, ignoring NaNs.
+For full documentation refer to :obj:`numpy.fmax`.
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar,
-    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`
-    and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default
-    values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by real-valued data types.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    First input array, expected to have numeric data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Second input array, also expected to have numeric data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
 
-    See Also
-    --------
-    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates
-                          NaNs.
-    :obj:`dpnp.fmin` : Element-wise minimum of array elements, ignores NaNs.
-    :obj:`dpnp.max` : The maximum value of an array along a given axis,
-                      propagates NaNs..
-    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,
-                         ignores NaNs.
-    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates
-                          NaNs.
-    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise maxima. The data type of
+    the returned array is determined by the Type Promotion Rules.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([2, 3, 4])
-    >>> x2 = np.array([1, 5, 2])
-    >>> np.fmax(x1, x2)
-    array([2, 5, 4])
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    >>> x1 = np.eye(2)
-    >>> x2 = np.array([0.5, 2])
-    >>> np.fmax(x1, x2) # broadcasting
-    array([[1. , 2. ],
-           [0.5, 2. ]])
+See Also
+--------
+:obj:`dpnp.fmin` : Element-wise minimum of two arrays, ignores NaNs.
+:obj:`dpnp.maximum` : Element-wise maximum of two arrays, propagates NaNs.
+:obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs.
+:obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
+:obj:`dpnp.minimum` : Element-wise minimum of two arrays, propagates NaNs.
+:obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
+:obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
 
-    >>> x1 = np.array([np.nan, 0, np.nan])
-    >>> x2 = np.array([0, np.nan, np.nan])
-    >>> np.fmax(x1, x2)
-    array([ 0.,  0., nan])
+Notes
+-----
+The fmax is equivalent to ``dpnp.where(x1 >= x2, x1, x2)`` when neither
+`x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.
 
-    """
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([2, 3, 4])
+>>> x2 = np.array([1, 5, 2])
+>>> np.fmax(x1, x2)
+array([2, 5, 4])
 
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory
-        # into a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
+>>> x1 = np.eye(2)
+>>> x2 = np.array([0.5, 2])
+>>> np.fmax(x1, x2)
+array([[1. , 2. ],
+       [0.5, 2. ]])
 
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            if out is not None:
-                if not dpnp.is_supported_array_type(out):
-                    raise TypeError(
-                        "return array must be of supported array type"
-                    )
-                out_desc = (
-                    dpnp.get_dpnp_descriptor(
-                        out, copy_when_nondefault_queue=False
-                    )
-                    or None
-                )
-            else:
-                out_desc = None
+>>> x1 = np.array([np.nan, 0, np.nan])
+>>> x2 = np.array([0, np.nan, np.nan])
+>>> np.fmax(x1, x2)
+array([ 0.,  0., nan])
+"""
 
-            return dpnp_fmax(
-                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.fmax, x1, x2, dtype=dtype, out=out, where=where, **kwargs
-    )
+fmax = DPNPBinaryFunc(
+    "fmax",
+    ufi._fmax_result_type,
+    ufi._fmax,
+    _FMAX_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_fmax_to_call,
+    mkl_impl_fn=vmi._fmax,
+)
 
 
-def fmin(x1, x2, /, out=None, *, where=True, dtype=None, subok=True, **kwargs):
-    """
-    Element-wise minimum of array elements.
+_FMIN_DOCSTRING = """
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise minima.
 
-    For full documentation refer to :obj:`numpy.fmin`.
+If one of the elements being compared is a NaN, then the non-nan element is
+returned. If both elements are NaNs then the first is returned. The latter
+distinction is important for complex NaNs, which are defined as at least one of
+the real or imaginary parts being a NaN. The net effect is that NaNs are
+ignored when possible.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        The minimum of `x1` and `x2`, element-wise, ignoring NaNs.
+For full documentation refer to :obj:`numpy.fmin`.
 
-    Limitations
-    -----------
-    Parameters `x1` and `x2` are supported as either scalar,
-    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`, but both `x1`
-    and `x2` can not be scalars at the same time.
-    Parameters `where`, `dtype` and `subok` are supported with their default
-    values.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by real-valued data types.
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    First input array, expected to have numeric data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Second input array, also expected to have numeric data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
 
-    See Also
-    --------
-    :obj:`dpnp.minimum` : Element-wise minimum of array elements, propagates
-                          NaNs.
-    :obj:`dpnp.fmax` : Element-wise maximum of array elements, ignores NaNs.
-    :obj:`dpnp.min` : The minimum value of an array along a given axis,
-                      propagates NaNs.
-    :obj:`dpnp.nanmin` : The minimum value of an array along a given axis,
-                         ignores NaNs.
-    :obj:`dpnp.maximum` : Element-wise maximum of array elements, propagates
-                          NaNs.
-    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise minima. The data type of
+    the returned array is determined by the Type Promotion Rules.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x1 = np.array([2, 3, 4])
-    >>> x2 = np.array([1, 5, 2])
-    >>> np.fmin(x1, x2)
-    array([1, 3, 2])
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    >>> x1 = np.eye(2)
-    >>> x2 = np.array([0.5, 2])
-    >>> np.fmin(x1, x2) # broadcasting
-    array([[0.5, 0. ],
-           [0. , 1. ]]
+See Also
+--------
+:obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
+:obj:`dpnp.minimum` : Element-wise minimum of two arrays, propagates NaNs.
+:obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
+:obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
+:obj:`dpnp.maximum` : Element-wise maximum of two arrays, propagates NaNs.
+:obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs.
+:obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
 
-    >>> x1 = np.array([np.nan, 0, np.nan])
-    >>> x2 = np.array([0, np.nan, np.nan])
-    >>> np.fmin(x1, x2)
-    array([ 0.,  0., nan])
+Notes
+-----
+The fmin is equivalent to ``dpnp.where(x1 <= x2, x1, x2)`` when neither
+`x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.
 
-    """
+Examples
+--------
+>>> import dpnp as np
+>>> x1 = np.array([2, 3, 4])
+>>> x2 = np.array([1, 5, 2])
+>>> np.fmin(x1, x2)
+array([1, 3, 2])
 
-    if kwargs:
-        pass
-    elif where is not True:
-        pass
-    elif dtype is not None:
-        pass
-    elif subok is not True:
-        pass
-    elif dpnp.isscalar(x1) and dpnp.isscalar(x2):
-        # at least either x1 or x2 has to be an array
-        pass
-    else:
-        # get USM type and queue to copy scalar from the host memory into
-        # a USM allocation
-        usm_type, queue = (
-            get_usm_allocations([x1, x2])
-            if dpnp.isscalar(x1) or dpnp.isscalar(x2)
-            else (None, None)
-        )
+>>> x1 = np.eye(2)
+>>> x2 = np.array([0.5, 2])
+>>> np.fmin(x1, x2)
+array([[0.5, 0. ],
+       [0. , 1. ]])
 
-        x1_desc = dpnp.get_dpnp_descriptor(
-            x1,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        x2_desc = dpnp.get_dpnp_descriptor(
-            x2,
-            copy_when_strides=False,
-            copy_when_nondefault_queue=False,
-            alloc_usm_type=usm_type,
-            alloc_queue=queue,
-        )
-        if x1_desc and x2_desc:
-            if out is not None:
-                if not dpnp.is_supported_array_type(out):
-                    raise TypeError(
-                        "return array must be of supported array type"
-                    )
-                out_desc = (
-                    dpnp.get_dpnp_descriptor(
-                        out, copy_when_nondefault_queue=False
-                    )
-                    or None
-                )
-            else:
-                out_desc = None
+>>> x1 = np.array([np.nan, 0, np.nan])
+>>> x2 = np.array([0, np.nan, np.nan])
+>>> np.fmin(x1, x2)
+array([ 0.,  0., nan])
+"""
 
-            return dpnp_fmin(
-                x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where
-            ).get_pyobj()
-
-    return call_origin(
-        numpy.fmin, x1, x2, dtype=dtype, out=out, where=where, **kwargs
-    )
+fmin = DPNPBinaryFunc(
+    "fmin",
+    ufi._fmin_result_type,
+    ufi._fmin,
+    _FMIN_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_fmin_to_call,
+    mkl_impl_fn=vmi._fmin,
+)
 
 
 _FMOD_DOCSTRING = """
@@ -2100,6 +2040,11 @@ _MAXIMUM_DOCSTRING = """
 Compares two input arrays `x1` and `x2` and returns a new array containing the
 element-wise maxima.
 
+If one of the elements being compared is a NaN, then that element is returned.
+If both elements are NaNs then the first is returned. The latter distinction is
+important for complex NaNs, which are defined as at least one of the real or
+imaginary parts being a NaN. The net effect is that NaNs are propagated.
+
 For full documentation refer to :obj:`numpy.maximum`.
 
 Parameters
@@ -2174,6 +2119,11 @@ maximum = DPNPBinaryFunc(
 _MINIMUM_DOCSTRING = """
 Compares two input arrays `x1` and `x2` and returns a new array containing the
 element-wise minima.
+
+If one of the elements being compared is a NaN, then that element is returned.
+If both elements are NaNs then the first is returned. The latter distinction is
+important for complex NaNs, which are defined as at least one of the real or
+imaginary parts being a NaN. The net effect is that NaNs are propagated.
 
 For full documentation refer to :obj:`numpy.minimum`.
 
