@@ -290,8 +290,8 @@ def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
     _check_norm(norm)
 
     if a.size == 0:
-        dpnp.get_result_array(a, out=out, casting="same_kind")
-        return out
+        res = dpnp.get_result_array(a, out=out, casting="same_kind")
+        return res
 
     # non-batch FFT
     axis = None if a_ndim == 1 else axis

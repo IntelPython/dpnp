@@ -42,8 +42,8 @@ import os
 
 import dpctl
 import dpctl.tensor as dpt
-import dpctl.utils as dpu
 import dpctl.tensor._tensor_impl as ti
+import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._device import normalize_queue_device
 
