@@ -35,8 +35,8 @@
 #include <iostream>
 #include <time.h>
 
-#include <sycl/sycl.hpp>
 #include <oneapi/mkl.hpp>
+#include <sycl/sycl.hpp>
 
 #include <dpnp_iface.hpp>
 
