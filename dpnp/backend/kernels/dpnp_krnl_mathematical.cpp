@@ -206,7 +206,11 @@ DPCTLSyclEventRef dpnp_modf_c(DPCTLSyclQueueRef q_ref,
             size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
             {
                 double input_elem1 = static_cast<double>(array1[i]);
-                result2[i] = sycl::modf(input_elem1, &result1[i]);
+                auto res_multi_ptr = sycl::address_space_cast<
+                    sycl::access::address_space::global_space,
+                    sycl::access::decorated::yes>(&result1[i]);
+
+                result2[i] = sycl::modf(input_elem1, res_multi_ptr);
             }
         };
 
