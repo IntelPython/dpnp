@@ -41,9 +41,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ERF_EXT
         DPNP_FN_FFT_FFT_EXT
         DPNP_FN_FFT_RFFT_EXT
-        DPNP_FN_MAXIMUM_EXT
         DPNP_FN_MEDIAN_EXT
-        DPNP_FN_MINIMUM_EXT
         DPNP_FN_MODF_EXT
         DPNP_FN_PARTITION_EXT
         DPNP_FN_RADIANS_EXT
@@ -168,15 +166,6 @@ Logic functions
 """
 cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input2,
                                    double rtol=*, double atol=*, cpp_bool equal_nan=*)
-
-
-"""
-Mathematical functions
-"""
-cpdef dpnp_descriptor dpnp_fmax(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                   dpnp_descriptor out=*, object where=*)
-cpdef dpnp_descriptor dpnp_fmin(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                   dpnp_descriptor out=*, object where=*)
 
 
 """
