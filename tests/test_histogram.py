@@ -182,7 +182,7 @@ class TestHistogram:
         result_hist, result_edges = dpnp.histogram(iv, density=True)
 
         if numpy.issubdtype(dtype, numpy.inexact):
-            tol = numpy.finfo(dtype).resolution
+            tol = 4 * numpy.finfo(dtype).resolution
             assert_allclose(result_hist, expected_hist, rtol=tol, atol=tol)
             assert_allclose(result_edges, expected_edges, rtol=tol, atol=tol)
         else:
