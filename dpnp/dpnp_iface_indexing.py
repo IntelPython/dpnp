@@ -1358,11 +1358,10 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
 
     if not dpnp.issubdtype(usm_ind.dtype, dpnp.integer):
         # dpt.take supports only integer dtype for array of indices
-        usm_ind = dpt.astype(usm_ind, dpnp.intp, copy=False)
+        usm_ind = dpt.astype(usm_ind, dpnp.intp, copy=False, casting="safe")
 
     usm_res = dpt.take(usm_a, usm_ind, axis=axis, mode=mode)
-    if res_shape is not None:
-        usm_res = dpt.reshape(usm_res, res_shape)
+    usm_res = dpt.reshape(usm_res, res_shape)
 
     result = dpnp_array._create_from_usm_ndarray(usm_res)
     return dpnp.get_result_array(result, out)
