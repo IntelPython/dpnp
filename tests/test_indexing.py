@@ -575,12 +575,11 @@ class TestTake:
     @pytest.mark.parametrize("indices", [[-5, 5]], ids=["[-5, 5]"])
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
     def test_over_index(self, a_dt, indices, mode):
-        a = numpy.array([-2, -1, 0, 1, 2], dtype=a_dt)
-        ind = numpy.array(indices, dtype=numpy.intp)
-        ia, iind = dpnp.array(a), dpnp.array(ind)
+        a = dpnp.array([-2, -1, 0, 1, 2], dtype=a_dt)
+        ind = dpnp.array(indices, dtype=numpy.intp)
 
-        result = dpnp.take(ia, iind, mode=mode)
-        expected = numpy.take(a, ind, mode=mode)
+        result = dpnp.take(a, ind, mode=mode)
+        expected = dpnp.array([-2, 2], dtype=a.dtype)
         assert_array_equal(result, expected)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
