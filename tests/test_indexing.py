@@ -555,7 +555,6 @@ class TestTake:
             assert_raises(TypeError, ia, iind, mode=mode)
             assert_raises(TypeError, a, ind, mode=mode)
 
-
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("ind_dt", get_integer_dtypes())
     @pytest.mark.parametrize(
@@ -571,7 +570,6 @@ class TestTake:
         result = ia.take(iind, axis=axis, mode=mode)
         expected = a.take(ind, axis=axis, mode=mode)
         assert_array_equal(result, expected)
-
 
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("indices", [[-5, 5]], ids=["[-5, 5]"])
@@ -598,7 +596,7 @@ class TestTake:
         ia = dpnp.array(a)
 
         result = ia.take([0], axis=False)
-        expected = a.take([0], axis=0) # numpy raises an error for bool axis
+        expected = a.take([0], axis=0)  # numpy raises an error for bool axis
         assert_array_equal(result, expected)
 
     def test_axis_as_array(self):
@@ -606,7 +604,7 @@ class TestTake:
         ia = dpnp.array(a)
 
         result = ia.take([0], axis=ia)
-        expected = a.take([0], axis=1) # numpy raises an error for bool axis
+        expected = a.take([0], axis=1)  # numpy raises an error for bool axis
         assert_array_equal(result, expected)
 
     def test_mode_raise(self):
@@ -616,7 +614,7 @@ class TestTake:
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_unicode_mode(self, xp):
         a = xp.arange(10)
-        k = b'\xc3\xa4'.decode("UTF8")
+        k = b"\xc3\xa4".decode("UTF8")
         assert_raises(ValueError, a.take, 5, mode=k)
 
 
