@@ -579,9 +579,11 @@ def get_result_array(a, out=None, casting="safe"):
     """
 
     if out is None:
+        synchronize_array_data(a)
         return a
 
     if a is out:
+        synchronize_array_data(a)
         return out
 
     dpnp.check_supported_arrays_type(out)

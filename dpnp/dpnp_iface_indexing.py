@@ -37,6 +37,8 @@ it contains:
 
 """
 
+import operator
+
 import dpctl.tensor as dpt
 import numpy
 from numpy.core.numeric import normalize_axis_index
@@ -1247,40 +1249,54 @@ def select(condlist, choicelist, default=0):
 
 
 # pylint: disable=redefined-outer-name
-def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
+def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
     """
     Take elements from an array along an axis.
 
+    When `axis` is not ``None``, this function does the same thing as "fancy"
+    indexing (indexing arrays using arrays); however, it can be easier to use
+    if you need elements along a given axis. A call such as
+    ``dpnp.take(a, indices, axis=3)`` is equivalent to
+    ``a[:, :, :,i ndices, ...]``.
+
     For full documentation refer to :obj:`numpy.take`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}, (Ni..., M, Nk...)
+        The source array.
+    indices : {array_like, scalars}, (Nj...)
+        The indices of the values to extract.
+        Also allow scalars for `indices`.
+    axis : {None, int}, optional
+        The axis over which to select values. By default, the flattened
+        input array is used.
+        Default: ``None``.
+    out : {dpnp.ndarray, usm_ndarray}, optional (Ni..., Nj..., Nk...)
+        If provided, the result will be placed in this array. It should
+        be of the appropriate shape and dtype.
+        Default: ``None``.
+    mode : {"wrap", "clip"}, optional
+        Specifies how out-of-bounds indices will be handled. Possible values
+        are:
+
+        - ``"wrap"``: clamps indices to (``-n <= i < n``), then wraps
+            negative indices.
+        - ``"clip"``: clips indices to (``0 <= i < n``).
+
+        Default: ``"wrap"``.
 
     Returns
     -------
-    out : dpnp.ndarray
-        An array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]
-        filled with elements from `x`.
-
-    Limitations
-    -----------
-    Parameters `x` and `indices` are supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter `indices` is supported as 1-D array of integer data type.
-    Parameter `out` is supported only with default value.
-    Parameter `mode` is supported with ``wrap``, the default, and ``clip``
-    values.
-    Providing parameter `axis` is optional when `x` is a 1-D array.
-    Otherwise the function will be executed sequentially on CPU.
+    out : dpnp.ndarray, (Ni..., Nj..., Nk...)
+        The returned array has the same type as `a`.
 
     See Also
     --------
     :obj:`dpnp.compress` : Take elements using a boolean mask.
+    :obj:`dpnp.ndarray.take` : Equivalent method.
     :obj:`dpnp.take_along_axis` : Take elements by matching the array and
                                   the index arrays.
-
-    Notes
-    -----
-    How out-of-bounds indices will be handled.
-    "wrap" - clamps indices to (-n <= i < n), then wraps negative indices.
-    "clip" - clips indices to (0 <= i < n)
 
     Examples
     --------
@@ -1302,29 +1318,54 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     >>> np.take(x, indices, mode="clip")
     array([4, 4, 4, 8, 8])
 
+    If `indices` is not one dimensional, the output also has these dimensions.
+
+    >>> np.take(x, [[0, 1], [2, 3]])
+    array([[4, 3],
+           [5, 7]])
+
     """
 
-    if dpnp.is_supported_array_type(x) and dpnp.is_supported_array_type(
-        indices
-    ):
-        if indices.ndim != 1 or not dpnp.issubdtype(
-            indices.dtype, dpnp.integer
-        ):
-            pass
-        elif axis is None and x.ndim > 1:
-            pass
-        elif out is not None:
-            pass
-        elif mode not in ("clip", "wrap"):
-            pass
-        else:
-            dpt_array = dpnp.get_usm_ndarray(x)
-            dpt_indices = dpnp.get_usm_ndarray(indices)
-            return dpnp_array._create_from_usm_ndarray(
-                dpt.take(dpt_array, dpt_indices, axis=axis, mode=mode)
-            )
+    if mode not in ("wrap", "clip"):
+        raise ValueError(f"`mode` must be 'wrap' or 'clip', but got `{mode}`.")
 
-    return call_origin(numpy.take, x, indices, axis, out, mode)
+    usm_a = dpnp.get_usm_ndarray(a)
+    if not dpnp.is_supported_array_type(indices):
+        usm_ind = dpt.asarray(
+            indices, usm_type=a.usm_type, sycl_queue=a.sycl_queue
+        )
+    else:
+        usm_ind = dpnp.get_usm_ndarray(indices)
+
+    a_ndim = a.ndim
+    if axis is None:
+        res_shape = usm_ind.shape
+
+        if a_ndim > 1:
+            # dpt.take requires flattened input array
+            usm_a = dpt.reshape(usm_a, -1)
+    elif a_ndim == 0:
+        axis = normalize_axis_index(operator.index(axis), 1)
+        res_shape = usm_ind.shape
+    else:
+        axis = normalize_axis_index(operator.index(axis), a_ndim)
+        a_sh = a.shape
+        res_shape = a_sh[:axis] + usm_ind.shape + a_sh[axis + 1 :]
+
+    if usm_ind.ndim != 1:
+        # dpt.take supports only 1-D array of indices
+        usm_ind = dpt.reshape(usm_ind, -1)
+
+    if not dpnp.issubdtype(usm_ind.dtype, dpnp.integer):
+        # dpt.take supports only integer dtype for array of indices
+        usm_ind = dpt.astype(usm_ind, dpnp.intp, copy=False)
+
+    usm_res = dpt.take(usm_a, usm_ind, axis=axis, mode=mode)
+    if res_shape is not None:
+        usm_res = dpt.reshape(usm_res, res_shape)
+
+    result = dpnp_array._create_from_usm_ndarray(usm_res)
+    return dpnp.get_result_array(result, out)
 
 
 def take_along_axis(a, indices, axis):
