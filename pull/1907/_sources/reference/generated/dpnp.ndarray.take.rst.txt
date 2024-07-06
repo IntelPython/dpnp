@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.take
-=================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.take
