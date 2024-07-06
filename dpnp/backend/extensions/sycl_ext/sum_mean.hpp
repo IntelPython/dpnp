@@ -26,7 +26,7 @@
 #pragma once
 
 #include "dispatcher_utils.hpp"
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 #include <tuple>
 
 #include "utils/memory_overlap.hpp"
