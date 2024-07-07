@@ -1257,7 +1257,7 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
     indexing (indexing arrays using arrays); however, it can be easier to use
     if you need elements along a given axis. A call such as
     ``dpnp.take(a, indices, axis=3)`` is equivalent to
-    ``a[:, :, :,i ndices, ...]``.
+    ``a[:, :, :, indices, ...]``.
 
     For full documentation refer to :obj:`numpy.take`.
 
@@ -1281,7 +1281,7 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
         are:
 
         - ``"wrap"``: clamps indices to (``-n <= i < n``), then wraps
-            negative indices.
+          negative indices.
         - ``"clip"``: clips indices to (``0 <= i < n``).
 
         Default: ``"wrap"``.
