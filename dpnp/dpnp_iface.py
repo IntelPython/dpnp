@@ -248,7 +248,7 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True, device=None):
     return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
-def as_usm_ndarray(a, device=None, usm_type=None, sycl_queue=None):
+def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
     """
     Return :class:`dpctl.tensor.usm_ndarray` from input object `a`.
 
@@ -256,6 +256,11 @@ def as_usm_ndarray(a, device=None, usm_type=None, sycl_queue=None):
     ----------
     a : {array_like, scalar}
         Input array or scalar.
+    dtype : {None, dtype}, optional
+        The desired dtype for the result array if new array is creating. If not
+        given, a default dtype will be used that can represent the values (by
+        considering Promotion Type Rule and device capabilities when necessary).
+        Default: ``None``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the result array is created if
         required.
@@ -279,7 +284,8 @@ def as_usm_ndarray(a, device=None, usm_type=None, sycl_queue=None):
         A dpctl USM ndarray from input array or scalar `a`.
         If `a` is instance of :class:`dpnp.ndarray`
         or :class:`dpctl.tensor.usm_ndarray`, no array allocation will be done
-        and `device`, `usm_type`, `sycl_queue` keywords will be ignored.
+        and `dtype`, `device`, `usm_type`, `sycl_queue` keywords
+        will be ignored.
 
     """
 
@@ -287,7 +293,7 @@ def as_usm_ndarray(a, device=None, usm_type=None, sycl_queue=None):
         return get_usm_ndarray(a)
 
     return dpt.asarray(
-        a, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+        a, dtype=dtype, device=device, usm_type=usm_type, sycl_queue=sycl_queue
     )
 
 

@@ -165,7 +165,7 @@ def _get_bin_edges(a, bins, range, usm_type):
                 )
 
         bin_edges = dpnp.as_usm_ndarray(
-            bin_edges, usm_type=usm_type, sycl_queue=sycl_queue
+            bins, usm_type=usm_type, sycl_queue=sycl_queue
         )
 
         if dpnp.any(bin_edges[:-1] > bin_edges[1:]):

@@ -552,7 +552,10 @@ def extract(condition, a):
 
     usm_a = dpnp.get_usm_ndarray(a)
     usm_cond = dpnp.as_usm_ndarray(
-        condition, usm_type=usm_a.usm_type, sycl_queue=usm_a.sycl_queue
+        condition,
+        dtype=dpnp.bool,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
     )
 
     if usm_cond.size != usm_a.size:
@@ -1054,15 +1057,26 @@ def place(a, mask, vals):
 
     usm_a = dpnp.get_usm_ndarray(a)
     usm_mask = dpnp.as_usm_ndarray(
-        mask, usm_type=usm_a.usm_type, sycl_queue=usm_a.sycl_queue
+        mask,
+        dtype=dpnp.bool,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
     )
     usm_vals = dpnp.as_usm_ndarray(
-        vals, usm_type=usm_a.usm_type, sycl_queue=usm_a.sycl_queue
+        vals,
+        dtype=usm_a.dtype,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
     )
 
     if usm_vals.ndim != 1:
         # dpt.place supports only 1-D array of values
         usm_vals = dpt.reshape(usm_vals, -1)
+
+    if usm_vals.dtype != usm_a.dtype:
+        # dpt.place casts values to a.dtype with "unsafe" rule,
+        # while numpy.place does that with "safe" casting rule
+        usm_vals = dpt.astype(usm_vals, usm_a.dtype, casting="safe", copy=False)
 
     dpt.place(usm_a, usm_mask, usm_vals)
     dpnp.synchronize_array_data(usm_a)
@@ -1362,7 +1376,10 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
 
     usm_a = dpnp.get_usm_ndarray(a)
     usm_ind = dpnp.as_usm_ndarray(
-        indices, usm_type=usm_a.usm_type, sycl_queue=usm_a.sycl_queue
+        indices,
+        dtype=dpnp.intp,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
     )
 
     a_ndim = usm_a.ndim
