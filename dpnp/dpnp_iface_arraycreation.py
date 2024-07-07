@@ -3498,9 +3498,7 @@ def vander(
             [125,  25,   5,   1]]), Device(level_zero:gpu:0), 'host')
     """
 
-    if dpnp.is_supported_array_type(x):
-        x = dpnp.get_usm_ndarray(x)
-    usm_x = dpt.asarray(
+    usm_x = dpnp.as_usm_ndarray(
         x, device=device, usm_type=usm_type, sycl_queue=sycl_queue
     )
 
