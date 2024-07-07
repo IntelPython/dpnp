@@ -120,14 +120,14 @@ def _build_along_axis_index(a, ind, axis):
             fancy_index.append(ind)
         else:
             ind_shape = shape_ones[:dim] + (-1,) + shape_ones[dim + 1 :]
-            fancy_index.append(
-                dpnp.arange(
-                    n,
-                    dtype=ind.dtype,
-                    usm_type=ind.usm_type,
-                    sycl_queue=ind.sycl_queue,
-                ).reshape(ind_shape)
+            tmp_ind = dpt.arange(
+                n,
+                dtype=ind.dtype,
+                usm_type=ind.usm_type,
+                sycl_queue=ind.sycl_queue,
             )
+            tmp_ind = dpt.reshape(tmp_ind, ind_shape)
+            fancy_index.append(tmp_ind)
 
     return tuple(fancy_index)
 
@@ -816,9 +816,9 @@ def indices(
     shape = (1,) * n
 
     if sparse:
-        res = ()
+        usm_res = ()
     else:
-        res = dpnp.empty(
+        usm_res = dpt.empty(
             (n,) + dimensions,
             dtype=dtype,
             device=device,
@@ -827,7 +827,7 @@ def indices(
         )
 
     for i, dim in enumerate(dimensions):
-        idx = dpnp.arange(
+        usm_idx = dpt.arange(
             dim,
             dtype=dtype,
             device=device,
@@ -836,10 +836,20 @@ def indices(
         ).reshape(shape[:i] + (dim,) + shape[i + 1 :])
 
         if sparse:
-            res = res + (idx,)
+            usm_res = usm_res + (usm_idx,)
         else:
-            res[i] = idx
-    return res
+            usm_res[i] = usm_idx
+
+    if isinstance(usm_res, tuple):
+        if len(usm_res) > 0:
+            dpnp.synchronize_array_data(usm_res[0])
+            return tuple(
+                dpnp_array._create_from_usm_ndarray(x) for x in usm_res
+            )
+        return usm_res  # return ()
+
+    dpnp.synchronize_array_data(usm_res)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def mask_indices(
@@ -1256,12 +1266,17 @@ def put_along_axis(a, ind, values, axis):
 
     """
 
-    dpnp.check_supported_arrays_type(a, ind)
+    a = dpnp.get_usm_ndarray(a)
+    ind = dpnp.get_usm_ndarray(ind)
 
     if axis is None:
-        a = a.ravel()
+        a = dpt.reshape(a, -1)
+
+    if isinstance(values, dpnp_array):
+        values = values.get_array()
 
     a[_build_along_axis_index(a, ind, axis)] = values
+    dpnp.synchronize_array_data(a)
 
 
 def putmask(x1, mask, values):
@@ -1532,12 +1547,16 @@ def take_along_axis(a, indices, axis):
 
     """
 
-    dpnp.check_supported_arrays_type(a, indices)
+    a = dpnp.get_usm_ndarray(a)
+    ind = dpnp.get_usm_ndarray(indices)
 
     if axis is None:
-        a = a.ravel()
+        a = dpt.reshape(a, -1)
 
-    return a[_build_along_axis_index(a, indices, axis)]
+    usm_res = a[_build_along_axis_index(a, ind, axis)]
+
+    dpnp.synchronize_array_data(usm_res)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def tril_indices(
