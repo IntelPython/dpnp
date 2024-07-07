@@ -120,14 +120,14 @@ def _build_along_axis_index(a, ind, axis):
             fancy_index.append(ind)
         else:
             ind_shape = shape_ones[:dim] + (-1,) + shape_ones[dim + 1 :]
-            fancy_index.append(
-                dpnp.arange(
-                    n,
-                    dtype=ind.dtype,
-                    usm_type=ind.usm_type,
-                    sycl_queue=ind.sycl_queue,
-                ).reshape(ind_shape)
+            tmp_ind = dpt.arange(
+                n,
+                dtype=ind.dtype,
+                usm_type=ind.usm_type,
+                sycl_queue=ind.sycl_queue,
             )
+            tmp_ind = dpt.reshape(tmp_ind, ind_shape)
+            fancy_index.append(tmp_ind)
 
     return tuple(fancy_index)
 
@@ -578,6 +578,10 @@ def fill_diagonal(a, val, wrap=False):
     """
     Fill the main diagonal of the given array of any dimensionality.
 
+    For an array `a` with ``a.ndim >= 2``, the diagonal is the list of values
+    ``a[i, ..., i]`` with indices ``i`` all identical. This function modifies
+    the input array in-place without returning a value.
+
     For full documentation refer to :obj:`numpy.fill_diagonal`.
 
     Parameters
@@ -678,8 +682,8 @@ def fill_diagonal(a, val, wrap=False):
 
     """
 
-    dpnp.check_supported_arrays_type(a)
-    dpnp.check_supported_arrays_type(val, scalar_type=True, all_scalars=True)
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_val = dpnp.get_usm_ndarray_or_scalar(val)
 
     if a.ndim < 2:
         raise ValueError("array must be at least 2-d")
@@ -696,16 +700,17 @@ def fill_diagonal(a, val, wrap=False):
     # TODO: implement flatiter for slice key
     # a.flat[:end:step] = val
     a_sh = a.shape
-    tmp_a = dpnp.ravel(a)
-    if dpnp.isscalar(val):
-        tmp_a[:end:step] = val
+    tmp_a = dpt.reshape(usm_a, -1)
+    if dpnp.isscalar(usm_val):
+        tmp_a[:end:step] = usm_val
     else:
-        flat_val = val.ravel()
+        usm_val = dpt.reshape(usm_val, -1)
+
         # Setitem can work only if index size equal val size.
         # Using loop for general case without dependencies of val size.
-        for i in range(0, flat_val.size):
-            tmp_a[step * i : end : step * (i + 1)] = flat_val[i]
-    tmp_a = dpnp.reshape(tmp_a, a_sh)
+        for i in range(0, usm_val.size):
+            tmp_a[step * i : end : step * (i + 1)] = usm_val[i]
+    tmp_a = dpt.reshape(tmp_a, a_sh)
     a[:] = tmp_a
 
 
@@ -758,6 +763,13 @@ def indices(
         with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
         with dimensions[i] in the i-th place.
 
+    See Also
+    --------
+    :obj:`dpnp.mgrid` : Return a dense multi-dimensional “meshgrid”.
+    :obj:`dpnp.mgrid` : Return an open multi-dimensional “meshgrid”.
+    :obj:`dpnp.mgrid` : Return a tuple of coordinate matrices from coordinate
+                        vectors.
+
     Examples
     --------
     >>> import dpnp as np
@@ -800,29 +812,43 @@ def indices(
     dimensions = tuple(dimensions)
     n = len(dimensions)
     shape = (1,) * n
+
     if sparse:
-        res = ()
+        usm_res = ()
     else:
-        res = dpnp.empty(
+        usm_res = dpt.empty(
             (n,) + dimensions,
             dtype=dtype,
             device=device,
             usm_type=usm_type,
             sycl_queue=sycl_queue,
         )
+
     for i, dim in enumerate(dimensions):
-        idx = dpnp.arange(
+        usm_idx = dpt.arange(
             dim,
             dtype=dtype,
             device=device,
             usm_type=usm_type,
             sycl_queue=sycl_queue,
-        ).reshape(shape[:i] + (dim,) + shape[i + 1 :])
+        )
+        usm_idx = dpt.reshape(usm_idx, shape[:i] + (dim,) + shape[i + 1 :])
+
         if sparse:
-            res = res + (idx,)
+            usm_res = usm_res + (usm_idx,)
         else:
-            res[i] = idx
-    return res
+            usm_res[i] = usm_idx
+
+    if isinstance(usm_res, tuple):
+        if len(usm_res) > 0:
+            dpnp.synchronize_array_data(usm_res[0])
+            return tuple(
+                dpnp_array._create_from_usm_ndarray(x) for x in usm_res
+            )
+        return usm_res  # return ()
+
+    dpnp.synchronize_array_data(usm_res)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def mask_indices(
@@ -1005,10 +1031,11 @@ def nonzero(a):
 
     """
 
-    usx_a = dpnp.get_usm_ndarray(a)
-    return tuple(
-        dpnp_array._create_from_usm_ndarray(y) for y in dpt.nonzero(usx_a)
-    )
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_res = dpt.nonzero(usm_a)
+
+    dpnp.synchronize_array_data(usm_res[0])
+    return tuple(dpnp_array._create_from_usm_ndarray(y) for y in usm_res)
 
 
 def place(a, mask, vals):
@@ -1139,41 +1166,47 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
 
     """
 
-    dpnp.check_supported_arrays_type(a)
-
-    if not dpnp.is_supported_array_type(ind):
-        ind = dpnp.asarray(
-            ind, dtype=dpnp.intp, sycl_queue=a.sycl_queue, usm_type=a.usm_type
-        )
-    elif not dpnp.issubdtype(ind.dtype, dpnp.integer):
-        ind = dpnp.astype(ind, dtype=dpnp.intp, casting="safe")
-    ind = dpnp.ravel(ind)
-
-    if not dpnp.is_supported_array_type(v):
-        v = dpnp.asarray(
-            v, dtype=a.dtype, sycl_queue=a.sycl_queue, usm_type=a.usm_type
-        )
-    if v.size == 0:
-        return
+    usm_a = dpnp.get_usm_ndarray(a)
 
     if not (axis is None or isinstance(axis, int)):
         raise TypeError(f"`axis` must be of integer type, got {type(axis)}")
-
-    in_a = a
-    if axis is None and a.ndim > 1:
-        a = dpnp.ravel(in_a)
 
     if mode not in ("wrap", "clip"):
         raise ValueError(
             f"clipmode must be one of 'clip' or 'wrap' (got '{mode}')"
         )
 
-    usm_a = dpnp.get_usm_ndarray(a)
-    usm_ind = dpnp.get_usm_ndarray(ind)
-    usm_v = dpnp.get_usm_ndarray(v)
+    usm_v = dpnp.as_usm_ndarray(
+        v,
+        dtype=usm_a.dtype,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
+    )
+    if usm_v.size == 0:
+        return
+
+    usm_ind = dpnp.as_usm_ndarray(
+        ind,
+        dtype=dpnp.intp,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
+    )
+    if usm_ind.ndim != 1:
+        # dpt.put supports only 1-D array of indices
+        usm_ind = dpt.reshape(usm_ind, -1, copy=False)
+
+    if not dpnp.issubdtype(usm_ind.dtype, dpnp.integer):
+        # dpt.put supports only integer dtype for array of indices
+        usm_ind = dpt.astype(usm_ind, dpnp.intp, casting="safe")
+
+    in_usm_a = usm_a
+    if axis is None and usm_a.ndim > 1:
+        usm_a = dpt.reshape(usm_a, -1)
+
     dpt.put(usm_a, usm_ind, usm_v, axis=axis, mode=mode)
-    if in_a is not a:
-        in_a[:] = a.reshape(in_a.shape, copy=False)
+    if in_usm_a._pointer != usm_a._pointer:  # pylint: disable=protected-access
+        in_usm_a[:] = dpt.reshape(usm_a, in_usm_a.shape, copy=False)
+    dpnp.synchronize_array_data(usm_a)
 
 
 def put_along_axis(a, ind, values, axis):
@@ -1224,12 +1257,17 @@ def put_along_axis(a, ind, values, axis):
 
     """
 
-    dpnp.check_supported_arrays_type(a, ind)
+    a = dpnp.get_usm_ndarray(a)
+    ind = dpnp.get_usm_ndarray(ind)
 
     if axis is None:
-        a = a.ravel()
+        a = dpt.reshape(a, -1)
+
+    if isinstance(values, dpnp_array):
+        values = values.get_array()
 
     a[_build_along_axis_index(a, ind, axis)] = values
+    dpnp.synchronize_array_data(a)
 
 
 def putmask(x1, mask, values):
@@ -1406,9 +1444,8 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
 
     usm_res = dpt.take(usm_a, usm_ind, axis=axis, mode=mode)
 
-    # need to reshape the result if shape of indices array was changed
-    result = dpnp.reshape(usm_res, res_shape)
-    return dpnp.get_result_array(result, out)
+    result = dpnp_array._create_from_usm_ndarray(usm_res)
+    return dpnp.get_result_array(result, out)  # synchronize is done inside
 
 
 def take_along_axis(a, indices, axis):
@@ -1493,12 +1530,16 @@ def take_along_axis(a, indices, axis):
 
     """
 
-    dpnp.check_supported_arrays_type(a, indices)
+    a = dpnp.get_usm_ndarray(a)
+    ind = dpnp.get_usm_ndarray(indices)
 
     if axis is None:
-        a = a.ravel()
+        a = dpt.reshape(a, -1)
 
-    return a[_build_along_axis_index(a, indices, axis)]
+    usm_res = a[_build_along_axis_index(a, ind, axis)]
+
+    dpnp.synchronize_array_data(usm_res)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def tril_indices(
