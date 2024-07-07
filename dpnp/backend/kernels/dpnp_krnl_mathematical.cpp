@@ -89,10 +89,10 @@ DPCTLSyclEventRef dpnp_ediff1d_c(DPCTLSyclQueueRef q_ref,
     _DataType_input *input1_data = input1_ptr.get_ptr();
     _DataType_output *result = result_ptr.get_ptr();
 
-    cl::sycl::event event;
-    cl::sycl::range<1> gws(result_size);
+    sycl::event event;
+    sycl::range<1> gws(result_size);
 
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
         size_t output_id =
             global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/
         {
@@ -101,7 +101,7 @@ DPCTLSyclEventRef dpnp_ediff1d_c(DPCTLSyclQueueRef q_ref,
             result[output_id] = next_elem - curr_elem;
         }
     };
-    auto kernel_func = [&](cl::sycl::handler &cgh) {
+    auto kernel_func = [&](sycl::handler &cgh) {
         cgh.parallel_for<
             class dpnp_ediff1d_c_kernel<_DataType_input, _DataType_output>>(
             gws, kernel_parallel_for_func);
@@ -205,8 +205,12 @@ DPCTLSyclEventRef dpnp_modf_c(DPCTLSyclQueueRef q_ref,
         auto kernel_parallel_for_func = [=](sycl::id<1> global_id) {
             size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
             {
-                _DataType_input input_elem1 = array1[i];
-                result2[i] = sycl::modf(double(input_elem1), &result1[i]);
+                double input_elem1 = static_cast<double>(array1[i]);
+                auto res_multi_ptr = sycl::address_space_cast<
+                    sycl::access::address_space::global_space,
+                    sycl::access::decorated::yes>(&result1[i]);
+
+                result2[i] = sycl::modf(input_elem1, res_multi_ptr);
             }
         };
 
