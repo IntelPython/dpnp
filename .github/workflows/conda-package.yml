@@ -25,7 +25,6 @@ env:
       test_bitwise.py
       test_copy.py
       test_counting.py
-      test_dparray.py
       test_extensions.py
       test_fft.py
       test_flat.py
@@ -37,6 +36,7 @@ env:
       test_mathematical.py
       test_mixins.py
       test_nanfunctions.py
+      test_ndarray.py
       test_outer.py
       test_product.py
       test_random_state.py
