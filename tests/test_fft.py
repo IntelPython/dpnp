@@ -321,8 +321,8 @@ class TestFft:
 
         # Invalid dtype
         a = dpnp.ones((10,), dtype=dpnp.complex64)
-        out = dpnp.empty((11,), dtype=dpnp.float32)
-        assert_raises(ValueError, dpnp.fft.fft, a, out=out)
+        out = dpnp.empty((10,), dtype=dpnp.float32)
+        assert_raises(TypeError, dpnp.fft.fft, a, out=out)
 
 
 class TestRfft:

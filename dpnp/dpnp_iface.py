@@ -624,20 +624,16 @@ def get_result_array(a, out=None, casting="safe"):
     if out is None:
         return a
 
-    if a is out or dpnp.are_same_logical_tensors(a, out):
-        if isinstance(out, dpnp_array):
-            return out
-        # out is usm_ndarray
-        return dpnp_array._create_from_usm_ndarray(out)
+    if isinstance(out, dpt.usm_ndarray):
+        out = dpnp_array._create_from_usm_ndarray(out)
 
-    dpnp.check_supported_arrays_type(out)
+    if a is out or dpnp.are_same_logical_tensors(a, out):
+        return out
+
     if out.shape != a.shape:
         raise ValueError(
             f"Output array of shape {a.shape} is needed, got {out.shape}."
         )
-
-    if isinstance(out, dpt.usm_ndarray):
-        out = dpnp_array._create_from_usm_ndarray(out)
 
     dpnp.copyto(out, a, casting=casting)
     return out

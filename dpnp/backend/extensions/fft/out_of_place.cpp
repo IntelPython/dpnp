@@ -63,7 +63,7 @@ std::pair<sycl::event, sycl::event>
 
     const int in_nd = in.get_ndim();
     const int out_nd = out.get_ndim();
-    if ((in_nd != out_nd)) {
+    if (in_nd != out_nd) {
         throw py::value_error(
             "The input and output arrays must have the same dimension.");
     }
@@ -72,7 +72,8 @@ std::pair<sycl::event, sycl::event>
     auto const &same_logical_tensors =
         dpctl::tensor::overlap::SameLogicalTensors();
     if (overlap(in, out) && !same_logical_tensors(in, out)) {
-        throw py::value_error("Arrays index overlapping segments of memory");
+        throw py::value_error(
+            "The input and output arrays are overlapping segments of memory");
     }
 
     sycl::queue exec_q = descr.get_queue();

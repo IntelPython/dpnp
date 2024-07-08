@@ -62,7 +62,7 @@ __all__ = [
 def _check_norm(norm):
     if norm not in (None, "ortho", "forward", "backward"):
         raise ValueError(
-            f"Invalid norm value {norm} should be None, "
+            f"Invalid norm value {norm}; should be None, "
             '"ortho", "forward", or "backward".'
         )
 
@@ -127,7 +127,7 @@ def _compute_result(dsc, a, out, forward, a_strides):
         )
     _manager.add_event_pair(ht_fft_event, fft_event)
 
-    return res_usm
+    return dpnp_array._create_from_usm_ndarray(res_usm)
 
 
 def _copy_array(x):
@@ -181,16 +181,16 @@ def _fft(a, norm, out, forward, in_place, axes=None):
         a = dpnp.moveaxis(a, axes, local_axes)
         a_shape_orig = a.shape
         local_shape = (-1,) + a_shape_orig[-len_axes:]
-        a = dpt.reshape(a.get_array(), local_shape)
+        a = dpnp.reshape(a, local_shape)
         index = 1
 
     a_strides = _standardize_strides_to_nonzero(a.strides, a.shape)
     dsc = _commit_descriptor(a, in_place, a_strides, index, axes)
-    res_usm = _compute_result(dsc, a, out, forward, a_strides)
-    res = _scale_result(res_usm, norm, forward, index)
+    res = _compute_result(dsc, a, out, forward, a_strides)
+    res = _scale_result(res, norm, forward, index)
 
     if axes is not None:  # batch_fft
-        res = dpt.reshape(res.get_array(), a_shape_orig)
+        res = dpnp.reshape(res, a_shape_orig)
         res = dpnp.moveaxis(res, local_axes, axes)
 
     result = dpnp.get_result_array(res, out=out, casting="same_kind")
@@ -198,14 +198,13 @@ def _fft(a, norm, out, forward, in_place, axes=None):
         result.flags.c_contiguous or result.flags.f_contiguous
     ):
         result = dpnp.ascontiguousarray(result)
-    else:
-        dpnp.synchronize_array_data(result)
+
     return result
 
 
-def _scale_result(res_usm, norm, forward, index):
+def _scale_result(res, norm, forward, index):
     """Scale the result of the FFT according to `norm`."""
-    scale = numpy.prod(res_usm.shape[index:], dtype=res_usm.real.dtype)
+    scale = numpy.prod(res.shape[index:], dtype=res.real.dtype)
     norm_factor = 1
     if norm == "ortho":
         norm_factor = numpy.sqrt(scale)
@@ -214,8 +213,8 @@ def _scale_result(res_usm, norm, forward, index):
     elif norm in [None, "backward"] and not forward:
         norm_factor = scale
 
-    res_usm /= norm_factor
-    return dpnp_array._create_from_usm_ndarray(res_usm)
+    res /= norm_factor
+    return res
 
 
 def _truncate_or_pad(a, shape, axes):
@@ -289,7 +288,7 @@ def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
     axis = normalize_axis_index(axis, a_ndim)
     if n is None:
         n = a.shape[axis]
-    if not isinstance(n, int):
+    elif not isinstance(n, int):
         raise TypeError("`n` should be None or an integer")
     if n < 1:
         raise ValueError(f"Invalid number of FFT data points ({n}) specified")
@@ -297,11 +296,9 @@ def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
     a = _truncate_or_pad(a, n, axis)
     _validate_out_keyword(a, out)
     a, in_place = _copy_array(a)
-    _check_norm(norm)
 
     if a.size == 0:
-        res = dpnp.get_result_array(a, out=out, casting="same_kind")
-        return res
+        return dpnp.get_result_array(a, out=out, casting="same_kind")
 
     # non-batch FFT
     axis = None if a_ndim == 1 else axis

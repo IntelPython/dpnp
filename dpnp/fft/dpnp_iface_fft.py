@@ -124,11 +124,12 @@ def fft(a, n=None, axis=-1, norm=None, out=None):
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
-        the default option "backward".
-        Default: "backward".
-    out : dpnp.ndarray of complex dtype, optional
+        the default option ``"backward"``.
+        Default: ``"backward"``.
+    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be
         of the appropriate shape and dtype.
+        Default: ``None``.
 
     Returns
     -------
@@ -388,11 +389,12 @@ def ifft(a, n=None, axis=-1, norm=None, out=None):
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
-        the default option "backward".
-        Default: "backward"
-    out : dpnp.ndarray of complex dtype, optional
+        the default option ``"backward"``.
+        Default: ``"backward"``.
+    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be
         of the appropriate shape and dtype.
+        Default: ``None``.
 
     Returns
     -------
