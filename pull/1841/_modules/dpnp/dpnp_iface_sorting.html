@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.16.0dev0+4.g5776abb3c2 documentation</title>
+  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.16.0dev0+49.g17d3775370 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7f154312"></script>
+        <script src="../../_static/documentation_options.js?v=29928358"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+4.g5776abb3c2
+                0.16.0dev0+49.g17d3775370
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -141,9 +141,10 @@
 <span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">call_origin</span><span class="p">,</span>
+    <span class="n">map_dtype_to_device</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argsort&quot;</span><span class="p">,</span> <span class="s2">&quot;partition&quot;</span><span class="p">,</span> <span class="s2">&quot;sort&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argsort&quot;</span><span class="p">,</span> <span class="s2">&quot;partition&quot;</span><span class="p">,</span> <span class="s2">&quot;sort&quot;</span><span class="p">,</span> <span class="s2">&quot;sort_complex&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="argsort">
@@ -361,6 +362,46 @@
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
         <span class="n">dpt</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
     <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="sort_complex">
+<a class="viewcode-back" href="../../reference/generated/dpnp.sort_complex.html#dpnp.sort_complex">[docs]</a>
+<span class="k">def</span> <span class="nf">sort_complex</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sort a complex array using the real part first, then the imaginary part.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.sort_complex`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray of complex dtype</span>
+<span class="sd">        Always returns a sorted complex array.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([5, 3, 6, 2, 1])</span>
+<span class="sd">    &gt;&gt;&gt; np.sort_complex(a)</span>
+<span class="sd">    array([1.+0.j, 2.+0.j, 3.+0.j, 5.+0.j, 6.+0.j])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([1 + 2j, 2 - 1j, 3 - 2j, 3 - 3j, 3 + 5j])</span>
+<span class="sd">    &gt;&gt;&gt; np.sort_complex(a)</span>
+<span class="sd">    array([1.+2.j, 2.-1.j, 3.-3.j, 3.-2.j, 3.+5.j])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubsctype</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span> <span class="ow">in</span> <span class="s2">&quot;bhBH&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">b</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">b</span></div>
 
 </pre></div>
 

@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+4.g5776abb3c2 documentation</title>
+  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+49.g17d3775370 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=7f154312"></script>
+        <script src="../../../_static/documentation_options.js?v=29928358"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+4.g5776abb3c2
+                0.16.0dev0+49.g17d3775370
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -129,14 +129,23 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="c1"># pylint: disable=invalid-name</span>
 
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.fft.dpnp_algo_fft</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">call_origin</span><span class="p">,</span>
+    <span class="n">checker_throw_axis_error</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dpnp.fft.dpnp_algo_fft</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">dpnp_fft</span><span class="p">,</span>
+    <span class="n">dpnp_rfft</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;fft&quot;</span><span class="p">,</span>
@@ -160,12 +169,16 @@
 <span class="p">]</span>
 
 
+<span class="c1"># TODO: remove pylint disable, once new implementation is ready</span>
+<span class="c1"># pylint: disable=missing-class-docstring</span>
 <span class="k">class</span> <span class="nc">Norm</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">backward</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">forward</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">ortho</span> <span class="o">=</span> <span class="mi">2</span>
 
 
+<span class="c1"># TODO: remove pylint disable, once new implementation is ready</span>
+<span class="c1"># pylint: disable=missing-function-docstring</span>
 <span class="k">def</span> <span class="nf">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">norm</span> <span class="o">==</span> <span class="s2">&quot;backward&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Norm</span><span class="o">.</span><span class="n">backward</span>
@@ -190,8 +203,10 @@
 <span class="sd">    Parameter `axis` is supported with its default value.</span>
 <span class="sd">    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,</span>
 <span class="sd">    `dpnp.complex128`, `dpnp.complex64` data types are supported.</span>
-<span class="sd">    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.</span>
+<span class="sd">    The `dpnp.bool` data type is not supported and will raise a `TypeError`</span>
+<span class="sd">    exception.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -306,12 +321,12 @@
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">x_desc</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">x_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">boundaries</span> <span class="o">=</span> <span class="n">s</span>
 
         <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">axes_param</span> <span class="o">=</span> <span class="n">axes</span>
 
@@ -360,6 +375,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># TODO: enable implementation</span>
+    <span class="c1"># pylint: disable=condition-evals-to-constant</span>
     <span class="k">if</span> <span class="n">x_desc</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">Norm</span><span class="o">.</span><span class="n">backward</span>
 
@@ -371,6 +388,9 @@
         <span class="k">if</span> <span class="n">x_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="n">input_boundarie</span> <span class="o">=</span> <span class="n">x_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis_param</span><span class="p">]</span>
+            <span class="n">output_boundarie</span> <span class="o">=</span> <span class="n">input_boundarie</span>
+
             <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span>
                 <span class="n">x_desc</span><span class="p">,</span>
                 <span class="n">input_boundarie</span><span class="p">,</span>
@@ -388,7 +408,8 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.fft.hfft.html#dpnp.fft.hfft">[docs]</a>
 <span class="k">def</span> <span class="nf">hfft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the one-dimensional discrete Fourier Transform of a signal that has Hermitian symmetry.</span>
+<span class="sd">    Compute the one-dimensional discrete Fourier Transform of a signal that has</span>
+<span class="sd">    Hermitian symmetry.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fft.hfft`.</span>
 
@@ -403,6 +424,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># TODO: enable implementation</span>
+    <span class="c1"># pylint: disable=condition-evals-to-constant</span>
     <span class="k">if</span> <span class="n">x_desc</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
 
@@ -452,7 +475,8 @@
 <span class="sd">    Parameter `axis` is supported with its default value.</span>
 <span class="sd">    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,,</span>
 <span class="sd">    `dpnp.complex128`, `dpnp.complex64` data types are supported.</span>
-<span class="sd">    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.</span>
+<span class="sd">    The `dpnp.bool` data type is not supported and will raise a `TypeError`</span>
+<span class="sd">    exception.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -546,6 +570,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># TODO: enable implementation</span>
+    <span class="c1"># pylint: disable=condition-evals-to-constant</span>
     <span class="k">if</span> <span class="n">x_desc</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">Norm</span><span class="o">.</span><span class="n">backward</span>
 
@@ -597,14 +623,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># TODO: enable implementation</span>
+    <span class="c1"># pylint: disable=condition-evals-to-constant</span>
     <span class="k">if</span> <span class="n">x_desc</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">x_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">boundaries</span> <span class="o">=</span> <span class="n">s</span>
 
         <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">axes_param</span> <span class="o">=</span> <span class="n">axes</span>
 
@@ -644,7 +672,8 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ihfft.html#dpnp.fft.ihfft">[docs]</a>
 <span class="k">def</span> <span class="nf">ihfft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute inverse one-dimensional discrete Fourier Transform of a signal that has Hermitian symmetry.</span>
+<span class="sd">    Compute inverse one-dimensional discrete Fourier Transform of a signal that</span>
+<span class="sd">    has Hermitian symmetry.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fft.ihfft`.</span>
 
@@ -659,6 +688,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># TODO: enable implementation</span>
+    <span class="c1"># pylint: disable=condition-evals-to-constant</span>
     <span class="k">if</span> <span class="n">x_desc</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
 
@@ -700,7 +731,8 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.fft.irfft.html#dpnp.fft.irfft">[docs]</a>
 <span class="k">def</span> <span class="nf">irfft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the one-dimensional inverse discrete Fourier Transform for real input.</span>
+<span class="sd">    Compute the one-dimensional inverse discrete Fourier Transform for real</span>
+<span class="sd">    input.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fft.irfft`.</span>
 
@@ -715,6 +747,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># TODO: enable implementation</span>
+    <span class="c1"># pylint: disable=condition-evals-to-constant</span>
     <span class="k">if</span> <span class="n">x_desc</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">norm_</span> <span class="o">=</span> <span class="n">get_validated_norm</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
 
@@ -747,7 +781,8 @@
                 <span class="kc">True</span><span class="p">,</span>
                 <span class="n">norm_</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-            <span class="c1"># TODO tmp = utils.create_output_array(result_shape, result_c_type, out)</span>
+            <span class="c1"># TODO:</span>
+            <span class="c1"># tmp = utils.create_output_array(result_shape, result_c_type, out)</span>
             <span class="c1"># tmp = dparray(result.shape, dtype=dpnp.float64)</span>
             <span class="c1"># for it in range(tmp.size):</span>
             <span class="c1">#     tmp[it] = result[it].real</span>
@@ -809,14 +844,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># TODO: enable implementation</span>
+    <span class="c1"># pylint: disable=condition-evals-to-constant</span>
     <span class="k">if</span> <span class="n">x_desc</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">x_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">boundaries</span> <span class="o">=</span> <span class="n">s</span>
 
         <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">axes_param</span> <span class="o">=</span> <span class="n">axes</span>
 
@@ -866,8 +903,10 @@
 <span class="sd">    Parameter `norm` is unsupported.</span>
 <span class="sd">    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,</span>
 <span class="sd">    `dpnp.complex128` data types are supported.</span>
-<span class="sd">    The `dpnp.bool` data type is not supported and will raise a `TypeError` exception.</span>
+<span class="sd">    The `dpnp.bool` data type is not supported and will raise a `TypeError`</span>
+<span class="sd">    exception.</span>
 <span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -987,14 +1026,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># TODO: enable implementation</span>
+    <span class="c1"># pylint: disable=condition-evals-to-constant</span>
     <span class="k">if</span> <span class="n">x_desc</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">x_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">boundaries</span> <span class="o">=</span> <span class="n">s</span>
 
         <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">axes_param</span> <span class="o">=</span> <span class="n">axes</span>
 

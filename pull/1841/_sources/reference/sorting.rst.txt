@@ -13,7 +13,6 @@ Sorting
    dpnp.sort
    dpnp.lexsort
    dpnp.argsort
-   dpnp.msort
    dpnp.sort_complex
    dpnp.partition
    dpnp.argpartition
@@ -32,10 +31,10 @@ Searching
    dpnp.nanargmax
    dpnp.argmin
    dpnp.nanargmin
+   dpnp.argwhere
    dpnp.nonzero
    dpnp.flatnonzero
    dpnp.where
-   dpnp.argwhere
    dpnp.searchsorted
    dpnp.extract
 
