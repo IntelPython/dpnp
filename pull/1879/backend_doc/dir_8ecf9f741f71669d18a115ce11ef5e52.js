@@ -20,6 +20,8 @@ var dir_8ecf9f741f71669d18a115ce11ef5e52 =
     [ "exp2.hpp", "exp2_8hpp_source.html", null ],
     [ "expm1.hpp", "expm1_8hpp_source.html", null ],
     [ "floor.hpp", "floor_8hpp_source.html", null ],
+    [ "fmax.hpp", "extensions_2vm_2fmax_8hpp_source.html", null ],
+    [ "fmin.hpp", "extensions_2vm_2fmin_8hpp_source.html", null ],
     [ "fmod.hpp", "extensions_2vm_2fmod_8hpp_source.html", null ],
     [ "hypot.hpp", "hypot_8hpp_source.html", null ],
     [ "ln.hpp", "ln_8hpp_source.html", null ],
