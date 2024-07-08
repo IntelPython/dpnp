@@ -25,27 +25,11 @@
 
 #pragma once
 
-#include <oneapi/mkl.hpp>
-#include <sycl/sycl.hpp>
+#include <pybind11/pybind11.h>
 
-#include <dpctl4pybind11.hpp>
+namespace py = pybind11;
 
-namespace dpnp
+namespace dpnp::extensions::vm
 {
-namespace backend
-{
-namespace ext
-{
-namespace lapack
-{
-extern std::pair<sycl::event, sycl::event>
-    gesv(sycl::queue exec_q,
-         dpctl::tensor::usm_ndarray coeff_matrix,
-         dpctl::tensor::usm_ndarray dependent_vals,
-         const std::vector<sycl::event> &depends);
-
-extern void init_gesv_dispatch_vector(void);
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+void init_fmax(py::module_ m);
+} // namespace dpnp::extensions::vm

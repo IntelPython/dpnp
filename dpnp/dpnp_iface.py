@@ -481,11 +481,6 @@ def get_dpnp_descriptor(
     if use_origin_backend():
         return False
 
-    # It's required to keep track of input object if a non-strided copy is
-    # going to be created. Thus there will be an extra descriptor allocated
-    # to refer on original input.
-    orig_desc = None
-
     # If input object is a scalar, it means it was allocated on host memory.
     # We need to copy it to USM memory according to compute follows data.
     if isscalar(ext_obj):
@@ -516,7 +511,6 @@ def get_dpnp_descriptor(
             ext_obj_offset = 0
 
         if ext_obj.strides != shape_offsets or ext_obj_offset != 0:
-            orig_desc = dpnp_descriptor(ext_obj)
             ext_obj = array(ext_obj, order="C")
 
     # while dpnp functions are based on DPNP_QUEUE
@@ -533,7 +527,7 @@ def get_dpnp_descriptor(
         if not queue_is_default:
             ext_obj = array(ext_obj, sycl_queue=default_queue)
 
-    dpnp_desc = dpnp_descriptor(ext_obj, orig_desc)
+    dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:  # pylint: disable=using-constant-test
         return dpnp_desc
 

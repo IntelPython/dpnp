@@ -27,7 +27,7 @@
 #ifndef VERBOSE_H // Cython compatibility
 #define VERBOSE_H
 
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 bool is_verbose_mode();
 void set_barrier_event(sycl::queue queue, std::vector<sycl::event> &depends);
