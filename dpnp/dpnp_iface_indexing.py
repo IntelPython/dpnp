@@ -1079,7 +1079,6 @@ def place(a, mask, vals):
         usm_vals = dpt.astype(usm_vals, usm_a.dtype, casting="safe", copy=False)
 
     dpt.place(usm_a, usm_mask, usm_vals)
-    dpnp.synchronize_array_data(usm_a)
 
 
 def put(a, ind, v, /, *, axis=None, mode="wrap"):
