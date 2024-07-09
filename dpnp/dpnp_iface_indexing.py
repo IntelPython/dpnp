@@ -1191,6 +1191,7 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
         usm_type=usm_a.usm_type,
         sycl_queue=usm_a.sycl_queue,
     )
+
     if usm_ind.ndim != 1:
         # dpt.put supports only 1-D array of indices
         usm_ind = dpt.reshape(usm_ind, -1, copy=False)
@@ -1206,7 +1207,6 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
     dpt.put(usm_a, usm_ind, usm_v, axis=axis, mode=mode)
     if in_usm_a._pointer != usm_a._pointer:  # pylint: disable=protected-access
         in_usm_a[:] = dpt.reshape(usm_a, in_usm_a.shape, copy=False)
-    dpnp.synchronize_array_data(usm_a)
 
 
 def put_along_axis(a, ind, values, axis):
@@ -1446,8 +1446,9 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
 
     usm_res = dpt.take(usm_a, usm_ind, axis=axis, mode=mode)
 
-    result = dpnp_array._create_from_usm_ndarray(usm_res)
-    return dpnp.get_result_array(result, out)  # synchronize is done inside
+    # need to reshape the result if shape of indices array was changed
+    result = dpnp.reshape(usm_res, res_shape)
+    return dpnp.get_result_array(result, out)
 
 
 def take_along_axis(a, indices, axis):
