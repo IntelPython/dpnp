@@ -1272,7 +1272,7 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
         The axis over which to select values. By default, the flattened
         input array is used.
         Default: ``None``.
-    out : {dpnp.ndarray, usm_ndarray}, optional (Ni..., Nj..., Nk...)
+    out : {None, dpnp.ndarray, usm_ndarray}, optional (Ni..., Nj..., Nk...)
         If provided, the result will be placed in this array. It should
         be of the appropriate shape and dtype.
         Default: ``None``.
