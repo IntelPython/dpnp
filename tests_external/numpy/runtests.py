@@ -47,7 +47,7 @@ import numpy.core._rational_tests
 import pytest
 
 import dpnp
-from dpnp.dparray import dparray
+from dpnp.dpnp_array import dpnp_array
 
 
 class dummymodule:
@@ -90,11 +90,11 @@ def define_func_types(mod, func_names, types_, default=""):
 
 
 def redefine_strides(f):
-    """Redefine attribute strides in dparray returned by specified function"""
+    """Redefine attribute strides in dpnp_array returned by specified function"""
 
     def wrapper(*args, **kwargs):
         res = f(*args, **kwargs)
-        if not isinstance(res, dparray):
+        if not isinstance(res, dpnp_array):
             return res
 
         strides = dpnp.asnumpy(res).strides
