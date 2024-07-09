@@ -1,4 +1,3 @@
-
 function(build_dpnp_cython_ext _trgt _src _dest)
   set(options SYCL)
   cmake_parse_arguments(BUILD_DPNP_EXT "${options}" "" "" ${ARGN})
@@ -53,8 +52,6 @@ function(build_dpnp_cython_ext_with_backend _trgt _src _dest)
   endif()
 endfunction()
 
-
-build_dpnp_cython_ext_with_backend(dparray ${CMAKE_CURRENT_SOURCE_DIR}/dparray.pyx dpnp)
 add_subdirectory(backend)
 add_subdirectory(backend/extensions/blas)
 add_subdirectory(backend/extensions/fft)

@@ -679,7 +679,7 @@ def irfft(x, n=None, axis=-1, norm=None):
             ).get_pyobj()
             # TODO:
             # tmp = utils.create_output_array(result_shape, result_c_type, out)
-            # tmp = dparray(result.shape, dtype=dpnp.float64)
+            # tmp = dpnp.ndarray(result.shape, dtype=dpnp.float64)
             # for it in range(tmp.size):
             #     tmp[it] = result[it].real
             return result
