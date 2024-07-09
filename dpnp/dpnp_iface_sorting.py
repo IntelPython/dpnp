@@ -156,9 +156,7 @@ def argsort(a, axis=-1, kind=None, order=None):
 
     """
 
-    return _wrap_sort_argsort(
-        a, dpt.argsort, axis=axis, kind=kind, order=order
-    )
+    return _wrap_sort_argsort(a, dpt.argsort, axis=axis, kind=kind, order=order)
 
 
 def partition(x1, kth, axis=-1, kind="introselect", order=None):
@@ -285,16 +283,11 @@ def sort_complex(a):
 
     """
 
-    b = _wrap_sort_argsort(a, dpt.sort)
-
+    b = dpnp.sort(a)
     if not dpnp.issubsctype(b.dtype, dpnp.complexfloating):
         if b.dtype.char in "bhBH":
             b_dt = dpnp.complex64
         else:
             b_dt = map_dtype_to_device(dpnp.complex128, b.sycl_device)
-
-        usm_b = dpt.astype(b.get_array(), b_dt)
-        b = dpnp_array._create_from_usm_ndarray(usm_b)
-
-    dpnp.synchronize_array_data(b)
+        return b.astype(b_dt)
     return b
