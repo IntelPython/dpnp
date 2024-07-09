@@ -38,7 +38,6 @@ available as a pybind11 extension.
 # pylint: disable=no-name-in-module
 
 import dpctl
-import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
@@ -103,7 +102,7 @@ def _compute_result(dsc, a, out, forward, a_strides):
         ht_fft_event, fft_event = fi._fft_in_place(
             dsc, a_usm, forward, depends=dep_evs
         )
-        res_usm = a_usm
+        result = a
     else:
         if (
             out is not None
@@ -111,23 +110,26 @@ def _compute_result(dsc, a, out, forward, a_strides):
             and not ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
         ):
             res_usm = dpnp.get_usm_ndarray(out)
+            result = out
         else:
             # Result array that is used in OneMKL must have the exact same
             # stride as input array
-            res_usm = dpt.usm_ndarray(
+            result = dpnp_array(
                 a.shape,
                 dtype=a.dtype,
-                buffer=a.usm_type,
                 strides=a_strides,
-                offset=0,
-                buffer_ctor_kwargs={"queue": a.sycl_queue},
+                usm_type=a.usm_type,
+                sycl_queue=exec_q,
             )
+            res_usm = result.get_array()
         ht_fft_event, fft_event = fi._fft_out_of_place(
             dsc, a_usm, res_usm, forward, depends=dep_evs
         )
     _manager.add_event_pair(ht_fft_event, fft_event)
 
-    return dpnp_array._create_from_usm_ndarray(res_usm)
+    if not isinstance(result, dpnp_array):
+        return dpnp_array._create_from_usm_ndarray(result)
+    return result
 
 
 def _copy_array(x):
@@ -304,7 +306,6 @@ def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
     axis = None if a_ndim == 1 else axis
 
     _check_norm(norm)
-    a, in_place = _copy_array(a)
     return _fft(
         a,
         norm=norm,
