@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+58.gbcc3da5ce9 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+68.g34b050c64c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=139edd08"></script>
+        <script src="../../_static/documentation_options.js?v=c7e84686"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+58.gbcc3da5ce9
+                0.16.0dev0+68.g34b050c64c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -210,14 +210,14 @@
             <span class="n">fancy_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ind_shape</span> <span class="o">=</span> <span class="n">shape_ones</span><span class="p">[:</span><span class="n">dim</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">shape_ones</span><span class="p">[</span><span class="n">dim</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
-            <span class="n">tmp_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                <span class="n">n</span><span class="p">,</span>
-                <span class="n">dtype</span><span class="o">=</span><span class="n">ind</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                <span class="n">usm_type</span><span class="o">=</span><span class="n">ind</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ind</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+            <span class="n">fancy_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+                    <span class="n">n</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">ind</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                    <span class="n">usm_type</span><span class="o">=</span><span class="n">ind</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ind</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">ind_shape</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="n">tmp_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">tmp_ind</span><span class="p">,</span> <span class="n">ind_shape</span><span class="p">)</span>
-            <span class="n">fancy_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp_ind</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">fancy_index</span><span class="p">)</span>
 
@@ -311,8 +311,8 @@
 
 <span class="sd">    See also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`diag_indices_from` : Return the indices to access the main</span>
-<span class="sd">                               diagonal of an n-dimensional array.</span>
+<span class="sd">    :obj:`dpnp.diag_indices_from` : Return the indices to access the main</span>
+<span class="sd">                                    diagonal of an n-dimensional array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -374,7 +374,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    arr : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Array at least 2-D</span>
+<span class="sd">        Array at least 2-D.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -383,8 +383,8 @@
 
 <span class="sd">    See also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`diag_indices` : Return the indices to access the main</span>
-<span class="sd">                          diagonal of an array.</span>
+<span class="sd">    :obj:`dpnp.diag_indices` : Return the indices to access the main diagonal</span>
+<span class="sd">                               of an array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -674,7 +674,6 @@
 
         <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">usm_cond</span><span class="p">,</span> <span class="n">usm_a</span><span class="p">)</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span></div>
 
 
@@ -794,6 +793,7 @@
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;array must be at least 2-d&quot;</span><span class="p">)</span>
+
     <span class="n">end</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span>
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">step</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
@@ -806,6 +806,7 @@
 
     <span class="c1"># TODO: implement flatiter for slice key</span>
     <span class="c1"># a.flat[:end:step] = val</span>
+    <span class="c1"># but need to consider use case when `a` is usm_ndarray also</span>
     <span class="n">a_sh</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">usm_val</span><span class="p">):</span>
@@ -817,8 +818,9 @@
         <span class="c1"># Using loop for general case without dependencies of val size.</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">usm_val</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
             <span class="n">tmp_a</span><span class="p">[</span><span class="n">step</span> <span class="o">*</span> <span class="n">i</span> <span class="p">:</span> <span class="n">end</span> <span class="p">:</span> <span class="n">step</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">usm_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
     <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">tmp_a</span><span class="p">,</span> <span class="n">a_sh</span><span class="p">)</span>
-    <span class="n">a</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">tmp_a</span></div>
+    <span class="n">usm_a</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">tmp_a</span></div>
 
 
 
@@ -876,9 +878,9 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.mgrid` : Return a dense multi-dimensional “meshgrid”.</span>
-<span class="sd">    :obj:`dpnp.mgrid` : Return an open multi-dimensional “meshgrid”.</span>
-<span class="sd">    :obj:`dpnp.mgrid` : Return a tuple of coordinate matrices from coordinate</span>
-<span class="sd">                        vectors.</span>
+<span class="sd">    :obj:`dpnp.ogrid` : Return an open multi-dimensional “meshgrid”.</span>
+<span class="sd">    :obj:`dpnp.meshgrid` : Return a tuple of coordinate matrices from</span>
+<span class="sd">                           coordinate vectors.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -924,9 +926,9 @@
     <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">n</span>
 
     <span class="k">if</span> <span class="n">sparse</span><span class="p">:</span>
-        <span class="n">usm_res</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="p">(</span><span class="n">n</span><span class="p">,)</span> <span class="o">+</span> <span class="n">dimensions</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
@@ -935,30 +937,19 @@
         <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dimensions</span><span class="p">):</span>
-        <span class="n">usm_idx</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
             <span class="n">dim</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">usm_idx</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_idx</span><span class="p">,</span> <span class="n">shape</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">dim</span><span class="p">,)</span> <span class="o">+</span> <span class="n">shape</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:])</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">dim</span><span class="p">,)</span> <span class="o">+</span> <span class="n">shape</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:])</span>
 
         <span class="k">if</span> <span class="n">sparse</span><span class="p">:</span>
-            <span class="n">usm_res</span> <span class="o">=</span> <span class="n">usm_res</span> <span class="o">+</span> <span class="p">(</span><span class="n">usm_idx</span><span class="p">,)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">+</span> <span class="p">(</span><span class="n">idx</span><span class="p">,)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">usm_res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">usm_idx</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">usm_res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
-                <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">usm_res</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="n">usm_res</span>  <span class="c1"># return ()</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span></div>
+            <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+    <span class="k">return</span> <span class="n">res</span></div>
 
 
 
@@ -1069,10 +1060,12 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices of the elements that are non-zero.</span>
 
-<span class="sd">    Returns a tuple of arrays, one for each dimension of `a`,</span>
-<span class="sd">    containing the indices of the non-zero elements in that</span>
-<span class="sd">    dimension. The values in `a` are always tested and returned in</span>
-<span class="sd">    row-major, C-style order.</span>
+<span class="sd">    Returns a tuple of arrays, one for each dimension of `a`, containing</span>
+<span class="sd">    the indices of the non-zero elements in that dimension. The values in `a`</span>
+<span class="sd">    are always tested and returned in row-major, C-style order.</span>
+
+<span class="sd">    To group the indices by element, rather than dimension, use</span>
+<span class="sd">    :obj:`dpnp.argwhere`, which returns a row for each non-zero element.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.nonzero`.</span>
 
@@ -1148,10 +1141,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">usm_a</span><span class="p">)</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">usm_res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">usm_res</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dpt</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">usm_a</span><span class="p">)</span>
+    <span class="p">)</span></div>
 
 
 
@@ -1224,8 +1216,7 @@
         <span class="c1"># while numpy.place does that with &quot;safe&quot; casting rule</span>
         <span class="n">usm_vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">usm_vals</span><span class="p">,</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="n">dpt</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_mask</span><span class="p">,</span> <span class="n">usm_vals</span><span class="p">)</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">usm_a</span><span class="p">)</span></div>
+    <span class="n">dpt</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_mask</span><span class="p">,</span> <span class="n">usm_vals</span><span class="p">)</span></div>
 
 
 
@@ -1314,6 +1305,7 @@
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">)</span>
+
     <span class="k">if</span> <span class="n">usm_ind</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># dpt.put supports only 1-D array of indices</span>
         <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_ind</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1328,8 +1320,7 @@
 
     <span class="n">dpt</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_ind</span><span class="p">,</span> <span class="n">usm_v</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">in_usm_a</span><span class="o">.</span><span class="n">_pointer</span> <span class="o">!=</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">_pointer</span><span class="p">:</span>  <span class="c1"># pylint: disable=protected-access</span>
-        <span class="n">in_usm_a</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">in_usm_a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">usm_a</span><span class="p">)</span></div>
+        <span class="n">in_usm_a</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">in_usm_a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
 
@@ -1338,6 +1329,13 @@
 <span class="k">def</span> <span class="nf">put_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Put values into the destination array by matching 1d index and data slices.</span>
+
+<span class="sd">    This iterates over matching 1d slices oriented along the specified axis in</span>
+<span class="sd">    the index and data arrays, and uses the former to place values into the</span>
+<span class="sd">    latter. These slices can be different lengths.</span>
+
+<span class="sd">    Functions returning an index along an `axis`, like :obj:`dpnp.argsort` and</span>
+<span class="sd">    :obj:`dpnp.argpartition`, produce suitable indices for this function.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.put_along_axis`.</span>
 
@@ -1383,17 +1381,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">ind</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span>
-
-    <span class="n">a</span><span class="p">[</span><span class="n">_build_along_axis_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">axis</span><span class="p">)]</span> <span class="o">=</span> <span class="n">values</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
+    <span class="n">a</span><span class="p">[</span><span class="n">_build_along_axis_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">axis</span><span class="p">)]</span> <span class="o">=</span> <span class="n">values</span></div>
 
 
 
@@ -1578,10 +1571,10 @@
         <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">usm_ind</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span>
 
     <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_ind</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>  <span class="c1"># synchronize is done inside</span></div>
+    <span class="c1"># need to reshape the result if shape of indices array was changed</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
 
 
 
@@ -1590,6 +1583,13 @@
 <span class="k">def</span> <span class="nf">take_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take values from the input array by matching 1d index and data slices.</span>
+
+<span class="sd">    This iterates over matching 1d slices oriented along the specified axis in</span>
+<span class="sd">    the index and data arrays, and uses the former to look up values in the</span>
+<span class="sd">    latter. These slices can be different lengths.</span>
+
+<span class="sd">    Functions returning an index along an `axis`, like :obj:`dpnp.argsort` and</span>
+<span class="sd">    :obj:`dpnp.argpartition`, produce suitable indices for this function.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.take_along_axis`.</span>
 
@@ -1604,7 +1604,7 @@
 <span class="sd">    axis : int</span>
 <span class="sd">        The axis to take 1d slices along. If axis is ``None``, the input</span>
 <span class="sd">        array is treated as if it had first been flattened to 1d,</span>
-<span class="sd">        for consistency with `sort` and `argsort`.</span>
+<span class="sd">        for consistency with :obj:`dpnp.sort` and :obj:`dpnp.argsort`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1669,16 +1669,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">ind</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
 
-    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">_build_along_axis_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">axis</span><span class="p">)]</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="n">_build_along_axis_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">)]</span></div>
 
 
 

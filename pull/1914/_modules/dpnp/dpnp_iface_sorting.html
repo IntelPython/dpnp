@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.16.0dev0+58.gbcc3da5ce9 documentation</title>
+  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.16.0dev0+68.g34b050c64c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=139edd08"></script>
+        <script src="../../_static/documentation_options.js?v=c7e84686"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+58.gbcc3da5ce9
+                0.16.0dev0+68.g34b050c64c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -248,11 +248,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">_wrap_sort_argsort</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">argsort</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span>
-    <span class="p">)</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span></div>
+    <span class="k">return</span> <span class="n">_wrap_sort_argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">argsort</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
 
 
 
@@ -353,9 +349,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">_wrap_sort_argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sort</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span></div>
+    <span class="k">return</span> <span class="n">_wrap_sort_argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sort</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
 
 
 
@@ -390,18 +384,13 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">b</span> <span class="o">=</span> <span class="n">_wrap_sort_argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sort</span><span class="p">)</span>
-
+    <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubsctype</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span> <span class="ow">in</span> <span class="s2">&quot;bhBH&quot;</span><span class="p">:</span>
             <span class="n">b_dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complex64</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">b_dt</span> <span class="o">=</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
-
-        <span class="n">usm_b</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span> <span class="n">b_dt</span><span class="p">)</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_b</span><span class="p">)</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">b_dt</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">b</span></div>
 
 </pre></div>
