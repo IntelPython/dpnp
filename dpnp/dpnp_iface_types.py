@@ -229,14 +229,14 @@ def iinfo(dtype):
     return dpt.iinfo(dtype)
 
 
-def isscalar(obj):
+def isscalar(element):
     """
-    Returns ``True`` if the type of `obj` is a scalar type.
+    Returns ``True`` if the type of `element` is a scalar type.
 
     For full documentation refer to :obj:`numpy.isscalar`.
 
     """
-    return numpy.isscalar(obj)
+    return numpy.isscalar(element)
 
 
 def issubdtype(arg1, arg2):
