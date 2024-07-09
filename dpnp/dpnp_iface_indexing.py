@@ -120,14 +120,14 @@ def _build_along_axis_index(a, ind, axis):
             fancy_index.append(ind)
         else:
             ind_shape = shape_ones[:dim] + (-1,) + shape_ones[dim + 1 :]
-            tmp_ind = dpt.arange(
-                n,
-                dtype=ind.dtype,
-                usm_type=ind.usm_type,
-                sycl_queue=ind.sycl_queue,
+            fancy_index.append(
+                dpnp.arange(
+                    n,
+                    dtype=ind.dtype,
+                    usm_type=ind.usm_type,
+                    sycl_queue=ind.sycl_queue,
+                ).reshape(ind_shape)
             )
-            tmp_ind = dpt.reshape(tmp_ind, ind_shape)
-            fancy_index.append(tmp_ind)
 
     return tuple(fancy_index)
 
@@ -1213,6 +1213,13 @@ def put_along_axis(a, ind, values, axis):
     """
     Put values into the destination array by matching 1d index and data slices.
 
+    This iterates over matching 1d slices oriented along the specified axis in
+    the index and data arrays, and uses the former to place values into the
+    latter. These slices can be different lengths.
+
+    Functions returning an index along an `axis`, like :obj:`dpnp.argsort` and
+    :obj:`dpnp.argpartition`, produce suitable indices for this function.
+
     For full documentation refer to :obj:`numpy.put_along_axis`.
 
     Parameters
@@ -1257,17 +1264,12 @@ def put_along_axis(a, ind, values, axis):
 
     """
 
-    a = dpnp.get_usm_ndarray(a)
-    ind = dpnp.get_usm_ndarray(ind)
+    dpnp.check_supported_arrays_type(a, ind)
 
     if axis is None:
-        a = dpt.reshape(a, -1)
-
-    if isinstance(values, dpnp_array):
-        values = values.get_array()
+        a = a.ravel()
 
     a[_build_along_axis_index(a, ind, axis)] = values
-    dpnp.synchronize_array_data(a)
 
 
 def putmask(x1, mask, values):
@@ -1452,6 +1454,13 @@ def take_along_axis(a, indices, axis):
     """
     Take values from the input array by matching 1d index and data slices.
 
+    This iterates over matching 1d slices oriented along the specified axis in
+    the index and data arrays, and uses the former to look up values in the
+    latter. These slices can be different lengths.
+
+    Functions returning an index along an `axis`, like :obj:`dpnp.argsort` and
+    :obj:`dpnp.argpartition`, produce suitable indices for this function.
+
     For full documentation refer to :obj:`numpy.take_along_axis`.
 
     Parameters
@@ -1465,7 +1474,7 @@ def take_along_axis(a, indices, axis):
     axis : int
         The axis to take 1d slices along. If axis is ``None``, the input
         array is treated as if it had first been flattened to 1d,
-        for consistency with `sort` and `argsort`.
+        for consistency with :obj:`dpnp.sort` and :obj:`dpnp.argsort`.
 
     Returns
     -------
@@ -1530,16 +1539,12 @@ def take_along_axis(a, indices, axis):
 
     """
 
-    a = dpnp.get_usm_ndarray(a)
-    ind = dpnp.get_usm_ndarray(indices)
+    dpnp.check_supported_arrays_type(a, indices)
 
     if axis is None:
-        a = dpt.reshape(a, -1)
+        a = a.ravel()
 
-    usm_res = a[_build_along_axis_index(a, ind, axis)]
-
-    dpnp.synchronize_array_data(usm_res)
-    return dpnp_array._create_from_usm_ndarray(usm_res)
+    return a[_build_along_axis_index(a, indices, axis)]
 
 
 def tril_indices(
