@@ -156,11 +156,9 @@ def argsort(a, axis=-1, kind=None, order=None):
 
     """
 
-    result = _wrap_sort_argsort(
+    return _wrap_sort_argsort(
         a, dpt.argsort, axis=axis, kind=kind, order=order
     )
-    dpnp.synchronize_array_data(result)
-    return result
 
 
 def partition(x1, kth, axis=-1, kind="introselect", order=None):
@@ -255,9 +253,7 @@ def sort(a, axis=-1, kind=None, order=None):
 
     """
 
-    result = _wrap_sort_argsort(a, dpt.sort, axis=axis, kind=kind, order=order)
-    dpnp.synchronize_array_data(result)
-    return result
+    return _wrap_sort_argsort(a, dpt.sort, axis=axis, kind=kind, order=order)
 
 
 def sort_complex(a):

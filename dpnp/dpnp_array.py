@@ -258,7 +258,7 @@ class dpnp_array:
         res = self.__new__(dpnp_array)
         res._array_obj = item
 
-        if self._array_obj._pointer is not res._array_obj._pointer:
+        if self._array_obj.usm_data is not res._array_obj.usm_data:
             dpnp.synchronize_array_data(self)
         return res
 
