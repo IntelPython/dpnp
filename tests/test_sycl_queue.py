@@ -103,7 +103,7 @@ def vvsort(val, vec, size, xp):
             {"dtype": dpnp.int32},
         ),
         pytest.param("fromiter", [[1, 2, 3, 4]], {"dtype": dpnp.int64}),
-        pytest.param("fromstring", ["1, 2"], {"dtype": int, "sep": " "}),
+        pytest.param("fromstring", ["1 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
         pytest.param("geomspace", [1, 4, 8], {}),
@@ -373,18 +373,13 @@ def test_array_creation_load_txt(device):
 
 
 @pytest.mark.parametrize(
-    "device_x",
+    "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-@pytest.mark.parametrize(
-    "device_y",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_meshgrid(device_x, device_y):
-    x = dpnp.arange(100, device=device_x)
-    y = dpnp.arange(100, device=device_y)
+def test_meshgrid(device):
+    x = dpnp.arange(100, device=device)
+    y = dpnp.arange(100, device=device)
     z = dpnp.meshgrid(x, y)
     assert_sycl_queue_equal(z[0].sycl_queue, x.sycl_queue)
     assert_sycl_queue_equal(z[1].sycl_queue, y.sycl_queue)
@@ -394,6 +389,8 @@ def test_meshgrid(device_x, device_y):
 @pytest.mark.parametrize(
     "func,data",
     [
+        pytest.param("all", [-1.0, 0.0, 1.0]),
+        pytest.param("any", [-1.0, 0.0, 1.0]),
         pytest.param("average", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("abs", [-1.2, 1.2]),
         pytest.param("angle", [[1.0 + 1.0j, 2.0 + 3.0j]]),
@@ -463,6 +460,7 @@ def test_meshgrid(device_x, device_y):
         ),
         pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("sort", [2.0, 1.0, 7.0, 4.0]),
+        pytest.param("sort_complex", [1 + 2j, 2 - 1j, 3 - 2j, 3 - 3j, 3 + 5j]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
         pytest.param("square", [1.0, 3.0, 9.0]),
         pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
@@ -490,6 +488,40 @@ def test_1in_1out(func, data, device):
 
     x_orig = dpnp.asnumpy(x)
     expected = getattr(numpy, func)(x_orig)
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = x.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "op",
+    [
+        "all",
+        "any",
+        "isfinite",
+        "isinf",
+        "isnan",
+        "isneginf",
+        "isposinf",
+        "logical_not",
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_logic_op_1in(op, device):
+    x = dpnp.array(
+        [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan], device=device
+    )
+    result = getattr(dpnp, op)(x)
+
+    x_orig = dpnp.asnumpy(x)
+    expected = getattr(numpy, op)(x_orig)
     assert_dtype_allclose(result, expected)
 
     expected_queue = x.get_array().sycl_queue
@@ -606,6 +638,7 @@ def test_reduce_hypot(device):
         pytest.param("arctan2", [[-1, +1, +1, -1]], [[-1, -1, +1, +1]]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
+        pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
         pytest.param(
             "divide", [0.0, 1.0, 2.0, 3.0, 4.0], [4.0, 4.0, 4.0, 4.0, 4.0]
         ),
@@ -614,6 +647,7 @@ def test_reduce_hypot(device):
         pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
         pytest.param("dot", [3, 4, 5], [1, 2, 3]),
         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
+        pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
         pytest.param(
             "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
         ),
@@ -623,6 +657,11 @@ def test_reduce_hypot(device):
             "fmod",
             [-3.0, -2.0, -1.0, 1.0, 2.0, 3.0],
             [2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
+        ),
+        pytest.param(
+            "gradient",
+            [1.0, 2.0, 4.0, 7.0, 11.0, 16.0],
+            [0.0, 1.0, 1.5, 3.5, 4.0, 6.0],
         ),
         pytest.param(
             "histogram_bin_edges",
@@ -690,7 +729,56 @@ def test_2in_1out(func, data1, data2, device):
     x2 = dpnp.array(data2, device=device)
     result = getattr(dpnp, func)(x1, x2)
 
-    assert_allclose(result, expected)
+    assert_dtype_allclose(result, expected)
+
+    assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "op",
+    [
+        "equal",
+        "greater",
+        "greater_equal",
+        # TODO: unblock when dpnp.isclose() is updated
+        # "isclose",
+        "less",
+        "less_equal",
+        "logical_and",
+        "logical_or",
+        "logical_xor",
+        "not_equal",
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_logic_op_2in(op, device):
+    x1 = dpnp.array(
+        [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan], device=device
+    )
+    x2 = dpnp.array(
+        [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan], device=device
+    )
+    # Remove NaN value from input arrays because numpy raises RuntimeWarning
+    if op in [
+        "greater",
+        "greater_equal",
+        "less",
+        "less_equal",
+    ]:
+        x1 = x1[:-1]
+        x2 = x2[:-1]
+    result = getattr(dpnp, op)(x1, x2)
+
+    x1_orig = dpnp.asnumpy(x1)
+    x2_orig = dpnp.asnumpy(x2)
+    expected = getattr(numpy, op)(x1_orig, x2_orig)
+
+    assert_dtype_allclose(result, expected)
 
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
@@ -1679,6 +1767,7 @@ def test_from_dlpack(arr_dtype, shape, device):
         assert V.strides == W.strides
 
 
+@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 @pytest.mark.parametrize(
     "device",
     valid_devices,
@@ -2105,7 +2194,9 @@ def test_lstsq(m, n, nrhs, device):
     b_dp = dpnp.array(b_np, device=device)
 
     result_dp = dpnp.linalg.lstsq(a_dp, b_dp)
-    result = numpy.linalg.lstsq(a_np, b_np)
+    # if rcond is not set, FutureWarning is given.
+    # By default Numpy uses None for calculations
+    result = numpy.linalg.lstsq(a_np, b_np, rcond=None)
 
     for param_dp, param_np in zip(result_dp, result):
         assert_dtype_allclose(param_dp, param_np)
@@ -2201,3 +2292,22 @@ def test_histogram_bin_edges(weights, device):
 
     edges_queue = result_edges.sycl_queue
     assert_sycl_queue_equal(edges_queue, iv.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device_x",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "device_y",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_astype(device_x, device_y):
+    x = dpnp.array([1, 2, 3], dtype="i4", device=device_x)
+    y = dpnp.astype(x, dtype="f4")
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+    sycl_queue = dpctl.SyclQueue(device_y)
+    y = dpnp.astype(x, dtype="f4", device=sycl_queue)
+    assert_sycl_queue_equal(y.sycl_queue, sycl_queue)

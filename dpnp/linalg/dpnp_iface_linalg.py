@@ -1354,7 +1354,7 @@ def tensorinv(a, ind=2):
     old_shape = a.shape
     inv_shape = old_shape[ind:] + old_shape[:ind]
     prod = numpy.prod(old_shape[ind:])
-    a = a.reshape(prod, -1)
+    a = dpnp.reshape(a, (prod, -1))
     a_inv = inv(a)
 
     return a_inv.reshape(*inv_shape)
@@ -1428,7 +1428,7 @@ def tensorsolve(a, b, axes=None):
             "prod(a.shape[b.ndim:]) == prod(a.shape[:b.ndim])"
         )
 
-    a = a.reshape(-1, prod)
-    b = b.ravel()
+    a = dpnp.reshape(a, (-1, prod))
+    b = dpnp.ravel(b)
     res = solve(a, b)
     return res.reshape(old_shape)

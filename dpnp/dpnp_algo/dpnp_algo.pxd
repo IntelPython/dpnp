@@ -35,18 +35,13 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_ALLCLOSE_EXT
         DPNP_FN_CHOOSE_EXT
-        DPNP_FN_COPY_EXT
         DPNP_FN_CORRELATE_EXT
         DPNP_FN_DEGREES_EXT
         DPNP_FN_EDIFF1D_EXT
         DPNP_FN_ERF_EXT
-        DPNP_FN_FABS_EXT
         DPNP_FN_FFT_FFT_EXT
         DPNP_FN_FFT_RFFT_EXT
-        DPNP_FN_FMOD_EXT
-        DPNP_FN_MAXIMUM_EXT
         DPNP_FN_MEDIAN_EXT
-        DPNP_FN_MINIMUM_EXT
         DPNP_FN_MODF_EXT
         DPNP_FN_PARTITION_EXT
         DPNP_FN_RADIANS_EXT
@@ -87,7 +82,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_WALD_EXT
         DPNP_FN_RNG_WEIBULL_EXT
         DPNP_FN_RNG_ZIPF_EXT
-        DPNP_FN_TRAPZ_EXT
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
@@ -172,20 +166,6 @@ Logic functions
 """
 cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input2,
                                    double rtol=*, double atol=*, cpp_bool equal_nan=*)
-
-
-"""
-Array creation routines
-"""
-cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
-
-"""
-Mathematical functions
-"""
-cpdef dpnp_descriptor dpnp_fmax(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                   dpnp_descriptor out=*, object where=*)
-cpdef dpnp_descriptor dpnp_fmin(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
-                                   dpnp_descriptor out=*, object where=*)
 
 
 """

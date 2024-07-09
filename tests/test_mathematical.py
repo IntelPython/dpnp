@@ -2,6 +2,7 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
+from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
@@ -9,6 +10,7 @@ from numpy.testing import (
     assert_array_equal,
     assert_equal,
     assert_raises,
+    assert_raises_regex,
 )
 
 import dpnp
@@ -22,8 +24,8 @@ from .helper import (
     get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_dtypes,
+    has_support_aspect16,
     has_support_aspect64,
-    is_cpu_device,
 )
 from .test_umath import (
     _get_numpy_arrays_1in_1out,
@@ -71,6 +73,35 @@ class TestAngle:
         result = dpnp.angle(dp_a, deg=deg)
 
         assert_dtype_allclose(result, expected)
+
+
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
+class TestConvolve:
+    def test_object(self):
+        d = [1.0] * 100
+        k = [1.0] * 3
+        assert_array_almost_equal(dpnp.convolve(d, k)[2:-2], dpnp.full(98, 3))
+
+    def test_no_overwrite(self):
+        d = dpnp.ones(100)
+        k = dpnp.ones(3)
+        dpnp.convolve(d, k)
+        assert_array_equal(d, dpnp.ones(100))
+        assert_array_equal(k, dpnp.ones(3))
+
+    def test_mode(self):
+        d = dpnp.ones(100)
+        k = dpnp.ones(3)
+        default_mode = dpnp.convolve(d, k, mode="full")
+        full_mode = dpnp.convolve(d, k, mode="full")
+        assert_array_equal(full_mode, default_mode)
+        # integer mode
+        with assert_raises(ValueError):
+            dpnp.convolve(d, k, mode=-1)
+        assert_array_equal(dpnp.convolve(d, k, mode=2), full_mode)
+        # illegal arguments
+        with assert_raises(TypeError):
+            dpnp.convolve(d, k, mode=None)
 
 
 class TestClip:
@@ -582,33 +613,347 @@ class TestDiff:
         assert_raises(numpy.AxisError, xp.diff, a, axis=3, append=0)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestConvolve:
-    def test_object(self):
-        d = [1.0] * 100
-        k = [1.0] * 3
-        assert_array_almost_equal(dpnp.convolve(d, k)[2:-2], dpnp.full(98, 3))
+class TestGradient:
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True, no_bool=True))
+    def test_basic(self, dt):
+        x = numpy.array([[1, 1], [3, 4]], dtype=dt)
+        ix = dpnp.array(x)
 
-    def test_no_overwrite(self):
-        d = dpnp.ones(100)
-        k = dpnp.ones(3)
-        dpnp.convolve(d, k)
-        assert_array_equal(d, dpnp.ones(100))
-        assert_array_equal(k, dpnp.ones(3))
+        expected = numpy.gradient(x)
+        result = dpnp.gradient(ix)
+        assert_array_equal(result, expected)
 
-    def test_mode(self):
-        d = dpnp.ones(100)
-        k = dpnp.ones(3)
-        default_mode = dpnp.convolve(d, k, mode="full")
-        full_mode = dpnp.convolve(d, k, mode="f")
-        assert_array_equal(full_mode, default_mode)
-        # integer mode
-        with assert_raises(ValueError):
-            dpnp.convolve(d, k, mode=-1)
-        assert_array_equal(dpnp.convolve(d, k, mode=2), full_mode)
-        # illegal arguments
-        with assert_raises(TypeError):
-            dpnp.convolve(d, k, mode=None)
+    @pytest.mark.parametrize(
+        "args",
+        [3.0, numpy.array(3.0), numpy.cumsum(numpy.ones(5))],
+        ids=["scalar", "array", "cumsum"],
+    )
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True, no_bool=True))
+    def test_args_1d(self, args, dt):
+        x = numpy.arange(5, dtype=dt)
+        ix = dpnp.array(x)
+
+        if numpy.isscalar(args):
+            iargs = args
+        else:
+            iargs = dpnp.array(args)
+
+        expected = numpy.gradient(x, args)
+        result = dpnp.gradient(ix, iargs)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "args", [1.5, numpy.array(1.5)], ids=["scalar", "array"]
+    )
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True, no_bool=True))
+    def test_args_2d(self, args, dt):
+        x = numpy.arange(25, dtype=dt).reshape(5, 5)
+        ix = dpnp.array(x)
+
+        if numpy.isscalar(args):
+            iargs = args
+        else:
+            iargs = dpnp.array(args)
+
+        expected = numpy.gradient(x, args)
+        result = dpnp.gradient(ix, iargs)
+        for gr, igr in zip(expected, result):
+            assert_dtype_allclose(igr, gr)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True, no_bool=True))
+    def test_args_2d_uneven(self, dt):
+        x = numpy.arange(25, dtype=dt).reshape(5, 5)
+        ix = dpnp.array(x)
+
+        dx = numpy.array([1.0, 2.0, 5.0, 9.0, 11.0])
+        idx = dpnp.array(dx)
+
+        expected = numpy.gradient(x, dx, dx)
+        result = dpnp.gradient(ix, idx, idx)
+        for gr, igr in zip(expected, result):
+            assert_dtype_allclose(igr, gr)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True, no_bool=True))
+    def test_args_2d_mix_with_scalar(self, dt):
+        x = numpy.arange(25, dtype=dt).reshape(5, 5)
+        ix = dpnp.array(x)
+
+        dx = numpy.cumsum(numpy.ones(5))
+        idx = dpnp.array(dx)
+
+        expected = numpy.gradient(x, dx, 2)
+        result = dpnp.gradient(ix, idx, 2)
+        for gr, igr in zip(expected, result):
+            assert_dtype_allclose(igr, gr)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True, no_bool=True))
+    def test_axis_args_2d(self, dt):
+        x = numpy.arange(25, dtype=dt).reshape(5, 5)
+        ix = dpnp.array(x)
+
+        dx = numpy.cumsum(numpy.ones(5))
+        idx = dpnp.array(dx)
+
+        expected = numpy.gradient(x, dx, axis=1)
+        result = dpnp.gradient(ix, idx, axis=1)
+        for gr, igr in zip(expected, result):
+            assert_dtype_allclose(igr, gr)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_args_2d_error(self, xp):
+        x = xp.arange(25).reshape(5, 5)
+        dx = xp.cumsum(xp.ones(5))
+        assert_raises_regex(
+            ValueError,
+            ".*scalars or 1d",
+            xp.gradient,
+            x,
+            xp.stack([dx] * 2, axis=-1),
+            1,
+        )
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_badargs(self, xp):
+        x = xp.arange(25).reshape(5, 5)
+        dx = xp.cumsum(xp.ones(5))
+
+        # wrong sizes
+        assert_raises(ValueError, xp.gradient, x, x, xp.ones(2))
+        assert_raises(ValueError, xp.gradient, x, 1, xp.ones(2))
+        assert_raises(ValueError, xp.gradient, x, xp.ones(2), xp.ones(2))
+        # wrong number of arguments
+        assert_raises(TypeError, xp.gradient, x, x)
+        assert_raises(TypeError, xp.gradient, x, dx, axis=(0, 1))
+        assert_raises(TypeError, xp.gradient, x, dx, dx, dx)
+        assert_raises(TypeError, xp.gradient, x, 1, 1, 1)
+        assert_raises(TypeError, xp.gradient, x, dx, dx, axis=1)
+        assert_raises(TypeError, xp.gradient, x, 1, 1, axis=1)
+
+    @pytest.mark.parametrize(
+        "x",
+        [
+            numpy.linspace(0, 1, 10),
+            numpy.sort(numpy.random.RandomState(0).random(10)),
+        ],
+        ids=["linspace", "random_sorted"],
+    )
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    # testing that the relative numerical error is close to numpy
+    def test_second_order_accurate(self, x, dt):
+        x = x.astype(dt)
+        dx = x[1] - x[0]
+        y = 2 * x**3 + 4 * x**2 + 2 * x
+
+        iy = dpnp.array(y)
+        idx = dpnp.array(dx)
+
+        expected = numpy.gradient(y, dx, edge_order=2)
+        result = dpnp.gradient(iy, idx, edge_order=2)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("edge_order", [1, 2])
+    @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_spacing_axis_scalar(self, edge_order, axis, dt):
+        x = numpy.array([0, 2.0, 3.0, 4.0, 5.0, 5.0], dtype=dt)
+        x = numpy.tile(x, (6, 1)) + x.reshape(-1, 1)
+        ix = dpnp.array(x)
+
+        expected = numpy.gradient(x, 1.0, axis=axis, edge_order=edge_order)
+        result = dpnp.gradient(ix, 1.0, axis=axis, edge_order=edge_order)
+        for gr, igr in zip(expected, result):
+            assert_dtype_allclose(igr, gr)
+
+    @pytest.mark.parametrize("edge_order", [1, 2])
+    @pytest.mark.parametrize("axis", [(0, 1), None])
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    @pytest.mark.parametrize(
+        "dx",
+        [numpy.arange(6.0), numpy.array([0.0, 0.5, 1.0, 3.0, 5.0, 7.0])],
+        ids=["even", "uneven"],
+    )
+    def test_spacing_axis_two_args(self, edge_order, axis, dt, dx):
+        x = numpy.array([0, 2.0, 3.0, 4.0, 5.0, 5.0], dtype=dt)
+        x = numpy.tile(x, (6, 1)) + x.reshape(-1, 1)
+
+        ix = dpnp.array(x)
+        idx = dpnp.array(dx)
+
+        expected = numpy.gradient(x, dx, dx, axis=axis, edge_order=edge_order)
+        result = dpnp.gradient(ix, idx, idx, axis=axis, edge_order=edge_order)
+        for gr, igr in zip(expected, result):
+            assert_dtype_allclose(igr, gr)
+
+    @pytest.mark.parametrize("edge_order", [1, 2])
+    @pytest.mark.parametrize("axis", [0, 1])
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    @pytest.mark.parametrize(
+        "dx",
+        [numpy.arange(6.0), numpy.array([0.0, 0.5, 1.0, 3.0, 5.0, 7.0])],
+        ids=["even", "uneven"],
+    )
+    def test_spacing_axis_args(self, edge_order, axis, dt, dx):
+        x = numpy.array([0, 2.0, 3.0, 4.0, 5.0, 5.0], dtype=dt)
+        x = numpy.tile(x, (6, 1)) + x.reshape(-1, 1)
+
+        ix = dpnp.array(x)
+        idx = dpnp.array(dx)
+
+        expected = numpy.gradient(x, dx, axis=axis, edge_order=edge_order)
+        result = dpnp.gradient(ix, idx, axis=axis, edge_order=edge_order)
+        for gr, igr in zip(expected, result):
+            assert_dtype_allclose(igr, gr)
+
+    @pytest.mark.parametrize("edge_order", [1, 2])
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_spacing_mix_args(self, edge_order, dt):
+        x = numpy.array([0, 2.0, 3.0, 4.0, 5.0, 5.0], dtype=dt)
+        x = numpy.tile(x, (6, 1)) + x.reshape(-1, 1)
+        x_uneven = numpy.array([0.0, 0.5, 1.0, 3.0, 5.0, 7.0])
+        x_even = numpy.arange(6.0)
+
+        ix = dpnp.array(x)
+        ix_uneven = dpnp.array(x_uneven)
+        ix_even = dpnp.array(x_even)
+
+        expected = numpy.gradient(
+            x, x_even, x_uneven, axis=(0, 1), edge_order=edge_order
+        )
+        result = dpnp.gradient(
+            ix, ix_even, ix_uneven, axis=(0, 1), edge_order=edge_order
+        )
+        for gr, igr in zip(expected, result):
+            assert_dtype_allclose(igr, gr)
+
+        expected = numpy.gradient(
+            x, x_uneven, x_even, axis=(1, 0), edge_order=edge_order
+        )
+        result = dpnp.gradient(
+            ix, ix_uneven, ix_even, axis=(1, 0), edge_order=edge_order
+        )
+        for gr, igr in zip(expected, result):
+            assert_dtype_allclose(igr, gr)
+
+    @pytest.mark.parametrize("axis", [0, 1, -1, (1, 0), None])
+    def test_specific_axes(self, axis):
+        x = numpy.array([[1, 1], [3, 4]])
+        ix = dpnp.array(x)
+
+        expected = numpy.gradient(x, axis=axis)
+        result = dpnp.gradient(ix, axis=axis)
+        for gr, igr in zip(expected, result):
+            assert_dtype_allclose(igr, gr)
+
+    def test_axis_scalar_args(self):
+        x = numpy.array([[1, 1], [3, 4]])
+        ix = dpnp.array(x)
+
+        expected = numpy.gradient(x, 2, 3, axis=(1, 0))
+        result = dpnp.gradient(ix, 2, 3, axis=(1, 0))
+        for gr, igr in zip(expected, result):
+            assert_dtype_allclose(igr, gr)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_wrong_number_of_args(self, xp):
+        x = xp.array([[1, 1], [3, 4]])
+        assert_raises(TypeError, xp.gradient, x, 1, 2, axis=1)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_wrong_axis(self, xp):
+        x = xp.array([[1, 1], [3, 4]])
+        assert_raises(numpy.AxisError, xp.gradient, x, axis=3)
+
+    @pytest.mark.parametrize(
+        "size, edge_order",
+        [
+            pytest.param(2, 1),
+            pytest.param(3, 2),
+        ],
+    )
+    def test_min_size_with_edge_order(self, size, edge_order):
+        x = numpy.arange(size)
+        ix = dpnp.array(x)
+
+        expected = numpy.gradient(x, edge_order=edge_order)
+        result = dpnp.gradient(ix, edge_order=edge_order)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "size, edge_order",
+        [
+            pytest.param(0, 1),
+            pytest.param(0, 2),
+            pytest.param(1, 1),
+            pytest.param(1, 2),
+            pytest.param(2, 2),
+        ],
+    )
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_wrong_size_with_edge_order(self, size, edge_order, xp):
+        assert_raises(
+            ValueError, xp.gradient, xp.arange(size), edge_order=edge_order
+        )
+
+    @pytest.mark.parametrize(
+        "dt", [numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]
+    )
+    def test_f_decreasing_unsigned_int(self, dt):
+        x = numpy.array([5, 4, 3, 2, 1], dtype=dt)
+        ix = dpnp.array(x)
+
+        expected = numpy.gradient(x)
+        result = dpnp.gradient(ix)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "dt", [numpy.int8, numpy.int16, numpy.int32, numpy.int64]
+    )
+    def test_f_signed_int_big_jump(self, dt):
+        maxint = numpy.iinfo(dt).max
+        x = numpy.array([-1, maxint], dtype=dt)
+        dx = numpy.array([1, 3])
+
+        ix = dpnp.array(x)
+        idx = dpnp.array(dx)
+
+        expected = numpy.gradient(x, dx)
+        result = dpnp.gradient(ix, idx)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "dt", [numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]
+    )
+    def test_x_decreasing_unsigned(self, dt):
+        x = numpy.array([3, 2, 1], dtype=dt)
+        f = numpy.array([0, 2, 4])
+
+        dp_x = dpnp.array(x)
+        dp_f = dpnp.array(f)
+
+        expected = numpy.gradient(f, x)
+        result = dpnp.gradient(dp_f, dp_x)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "dt", [numpy.int8, numpy.int16, numpy.int32, numpy.int64]
+    )
+    def test_x_signed_int_big_jump(self, dt):
+        minint = numpy.iinfo(dt).min
+        maxint = numpy.iinfo(dt).max
+        x = numpy.array([-1, maxint], dtype=dt)
+        f = numpy.array([minint // 2, 0])
+
+        dp_x = dpnp.array(x)
+        dp_f = dpnp.array(f)
+
+        expected = numpy.gradient(f, x)
+        result = dpnp.gradient(dp_f, dp_x)
+        assert_array_equal(result, expected)
+
+    def test_return_type(self):
+        x = dpnp.array([[1, 2], [2, 3]])
+        res = dpnp.gradient(x)
+        assert type(res) is tuple
 
 
 @pytest.mark.parametrize("dtype1", get_all_dtypes())
@@ -696,12 +1041,11 @@ class TestMathematical:
     def test_fmin(self, dtype, lhs, rhs):
         self._test_mathematical("fmin", dtype, lhs, rhs, check_type=False)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
     def test_fmod(self, dtype, lhs, rhs):
-        if rhs == 0.3:
+        if rhs == 0.3 and not has_support_aspect64():
             """
             Due to accuracy reason, the results are different for `float32` and `float64`
                 >>> numpy.fmod(numpy.array([3.9], dtype=numpy.float32), 0.3)
@@ -709,7 +1053,7 @@ class TestMathematical:
 
                 >>> numpy.fmod(numpy.array([3.9], dtype=numpy.float64), 0.3)
                 array([9.53674318e-08])
-            On a gpu without support for `float64`, dpnp produces results similar to the second one.
+            On a gpu without fp64 support, dpnp produces results similar to the second one.
             """
             pytest.skip("Due to accuracy reason, the results are different.")
         self._test_mathematical("fmod", dtype, lhs, rhs, check_type=False)
@@ -954,6 +1298,52 @@ def test_positive_boolean():
 
     with pytest.raises(TypeError):
         dpnp.positive(dpnp_a)
+
+
+@pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+def test_float_remainder_magnitude(dtype):
+    b = numpy.array(1.0, dtype=dtype)
+    a = numpy.nextafter(numpy.array(0.0, dtype=dtype), -b)
+
+    ia = dpnp.array(a)
+    ib = dpnp.array(b)
+
+    result = dpnp.remainder(ia, ib)
+    expected = numpy.remainder(a, b)
+    assert_equal(result, expected)
+
+    result = dpnp.remainder(-ia, -ib)
+    expected = numpy.remainder(-a, -b)
+    assert_equal(result, expected)
+
+
+@pytest.mark.usefixtures("suppress_divide_numpy_warnings")
+@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+@pytest.mark.parametrize("func", ["remainder", "fmod"])
+@pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+@pytest.mark.parametrize(
+    "lhs, rhs",
+    [
+        pytest.param(1.0, 0.0, id="one-zero"),
+        pytest.param(1.0, numpy.inf, id="one-inf"),
+        pytest.param(numpy.inf, 1.0, id="inf-one"),
+        pytest.param(numpy.inf, numpy.inf, id="inf-inf"),
+        pytest.param(numpy.inf, 0.0, id="inf-zero"),
+        pytest.param(1.0, numpy.nan, id="one-nan"),
+        pytest.param(numpy.nan, 0.0, id="nan-zero"),
+        pytest.param(numpy.nan, 1.0, id="nan-one"),
+    ],
+)
+def test_float_remainder_fmod_nans_inf(func, dtype, lhs, rhs):
+    a = numpy.array(lhs, dtype=dtype)
+    b = numpy.array(rhs, dtype=dtype)
+
+    ia = dpnp.array(a)
+    ib = dpnp.array(b)
+
+    result = getattr(dpnp, func)(ia, ib)
+    expected = getattr(numpy, func)(a, b)
+    assert_equal(result, expected)
 
 
 class TestProd:
@@ -1384,32 +1774,6 @@ class TestTrapz:
         assert_array_equal(expected, result)
 
 
-class TestGradient:
-    @pytest.mark.parametrize(
-        "array", [[2, 3, 6, 8, 4, 9], [3.0, 4.0, 7.5, 9.0], [2, 6, 8, 10]]
-    )
-    def test_gradient_y1(self, array):
-        np_y = numpy.array(array)
-        dpnp_y = dpnp.array(array)
-
-        result = dpnp.gradient(dpnp_y)
-        expected = numpy.gradient(np_y)
-        assert_array_equal(expected, result)
-
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.parametrize(
-        "array", [[2, 3, 6, 8, 4, 9], [3.0, 4.0, 7.5, 9.0], [2, 6, 8, 10]]
-    )
-    @pytest.mark.parametrize("dx", [2, 3.5])
-    def test_gradient_y1_dx(self, array, dx):
-        np_y = numpy.array(array)
-        dpnp_y = dpnp.array(array)
-
-        result = dpnp.gradient(dpnp_y, dx)
-        expected = numpy.gradient(np_y, dx)
-        assert_array_equal(expected, result)
-
-
 class TestRoundingFuncs:
     @pytest.fixture(
         params=[
@@ -1588,6 +1952,80 @@ class TestDivide:
 
         assert_raises(TypeError, dpnp.divide, a, 2, out)
         assert_raises(TypeError, numpy.divide, a.asnumpy(), 2, out)
+
+
+class TestFmaxFmin:
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
+    @pytest.mark.parametrize("func", ["fmax", "fmin"])
+    def test_half(self, func):
+        a = numpy.array([0, 1, 2, 4, 2], dtype=numpy.float16)
+        b = numpy.array([-2, 5, 1, 4, 3], dtype=numpy.float16)
+        c = numpy.array([0, -1, -numpy.inf, numpy.nan, 6], dtype=numpy.float16)
+        ia, ib, ic = dpnp.array(a), dpnp.array(b), dpnp.array(c)
+
+        result = getattr(dpnp, func)(ia, ib)
+        expected = getattr(numpy, func)(a, b)
+        assert_equal(result, expected)
+
+        result = getattr(dpnp, func)(ib, ic)
+        expected = getattr(numpy, func)(b, c)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("func", ["fmax", "fmin"])
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_float_nans(self, func, dtype):
+        a = numpy.array([0, numpy.nan, numpy.nan], dtype=dtype)
+        b = numpy.array([numpy.nan, 0, numpy.nan], dtype=dtype)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = getattr(dpnp, func)(ia, ib)
+        expected = getattr(numpy, func)(a, b)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("func", ["fmax", "fmin"])
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize(
+        "nan_val",
+        [
+            complex(numpy.nan, 0),
+            complex(0, numpy.nan),
+            complex(numpy.nan, numpy.nan),
+        ],
+        ids=["nan+0j", "nanj", "nan+nanj"],
+    )
+    def test_complex_nans(self, func, dtype, nan_val):
+        a = numpy.array([0, nan_val, nan_val], dtype=dtype)
+        b = numpy.array([nan_val, 0, nan_val], dtype=dtype)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = getattr(dpnp, func)(ia, ib)
+        expected = getattr(numpy, func)(a, b)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("func", ["fmax", "fmin"])
+    @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+    def test_precision(self, func, dtype):
+        dtmin = numpy.finfo(dtype).min
+        dtmax = numpy.finfo(dtype).max
+        d1 = dtype(0.1)
+        d1_next = numpy.nextafter(d1, numpy.inf)
+
+        test_cases = [
+            # v1     v2
+            (dtmin, -numpy.inf),
+            (dtmax, -numpy.inf),
+            (d1, d1_next),
+            (dtmax, numpy.nan),
+        ]
+
+        for v1, v2 in test_cases:
+            a = numpy.array([v1])
+            b = numpy.array([v2])
+            ia, ib = dpnp.array(a), dpnp.array(b)
+
+            result = getattr(dpnp, func)(ia, ib)
+            expected = getattr(numpy, func)(a, b)
+            assert_allclose(result, expected)
 
 
 class TestFloorDivide:
@@ -2594,20 +3032,163 @@ class TestMatmul:
         assert result is out
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("shape", [(8, 10)], ids=["2D"])
+    @pytest.mark.parametrize("incx", [-2, 2], ids=["-2", "2"])
+    @pytest.mark.parametrize("incy", [-2, 2], ids=["-2", "2"])
+    @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
+    def test_matmul_strided_mat_vec(self, shape, incx, incy, transpose):
+        if transpose:
+            s1 = shape[-2]
+            s2 = shape[-1]
+        else:
+            s1 = shape[-1]
+            s2 = shape[-2]
+        a = numpy.random.rand(*shape)
+        B = numpy.random.rand(2 * s1)
+        a_dp = dpnp.asarray(a)
+        if transpose:
+            a = numpy.moveaxis(a, (-2, -1), (-1, -2))
+            a_dp = dpnp.moveaxis(a_dp, (-2, -1), (-1, -2))
+        B_dp = dpnp.asarray(B)
+        b = B[::incx]
+        b_dp = B_dp[::incx]
+
+        result = dpnp.matmul(a_dp, b_dp)
+        expected = numpy.matmul(a, b)
+        assert_dtype_allclose(result, expected)
+
+        out_shape = shape[:-2] + (2 * s2,)
+        OUT = dpnp.empty(out_shape, dtype=result.dtype)
+        out = OUT[..., ::incy]
+        result = dpnp.matmul(a_dp, b_dp, out=out)
+        assert result is out
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("shape", [(8, 10)], ids=["2D"])
+    @pytest.mark.parametrize("incx", [-2, 2], ids=["-2", "2"])
+    @pytest.mark.parametrize("incy", [-2, 2], ids=["-2", "2"])
+    @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
+    def test_matmul_strided_vec_mat(self, shape, incx, incy, transpose):
+        if transpose:
+            s1 = shape[-2]
+            s2 = shape[-1]
+        else:
+            s1 = shape[-1]
+            s2 = shape[-2]
+        a = numpy.random.rand(*shape)
+        B = numpy.random.rand(2 * s2)
+        a_dp = dpnp.asarray(a)
+        if transpose:
+            a = numpy.moveaxis(a, (-2, -1), (-1, -2))
+            a_dp = dpnp.moveaxis(a_dp, (-2, -1), (-1, -2))
+        B_dp = dpnp.asarray(B)
+        b = B[::incx]
+        b_dp = B_dp[::incx]
+
+        result = dpnp.matmul(b_dp, a_dp)
+        expected = numpy.matmul(b, a)
+        assert_dtype_allclose(result, expected)
+
+        out_shape = shape[:-2] + (2 * s1,)
+        OUT = dpnp.empty(out_shape, dtype=result.dtype)
+        out = OUT[..., ::incy]
+        result = dpnp.matmul(b_dp, a_dp, out=out)
+        assert result is out
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "order1, order2, out_order",
+        [
+            ("C", "C", "C"),
+            ("C", "C", "F"),
+            ("C", "F", "C"),
+            ("C", "F", "F"),
+            ("F", "C", "C"),
+            ("F", "C", "F"),
+            ("F", "F", "F"),
+            ("F", "F", "C"),
+        ],
+    )
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
-    def test_matmul_out(self, dtype):
-        a1 = numpy.arange(5 * 4, dtype=dtype).reshape(5, 4)
-        a2 = numpy.arange(7 * 4, dtype=dtype).reshape(4, 7)
+    def test_matmul_out1(self, order1, order2, out_order, dtype):
+        # test gemm with out keyword
+        a1 = numpy.arange(20, dtype=dtype).reshape(5, 4, order=order1)
+        a2 = numpy.arange(28, dtype=dtype).reshape(4, 7, order=order2)
 
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
 
-        dpnp_out = dpnp.empty((5, 7), dtype=dtype)
+        dpnp_out = dpnp.empty((5, 7), dtype=dtype, order=out_order)
         result = dpnp.matmul(b1, b2, out=dpnp_out)
-        expected = numpy.matmul(a1, a2)
         assert result is dpnp_out
+
+        out = numpy.empty((5, 7), dtype=dtype, order=out_order)
+        expected = numpy.matmul(a1, a2, out=out)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("trans", [True, False])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    def test_matmul_out2(self, trans, dtype):
+        # test gemm_batch with out keyword
+        # the base of input arrays is c-contiguous
+        # the base of output array is c-contiguous or f-contiguous
+        a1 = numpy.arange(24, dtype=dtype).reshape(2, 3, 4)
+        a2 = numpy.arange(40, dtype=dtype).reshape(2, 4, 5)
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        if trans:
+            dpnp_out = dpnp.empty((2, 5, 3), dtype=dtype).transpose(0, 2, 1)
+            out = numpy.empty((2, 5, 3), dtype=dtype).transpose(0, 2, 1)
+        else:
+            dpnp_out = dpnp.empty((2, 3, 5), dtype=dtype)
+            out = numpy.empty((2, 3, 5), dtype=dtype)
+
+        result = dpnp.matmul(b1, b2, out=dpnp_out)
+        assert result is dpnp_out
+
+        expected = numpy.matmul(a1, a2, out=out)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("trans", [True, False])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    def test_matmul_out3(self, trans, dtype):
+        # test gemm_batch with out keyword
+        # the base of input arrays is f-contiguous
+        # the base of output array is c-contiguous or f-contiguous
+        a1 = numpy.arange(24, dtype=dtype).reshape(2, 4, 3)
+        a2 = numpy.arange(40, dtype=dtype).reshape(2, 5, 4)
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        a1 = numpy.asarray(a1).transpose(0, 2, 1)
+        a2 = numpy.asarray(a2).transpose(0, 2, 1)
+        b1 = b1.transpose(0, 2, 1)
+        b2 = b2.transpose(0, 2, 1)
+
+        if trans:
+            dpnp_out = dpnp.empty((2, 5, 3), dtype=dtype).transpose(0, 2, 1)
+            out = numpy.empty((2, 5, 3), dtype=dtype).transpose(0, 2, 1)
+        else:
+            dpnp_out = dpnp.empty((2, 3, 5), dtype=dtype)
+            out = numpy.empty((2, 3, 5), dtype=dtype)
+
+        result = dpnp.matmul(b1, b2, out=dpnp_out)
+        assert result is dpnp_out
+
+        expected = numpy.matmul(a1, a2, out=out)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
@@ -2619,6 +3200,9 @@ class TestMatmul:
         ],
     )
     def test_matmul_out_0D(self, out_shape):
+        # for matmul of 0-D arrays with out keyword,
+        # NumPy repeats the data to match the shape
+        # of output array
         a = numpy.arange(3)
         b = dpnp.asarray(a)
 
@@ -2631,26 +3215,24 @@ class TestMatmul:
 
     @testing.slow
     @pytest.mark.parametrize(
-        "shape",
+        "shape_pair",
         [
-            ((4096, 4096, 4, 4)),
-            ((2048, 2048, 8, 8)),
+            ((4096, 4096, 2, 2), (4096, 4096, 2, 2)),
+            ((2, 2), (4096, 4096, 2, 2)),
+            ((4096, 4096, 2, 2), (2, 2)),
         ],
     )
-    def test_matmul_large(self, shape):
-        size = numpy.prod(shape, dtype=int)
-        a = numpy.array(numpy.random.uniform(-5, 5, size)).reshape(shape)
+    def test_matmul_large(self, shape_pair):
+        shape1, shape2 = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
+        a = numpy.array(numpy.random.uniform(-5, 5, size1)).reshape(shape1)
+        b = numpy.array(numpy.random.uniform(-5, 5, size2)).reshape(shape2)
         a_dp = dpnp.asarray(a)
+        b_dp = dpnp.asarray(b)
 
-        result = dpnp.matmul(a_dp, a_dp)
-        expected = numpy.matmul(a, a)
-        assert_dtype_allclose(result, expected, factor=24)
-
-        # make the 2-d base f-contiguous
-        a = a.transpose(0, 1, 3, 2)
-        a_dp = a_dp.transpose(0, 1, 3, 2)
-        result = dpnp.matmul(a_dp, a_dp)
-        expected = numpy.matmul(a, a)
+        result = dpnp.matmul(a_dp, b_dp)
+        expected = numpy.matmul(a, b)
         assert_dtype_allclose(result, expected, factor=24)
 
 
@@ -2728,9 +3310,14 @@ class TestMatmulInvalidCases:
     def test_exe_q(self):
         x1 = dpnp.ones((5, 4), sycl_queue=dpctl.SyclQueue())
         x2 = dpnp.ones((4, 7), sycl_queue=dpctl.SyclQueue())
-
         with pytest.raises(ValueError):
             dpnp.matmul(x1, x2)
+
+        x1 = dpnp.ones((5, 4))
+        x2 = dpnp.ones((4, 7))
+        out = dpnp.empty((5, 7), sycl_queue=dpctl.SyclQueue())
+        with pytest.raises(ExecutionPlacementError):
+            dpnp.matmul(x1, x2, out=out)
 
     def test_matmul_casting(self):
         a1 = dpnp.arange(2 * 4, dtype=dpnp.float32).reshape(2, 4)

@@ -51,9 +51,10 @@ from .dpnp_algo import (
 from .dpnp_array import dpnp_array
 from .dpnp_utils import (
     call_origin,
+    map_dtype_to_device,
 )
 
-__all__ = ["argsort", "partition", "sort"]
+__all__ = ["argsort", "partition", "sort", "sort_complex"]
 
 
 def argsort(a, axis=-1, kind=None, order=None):
@@ -263,3 +264,40 @@ def sort(a, axis=-1, kind=None, order=None):
     return dpnp_array._create_from_usm_ndarray(
         dpt.sort(dpnp.get_usm_ndarray(a), axis=axis)
     )
+
+
+def sort_complex(a):
+    """
+    Sort a complex array using the real part first, then the imaginary part.
+
+    For full documentation refer to :obj:`numpy.sort_complex`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+
+    Returns
+    -------
+    out : dpnp.ndarray of complex dtype
+        Always returns a sorted complex array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([5, 3, 6, 2, 1])
+    >>> np.sort_complex(a)
+    array([1.+0.j, 2.+0.j, 3.+0.j, 5.+0.j, 6.+0.j])
+
+    >>> a = np.array([1 + 2j, 2 - 1j, 3 - 2j, 3 - 3j, 3 + 5j])
+    >>> np.sort_complex(a)
+    array([1.+2.j, 2.-1.j, 3.-3.j, 3.-2.j, 3.+5.j])
+
+    """
+
+    b = dpnp.sort(a)
+    if not dpnp.issubsctype(b.dtype, dpnp.complexfloating):
+        if b.dtype.char in "bhBH":
+            return b.astype(dpnp.complex64)
+        return b.astype(map_dtype_to_device(dpnp.complex128, b.sycl_device))
+    return b

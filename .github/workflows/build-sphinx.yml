@@ -91,7 +91,7 @@ jobs:
           sudo apt-get install -y nvidia-cuda-toolkit clinfo
 
       - name: Checkout repo
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 0
 
@@ -99,31 +99,43 @@ jobs:
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
-          auto-update-conda: true
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
+          channels: conda-forge
           python-version: ${{ env.python-ver }}
-          miniconda-version: 'latest'
           activate-environment: 'docs'
-          channels: intel, conda-forge
+
+      # Here is an issue in conda gh-12356 causing adding defaults to the list of channels
+      # upon running `conda config --append channels conda-forge`, while mamba requires to have only conda-forge channel
+      - name: Remove defaults channel
+        run: |
+          conda config --remove channels defaults
+          conda config --show
+
+      # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
+      - name: Disable speed limit check in mamba
+        run: echo "MAMBA_NO_LOW_SPEED_LIMIT=1" >> $GITHUB_ENV
 
       - name: Install sphinx dependencies
         run: |
-          conda install sphinx sphinx_rtd_theme
+          mamba install sphinx sphinx_rtd_theme
           pip install sphinxcontrib-googleanalytics==0.4 \
             pyenchant sphinxcontrib-spelling
 
       - name: Install dpnp dependencies
         run: |
-          conda install numpy"<1.24" dpctl">=0.17.0dev0" mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
+          mamba install numpy"<1.24" dpctl">=0.18.0dev0" mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
               cmake cython pytest ninja scikit-build ${{ env.CHANNELS }}
 
       - name: Install cuPy dependencies
-        run: conda install cupy cudatoolkit=10.0
+        run: mamba install cupy cudatoolkit=10.0
 
       - name: Conda info
-        run: conda info
+        run: mamba info
 
       - name: Conda list
-        run: conda list
+        run: mamba list
 
       - name: Build library
         run: python scripts/build_locally.py
@@ -209,7 +221,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 0
 

@@ -25,14 +25,11 @@
 
 set(DPNP_SRC
     kernels/dpnp_krnl_arraycreation.cpp
-    kernels/dpnp_krnl_bitwise.cpp
     kernels/dpnp_krnl_common.cpp
     kernels/dpnp_krnl_elemwise.cpp
     kernels/dpnp_krnl_fft.cpp
     kernels/dpnp_krnl_indexing.cpp
-    kernels/dpnp_krnl_linalg.cpp
     kernels/dpnp_krnl_logic.cpp
-    kernels/dpnp_krnl_manipulation.cpp
     kernels/dpnp_krnl_mathematical.cpp
     kernels/dpnp_krnl_random.cpp
     kernels/dpnp_krnl_reduction.cpp
@@ -85,12 +82,7 @@ if(DPNP_GENERATE_COVERAGE)
     target_link_options(${_trgt} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 endif()
 
-if (MKL_VERSION_2024)
-    target_link_libraries(${_trgt} PUBLIC MKL::MKL_SYCL)
-else()
-    target_link_libraries(${_trgt} PUBLIC MKL::MKL_DPCPP)
-endif()
-
+target_link_libraries(${_trgt} PUBLIC MKL::MKL_SYCL)
 target_link_libraries(${_trgt} PUBLIC oneDPL)
 
 if (UNIX)

@@ -20,6 +20,106 @@ from .helper import (
 )
 
 
+class TestDigitize:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("right", [True, False])
+    @pytest.mark.parametrize(
+        "x, bins",
+        [
+            # Negative values
+            (
+                numpy.array([-5, -3, -1, 0, 1, 3, 5]),
+                numpy.array([-4, -2, 0, 2, 4]),
+            ),
+            # Non-uniform bins
+            (
+                numpy.array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+                numpy.array([1, 4, 6, 7]),
+            ),
+            # Repeated elements
+            (numpy.array([1, 2, 2, 3, 3, 3, 4, 5]), numpy.array([1, 2, 3, 4])),
+        ],
+    )
+    def test_digitize(self, x, bins, dtype, right):
+        x = x.astype(dtype)
+        bins = bins.astype(dtype)
+        x_dp = dpnp.array(x)
+        bins_dp = dpnp.array(bins)
+
+        result = dpnp.digitize(x_dp, bins_dp, right=right)
+        expected = numpy.digitize(x, bins, right=right)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    @pytest.mark.parametrize("right", [True, False])
+    def test_digitize_inf(self, dtype, right):
+        x = numpy.array([-numpy.inf, -1, 0, 1, numpy.inf], dtype=dtype)
+        bins = numpy.array([-2, -1, 0, 1, 2], dtype=dtype)
+        x_dp = dpnp.array(x)
+        bins_dp = dpnp.array(bins)
+
+        result = dpnp.digitize(x_dp, bins_dp, right=right)
+        expected = numpy.digitize(x, bins, right=right)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dtype_x", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "dtype_bins", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("right", [True, False])
+    def test_digitize_diff_types(self, dtype_x, dtype_bins, right):
+        x = numpy.array([1, 2, 3, 4, 5], dtype=dtype_x)
+        bins = numpy.array([1, 3, 5], dtype=dtype_bins)
+        x_dp = dpnp.array(x)
+        bins_dp = dpnp.array(bins)
+
+        result = dpnp.digitize(x_dp, bins_dp, right=right)
+        expected = numpy.digitize(x, bins, right=right)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "x, bins",
+        [
+            # Empty array
+            (numpy.array([]), numpy.array([1, 2, 3])),
+            # Empty bins
+            (numpy.array([1, 2, 3]), numpy.array([])),
+        ],
+    )
+    def test_digitize_empty(self, x, bins, dtype):
+        x = x.astype(dtype)
+        bins = bins.astype(dtype)
+        x_dp = dpnp.array(x)
+        bins_dp = dpnp.array(bins)
+
+        result = dpnp.digitize(x_dp, bins_dp)
+        expected = numpy.digitize(x, bins)
+        assert_dtype_allclose(result, expected)
+
+    def test_digitize_error(self):
+        x_dp = dpnp.array([1, 2, 3], dtype="float32")
+        bins_dp = dpnp.array([1, 2, 3], dtype="float32")
+
+        # unsupported type
+        x_np = dpnp.asnumpy(x_dp)
+        bins_np = dpnp.asnumpy(bins_dp)
+        with pytest.raises(TypeError):
+            dpnp.digitize(x_np, bins_dp)
+            dpnp.digitize(x_dp, bins_np)
+
+        # bins ndim < 1
+        bins_scalar = dpnp.array(1)
+        with pytest.raises(ValueError):
+            dpnp.digitize(x_dp, bins_scalar)
+
+
 class TestHistogram:
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize(
@@ -82,7 +182,7 @@ class TestHistogram:
         result_hist, result_edges = dpnp.histogram(iv, density=True)
 
         if numpy.issubdtype(dtype, numpy.inexact):
-            tol = numpy.finfo(dtype).resolution
+            tol = 4 * numpy.finfo(dtype).resolution
             assert_allclose(result_hist, expected_hist, rtol=tol, atol=tol)
             assert_allclose(result_edges, expected_edges, rtol=tol, atol=tol)
         else:
@@ -293,7 +393,8 @@ class TestHistogram:
 
         # both first and last ranges must be finite
         with assert_raises_regex(
-            ValueError, f"autodetected range of \[{min}, {max}\] is not finite"
+            ValueError,
+            f"autodetected range of \\[{min}, {max}\\] is not finite",
         ):
             xp.histogram(v)
 

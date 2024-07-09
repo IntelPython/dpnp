@@ -199,7 +199,7 @@ def test_array_creation_from_2d_array(func, args, usm_type_x, usm_type_y):
             "fromfunction", [(lambda i, j: i + j), (3, 3)], {"dtype": dp.int32}
         ),
         pytest.param("fromiter", [[1, 2, 3, 4]], {"dtype": dp.int64}),
-        pytest.param("fromstring", ["1, 2"], {"dtype": int, "sep": " "}),
+        pytest.param("fromstring", ["1 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
         pytest.param("geomspace", [1, 4, 8], {}),
@@ -357,20 +357,32 @@ def test_tril_triu(func, usm_type):
 @pytest.mark.parametrize(
     "op",
     [
-        "equal",
-        "greater",
-        "greater_equal",
-        "less",
-        "less_equal",
-        "logical_and",
-        "logical_or",
-        "logical_xor",
-        "not_equal",
+        "all",
+        "any",
+        "isfinite",
+        "isinf",
+        "isnan",
+        "isneginf",
+        "isposinf",
+        "logical_not",
     ],
-    ids=[
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_logic_op_1in(op, usm_type_x):
+    x = dp.arange(-10, 10, usm_type=usm_type_x)
+    res = getattr(dp, op)(x)
+
+    assert x.usm_type == res.usm_type == usm_type_x
+
+
+@pytest.mark.parametrize(
+    "op",
+    [
         "equal",
         "greater",
         "greater_equal",
+        # TODO: unblock when dpnp.isclose() is updated
+        # "isclose",
         "less",
         "less_equal",
         "logical_and",
@@ -381,7 +393,7 @@ def test_tril_triu(func, usm_type):
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-def test_coerced_usm_types_logic_op(op, usm_type_x, usm_type_y):
+def test_coerced_usm_types_logic_op_2in(op, usm_type_x, usm_type_y):
     x = dp.arange(100, usm_type=usm_type_x)
     y = dp.arange(100, usm_type=usm_type_y)[::-1]
 
@@ -510,6 +522,8 @@ def test_norm(usm_type, ord, axis):
 @pytest.mark.parametrize(
     "func,data",
     [
+        pytest.param("all", [-1.0, 0.0, 1.0]),
+        pytest.param("any", [-1.0, 0.0, 1.0]),
         pytest.param("average", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("abs", [-1.2, 1.2]),
         pytest.param("angle", [[1.0 + 1.0j, 2.0 + 3.0j]]),
@@ -538,7 +552,9 @@ def test_norm(usm_type, ord, axis):
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
+        pytest.param("fabs", [-1.2, 1.2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("gradient", [1, 2, 4, 7, 11, 16]),
         pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
         pytest.param(
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
@@ -580,6 +596,7 @@ def test_norm(usm_type, ord, axis):
         ),
         pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("sort", [2.0, 1.0, 7.0, 4.0]),
+        pytest.param("sort_complex", [1 + 2j, 2 - 1j, 3 - 2j, 3 - 3j, 3 + 5j]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
         pytest.param("square", [1.0, 3.0, 9.0]),
         pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
@@ -614,21 +631,28 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("arctan2", [[-1, +1, +1, -1]], [[-1, -1, +1, +1]]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
+        pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
         # dpnp.dot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
         pytest.param("dot", [3, 4, 5], [1, 2, 3]),
         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
-        pytest.param("fmax", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
-        pytest.param("fmin", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
+        # TODO: uncomment once resolved in gh-1723 by dpctl
+        # pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
+        pytest.param("fmax", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
+        pytest.param("fmin", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
+        pytest.param("fmod", [5, 3], [2, 2.0]),
+        pytest.param(
+            "gradient", [1, 2, 4, 7, 11, 16], [0.0, 1.0, 1.5, 3.5, 4.0, 6.0]
+        ),
         pytest.param(
             "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
-        pytest.param("maximum", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
-        pytest.param("minimum", [[0.0, 1.0, 2.0]], [[3.0, 4.0, 5.0]]),
+        pytest.param("maximum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
+        pytest.param("minimum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
         pytest.param("searchsorted", [11, 12, 13, 14, 15], [-10, 20, 12, 13]),
         pytest.param(
             "tensordot",

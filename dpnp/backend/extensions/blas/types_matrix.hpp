@@ -33,15 +33,7 @@
 // dpctl namespace for operations with types
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace blas
-{
-namespace types
+namespace dpnp::extensions::blas::types
 {
 /**
  * @brief A factory to define pairs of supported types for which
@@ -165,8 +157,29 @@ struct GemmBatchTypePairSupportFactory
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
-} // namespace types
-} // namespace blas
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL BLAS library provides support in oneapi::mkl::blas::gemv<T>
+ * function.
+ *
+ * @tparam T Type of input and output arrays.
+ */
+template <typename T>
+struct GemvTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
+        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<float>,
+                                          T,
+                                          std::complex<float>>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<double>,
+                                          T,
+                                          std::complex<double>>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
+} // namespace dpnp::extensions::blas::types

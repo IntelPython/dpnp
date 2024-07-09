@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2024, Intel Corporation
+// Copyright (c) 2023-2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -23,41 +23,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-/**
- * Example of experimental interface.
- *
- * This example shows how to get a runtime pointer from DPNP C++ Backend library
- *
- * Possible compile line:
- * . /opt/intel/oneapi/setvars.sh
- * g++ -g dpnp/backend/examples/example_experimental_iface.cpp -Idpnp
- * -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o
- * example_experimental_iface
- */
+#pragma once
 
-#include <iostream>
+#include <pybind11/pybind11.h>
 
-#include <dpnp_iface_fptr.hpp>
-// TODO #include <backend/backend_utils.hpp>
+namespace py = pybind11;
 
-int main(int, char **)
+namespace dpnp::extensions::vm
 {
-    void *result = get_backend_function_name("dpnp_dot", "float");
-    std::cout << "Result Dot() function pointer (by old interface): " << result
-              << std::endl;
-
-    DPNPFuncData_t dpnp_dot_f = get_dpnp_function_ptr(
-        DPNPFuncName::DPNP_FN_DOT, DPNPFuncType::DPNP_FT_LONG);
-    std::cout << "Result Dot() function pointer: " << dpnp_dot_f.ptr
-              << " with return datatype " << (size_t)dpnp_dot_f.return_type
-              << std::endl;
-
-    DPNPFuncData_t dpnp_add_f = get_dpnp_function_ptr(
-        DPNPFuncName::DPNP_FN_ADD, DPNPFuncType::DPNP_FT_FLOAT,
-        DPNPFuncType::DPNP_FT_INT);
-    std::cout << "Result Add() function pointer: " << dpnp_add_f.ptr
-              << " with return datatype " << (size_t)dpnp_add_f.return_type
-              << std::endl;
-
-    return 0;
-}
+void init_fmax(py::module_ m);
+} // namespace dpnp::extensions::vm

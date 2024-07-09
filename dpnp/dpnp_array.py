@@ -258,6 +258,8 @@ class dpnp_array:
         res = self.__new__(dpnp_array)
         res._array_obj = item
 
+        if self._array_obj.usm_data is not res._array_obj.usm_data:
+            dpnp.synchronize_array_data(self)
         return res
 
     def __gt__(self, other):
@@ -454,6 +456,7 @@ class dpnp_array:
             val = val.get_array()
 
         self._array_obj.__setitem__(key, val)
+        dpnp.synchronize_array_data(self)
 
     # '__setstate__',
     # '__sizeof__',
@@ -562,7 +565,15 @@ class dpnp_array:
 
         return dpt.asnumpy(self._array_obj)
 
-    def astype(self, dtype, order="K", casting="unsafe", subok=True, copy=True):
+    def astype(
+        self,
+        dtype,
+        order="K",
+        casting="unsafe",
+        subok=True,
+        copy=True,
+        device=None,
+    ):
         """
         Copy the array with data type casting.
 
@@ -597,6 +608,13 @@ class dpnp_array:
             this is set to ``False``, and the `dtype`, `order`, and `subok`
             requirements are satisfied, the input array is returned instead of
             a copy.
+        device : {None, string, SyclDevice, SyclQueue}, optional
+            An array API concept of device where the output array is created.
+            The `device` can be ``None`` (the default), an OneAPI filter selector
+            string, an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+            or a `Device` object returned by
+            :obj:`dpnp.dpnp_array.dpnp_array.device` property. Default: ``None``.
 
         Returns
         -------
@@ -626,7 +644,9 @@ class dpnp_array:
                 f"subok={subok} is currently not supported"
             )
 
-        return dpnp.astype(self, dtype, order=order, casting=casting, copy=copy)
+        return dpnp.astype(
+            self, dtype, order=order, casting=casting, copy=copy, device=device
+        )
 
     # 'base',
     # 'byteswap',

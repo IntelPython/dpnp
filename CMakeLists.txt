@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
 project(dpnp
+  VERSION 0.16
+  LANGUAGES CXX
   DESCRIPTION "NumPy-like API accelerated by SYCL."
 )
 
@@ -24,18 +26,11 @@ endif()
 set(MKL_ARCH "intel64")
 set(MKL_LINK "dynamic")
 set(MKL_THREADING "tbb_thread")
-set(MKL_VERSION_2024 FALSE)
+set(MKL_INTERFACE "ilp64")
 find_package(MKL QUIET)
 if(MKL_FOUND)
-    if(MKL_VERSION VERSION_GREATER_EQUAL "2024.0.0")
-        set(MKL_VERSION_2024 TRUE)
-        set(MKL_INTERFACE "ilp64")
-        find_package(MKL REQUIRED)
-    endif()
-endif()
-
-if(NOT MKL_VERSION_2024)
-    set(MKL_INTERFACE_FULL "intel_ilp64")
+    find_package(MKL REQUIRED)
+else()
     find_package(MKL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
 endif()
 

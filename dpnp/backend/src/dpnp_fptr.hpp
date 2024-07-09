@@ -35,7 +35,7 @@
 #include <complex>
 #include <map>
 
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 #include <dpnp_iface_fptr.hpp>
 
@@ -326,14 +326,11 @@ static constexpr DPNPFuncType get_floating_res_type()
  * FPTR interface initialization functions
  */
 void func_map_init_arraycreation(func_map_t &fmap);
-void func_map_init_bitwise(func_map_t &fmap);
 void func_map_init_elemwise(func_map_t &fmap);
 void func_map_init_fft_func(func_map_t &fmap);
 void func_map_init_indexing_func(func_map_t &fmap);
 void func_map_init_linalg(func_map_t &fmap);
-void func_map_init_linalg_func(func_map_t &fmap);
 void func_map_init_logic(func_map_t &fmap);
-void func_map_init_manipulation(func_map_t &fmap);
 void func_map_init_mathematical(func_map_t &fmap);
 void func_map_init_random(func_map_t &fmap);
 void func_map_init_reduction(func_map_t &fmap);

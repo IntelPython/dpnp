@@ -57,6 +57,87 @@ def vvsort(val, vec, size, xp):
         vec[:, imax] = temp
 
 
+# check linear algebra functions from dpnp.linalg
+# with multidimensional usm_ndarray as input
+@pytest.mark.parametrize(
+    "func, gen_kwargs, func_kwargs",
+    [
+        pytest.param("cholesky", {"hermitian": True}, {}),
+        pytest.param("cond", {}, {}),
+        pytest.param("det", {}, {}),
+        pytest.param("eig", {}, {}),
+        pytest.param("eigh", {"hermitian": True}, {}),
+        pytest.param("eigvals", {}, {}),
+        pytest.param("eigvalsh", {"hermitian": True}, {}),
+        pytest.param("inv", {}, {}),
+        pytest.param("matrix_power", {}, {"n": 4}),
+        pytest.param("matrix_rank", {}, {}),
+        pytest.param("norm", {}, {}),
+        pytest.param("pinv", {}, {}),
+        pytest.param("qr", {}, {}),
+        pytest.param("slogdet", {}, {}),
+        pytest.param("solve", {}, {}),
+        pytest.param("svd", {}, {}),
+        pytest.param("tensorinv", {}, {"ind": 1}),
+        pytest.param("tensorsolve", {}, {}),
+    ],
+)
+def test_usm_ndarray_linalg_batch(func, gen_kwargs, func_kwargs):
+    shape = (
+        (2, 2, 3, 3) if func not in ["tensorinv", "tensorsolve"] else (4, 2, 2)
+    )
+
+    if func == "tensorsolve":
+        shape_b = (4,)
+        dpt_args = [
+            dpt.asarray(
+                generate_random_numpy_array(shape, seed_value=81, **gen_kwargs)
+            ),
+            dpt.asarray(
+                generate_random_numpy_array(
+                    shape_b, seed_value=81, **gen_kwargs
+                )
+            ),
+        ]
+    elif func in ["lstsq", "solve"]:
+        dpt_args = [
+            dpt.asarray(
+                generate_random_numpy_array(shape, seed_value=81, **gen_kwargs)
+            )
+            for _ in range(2)
+        ]
+    else:
+        dpt_args = [
+            dpt.asarray(generate_random_numpy_array(shape, **gen_kwargs))
+        ]
+
+    result = getattr(inp.linalg, func)(*dpt_args, **func_kwargs)
+
+    if isinstance(result, tuple):
+        for res in result:
+            assert isinstance(res, inp.ndarray)
+    else:
+        assert isinstance(result, inp.ndarray)
+
+
+# check linear algebra functions from dpnp
+# with multidimensional usm_ndarray as input
+@pytest.mark.parametrize(
+    "func", ["dot", "inner", "kron", "matmul", "outer", "tensordot", "vdot"]
+)
+def test_usm_ndarray_linearalgebra_batch(func):
+    shape = (2, 2, 2, 2)
+
+    dpt_args = [
+        dpt.asarray(generate_random_numpy_array(shape, seed_value=81))
+        for _ in range(2)
+    ]
+
+    result = getattr(inp, func)(*dpt_args)
+
+    assert isinstance(result, inp.ndarray)
+
+
 class TestCholesky:
     @pytest.mark.parametrize(
         "array",
@@ -613,11 +694,27 @@ class TestEinsum:
         expected = numpy.einsum("i,i,i", b_np, b_np, b_np, optimize="greedy")
         assert_dtype_allclose(result, expected)
 
+    def test_einsum_out(self):
+        a = inp.ones((5, 5))
+        a_np = a.asnumpy()
+        out = inp.empty((5,))
+        out_np = out.asnumpy()
+        result = inp.einsum("ii->i", a, out=out)
+        assert result is out
+        expected = numpy.einsum("ii->i", a_np, out=out_np)
+        assert_dtype_allclose(result, expected)
+
     def test_einsum_error(self):
         a = inp.ones((5, 5))
         # unknown keyword argument
         with pytest.raises(TypeError):
             inp.einsum("ii->i", a, copy=False)
+
+        a = inp.ones((5, 5))
+        out = inp.empty((5,), sycl_queue=dpctl.SyclQueue())
+        # inconsistent sycl_queue
+        with pytest.raises(ExecutionPlacementError):
+            inp.einsum("ii->i", a, out=out)
 
         # unknown value for optimize keyword
         with pytest.raises(TypeError):
@@ -780,7 +877,9 @@ class TestLstsq:
         b_dp = inp.array(b_np)
 
         result = inp.linalg.lstsq(a_dp, b_dp)
-        expected = numpy.linalg.lstsq(a_np, b_np)
+        # if rcond is not set, FutureWarning is given.
+        # By default Numpy uses None for calculations
+        expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
 
         for param_dp, param_np in zip(result, expected):
             assert_dtype_allclose(param_dp, param_np)
@@ -794,7 +893,9 @@ class TestLstsq:
         a_dp = inp.array(a_np)
         b_dp = inp.array(b_np)
 
-        expected = numpy.linalg.lstsq(a_np, b_np)
+        # if rcond is not set, FutureWarning is given.
+        # By default Numpy uses None for calculations
+        expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
         result = inp.linalg.lstsq(a_dp, b_dp)
 
         for param_dp, param_np in zip(result, expected):
@@ -813,7 +914,9 @@ class TestLstsq:
         b_dp = inp.array(b_np)
 
         result = inp.linalg.lstsq(a_dp, b_dp)
-        expected = numpy.linalg.lstsq(a_np, b_np)
+        # if rcond is not set, FutureWarning is given.
+        # By default Numpy uses None for calculations
+        expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
 
         for param_dp, param_np in zip(result, expected):
             assert_dtype_allclose(param_dp, param_np)

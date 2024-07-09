@@ -1,12 +1,13 @@
 import math
 import operator
 
+import dpctl.tensor as dpt
 import dpctl.utils as dpu
 import numpy
 
 import dpnp
-import dpnp.dpnp_container as dpnp_container
 import dpnp.dpnp_utils as utils
+from dpnp.dpnp_array import dpnp_array
 
 __all__ = [
     "dpnp_geomspace",
@@ -14,6 +15,12 @@ __all__ = [
     "dpnp_logspace",
     "dpnp_nd_grid",
 ]
+
+
+def _as_usm_ndarray(a, usm_type, sycl_queue):
+    if isinstance(a, dpnp_array):
+        return a.get_array()
+    return dpt.asarray(a, usm_type=usm_type, sycl_queue=sycl_queue)
 
 
 def dpnp_geomspace(
@@ -40,14 +47,8 @@ def dpnp_geomspace(
     else:
         _usm_type = usm_type
 
-    if not dpnp.is_supported_array_type(start):
-        start = dpnp.asarray(
-            start, usm_type=_usm_type, sycl_queue=sycl_queue_normalized
-        )
-    if not dpnp.is_supported_array_type(stop):
-        stop = dpnp.asarray(
-            stop, usm_type=_usm_type, sycl_queue=sycl_queue_normalized
-        )
+    start = _as_usm_ndarray(start, _usm_type, sycl_queue_normalized)
+    stop = _as_usm_ndarray(stop, _usm_type, sycl_queue_normalized)
 
     dt = numpy.result_type(start, stop, float(num))
     dt = utils.map_dtype_to_device(dt, sycl_queue_normalized.sycl_device)
@@ -57,8 +58,8 @@ def dpnp_geomspace(
     if dpnp.any(start == 0) or dpnp.any(stop == 0):
         raise ValueError("Geometric sequence cannot include zero")
 
-    out_sign = dpnp.ones(
-        dpnp.broadcast_arrays(start, stop)[0].shape,
+    out_sign = dpt.ones(
+        dpt.broadcast_arrays(start, stop)[0].shape,
         dtype=dt,
         usm_type=_usm_type,
         sycl_queue=sycl_queue_normalized,
@@ -72,15 +73,15 @@ def dpnp_geomspace(
             stop[all_imag] = stop[all_imag].imag
             out_sign[all_imag] = 1j
 
-    both_negative = (dpnp.sign(start) == -1) & (dpnp.sign(stop) == -1)
+    both_negative = (dpt.sign(start) == -1) & (dpt.sign(stop) == -1)
     if dpnp.any(both_negative):
-        dpnp.negative(start[both_negative], out=start[both_negative])
-        dpnp.negative(stop[both_negative], out=stop[both_negative])
-        dpnp.negative(out_sign[both_negative], out=out_sign[both_negative])
+        dpt.negative(start[both_negative], out=start[both_negative])
+        dpt.negative(stop[both_negative], out=stop[both_negative])
+        dpt.negative(out_sign[both_negative], out=out_sign[both_negative])
 
-    log_start = dpnp.log10(start)
-    log_stop = dpnp.log10(stop)
-    result = dpnp_logspace(
+    log_start = dpt.log10(start)
+    log_stop = dpt.log10(stop)
+    res = dpnp_logspace(
         log_start,
         log_stop,
         num=num,
@@ -89,19 +90,20 @@ def dpnp_geomspace(
         dtype=dtype,
         usm_type=_usm_type,
         sycl_queue=sycl_queue_normalized,
-    )
+    ).get_array()
 
     if num > 0:
-        result[0] = start
+        res[0] = start
         if num > 1 and endpoint:
-            result[-1] = stop
+            res[-1] = stop
 
-    result = out_sign * result
+    res = out_sign * res
 
     if axis != 0:
-        result = dpnp.moveaxis(result, 0, axis)
+        res = dpt.moveaxis(res, 0, axis)
 
-    return result.astype(dtype, copy=False)
+    res = dpt.astype(res, dtype, copy=False)
+    return dpnp_array._create_from_usm_ndarray(res)
 
 
 def dpnp_linspace(
@@ -129,14 +131,11 @@ def dpnp_linspace(
     else:
         _usm_type = usm_type
 
-    if not hasattr(start, "dtype") and not dpnp.isscalar(start):
-        start = dpnp.asarray(
-            start, usm_type=_usm_type, sycl_queue=sycl_queue_normalized
-        )
-    if not hasattr(stop, "dtype") and not dpnp.isscalar(stop):
-        stop = dpnp.asarray(
-            stop, usm_type=_usm_type, sycl_queue=sycl_queue_normalized
-        )
+    if not dpnp.isscalar(start):
+        start = _as_usm_ndarray(start, _usm_type, sycl_queue_normalized)
+
+    if not dpnp.isscalar(stop):
+        stop = _as_usm_ndarray(stop, _usm_type, sycl_queue_normalized)
 
     dt = numpy.result_type(start, stop, float(num))
     dt = utils.map_dtype_to_device(dt, sycl_queue_normalized.sycl_device)
@@ -155,7 +154,7 @@ def dpnp_linspace(
 
     if dpnp.isscalar(start) and dpnp.isscalar(stop):
         # Call linspace() function for scalars.
-        res = dpnp_container.linspace(
+        usm_res = dpt.linspace(
             start,
             stop,
             num,
@@ -167,17 +166,17 @@ def dpnp_linspace(
         if retstep is True and step_nan is False:
             step = (stop - start) / step_num
     else:
-        _start = dpnp.asarray(
+        usm_start = dpt.asarray(
             start,
             dtype=dt,
             usm_type=_usm_type,
             sycl_queue=sycl_queue_normalized,
         )
-        _stop = dpnp.asarray(
+        usm_stop = dpt.asarray(
             stop, dtype=dt, usm_type=_usm_type, sycl_queue=sycl_queue_normalized
         )
 
-        res = dpnp_container.arange(
+        usm_res = dpt.arange(
             0,
             stop=num,
             step=1,
@@ -187,28 +186,29 @@ def dpnp_linspace(
         )
 
         if step_nan is False:
-            step = (_stop - _start) / step_num
-            res = res.reshape((-1,) + (1,) * step.ndim)
-            res = res * step + _start
+            step = (usm_stop - usm_start) / step_num
+            usm_res = dpt.reshape(usm_res, (-1,) + (1,) * step.ndim, copy=False)
+            usm_res = usm_res * step
+            usm_res += usm_start
 
         if endpoint and num > 1:
-            res[-1] = dpnp_container.full(step.shape, _stop)
+            usm_res[-1] = dpt.full(step.shape, usm_stop)
 
     if axis != 0:
-        res = dpnp.moveaxis(res, 0, axis)
+        usm_res = dpt.moveaxis(usm_res, 0, axis)
 
     if numpy.issubdtype(dtype, dpnp.integer):
-        dpnp.floor(res, out=res)
+        dpt.floor(usm_res, out=usm_res)
 
-    res = res.astype(dtype, copy=False)
+    res = dpt.astype(usm_res, dtype, copy=False)
+    res = dpnp_array._create_from_usm_ndarray(res)
 
     if retstep is True:
         if dpnp.isscalar(step):
-            step = dpnp.asarray(
+            step = dpt.asarray(
                 step, usm_type=res.usm_type, sycl_queue=res.sycl_queue
             )
-        return (res, step)
-
+        return res, dpnp_array._create_from_usm_ndarray(step)
     return res
 
 
@@ -239,12 +239,15 @@ def dpnp_logspace(
             usm_type = "device" if usm_type_alloc is None else usm_type_alloc
         else:
             usm_type = usm_type
-        start = dpnp.asarray(start, usm_type=usm_type, sycl_queue=sycl_queue)
-        stop = dpnp.asarray(stop, usm_type=usm_type, sycl_queue=sycl_queue)
-        base = dpnp.asarray(base, usm_type=usm_type, sycl_queue=sycl_queue)
-        [start, stop, base] = dpnp.broadcast_arrays(start, stop, base)
-        base = dpnp.expand_dims(base, axis=axis)
 
+        start = _as_usm_ndarray(start, usm_type, sycl_queue)
+        stop = _as_usm_ndarray(stop, usm_type, sycl_queue)
+        base = _as_usm_ndarray(base, usm_type, sycl_queue)
+
+        [start, stop, base] = dpt.broadcast_arrays(start, stop, base)
+        base = dpt.expand_dims(base, axis=axis)
+
+    # assume res as not a tuple, because retstep is False
     res = dpnp_linspace(
         start,
         stop,
@@ -254,11 +257,12 @@ def dpnp_logspace(
         sycl_queue=sycl_queue,
         endpoint=endpoint,
         axis=axis,
-    )
+    ).get_array()
 
-    if dtype is None:
-        return dpnp.power(base, res)
-    return dpnp.power(base, res).astype(dtype, copy=False)
+    dpt.pow(base, res, out=res)
+    if dtype is not None:
+        res = dpt.astype(res, dtype, copy=False)
+    return dpnp_array._create_from_usm_ndarray(res)
 
 
 class dpnp_nd_grid:

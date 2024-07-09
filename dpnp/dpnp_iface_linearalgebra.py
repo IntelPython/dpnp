@@ -136,30 +136,29 @@ def dot(a, b, out=None):
             raise ValueError("Only C-contiguous array is acceptable.")
 
     if dpnp.isscalar(a) or dpnp.isscalar(b):
-        # TODO: investigate usage of axpy (axpy_batch) or scal
-        # functions from BLAS here instead of dpnp.multiply
+        # TODO: use specific scalar-vector kernel
         return dpnp.multiply(a, b, out=out)
 
-    if a.ndim == 0 or b.ndim == 0:
-        # TODO: investigate usage of axpy (axpy_batch) or scal
-        # functions from BLAS here instead of dpnp.multiply
+    a_ndim = a.ndim
+    b_ndim = b.ndim
+    if a_ndim == 0 or b_ndim == 0:
+        # TODO: use specific scalar-vector kernel
         return dpnp.multiply(a, b, out=out)
 
-    if a.ndim == 1 and b.ndim == 1:
+    if a_ndim == 1 and b_ndim == 1:
         return dpnp_dot(a, b, out=out)
 
-    if a.ndim == 2 and b.ndim == 2:
-        # NumPy does not allow casting even if it is safe
+    # NumPy does not allow casting even if it is safe
+    # casting="no" is used in the following
+    if a_ndim == 2 and b_ndim == 2:
         return dpnp.matmul(a, b, out=out, casting="no")
 
-    if a.ndim == 1 or b.ndim == 1:
-        # NumPy does not allow casting even if it is safe
+    if a_ndim == 1 or b_ndim == 1:
         return dpnp.matmul(a, b, out=out, casting="no")
 
     # TODO: investigate usage of matmul for some possible
     # use cases instead of dpnp.tensordot
     result = dpnp.tensordot(a, b, axes=(-1, -2))
-    # NumPy does not allow casting even if it is safe
     return dpnp.get_result_array(result, out, casting="no")
 
 
@@ -617,9 +616,11 @@ def inner(a, b):
     dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
     if dpnp.isscalar(a) or dpnp.isscalar(b):
+        # TODO: use specific scalar-vector kernel
         return dpnp.multiply(a, b)
 
     if a.ndim == 0 or b.ndim == 0:
+        # TODO: use specific scalar-vector kernel
         return dpnp.multiply(a, b)
 
     if a.shape[-1] != b.shape[-1]:
@@ -694,11 +695,13 @@ def kron(a, b):
     dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
     if dpnp.isscalar(a) or dpnp.isscalar(b):
+        # TODO: use specific scalar-vector kernel
         return dpnp.multiply(a, b)
 
     a_ndim = a.ndim
     b_ndim = b.ndim
     if a_ndim == 0 or b_ndim == 0:
+        # TODO: use specific scalar-vector kernel
         return dpnp.multiply(a, b)
 
     return dpnp_kron(a, b, a_ndim, b_ndim)
@@ -818,7 +821,6 @@ def matmul(
 
     """
 
-    dpnp.check_supported_arrays_type(x1, x2)
     if subok is False:
         raise NotImplementedError(
             "subok keyword argument is only supported by its default value."
@@ -890,13 +892,13 @@ def outer(a, b, out=None):
     dpnp.check_supported_arrays_type(a, b, scalar_type=True, all_scalars=False)
     if dpnp.isscalar(a):
         x1 = a
-        x2 = b.ravel()[None, :]
+        x2 = dpnp.ravel(b)[None, :]
     elif dpnp.isscalar(b):
-        x1 = a.ravel()[:, None]
+        x1 = dpnp.ravel(a)[:, None]
         x2 = b
     else:
-        x1 = a.ravel()
-        x2 = b.ravel()
+        x1 = dpnp.ravel(a)
+        x2 = dpnp.ravel(b)
 
     return dpnp.multiply.outer(x1, x2, out=out)
 
@@ -997,6 +999,7 @@ def tensordot(a, b, axes=2):
             raise ValueError(
                 "One of the inputs is scalar, axes should be zero."
             )
+        # TODO: use specific scalar-vector kernel
         return dpnp.multiply(a, b)
 
     try:
@@ -1026,6 +1029,7 @@ def tensordot(a, b, axes=2):
     axes_b = normalize_axis_tuple(axes_b, b_ndim, "axis_b")
 
     if a.ndim == 0 or b.ndim == 0:
+        # TODO: use specific scalar-vector kernel
         return dpnp.multiply(a, b)
 
     a_shape = a.shape
@@ -1052,8 +1056,8 @@ def tensordot(a, b, axes=2):
     newshape_b = (n1, n2)
     oldb = [b_shape[axis] for axis in notin]
 
-    at = a.transpose(newaxes_a).reshape(newshape_a)
-    bt = b.transpose(newaxes_b).reshape(newshape_b)
+    at = dpnp.transpose(a, newaxes_a).reshape(newshape_a)
+    bt = dpnp.transpose(b, newaxes_b).reshape(newshape_b)
     res = dpnp.matmul(at, bt)
 
     return res.reshape(olda + oldb)
@@ -1110,14 +1114,16 @@ def vdot(a, b):
 
     dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
-    if dpnp.isscalar(a) or dpnp.isscalar(b):
-        if dpnp.isscalar(b) and a.size != 1:
-            raise ValueError("The first array should be of size one.")
-        if dpnp.isscalar(a) and b.size != 1:
+    if dpnp.isscalar(a):
+        if b.size != 1:
             raise ValueError("The second array should be of size one.")
-        a_conj = numpy.conj(a) if dpnp.isscalar(a) else dpnp.conj(a)
-        # TODO: investigate usage of axpy (axpy_batch) or scal
-        # functions from BLAS here instead of dpnp.multiply
+        a_conj = numpy.conj(a)
+        return dpnp.multiply(a_conj, b)
+
+    if dpnp.isscalar(b):
+        if a.size != 1:
+            raise ValueError("The first array should be of size one.")
+        a_conj = dpnp.conj(a)
         return dpnp.multiply(a_conj, b)
 
     if a.ndim == 1 and b.ndim == 1:

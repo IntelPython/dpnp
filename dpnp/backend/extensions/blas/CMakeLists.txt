@@ -29,6 +29,7 @@ set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/blas_py.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm_batch.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gemv.cpp
 )
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
@@ -68,11 +69,7 @@ if (DPNP_GENERATE_COVERAGE)
     target_link_options(${python_module_name} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 endif()
 
-if (MKL_VERSION_2024)
-    target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::BLAS)
-else()
-    target_link_libraries(${python_module_name} PUBLIC MKL::MKL_DPCPP)
-endif()
+target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::BLAS)
 
 install(TARGETS ${python_module_name}
   DESTINATION "dpnp/backend/extensions/blas"

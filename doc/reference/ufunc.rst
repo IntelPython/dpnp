@@ -105,10 +105,12 @@ Comparison functions
    dpnp.less_equal
    dpnp.not_equal
    dpnp.equal
+
    dpnp.logical_and
    dpnp.logical_or
    dpnp.logical_xor
    dpnp.logical_not
+
    dpnp.maximum
    dpnp.minimum
    dpnp.fmax

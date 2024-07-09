@@ -62,6 +62,7 @@ add_subdirectory(backend/extensions/rng/device)
 add_subdirectory(backend/extensions/rng/host)
 add_subdirectory(backend/extensions/vm)
 add_subdirectory(backend/extensions/sycl_ext)
+add_subdirectory(backend/extensions/ufunc)
 
 add_subdirectory(dpnp_algo)
 add_subdirectory(dpnp_utils)

@@ -12,8 +12,9 @@ env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
   CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
-  CONDA_BUILD_VERSION: '24.1.2'
-  CONDA_INDEX_VERSION: '0.4.0'
+  CONDA_BUILD_VERSION: '24.5.1'
+  CONDA_INDEX_VERSION: '0.5.0'
+  RUN_TESTS_MAX_ATTEMPTS: 2
   TEST_ENV_NAME: 'test'
   TEST_SCOPE: >-
       test_absolute.py
@@ -48,6 +49,7 @@ env:
       test_umath.py
       test_usm_type.py
       third_party/cupy/core_tests
+      third_party/cupy/creation_tests
       third_party/cupy/indexing_tests/test_indexing.py
       third_party/cupy/lib_tests
       third_party/cupy/linalg_tests
@@ -89,26 +91,39 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 0
 
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
-          auto-update-conda: true
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
+          channels: conda-forge
           python-version: ${{ matrix.python }}
-          miniconda-version: 'latest'
           activate-environment: 'build'
+
+      # Here is an issue in conda gh-12356 causing adding defaults to the list of channels
+      # upon running `conda config --append channels conda-forge`, while mamba requires to have only conda-forge channel
+      - name: Remove defaults channel
+        run: |
+          conda config --remove channels defaults
+          conda config --show
+
+      # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
+      - name: Disable speed limit check in mamba
+        run: echo "MAMBA_NO_LOW_SPEED_LIMIT=1" >> $GITHUB_ENV
 
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
-          echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\" '/' >> $GITHUB_ENV
+          echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\\\" '/' >> $GITHUB_ENV
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
 
       - name: Install conda-build
-        run: conda install conda-build=${{ env.CONDA_BUILD_VERSION}}
+        run: mamba install conda-build=${{ env.CONDA_BUILD_VERSION}}
 
       - name: Cache conda packages
         uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
@@ -123,16 +138,16 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Build conda package
-        run: conda build --no-test --python ${{ matrix.python }} --numpy 1.23 ${{ env.CHANNELS }} conda-recipe
+        run: conda build --no-test --python ${{ matrix.python }} --numpy 1.24 ${{ env.CHANNELS }} conda-recipe
 
       - name: Upload artifact
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
       - name: Upload wheels artifact
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
@@ -165,7 +180,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -178,13 +193,18 @@ jobs:
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
-          auto-update-conda: true
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
+          channels: conda-forge
           python-version: ${{ matrix.python }}
-          miniconda-version: 'latest'
           activate-environment: ${{ env.TEST_ENV_NAME }}
 
+      - name: Remove defaults channel
+        run: conda config --remove channels defaults
+
       - name: Install conda-index
-        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION }}
+        run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
 
       - name: Create conda channel
         run: |
@@ -192,7 +212,7 @@ jobs:
 
       - name: Test conda channel
         run: |
-          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          mamba search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
           cat ${{ env.ver-json-path }}
 
       - name: Collect dependencies
@@ -202,7 +222,7 @@ jobs:
           echo PACKAGE_VERSION=${PACKAGE_VERSION}
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
 
-          conda install ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
+          mamba install ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
           cat lockfile
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
@@ -220,12 +240,13 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Install dpnp
-        run: conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+          MAMBA_NO_LOW_SPEED_LIMIT: 1
 
       - name: List installed packages
-        run: conda list
+        run: mamba list
 
       - name: Smoke test
         run: |
@@ -245,7 +266,7 @@ jobs:
         with:
           shell: bash
           timeout_minutes: 10
-          max_attempts: 5
+          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
@@ -280,7 +301,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -302,10 +323,15 @@ jobs:
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
-          auto-update-conda: true
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
+          channels: conda-forge
           python-version: ${{ matrix.python }}
-          miniconda-version: 'latest'
           activate-environment: ${{ env.TEST_ENV_NAME }}
+
+      - name: Remove defaults channel
+        run: conda config --remove channels defaults
 
       - name: Store conda paths as envs
         run: |
@@ -314,7 +340,7 @@ jobs:
           (echo CONDA_LIB_BIN_PATH=%CONDA_PREFIX%\Library\bin\) >> %GITHUB_ENV%
 
       - name: Install conda-index
-        run: conda install conda-index=${{ env.CONDA_INDEX_VERSION}}
+        run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
 
       - name: Create conda channel
         run: |
@@ -324,7 +350,7 @@ jobs:
       - name: Test conda channel
         run: |
           @echo on
-          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          mamba search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
 
       - name: Dump version.json
         run: more ${{ env.ver-json-path }}
@@ -339,7 +365,7 @@ jobs:
           echo PACKAGE_VERSION: %PACKAGE_VERSION%
           (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
 
-          conda install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
+          mamba install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
@@ -361,12 +387,13 @@ jobs:
       - name: Install dpnp
         run: |
           @echo on
-          conda install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+          MAMBA_NO_LOW_SPEED_LIMIT: 1
 
       - name: List installed packages
-        run: conda list
+        run: mamba list
 
       - name: Activate OCL CPU RT
         shell: pwsh
@@ -395,10 +422,10 @@ jobs:
         with:
           shell: cmd
           timeout_minutes: 15
-          max_attempts: 5
+          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: >-
-            conda activate ${{ env.TEST_ENV_NAME }}
+            mamba activate ${{ env.TEST_ENV_NAME }}
             & cd ${{ env.tests-path }}
             & python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
@@ -426,25 +453,30 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Download wheels artifact
-        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
 
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
-          auto-update-conda: true
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
+          channels: conda-forge
           python-version: ${{ matrix.python }}
-          miniconda-version: 'latest'
           activate-environment: 'upload'
 
+      - name: Remove defaults channel
+        run: conda config --remove channels defaults
+
       - name: Install anaconda-client
-        run: conda install anaconda-client
+        run: mamba install anaconda-client
 
       - name: Package version
         run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.tar.bz2 | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
@@ -469,16 +501,22 @@ jobs:
     steps:
       - uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
-          run-post: false
-          channel-priority: "disabled"
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
           channels: conda-forge
+          run-post: false
           python-version: '3.11'
+          activate-environment: 'cleanup'
+
+      - name: Remove defaults channel
+        run: conda config --remove channels defaults
 
       - name: Install anaconda-client
-        run: conda install anaconda-client
+        run: mamba install anaconda-client
 
       - name: Checkout repo
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0
