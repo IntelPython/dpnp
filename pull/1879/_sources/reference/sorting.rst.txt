@@ -18,7 +18,7 @@ Sorting
    dpnp.argpartition
 
 .. seealso::
-   :func:`dpnp.dparray.sort`
+   :func:`dpnp.ndarray.sort`
 
 Searching
 ---------
