@@ -766,9 +766,9 @@ def indices(
     See Also
     --------
     :obj:`dpnp.mgrid` : Return a dense multi-dimensional “meshgrid”.
-    :obj:`dpnp.mgrid` : Return an open multi-dimensional “meshgrid”.
-    :obj:`dpnp.mgrid` : Return a tuple of coordinate matrices from coordinate
-                        vectors.
+    :obj:`dpnp.ogrid` : Return an open multi-dimensional “meshgrid”.
+    :obj:`dpnp.meshgrid` : Return a tuple of coordinate matrices from
+                           coordinate vectors.
 
     Examples
     --------
@@ -814,9 +814,9 @@ def indices(
     shape = (1,) * n
 
     if sparse:
-        usm_res = ()
+        res = ()
     else:
-        usm_res = dpt.empty(
+        res = dpnp.empty(
             (n,) + dimensions,
             dtype=dtype,
             device=device,
@@ -825,30 +825,19 @@ def indices(
         )
 
     for i, dim in enumerate(dimensions):
-        usm_idx = dpt.arange(
+        idx = dpnp.arange(
             dim,
             dtype=dtype,
             device=device,
             usm_type=usm_type,
             sycl_queue=sycl_queue,
-        )
-        usm_idx = dpt.reshape(usm_idx, shape[:i] + (dim,) + shape[i + 1 :])
+        ).reshape(shape[:i] + (dim,) + shape[i + 1 :])
 
         if sparse:
-            usm_res = usm_res + (usm_idx,)
+            res = res + (idx,)
         else:
-            usm_res[i] = usm_idx
-
-    if isinstance(usm_res, tuple):
-        if len(usm_res) > 0:
-            dpnp.synchronize_array_data(usm_res[0])
-            return tuple(
-                dpnp_array._create_from_usm_ndarray(x) for x in usm_res
-            )
-        return usm_res  # return ()
-
-    dpnp.synchronize_array_data(usm_res)
-    return dpnp_array._create_from_usm_ndarray(usm_res)
+            res[i] = idx
+    return res
 
 
 def mask_indices(
