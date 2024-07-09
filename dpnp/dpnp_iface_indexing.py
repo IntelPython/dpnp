@@ -953,10 +953,12 @@ def nonzero(a):
     """
     Return the indices of the elements that are non-zero.
 
-    Returns a tuple of arrays, one for each dimension of `a`,
-    containing the indices of the non-zero elements in that
-    dimension. The values in `a` are always tested and returned in
-    row-major, C-style order.
+    Returns a tuple of arrays, one for each dimension of `a`, containing
+    the indices of the non-zero elements in that dimension. The values in `a`
+    are always tested and returned in row-major, C-style order.
+
+    To group the indices by element, rather than dimension, use
+    :obj:`dpnp.argwhere`, which returns a row for each non-zero element.
 
     For full documentation refer to :obj:`numpy.nonzero`.
 
@@ -1032,10 +1034,9 @@ def nonzero(a):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt.nonzero(usm_a)
-
-    dpnp.synchronize_array_data(usm_res[0])
-    return tuple(dpnp_array._create_from_usm_ndarray(y) for y in usm_res)
+    return tuple(
+        dpnp_array._create_from_usm_ndarray(y) for y in dpt.nonzero(usm_a)
+    )
 
 
 def place(a, mask, vals):
