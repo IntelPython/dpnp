@@ -216,8 +216,8 @@ def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
 
     See also
     --------
-    :obj:`diag_indices_from` : Return the indices to access the main
-                               diagonal of an n-dimensional array.
+    :obj:`dpnp.diag_indices_from` : Return the indices to access the main
+                                    diagonal of an n-dimensional array.
 
     Examples
     --------
@@ -276,7 +276,7 @@ def diag_indices_from(arr):
     Parameters
     ----------
     arr : {dpnp.ndarray, usm_ndarray}
-        Array at least 2-D
+        Array at least 2-D.
 
     Returns
     -------
@@ -285,8 +285,8 @@ def diag_indices_from(arr):
 
     See also
     --------
-    :obj:`diag_indices` : Return the indices to access the main
-                          diagonal of an array.
+    :obj:`dpnp.diag_indices` : Return the indices to access the main diagonal
+                               of an array.
 
     Examples
     --------
@@ -570,7 +570,6 @@ def extract(condition, a):
 
         usm_res = dpt.extract(usm_cond, usm_a)
 
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -687,6 +686,7 @@ def fill_diagonal(a, val, wrap=False):
 
     if a.ndim < 2:
         raise ValueError("array must be at least 2-d")
+
     end = a.size
     if a.ndim == 2:
         step = a.shape[1] + 1
@@ -699,6 +699,7 @@ def fill_diagonal(a, val, wrap=False):
 
     # TODO: implement flatiter for slice key
     # a.flat[:end:step] = val
+    # but need to consider use case when `a` is usm_ndarray also
     a_sh = a.shape
     tmp_a = dpt.reshape(usm_a, -1)
     if dpnp.isscalar(usm_val):
@@ -710,8 +711,9 @@ def fill_diagonal(a, val, wrap=False):
         # Using loop for general case without dependencies of val size.
         for i in range(0, usm_val.size):
             tmp_a[step * i : end : step * (i + 1)] = usm_val[i]
+
     tmp_a = dpt.reshape(tmp_a, a_sh)
-    a[:] = tmp_a
+    usm_a[:] = tmp_a
 
 
 def indices(
