@@ -1268,7 +1268,7 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
     indices : {array_like, scalars}, (Nj...)
         The indices of the values to extract.
         Also allow scalars for `indices`.
-    axis : {None, int}, optional
+    axis : {None, int, bool, 0-d array of integer dtype}, optional
         The axis over which to select values. By default, the flattened
         input array is used.
         Default: ``None``.
