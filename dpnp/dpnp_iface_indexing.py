@@ -1361,9 +1361,9 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
         usm_ind = dpt.astype(usm_ind, dpnp.intp, copy=False, casting="safe")
 
     usm_res = dpt.take(usm_a, usm_ind, axis=axis, mode=mode)
-    usm_res = dpt.reshape(usm_res, res_shape)
 
-    result = dpnp_array._create_from_usm_ndarray(usm_res)
+    # need to reshape the result if shape of indices array was changed
+    result = dpnp.reshape(usm_res, res_shape)
     return dpnp.get_result_array(result, out)
 
 
