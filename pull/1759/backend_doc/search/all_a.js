@@ -14,7 +14,5 @@ var searchData=
   ['mt19937_5fdelete_11',['MT19937_Delete',['../group___b_a_c_k_e_n_d___a_p_i.html#gaff33ecfcdcc418196d3361d37c53f5f0',1,'dpnp_random_state.hpp']]],
   ['mt19937_5finitscalarseed_12',['MT19937_InitScalarSeed',['../group___b_a_c_k_e_n_d___a_p_i.html#ga27e7a066bbe9e7bb42ea0bb4aa80fa5a',1,'dpnp_random_state.hpp']]],
   ['mt19937_5finitvectorseed_13',['MT19937_InitVectorSeed',['../group___b_a_c_k_e_n_d___a_p_i.html#ga5aa43f73b2b057034fd5f29cd86ea246',1,'dpnp_random_state.hpp']]],
-  ['mt19937_5fstruct_14',['mt19937_struct',['../structmt19937__struct.html',1,'']]],
-  ['mulcontigfactory_15',['MulContigFactory',['../structdpnp_1_1backend_1_1ext_1_1vm_1_1_mul_contig_factory.html',1,'dpnp::backend::ext::vm']]],
-  ['muloutputtype_16',['MulOutputType',['../structdpnp_1_1backend_1_1ext_1_1vm_1_1types_1_1_mul_output_type.html',1,'dpnp::backend::ext::vm::types']]]
+  ['mt19937_5fstruct_14',['mt19937_struct',['../structmt19937__struct.html',1,'']]]
 ];
