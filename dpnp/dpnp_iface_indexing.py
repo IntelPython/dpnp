@@ -1038,10 +1038,10 @@ def place(a, mask, vals):
 
     See Also
     --------
-    obj:`dpnp.copyto` : Copies values from one array to another.
-    obj:`dpnp.put` : Replaces specified elements of an array with given values.
-    obj:`dpnp.take` : Take elements from an array along an axis.
-    obj:`dpnp.extract` : Return the elements of an array that satisfy some
+    :obj:`dpnp.copyto` : Copies values from one array to another.
+    :obj:`dpnp.put` : Replaces specified elements of an array with given values.
+    :obj:`dpnp.take` : Take elements from an array along an axis.
+    :obj:`dpnp.extract` : Return the elements of an array that satisfy some
                          condition.
 
     Examples
