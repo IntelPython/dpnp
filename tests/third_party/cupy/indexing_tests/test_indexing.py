@@ -9,26 +9,22 @@ from tests.third_party.cupy import testing
 
 
 class TestIndexing(unittest.TestCase):
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_take_by_scalar(self, xp):
         a = testing.shaped_arange((2, 4, 3), xp)
         return a.take(2, axis=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_external_take_by_scalar(self, xp):
         a = testing.shaped_arange((2, 4, 3), xp)
         return xp.take(a, 2, axis=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_take_by_array(self, xp):
         a = testing.shaped_arange((2, 4, 3), xp)
         b = xp.array([[1, 3], [2, 0]])
         return a.take(b, axis=1)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.numpy_cupy_array_equal()
     def test_take_no_axis(self, xp):
         a = testing.shaped_arange((2, 3, 4), xp)
@@ -39,7 +35,7 @@ class TestIndexing(unittest.TestCase):
     # mark slow as NumPy could go OOM on the Windows CI
     @testing.slow
     @testing.for_int_dtypes(no_bool=True)
-    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
+    @testing.numpy_cupy_array_equal()
     def test_take_index_range_overflow(self, xp, dtype):
         # Skip for too large dimensions
         if numpy.dtype(dtype) in (numpy.int64, numpy.uint64):
