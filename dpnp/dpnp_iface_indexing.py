@@ -551,12 +551,12 @@ def extract(condition, a):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-    if not dpnp.is_supported_array_type(condition):
-        usm_cond = dpt.asarray(
-            condition, usm_type=a.usm_type, sycl_queue=a.sycl_queue
-        )
-    else:
-        usm_cond = dpnp.get_usm_ndarray(condition)
+    usm_cond = dpnp.as_usm_ndarray(
+        condition,
+        dtype=dpnp.bool,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
+    )
 
     if usm_cond.size != usm_a.size:
         usm_a = dpt.reshape(usm_a, -1)
@@ -1011,30 +1011,74 @@ def nonzero(a):
     )
 
 
-def place(x, mask, vals, /):
+def place(a, mask, vals):
     """
     Change elements of an array based on conditional and input values.
 
+    Similar to ``dpnp.copyto(a, vals, where=mask)``, the difference is that
+    :obj:`dpnp.place` uses the first N elements of `vals`, where N is
+    the number of ``True`` values in `mask`, while :obj:`dpnp.copyto` uses
+    the elements where `mask` is ``True``.
+
+    Note that :obj:`dpnp.extract` does the exact opposite of :obj:`dpnp.place`.
+
     For full documentation refer to :obj:`numpy.place`.
 
-    Limitations
-    -----------
-    Parameters `x`, `mask` and `vals` are supported either as
-    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Array to put data into.
+    mask : {array_like, scalar}
+        Boolean mask array. Must have the same size as `a`.
+    vals : {array_like, scalar}
+        Values to put into `a`. Only the first N elements are used, where N is
+        the number of ``True`` values in `mask`. If `vals` is smaller than N,
+        it will be repeated, and if elements of `a` are to be masked, this
+        sequence must be non-empty.
+
+    See Also
+    --------
+    :obj:`dpnp.copyto` : Copies values from one array to another.
+    :obj:`dpnp.put` : Replaces specified elements of an array with given values.
+    :obj:`dpnp.take` : Take elements from an array along an axis.
+    :obj:`dpnp.extract` : Return the elements of an array that satisfy some
+                         condition.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(6).reshape(2, 3)
+    >>> np.place(a, a > 2, [44, 55])
+    >>> a
+    array([[ 0,  1,  2],
+           [44, 55, 44]])
+
     """
 
-    if (
-        dpnp.is_supported_array_type(x)
-        and dpnp.is_supported_array_type(mask)
-        and dpnp.is_supported_array_type(vals)
-    ):
-        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
-        dpt_mask = mask.get_array() if isinstance(mask, dpnp_array) else mask
-        dpt_vals = vals.get_array() if isinstance(vals, dpnp_array) else vals
-        return dpt.place(dpt_array, dpt_mask, dpt_vals)
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_mask = dpnp.as_usm_ndarray(
+        mask,
+        dtype=dpnp.bool,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
+    )
+    usm_vals = dpnp.as_usm_ndarray(
+        vals,
+        dtype=usm_a.dtype,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
+    )
 
-    return call_origin(numpy.place, x, mask, vals, dpnp_inplace=True)
+    if usm_vals.ndim != 1:
+        # dpt.place supports only 1-D array of values
+        usm_vals = dpt.reshape(usm_vals, -1)
+
+    if usm_vals.dtype != usm_a.dtype:
+        # dpt.place casts values to a.dtype with "unsafe" rule,
+        # while numpy.place does that with "safe" casting rule
+        usm_vals = dpt.astype(usm_vals, usm_a.dtype, casting="safe", copy=False)
+
+    dpt.place(usm_a, usm_mask, usm_vals)
 
 
 def put(a, ind, v, /, *, axis=None, mode="wrap"):
