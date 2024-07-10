@@ -72,6 +72,7 @@ __all__ = [
     "isposinf",
     "isreal",
     "isrealobj",
+    "isscalar",
     "less",
     "less_equal",
     "logical_and",
@@ -237,7 +238,7 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
 
     """
 
-    if dpnp.isscalar(a) and dpnp.isscalar(b):
+    if isscalar(a) and isscalar(b):
         # at least one of inputs has to be an array
         pass
     elif not (
@@ -248,18 +249,18 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     elif kwargs:
         pass
     else:
-        if not dpnp.isscalar(rtol):
+        if not isscalar(rtol):
             raise TypeError(
                 f"An argument `rtol` must be a scalar, but got {rtol}"
             )
-        if not dpnp.isscalar(atol):
+        if not isscalar(atol):
             raise TypeError(
                 f"An argument `atol` must be a scalar, but got {atol}"
             )
 
-        if dpnp.isscalar(a):
+        if isscalar(a):
             a = dpnp.full_like(b, fill_value=a)
-        elif dpnp.isscalar(b):
+        elif isscalar(b):
             b = dpnp.full_like(a, fill_value=b)
         elif a.shape != b.shape:
             a, b = dpt.broadcast_arrays(a.get_array(), b.get_array())
@@ -643,15 +644,16 @@ def iscomplex(x):
     Examples
     --------
     >>> import dpnp as np
-    >>> np.iscomplex([1+1j, 1+0j, 4.5, 3, 2, 2j])
+    >>> a = np.array([1+1j, 1+0j, 4.5, 3, 2, 2j])
+    >>> np.iscomplex(a)
     array([ True, False, False, False, False,  True])
 
     """
-    ax = dpnp.asanyarray(x)
-    if issubclass(ax.dtype.type, dpnp.complexfloating):
-        return ax.imag != 0
-    res = dpnp.zeros(ax.shape, dtype=dpnp.bool)
-    return res[()]  # convert to scalar if needed
+    dpnp.check_supported_arrays_type(x)
+    if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
+        return x.imag != 0
+    res = dpnp.zeros_like(x, dtype=dpnp.bool)
+    return res
 
 
 def iscomplexobj(x):
@@ -694,12 +696,7 @@ def iscomplexobj(x):
     True
 
     """
-    try:
-        dtype = x.dtype
-        type_ = dtype.type
-    except AttributeError:
-        type_ = dpnp.asarray(x).dtype.type
-    return issubclass(type_, dpnp.complexfloating)
+    return numpy.iscomplexobj(x)
 
 
 _ISFINITE_DOCSTRING = """
@@ -1043,7 +1040,7 @@ def isreal(x):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([1+1j, 1+0j, 4.5, 3, 2, 2j], dtype=dpnp.complex64)
+    >>> a = np.array([1+1j, 1+0j, 4.5, 3, 2, 2j])
     >>> np.isreal(a)
     array([False,  True,  True,  True,  True, False])
 
@@ -1082,6 +1079,7 @@ def isrealobj(x):
 
     Examples
     --------
+    >>> import dpnp as np
     >>> np.isrealobj(False)
     True
     >>> np.isrealobj(1)
@@ -1093,6 +1091,39 @@ def isrealobj(x):
 
     """
     return not iscomplexobj(x)
+
+
+def isscalar(element):
+    """
+    Returns ``True`` if the type of `element` is a scalar type.
+
+    For full documentation refer to :obj:`numpy.isscalar`.
+
+    Parameters
+    ----------
+    element : any
+        Input argument, can be of any type and shape.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if `element` is a scalar type, ``False`` if it is not.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.isscalar(3.1)
+    True
+    >>> np.isscalar(np.array(3.1))
+    False
+    >>> np.isscalar([3.1])
+    False
+    >>> np.isscalar(False)
+    True
+    >>> np.isscalar("dpnp")
+    True
+    """
+    return numpy.isscalar(element)
 
 
 _LESS_DOCSTRING = """

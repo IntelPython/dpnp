@@ -3,6 +3,7 @@ import unittest
 import numpy
 import pytest
 
+import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
@@ -95,13 +96,14 @@ class TestTypeTestingFunctions(unittest.TestCase):
     def test_scalar(self, xp, dtype):
         return getattr(xp, self.func)(dtype(3))
 
-    @pytest.mark.skip("tolist not implemented")
+    @pytest.mark.skip("support for list not implemented")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_list(self, xp, dtype):
-        return getattr(xp, self.func)(
-            testing.shaped_arange((2, 3), xp, dtype).tolist()
-        )
+        a = testing.shaped_arange((2, 3), xp, dtype)
+        if xp == cupy:
+            a = a.asnumpy()
+        return getattr(xp, self.func)(a.tolist())
 
 
 @testing.parameterize(
@@ -120,10 +122,10 @@ class TestTypeTestingObjFunctions(unittest.TestCase):
     def test_scalar(self, xp, dtype):
         return getattr(xp, self.func)(dtype(3))
 
-    @pytest.mark.skip("tolist not implemented")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_list(self, xp, dtype):
-        return getattr(xp, self.func)(
-            testing.shaped_arange((2, 3), xp, dtype).tolist()
-        )
+        a = testing.shaped_arange((2, 3), xp, dtype)
+        if xp == cupy:
+            a = a.asnumpy()
+        return getattr(xp, self.func)(a.tolist())

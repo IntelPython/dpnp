@@ -73,7 +73,7 @@ __all__ = [
     "synchronize_array_data",
 ]
 
-from dpnp import float64, isscalar
+from dpnp import float64
 from dpnp.dpnp_iface_arraycreation import *
 from dpnp.dpnp_iface_arraycreation import __all__ as __all__arraycreation
 from dpnp.dpnp_iface_bitwise import *
@@ -440,7 +440,7 @@ def get_dpnp_descriptor(
 
     # If input object is a scalar, it means it was allocated on host memory.
     # We need to copy it to USM memory according to compute follows data.
-    if isscalar(ext_obj):
+    if dpnp.isscalar(ext_obj):
         ext_obj = array(
             ext_obj,
             dtype=alloc_dtype,
@@ -651,7 +651,7 @@ def get_usm_ndarray_or_scalar(a):
 
     """
 
-    return a if isscalar(a) else get_usm_ndarray(a)
+    return a if dpnp.isscalar(a) else get_usm_ndarray(a)
 
 
 def is_supported_array_or_scalar(a):
@@ -673,7 +673,7 @@ def is_supported_array_or_scalar(a):
 
     """
 
-    return isscalar(a) or is_supported_array_type(a)
+    return dpnp.isscalar(a) or is_supported_array_type(a)
 
 
 def is_supported_array_type(a):
