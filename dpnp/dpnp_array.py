@@ -258,6 +258,8 @@ class dpnp_array:
         res = self.__new__(dpnp_array)
         res._array_obj = item
 
+        if self._array_obj.usm_data is not res._array_obj.usm_data:
+            dpnp.synchronize_array_data(self)
         return res
 
     def __gt__(self, other):
@@ -454,6 +456,7 @@ class dpnp_array:
             val = val.get_array()
 
         self._array_obj.__setitem__(key, val)
+        dpnp.synchronize_array_data(self)
 
     # '__setstate__',
     # '__sizeof__',
@@ -966,7 +969,7 @@ class dpnp_array:
         if id is None:
             if self.size != 1:
                 raise ValueError(
-                    "DPNP dparray::item(): can only convert an array of size 1 to a Python scalar"
+                    "DPNP ndarray::item(): can only convert an array of size 1 to a Python scalar"
                 )
             else:
                 id = 0

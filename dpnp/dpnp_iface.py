@@ -42,6 +42,7 @@ import os
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._device import normalize_queue_device
 
@@ -69,6 +70,7 @@ __all__ = [
     "get_usm_ndarray_or_scalar",
     "is_supported_array_or_scalar",
     "is_supported_array_type",
+    "synchronize_array_data",
 ]
 
 from dpnp import float64, isscalar
@@ -238,10 +240,10 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True, device=None):
         x1_obj, dtype, order=order, casting=casting, copy=copy, device=device
     )
 
-    # return x1 if dpctl returns a zero copy of x1_obj
+    dpnp.synchronize_array_data(x1)
     if array_obj is x1_obj and isinstance(x1, dpnp_array):
+        # return x1 if dpctl returns a zero copy of x1_obj
         return x1
-
     return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
@@ -436,11 +438,6 @@ def get_dpnp_descriptor(
     if use_origin_backend():
         return False
 
-    # It's required to keep track of input object if a non-strided copy is
-    # going to be created. Thus there will be an extra descriptor allocated
-    # to refer on original input.
-    orig_desc = None
-
     # If input object is a scalar, it means it was allocated on host memory.
     # We need to copy it to USM memory according to compute follows data.
     if isscalar(ext_obj):
@@ -471,7 +468,6 @@ def get_dpnp_descriptor(
             ext_obj_offset = 0
 
         if ext_obj.strides != shape_offsets or ext_obj_offset != 0:
-            orig_desc = dpnp_descriptor(ext_obj)
             ext_obj = array(ext_obj, order="C")
 
     # while dpnp functions are based on DPNP_QUEUE
@@ -488,7 +484,7 @@ def get_dpnp_descriptor(
         if not queue_is_default:
             ext_obj = array(ext_obj, sycl_queue=default_queue)
 
-    dpnp_desc = dpnp_descriptor(ext_obj, orig_desc)
+    dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:  # pylint: disable=using-constant-test
         return dpnp_desc
 
@@ -699,3 +695,16 @@ def is_supported_array_type(a):
     """
 
     return isinstance(a, (dpnp_array, dpt.usm_ndarray))
+
+
+def synchronize_array_data(a):
+    """
+    The dpctl interface was reworked to make asynchronous execution.
+    That function makes a synchronization call to ensure array data is valid
+    before exit from dpnp interface function.
+
+    """
+
+    if hasattr(dpu, "SequentialOrderManager"):
+        check_supported_arrays_type(a)
+        dpu.SequentialOrderManager[a.sycl_queue].wait()

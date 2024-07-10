@@ -46,6 +46,9 @@
 #include "exp2.hpp"
 #include "expm1.hpp"
 #include "floor.hpp"
+#include "fmax.hpp"
+#include "fmin.hpp"
+#include "fmod.hpp"
 #include "hypot.hpp"
 #include "ln.hpp"
 #include "log10.hpp"
@@ -86,6 +89,9 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_exp2(m);
     vm_ns::init_expm1(m);
     vm_ns::init_floor(m);
+    vm_ns::init_fmax(m);
+    vm_ns::init_fmin(m);
+    vm_ns::init_fmod(m);
     vm_ns::init_hypot(m);
     vm_ns::init_ln(m);
     vm_ns::init_log10(m);
