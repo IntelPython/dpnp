@@ -57,6 +57,7 @@ __all__ = [
     "array_equal",
     "asnumpy",
     "astype",
+    "as_usm_ndarray",
     "check_limitations",
     "check_supported_arrays_type",
     "convert_single_elem_array_to_scalar",
@@ -245,6 +246,55 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True, device=None):
         # return x1 if dpctl returns a zero copy of x1_obj
         return x1
     return dpnp_array._create_from_usm_ndarray(array_obj)
+
+
+def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
+    """
+    Return :class:`dpctl.tensor.usm_ndarray` from input object `a`.
+
+    Parameters
+    ----------
+    a : {array_like, scalar}
+        Input array or scalar.
+    dtype : {None, dtype}, optional
+        The desired dtype for the result array if new array is creating. If not
+        given, a default dtype will be used that can represent the values (by
+        considering Promotion Type Rule and device capabilities when necessary).
+        Default: ``None``.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the result array is created if
+        required.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the result array if new array
+        is created.
+        Default: ``None``.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for result array allocation if required.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        A dpctl USM ndarray from input array or scalar `a`.
+        If `a` is instance of :class:`dpnp.ndarray`
+        or :class:`dpctl.tensor.usm_ndarray`, no array allocation will be done
+        and `dtype`, `device`, `usm_type`, `sycl_queue` keywords
+        will be ignored.
+
+    """
+
+    if is_supported_array_type(a):
+        return get_usm_ndarray(a)
+
+    return dpt.asarray(
+        a, dtype=dtype, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
 
 
 def check_limitations(

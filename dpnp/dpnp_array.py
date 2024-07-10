@@ -969,7 +969,7 @@ class dpnp_array:
         if id is None:
             if self.size != 1:
                 raise ValueError(
-                    "DPNP dparray::item(): can only convert an array of size 1 to a Python scalar"
+                    "DPNP ndarray::item(): can only convert an array of size 1 to a Python scalar"
                 )
             else:
                 id = 0
@@ -1399,7 +1399,7 @@ class dpnp_array:
 
         return dpnp.swapaxes(self, axis1=axis1, axis2=axis2)
 
-    def take(self, indices, /, *, axis=None, out=None, mode="wrap"):
+    def take(self, indices, axis=None, out=None, mode="wrap"):
         """
         Take elements from an array along an axis.
 
