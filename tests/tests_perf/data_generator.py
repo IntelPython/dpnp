@@ -27,7 +27,7 @@
 import numpy
 
 import dpnp
-from dpnp.dparray import dparray
+from dpnp.dpnp_array import dpnp_array
 
 __all__ = ["gen_array_1d", "gen_array_2d"]
 
@@ -73,7 +73,7 @@ def gen_ndarray(size, dtype=numpy.float64, low=None, high=None, seed=None):
 
 def gen_dparray(size, dtype=numpy.float64, low=None, high=None, seed=None):
     """
-    Generate dparray of random numbers of specified size and type.
+    Generate dpnp_array of random numbers of specified size and type.
 
     Parameters
     ----------
@@ -90,12 +90,12 @@ def gen_dparray(size, dtype=numpy.float64, low=None, high=None, seed=None):
 
     Returns
     -------
-    dparray
-        generated dparray
+    dpnp_array
+        generated dpnp_array
     """
     ndarr = gen_ndarray(size, dtype=dtype, low=low, high=high, seed=seed)
 
-    dparr = dparray(ndarr.shape, dtype=dtype)
+    dparr = dpnp_array(ndarr.shape, dtype=dtype)
 
     for i in range(dparr.size):
         dparr._setitem_scalar(i, ndarr.item(i))
@@ -126,8 +126,8 @@ def gen_array_1d(
 
     Returns
     -------
-    dparray
-        generated dparray
+    dpnp_array
+        generated dpnp_array
     """
     if lib is numpy:
         return gen_ndarray(size, dtype=dtype, low=low, high=high, seed=seed)
