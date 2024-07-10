@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+57.g6d69808e5c documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+62.gcede6e33ff documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=ab840d51"></script>
+        <script src="../../_static/documentation_options.js?v=21fa2789"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+57.g6d69808e5c
+                0.16.0dev0+62.gcede6e33ff
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1157,10 +1157,10 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    obj:`dpnp.copyto` : Copies values from one array to another.</span>
-<span class="sd">    obj:`dpnp.put` : Replaces specified elements of an array with given values.</span>
-<span class="sd">    obj:`dpnp.take` : Take elements from an array along an axis.</span>
-<span class="sd">    obj:`dpnp.extract` : Return the elements of an array that satisfy some</span>
+<span class="sd">    :obj:`dpnp.copyto` : Copies values from one array to another.</span>
+<span class="sd">    :obj:`dpnp.put` : Replaces specified elements of an array with given values.</span>
+<span class="sd">    :obj:`dpnp.take` : Take elements from an array along an axis.</span>
+<span class="sd">    :obj:`dpnp.extract` : Return the elements of an array that satisfy some</span>
 <span class="sd">                         condition.</span>
 
 <span class="sd">    Examples</span>
@@ -1446,11 +1446,11 @@
 <span class="sd">    indices : {array_like, scalars}, (Nj...)</span>
 <span class="sd">        The indices of the values to extract.</span>
 <span class="sd">        Also allow scalars for `indices`.</span>
-<span class="sd">    axis : {None, int}, optional</span>
+<span class="sd">    axis : {None, int, bool, 0-d array of integer dtype}, optional</span>
 <span class="sd">        The axis over which to select values. By default, the flattened</span>
 <span class="sd">        input array is used.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional (Ni..., Nj..., Nk...)</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional (Ni..., Nj..., Nk...)</span>
 <span class="sd">        If provided, the result will be placed in this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
 <span class="sd">        Default: ``None``.</span>
@@ -1508,14 +1508,14 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`mode` must be &#39;wrap&#39; or &#39;clip&#39;, but got `</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">`.&quot;</span><span class="p">)</span>
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
-        <span class="n">indices</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span>
-        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+        <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="n">indices</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
 
-    <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">res_shape</span> <span class="o">=</span> <span class="n">usm_ind</span><span class="o">.</span><span class="n">shape</span>
 
