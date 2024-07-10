@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+29.g1a57624b32 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+56.g7486165136 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4829e834"></script>
+        <script src="../../_static/documentation_options.js?v=58f743ee"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+29.g1a57624b32
+                0.16.0dev0+56.g7486165136
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -126,6 +126,8 @@
 <span class="sd"> - The functions parameters check</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">operator</span>
 
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
@@ -309,8 +311,8 @@
 
 <span class="sd">    See also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`diag_indices_from` : Return the indices to access the main</span>
-<span class="sd">                               diagonal of an n-dimensional array.</span>
+<span class="sd">    :obj:`dpnp.diag_indices_from` : Return the indices to access the main</span>
+<span class="sd">                                    diagonal of an n-dimensional array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -372,7 +374,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    arr : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Array at least 2-D</span>
+<span class="sd">        Array at least 2-D.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -381,8 +383,8 @@
 
 <span class="sd">    See also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`diag_indices` : Return the indices to access the main</span>
-<span class="sd">                          diagonal of an array.</span>
+<span class="sd">    :obj:`dpnp.diag_indices` : Return the indices to access the main diagonal</span>
+<span class="sd">                               of an array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -594,42 +596,85 @@
 
 <div class="viewcode-block" id="extract">
 <a class="viewcode-back" href="../../reference/generated/dpnp.extract.html#dpnp.extract">[docs]</a>
-<span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the elements of an array that satisfy some condition.</span>
 
+<span class="sd">    This is equivalent to</span>
+<span class="sd">    ``dpnp.compress(dpnp.ravel(condition), dpnp.ravel(a))``. If `condition`</span>
+<span class="sd">    is boolean :obj:`dpnp.extract` is equivalent to ``a[condition]``.</span>
+
+<span class="sd">    Note that :obj:`dpnp.place` does the exact opposite of :obj:`dpnp.extract`.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.extract`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    condition : {array_like, scalar}</span>
+<span class="sd">        An array whose non-zero or ``True`` entries indicate the element of `a`</span>
+<span class="sd">        to extract.</span>
+<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">        Input array of the same size as `condition`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Rank 1 array of values from `x` where `condition` is True.</span>
+<span class="sd">        Rank 1 array of values from `a` where `condition` is ``True``.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `condition` and `x` are supported either as</span>
-<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameter `x` must be the same shape as `condition`.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.take` : Take elements from an array along an axis.</span>
+<span class="sd">    :obj:`dpnp.put` : Replaces specified elements of an array with given values.</span>
+<span class="sd">    :obj:`dpnp.copyto` : Copies values from one array to another, broadcasting</span>
+<span class="sd">                         as necessary.</span>
+<span class="sd">    :obj:`dpnp.compress` : eturn selected slices of an array along given axis.</span>
+<span class="sd">    :obj:`dpnp.place` : Change elements of an array based on conditional and</span>
+<span class="sd">                        input values.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(12).reshape((3, 4))</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[ 0,  1,  2,  3],</span>
+<span class="sd">           [ 4,  5,  6,  7],</span>
+<span class="sd">           [ 8,  9, 10, 11]])</span>
+<span class="sd">    &gt;&gt;&gt; condition = np.mod(a, 3) == 0</span>
+<span class="sd">    &gt;&gt;&gt; condition</span>
+<span class="sd">    array([[ True, False, False,  True],</span>
+<span class="sd">           [False, False,  True, False],</span>
+<span class="sd">           [False,  True, False, False]])</span>
+<span class="sd">    &gt;&gt;&gt; np.extract(condition, a)</span>
+<span class="sd">    array([0, 3, 6, 9])</span>
+
+<span class="sd">    If `condition` is boolean:</span>
+
+<span class="sd">    &gt;&gt;&gt; a[condition]</span>
+<span class="sd">    array([0, 3, 6, 9])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span>
-        <span class="n">x</span>
-    <span class="p">):</span>
-        <span class="k">if</span> <span class="n">condition</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dpt_condition</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">condition</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">condition</span>
-            <span class="p">)</span>
-            <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
-            <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
-                <span class="n">dpt</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">dpt_condition</span><span class="p">,</span> <span class="n">dpt_array</span><span class="p">)</span>
-            <span class="p">)</span>
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">usm_cond</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
+        <span class="n">condition</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">extract</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">usm_cond</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">usm_cond</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_cond</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">usm_cond</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">usm_cond</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">usm_cond</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_cond</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">usm_cond</span><span class="p">,</span> <span class="n">usm_a</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span></div>
 
 
 
@@ -638,6 +683,10 @@
 <span class="k">def</span> <span class="nf">fill_diagonal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fill the main diagonal of the given array of any dimensionality.</span>
+
+<span class="sd">    For an array `a` with ``a.ndim &gt;= 2``, the diagonal is the list of values</span>
+<span class="sd">    ``a[i, ..., i]`` with indices ``i`` all identical. This function modifies</span>
+<span class="sd">    the input array in-place without returning a value.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fill_diagonal`.</span>
 
@@ -739,11 +788,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">usm_val</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;array must be at least 2-d&quot;</span><span class="p">)</span>
+
     <span class="n">end</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span>
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">step</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
@@ -756,18 +806,21 @@
 
     <span class="c1"># TODO: implement flatiter for slice key</span>
     <span class="c1"># a.flat[:end:step] = val</span>
+    <span class="c1"># but need to consider use case when `a` is usm_ndarray also</span>
     <span class="n">a_sh</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
-        <span class="n">tmp_a</span><span class="p">[:</span><span class="n">end</span><span class="p">:</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+    <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">usm_val</span><span class="p">):</span>
+        <span class="n">tmp_a</span><span class="p">[:</span><span class="n">end</span><span class="p">:</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">usm_val</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">flat_val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">usm_val</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_val</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
         <span class="c1"># Setitem can work only if index size equal val size.</span>
         <span class="c1"># Using loop for general case without dependencies of val size.</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">flat_val</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
-            <span class="n">tmp_a</span><span class="p">[</span><span class="n">step</span> <span class="o">*</span> <span class="n">i</span> <span class="p">:</span> <span class="n">end</span> <span class="p">:</span> <span class="n">step</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">flat_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-    <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">tmp_a</span><span class="p">,</span> <span class="n">a_sh</span><span class="p">)</span>
-    <span class="n">a</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">tmp_a</span></div>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">usm_val</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">tmp_a</span><span class="p">[</span><span class="n">step</span> <span class="o">*</span> <span class="n">i</span> <span class="p">:</span> <span class="n">end</span> <span class="p">:</span> <span class="n">step</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">usm_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">tmp_a</span><span class="p">,</span> <span class="n">a_sh</span><span class="p">)</span>
+    <span class="n">usm_a</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">tmp_a</span></div>
 
 
 
@@ -822,6 +875,13 @@
 <span class="sd">        with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)</span>
 <span class="sd">        with dimensions[i] in the i-th place.</span>
 
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.mgrid` : Return a dense multi-dimensional “meshgrid”.</span>
+<span class="sd">    :obj:`dpnp.ogrid` : Return an open multi-dimensional “meshgrid”.</span>
+<span class="sd">    :obj:`dpnp.meshgrid` : Return a tuple of coordinate matrices from</span>
+<span class="sd">                           coordinate vectors.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
@@ -864,6 +924,7 @@
     <span class="n">dimensions</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dimensions</span><span class="p">)</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dimensions</span><span class="p">)</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">n</span>
+
     <span class="k">if</span> <span class="n">sparse</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
@@ -874,6 +935,7 @@
             <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
         <span class="p">)</span>
+
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dimensions</span><span class="p">):</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
             <span class="n">dim</span><span class="p">,</span>
@@ -882,6 +944,7 @@
             <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
         <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">dim</span><span class="p">,)</span> <span class="o">+</span> <span class="n">shape</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:])</span>
+
         <span class="k">if</span> <span class="n">sparse</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">+</span> <span class="p">(</span><span class="n">idx</span><span class="p">,)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -997,10 +1060,12 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices of the elements that are non-zero.</span>
 
-<span class="sd">    Returns a tuple of arrays, one for each dimension of `a`,</span>
-<span class="sd">    containing the indices of the non-zero elements in that</span>
-<span class="sd">    dimension. The values in `a` are always tested and returned in</span>
-<span class="sd">    row-major, C-style order.</span>
+<span class="sd">    Returns a tuple of arrays, one for each dimension of `a`, containing</span>
+<span class="sd">    the indices of the non-zero elements in that dimension. The values in `a`</span>
+<span class="sd">    are always tested and returned in row-major, C-style order.</span>
+
+<span class="sd">    To group the indices by element, rather than dimension, use</span>
+<span class="sd">    :obj:`dpnp.argwhere`, which returns a row for each non-zero element.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.nonzero`.</span>
 
@@ -1075,39 +1140,83 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">usx_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
-        <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dpt</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">usx_a</span><span class="p">)</span>
+        <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dpt</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">usm_a</span><span class="p">)</span>
     <span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="place">
 <a class="viewcode-back" href="../../reference/generated/dpnp.place.html#dpnp.place">[docs]</a>
-<span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change elements of an array based on conditional and input values.</span>
 
+<span class="sd">    Similar to ``dpnp.copyto(a, vals, where=mask)``, the difference is that</span>
+<span class="sd">    :obj:`dpnp.place` uses the first N elements of `vals`, where N is</span>
+<span class="sd">    the number of ``True`` values in `mask`, while :obj:`dpnp.copyto` uses</span>
+<span class="sd">    the elements where `mask` is ``True``.</span>
+
+<span class="sd">    Note that :obj:`dpnp.extract` does the exact opposite of :obj:`dpnp.place`.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.place`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x`, `mask` and `vals` are supported either as</span>
-<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Array to put data into.</span>
+<span class="sd">    mask : {array_like, scalar}</span>
+<span class="sd">        Boolean mask array. Must have the same size as `a`.</span>
+<span class="sd">    vals : {array_like, scalar}</span>
+<span class="sd">        Values to put into `a`. Only the first N elements are used, where N is</span>
+<span class="sd">        the number of ``True`` values in `mask`. If `vals` is smaller than N,</span>
+<span class="sd">        it will be repeated, and if elements of `a` are to be masked, this</span>
+<span class="sd">        sequence must be non-empty.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.copyto` : Copies values from one array to another.</span>
+<span class="sd">    :obj:`dpnp.put` : Replaces specified elements of an array with given values.</span>
+<span class="sd">    :obj:`dpnp.take` : Take elements from an array along an axis.</span>
+<span class="sd">    :obj:`dpnp.extract` : Return the elements of an array that satisfy some</span>
+<span class="sd">                         condition.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(6).reshape(2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; np.place(a, a &gt; 2, [44, 55])</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[ 0,  1,  2],</span>
+<span class="sd">           [44, 55, 44]])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
-    <span class="p">):</span>
-        <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span>
-        <span class="n">dpt_mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">mask</span>
-        <span class="n">dpt_vals</span> <span class="o">=</span> <span class="n">vals</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span> <span class="k">else</span> <span class="n">vals</span>
-        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">dpt_mask</span><span class="p">,</span> <span class="n">dpt_vals</span><span class="p">)</span>
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">usm_mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
+        <span class="n">mask</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">usm_vals</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
+        <span class="n">vals</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">place</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">usm_vals</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># dpt.place supports only 1-D array of values</span>
+        <span class="n">usm_vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_vals</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">usm_vals</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+        <span class="c1"># dpt.place casts values to a.dtype with &quot;unsafe&quot; rule,</span>
+        <span class="c1"># while numpy.place does that with &quot;safe&quot; casting rule</span>
+        <span class="n">usm_vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">usm_vals</span><span class="p">,</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">dpt</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_mask</span><span class="p">,</span> <span class="n">usm_vals</span><span class="p">)</span></div>
 
 
 
@@ -1171,41 +1280,47 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">ind</span><span class="p">):</span>
-        <span class="n">ind</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-            <span class="n">ind</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
-        <span class="p">)</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-        <span class="n">ind</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span>
-    <span class="n">ind</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-            <span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span>
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`axis` must be of integer type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="n">in_a</span> <span class="o">=</span> <span class="n">a</span>
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">in_a</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;wrap&quot;</span><span class="p">,</span> <span class="s2">&quot;clip&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;clipmode must be one of &#39;clip&#39; or &#39;wrap&#39; (got &#39;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
         <span class="p">)</span>
 
-    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
-    <span class="n">usm_v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="n">usm_v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
+        <span class="n">v</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">usm_v</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
+        <span class="n">ind</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">usm_ind</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># dpt.put supports only 1-D array of indices</span>
+        <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_ind</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">usm_ind</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+        <span class="c1"># dpt.put supports only integer dtype for array of indices</span>
+        <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">usm_ind</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span>
+
+    <span class="n">in_usm_a</span> <span class="o">=</span> <span class="n">usm_a</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
     <span class="n">dpt</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_ind</span><span class="p">,</span> <span class="n">usm_v</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">in_a</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span><span class="p">:</span>
-        <span class="n">in_a</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">in_a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">in_usm_a</span><span class="o">.</span><span class="n">_pointer</span> <span class="o">!=</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">_pointer</span><span class="p">:</span>  <span class="c1"># pylint: disable=protected-access</span>
+        <span class="n">in_usm_a</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">in_usm_a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
 
@@ -1214,6 +1329,13 @@
 <span class="k">def</span> <span class="nf">put_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Put values into the destination array by matching 1d index and data slices.</span>
+
+<span class="sd">    This iterates over matching 1d slices oriented along the specified axis in</span>
+<span class="sd">    the index and data arrays, and uses the former to place values into the</span>
+<span class="sd">    latter. These slices can be different lengths.</span>
+
+<span class="sd">    Functions returning an index along an `axis`, like :obj:`dpnp.argsort` and</span>
+<span class="sd">    :obj:`dpnp.argpartition`, produce suitable indices for this function.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.put_along_axis`.</span>
 
@@ -1337,40 +1459,54 @@
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 <div class="viewcode-block" id="take">
 <a class="viewcode-back" href="../../reference/generated/dpnp.take.html#dpnp.take">[docs]</a>
-<span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take elements from an array along an axis.</span>
 
+<span class="sd">    When `axis` is not ``None``, this function does the same thing as &quot;fancy&quot;</span>
+<span class="sd">    indexing (indexing arrays using arrays); however, it can be easier to use</span>
+<span class="sd">    if you need elements along a given axis. A call such as</span>
+<span class="sd">    ``dpnp.take(a, indices, axis=3)`` is equivalent to</span>
+<span class="sd">    ``a[:, :, :, indices, ...]``.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.take`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}, (Ni..., M, Nk...)</span>
+<span class="sd">        The source array.</span>
+<span class="sd">    indices : {array_like, scalars}, (Nj...)</span>
+<span class="sd">        The indices of the values to extract.</span>
+<span class="sd">        Also allow scalars for `indices`.</span>
+<span class="sd">    axis : {None, int, bool, 0-d array of integer dtype}, optional</span>
+<span class="sd">        The axis over which to select values. By default, the flattened</span>
+<span class="sd">        input array is used.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional (Ni..., Nj..., Nk...)</span>
+<span class="sd">        If provided, the result will be placed in this array. It should</span>
+<span class="sd">        be of the appropriate shape and dtype.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    mode : {&quot;wrap&quot;, &quot;clip&quot;}, optional</span>
+<span class="sd">        Specifies how out-of-bounds indices will be handled. Possible values</span>
+<span class="sd">        are:</span>
+
+<span class="sd">        - ``&quot;wrap&quot;``: clamps indices to (``-n &lt;= i &lt; n``), then wraps</span>
+<span class="sd">          negative indices.</span>
+<span class="sd">        - ``&quot;clip&quot;``: clips indices to (``0 &lt;= i &lt; n``).</span>
+
+<span class="sd">        Default: ``&quot;wrap&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]</span>
-<span class="sd">        filled with elements from `x`.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x` and `indices` are supported either as :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameter `indices` is supported as 1-D array of integer data type.</span>
-<span class="sd">    Parameter `out` is supported only with default value.</span>
-<span class="sd">    Parameter `mode` is supported with ``wrap``, the default, and ``clip``</span>
-<span class="sd">    values.</span>
-<span class="sd">    Providing parameter `axis` is optional when `x` is a 1-D array.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    out : dpnp.ndarray, (Ni..., Nj..., Nk...)</span>
+<span class="sd">        The returned array has the same type as `a`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.compress` : Take elements using a boolean mask.</span>
+<span class="sd">    :obj:`dpnp.ndarray.take` : Equivalent method.</span>
 <span class="sd">    :obj:`dpnp.take_along_axis` : Take elements by matching the array and</span>
 <span class="sd">                                  the index arrays.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    How out-of-bounds indices will be handled.</span>
-<span class="sd">    &quot;wrap&quot; - clamps indices to (-n &lt;= i &lt; n), then wraps negative indices.</span>
-<span class="sd">    &quot;clip&quot; - clips indices to (0 &lt;= i &lt; n)</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1392,29 +1528,53 @@
 <span class="sd">    &gt;&gt;&gt; np.take(x, indices, mode=&quot;clip&quot;)</span>
 <span class="sd">    array([4, 4, 4, 8, 8])</span>
 
+<span class="sd">    If `indices` is not one dimensional, the output also has these dimensions.</span>
+
+<span class="sd">    &gt;&gt;&gt; np.take(x, [[0, 1], [2, 3]])</span>
+<span class="sd">    array([[4, 3],</span>
+<span class="sd">           [5, 7]])</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span>
-        <span class="n">indices</span>
-    <span class="p">):</span>
-        <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span>
-            <span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span>
-        <span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;clip&quot;</span><span class="p">,</span> <span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dpt_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-            <span class="n">dpt_indices</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
-                <span class="n">dpt</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">dpt_array</span><span class="p">,</span> <span class="n">dpt_indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-            <span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;wrap&quot;</span><span class="p">,</span> <span class="s2">&quot;clip&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`mode` must be &#39;wrap&#39; or &#39;clip&#39;, but got `</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">`.&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">take</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+        <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="n">indices</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+
+    <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">res_shape</span> <span class="o">=</span> <span class="n">usm_ind</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="k">if</span> <span class="n">a_ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># dpt.take requires flattened input array</span>
+            <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">a_ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">axis</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">res_shape</span> <span class="o">=</span> <span class="n">usm_ind</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">axis</span><span class="p">),</span> <span class="n">a_ndim</span><span class="p">)</span>
+        <span class="n">a_sh</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">res_shape</span> <span class="o">=</span> <span class="n">a_sh</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="n">usm_ind</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="n">a_sh</span><span class="p">[</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+
+    <span class="k">if</span> <span class="n">usm_ind</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># dpt.take supports only 1-D array of indices</span>
+        <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_ind</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">usm_ind</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+        <span class="c1"># dpt.take supports only integer dtype for array of indices</span>
+        <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">usm_ind</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span>
+
+    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_ind</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+
+    <span class="c1"># need to reshape the result if shape of indices array was changed</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
 
 
 
@@ -1423,6 +1583,13 @@
 <span class="k">def</span> <span class="nf">take_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take values from the input array by matching 1d index and data slices.</span>
+
+<span class="sd">    This iterates over matching 1d slices oriented along the specified axis in</span>
+<span class="sd">    the index and data arrays, and uses the former to look up values in the</span>
+<span class="sd">    latter. These slices can be different lengths.</span>
+
+<span class="sd">    Functions returning an index along an `axis`, like :obj:`dpnp.argsort` and</span>
+<span class="sd">    :obj:`dpnp.argpartition`, produce suitable indices for this function.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.take_along_axis`.</span>
 
@@ -1437,7 +1604,7 @@
 <span class="sd">    axis : int</span>
 <span class="sd">        The axis to take 1d slices along. If axis is ``None``, the input</span>
 <span class="sd">        array is treated as if it had first been flattened to 1d,</span>
-<span class="sd">        for consistency with `sort` and `argsort`.</span>
+<span class="sd">        for consistency with :obj:`dpnp.sort` and :obj:`dpnp.argsort`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

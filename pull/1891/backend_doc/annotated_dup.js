@@ -26,9 +26,7 @@ var annotated_dup =
               [ "UngqrBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_ungqr_batch_type_pair_support_factory.html", null ],
               [ "UngqrTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html", null ]
             ] ],
-            [ "HeevdContigFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1_heevd_contig_factory.html", null ],
-            [ "LinAlgError", "classdpnp_1_1backend_1_1ext_1_1lapack_1_1_lin_alg_error.html", null ],
-            [ "SyevdContigFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1_syevd_contig_factory.html", null ]
+            [ "LinAlgError", "classdpnp_1_1backend_1_1ext_1_1lapack_1_1_lin_alg_error.html", null ]
           ] ],
           [ "sycl_ext", null, [
             [ "cartesian_product", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product.html", null ],
@@ -93,6 +91,15 @@ var annotated_dup =
       [ "kernels", null, [
         [ "fabs", null, [
           [ "FabsFunctor", "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html", null ]
+        ] ],
+        [ "fmax", null, [
+          [ "FmaxFunctor", "structdpnp_1_1kernels_1_1fmax_1_1_fmax_functor.html", null ]
+        ] ],
+        [ "fmin", null, [
+          [ "FminFunctor", "structdpnp_1_1kernels_1_1fmin_1_1_fmin_functor.html", null ]
+        ] ],
+        [ "fmod", null, [
+          [ "FmodFunctor", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ]
         ] ]
       ] ]
     ] ],
