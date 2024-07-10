@@ -104,10 +104,10 @@ class TestFft:
 
     @pytest.mark.parametrize("n", [None, 5, 20])
     def test_fft_usm_ndarray(self, n):
-        x = dpnp.linspace(-1, 1, 11)
-        a = dpnp.sin(x) + 1j * dpnp.cos(x)
-        a_usm = dpt.asarray(a, dtype=dpnp.complex64)
-        a_np = dpnp.asnumpy(a_usm)
+        x = dpt.linspace(-1, 1, 11)
+        a = dpt.sin(x) + 1j * dpt.cos(x)
+        a_usm = dpt.asarray(a, dtype=dpt.complex64)
+        a_np = dpt.asnumpy(a_usm)
         out_shape = (n,) if n is not None else a_usm.shape
         out = dpt.empty(out_shape, dtype=a_usm.dtype)
 

@@ -76,12 +76,12 @@ std::pair<sycl::event, sycl::event>
 
     try {
         if (is_forward) {
-            fft_event = oneapi::mkl::dft::compute_forward(
-                descr.get_descriptor(), in_out_ptr, depends);
+            fft_event = mkl_dft::compute_forward(descr.get_descriptor(),
+                                                 in_out_ptr, depends);
         }
         else {
-            fft_event = oneapi::mkl::dft::compute_backward(
-                descr.get_descriptor(), in_out_ptr, depends);
+            fft_event = mkl_dft::compute_backward(descr.get_descriptor(),
+                                                  in_out_ptr, depends);
         }
     } catch (oneapi::mkl::exception const &e) {
         error_msg
