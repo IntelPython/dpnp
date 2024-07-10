@@ -1017,7 +1017,7 @@ def place(a, mask, vals):
 
     Similar to ``dpnp.copyto(a, vals, where=mask)``, the difference is that
     :obj:`dpnp.place` uses the first N elements of `vals`, where N is
-    the number of ``True`` values in `mask`, while :obj:`copyto` uses
+    the number of ``True`` values in `mask`, while :obj:`dpnp.copyto` uses
     the elements where `mask` is ``True``.
 
     Note that :obj:`dpnp.extract` does the exact opposite of :obj:`dpnp.place`.
