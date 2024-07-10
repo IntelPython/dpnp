@@ -1312,11 +1312,11 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
     indices : {array_like, scalars}, (Nj...)
         The indices of the values to extract.
         Also allow scalars for `indices`.
-    axis : {None, int}, optional
+    axis : {None, int, bool, 0-d array of integer dtype}, optional
         The axis over which to select values. By default, the flattened
         input array is used.
         Default: ``None``.
-    out : {dpnp.ndarray, usm_ndarray}, optional (Ni..., Nj..., Nk...)
+    out : {None, dpnp.ndarray, usm_ndarray}, optional (Ni..., Nj..., Nk...)
         If provided, the result will be placed in this array. It should
         be of the appropriate shape and dtype.
         Default: ``None``.
@@ -1374,14 +1374,14 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
         raise ValueError(f"`mode` must be 'wrap' or 'clip', but got `{mode}`.")
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_ind = dpnp.as_usm_ndarray(
-        indices,
-        dtype=dpnp.intp,
-        usm_type=usm_a.usm_type,
-        sycl_queue=usm_a.sycl_queue,
-    )
+    if not dpnp.is_supported_array_type(indices):
+        usm_ind = dpt.asarray(
+            indices, usm_type=a.usm_type, sycl_queue=a.sycl_queue
+        )
+    else:
+        usm_ind = dpnp.get_usm_ndarray(indices)
 
-    a_ndim = usm_a.ndim
+    a_ndim = a.ndim
     if axis is None:
         res_shape = usm_ind.shape
 

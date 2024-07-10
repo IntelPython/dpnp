@@ -574,8 +574,8 @@ class TestTake:
             expected = numpy.take(a, ind, mode=mode)
             assert_array_equal(result, expected)
         else:
-            assert_raises(TypeError, ia, iind, mode=mode)
-            assert_raises(TypeError, a, ind, mode=mode)
+            assert_raises(TypeError, ia.take, iind, mode=mode)
+            assert_raises(TypeError, a.take, ind, mode=mode)
 
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("ind_dt", get_integer_dtypes())
@@ -625,7 +625,9 @@ class TestTake:
         ia = dpnp.array(a)
 
         result = ia.take([0], axis=ia)
-        expected = a.take([0], axis=1)  # numpy raises an error for bool axis
+        expected = a.take(
+            [0], axis=1
+        )  # numpy raises an error for axis as array
         assert_array_equal(result, expected)
 
     def test_mode_raise(self):
