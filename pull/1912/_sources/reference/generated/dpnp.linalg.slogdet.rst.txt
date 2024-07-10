@@ -1,6 +1,0 @@
-﻿dpnp.linalg.slogdet
-===================
-
-.. currentmodule:: dpnp.linalg
-
-.. autofunction:: slogdet
