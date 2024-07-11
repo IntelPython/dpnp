@@ -99,7 +99,7 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
     is_cpu_device = a.sycl_device.has_aspect_cpu
     orig_shape = a.shape
     # get 3d input array by reshape
-    a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
+    a = dpnp.reshape(a, (-1, orig_shape[-2], orig_shape[-1]))
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
     # allocate a memory for dpnp array of eigenvalues
@@ -191,7 +191,7 @@ def _batched_inv(a, res_type):
 
     orig_shape = a.shape
     # get 3d input arrays by reshape
-    a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
+    a = dpnp.reshape(a, (-1, orig_shape[-2], orig_shape[-1]))
     batch_size = a.shape[0]
     a_usm_arr = dpnp.get_usm_ndarray(a)
     a_sycl_queue = a.sycl_queue
@@ -362,7 +362,7 @@ def _batched_qr(a, mode="reduced"):
     a_sycl_queue = a.sycl_queue
 
     # get 3d input arrays by reshape
-    a = a.reshape(-1, m, n)
+    a = dpnp.reshape(a, (-1, m, n))
 
     a = a.swapaxes(-2, -1)
     a_usm_arr = dpnp.get_usm_ndarray(a)
@@ -513,7 +513,7 @@ def _batched_svd(
 
     if a.ndim > 3:
         # get 3d input arrays by reshape
-        a = a.reshape(prod(a.shape[:-2]), a.shape[-2], a.shape[-1])
+        a = dpnp.reshape(a, (prod(a.shape[:-2]), a.shape[-2], a.shape[-1]))
         reshape = True
 
     batch_size = a.shape[0]
@@ -806,7 +806,7 @@ def _lu_factor(a, res_type):
     if a.ndim > 2:
         orig_shape = a.shape
         # get 3d input arrays by reshape
-        a = a.reshape(-1, n, n)
+        a = dpnp.reshape(a, (-1, n, n))
         batch_size = a.shape[0]
         a_usm_arr = dpnp.get_usm_ndarray(a)
 
@@ -1719,7 +1719,7 @@ def dpnp_cholesky_batch(a, upper_lower, res_type):
 
     orig_shape = a.shape
     # get 3d input arrays by reshape
-    a = a.reshape(-1, n, n)
+    a = dpnp.reshape(a, (-1, n, n))
     batch_size = a.shape[0]
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
@@ -2147,7 +2147,7 @@ def dpnp_matrix_power(a, n):
     # `result` will hold the final matrix power,
     # while `acc` serves as an accumulator for the intermediate matrix powers.
     result = None
-    acc = a.copy()
+    acc = dpnp.copy(a)
     while n > 0:
         n, bit = divmod(n, 2)
         if bit:

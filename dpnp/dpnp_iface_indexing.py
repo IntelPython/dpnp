@@ -37,6 +37,8 @@ it contains:
 
 """
 
+import operator
+
 import dpctl.tensor as dpt
 import numpy
 from numpy.core.numeric import normalize_axis_index
@@ -214,8 +216,8 @@ def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
 
     See also
     --------
-    :obj:`diag_indices_from` : Return the indices to access the main
-                               diagonal of an n-dimensional array.
+    :obj:`dpnp.diag_indices_from` : Return the indices to access the main
+                                    diagonal of an n-dimensional array.
 
     Examples
     --------
@@ -274,7 +276,7 @@ def diag_indices_from(arr):
     Parameters
     ----------
     arr : {dpnp.ndarray, usm_ndarray}
-        Array at least 2-D
+        Array at least 2-D.
 
     Returns
     -------
@@ -283,8 +285,8 @@ def diag_indices_from(arr):
 
     See also
     --------
-    :obj:`diag_indices` : Return the indices to access the main
-                          diagonal of an array.
+    :obj:`dpnp.diag_indices` : Return the indices to access the main diagonal
+                               of an array.
 
     Examples
     --------
@@ -490,47 +492,94 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
     )
 
 
-def extract(condition, x):
+def extract(condition, a):
     """
     Return the elements of an array that satisfy some condition.
 
+    This is equivalent to
+    ``dpnp.compress(dpnp.ravel(condition), dpnp.ravel(a))``. If `condition`
+    is boolean :obj:`dpnp.extract` is equivalent to ``a[condition]``.
+
+    Note that :obj:`dpnp.place` does the exact opposite of :obj:`dpnp.extract`.
+
     For full documentation refer to :obj:`numpy.extract`.
+
+    Parameters
+    ----------
+    condition : {array_like, scalar}
+        An array whose non-zero or ``True`` entries indicate the element of `a`
+        to extract.
+    a : {dpnp_array, usm_ndarray}
+        Input array of the same size as `condition`.
 
     Returns
     -------
     out : dpnp.ndarray
-        Rank 1 array of values from `x` where `condition` is True.
+        Rank 1 array of values from `a` where `condition` is ``True``.
 
-    Limitations
-    -----------
-    Parameters `condition` and `x` are supported either as
-    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter `x` must be the same shape as `condition`.
-    Otherwise the function will be executed sequentially on CPU.
+    See Also
+    --------
+    :obj:`dpnp.take` : Take elements from an array along an axis.
+    :obj:`dpnp.put` : Replaces specified elements of an array with given values.
+    :obj:`dpnp.copyto` : Copies values from one array to another, broadcasting
+                         as necessary.
+    :obj:`dpnp.compress` : eturn selected slices of an array along given axis.
+    :obj:`dpnp.place` : Change elements of an array based on conditional and
+                        input values.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(12).reshape((3, 4))
+    >>> a
+    array([[ 0,  1,  2,  3],
+           [ 4,  5,  6,  7],
+           [ 8,  9, 10, 11]])
+    >>> condition = np.mod(a, 3) == 0
+    >>> condition
+    array([[ True, False, False,  True],
+           [False, False,  True, False],
+           [False,  True, False, False]])
+    >>> np.extract(condition, a)
+    array([0, 3, 6, 9])
+
+    If `condition` is boolean:
+
+    >>> a[condition]
+    array([0, 3, 6, 9])
+
     """
 
-    if dpnp.is_supported_array_type(condition) and dpnp.is_supported_array_type(
-        x
-    ):
-        if condition.shape != x.shape:
-            pass
-        else:
-            dpt_condition = (
-                condition.get_array()
-                if isinstance(condition, dpnp_array)
-                else condition
-            )
-            dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
-            return dpnp_array._create_from_usm_ndarray(
-                dpt.extract(dpt_condition, dpt_array)
-            )
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_cond = dpnp.as_usm_ndarray(
+        condition,
+        dtype=dpnp.bool,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
+    )
 
-    return call_origin(numpy.extract, condition, x)
+    if usm_cond.size != usm_a.size:
+        usm_a = dpt.reshape(usm_a, -1)
+        usm_cond = dpt.reshape(usm_cond, -1)
+
+        usm_res = dpt.take(usm_a, dpt.nonzero(usm_cond)[0])
+    else:
+        if usm_cond.shape != usm_a.shape:
+            usm_a = dpt.reshape(usm_a, -1)
+            usm_cond = dpt.reshape(usm_cond, -1)
+
+        usm_res = dpt.extract(usm_cond, usm_a)
+
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def fill_diagonal(a, val, wrap=False):
     """
     Fill the main diagonal of the given array of any dimensionality.
+
+    For an array `a` with ``a.ndim >= 2``, the diagonal is the list of values
+    ``a[i, ..., i]`` with indices ``i`` all identical. This function modifies
+    the input array in-place without returning a value.
 
     For full documentation refer to :obj:`numpy.fill_diagonal`.
 
@@ -632,11 +681,12 @@ def fill_diagonal(a, val, wrap=False):
 
     """
 
-    dpnp.check_supported_arrays_type(a)
-    dpnp.check_supported_arrays_type(val, scalar_type=True, all_scalars=True)
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_val = dpnp.get_usm_ndarray_or_scalar(val)
 
     if a.ndim < 2:
         raise ValueError("array must be at least 2-d")
+
     end = a.size
     if a.ndim == 2:
         step = a.shape[1] + 1
@@ -649,18 +699,21 @@ def fill_diagonal(a, val, wrap=False):
 
     # TODO: implement flatiter for slice key
     # a.flat[:end:step] = val
+    # but need to consider use case when `a` is usm_ndarray also
     a_sh = a.shape
-    tmp_a = dpnp.ravel(a)
-    if dpnp.isscalar(val):
-        tmp_a[:end:step] = val
+    tmp_a = dpt.reshape(usm_a, -1)
+    if dpnp.isscalar(usm_val):
+        tmp_a[:end:step] = usm_val
     else:
-        flat_val = val.ravel()
+        usm_val = dpt.reshape(usm_val, -1)
+
         # Setitem can work only if index size equal val size.
         # Using loop for general case without dependencies of val size.
-        for i in range(0, flat_val.size):
-            tmp_a[step * i : end : step * (i + 1)] = flat_val[i]
-    tmp_a = dpnp.reshape(tmp_a, a_sh)
-    a[:] = tmp_a
+        for i in range(0, usm_val.size):
+            tmp_a[step * i : end : step * (i + 1)] = usm_val[i]
+
+    tmp_a = dpt.reshape(tmp_a, a_sh)
+    usm_a[:] = tmp_a
 
 
 def indices(
@@ -712,6 +765,13 @@ def indices(
         with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
         with dimensions[i] in the i-th place.
 
+    See Also
+    --------
+    :obj:`dpnp.mgrid` : Return a dense multi-dimensional “meshgrid”.
+    :obj:`dpnp.ogrid` : Return an open multi-dimensional “meshgrid”.
+    :obj:`dpnp.meshgrid` : Return a tuple of coordinate matrices from
+                           coordinate vectors.
+
     Examples
     --------
     >>> import dpnp as np
@@ -754,6 +814,7 @@ def indices(
     dimensions = tuple(dimensions)
     n = len(dimensions)
     shape = (1,) * n
+
     if sparse:
         res = ()
     else:
@@ -764,6 +825,7 @@ def indices(
             usm_type=usm_type,
             sycl_queue=sycl_queue,
         )
+
     for i, dim in enumerate(dimensions):
         idx = dpnp.arange(
             dim,
@@ -772,6 +834,7 @@ def indices(
             usm_type=usm_type,
             sycl_queue=sycl_queue,
         ).reshape(shape[:i] + (dim,) + shape[i + 1 :])
+
         if sparse:
             res = res + (idx,)
         else:
@@ -881,10 +944,12 @@ def nonzero(a):
     """
     Return the indices of the elements that are non-zero.
 
-    Returns a tuple of arrays, one for each dimension of `a`,
-    containing the indices of the non-zero elements in that
-    dimension. The values in `a` are always tested and returned in
-    row-major, C-style order.
+    Returns a tuple of arrays, one for each dimension of `a`, containing
+    the indices of the non-zero elements in that dimension. The values in `a`
+    are always tested and returned in row-major, C-style order.
+
+    To group the indices by element, rather than dimension, use
+    :obj:`dpnp.argwhere`, which returns a row for each non-zero element.
 
     For full documentation refer to :obj:`numpy.nonzero`.
 
@@ -959,36 +1024,80 @@ def nonzero(a):
 
     """
 
-    usx_a = dpnp.get_usm_ndarray(a)
+    usm_a = dpnp.get_usm_ndarray(a)
     return tuple(
-        dpnp_array._create_from_usm_ndarray(y) for y in dpt.nonzero(usx_a)
+        dpnp_array._create_from_usm_ndarray(y) for y in dpt.nonzero(usm_a)
     )
 
 
-def place(x, mask, vals, /):
+def place(a, mask, vals):
     """
     Change elements of an array based on conditional and input values.
 
+    Similar to ``dpnp.copyto(a, vals, where=mask)``, the difference is that
+    :obj:`dpnp.place` uses the first N elements of `vals`, where N is
+    the number of ``True`` values in `mask`, while :obj:`dpnp.copyto` uses
+    the elements where `mask` is ``True``.
+
+    Note that :obj:`dpnp.extract` does the exact opposite of :obj:`dpnp.place`.
+
     For full documentation refer to :obj:`numpy.place`.
 
-    Limitations
-    -----------
-    Parameters `x`, `mask` and `vals` are supported either as
-    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Array to put data into.
+    mask : {array_like, scalar}
+        Boolean mask array. Must have the same size as `a`.
+    vals : {array_like, scalar}
+        Values to put into `a`. Only the first N elements are used, where N is
+        the number of ``True`` values in `mask`. If `vals` is smaller than N,
+        it will be repeated, and if elements of `a` are to be masked, this
+        sequence must be non-empty.
+
+    See Also
+    --------
+    :obj:`dpnp.copyto` : Copies values from one array to another.
+    :obj:`dpnp.put` : Replaces specified elements of an array with given values.
+    :obj:`dpnp.take` : Take elements from an array along an axis.
+    :obj:`dpnp.extract` : Return the elements of an array that satisfy some
+                         condition.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(6).reshape(2, 3)
+    >>> np.place(a, a > 2, [44, 55])
+    >>> a
+    array([[ 0,  1,  2],
+           [44, 55, 44]])
+
     """
 
-    if (
-        dpnp.is_supported_array_type(x)
-        and dpnp.is_supported_array_type(mask)
-        and dpnp.is_supported_array_type(vals)
-    ):
-        dpt_array = x.get_array() if isinstance(x, dpnp_array) else x
-        dpt_mask = mask.get_array() if isinstance(mask, dpnp_array) else mask
-        dpt_vals = vals.get_array() if isinstance(vals, dpnp_array) else vals
-        return dpt.place(dpt_array, dpt_mask, dpt_vals)
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_mask = dpnp.as_usm_ndarray(
+        mask,
+        dtype=dpnp.bool,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
+    )
+    usm_vals = dpnp.as_usm_ndarray(
+        vals,
+        dtype=usm_a.dtype,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
+    )
 
-    return call_origin(numpy.place, x, mask, vals, dpnp_inplace=True)
+    if usm_vals.ndim != 1:
+        # dpt.place supports only 1-D array of values
+        usm_vals = dpt.reshape(usm_vals, -1)
+
+    if usm_vals.dtype != usm_a.dtype:
+        # dpt.place casts values to a.dtype with "unsafe" rule,
+        # while numpy.place does that with "safe" casting rule
+        usm_vals = dpt.astype(usm_vals, usm_a.dtype, casting="safe", copy=False)
+
+    dpt.place(usm_a, usm_mask, usm_vals)
 
 
 def put(a, ind, v, /, *, axis=None, mode="wrap"):
@@ -1049,46 +1158,59 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
 
     """
 
-    dpnp.check_supported_arrays_type(a)
-
-    if not dpnp.is_supported_array_type(ind):
-        ind = dpnp.asarray(
-            ind, dtype=dpnp.intp, sycl_queue=a.sycl_queue, usm_type=a.usm_type
-        )
-    elif not dpnp.issubdtype(ind.dtype, dpnp.integer):
-        ind = dpnp.astype(ind, dtype=dpnp.intp, casting="safe")
-    ind = dpnp.ravel(ind)
-
-    if not dpnp.is_supported_array_type(v):
-        v = dpnp.asarray(
-            v, dtype=a.dtype, sycl_queue=a.sycl_queue, usm_type=a.usm_type
-        )
-    if v.size == 0:
-        return
+    usm_a = dpnp.get_usm_ndarray(a)
 
     if not (axis is None or isinstance(axis, int)):
         raise TypeError(f"`axis` must be of integer type, got {type(axis)}")
-
-    in_a = a
-    if axis is None and a.ndim > 1:
-        a = dpnp.ravel(in_a)
 
     if mode not in ("wrap", "clip"):
         raise ValueError(
             f"clipmode must be one of 'clip' or 'wrap' (got '{mode}')"
         )
 
-    usm_a = dpnp.get_usm_ndarray(a)
-    usm_ind = dpnp.get_usm_ndarray(ind)
-    usm_v = dpnp.get_usm_ndarray(v)
+    usm_v = dpnp.as_usm_ndarray(
+        v,
+        dtype=usm_a.dtype,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
+    )
+    if usm_v.size == 0:
+        return
+
+    usm_ind = dpnp.as_usm_ndarray(
+        ind,
+        dtype=dpnp.intp,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
+    )
+
+    if usm_ind.ndim != 1:
+        # dpt.put supports only 1-D array of indices
+        usm_ind = dpt.reshape(usm_ind, -1, copy=False)
+
+    if not dpnp.issubdtype(usm_ind.dtype, dpnp.integer):
+        # dpt.put supports only integer dtype for array of indices
+        usm_ind = dpt.astype(usm_ind, dpnp.intp, casting="safe")
+
+    in_usm_a = usm_a
+    if axis is None and usm_a.ndim > 1:
+        usm_a = dpt.reshape(usm_a, -1)
+
     dpt.put(usm_a, usm_ind, usm_v, axis=axis, mode=mode)
-    if in_a is not a:
-        in_a[:] = a.reshape(in_a.shape, copy=False)
+    if in_usm_a._pointer != usm_a._pointer:  # pylint: disable=protected-access
+        in_usm_a[:] = dpt.reshape(usm_a, in_usm_a.shape, copy=False)
 
 
 def put_along_axis(a, ind, values, axis):
     """
     Put values into the destination array by matching 1d index and data slices.
+
+    This iterates over matching 1d slices oriented along the specified axis in
+    the index and data arrays, and uses the former to place values into the
+    latter. These slices can be different lengths.
+
+    Functions returning an index along an `axis`, like :obj:`dpnp.argsort` and
+    :obj:`dpnp.argpartition`, produce suitable indices for this function.
 
     For full documentation refer to :obj:`numpy.put_along_axis`.
 
@@ -1203,40 +1325,54 @@ def select(condlist, choicelist, default=0):
 
 
 # pylint: disable=redefined-outer-name
-def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
+def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
     """
     Take elements from an array along an axis.
 
+    When `axis` is not ``None``, this function does the same thing as "fancy"
+    indexing (indexing arrays using arrays); however, it can be easier to use
+    if you need elements along a given axis. A call such as
+    ``dpnp.take(a, indices, axis=3)`` is equivalent to
+    ``a[:, :, :, indices, ...]``.
+
     For full documentation refer to :obj:`numpy.take`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}, (Ni..., M, Nk...)
+        The source array.
+    indices : {array_like, scalars}, (Nj...)
+        The indices of the values to extract.
+        Also allow scalars for `indices`.
+    axis : {None, int, bool, 0-d array of integer dtype}, optional
+        The axis over which to select values. By default, the flattened
+        input array is used.
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional (Ni..., Nj..., Nk...)
+        If provided, the result will be placed in this array. It should
+        be of the appropriate shape and dtype.
+        Default: ``None``.
+    mode : {"wrap", "clip"}, optional
+        Specifies how out-of-bounds indices will be handled. Possible values
+        are:
+
+        - ``"wrap"``: clamps indices to (``-n <= i < n``), then wraps
+          negative indices.
+        - ``"clip"``: clips indices to (``0 <= i < n``).
+
+        Default: ``"wrap"``.
 
     Returns
     -------
-    out : dpnp.ndarray
-        An array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]
-        filled with elements from `x`.
-
-    Limitations
-    -----------
-    Parameters `x` and `indices` are supported either as :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Parameter `indices` is supported as 1-D array of integer data type.
-    Parameter `out` is supported only with default value.
-    Parameter `mode` is supported with ``wrap``, the default, and ``clip``
-    values.
-    Providing parameter `axis` is optional when `x` is a 1-D array.
-    Otherwise the function will be executed sequentially on CPU.
+    out : dpnp.ndarray, (Ni..., Nj..., Nk...)
+        The returned array has the same type as `a`.
 
     See Also
     --------
     :obj:`dpnp.compress` : Take elements using a boolean mask.
+    :obj:`dpnp.ndarray.take` : Equivalent method.
     :obj:`dpnp.take_along_axis` : Take elements by matching the array and
                                   the index arrays.
-
-    Notes
-    -----
-    How out-of-bounds indices will be handled.
-    "wrap" - clamps indices to (-n <= i < n), then wraps negative indices.
-    "clip" - clips indices to (0 <= i < n)
 
     Examples
     --------
@@ -1258,34 +1394,65 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     >>> np.take(x, indices, mode="clip")
     array([4, 4, 4, 8, 8])
 
+    If `indices` is not one dimensional, the output also has these dimensions.
+
+    >>> np.take(x, [[0, 1], [2, 3]])
+    array([[4, 3],
+           [5, 7]])
+
     """
 
-    if dpnp.is_supported_array_type(x) and dpnp.is_supported_array_type(
-        indices
-    ):
-        if indices.ndim != 1 or not dpnp.issubdtype(
-            indices.dtype, dpnp.integer
-        ):
-            pass
-        elif axis is None and x.ndim > 1:
-            pass
-        elif out is not None:
-            pass
-        elif mode not in ("clip", "wrap"):
-            pass
-        else:
-            dpt_array = dpnp.get_usm_ndarray(x)
-            dpt_indices = dpnp.get_usm_ndarray(indices)
-            return dpnp_array._create_from_usm_ndarray(
-                dpt.take(dpt_array, dpt_indices, axis=axis, mode=mode)
-            )
+    if mode not in ("wrap", "clip"):
+        raise ValueError(f"`mode` must be 'wrap' or 'clip', but got `{mode}`.")
 
-    return call_origin(numpy.take, x, indices, axis, out, mode)
+    usm_a = dpnp.get_usm_ndarray(a)
+    if not dpnp.is_supported_array_type(indices):
+        usm_ind = dpt.asarray(
+            indices, usm_type=a.usm_type, sycl_queue=a.sycl_queue
+        )
+    else:
+        usm_ind = dpnp.get_usm_ndarray(indices)
+
+    a_ndim = a.ndim
+    if axis is None:
+        res_shape = usm_ind.shape
+
+        if a_ndim > 1:
+            # dpt.take requires flattened input array
+            usm_a = dpt.reshape(usm_a, -1)
+    elif a_ndim == 0:
+        axis = normalize_axis_index(operator.index(axis), 1)
+        res_shape = usm_ind.shape
+    else:
+        axis = normalize_axis_index(operator.index(axis), a_ndim)
+        a_sh = a.shape
+        res_shape = a_sh[:axis] + usm_ind.shape + a_sh[axis + 1 :]
+
+    if usm_ind.ndim != 1:
+        # dpt.take supports only 1-D array of indices
+        usm_ind = dpt.reshape(usm_ind, -1)
+
+    if not dpnp.issubdtype(usm_ind.dtype, dpnp.integer):
+        # dpt.take supports only integer dtype for array of indices
+        usm_ind = dpt.astype(usm_ind, dpnp.intp, copy=False, casting="safe")
+
+    usm_res = dpt.take(usm_a, usm_ind, axis=axis, mode=mode)
+
+    # need to reshape the result if shape of indices array was changed
+    result = dpnp.reshape(usm_res, res_shape)
+    return dpnp.get_result_array(result, out)
 
 
 def take_along_axis(a, indices, axis):
     """
     Take values from the input array by matching 1d index and data slices.
+
+    This iterates over matching 1d slices oriented along the specified axis in
+    the index and data arrays, and uses the former to look up values in the
+    latter. These slices can be different lengths.
+
+    Functions returning an index along an `axis`, like :obj:`dpnp.argsort` and
+    :obj:`dpnp.argpartition`, produce suitable indices for this function.
 
     For full documentation refer to :obj:`numpy.take_along_axis`.
 
@@ -1300,7 +1467,7 @@ def take_along_axis(a, indices, axis):
     axis : int
         The axis to take 1d slices along. If axis is ``None``, the input
         array is treated as if it had first been flattened to 1d,
-        for consistency with `sort` and `argsort`.
+        for consistency with :obj:`dpnp.sort` and :obj:`dpnp.argsort`.
 
     Returns
     -------

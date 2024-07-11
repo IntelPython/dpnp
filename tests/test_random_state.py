@@ -35,6 +35,9 @@ def get_default_floating():
 
 
 class TestNormal:
+    # TODO: Temporary skip due to incorrect results in public CI
+    # (ARM architecture) with the new MKL package 2024.2.0 (SAT-7080)
+    @pytest.mark.skipif(is_cpu_device(), reason="SAT-7080")
     @pytest.mark.parametrize(
         "dtype",
         [dpnp.float32, dpnp.float64, dpnp.float, None],
@@ -605,6 +608,9 @@ class TestRandInt:
 
 
 class TestRandN:
+    # TODO: Temporary skip due to incorrect results in public CI
+    # (ARM architecture) with the new MKL package 2024.2.0 (SAT-7080)
+    @pytest.mark.skipif(is_cpu_device(), reason="SAT-7080")
     @pytest.mark.parametrize(
         "usm_type",
         ["host", "device", "shared"],

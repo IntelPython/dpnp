@@ -80,36 +80,6 @@
 }
 #endif
 
-#if defined(DPNPC_TOUCH_KERNEL_TO_LINK)
-/**
- * Function push the SYCL kernels to be linked (final stage of the compilation)
- * for the current queue
- *
- * TODO it is not the best idea to just a call some kernel. Needs better
- * solution.
- */
-static long dpnp_kernels_link()
-{
-    /* must use memory pre-allocated at the current queue */
-    long *value_ptr =
-        reinterpret_cast<long *>(dpnp_memory_alloc_c(1 * sizeof(long)));
-    long *result_ptr =
-        reinterpret_cast<long *>(dpnp_memory_alloc_c(1 * sizeof(long)));
-    long result = 1;
-
-    *value_ptr = 2;
-
-    dpnp_square_c<long>(value_ptr, result_ptr, 1);
-
-    result = *result_ptr;
-
-    dpnp_memory_free_c(result_ptr);
-    dpnp_memory_free_c(value_ptr);
-
-    return result;
-}
-#endif
-
 size_t dpnp_queue_is_cpu_c()
 {
     const auto &be = backend_sycl::get();

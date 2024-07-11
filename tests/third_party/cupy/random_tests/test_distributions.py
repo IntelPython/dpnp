@@ -354,7 +354,7 @@ class TestDistributionsMultivariateNormal(unittest.TestCase):
     def check_distribution(self, dist_func, mean_dtype, cov_dtype):
         mean = cupy.zeros(self.d, dtype=mean_dtype)
         cov = cupy.random.normal(size=(self.d, self.d))
-        # dpnp.dparray doesn't have .dot
+        # dpnp.dpnp_array doesn't have .dot
         # TODO
         # no conversation to ndarray
         cov = numpy.array(cov)
