@@ -160,7 +160,9 @@ jobs:
         working-directory: doc
 
       - name: Build docs
-        run: make html
+        run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
+          make html
         working-directory: doc
 
       - name: Set a project number to current release
