@@ -78,6 +78,7 @@ jobs:
         run: |
           sudo apt-get install intel-oneapi-mkl                \
                                intel-oneapi-mkl-devel          \
+                               intel-oneapi-tbb-devel          \
                                intel-oneapi-libdpstd-devel     \
                                intel-oneapi-compiler-dpcpp-cpp
 

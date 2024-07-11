@@ -49,10 +49,11 @@ jobs:
       - name: Install latest Intel OneAPI
         if: env.INSTALL_ONE_API == 'yes'
         run: |
-          sudo apt-get install intel-oneapi-compiler-dpcpp-cpp
-          sudo apt-get install intel-oneapi-mkl-devel
-          sudo apt-get install intel-oneapi-libdpstd-devel
-          sudo apt-get install intel-oneapi-tbb-devel
+          sudo apt-get install intel-oneapi-mkl                \
+                               intel-oneapi-mkl-devel          \
+                               intel-oneapi-tbb-devel          \
+                               intel-oneapi-libdpstd-devel     \
+                               intel-oneapi-compiler-dpcpp-cpp
 
       - name: Install Lcov
         run: |
