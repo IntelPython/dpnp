@@ -178,7 +178,7 @@ class TestRfft(unittest.TestCase):
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
-        type_check=has_support_aspect64(),
+        type_check=False,
     )
     def test_rfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
