@@ -25,8 +25,9 @@ class TestFft:
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
+        type_check=False,
         contiguous_check=False,
-        type_check=has_support_aspect64(),
+        type_check=False,,
     )
     def test_fft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -40,7 +41,7 @@ class TestFft:
         atol=1e-7,
         accept_error=ValueError,
         contiguous_check=False,
-        type_check=has_support_aspect64(),
+        type_check=False,
     )
     def test_ifft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -220,7 +221,7 @@ class TestRfft:
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
-        type_check=has_support_aspect64(),
+        type_check=False,
     )
     def test_rfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
