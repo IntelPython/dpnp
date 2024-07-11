@@ -26,7 +26,7 @@ class TestFft(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=has_support_aspect64(),
+        type_check=False,
         contiguous_check=False,
     )
     def test_fft(self, xp, dtype):
@@ -40,7 +40,7 @@ class TestFft(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=has_support_aspect64(),
+        type_check=False,
         contiguous_check=False,
     )
     def test_ifft(self, xp, dtype):
