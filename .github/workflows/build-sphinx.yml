@@ -149,17 +149,14 @@ jobs:
         run: mamba list
 
       - name: Build library
-        if: env.INSTALL_ONE_API == 'yes'
         run: |
           [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
           python scripts/build_locally.py
 
-      - name: Build library
-        if: env.INSTALL_ONE_API != 'yes'
-        run: python scripts/build_locally.py
-
       - name: Run a spelling checker for docs
-        run: make spelling
+        run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
+          make spelling
         working-directory: doc
 
       - name: Build docs
