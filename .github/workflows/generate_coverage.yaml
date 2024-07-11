@@ -82,7 +82,7 @@ jobs:
         if: env.INSTALL_ONE_API == 'yes'
         run: |
           mamba install cython llvm cmake">=3.21" scikit-build ninja pytest pytest-cov coverage[toml] \
-              dpctl">=0.18.0dev0" -c dppy/label/dev
+              dpctl">=0.18.0dev0" -c dppy/label/dev -c conda-forge --override-channels
 
       - name: Install dpnp dependencies
         if: env.INSTALL_ONE_API != 'yes'
