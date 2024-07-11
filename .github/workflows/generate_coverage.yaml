@@ -50,6 +50,7 @@ jobs:
         run: |
           sudo apt-get install intel-oneapi-compiler-dpcpp-cpp
           sudo apt-get install intel-oneapi-mkl-devel
+          sudo apt-get install intel-oneapi-libdpstd-devel
           sudo apt-get install intel-oneapi-tbb-devel
 
       - name: Install Lcov
@@ -81,7 +82,7 @@ jobs:
         if: env.INSTALL_ONE_API == 'yes'
         run: |
           mamba install cython llvm cmake">=3.21" scikit-build ninja pytest pytest-cov coverage[toml] \
-              dpctl">=0.18.0dev0" onedpl-devel ${{ env.CHANNELS }}
+              dpctl">=0.18.0dev0" -c dppy/label/dev
 
       - name: Install dpnp dependencies
         if: env.INSTALL_ONE_API != 'yes'
