@@ -148,6 +148,11 @@ jobs:
       - name: Conda list
         run: mamba list
 
+      - name: Activate oneAPI enviroment
+        if: env.INSTALL_ONE_API == 'yes'
+        run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
+
       - name: Build library
         run: python scripts/build_locally.py
 
