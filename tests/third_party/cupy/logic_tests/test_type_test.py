@@ -54,7 +54,6 @@ class TestIsScalarValues2(testing.NumpyAliasValuesTestBase):
         self.args = (value,)
 
 
-@pytest.mark.skip("isfortran not implemented")
 @testing.parameterize(
     *testing.product(
         {

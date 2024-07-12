@@ -652,16 +652,16 @@ def iscomplex(x):
     dpnp.check_supported_arrays_type(x)
     if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
         return x.imag != 0
-    res = dpnp.zeros_like(x, dtype=dpnp.bool)
-    return res
+    return dpnp.zeros_like(x, dtype=dpnp.bool)
 
 
 def iscomplexobj(x):
     """
     Check for a complex type or an array of complex numbers.
 
-    The type of the input is checked, not the value. Even if the input
-    has an imaginary part equal to zero, `iscomplexobj` evaluates to ``True``.
+    The type of the input is checked, not the value. Even if the input has an
+    imaginary part equal to zero, :obj:`dpnp.iscomplexobj` evaluates to
+    ``True``.
 
     For full documentation refer to :obj:`numpy.iscomplexobj`.
 
@@ -674,7 +674,7 @@ def iscomplexobj(x):
 
     Returns
     -------
-    out : dpnp.ndarray
+    out : bool
         The return value, ``True`` if `x` is of a complex type or has at least
         one complex element.
 
@@ -1045,16 +1045,19 @@ def isreal(x):
     array([False,  True,  True,  True,  True, False])
 
     """
-    return dpnp.imag(x) == 0
+    dpnp.check_supported_arrays_type(x)
+    if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
+        return x.imag == 0
+    return dpnp.ones_like(x, dtype=dpnp.bool)
 
 
 def isrealobj(x):
     """
     Return ``True`` if `x` is a not complex type or an array of complex numbers.
 
-    The type of the input is checked, not the value. So even if the input
-    has an imaginary part equal to zero, `isrealobj` evaluates to ``False``
-    if the data type is complex.
+    The type of the input is checked, not the value. So even if the input has
+    an imaginary part equal to zero, :obj:`dpnp.isrealobj` evaluates to
+    ``False`` if the data type is complex.
 
     For full documentation refer to :obj:`numpy.isrealobj`.
 
@@ -1067,7 +1070,7 @@ def isrealobj(x):
 
     Returns
     -------
-    out : dpnp.ndarray
+    out : bool
         The return value, ``False`` if `x` is of a complex type.
 
     See Also

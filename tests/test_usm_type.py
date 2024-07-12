@@ -1309,3 +1309,19 @@ def test_histogram_bin_edges(usm_type_v, usm_type_w):
     assert v.usm_type == usm_type_v
     assert w.usm_type == usm_type_w
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_isreal(usm_type):
+    a = dp.array([1 + 1j, 1 + 0j, 4.5, 3, 2, 2j], usm_type=usm_type)
+
+    res = dp.isreal(a)
+    assert res.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_iscomplex(usm_type):
+    a = dp.array([1 + 1j, 1 + 0j, 4.5, 3, 2, 2j], usm_type=usm_type)
+
+    res = dp.iscomplex(a)
+    assert res.usm_type == usm_type

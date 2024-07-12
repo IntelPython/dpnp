@@ -2311,3 +2311,29 @@ def test_astype(device_x, device_y):
     sycl_queue = dpctl.SyclQueue(device_y)
     y = dpnp.astype(x, dtype="f4", device=sycl_queue)
     assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_isreal(device):
+    sycl_queue = dpctl.SyclQueue(device)
+    a = dpnp.array([1 + 1j, 1 + 0j, 4.5, 3, 2, 2j], sycl_queue=sycl_queue)
+
+    res = dpnp.isreal(a)
+    assert_sycl_queue_equal(res.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_iscomplex(device):
+    sycl_queue = dpctl.SyclQueue(device)
+    a = dpnp.array([1 + 1j, 1 + 0j, 4.5, 3, 2, 2j], sycl_queue=sycl_queue)
+
+    res = dpnp.iscomplex(a)
+    assert_sycl_queue_equal(res.sycl_queue, sycl_queue)
