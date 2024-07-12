@@ -11,7 +11,8 @@ permissions: read-all
 env:
   PACKAGE_NAME: dpnp
   MODULE_NAME: dpnp
-  CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+  # CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+  CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
   CONDA_BUILD_VERSION: '24.5.1'
   CONDA_INDEX_VERSION: '0.5.0'
   RUN_TESTS_MAX_ATTEMPTS: 2
