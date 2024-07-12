@@ -30,8 +30,8 @@ import warnings
 
 import dpctl
 import dpctl.tensor as dpt
-import dpctl.tensor._tensor_elementwise_impl as tei
 import dpctl.tensor._tensor_impl as ti
+import dpctl.utils as dpu
 import numpy
 from dpctl.utils import ExecutionPlacementError
 from numpy.core.numeric import normalize_axis_tuple
@@ -105,8 +105,7 @@ def _chr(label):
 
     if label < 0:
         return f"...[{label}]"
-    else:
-        return chr(label)
+    return chr(label)
 
 
 def _compute_res_dtype(*arrays, sycl_queue, dtype=None, casting="no"):
@@ -219,9 +218,7 @@ def _compute_size(start, shape):
     return ret
 
 
-def _copy_array(
-    x, dep_events, host_events, copy_flag=False, dtype=None, order="C"
-):
+def _copy_array(x, copy_flag=False, dtype=None, order="C"):
     """
     Creating a copy of input array if needed.
 
@@ -240,13 +237,18 @@ def _copy_array(
 
     if copy:
         x_copy = dpnp.empty_like(x, dtype=dtype, order=order)
+
+        exec_q = x_copy.sycl_queue
+        _manager = dpu.SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
+
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=dpnp.get_usm_ndarray(x),
             dst=x_copy.get_array(),
-            sycl_queue=x.sycl_queue,
+            sycl_queue=exec_q,
+            depends=dep_evs,
         )
-        dep_events.append(copy_ev)
-        host_events.append(ht_copy_ev)
+        _manager.add_event_pair(ht_copy_ev, copy_ev)
         return x_copy
     return x
 
@@ -555,10 +557,9 @@ def _flatten_transpose(a, axeses):
         transpose_axes.extend(axes)
         shapes.append([a.shape[axis] for axis in axes])
 
+    new_sh = tuple([int(numpy.prod(shape)) for shape in shapes])
     return (
-        dpnp.transpose(a, transpose_axes).reshape(
-            tuple([int(numpy.prod(shape)) for shape in shapes])
-        ),
+        dpnp.transpose(a, transpose_axes).reshape(new_sh),
         shapes,
     )
 
@@ -707,24 +708,20 @@ def _get_result_shape(x1, x2, out, np_flag):
     return x1, x2, result_shape
 
 
-def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
+def _gemm_batch_matmul(exec_q, x1, x2, res):
     # arrays here are already at least 3D, make them 3D
     x1 = dpnp.reshape(x1, (-1, x1.shape[-2], x1.shape[-1]))
     x2 = dpnp.reshape(x2, (-1, x2.shape[-2], x2.shape[-1]))
     orig_shape = res.shape
     res = dpnp.reshape(res, (-1, res.shape[-2], res.shape[-1]))
 
-    ht_tasks_list = []
     # gemm_batch does not handle negative strides, make a copy if needed
-    x1 = _copy_array(
-        x1, dev_tasks_list, ht_tasks_list, copy_flag=x1.strides[0] < 0
-    )
-    x2 = _copy_array(
-        x2, dev_tasks_list, ht_tasks_list, copy_flag=x2.strides[0] < 0
-    )
-    res = _copy_array(
-        res, dev_tasks_list, ht_tasks_list, copy_flag=res.strides[0] < 0
-    )
+    x1 = _copy_array(x1, copy_flag=x1.strides[0] < 0)
+    x2 = _copy_array(x2, copy_flag=x2.strides[0] < 0)
+    res = _copy_array(res, copy_flag=res.strides[0] < 0)
+
+    _manager = dpu.SequentialOrderManager[exec_q]
+
     # onemkl::blas::gemm_bacth throws an exception (Provided range is out
     # of integer limits) if the batch_size is too large (>=4096*4096), so
     # we need to split the batch into smaller chunks
@@ -742,15 +739,15 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
             x1_usm = dpnp.get_usm_ndarray(x1[i : i + chunk, ...])
             x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
         res_usm = dpnp.get_usm_ndarray(res[i : i + chunk, ...])
-        ht_blas_ev, _, row_major = bi._gemm_batch(
+
+        ht_blas_ev, blas_ev, row_major = bi._gemm_batch(
             exec_q,
             x1_usm,
             x2_usm,
             res_usm,
-            dev_tasks_list,
+            depends=_manager.submitted_events,
         )
-        ht_tasks_list.append(ht_blas_ev)
-    dpctl.SyclEvent.wait_for(ht_tasks_list)
+        _manager.add_event_pair(ht_blas_ev, blas_ev)
 
     res_shape = res.shape
     _, res_is_c_contig, res_is_f_contig = _define_contig_flag(res)
@@ -773,15 +770,16 @@ def _gemm_batch_matmul(exec_q, x1, x2, res, dev_tasks_list):
     return dpnp.ascontiguousarray(res)
 
 
-def _gemm_matmul(exec_q, x1, x2, res, dev_tasks_list):
-    ht_blas_ev, _, row_major = bi._gemm(
+def _gemm_matmul(exec_q, x1, x2, res):
+    _manager = dpu.SequentialOrderManager[exec_q]
+    ht_gemm_ev, gemm_ev, row_major = bi._gemm(
         exec_q,
         dpnp.get_usm_ndarray(x1),
         dpnp.get_usm_ndarray(x2),
         dpnp.get_usm_ndarray(res),
-        dev_tasks_list,
+        depends=_manager.submitted_events,
     )
-    ht_blas_ev.wait()
+    _manager.add_event_pair(ht_gemm_ev, gemm_ev)
 
     if row_major:
         if res.flags.f_contiguous is True:
@@ -1585,7 +1583,7 @@ def _view_work_around(a, shape, strides):
     return b
 
 
-def dpnp_cross(a, b, cp, exec_q):
+def dpnp_cross(a, b, cp):
     """Return the cross product of two (arrays of) vectors."""
 
     # create local aliases for readability
@@ -1593,150 +1591,60 @@ def dpnp_cross(a, b, cp, exec_q):
     a1 = a[..., 1]
     if a.shape[-1] == 3:
         a2 = a[..., 2]
+
     b0 = b[..., 0]
     b1 = b[..., 1]
     if b.shape[-1] == 3:
         b2 = b[..., 2]
+
     if cp.ndim != 0 and cp.shape[-1] == 3:
         cp0 = cp[..., 0]
         cp1 = cp[..., 1]
         cp2 = cp[..., 2]
 
-    host_events = []
     if a.shape[-1] == 2:
         if b.shape[-1] == 2:
             # a0 * b1 - a1 * b0
-            cp_usm = dpnp.get_usm_ndarray(cp)
-            ht_ev1, dev_ev1 = tei._multiply(
-                dpnp.get_usm_ndarray(a0),
-                dpnp.get_usm_ndarray(b1),
-                cp_usm,
-                exec_q,
-            )
-            host_events.append(ht_ev1)
-            tmp = dpt.empty_like(cp_usm)
-            ht_ev2, dev_ev2 = tei._multiply(
-                dpnp.get_usm_ndarray(a1), dpnp.get_usm_ndarray(b0), tmp, exec_q
-            )
-            host_events.append(ht_ev2)
-            ht_ev3, _ = tei._subtract_inplace(
-                cp_usm, tmp, exec_q, [dev_ev1, dev_ev2]
-            )
-            host_events.append(ht_ev3)
+            cp = dpnp.multiply(a0, b1, out=cp)
+            cp -= a1 * b0
         else:
             assert b.shape[-1] == 3
             # cp0 = a1 * b2 - 0  (a2 = 0)
+            cp0 = dpnp.multiply(a1, b2, out=cp0)
+
             # cp1 = 0 - a0 * b2  (a2 = 0)
+            cp1 = dpnp.multiply(a0, b2, out=cp1)
+            cp1 = dpnp.negative(cp1, out=cp1)
+
             # cp2 = a0 * b1 - a1 * b0
-            cp1_usm = dpnp.get_usm_ndarray(cp1)
-            cp2_usm = dpnp.get_usm_ndarray(cp2)
-            a1_usm = dpnp.get_usm_ndarray(a1)
-            b2_usm = dpnp.get_usm_ndarray(b2)
-            ht_ev1, _ = tei._multiply(
-                a1_usm, b2_usm, dpnp.get_usm_ndarray(cp0), exec_q
-            )
-            host_events.append(ht_ev1)
-            ht_ev2, dev_ev2 = tei._multiply(
-                dpnp.get_usm_ndarray(a0), b2_usm, cp1_usm, exec_q
-            )
-            host_events.append(ht_ev2)
-            ht_ev3, _ = tei._negative(cp1_usm, cp1_usm, exec_q, [dev_ev2])
-            host_events.append(ht_ev3)
-            ht_ev4, dev_ev4 = tei._multiply(
-                dpnp.get_usm_ndarray(a0),
-                dpnp.get_usm_ndarray(b1),
-                cp2_usm,
-                exec_q,
-            )
-            host_events.append(ht_ev4)
-            tmp = dpt.empty_like(cp2_usm)
-            ht_ev5, dev_ev5 = tei._multiply(
-                a1_usm, dpnp.get_usm_ndarray(b0), tmp, exec_q
-            )
-            host_events.append(ht_ev5)
-            ht_ev6, _ = tei._subtract_inplace(
-                cp2_usm, tmp, exec_q, [dev_ev4, dev_ev5]
-            )
-            host_events.append(ht_ev6)
+            cp2 = dpnp.multiply(a0, b1, out=cp2)
+            cp2 -= a1 * b0
     else:
         assert a.shape[-1] == 3
         if b.shape[-1] == 3:
             # cp0 = a1 * b2 - a2 * b1
+            cp0 = dpnp.multiply(a1, b2, out=cp0)
+            cp0 -= a2 * b1
+
             # cp1 = a2 * b0 - a0 * b2
+            cp1 = dpnp.multiply(a2, b0, out=cp1)
+            cp1 -= a0 * b2
+
             # cp2 = a0 * b1 - a1 * b0
-            cp0_usm = dpnp.get_usm_ndarray(cp0)
-            cp1_usm = dpnp.get_usm_ndarray(cp1)
-            cp2_usm = dpnp.get_usm_ndarray(cp2)
-            a0_usm = dpnp.get_usm_ndarray(a0)
-            a1_usm = dpnp.get_usm_ndarray(a1)
-            a2_usm = dpnp.get_usm_ndarray(a2)
-            b0_usm = dpnp.get_usm_ndarray(b0)
-            b1_usm = dpnp.get_usm_ndarray(b1)
-            b2_usm = dpnp.get_usm_ndarray(b2)
-            ht_ev1, dev_ev1 = tei._multiply(a1_usm, b2_usm, cp0_usm, exec_q)
-            host_events.append(ht_ev1)
-            tmp = dpt.empty_like(cp0_usm)
-            ht_ev2, dev_ev2 = tei._multiply(a2_usm, b1_usm, tmp, exec_q)
-            host_events.append(ht_ev2)
-            ht_ev3, dev_ev3 = tei._subtract_inplace(
-                cp0_usm, tmp, exec_q, [dev_ev1, dev_ev2]
-            )
-            host_events.append(ht_ev3)
-            ht_ev4, dev_ev4 = tei._multiply(a2_usm, b0_usm, cp1_usm, exec_q)
-            host_events.append(ht_ev4)
-            ht_ev5, dev_ev5 = tei._multiply(
-                a0_usm, b2_usm, tmp, exec_q, [dev_ev3]
-            )
-            host_events.append(ht_ev5)
-            ht_ev6, dev_ev6 = tei._subtract_inplace(
-                cp1_usm, tmp, exec_q, [dev_ev4, dev_ev5]
-            )
-            host_events.append(ht_ev6)
-            ht_ev7, dev_ev7 = tei._multiply(a0_usm, b1_usm, cp2_usm, exec_q)
-            host_events.append(ht_ev7)
-            ht_ev8, dev_ev8 = tei._multiply(
-                a1_usm, b0_usm, tmp, exec_q, [dev_ev6]
-            )
-            host_events.append(ht_ev8)
-            ht_ev9, _ = tei._subtract_inplace(
-                cp2_usm, tmp, exec_q, [dev_ev7, dev_ev8]
-            )
-            host_events.append(ht_ev9)
+            cp2 = dpnp.multiply(a0, b1, out=cp2)
+            cp2 -= a1 * b0
         else:
             assert b.shape[-1] == 2
             # cp0 = 0 - a2 * b1  (b2 = 0)
-            # cp1 = a2 * b0 - 0  (b2 = 0)
-            # cp2 = a0 * b1 - a1 * b0
-            cp0_usm = dpnp.get_usm_ndarray(cp0)
-            cp2_usm = dpnp.get_usm_ndarray(cp2)
-            a2_usm = dpnp.get_usm_ndarray(a2)
-            b1_usm = dpnp.get_usm_ndarray(b1)
-            ht_ev1, dev_ev1 = tei._multiply(a2_usm, b1_usm, cp0_usm, exec_q)
-            host_events.append(ht_ev1)
-            ht_ev2, _ = tei._negative(cp0_usm, cp0_usm, exec_q, [dev_ev1])
-            host_events.append(ht_ev2)
-            ht_ev3, _ = tei._multiply(
-                a2_usm,
-                dpnp.get_usm_ndarray(b0),
-                dpnp.get_usm_ndarray(cp1),
-                exec_q,
-            )
-            host_events.append(ht_ev3)
-            ht_ev4, dev_ev4 = tei._multiply(
-                dpnp.get_usm_ndarray(a0), b1_usm, cp2_usm, exec_q
-            )
-            host_events.append(ht_ev4)
-            tmp = dpt.empty_like(cp2_usm)
-            ht_ev5, dev_ev5 = tei._multiply(
-                dpnp.get_usm_ndarray(a1), dpnp.get_usm_ndarray(b0), tmp, exec_q
-            )
-            host_events.append(ht_ev5)
-            ht_ev6, _ = tei._subtract_inplace(
-                cp2_usm, tmp, exec_q, [dev_ev4, dev_ev5]
-            )
-            host_events.append(ht_ev6)
+            cp0 = dpnp.multiply(a2, b1, out=cp0)
+            cp0 = dpnp.negative(cp0, out=cp0)
 
-    dpctl.SyclEvent.wait_for(host_events)
+            # cp1 = a2 * b0 - 0  (b2 = 0)
+            cp1 = dpnp.multiply(a2, b0, out=cp1)
+
+            # cp2 = a0 * b1 - a1 * b0
+            cp2 = dpnp.multiply(a0, b1, out=cp2)
+            cp2 -= a1 * b0
     return cp
 
 
@@ -1776,35 +1684,28 @@ def dpnp_dot(a, b, /, out=None, *, conjugate=False):
     result = _create_result_array(
         a, b, out, (), dot_dtype, res_usm_type, exec_q
     )
+
     # input arrays should have the proper data type
-    dep_events_list = []
-    host_tasks_list = []
     if dpnp.issubdtype(res_dtype, dpnp.inexact):
         # copying is needed if dtypes of input arrays are different
-        a = _copy_array(a, dep_events_list, host_tasks_list, dtype=dot_dtype)
-        b = _copy_array(b, dep_events_list, host_tasks_list, dtype=dot_dtype)
+        a = _copy_array(a, dtype=dot_dtype)
+        b = _copy_array(b, dtype=dot_dtype)
+
+        _manager = dpu.SequentialOrderManager[exec_q]
+
         if dpnp.issubdtype(res_dtype, dpnp.complexfloating):
-            if conjugate:
-                dot_func = "_dotc"
-            else:
-                dot_func = "_dotu"
-            ht_ev, _ = getattr(bi, dot_func)(
-                exec_q,
-                dpnp.get_usm_ndarray(a),
-                dpnp.get_usm_ndarray(b),
-                dpnp.get_usm_ndarray(result),
-                dep_events_list,
-            )
+            dot_func = "_dotc" if conjugate else "_dotu"
         else:
-            ht_ev, _ = bi._dot(
-                exec_q,
-                dpnp.get_usm_ndarray(a),
-                dpnp.get_usm_ndarray(b),
-                dpnp.get_usm_ndarray(result),
-                dep_events_list,
-            )
-        host_tasks_list.append(ht_ev)
-        dpctl.SyclEvent.wait_for(host_tasks_list)
+            dot_func = "_dot"
+
+        ht_dot_ev, dot_ev = getattr(bi, dot_func)(
+            exec_q,
+            dpnp.get_usm_ndarray(a),
+            dpnp.get_usm_ndarray(b),
+            dpnp.get_usm_ndarray(result),
+            depends=_manager.submitted_events,
+        )
+        _manager.add_event_pair(ht_dot_ev, dot_ev)
     else:
         # oneapi::mkl::blas::dot is slow for integer data type,
         # so using dpctl.tensor.vecdot instead
@@ -2102,10 +2003,12 @@ def dpnp_matmul(
         axes_x1, axes_x2, axes_res = axes
         axes_x1 = normalize_axis_tuple(axes_x1, x1_ndim, "axis")
         axes_x2 = normalize_axis_tuple(axes_x2, x2_ndim, "axis")
+
         # Move the axes that are going to be used in matrix product,
         # to the end of "x1" and "x2"
         x1 = dpnp.moveaxis(x1, axes_x1, (-2, -1)) if x1_ndim != 1 else x1
         x2 = dpnp.moveaxis(x2, axes_x2, (-2, -1)) if x2_ndim != 1 else x2
+
         out_orig = out
         if out is not None:
             # out that is passed to the backend should have the correct shape
@@ -2135,6 +2038,7 @@ def dpnp_matmul(
     x2_shape = x2.shape
     x1_is_2D, x1_is_1D, x1_base_is_1D = _define_dim_flags(x1, pos=0)
     x2_is_2D, x2_is_1D, x2_base_is_1D = _define_dim_flags(x2, pos=1)
+
     # TODO: investigate usage of syrk function from BLAS in
     # case of a.T @ a and a @ a.T to gain performance.
     if numpy.prod(result_shape) == 0:
@@ -2186,20 +2090,22 @@ def dpnp_matmul(
         call_flag = "gemm_batch"
         res_shape = result_shape
 
+    # dispatch to proper function call
     if call_flag == "multiply":
-        res = dpnp.multiply(x1, x2)
-        res_shape = res.shape
+        result = dpnp.multiply(x1, x2)
+        res_shape = result.shape
     elif call_flag == "dot":
         if out is not None and out.shape != ():
-            res = dpnp_dot(x1, x2)
+            result = dpnp_dot(x1, x2)
         else:
-            res = dpnp_dot(x1, x2, out=out)
-        res_shape = res.shape
+            result = dpnp_dot(x1, x2, out=out)
+        res_shape = result.shape
     else:
         x1_contig_flag, _, x1_f = _define_contig_flag(x1)
         x2_contig_flag, _, x2_f = _define_contig_flag(x2)
+
         res_order = "F" if (x1_f and x2_f and call_flag == "gemm") else "C"
-        res = _create_result_array(
+        result = _create_result_array(
             x1,
             x2,
             out,
@@ -2211,27 +2117,21 @@ def dpnp_matmul(
         )
 
         # calculate result
-        if res.size == 0:
+        if result.size == 0:
             pass
         elif x1.size == 0 or x2.size == 0:
-            res.fill(0)
+            result.fill(0)
         else:
             # input arrays should have the proper data type and
             # their base (last 2-dimensions) to be c-contiguous or f-contiguous
-            dep_events_list = []
-            host_tasks_list = []
             x1 = _copy_array(
                 x1,
-                dep_events_list,
-                host_tasks_list,
                 copy_flag=not x1_contig_flag,
                 dtype=compute_dtype,
                 order=res_order,
             )
             x2 = _copy_array(
                 x2,
-                dep_events_list,
-                host_tasks_list,
                 copy_flag=not x2_contig_flag,
                 dtype=compute_dtype,
                 order=res_order,
@@ -2244,42 +2144,36 @@ def dpnp_matmul(
                 else:
                     a_usm = dpnp.get_usm_ndarray(x1)
                     x_usm = dpnp.get_usm_ndarray(x2)
-                ht_blas_ev, _ = bi._gemv(
+
+                _manager = dpu.SequentialOrderManager[exec_q]
+                ht_gemv_ev, gemv_ev = bi._gemv(
                     exec_q,
                     a_usm,
                     x_usm,
-                    dpnp.get_usm_ndarray(res),
+                    dpnp.get_usm_ndarray(result),
                     transpose,
-                    dep_events_list,
+                    depends=_manager.submitted_events,
                 )
-                host_tasks_list.append(ht_blas_ev)
+                _manager.add_event_pair(ht_gemv_ev, gemv_ev)
             elif call_flag == "gemm":
-                res = _gemm_matmul(
+                result = _gemm_matmul(
                     exec_q,
                     x1,
                     x2,
-                    res,
-                    dep_events_list,
+                    result,
                 )
             else:  # call_flag == "gemm_batch"
-                res = _gemm_batch_matmul(
+                result = _gemm_batch_matmul(
                     exec_q,
                     x1,
                     x2,
-                    res,
-                    dep_events_list,
+                    result,
                 )
 
-            dpctl.SyclEvent.wait_for(host_tasks_list)
-
     if NumPy_special_behavior:
-        result = dpnp.tile(res, out.shape)
-    else:
-        result = (
-            dpnp.reshape(res, result_shape)
-            if res_shape != result_shape
-            else res
-        )
+        result = dpnp.tile(result, out.shape)
+    elif res_shape != result_shape:
+        result = dpnp.reshape(result, result_shape)
 
     if compute_dtype != res_dtype:
         result = dpnp.astype(result, res_dtype, copy=False)
@@ -2292,19 +2186,19 @@ def dpnp_matmul(
             elif len(axes_res) == 1:
                 result = dpnp.moveaxis(result, (-1,), axes_res)
             return result
+
         # If `order` was not passed as default
         # we need to update it to match the passed `order`.
-        elif order not in ["k", "K"]:
+        if order not in ["k", "K"]:
             return dpnp.array(result, copy=False, order=order)
-        else:
-            return result
-    else:
-        # TODO: There is opportunity to improve performance when out keyword
-        # is present. For some cases, out is NOT result but they have the same
-        # base (They are views of the same data). In this case, we can avoid
-        # copyign result to out.
-        result = dpnp.get_result_array(result, out, casting=casting)
-        if axes is not None and out is result:
-            # out and out_orig contain the same data but they have different shape
-            return out_orig
         return result
+
+    # TODO: There is opportunity to improve performance when out keyword is
+    # present. For some cases, out is NOT result but they have the same base
+    # (They are views of the same data). In this case, we can avoid copyign
+    # result to out.
+    result = dpnp.get_result_array(result, out, casting=casting)
+    if axes is not None and out is result:
+        # out and out_orig contain the same data but they have different shape
+        return out_orig
+    return result
