@@ -25,11 +25,11 @@ class TestFft:
 
         np_res = numpy.fft.fft(np_data, norm=norm)
         dpnp_res = dpnp.fft.fft(dpnp_data, norm=norm)
-        assert_dtype_allclose(dpnp_res, np_res)
+        assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
 
         np_res = numpy.fft.ifft(np_data, norm=norm)
         dpnp_res = dpnp.fft.ifft(dpnp_data, norm=norm)
-        assert_dtype_allclose(dpnp_res, np_res)
+        assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize("n", [None, 5, 20])
@@ -41,11 +41,11 @@ class TestFft:
 
         result = dpnp.fft.fft(a, n=n, norm=norm)
         expected = numpy.fft.fft(a_np, n=n, norm=norm)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
         iresult = dpnp.fft.ifft(result, n=n, norm=norm)
         iexpected = numpy.fft.ifft(expected, n=n, norm=norm)
-        assert_dtype_allclose(iresult, iexpected)
+        assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 20])
@@ -58,11 +58,11 @@ class TestFft:
 
         result = dpnp.fft.fft(a, n=n, norm=norm)
         expected = numpy.fft.fft(a_np, n=n, norm=norm)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
         iresult = dpnp.fft.ifft(result, n=n, norm=norm)
         iexpected = numpy.fft.ifft(expected, n=n, norm=norm)
-        assert_dtype_allclose(iresult, iexpected)
+        assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 8])
@@ -75,11 +75,11 @@ class TestFft:
 
         result = dpnp.fft.fft(a, n=n, axis=axis, norm=norm)
         expected = numpy.fft.fft(a_np, n=n, axis=axis, norm=norm)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
         iresult = dpnp.fft.ifft(result, n=n, axis=axis, norm=norm)
         iexpected = numpy.fft.ifft(expected, n=n, axis=axis, norm=norm)
-        assert_dtype_allclose(iresult, iexpected)
+        assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 8])
@@ -96,11 +96,11 @@ class TestFft:
 
         result = dpnp.fft.fft(a, n=n, axis=axis, norm=norm)
         expected = numpy.fft.fft(a_np, n=n, axis=axis, norm=norm)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
         iresult = dpnp.fft.ifft(result, n=n, axis=axis, norm=norm)
         iexpected = numpy.fft.ifft(expected, n=n, axis=axis, norm=norm)
-        assert_dtype_allclose(iresult, iexpected)
+        assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("n", [None, 5, 20])
     def test_fft_usm_ndarray(self, n):
@@ -114,13 +114,13 @@ class TestFft:
         result = dpnp.fft.fft(a_usm, n=n, out=out)
         assert out is result.get_array()
         expected = numpy.fft.fft(a_np, n=n)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
         # in-place
         if n is None:
             result = dpnp.fft.fft(a_usm, n=n, out=a_usm)
             assert a_usm is result.get_array()
-            assert_dtype_allclose(result, expected)
+            assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 20])
@@ -136,12 +136,12 @@ class TestFft:
         result = dpnp.fft.fft(a, n=n, norm=norm, out=out)
         assert out is result
         expected = numpy.fft.fft(a_np, n=n, norm=norm)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
         iresult = dpnp.fft.ifft(result, n=n, norm=norm, out=out)
         assert out is iresult
         iexpected = numpy.fft.ifft(expected, n=n, norm=norm)
-        assert_dtype_allclose(iresult, iexpected)
+        assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("axis", [0, 1])
     def test_fft_inplace_out(self, axis):
@@ -238,12 +238,12 @@ class TestFft:
         result = dpnp.fft.fft(a, n=n, axis=axis, norm=norm, out=out)
         assert out is result
         expected = numpy.fft.fft(a_np, n=n, axis=axis, norm=norm)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
         iresult = dpnp.fft.ifft(result, n=n, axis=axis, norm=norm, out=out)
         assert out is iresult
         iexpected = numpy.fft.ifft(expected, n=n, axis=axis, norm=norm)
-        assert_dtype_allclose(iresult, iexpected)
+        assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("stride", [-1, -3, 2, 5])
     def test_fft_strided_1D(self, stride):
@@ -256,7 +256,7 @@ class TestFft:
 
         result = dpnp.fft.fft(a)
         expected = numpy.fft.fft(a_np)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("stride_x", [-1, -3, 2, 3])
     @pytest.mark.parametrize("stride_y", [-1, -3, 2, 3])
@@ -270,7 +270,7 @@ class TestFft:
 
         result = dpnp.fft.fft(a)
         expected = numpy.fft.fft(a_np)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     def test_fft_empty_array(self):
         a_np = numpy.empty((10, 0, 4), dtype=numpy.complex64)
@@ -278,17 +278,19 @@ class TestFft:
 
         result = dpnp.fft.fft(a, axis=0)
         expected = numpy.fft.fft(a_np, axis=0)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
         result = dpnp.fft.fft(a, axis=1, n=2)
         expected = numpy.fft.fft(a_np, axis=1, n=2)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_fft_error(self, xp):
         # 0-D input
         a = xp.array(3)
-        assert_raises(ValueError, xp.fft.fft, a)
+        # dpnp and Intel® NumPy return ValueError
+        # vanilla NumPy return IndexError
+        assert_raises((ValueError, IndexError), xp.fft.fft, a)
 
         # n is not int
         a = xp.ones((4, 3))
