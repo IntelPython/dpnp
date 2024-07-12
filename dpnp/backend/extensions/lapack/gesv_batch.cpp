@@ -243,41 +243,18 @@ std::pair<sycl::event, sycl::event>
                dpctl::tensor::usm_ndarray dependent_vals,
                const std::vector<sycl::event> &depends)
 {
-    const int coeff_matrix_nd = coeff_matrix.get_ndim();
     const int dependent_vals_nd = dependent_vals.get_ndim();
-
-    if (coeff_matrix_nd != 3) {
-        throw py::value_error("The coefficient matrix has ndim=" +
-                              std::to_string(coeff_matrix_nd) +
-                              ", but a 3-dimensional array is expected.");
-    }
-
-    if (dependent_vals_nd < 2 || dependent_vals_nd > 3) {
-        throw py::value_error(
-            "The dependent values array has ndim=" +
-            std::to_string(dependent_vals_nd) +
-            ", but a 2-dimensional or 3-dimensional array is expected.");
-    }
 
     const py::ssize_t *coeff_matrix_shape = coeff_matrix.get_shape_raw();
     const py::ssize_t *dependent_vals_shape = dependent_vals.get_shape_raw();
 
-    // The coeff_matrix and dependent_vals arrays must be F-contiguous arrays
-    // with the shapes (n,n,batch_size) and (n,nrhs,batch_size) or
-    // (n,batch_size) respectively
-    if (coeff_matrix_shape[0] != coeff_matrix_shape[1]) {
-        throw py::value_error("The coefficient matrix must be square,"
-                              " but got a shape of (" +
-                              std::to_string(coeff_matrix_shape[0]) + ", " +
-                              std::to_string(coeff_matrix_shape[1]) + ").");
-    }
+    const int expected_coeff_matrix_ndim = 3;
+    const int min_dependent_vals_ndim = 2;
+    const int max_dependent_vals_ndim = 3;
 
-    if (coeff_matrix_shape[0] != dependent_vals_shape[0]) {
-        throw py::value_error("The first dimension (n) of coeff_matrix and"
-                              " dependent_vals must be the same, but got " +
-                              std::to_string(coeff_matrix_shape[0]) + " and " +
-                              std::to_string(dependent_vals_shape[0]) + ".");
-    }
+    common_gesv_checks(exec_q, coeff_matrix, dependent_vals, coeff_matrix_shape,
+                       dependent_vals_shape, expected_coeff_matrix_ndim,
+                       min_dependent_vals_ndim, max_dependent_vals_ndim);
 
     if (dependent_vals_nd == 2) {
         if (coeff_matrix_shape[2] != dependent_vals_shape[1]) {
@@ -311,46 +288,9 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    // Check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {coeff_matrix, dependent_vals}))
-    {
-        throw py::value_error(
-            "Execution queue is not compatible with allocation queues.");
-    }
-
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(coeff_matrix, dependent_vals)) {
-        throw py::value_error(
-            "The arrays of coefficients and dependent variables "
-            "are overlapping segments of memory.");
-    }
-
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(
-        dependent_vals);
-
-    bool is_coeff_matrix_f_contig = coeff_matrix.is_f_contiguous();
-    if (!is_coeff_matrix_f_contig) {
-        throw py::value_error("The coefficient matrix "
-                              "must be F-contiguous.");
-    }
-
-    bool is_dependent_vals_f_contig = dependent_vals.is_f_contiguous();
-    if (!is_dependent_vals_f_contig) {
-        throw py::value_error("The array of dependent variables "
-                              "must be F-contiguous.");
-    }
-
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int coeff_matrix_type_id =
         array_types.typenum_to_lookup_id(coeff_matrix.get_typenum());
-    int dependent_vals_type_id =
-        array_types.typenum_to_lookup_id(dependent_vals.get_typenum());
-
-    if (coeff_matrix_type_id != dependent_vals_type_id) {
-        throw py::value_error("The types of the coefficient matrix and "
-                              "dependent variables are mismatched.");
-    }
 
     gesv_batch_impl_fn_ptr_t gesv_batch_fn =
         gesv_batch_dispatch_vector[coeff_matrix_type_id];
