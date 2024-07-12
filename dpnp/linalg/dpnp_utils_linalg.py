@@ -38,8 +38,8 @@ available as a pybind11 extension.
 # pylint: disable=protected-access
 # pylint: disable=useless-import-alias
 
-import dpctl
 import dpctl.tensor._tensor_impl as ti
+import dpctl.utils as dpu
 import numpy
 from numpy import prod
 from numpy.core.numeric import normalize_axis_index
@@ -128,11 +128,12 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
     a_sycl_queue = a.sycl_queue
     a_order = "C" if a.flags.c_contiguous else "F"
 
+    _manager = dpu.SequentialOrderManager[a_sycl_queue]
+
     # need to loop over the 1st dimension to get eigenvalues and
     # eigenvectors of 3d matrix A
     batch_size = a.shape[0]
     eig_vecs = [None] * batch_size
-    ht_list_ev = [None] * batch_size * 2
     for i in range(batch_size):
         # oneMKL LAPACK assumes fortran-like array as input, so
         # allocate a memory with 'F' order for dpnp array of eigenvectors
@@ -140,11 +141,13 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
 
         # use DPCTL tensor function to fill the array of eigenvectors with
         # content of input array
-        ht_list_ev[2 * i], copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=a_usm_arr[i],
             dst=eig_vecs[i].get_array(),
             sycl_queue=a_sycl_queue,
+            depends=_manager.submitted_events,
         )
+        _manager.add_event_pair(ht_ev, copy_ev)
 
         # TODO: Remove this w/a when MKLD-17201 is solved.
         # Waiting for a host task executing an OneMKL LAPACK syevd/heevd call
@@ -153,11 +156,11 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
         # We need to wait for each host tasks before calling _seyvd and _heevd
         # to avoid deadlock.
         if is_cpu_device:
-            ht_list_ev[2 * i].wait()
+            dpnp.synchronize_array_data(a)
 
         # call LAPACK extension function to get eigenvalues and
         # eigenvectors of a portion of matrix A
-        ht_list_ev[2 * i + 1], _ = getattr(li, lapack_func)(
+        ht_ev, lapack_ev = getattr(li, lapack_func)(
             a_sycl_queue,
             jobz,
             uplo,
@@ -165,8 +168,7 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
             w[i].get_array(),
             depends=[copy_ev],
         )
-
-    dpctl.SyclEvent.wait_for(ht_list_ev)
+        _manager.add_event_pair(ht_ev, lapack_ev)
 
     w = w.reshape(w_orig_shape)
 
@@ -208,18 +210,24 @@ def _batched_inv(a, res_type):
     )
     dev_info = [0] * batch_size
 
+    _manager = dpu.SequentialOrderManager[a_sycl_queue]
+
     # use DPCTL tensor function to fill the matrix array
     # with content from the input array `a`
-    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
+    ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr,
+        dst=a_h.get_array(),
+        sycl_queue=a.sycl_queue,
+        depends=_manager.submitted_events,
     )
+    _manager.add_event_pair(ht_ev, copy_ev)
 
     ipiv_stride = n
     a_stride = a_h.strides[0]
 
     # Call the LAPACK extension function _getrf_batch
     # to perform LU decomposition of a batch of general matrices
-    ht_getrf_ev, getrf_ev = li._getrf_batch(
+    ht_ev, getrf_ev = li._getrf_batch(
         a_sycl_queue,
         a_h.get_array(),
         ipiv_h.get_array(),
@@ -228,15 +236,16 @@ def _batched_inv(a, res_type):
         a_stride,
         ipiv_stride,
         batch_size,
-        [a_copy_ev],
+        depends=[copy_ev],
     )
+    _manager.add_event_pair(ht_ev, getrf_ev)
 
     _check_lapack_dev_info(dev_info)
 
     # Call the LAPACK extension function _getri_batch
     # to compute the inverse of a batch of matrices using the results
     # from the LU decomposition performed by _getrf_batch
-    ht_getri_ev, _ = li._getri_batch(
+    ht_ev, getri_ev = li._getri_batch(
         a_sycl_queue,
         a_h.get_array(),
         ipiv_h.get_array(),
@@ -245,14 +254,11 @@ def _batched_inv(a, res_type):
         a_stride,
         ipiv_stride,
         batch_size,
-        [getrf_ev],
+        depends=[getrf_ev],
     )
+    _manager.add_event_pair(ht_ev, getri_ev)
 
     _check_lapack_dev_info(dev_info)
-
-    ht_getri_ev.wait()
-    ht_getrf_ev.wait()
-    a_ht_copy_ev.wait()
 
     return a_h.reshape(orig_shape)
 
@@ -290,13 +296,12 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
         b_usm_arr = dpnp.get_usm_ndarray(b)
         reshape = True
 
-    batch_size = a.shape[0]
+    _manager = dpu.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
 
+    batch_size = a.shape[0]
     coeff_vecs = [None] * batch_size
     val_vecs = [None] * batch_size
-    a_ht_copy_ev = [None] * batch_size
-    b_ht_copy_ev = [None] * batch_size
-    ht_lapack_ev = [None] * batch_size
 
     for i in range(batch_size):
         # oneMKL LAPACK assumes fortran-like array as input, so allocate
@@ -307,11 +312,13 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
 
         # use DPCTL tensor function to fill the coefficient matrix array
         # with content from the input array
-        a_ht_copy_ev[i], a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        ht_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=a_usm_arr[i],
             dst=coeff_vecs[i].get_array(),
             sycl_queue=a.sycl_queue,
+            depends=dep_evs,
         )
+        _manager.add_event_pair(ht_ev, a_copy_ev)
 
         # oneMKL LAPACK assumes fortran-like array as input, so
         # allocate a memory with 'F' order for dpnp array of multiple
@@ -322,21 +329,24 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
 
         # use DPCTL tensor function to fill the array of multiple dependent
         # variables with content from the input arrays
-        b_ht_copy_ev[i], b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        ht_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=b_usm_arr[i],
             dst=val_vecs[i].get_array(),
             sycl_queue=b.sycl_queue,
+            depends=dep_evs,
         )
+        _manager.add_event_pair(ht_ev, b_copy_ev)
 
         # Call the LAPACK extension function _gesv to solve the system of
         # linear equations using a portion of the coefficient square matrix
         # and a corresponding portion of the dependent variables array.
-        ht_lapack_ev[i], _ = li._gesv(
+        ht_ev, gesv_ev = li._gesv(
             exec_q,
             coeff_vecs[i].get_array(),
             val_vecs[i].get_array(),
             depends=[a_copy_ev, b_copy_ev],
         )
+        _manager.add_event_pair(ht_ev, gesv_ev)
 
         # TODO: Remove this w/a when MKLD-17201 is solved.
         # Waiting for a host task executing an OneMKL LAPACK gesv call
@@ -345,13 +355,7 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
         # We need to wait for each host tasks before calling _gesv to avoid
         # deadlock.
         if is_cpu_device:
-            ht_lapack_ev[i].wait()
-            b_ht_copy_ev[i].wait()
-
-    for i in range(batch_size):
-        ht_lapack_ev[i].wait()
-        b_ht_copy_ev[i].wait()
-        a_ht_copy_ev[i].wait()
+            dpnp.synchronize_array_data(a)
 
     # combine the list of solutions into a single array
     out_v = dpnp.array(
@@ -393,11 +397,17 @@ def _batched_qr(a, mode="reduced"):
 
     a_t = dpnp.empty_like(a, order="C", dtype=res_type)
 
+    _manager = dpu.SequentialOrderManager[a_sycl_queue]
+
     # use DPCTL tensor function to fill the matrix array
     # with content from the input array `a`
-    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_t.get_array(), sycl_queue=a_sycl_queue
+    ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr,
+        dst=a_t.get_array(),
+        sycl_queue=a_sycl_queue,
+        depends=_manager.submitted_events,
     )
+    _manager.add_event_pair(ht_ev, copy_ev)
 
     tau_h = dpnp.empty_like(
         a_t,
@@ -410,7 +420,7 @@ def _batched_qr(a, mode="reduced"):
 
     # Call the LAPACK extension function _geqrf_batch to compute
     # the QR factorization of a general m x n matrix.
-    ht_geqrf_batch_ev, geqrf_batch_ev = li._geqrf_batch(
+    ht_ev, geqrf_ev = li._geqrf_batch(
         a_sycl_queue,
         a_t.get_array(),
         tau_h.get_array(),
@@ -419,20 +429,18 @@ def _batched_qr(a, mode="reduced"):
         a_stride,
         tau_stride,
         batch_size,
-        [a_copy_ev],
+        depends=[copy_ev],
     )
-
-    ht_list_ev = [ht_geqrf_batch_ev, a_ht_copy_ev]
+    _manager.add_event_pair(ht_ev, geqrf_ev)
 
     if mode in ["r", "raw"]:
         if mode == "r":
             r = a_t[..., :k].swapaxes(-2, -1)
-            r = _triu_inplace(r, ht_list_ev, [geqrf_batch_ev])
-            dpctl.SyclEvent.wait_for(ht_list_ev)
+            r = _triu_inplace(r)
+
             return r.reshape(batch_shape + r.shape[-2:])
 
         # mode=="raw"
-        dpctl.SyclEvent.wait_for(ht_list_ev)
         q = a_t.reshape(batch_shape + a_t.shape[-2:])
         r = tau_h.reshape(batch_shape + tau_h.shape[-1:])
         return (q, r)
@@ -454,14 +462,13 @@ def _batched_qr(a, mode="reduced"):
 
     # use DPCTL tensor function to fill the matrix array `q[..., :n, :]`
     # with content from the array `a_t` overwritten by geqrf_batch
-    a_t_ht_copy_ev, a_t_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+    ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_t.get_array(),
         dst=q[..., :n, :].get_array(),
         sycl_queue=a_sycl_queue,
-        depends=[geqrf_batch_ev],
+        depends=[geqrf_ev],
     )
-
-    ht_list_ev.append(a_t_ht_copy_ev)
+    _manager.add_event_pair(ht_ev, copy_ev)
 
     q_stride = q.strides[0]
     tau_stride = tau_h.strides[0]
@@ -477,7 +484,7 @@ def _batched_qr(a, mode="reduced"):
     # Call the LAPACK extension function _orgqr_batch/ to generate the real
     # orthogonal/complex unitary matrices `Qi` of the QR factorization
     # for a batch of general matrices.
-    ht_lapack_ev, lapack_ev = getattr(li, lapack_func)(
+    ht_ev, lapack_ev = getattr(li, lapack_func)(
         a_sycl_queue,
         q.get_array(),
         tau_h.get_array(),
@@ -487,18 +494,14 @@ def _batched_qr(a, mode="reduced"):
         q_stride,
         tau_stride,
         batch_size,
-        [a_t_copy_ev],
+        depends=[copy_ev],
     )
-
-    ht_list_ev.append(ht_lapack_ev)
+    _manager.add_event_pair(ht_ev, lapack_ev)
 
     q = q[..., :mc, :].swapaxes(-2, -1)
     r = a_t[..., :mc].swapaxes(-2, -1)
 
-    ht_list_ev.append(ht_lapack_ev)
-
-    r = _triu_inplace(r, ht_list_ev, [lapack_ev])
-    dpctl.SyclEvent.wait_for(ht_list_ev)
+    r = _triu_inplace(r)
 
     return (
         q.reshape(batch_shape + q.shape[-2:]),
@@ -569,22 +572,17 @@ def _batched_svd(
     u_matrices = [None] * batch_size
     s_matrices = [None] * batch_size
     vt_matrices = [None] * batch_size
-    ht_list_ev = [None] * batch_size * 2
     for i in range(batch_size):
         if compute_uv:
             (
                 u_matrices[i],
                 s_matrices[i],
                 vt_matrices[i],
-                ht_list_ev[2 * i],
-                ht_list_ev[2 * i + 1],
             ) = dpnp_svd(a[i], full_matrices, compute_uv=True, batch_call=True)
         else:
-            s_matrices[i], ht_list_ev[2 * i], ht_list_ev[2 * i + 1] = dpnp_svd(
+            s_matrices[i] = dpnp_svd(
                 a[i], full_matrices, compute_uv=False, batch_call=True
             )
-
-    dpctl.SyclEvent.wait_for(ht_list_ev)
 
     # TODO: Need to return C-contiguous array to match the output of
     # numpy.linalg.svd
@@ -827,6 +825,8 @@ def _lu_factor(a, res_type):
     # On GPU call getrf for each two-dimensional array by loop
     use_batch = a.sycl_device.has_aspect_cpu
 
+    _manager = dpu.SequentialOrderManager[a_sycl_queue]
+
     if a.ndim > 2:
         orig_shape = a.shape
         # get 3d input arrays by reshape
@@ -846,16 +846,20 @@ def _lu_factor(a, res_type):
             )
             dev_info_h = [0] * batch_size
 
-            a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+            ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=a_usm_arr,
+                dst=a_h.get_array(),
+                sycl_queue=a_sycl_queue,
+                depends=_manager.submitted_events,
             )
+            _manager.add_event_pair(ht_ev, copy_ev)
 
             ipiv_stride = n
             a_stride = a_h.strides[0]
 
             # Call the LAPACK extension function _getrf_batch
             # to perform LU decomposition of a batch of general matrices
-            ht_lapack_ev, _ = li._getrf_batch(
+            ht_ev, getrf_ev = li._getrf_batch(
                 a_sycl_queue,
                 a_h.get_array(),
                 ipiv_h.get_array(),
@@ -864,11 +868,9 @@ def _lu_factor(a, res_type):
                 a_stride,
                 ipiv_stride,
                 batch_size,
-                [a_copy_ev],
+                depends=[copy_ev],
             )
-
-            ht_lapack_ev.wait()
-            a_ht_copy_ev.wait()
+            _manager.add_event_pair(ht_ev, getrf_ev)
 
             dev_info_array = dpnp.array(
                 dev_info_h, usm_type=a_usm_type, sycl_queue=a_sycl_queue
@@ -885,22 +887,23 @@ def _lu_factor(a, res_type):
         a_vecs = [None] * batch_size
         ipiv_vecs = [None] * batch_size
         dev_info_vecs = [None] * batch_size
-        a_ht_copy_ev = [None] * batch_size
-        ht_lapack_ev = [None] * batch_size
+
+        dep_evs = _manager.submitted_events
 
         # Process each batch
         for i in range(batch_size):
             # Copy each 2D slice to a new array because getrf will destroy
             # the input matrix
             a_vecs[i] = dpnp.empty_like(a[i], order="C", dtype=res_type)
-            (
-                a_ht_copy_ev[i],
-                a_copy_ev,
-            ) = ti._copy_usm_ndarray_into_usm_ndarray(
+
+            ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=a_usm_arr[i],
                 dst=a_vecs[i].get_array(),
                 sycl_queue=a_sycl_queue,
+                depends=dep_evs,
             )
+            _manager.add_event_pair(ht_ev, copy_ev)
+
             ipiv_vecs[i] = dpnp.empty(
                 (n,),
                 dtype=dpnp.int64,
@@ -912,17 +915,14 @@ def _lu_factor(a, res_type):
 
             # Call the LAPACK extension function _getrf
             # to perform LU decomposition on each batch in 'a_vecs[i]'
-            ht_lapack_ev[i], _ = li._getrf(
+            ht_ev, getrf_ev = li._getrf(
                 a_sycl_queue,
                 a_vecs[i].get_array(),
                 ipiv_vecs[i].get_array(),
                 dev_info_vecs[i],
-                [a_copy_ev],
+                depends=[copy_ev],
             )
-
-        for i in range(batch_size):
-            ht_lapack_ev[i].wait()
-            a_ht_copy_ev[i].wait()
+            _manager.add_event_pair(ht_ev, getrf_ev)
 
         # Reshape the results back to their original shape
         out_a = dpnp.array(a_vecs, order="C").reshape(orig_shape)
@@ -940,9 +940,13 @@ def _lu_factor(a, res_type):
 
     # use DPCTL tensor function to fill the сopy of the input array
     # from the input array
-    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+    ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr,
+        dst=a_h.get_array(),
+        sycl_queue=a_sycl_queue,
+        depends=_manager.submitted_events,
     )
+    _manager.add_event_pair(ht_ev, copy_ev)
 
     ipiv_h = dpnp.empty(
         n,
@@ -955,16 +959,14 @@ def _lu_factor(a, res_type):
 
     # Call the LAPACK extension function _getrf
     # to perform LU decomposition on the input matrix
-    ht_lapack_ev, _ = li._getrf(
+    ht_ev, getrf_ev = li._getrf(
         a_sycl_queue,
         a_h.get_array(),
         ipiv_h.get_array(),
         dev_info_h,
-        [a_copy_ev],
+        depends=[copy_ev],
     )
-
-    ht_lapack_ev.wait()
-    a_ht_copy_ev.wait()
+    _manager.add_event_pair(ht_ev, getrf_ev)
 
     dev_info_array = dpnp.array(
         dev_info_h, usm_type=a_usm_type, sycl_queue=a_sycl_queue
@@ -1308,10 +1310,8 @@ def _stacked_identity_like(x):
     return x
 
 
-def _triu_inplace(a, host_tasks, depends=None):
+def _triu_inplace(a):
     """
-    _triu_inplace(a, host_tasks, depends=None)
-
     Computes the upper triangular part of an array in-place,
     but currently allocates extra memory for the result.
 
@@ -1319,14 +1319,6 @@ def _triu_inplace(a, host_tasks, depends=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array from which the upper triangular part is to be extracted.
-    host_tasks : list
-        A list to which the function appends the host event corresponding to
-        the computation. This allows for dependency management and
-        synchronization with other tasks.
-    depends : list, optional
-        A list of events that the triangular operation depends on.
-        These tasks are completed before the triangular computation starts.
-        If ``None``, defaults to an empty list.
 
     Returns
     -------
@@ -1337,17 +1329,17 @@ def _triu_inplace(a, host_tasks, depends=None):
 
     # TODO: implement a dedicated kernel for in-place triu instead of
     # extra memory allocation for result
-    if depends is None:
-        depends = []
     out = dpnp.empty_like(a, order="C")
-    ht_triu_ev, _ = ti._triu(
+
+    _manager = dpu.SequentialOrderManager[a.sycl_queue]
+    ht_ev, triu_ev = ti._triu(
         src=a.get_array(),
         dst=out.get_array(),
         k=0,
         sycl_queue=a.sycl_queue,
-        depends=depends,
+        depends=_manager.submitted_events,
     )
-    host_tasks.append(ht_triu_ev)
+    _manager.add_event_pair(ht_ev, triu_ev)
     return out
 
 
@@ -1750,29 +1742,33 @@ def dpnp_cholesky_batch(a, upper_lower, res_type):
     # `a` must be copied because potrf_batch destroys the input matrix
     a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
 
+    _manager = dpu.SequentialOrderManager[a_sycl_queue]
+
     # use DPCTL tensor function to fill the сopy of the input array
     # from the input array
-    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+    ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr,
+        dst=a_h.get_array(),
+        sycl_queue=a_sycl_queue,
+        depends=_manager.submitted_events,
     )
+    _manager.add_event_pair(ht_ev, copy_ev)
 
     a_stride = a_h.strides[0]
 
     # Call the LAPACK extension function _potrf_batch
     # to computes the Cholesky decomposition of a batch of
     # symmetric positive-definite matrices
-    ht_lapack_ev, _ = li._potrf_batch(
+    ht_ev, potrf_ev = li._potrf_batch(
         a_sycl_queue,
         a_h.get_array(),
         upper_lower,
         n,
         a_stride,
         batch_size,
-        [a_copy_ev],
+        depends=[copy_ev],
     )
-
-    ht_lapack_ev.wait()
-    a_ht_copy_ev.wait()
+    _manager.add_event_pair(ht_ev, potrf_ev)
 
     # Get upper or lower-triangular matrix part as per `upper_lower` value
     # upper_lower is 0 (lower) or 1 (upper)
@@ -1828,23 +1824,27 @@ def dpnp_cholesky(a, upper):
     # `a` must be copied because potrf destroys the input matrix
     a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=a_usm_type)
 
+    _manager = dpu.SequentialOrderManager[a_sycl_queue]
+
     # use DPCTL tensor function to fill the сopy of the input array
     # from the input array
-    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a_sycl_queue
+    ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr,
+        dst=a_h.get_array(),
+        sycl_queue=a_sycl_queue,
+        depends=_manager.submitted_events,
     )
+    _manager.add_event_pair(ht_ev, copy_ev)
 
     # Call the LAPACK extension function _potrf
     # to computes the Cholesky decomposition
-    ht_lapack_ev, _ = li._potrf(
+    ht_ev, potrf_ev = li._potrf(
         a_sycl_queue,
         a_h.get_array(),
         upper_lower,
-        [a_copy_ev],
+        depends=[copy_ev],
     )
-
-    ht_lapack_ev.wait()
-    a_ht_copy_ev.wait()
+    _manager.add_event_pair(ht_ev, potrf_ev)
 
     # Get upper or lower-triangular matrix part as per `upper` value
     if upper:
@@ -1974,8 +1974,8 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
     a_order = "C" if a.flags.c_contiguous else "F"
 
     a_usm_arr = dpnp.get_usm_ndarray(a)
-    ht_list_ev = []
-    copy_ev = dpctl.SyclEvent()
+
+    _manager = dpu.SequentialOrderManager[a_sycl_queue]
 
     # When `eigen_mode == "N"` (jobz == 0), OneMKL LAPACK does not
     # overwrite the input array.
@@ -1991,10 +1991,13 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
 
         # use DPCTL tensor function to fill the array of eigenvectors with
         # content of input array
-        ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr, dst=v.get_array(), sycl_queue=a_sycl_queue
+        ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr,
+            dst=v.get_array(),
+            sycl_queue=a_sycl_queue,
+            depends=_manager.submitted_events,
         )
-        ht_list_ev.append(ht_copy_ev)
+        _manager.add_event_pair(ht_ev, copy_ev)
 
     # allocate a memory for dpnp array of eigenvalues
     w = dpnp.empty_like(
@@ -2005,30 +2008,30 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
 
     # call LAPACK extension function to get eigenvalues and eigenvectors of
     # matrix A
-    ht_lapack_ev, lapack_ev = getattr(li, lapack_func)(
+    ht_ev, lapack_ev = getattr(li, lapack_func)(
         a_sycl_queue,
         jobz,
         uplo,
         v.get_array(),
         w.get_array(),
-        depends=[copy_ev],
+        depends=_manager.submitted_events,
     )
-    ht_list_ev.append(ht_lapack_ev)
+    _manager.add_event_pair(ht_ev, lapack_ev)
 
     if eigen_mode == "V" and a_order != "F":
         # need to align order of eigenvectors with one of input matrix A
         out_v = dpnp.empty_like(v, order=a_order)
-        ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+
+        ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=v.get_array(),
             dst=out_v.get_array(),
             sycl_queue=a_sycl_queue,
             depends=[lapack_ev],
         )
-        ht_list_ev.append(ht_copy_out_ev)
+        _manager.add_event_pair(ht_ev, copy_ev)
     else:
         out_v = v
 
-    dpctl.SyclEvent.wait_for(ht_list_ev)
     return (w, out_v) if eigen_mode == "V" else w
 
 
@@ -2063,11 +2066,17 @@ def dpnp_inv(a):
     # This transposition is effective because the input array `a` is square.
     a_f = dpnp.empty_like(a, order=a_order, dtype=res_type)
 
+    _manager = dpu.SequentialOrderManager[a_sycl_queue]
+
     # use DPCTL tensor function to fill the coefficient matrix array
     # with content from the input array `a`
-    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_f.get_array(), sycl_queue=a_sycl_queue
+    ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr,
+        dst=a_f.get_array(),
+        sycl_queue=a_sycl_queue,
+        depends=_manager.submitted_events,
     )
+    _manager.add_event_pair(ht_ev, copy_ev)
 
     b_f = dpnp.eye(
         a_shape[0],
@@ -2078,16 +2087,14 @@ def dpnp_inv(a):
     )
 
     if a_order == "F":
-        ht_lapack_ev, _ = li._gesv(
-            a_sycl_queue, a_f.get_array(), b_f.get_array(), [a_copy_ev]
-        )
+        usm_a_f = a_f.get_array()
+        usm_b_f = b_f.get_array()
     else:
-        ht_lapack_ev, _ = li._gesv(
-            a_sycl_queue, a_f.T.get_array(), b_f.T.get_array(), [a_copy_ev]
-        )
+        usm_a_f = a_f.T.get_array()
+        usm_b_f = b_f.T.get_array()
 
-    ht_lapack_ev.wait()
-    a_ht_copy_ev.wait()
+    ht_ev, gesv_ev = li._gesv(a_sycl_queue, usm_a_f, usm_b_f, depends=[copy_ev])
+    _manager.add_event_pair(ht_ev, gesv_ev)
 
     return b_f
 
@@ -2359,11 +2366,17 @@ def dpnp_qr(a, mode="reduced"):
     a_usm_arr = dpnp.get_usm_ndarray(a)
     a_t = dpnp.empty_like(a, order="C", dtype=res_type)
 
+    _manager = dpu.SequentialOrderManager[a_sycl_queue]
+
     # use DPCTL tensor function to fill the matrix array
     # with content from the input array `a`
-    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_t.get_array(), sycl_queue=a_sycl_queue
+    ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr,
+        dst=a_t.get_array(),
+        sycl_queue=a_sycl_queue,
+        depends=_manager.submitted_events,
     )
+    _manager.add_event_pair(ht_ev, copy_ev)
 
     tau_h = dpnp.empty_like(
         a,
@@ -2373,21 +2386,18 @@ def dpnp_qr(a, mode="reduced"):
 
     # Call the LAPACK extension function _geqrf to compute the QR factorization
     # of a general m x n matrix.
-    ht_geqrf_ev, geqrf_ev = li._geqrf(
-        a_sycl_queue, a_t.get_array(), tau_h.get_array(), [a_copy_ev]
+    ht_ev, geqrf_ev = li._geqrf(
+        a_sycl_queue, a_t.get_array(), tau_h.get_array(), depends=[copy_ev]
     )
-
-    ht_list_ev = [ht_geqrf_ev, a_ht_copy_ev]
+    _manager.add_event_pair(ht_ev, geqrf_ev)
 
     if mode in ["r", "raw"]:
         if mode == "r":
             r = a_t[:, :k].transpose()
-            r = _triu_inplace(r, ht_list_ev, [geqrf_ev])
-            dpctl.SyclEvent.wait_for(ht_list_ev)
+            r = _triu_inplace(r)
             return r
 
         # mode == "raw":
-        dpctl.SyclEvent.wait_for(ht_list_ev)
         return (a_t, tau_h)
 
     # mc is the total number of columns in the q matrix.
@@ -2410,14 +2420,13 @@ def dpnp_qr(a, mode="reduced"):
 
     # use DPCTL tensor function to fill the matrix array `q[:n]`
     # with content from the array `a_t` overwritten by geqrf
-    a_t_ht_copy_ev, a_t_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+    ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_t.get_array(),
         dst=q[:n].get_array(),
         sycl_queue=a_sycl_queue,
         depends=[geqrf_ev],
     )
-
-    ht_list_ev.append(a_t_ht_copy_ev)
+    _manager.add_event_pair(ht_ev, copy_ev)
 
     # Get LAPACK function (_orgqr for real or _ungqf for complex data types)
     # for QR factorization
@@ -2429,18 +2438,21 @@ def dpnp_qr(a, mode="reduced"):
 
     # Call the LAPACK extension function _orgqr/_ungqf to generate the real
     # orthogonal/complex unitary matrix `Q` of the QR factorization
-    ht_lapack_ev, lapack_ev = getattr(li, lapack_func)(
-        a_sycl_queue, m, mc, k, q.get_array(), tau_h.get_array(), [a_t_copy_ev]
+    ht_ev, lapack_ev = getattr(li, lapack_func)(
+        a_sycl_queue,
+        m,
+        mc,
+        k,
+        q.get_array(),
+        tau_h.get_array(),
+        depends=[copy_ev],
     )
+    _manager.add_event_pair(ht_ev, lapack_ev)
 
     q = q[:mc].transpose()
     r = a_t[:, :mc].transpose()
 
-    ht_list_ev.append(ht_lapack_ev)
-
-    r = _triu_inplace(r, ht_list_ev, [lapack_ev])
-    dpctl.SyclEvent.wait_for(ht_list_ev)
-
+    r = _triu_inplace(r)
     return (q, r)
 
 
@@ -2476,11 +2488,18 @@ def dpnp_solve(a, b):
     # oneMKL LAPACK getrf overwrites `a`.
     a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=res_usm_type)
 
+    _manager = dpu.SequentialOrderManager[exec_q]
+    dev_evs = _manager.submitted_events
+
     # use DPCTL tensor function to fill the сopy of the input array
     # from the input array
-    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=a.sycl_queue
+    ht_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr,
+        dst=a_h.get_array(),
+        sycl_queue=a.sycl_queue,
+        depends=dev_evs,
     )
+    _manager.add_event_pair(ht_ev, a_copy_ev)
 
     # oneMKL LAPACK getrs overwrites `b` and assumes fortran-like array as
     # input.
@@ -2490,9 +2509,13 @@ def dpnp_solve(a, b):
 
     # use DPCTL tensor function to fill the array of multiple dependent
     # variables with content from the input array `b`
-    b_ht_copy_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=b_usm_arr, dst=b_h.get_array(), sycl_queue=b.sycl_queue
+    ht_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=b_usm_arr,
+        dst=b_h.get_array(),
+        sycl_queue=b.sycl_queue,
+        depends=dev_evs,
     )
+    _manager.add_event_pair(ht_ev, b_copy_ev)
 
     n = a.shape[0]
 
@@ -2505,29 +2528,28 @@ def dpnp_solve(a, b):
 
     # Call the LAPACK extension function _getrf
     # to perform LU decomposition of the input matrix
-    ht_getrf_ev, getrf_ev = li._getrf(
+    ht_ev, getrf_ev = li._getrf(
         exec_q,
         a_h.get_array(),
         ipiv_h.get_array(),
         dev_info_h,
-        [a_copy_ev],
+        depends=[a_copy_ev],
     )
+    _manager.add_event_pair(ht_ev, getrf_ev)
 
     _check_lapack_dev_info(dev_info_h)
 
     # Call the LAPACK extension function _getrs
     # to solve the system of linear equations with an LU-factored
     # coefficient square matrix, with multiple right-hand sides.
-    ht_getrs_ev, _ = li._getrs(
+    ht_ev, getrs_ev = li._getrs(
         exec_q,
         a_h.get_array(),
         ipiv_h.get_array(),
         b_h.get_array(),
-        [b_copy_ev, getrf_ev],
+        depends=[b_copy_ev, getrf_ev],
     )
-
-    ht_list_ev = [a_ht_copy_ev, b_ht_copy_ev, ht_getrf_ev, ht_getrs_ev]
-    dpctl.SyclEvent.wait_for(ht_list_ev)
+    _manager.add_event_pair(ht_ev, getrs_ev)
     return b_h
 
 
@@ -2643,11 +2665,17 @@ def dpnp_svd(
 
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
+    _manager = dpu.SequentialOrderManager[exec_q]
+
     # use DPCTL tensor function to fill the сopy of the input array
     # from the input array
-    a_ht_copy_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr, dst=a_h.get_array(), sycl_queue=exec_q
+    ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr,
+        dst=a_h.get_array(),
+        sycl_queue=exec_q,
+        depends=_manager.submitted_events,
     )
+    _manager.add_event_pair(ht_ev, copy_ev)
 
     k = min(m, n)
     if compute_uv:
@@ -2681,7 +2709,7 @@ def dpnp_svd(
     )
     s_h = dpnp.empty_like(a_h, shape=(k,), dtype=s_type)
 
-    ht_lapack_ev, _ = li._gesvd(
+    ht_ev, gesvd_ev = li._gesvd(
         exec_q,
         jobu,
         jobvt,
@@ -2689,16 +2717,14 @@ def dpnp_svd(
         s_h.get_array(),
         u_h.get_array(),
         vt_h.get_array(),
-        [a_copy_ev],
+        depends=[copy_ev],
     )
+    _manager.add_event_pair(ht_ev, gesvd_ev)
 
     if batch_call:
         if compute_uv:
-            return u_h, s_h, vt_h, ht_lapack_ev, a_ht_copy_ev
-        return s_h, ht_lapack_ev, a_ht_copy_ev
-
-    ht_lapack_ev.wait()
-    a_ht_copy_ev.wait()
+            return u_h, s_h, vt_h
+        return s_h
 
     # TODO: Need to return C-contiguous array to match the output of
     # numpy.linalg.svd
