@@ -427,6 +427,8 @@ def test_meshgrid(device):
         pytest.param(
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
+        pytest.param("iscomplex", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
+        pytest.param("isreal", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
         pytest.param("log", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("log10", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("log1p", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
@@ -2311,29 +2313,3 @@ def test_astype(device_x, device_y):
     sycl_queue = dpctl.SyclQueue(device_y)
     y = dpnp.astype(x, dtype="f4", device=sycl_queue)
     assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_isreal(device):
-    sycl_queue = dpctl.SyclQueue(device)
-    a = dpnp.array([1 + 1j, 1 + 0j, 4.5, 3, 2, 2j], sycl_queue=sycl_queue)
-
-    res = dpnp.isreal(a)
-    assert_sycl_queue_equal(res.sycl_queue, sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_iscomplex(device):
-    sycl_queue = dpctl.SyclQueue(device)
-    a = dpnp.array([1 + 1j, 1 + 0j, 4.5, 3, 2, 2j], sycl_queue=sycl_queue)
-
-    res = dpnp.iscomplex(a)
-    assert_sycl_queue_equal(res.sycl_queue, sycl_queue)
