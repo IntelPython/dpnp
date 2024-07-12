@@ -88,7 +88,7 @@ var hierarchy =
     [ "dpnp::extensions::fft::ScaleType< mkl_dft::precision::DOUBLE >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html", null ],
     [ "dpnp::extensions::fft::ScaleType< mkl_dft::precision::SINGLE >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::sum_mean< InT, OutT, Mean >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1sum__mean.html", null ],
-    [ "dpnp::backend::ext::lapack::types::SyevdTypePairSupportFactory< T >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
+    [ "dpnp::backend::ext::lapack::types::SyevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::sycl_ext::tuple_of_n_elements< T, N >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__n__elements.html", null ],
     [ "dpnp::backend::ext::sycl_ext::tuple_of_n_elements< T, 0 >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__n__elements_3_01_t_00_010_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::tuple_of_n_elements< T, 1 >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__n__elements_3_01_t_00_011_01_4.html", null ],
