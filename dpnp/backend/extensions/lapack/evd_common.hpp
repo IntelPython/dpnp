@@ -36,15 +36,7 @@
 
 #include "types_matrix.hpp"
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace lapack
-{
-namespace evd
+namespace dpnp::extensions::lapack::evd
 {
 typedef sycl::event (*evd_impl_fn_ptr_t)(sycl::queue &,
                                          const oneapi::mkl::job,
@@ -171,8 +163,4 @@ void init_evd_dispatch_table(
         contig;
     contig.populate_dispatch_table(evd_dispatch_table);
 }
-} // namespace evd
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::lapack::evd

@@ -25,13 +25,7 @@
 
 #include "heevd.hpp"
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace lapack
+namespace dpnp::extensions::lapack
 {
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace type_utils = dpctl::tensor::type_utils;
@@ -155,7 +149,4 @@ void init_heevd(py::module_ m)
               py::arg("depends") = py::list());
     }
 }
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::lapack
