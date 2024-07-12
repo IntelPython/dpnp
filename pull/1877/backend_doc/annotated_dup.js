@@ -3,19 +3,6 @@ var annotated_dup =
     [ "dpnp", null, [
       [ "backend", null, [
         [ "ext", null, [
-          [ "blas", null, [
-            [ "types", null, [
-              [ "DotcTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html", null ],
-              [ "DotTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html", null ],
-              [ "DotuTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
-              [ "GemmBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
-              [ "GemmTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ],
-              [ "GemvTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html", null ]
-            ] ],
-            [ "DotcContigFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1_dotc_contig_factory.html", null ],
-            [ "DotContigFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1_dot_contig_factory.html", null ],
-            [ "DotuContigFactory", "structdpnp_1_1backend_1_1ext_1_1blas_1_1_dotu_contig_factory.html", null ]
-          ] ],
           [ "lapack", null, [
             [ "helper", null, [
               [ "value_type_of", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of.html", null ],
@@ -84,6 +71,35 @@ var annotated_dup =
             [ "tuple_of_tuples< std::tuple< T > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__tuples_3_01std_1_1tuple_3_01_t_01_4_01_4.html", null ],
             [ "UsmArrayMatcher", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_usm_array_matcher.html", null ]
           ] ]
+        ] ]
+      ] ],
+      [ "extensions", null, [
+        [ "blas", null, [
+          [ "types", null, [
+            [ "DotcTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html", null ],
+            [ "DotTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html", null ],
+            [ "DotuTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
+            [ "GemmBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
+            [ "GemmTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ],
+            [ "GemvTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html", null ]
+          ] ],
+          [ "DotcContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dotc_contig_factory.html", null ],
+          [ "DotContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dot_contig_factory.html", null ],
+          [ "DotuContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dotu_contig_factory.html", null ]
+        ] ]
+      ] ],
+      [ "kernels", null, [
+        [ "fabs", null, [
+          [ "FabsFunctor", "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html", null ]
+        ] ],
+        [ "fmax", null, [
+          [ "FmaxFunctor", "structdpnp_1_1kernels_1_1fmax_1_1_fmax_functor.html", null ]
+        ] ],
+        [ "fmin", null, [
+          [ "FminFunctor", "structdpnp_1_1kernels_1_1fmin_1_1_fmin_functor.html", null ]
+        ] ],
+        [ "fmod", null, [
+          [ "FmodFunctor", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ]
         ] ]
       ] ]
     ] ],

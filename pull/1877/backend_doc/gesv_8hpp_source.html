@@ -125,8 +125,8 @@ $(document).ready(function(){initNavTree('gesv_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &lt;CL/sycl.hpp&gt;</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &lt;oneapi/mkl.hpp&gt;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &lt;oneapi/mkl.hpp&gt;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &lt;sycl/sycl.hpp&gt;</span></div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &lt;dpctl4pybind11.hpp&gt;</span></div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
@@ -150,12 +150,21 @@ $(document).ready(function(){initNavTree('gesv_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>               dpctl::tensor::usm_ndarray dependent_vals,</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>               <span class="keyword">const</span> std::vector&lt;sycl::event&gt; &amp;depends);</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">extern</span> <span class="keywordtype">void</span> init_gesv_dispatch_vector(<span class="keywordtype">void</span>);</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keyword">extern</span> <span class="keywordtype">void</span> init_gesv_batch_dispatch_vector(<span class="keywordtype">void</span>);</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>} <span class="comment">// namespace lapack</span></div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>} <span class="comment">// namespace ext</span></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>} <span class="comment">// namespace backend</span></div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>} <span class="comment">// namespace dpnp</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">extern</span> <span class="keywordtype">void</span> common_gesv_checks(sycl::queue &amp;exec_q,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                               dpctl::tensor::usm_ndarray coeff_matrix,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                               dpctl::tensor::usm_ndarray dependent_vals,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                               <span class="keyword">const</span> py::ssize_t *coeff_matrix_shape,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                               <span class="keyword">const</span> py::ssize_t *dependent_vals_shape,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                               <span class="keyword">const</span> <span class="keywordtype">int</span> expected_coeff_matrix_ndim,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                               <span class="keyword">const</span> <span class="keywordtype">int</span> min_dependent_vals_ndim,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                               <span class="keyword">const</span> <span class="keywordtype">int</span> max_dependent_vals_ndim);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keyword">extern</span> <span class="keywordtype">void</span> init_gesv_dispatch_vector(<span class="keywordtype">void</span>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="keyword">extern</span> <span class="keywordtype">void</span> init_gesv_batch_dispatch_vector(<span class="keywordtype">void</span>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>} <span class="comment">// namespace lapack</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>} <span class="comment">// namespace ext</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>} <span class="comment">// namespace backend</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>} <span class="comment">// namespace dpnp</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.16.0dev0+31.g6829a842b9 documentation</title>
+  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.16.0dev0+75.g9e3ed59fb0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=1f4ef2d5"></script>
+        <script src="../../_static/documentation_options.js?v=10e39e8e"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+31.g6829a842b9
+                0.16.0dev0+75.g9e3ed59fb0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -147,6 +147,28 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argsort&quot;</span><span class="p">,</span> <span class="s2">&quot;partition&quot;</span><span class="p">,</span> <span class="s2">&quot;sort&quot;</span><span class="p">,</span> <span class="s2">&quot;sort_complex&quot;</span><span class="p">]</span>
 
 
+<span class="k">def</span> <span class="nf">_wrap_sort_argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">_sorting_fn</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrap a sorting call from dpctl.tensor interface.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;order keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kind</span> <span class="o">!=</span> <span class="s2">&quot;stable&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;kind keyword argument can only be None or &#39;stable&#39;.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">_sorting_fn</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="argsort">
 <a class="viewcode-back" href="../../reference/generated/dpnp.argsort.html#dpnp.argsort">[docs]</a>
 <span class="k">def</span> <span class="nf">argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -226,24 +248,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;order keyword argument is only supported with its default value.&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kind</span> <span class="o">!=</span> <span class="s2">&quot;stable&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;kind keyword argument can only be None or &#39;stable&#39;.&quot;</span>
-        <span class="p">)</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-        <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-
-    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
-        <span class="n">dpt</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
-    <span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_wrap_sort_argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">argsort</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
 
 
 
@@ -344,24 +349,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;order keyword argument is only supported with its default value.&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kind</span> <span class="o">!=</span> <span class="s2">&quot;stable&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;kind keyword argument can only be None or &#39;stable&#39;.&quot;</span>
-        <span class="p">)</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-        <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-
-    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
-        <span class="n">dpt</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
-    <span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_wrap_sort_argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sort</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
 
 
 
@@ -399,8 +387,10 @@
     <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubsctype</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span> <span class="ow">in</span> <span class="s2">&quot;bhBH&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">b</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">b</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">))</span>
+            <span class="n">b_dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complex64</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">b_dt</span> <span class="o">=</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">b_dt</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">b</span></div>
 
 </pre></div>

@@ -18,7 +18,7 @@ Sorting
    dpnp.argpartition
 
 .. seealso::
-   :func:`dpnp.dparray.sort`
+   :func:`dpnp.ndarray.sort`
 
 Searching
 ---------
@@ -31,10 +31,10 @@ Searching
    dpnp.nanargmax
    dpnp.argmin
    dpnp.nanargmin
+   dpnp.argwhere
    dpnp.nonzero
    dpnp.flatnonzero
    dpnp.where
-   dpnp.argwhere
    dpnp.searchsorted
    dpnp.extract
 
