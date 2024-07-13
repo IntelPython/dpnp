@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023-2024, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -24,20 +24,22 @@
 //*****************************************************************************
 
 #pragma once
-#include <cstring>
-#include <stdexcept>
 
-namespace dpnp::extensions::lapack::helper
-{
-template <typename T>
-struct value_type_of
-{
-    using type = T;
-};
+#include <oneapi/mkl.hpp>
+#include <sycl/sycl.hpp>
 
-template <typename T>
-struct value_type_of<std::complex<T>>
+#include <dpctl4pybind11.hpp>
+
+namespace dpnp::extensions::fft
 {
-    using type = T;
-};
-} // namespace dpnp::extensions::lapack::helper
+namespace mkl_dft = oneapi::mkl::dft;
+
+template <mkl_dft::precision prec, mkl_dft::domain dom>
+std::pair<sycl::event, sycl::event>
+    compute_fft_out_of_place(DescriptorWrapper<prec, dom> &descr,
+                             const dpctl::tensor::usm_ndarray &in,
+                             const dpctl::tensor::usm_ndarray &out,
+                             const bool is_forward,
+                             const std::vector<sycl::event> &depends);
+
+} // namespace dpnp::extensions::fft

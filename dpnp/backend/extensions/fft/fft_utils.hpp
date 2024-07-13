@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023-2024, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -24,20 +24,28 @@
 //*****************************************************************************
 
 #pragma once
-#include <cstring>
-#include <stdexcept>
 
-namespace dpnp::extensions::lapack::helper
+#include <oneapi/mkl.hpp>
+
+namespace dpnp::extensions::fft
 {
-template <typename T>
-struct value_type_of
+namespace mkl_dft = oneapi::mkl::dft;
+
+template <mkl_dft::precision prec>
+struct ScaleType
 {
-    using type = T;
+    using value_type = void;
 };
 
-template <typename T>
-struct value_type_of<std::complex<T>>
+template <>
+struct ScaleType<mkl_dft::precision::SINGLE>
 {
-    using type = T;
+    using value_type = float;
 };
-} // namespace dpnp::extensions::lapack::helper
+
+template <>
+struct ScaleType<mkl_dft::precision::DOUBLE>
+{
+    using value_type = double;
+};
+} // namespace dpnp::extensions::fft
