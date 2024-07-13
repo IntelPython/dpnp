@@ -62,6 +62,12 @@ var annotated_dup =
           [ "DotContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dot_contig_factory.html", null ],
           [ "DotuContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dotu_contig_factory.html", null ]
         ] ],
+        [ "fft", null, [
+          [ "DescriptorWrapper", "classdpnp_1_1extensions_1_1fft_1_1_descriptor_wrapper.html", null ],
+          [ "ScaleType", "structdpnp_1_1extensions_1_1fft_1_1_scale_type.html", null ],
+          [ "ScaleType< mkl_dft::precision::DOUBLE >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html", null ],
+          [ "ScaleType< mkl_dft::precision::SINGLE >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html", null ]
+        ] ],
         [ "lapack", null, [
           [ "helper", null, [
             [ "value_type_of", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of.html", null ],
