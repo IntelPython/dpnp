@@ -427,6 +427,8 @@ def test_meshgrid(device):
         pytest.param(
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
+        pytest.param("iscomplex", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
+        pytest.param("isreal", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
         pytest.param("log", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("log10", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("log1p", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
