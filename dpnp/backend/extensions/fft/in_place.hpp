@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2024, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -23,41 +23,22 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-/**
- * Example of experimental interface.
- *
- * This example shows how to get a runtime pointer from DPNP C++ Backend library
- *
- * Possible compile line:
- * . /opt/intel/oneapi/setvars.sh
- * g++ -g dpnp/backend/examples/example_experimental_iface.cpp -Idpnp
- * -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o
- * example_experimental_iface
- */
+#pragma once
 
-#include <iostream>
+#include <oneapi/mkl.hpp>
+#include <sycl/sycl.hpp>
 
-#include <dpnp_iface_fptr.hpp>
-// TODO #include <backend/backend_utils.hpp>
+#include <dpctl4pybind11.hpp>
 
-int main(int, char **)
+namespace dpnp::extensions::fft
 {
-    void *result = get_backend_function_name("dpnp_dot", "float");
-    std::cout << "Result Dot() function pointer (by old interface): " << result
-              << std::endl;
+namespace mkl_dft = oneapi::mkl::dft;
 
-    DPNPFuncData_t dpnp_dot_f = get_dpnp_function_ptr(
-        DPNPFuncName::DPNP_FN_DOT, DPNPFuncType::DPNP_FT_LONG);
-    std::cout << "Result Dot() function pointer: " << dpnp_dot_f.ptr
-              << " with return datatype " << (size_t)dpnp_dot_f.return_type
-              << std::endl;
+template <mkl_dft::precision prec, mkl_dft::domain dom>
+std::pair<sycl::event, sycl::event>
+    compute_fft_in_place(DescriptorWrapper<prec, dom> &descr,
+                         const dpctl::tensor::usm_ndarray &in_out,
+                         const bool is_forward,
+                         const std::vector<sycl::event> &depends);
 
-    DPNPFuncData_t dpnp_add_f = get_dpnp_function_ptr(
-        DPNPFuncName::DPNP_FN_ADD, DPNPFuncType::DPNP_FT_FLOAT,
-        DPNPFuncType::DPNP_FT_INT);
-    std::cout << "Result Add() function pointer: " << dpnp_add_f.ptr
-              << " with return datatype " << (size_t)dpnp_add_f.return_type
-              << std::endl;
-
-    return 0;
-}
+} // namespace dpnp::extensions::fft

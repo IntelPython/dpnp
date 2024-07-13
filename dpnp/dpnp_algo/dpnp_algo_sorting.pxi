@@ -58,7 +58,7 @@ cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, a
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PARTITION_EXT, param1_type, param1_type)
 
-    cdef utils.dpnp_descriptor arr2 = dpnp_copy(arr)
+    cdef utils.dpnp_descriptor arr2 = dpnp.get_dpnp_descriptor(arr.get_pyobj().copy(), copy_when_nondefault_queue=False)
 
     arr_obj = arr.get_array()
 

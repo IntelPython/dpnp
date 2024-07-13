@@ -40,10 +40,16 @@ it contains:
 import operator
 import warnings
 
+import dpctl.tensor as dpt
 import dpctl.utils as dpu
 import numpy
 
 import dpnp
+
+from .dpnp_algo.dpnp_arraycreation import (
+    dpnp_linspace,
+)
+from .dpnp_array import dpnp_array
 
 __all__ = [
     "digitize",
@@ -60,7 +66,7 @@ def _ravel_check_a_and_weights(a, weights):
     """Check input `a` and `weights` arrays, and ravel both."""
 
     # ensure that `a` array has supported type
-    dpnp.check_supported_arrays_type(a)
+    a = dpnp.get_usm_ndarray(a)
     usm_type = a.usm_type
 
     # ensure that the array is a "subtractable" dtype
@@ -71,11 +77,11 @@ def _ravel_check_a_and_weights(a, weights):
             RuntimeWarning,
             stacklevel=3,
         )
-        a = a.astype(numpy.uint8)
+        a = dpt.astype(a, numpy.uint8)
 
     if weights is not None:
         # check that `weights` array has supported type
-        dpnp.check_supported_arrays_type(weights)
+        weights = dpnp.get_usm_ndarray(weights)
         usm_type = dpu.get_coerced_usm_type([usm_type, weights.usm_type])
 
         # check that arrays have the same allocation queue
@@ -86,8 +92,9 @@ def _ravel_check_a_and_weights(a, weights):
 
         if weights.shape != a.shape:
             raise ValueError("weights should have the same shape as a.")
-        weights = weights.ravel()
-    a = a.ravel()
+        weights = dpt.reshape(weights, -1)
+
+    a = dpt.reshape(a, -1)
     return a, weights, usm_type
 
 
@@ -113,7 +120,7 @@ def _get_outer_edges(a, range):
         first_edge, last_edge = 0, 1
 
     else:
-        first_edge, last_edge = a.min(), a.max()
+        first_edge, last_edge = dpt.min(a), dpt.max(a)
         if not (dpnp.isfinite(first_edge) and dpnp.isfinite(last_edge)):
             raise ValueError(
                 f"autodetected range of [{first_edge}, {last_edge}] "
@@ -157,11 +164,9 @@ def _get_bin_edges(a, bins, range, usm_type):
                     "a and bins must be allocated on the same SYCL queue"
                 )
 
-            bin_edges = bins
-        else:
-            bin_edges = dpnp.asarray(
-                bins, sycl_queue=sycl_queue, usm_type=usm_type
-            )
+        bin_edges = dpnp.as_usm_ndarray(
+            bins, usm_type=usm_type, sycl_queue=sycl_queue
+        )
 
         if dpnp.any(bin_edges[:-1] > bin_edges[1:]):
             raise ValueError(
@@ -183,7 +188,7 @@ def _get_bin_edges(a, bins, range, usm_type):
             )
 
         # bin edges must be computed
-        bin_edges = dpnp.linspace(
+        bin_edges = dpnp_linspace(
             first_edge,
             last_edge,
             n_equal_bins + 1,
@@ -191,7 +196,7 @@ def _get_bin_edges(a, bins, range, usm_type):
             dtype=bin_type,
             sycl_queue=sycl_queue,
             usm_type=usm_type,
-        )
+        ).get_array()
         return bin_edges, (first_edge, last_edge, n_equal_bins)
     return bin_edges, None
 
@@ -204,8 +209,11 @@ def _search_sorted_inclusive(a, v):
 
     """
 
-    return dpnp.concatenate(
-        (a.searchsorted(v[:-1], "left"), a.searchsorted(v[-1:], "right"))
+    return dpt.concat(
+        (
+            dpt.searchsorted(a, v[:-1], side="left"),
+            dpt.searchsorted(a, v[-1:], side="right"),
+        )
     )
 
 
@@ -297,8 +305,14 @@ def digitize(x, bins, right=False):
         # Use dpnp.searchsorted directly if bins are increasing
         return dpnp.searchsorted(bins, x, side=side)
 
+    usm_x = dpnp.get_usm_ndarray(x)
+    usm_bins = dpnp.get_usm_ndarray(bins)
+
     # Reverse bins and adjust indices if bins are decreasing
-    return bins.size - dpnp.searchsorted(bins[::-1], x, side=side)
+    usm_res = usm_bins.size - dpt.searchsorted(usm_bins[::-1], usm_x, side=side)
+
+    dpnp.synchronize_array_data(usm_res)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def histogram(a, bins=10, range=None, density=None, weights=None):
@@ -412,26 +426,36 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     else:
         # Compute via cumulative histogram
         if weights is None:
-            sa = dpnp.sort(a)
+            sa = dpt.sort(a)
             cum_n = _search_sorted_inclusive(sa, bin_edges)
         else:
-            zero = dpnp.zeros(
+            zero = dpt.zeros(
                 1, dtype=ntype, sycl_queue=a.sycl_queue, usm_type=usm_type
             )
-            sorting_index = dpnp.argsort(a)
+            sorting_index = dpt.argsort(a)
             sa = a[sorting_index]
             sw = weights[sorting_index]
-            cw = dpnp.concatenate((zero, sw.cumsum(dtype=ntype)))
+            cw = dpt.concat((zero, dpt.cumulative_sum(sw, dtype=ntype)))
             bin_index = _search_sorted_inclusive(sa, bin_edges)
             cum_n = cw[bin_index]
 
         n = dpnp.diff(cum_n)
 
+    # convert bin_edges to dpnp.ndarray
+    bin_edges = dpnp_array._create_from_usm_ndarray(bin_edges)
+
     if density:
         # pylint: disable=possibly-used-before-assignment
-        db = dpnp.diff(bin_edges).astype(dpnp.default_float_type())
-        return n / db / n.sum(), bin_edges
+        db = dpnp.diff(bin_edges)
+        db = dpt.astype(db.get_array(), dpnp.default_float_type())
 
+        usm_n = n.get_array()
+        hist = usm_n / db / dpt.sum(usm_n)
+
+        dpnp.synchronize_array_data(hist)
+        return dpnp_array._create_from_usm_ndarray(hist), bin_edges
+
+    dpnp.synchronize_array_data(n)
     return n, bin_edges
 
 
@@ -517,4 +541,6 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
 
     a, weights, usm_type = _ravel_check_a_and_weights(a, weights)
     bin_edges, _ = _get_bin_edges(a, bins, range, usm_type)
-    return bin_edges
+
+    dpnp.synchronize_array_data(bin_edges)
+    return dpnp_array._create_from_usm_ndarray(bin_edges)

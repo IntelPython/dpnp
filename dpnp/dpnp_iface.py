@@ -36,12 +36,14 @@ it contains:
  - The functions parameters check
 
 """
-
+# pylint: disable=protected-access
 
 import os
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as ti
+import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._device import normalize_queue_device
 
@@ -53,9 +55,11 @@ from dpnp.linalg import *
 from dpnp.random import *
 
 __all__ = [
+    "are_same_logical_tensors",
     "array_equal",
     "asnumpy",
     "astype",
+    "as_usm_ndarray",
     "check_limitations",
     "check_supported_arrays_type",
     "convert_single_elem_array_to_scalar",
@@ -69,6 +73,7 @@ __all__ = [
     "get_usm_ndarray_or_scalar",
     "is_supported_array_or_scalar",
     "is_supported_array_type",
+    "synchronize_array_data",
 ]
 
 from dpnp import float64, isscalar
@@ -125,6 +130,47 @@ __all__ += __all__searching
 __all__ += __all__sorting
 __all__ += __all__statistics
 __all__ += __all__trigonometric
+
+
+def are_same_logical_tensors(ar1, ar2):
+    """
+    Check if two arrays are logical views into the same memory.
+
+    Parameters
+    ----------
+    ar1 : {dpnp_array, usm_ndarray}
+        First input array.
+    ar2 : {dpnp_array, usm_ndarray}
+        Second input array.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if two arrays are logical views into the same memory,
+        ``False`` otherwise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> b = a[:]
+    >>> a is b
+    False
+    >>> np.are_same_logical_tensors(a, b)
+    True
+    >>> b[0] = 0
+    >>> a
+    array([0, 2, 3])
+
+    >>> c = a.copy()
+    >>> np.are_same_logical_tensors(a, c)
+    False
+
+    """
+
+    return ti._same_logical_tensors(
+        dpnp.get_usm_ndarray(ar1), dpnp.get_usm_ndarray(ar2)
+    )
 
 
 def array_equal(a1, a2, equal_nan=False):
@@ -238,11 +284,60 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True, device=None):
         x1_obj, dtype, order=order, casting=casting, copy=copy, device=device
     )
 
-    # return x1 if dpctl returns a zero copy of x1_obj
+    dpnp.synchronize_array_data(x1)
     if array_obj is x1_obj and isinstance(x1, dpnp_array):
+        # return x1 if dpctl returns a zero copy of x1_obj
         return x1
-
     return dpnp_array._create_from_usm_ndarray(array_obj)
+
+
+def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
+    """
+    Return :class:`dpctl.tensor.usm_ndarray` from input object `a`.
+
+    Parameters
+    ----------
+    a : {array_like, scalar}
+        Input array or scalar.
+    dtype : {None, dtype}, optional
+        The desired dtype for the result array if new array is creating. If not
+        given, a default dtype will be used that can represent the values (by
+        considering Promotion Type Rule and device capabilities when necessary).
+        Default: ``None``.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the result array is created if
+        required.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the result array if new array
+        is created.
+        Default: ``None``.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for result array allocation if required.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        A dpctl USM ndarray from input array or scalar `a`.
+        If `a` is instance of :class:`dpnp.ndarray`
+        or :class:`dpctl.tensor.usm_ndarray`, no array allocation will be done
+        and `dtype`, `device`, `usm_type`, `sycl_queue` keywords
+        will be ignored.
+
+    """
+
+    if is_supported_array_type(a):
+        return get_usm_ndarray(a)
+
+    return dpt.asarray(
+        a, dtype=dtype, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
 
 
 def check_limitations(
@@ -436,11 +531,6 @@ def get_dpnp_descriptor(
     if use_origin_backend():
         return False
 
-    # It's required to keep track of input object if a non-strided copy is
-    # going to be created. Thus there will be an extra descriptor allocated
-    # to refer on original input.
-    orig_desc = None
-
     # If input object is a scalar, it means it was allocated on host memory.
     # We need to copy it to USM memory according to compute follows data.
     if isscalar(ext_obj):
@@ -471,7 +561,6 @@ def get_dpnp_descriptor(
             ext_obj_offset = 0
 
         if ext_obj.strides != shape_offsets or ext_obj_offset != 0:
-            orig_desc = dpnp_descriptor(ext_obj)
             ext_obj = array(ext_obj, order="C")
 
     # while dpnp functions are based on DPNP_QUEUE
@@ -488,7 +577,7 @@ def get_dpnp_descriptor(
         if not queue_is_default:
             ext_obj = array(ext_obj, sycl_queue=default_queue)
 
-    dpnp_desc = dpnp_descriptor(ext_obj, orig_desc)
+    dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:  # pylint: disable=using-constant-test
         return dpnp_desc
 
@@ -585,17 +674,16 @@ def get_result_array(a, out=None, casting="safe"):
     if out is None:
         return a
 
-    if a is out:
+    if isinstance(out, dpt.usm_ndarray):
+        out = dpnp_array._create_from_usm_ndarray(out)
+
+    if a is out or dpnp.are_same_logical_tensors(a, out):
         return out
 
-    dpnp.check_supported_arrays_type(out)
     if out.shape != a.shape:
         raise ValueError(
             f"Output array of shape {a.shape} is needed, got {out.shape}."
         )
-
-    if isinstance(out, dpt.usm_ndarray):
-        out = dpnp_array._create_from_usm_ndarray(out)
 
     dpnp.copyto(out, a, casting=casting)
     return out
@@ -699,3 +787,16 @@ def is_supported_array_type(a):
     """
 
     return isinstance(a, (dpnp_array, dpt.usm_ndarray))
+
+
+def synchronize_array_data(a):
+    """
+    The dpctl interface was reworked to make asynchronous execution.
+    That function makes a synchronization call to ensure array data is valid
+    before exit from dpnp interface function.
+
+    """
+
+    if hasattr(dpu, "SequentialOrderManager"):
+        check_supported_arrays_type(a)
+        dpu.SequentialOrderManager[a.sycl_queue].wait()

@@ -65,14 +65,16 @@ For full documentation refer to :obj:`numpy.bitwise_and`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have integer or boolean data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have integer or boolean data
-    type.
+    type. Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -132,14 +134,16 @@ For full documentation refer to :obj:`numpy.bitwise_or`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have integer or boolean data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have integer or boolean data
-    type.
+    type. Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -194,14 +198,16 @@ For full documentation refer to :obj:`numpy.bitwise_xor`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have integer or boolean data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have integer or boolean data
-    type.
+    type. Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -264,6 +270,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -326,14 +333,17 @@ For full documentation refer to :obj:`numpy.left_shift`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have integer data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have integer data type.
-    Each element must be greater than or equal to 0.
+    Each element must be greater than or equal to ``0``.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
@@ -384,14 +394,17 @@ For full documentation refer to :obj:`numpy.right_shift`.
 
 Parameters
 ----------
-x1 : {dpnp.ndarray, usm_ndarray}
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have integer data type.
-x2 : {dpnp.ndarray, usm_ndarray}
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have integer data type.
-    Each element must be greater than or equal to 0.
+    Each element must be greater than or equal to ``0``.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
