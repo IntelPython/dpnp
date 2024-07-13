@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2024, Intel Corporation
@@ -53,8 +51,12 @@ from dpnp.dpnp_utils import (
     checker_throw_axis_error,
 )
 from dpnp.fft.dpnp_algo_fft import (
-    dpnp_fft,
+    dpnp_fft_deprecated,
     dpnp_rfft,
+)
+
+from .dpnp_utils_fft import (
+    dpnp_fft,
 )
 
 __all__ = [
@@ -99,61 +101,72 @@ def get_validated_norm(norm):
     raise ValueError("Unknown norm value.")
 
 
-def fft(x, n=None, axis=-1, norm=None):
+def fft(a, n=None, axis=-1, norm=None, out=None):
     """
     Compute the one-dimensional discrete Fourier Transform.
 
     For full documentation refer to :obj:`numpy.fft.fft`.
 
-    Limitations
-    -----------
-    Parameter `x` is supported either as :class:`dpnp.ndarray`.
-    Parameter `axis` is supported with its default value.
-    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
-    `dpnp.complex128`, `dpnp.complex64` data types are supported.
-    The `dpnp.bool` data type is not supported and will raise a `TypeError`
-    exception.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array, can be complex.
+    n : {None, int}, optional
+        Length of the transformed axis of the output.
+        If `n` is smaller than the length of the input, the input is cropped.
+        If it is larger, the input is padded with zeros. If `n` is not given,
+        the length of the input along the axis specified by `axis` is used.
+        Default: ``None``.
+    axis : int, optional
+        Axis over which to compute the FFT. If not given, the last axis is
+        used. Default: ``-1``.
+    norm : {None, "backward", "ortho", "forward"}, optional
+        Normalization mode (see :obj:`dpnp.fft`).
+        Indicates which direction of the forward/backward pair of transforms
+        is scaled and with what normalization factor. ``None`` is an alias of
+        the default option ``"backward"``.
+        Default: ``"backward"``.
+    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
+        If provided, the result will be placed in this array. It should be
+        of the appropriate shape and dtype.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray of complex dtype
+        The truncated or zero-padded input, transformed along the axis
+        indicated by `axis`, or the last one if `axis` is not specified.
+
+    See Also
+    --------
+    :obj:`dpnp.fft` : For definition of the DFT and conventions used.
+    :obj:`dpnp.fft.ifft` : The inverse of :obj:`dpnp.fft.fft`.
+    :obj:`dpnp.fft.fft2` : The two-dimensional FFT.
+    :obj:`dpnp.fft.fftn` : The `n`-dimensional FFT.
+    :obj:`dpnp.fft.rfftn` : The `n`-dimensional FFT of real input.
+    :obj:`dpnp.fft.fftfreq` : Frequency bins for given FFT parameters.
+
+    Notes
+    -----
+    FFT (Fast Fourier Transform) refers to a way the discrete Fourier
+    Transform (DFT) can be calculated efficiently, by using symmetries in the
+    calculated terms. The symmetry is highest when `n` is a power of 2, and
+    the transform is therefore most efficient for these sizes.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.exp(2j * np.pi * np.arange(8) / 8)
+    >>> np.fft.fft(a)
+    array([-3.44509285e-16+1.14423775e-17j,  8.00000000e+00-8.52069395e-16j,
+            2.33486982e-16+1.22464680e-16j,  0.00000000e+00+1.22464680e-16j,
+            9.95799250e-17+2.33486982e-16j, -8.88178420e-16+1.17281316e-16j,
+            1.14423775e-17+1.22464680e-16j,  0.00000000e+00+1.22464680e-16j])
 
     """
 
-    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
-    if x_desc:
-        dt = x_desc.dtype
-        if dpnp.issubdtype(dt, dpnp.bool):
-            raise TypeError(f"The `{dt}` data type is unsupported.")
-
-        norm_ = get_validated_norm(norm)
-
-        if axis is None:
-            axis_param = -1  # the most right dimension (default value)
-        else:
-            axis_param = axis
-
-        if n is None:
-            input_boundarie = x_desc.shape[axis_param]
-        else:
-            input_boundarie = n
-
-        if x_desc.size < 1:
-            pass  # let fallback to handle exception
-        elif input_boundarie < 1:
-            pass  # let fallback to handle exception
-        elif n is not None:
-            pass
-        elif axis != -1:
-            pass
-        else:
-            output_boundarie = input_boundarie
-            return dpnp_fft(
-                x_desc,
-                input_boundarie,
-                output_boundarie,
-                axis_param,
-                False,
-                norm_.value,
-            ).get_pyobj()
-    return call_origin(numpy.fft.fft, x, n, axis, norm)
+    dpnp.check_supported_arrays_type(a)
+    return dpnp_fft(a, forward=True, n=n, axis=axis, norm=norm, out=out)
 
 
 def fft2(x, s=None, axes=(-2, -1), norm=None):
@@ -287,7 +300,7 @@ def fftshift(x, axes=None):
             input_boundarie = x_desc.shape[axis_param]
             output_boundarie = input_boundarie
 
-            return dpnp_fft(
+            return dpnp_fft_deprecated(
                 x_desc,
                 input_boundarie,
                 output_boundarie,
@@ -341,7 +354,7 @@ def hfft(x, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(
+            return dpnp_fft_deprecated(
                 x_desc,
                 input_boundarie,
                 output_boundarie,
@@ -353,60 +366,68 @@ def hfft(x, n=None, axis=-1, norm=None):
     return call_origin(numpy.fft.hfft, x, n, axis, norm)
 
 
-def ifft(x, n=None, axis=-1, norm=None):
+def ifft(a, n=None, axis=-1, norm=None, out=None):
     """
     Compute the one-dimensional inverse discrete Fourier Transform.
 
     For full documentation refer to :obj:`numpy.fft.ifft`.
 
-    Limitations
-    -----------
-    Parameter `x` is supported either as :class:`dpnp.ndarray`.
-    Parameter `axis` is supported with its default value.
-    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,,
-    `dpnp.complex128`, `dpnp.complex64` data types are supported.
-    The `dpnp.bool` data type is not supported and will raise a `TypeError`
-    exception.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array, can be complex.
+    n : {None, int}, optional
+        Length of the transformed axis of the output.
+        If `n` is smaller than the length of the input, the input is cropped.
+        If it is larger, the input is padded with zeros. If `n` is not given,
+        the length of the input along the axis specified by `axis` is used.
+        Default: ``None``.
+    axis : int, optional
+        Axis over which to compute the inverse FFT. If not given, the last
+        axis is used. Default: ``-1``.
+    norm : {"backward", "ortho", "forward"}, optional
+        Normalization mode (see :obj:`dpnp.fft`).
+        Indicates which direction of the forward/backward pair of transforms
+        is scaled and with what normalization factor. ``None`` is an alias of
+        the default option ``"backward"``.
+        Default: ``"backward"``.
+    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
+        If provided, the result will be placed in this array. It should be
+        of the appropriate shape and dtype.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray of complex dtype
+        The truncated or zero-padded input, transformed along the axis
+        indicated by `axis`, or the last one if `axis` is not specified.
+
+    See Also
+    --------
+    :obj:`dpnp.fft` : For definition of the DFT and conventions used.
+    :obj:`dpnp.fft.fft` : The one-dimensional (forward) FFT,
+                          of which :obj:`dpnp.fft.ifft` is the inverse.
+    :obj:`dpnp.fft.ifft2` : The two-dimensional inverse FFT.
+    :obj:`dpnp.fft.ifftn` : The `n`-dimensional inverse FFT.
+
+    Notes
+    -----
+    If the input parameter `n` is larger than the size of the input, the input
+    is padded by appending zeros at the end. Even though this is the common
+    approach, it might lead to surprising results. If a different padding is
+    desired, it must be performed before calling :obj:`dpnp.fft.ifft`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([0, 4, 0, 0])
+    >>> np.fft.ifft(a)
+    array([ 1.+0.j,  0.+1.j, -1.+0.j,  0.-1.j]) # may vary
 
     """
 
-    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
-    if x_desc:
-        dt = x_desc.dtype
-        if dpnp.issubdtype(dt, dpnp.bool):
-            raise TypeError(f"The `{dt}` data type is unsupported.")
-
-        norm_ = get_validated_norm(norm)
-
-        if axis is None:
-            axis_param = -1  # the most right dimension (default value)
-        else:
-            axis_param = axis
-
-        if n is None:
-            input_boundarie = x_desc.shape[axis_param]
-        else:
-            input_boundarie = n
-
-        if x_desc.size < 1:
-            pass  # let fallback to handle exception
-        elif input_boundarie < 1:
-            pass  # let fallback to handle exception
-        elif n is not None:
-            pass
-        else:
-            output_boundarie = input_boundarie
-            return dpnp_fft(
-                x_desc,
-                input_boundarie,
-                output_boundarie,
-                axis_param,
-                True,
-                norm_.value,
-            ).get_pyobj()
-
-    return call_origin(numpy.fft.ifft, x, n, axis, norm)
+    dpnp.check_supported_arrays_type(a)
+    return dpnp_fft(a, forward=False, n=n, axis=axis, norm=norm, out=out)
 
 
 def ifft2(x, s=None, axes=(-2, -1), norm=None):
@@ -435,54 +456,6 @@ def ifft2(x, s=None, axes=(-2, -1), norm=None):
             return ifftn(x, s, axes, norm)
 
     return call_origin(numpy.fft.ifft2, x, s, axes, norm)
-
-
-def ifftshift(x, axes=None):
-    """
-    Inverse shift the zero-frequency component to the center of the spectrum.
-
-    For full documentation refer to :obj:`numpy.fft.ifftshift`.
-
-    Limitations
-    -----------
-    Parameter `x` is supported either as :class:`dpnp.ndarray`.
-    Parameter `axes` is unsupported.
-    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
-    `dpnp.complex128` data types are supported.
-    Otherwise the function will be executed sequentially on CPU.
-
-    """
-
-    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
-    # TODO: enable implementation
-    # pylint: disable=condition-evals-to-constant
-    if x_desc and 0:
-        norm_ = Norm.backward
-
-        if axes is None:
-            axis_param = -1  # the most right dimension (default value)
-        else:
-            axis_param = axes
-
-        input_boundarie = x_desc.shape[axis_param]
-
-        if x_desc.size < 1:
-            pass  # let fallback to handle exception
-        elif input_boundarie < 1:
-            pass  # let fallback to handle exception
-        else:
-            output_boundarie = input_boundarie
-
-            return dpnp_fft(
-                x_desc,
-                input_boundarie,
-                output_boundarie,
-                axis_param,
-                True,
-                norm_.value,
-            ).get_pyobj()
-
-    return call_origin(numpy.fft.ifftshift, x, axes)
 
 
 def ifftn(x, s=None, axes=None, norm=None):
@@ -548,6 +521,54 @@ def ifftn(x, s=None, axes=None, norm=None):
     return call_origin(numpy.fft.ifftn, x, s, axes, norm)
 
 
+def ifftshift(x, axes=None):
+    """
+    Inverse shift the zero-frequency component to the center of the spectrum.
+
+    For full documentation refer to :obj:`numpy.fft.ifftshift`.
+
+    Limitations
+    -----------
+    Parameter `x` is supported either as :class:`dpnp.ndarray`.
+    Parameter `axes` is unsupported.
+    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
+    `dpnp.complex128` data types are supported.
+    Otherwise the function will be executed sequentially on CPU.
+
+    """
+
+    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
+    # TODO: enable implementation
+    # pylint: disable=condition-evals-to-constant
+    if x_desc and 0:
+        norm_ = Norm.backward
+
+        if axes is None:
+            axis_param = -1  # the most right dimension (default value)
+        else:
+            axis_param = axes
+
+        input_boundarie = x_desc.shape[axis_param]
+
+        if x_desc.size < 1:
+            pass  # let fallback to handle exception
+        elif input_boundarie < 1:
+            pass  # let fallback to handle exception
+        else:
+            output_boundarie = input_boundarie
+
+            return dpnp_fft_deprecated(
+                x_desc,
+                input_boundarie,
+                output_boundarie,
+                axis_param,
+                True,
+                norm_.value,
+            ).get_pyobj()
+
+    return call_origin(numpy.fft.ifftshift, x, axes)
+
+
 def ihfft(x, n=None, axis=-1, norm=None):
     """
     Compute inverse one-dimensional discrete Fourier Transform of a signal that
@@ -592,7 +613,7 @@ def ihfft(x, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(
+            return dpnp_fft_deprecated(
                 x_desc,
                 input_boundarie,
                 output_boundarie,
