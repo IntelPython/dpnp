@@ -593,54 +593,6 @@ def ifftn(x, s=None, axes=None, norm=None):
     return call_origin(numpy.fft.ifftn, x, s, axes, norm)
 
 
-def ifftshift(x, axes=None):
-    """
-    Inverse shift the zero-frequency component to the center of the spectrum.
-
-    For full documentation refer to :obj:`numpy.fft.ifftshift`.
-
-    Limitations
-    -----------
-    Parameter `x` is supported either as :class:`dpnp.ndarray`.
-    Parameter `axes` is unsupported.
-    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
-    `dpnp.complex128` data types are supported.
-    Otherwise the function will be executed sequentially on CPU.
-
-    """
-
-    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
-    # TODO: enable implementation
-    # pylint: disable=condition-evals-to-constant
-    if x_desc and 0:
-        norm_ = Norm.backward
-
-        if axes is None:
-            axis_param = -1  # the most right dimension (default value)
-        else:
-            axis_param = axes
-
-        input_boundarie = x_desc.shape[axis_param]
-
-        if x_desc.size < 1:
-            pass  # let fallback to handle exception
-        elif input_boundarie < 1:
-            pass  # let fallback to handle exception
-        else:
-            output_boundarie = input_boundarie
-
-            return dpnp_fft_deprecated(
-                x_desc,
-                input_boundarie,
-                output_boundarie,
-                axis_param,
-                True,
-                norm_.value,
-            ).get_pyobj()
-
-    return call_origin(numpy.fft.ifftshift, x, axes)
-
-
 def ihfft(x, n=None, axis=-1, norm=None):
     """
     Compute inverse one-dimensional discrete Fourier Transform of a signal that

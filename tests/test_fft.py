@@ -355,7 +355,7 @@ class TestRfft:
         with pytest.raises(TypeError):
             dpnp_func(a)
 
-            
+
 class TestFftshift:
     @pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
     @pytest.mark.parametrize("axes", [None, 1, (0, 1)])
@@ -364,4 +364,4 @@ class TestFftshift:
         x_np = x.asnumpy()
         expected = getattr(dpnp.fft, func)(x, axes=axes)
         result = getattr(numpy.fft, func)(x_np, axes=axes)
-        assert_dtype_allclose(expected, result)        
+        assert_dtype_allclose(expected, result)
