@@ -355,7 +355,7 @@ class TestRfft:
         with pytest.raises(TypeError):
             dpnp_func(a)
 
-            
+
 class TestFftfreq:
     @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
     @pytest.mark.parametrize("n", [10, 20])

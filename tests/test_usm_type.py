@@ -944,7 +944,7 @@ def test_fftfreq(func, usm_type):
     assert_dtype_allclose(result, expected)
     assert result.usm_type == usm_type
 
-    
+
 @pytest.mark.parametrize("func", ["fft", "ifft"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_fft(func, usm_type):
