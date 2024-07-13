@@ -27,15 +27,7 @@
 #include <cstring>
 #include <stdexcept>
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace lapack
-{
-namespace helper
+namespace dpnp::extensions::lapack::helper
 {
 template <typename T>
 struct value_type_of
@@ -48,8 +40,4 @@ struct value_type_of<std::complex<T>>
 {
     using type = T;
 };
-} // namespace helper
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::lapack::helper

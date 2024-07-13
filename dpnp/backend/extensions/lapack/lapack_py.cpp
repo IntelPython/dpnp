@@ -43,7 +43,7 @@
 #include "syevd.hpp"
 #include "ungqr.hpp"
 
-namespace lapack_ext = dpnp::backend::ext::lapack;
+namespace lapack_ext = dpnp::extensions::lapack;
 namespace py = pybind11;
 
 // populate dispatch vectors
