@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+60.g3e237b3172 documentation</title>
+  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+67.g27e9796975 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=ceb17c03"></script>
+        <script src="../../../_static/documentation_options.js?v=3ebddf7a"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+60.g3e237b3172
+                0.16.0dev0+67.g27e9796975
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -316,7 +316,7 @@
 <span class="sd">        Window length.</span>
 <span class="sd">    d : scalar, optional</span>
 <span class="sd">        Sample spacing (inverse of the sampling rate).</span>
-<span class="sd">        Default: ``1``.</span>
+<span class="sd">        Default: ``1.0``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -324,6 +324,7 @@
 <span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
 <span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
 <span class="sd">        Default: ``None``.</span>
@@ -358,15 +359,15 @@
 
 <span class="sd">    &gt;&gt;&gt; x = np.fft.fftfreq(n, d=timestep) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x.shape, x.device, x.usm_type</span>
-<span class="sd">    ((8, ), Device(level_zero:gpu:0), &#39;device&#39;)</span>
+<span class="sd">    ((8,), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
 <span class="sd">    &gt;&gt;&gt; y = np.fft.fftfreq(n, d=timestep, device=&quot;cpu&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; y.shape, y.device, y.usm_type</span>
-<span class="sd">    ((8, ), Device(opencl:cpu:0), &#39;device&#39;)</span>
+<span class="sd">    ((8,), Device(opencl:cpu:0), &#39;device&#39;)</span>
 
 <span class="sd">    &gt;&gt;&gt; z = np.fft.fftfreq(n, d=timestep, usm_type=&quot;host&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; z.shape, z.device, z.usm_type</span>
-<span class="sd">    ((8, ), Device(level_zero:gpu:0), &#39;host&#39;)</span>
+<span class="sd">    ((8,), Device(level_zero:gpu:0), &#39;host&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1129,7 +1130,7 @@
 <span class="sd">        Window length.</span>
 <span class="sd">    d : scalar, optional</span>
 <span class="sd">        Sample spacing (inverse of the sampling rate).</span>
-<span class="sd">        Default: ``1``.</span>
+<span class="sd">        Default: ``1.0``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -1137,6 +1138,7 @@
 <span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
 <span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
 <span class="sd">        Default: ``None``.</span>
@@ -1147,7 +1149,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    f : dpnp.ndarray</span>
-<span class="sd">        Array of length `n` containing the sample frequencies.</span>
+<span class="sd">        Array of length ``n//2 + 1`` containing the sample frequencies.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1167,22 +1169,22 @@
 <span class="sd">    array([  0.,  10.,  20.,  30.,  40., -50., -40., -30., -20., -10.])</span>
 <span class="sd">    &gt;&gt;&gt; freq = np.fft.rfftfreq(n, d=1./sample_rate)</span>
 <span class="sd">    &gt;&gt;&gt; freq</span>
-<span class="sd">    array([  0.,  10.,  20.,  30.,  40.,  50.])</span>
+<span class="sd">    array([ 0., 10., 20., 30., 40., 50.])</span>
 
 <span class="sd">    Creating the output array on a different device or with a</span>
 <span class="sd">    specified usm_type:</span>
 
 <span class="sd">    &gt;&gt;&gt; x = np.fft.rfftfreq(n, d=1./sample_rate) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x.shape, x.device, x.usm_type</span>
-<span class="sd">    ((6, ), Device(level_zero:gpu:0), &#39;device&#39;)</span>
+<span class="sd">    ((6,), Device(level_zero:gpu:0), &#39;device&#39;)</span>
 
-<span class="sd">    &gt;&gt;&gt; y =np.fft.rfftfreq(n, d=1./sample_rate, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.fft.rfftfreq(n, d=1./sample_rate, device=&quot;cpu&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; y.shape, y.device, y.usm_type</span>
-<span class="sd">    ((6, ), Device(opencl:cpu:0), &#39;device&#39;)</span>
+<span class="sd">    ((6,), Device(opencl:cpu:0), &#39;device&#39;)</span>
 
 <span class="sd">    &gt;&gt;&gt; z = np.fft.rfftfreq(n, d=1./sample_rate, usm_type=&quot;host&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; z.shape, z.device, z.usm_type</span>
-<span class="sd">    ((6, ), Device(level_zero:gpu:0), &#39;host&#39;)</span>
+<span class="sd">    ((6,), Device(level_zero:gpu:0), &#39;host&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
