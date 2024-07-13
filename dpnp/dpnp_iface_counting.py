@@ -37,6 +37,8 @@ it contains:
 
 """
 
+import dpctl.tensor as dpt
+
 import dpnp
 
 __all__ = ["count_nonzero"]
@@ -87,5 +89,6 @@ def count_nonzero(a, axis=None, *, keepdims=False):
 
     # TODO: might be improved by implementing an extension
     # with `count_nonzero` kernel
-    a = dpnp.astype(a, dpnp.bool, copy=False)
-    return a.sum(axis=axis, dtype=dpnp.intp, keepdims=keepdims)
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_a = dpt.astype(usm_a, dpnp.bool, copy=False)
+    return dpnp.sum(usm_a, axis=axis, dtype=dpnp.intp, keepdims=keepdims)

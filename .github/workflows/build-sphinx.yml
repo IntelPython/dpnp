@@ -38,6 +38,9 @@ jobs:
     env:
       python-ver: '3.9'
       CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+      NO_INTEL_CHANNELS: '-c dppy/label/dev -c conda-forge --override-channels'
+      # Install the latest oneAPI compiler to work around an issue
+      INSTALL_ONE_API: 'yes'
 
     steps:
       - name: Cancel Previous Runs
@@ -75,6 +78,8 @@ jobs:
         run: |
           sudo apt-get install intel-oneapi-mkl                \
                                intel-oneapi-mkl-devel          \
+                               intel-oneapi-tbb-devel          \
+                               intel-oneapi-libdpstd-devel     \
                                intel-oneapi-compiler-dpcpp-cpp
 
       # required by sphinxcontrib-spelling extension
@@ -124,6 +129,12 @@ jobs:
             pyenchant sphinxcontrib-spelling
 
       - name: Install dpnp dependencies
+        if: env.INSTALL_ONE_API == 'yes'
+        run: |
+          mamba install numpy"<1.24" dpctl">=0.18.0dev0" cmake cython pytest ninja scikit-build ${{ env.NO_INTEL_CHANNELS }}
+
+      - name: Install dpnp dependencies
+        if: env.INSTALL_ONE_API != 'yes'
         run: |
           mamba install numpy"<1.24" dpctl">=0.18.0dev0" mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
               cmake cython pytest ninja scikit-build ${{ env.CHANNELS }}
@@ -138,14 +149,20 @@ jobs:
         run: mamba list
 
       - name: Build library
-        run: python scripts/build_locally.py
+        run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
+          python scripts/build_locally.py
 
       - name: Run a spelling checker for docs
-        run: make spelling
+        run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
+          make spelling
         working-directory: doc
 
       - name: Build docs
-        run: make html
+        run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
+          make html
         working-directory: doc
 
       - name: Set a project number to current release

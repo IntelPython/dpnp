@@ -37,20 +37,13 @@ and the rest of the library
 
 __all__ += [
     "dpnp_ediff1d",
-    "dpnp_fmod",
-    "dpnp_fmax",
-    "dpnp_fmin",
     "dpnp_modf",
-    "dpnp_trapz",
 ]
 
 
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_2out_t)(c_dpctl.DPCTLSyclQueueRef,
                                                      void * , void * , void * , size_t,
                                                      const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*ftpr_custom_trapz_2in_1out_with_2size_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                             void *, void * , void * , double, size_t, size_t,
-                                                                             const c_dpctl.DPCTLEventVectorRef)
 
 
 cpdef utils.dpnp_descriptor dpnp_ediff1d(utils.dpnp_descriptor x1):
@@ -109,30 +102,6 @@ cpdef utils.dpnp_descriptor dpnp_ediff1d(utils.dpnp_descriptor x1):
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_fmod(utils.dpnp_descriptor x1_obj,
-                                      utils.dpnp_descriptor x2_obj,
-                                      object dtype=None,
-                                      utils.dpnp_descriptor out=None,
-                                      object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_FMOD_EXT, x1_obj, x2_obj, dtype, out, where)
-
-
-cpdef utils.dpnp_descriptor dpnp_fmax(utils.dpnp_descriptor x1_obj,
-                                         utils.dpnp_descriptor x2_obj,
-                                         object dtype=None,
-                                         utils.dpnp_descriptor out=None,
-                                         object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_MAXIMUM_EXT, x1_obj, x2_obj, dtype, out, where)
-
-
-cpdef utils.dpnp_descriptor dpnp_fmin(utils.dpnp_descriptor x1_obj,
-                                         utils.dpnp_descriptor x2_obj,
-                                         object dtype=None,
-                                         utils.dpnp_descriptor out=None,
-                                         object where=True):
-    return call_fptr_2in_1out_strides(DPNP_FN_MINIMUM_EXT, x1_obj, x2_obj, dtype, out, where)
-
-
 cpdef tuple dpnp_modf(utils.dpnp_descriptor x1):
     """ Convert string type names (array.dtype) to C enum DPNPFuncType """
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
@@ -175,41 +144,3 @@ cpdef tuple dpnp_modf(utils.dpnp_descriptor x1):
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return (result1.get_pyobj(), result2.get_pyobj())
-
-
-cpdef utils.dpnp_descriptor dpnp_trapz(utils.dpnp_descriptor y1, utils.dpnp_descriptor x1, double dx):
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(y1.dtype)
-    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRAPZ_EXT, param1_type, param2_type)
-
-    result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(y1, x1)
-
-    # create result array with type given by FPTR data
-    cdef shape_type_c result_shape = (1,)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=result_sycl_device,
-                                                                       usm_type=result_usm_type,
-                                                                       sycl_queue=result_sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef ftpr_custom_trapz_2in_1out_with_2size_t func = <ftpr_custom_trapz_2in_1out_with_2size_t > kernel_data.ptr
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    y1.get_data(),
-                                                    x1.get_data(),
-                                                    result.get_data(),
-                                                    dx,
-                                                    y1.size,
-                                                    x1.size,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result

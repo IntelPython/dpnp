@@ -668,12 +668,15 @@ def concatenate(
 
     usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
     usm_res = dpt.concat(usm_arrays, axis=axis)
+
     res = dpnp_array._create_from_usm_ndarray(usm_res)
     if dtype is not None:
         res = res.astype(dtype, casting=casting, copy=False)
     elif out is not None:
         dpnp.copyto(out, res, casting=casting)
         return out
+
+    dpnp.synchronize_array_data(res)
     return res
 
 
@@ -907,10 +910,11 @@ def expand_dims(a, axis):
 
     """
 
-    usm_array = dpnp.get_usm_ndarray(a)
-    return dpnp_array._create_from_usm_ndarray(
-        dpt.expand_dims(usm_array, axis=axis)
-    )
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_res = dpt.expand_dims(usm_a, axis=axis)
+
+    dpnp.synchronize_array_data(usm_res)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def flip(m, axis=None):
@@ -1248,12 +1252,16 @@ def repeat(a, repeats, axis=None):
     ----------
     x : {dpnp.ndarray, usm_ndarray}
         Input array.
-    repeat : int or array of int
+    repeats : {int, tuple, list, range, dpnp.ndarray, usm_ndarray}
         The number of repetitions for each element. `repeats` is broadcasted to
         fit the shape of the given axis.
-    axis : int, optional
+        If `repeats` is an array, it must have an integer data type.
+        Otherwise, `repeats` must be a Python integer or sequence of Python
+        integers (i.e., a tuple, list, or range).
+    axis : {None, int}, optional
         The axis along which to repeat values. By default, use the flattened
         input array, and return a flat output array.
+        Default: ``None``.
 
     Returns
     -------
@@ -1263,8 +1271,8 @@ def repeat(a, repeats, axis=None):
 
     See Also
     --------
-    :obj:`dpnp.tile` : Construct an array by repeating A the number of times
-                       given by reps.
+    :obj:`dpnp.tile` : Tile an array.
+    :obj:`dpnp.unique` : Find the unique elements of an array.
 
     Examples
     --------
@@ -1286,15 +1294,18 @@ def repeat(a, repeats, axis=None):
 
     """
 
-    rep = repeats
-    if isinstance(repeats, dpnp_array):
-        rep = dpnp.get_usm_ndarray(repeats)
+    dpnp.check_supported_arrays_type(a)
+    if not isinstance(repeats, (int, tuple, list, range)):
+        repeats = dpnp.get_usm_ndarray(repeats)
+
     if axis is None and a.ndim > 1:
-        usm_arr = dpnp.get_usm_ndarray(a.flatten())
-    else:
-        usm_arr = dpnp.get_usm_ndarray(a)
-    usm_arr = dpt.repeat(usm_arr, rep, axis=axis)
-    return dpnp_array._create_from_usm_ndarray(usm_arr)
+        a = dpnp.ravel(a)
+
+    usm_arr = dpnp.get_usm_ndarray(a)
+    usm_res = dpt.repeat(usm_arr, repeats, axis=axis)
+
+    dpnp.synchronize_array_data(usm_res)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def reshape(a, /, newshape, order="C", copy=None):
@@ -1369,9 +1380,11 @@ def reshape(a, /, newshape, order="C", copy=None):
     elif order not in "cfCF":
         raise ValueError(f"order must be one of 'C' or 'F' (got {order})")
 
-    usm_arr = dpnp.get_usm_ndarray(a)
-    usm_arr = dpt.reshape(usm_arr, shape=newshape, order=order, copy=copy)
-    return dpnp_array._create_from_usm_ndarray(usm_arr)
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_res = dpt.reshape(usm_a, shape=newshape, order=order, copy=copy)
+
+    dpnp.synchronize_array_data(usm_res)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def result_type(*arrays_and_dtypes):
@@ -1478,10 +1491,12 @@ def roll(x, shift, axis=None):
     """
     if axis is None:
         return roll(x.reshape(-1), shift, 0).reshape(x.shape)
-    usm_array = dpnp.get_usm_ndarray(x)
-    return dpnp_array._create_from_usm_ndarray(
-        dpt.roll(usm_array, shift=shift, axis=axis)
-    )
+
+    usm_x = dpnp.get_usm_ndarray(x)
+    usm_res = dpt.roll(usm_x, shift=shift, axis=axis)
+
+    dpnp.synchronize_array_data(usm_res)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def rollaxis(x, axis, start=0):
@@ -1628,10 +1643,11 @@ def squeeze(a, /, axis=None):
 
     """
 
-    usm_array = dpnp.get_usm_ndarray(a)
-    return dpnp_array._create_from_usm_ndarray(
-        dpt.squeeze(usm_array, axis=axis)
-    )
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_res = dpt.squeeze(usm_a, axis=axis)
+
+    dpnp.synchronize_array_data(usm_res)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
@@ -1709,12 +1725,15 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
 
     usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
     usm_res = dpt.stack(usm_arrays, axis=axis)
+
     res = dpnp_array._create_from_usm_ndarray(usm_res)
     if dtype is not None:
         res = res.astype(dtype, casting=casting, copy=False)
     elif out is not None:
         dpnp.copyto(out, res, casting=casting)
         return out
+
+    dpnp.synchronize_array_data(res)
     return res
 
 
@@ -1767,10 +1786,11 @@ def swapaxes(a, axis1, axis2):
 
     """
 
-    usm_array = dpnp.get_usm_ndarray(a)
-    return dpnp_array._create_from_usm_ndarray(
-        dpt.swapaxes(usm_array, axis1=axis1, axis2=axis2)
-    )
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_res = dpt.swapaxes(usm_a, axis1=axis1, axis2=axis2)
+
+    dpnp.synchronize_array_data(usm_res)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 # pylint: disable=invalid-name
@@ -1848,8 +1868,11 @@ def tile(A, reps):
 
     """
 
-    usm_array = dpnp.get_usm_ndarray(A)
-    return dpnp_array._create_from_usm_ndarray(dpt.tile(usm_array, reps))
+    usm_a = dpnp.get_usm_ndarray(A)
+    usm_res = dpt.tile(usm_a, reps)
+
+    dpnp.synchronize_array_data(usm_res)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def transpose(a, axes=None):

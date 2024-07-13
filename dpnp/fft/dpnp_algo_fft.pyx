@@ -38,7 +38,7 @@ cimport dpnp.dpnp_utils as utils
 from dpnp.dpnp_algo cimport *
 
 __all__ = [
-    "dpnp_fft",
+    "dpnp_fft_deprecated",
     "dpnp_rfft"
 ]
 
@@ -47,7 +47,7 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_fft_fft_t)(c_dpctl.DPCTLSyclQueueR
                                                          long, size_t, size_t, const c_dpctl.DPCTLEventVectorRef)
 
 
-cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
+cpdef utils.dpnp_descriptor dpnp_fft_deprecated(utils.dpnp_descriptor input,
                                      size_t input_boundarie,
                                      size_t output_boundarie,
                                      long axis,
