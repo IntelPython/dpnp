@@ -475,61 +475,6 @@ def ifft2(x, s=None, axes=(-2, -1), norm=None):
     return call_origin(numpy.fft.ifft2, x, s, axes, norm)
 
 
-def ifftshift(x, axes=None):
-    """
-    Inverse shift the zero-frequency component to the center of the spectrum.
-
-    Although identical for even-length `x`, the functions differ by one sample
-    for odd-length `x`.
-
-    For full documentation refer to :obj:`numpy.fft.ifftshift`.
-
-    Parameters
-    ----------
-    x : {dpnp.ndarray, usm_ndarray}
-        Input array.
-    axes : {None, int, list or tuple of ints}, optional
-        Axes over which to calculate.
-        Defaults to ``None``, which shifts all axes.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        The shifted array.
-
-    See Also
-    --------
-    :obj:`dpnp.fftshift` : Shift zero-frequency component to the center
-                of the spectrum.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> freqs = np.fft.fftfreq(9, d=1./9).reshape(3, 3)
-    >>> freqs
-    array([[ 0.,  1.,  2.],
-           [ 3.,  4., -4.],
-           [-3., -2., -1.]])
-    >>> np.fft.ifftshift(np.fft.fftshift(freqs))
-    array([[ 0.,  1.,  2.],
-           [ 3.,  4., -4.],
-           [-3., -2., -1.]])
-
-    """
-
-    dpnp.check_supported_arrays_type(x)
-    if axes is None:
-        axes = tuple(range(x.ndim))
-        shift = [-(dim // 2) for dim in x.shape]
-    elif isinstance(axes, int):
-        shift = -(x.shape[axes] // 2)
-    else:
-        x_shape = x.shape
-        shift = [-(x_shape[ax] // 2) for ax in axes]
-
-    return dpnp.roll(x, shift, axes)
-
-
 def ifftn(x, s=None, axes=None, norm=None):
     """
     Compute the N-dimensional inverse discrete Fourier Transform.
@@ -591,6 +536,61 @@ def ifftn(x, s=None, axes=None, norm=None):
             return x_iter
 
     return call_origin(numpy.fft.ifftn, x, s, axes, norm)
+
+
+def ifftshift(x, axes=None):
+    """
+    Inverse shift the zero-frequency component to the center of the spectrum.
+
+    Although identical for even-length `x`, the functions differ by one sample
+    for odd-length `x`.
+
+    For full documentation refer to :obj:`numpy.fft.ifftshift`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axes : {None, int, list or tuple of ints}, optional
+        Axes over which to calculate.
+        Defaults to ``None``, which shifts all axes.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The shifted array.
+
+    See Also
+    --------
+    :obj:`dpnp.fftshift` : Shift zero-frequency component to the center
+                of the spectrum.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> freqs = np.fft.fftfreq(9, d=1./9).reshape(3, 3)
+    >>> freqs
+    array([[ 0.,  1.,  2.],
+           [ 3.,  4., -4.],
+           [-3., -2., -1.]])
+    >>> np.fft.ifftshift(np.fft.fftshift(freqs))
+    array([[ 0.,  1.,  2.],
+           [ 3.,  4., -4.],
+           [-3., -2., -1.]])
+
+    """
+
+    dpnp.check_supported_arrays_type(x)
+    if axes is None:
+        axes = tuple(range(x.ndim))
+        shift = [-(dim // 2) for dim in x.shape]
+    elif isinstance(axes, int):
+        shift = -(x.shape[axes] // 2)
+    else:
+        x_shape = x.shape
+        shift = [-(x_shape[ax] // 2) for ax in axes]
+
+    return dpnp.roll(x, shift, axes)
 
 
 def ihfft(x, n=None, axis=-1, norm=None):
