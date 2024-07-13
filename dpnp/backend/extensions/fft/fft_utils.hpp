@@ -25,23 +25,27 @@
 
 #pragma once
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <oneapi/mkl.hpp>
 
-#include "evd_common.hpp"
+namespace dpnp::extensions::fft
+{
+namespace mkl_dft = oneapi::mkl::dft;
 
-namespace py = pybind11;
+template <mkl_dft::precision prec>
+struct ScaleType
+{
+    using value_type = void;
+};
 
-namespace dpnp
+template <>
+struct ScaleType<mkl_dft::precision::SINGLE>
 {
-namespace backend
+    using value_type = float;
+};
+
+template <>
+struct ScaleType<mkl_dft::precision::DOUBLE>
 {
-namespace ext
-{
-namespace lapack
-{
-void init_heevd(py::module_ m);
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+    using value_type = double;
+};
+} // namespace dpnp::extensions::fft

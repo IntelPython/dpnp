@@ -25,23 +25,20 @@
 
 #pragma once
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <oneapi/mkl.hpp>
+#include <sycl/sycl.hpp>
 
-#include "evd_common.hpp"
+#include <dpctl4pybind11.hpp>
 
-namespace py = pybind11;
+namespace dpnp::extensions::fft
+{
+namespace mkl_dft = oneapi::mkl::dft;
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace lapack
-{
-void init_heevd(py::module_ m);
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+template <mkl_dft::precision prec, mkl_dft::domain dom>
+std::pair<sycl::event, sycl::event>
+    compute_fft_in_place(DescriptorWrapper<prec, dom> &descr,
+                         const dpctl::tensor::usm_ndarray &in_out,
+                         const bool is_forward,
+                         const std::vector<sycl::event> &depends);
+
+} // namespace dpnp::extensions::fft
