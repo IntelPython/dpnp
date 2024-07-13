@@ -33,15 +33,7 @@
 // dpctl namespace for operations with types
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace lapack
-{
-namespace types
+namespace dpnp::extensions::lapack::types
 {
 /**
  * @brief A factory to define pairs of supported types for which
@@ -434,8 +426,4 @@ struct UngqrTypePairSupportFactory
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
-} // namespace types
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::lapack::types
