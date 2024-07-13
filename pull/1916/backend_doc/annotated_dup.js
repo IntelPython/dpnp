@@ -3,31 +3,6 @@ var annotated_dup =
     [ "dpnp", null, [
       [ "backend", null, [
         [ "ext", null, [
-          [ "lapack", null, [
-            [ "helper", null, [
-              [ "value_type_of", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of.html", null ],
-              [ "value_type_of< std::complex< T > >", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ]
-            ] ],
-            [ "types", null, [
-              [ "GeqrfBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_geqrf_batch_type_pair_support_factory.html", null ],
-              [ "GeqrfTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_geqrf_type_pair_support_factory.html", null ],
-              [ "GesvdTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_gesvd_type_pair_support_factory.html", null ],
-              [ "GesvTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_gesv_type_pair_support_factory.html", null ],
-              [ "GetrfBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html", null ],
-              [ "GetrfTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html", null ],
-              [ "GetriBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html", null ],
-              [ "GetrsTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html", null ],
-              [ "HeevdTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
-              [ "OrgqrBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_orgqr_batch_type_pair_support_factory.html", null ],
-              [ "OrgqrTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_orgqr_type_pair_support_factory.html", null ],
-              [ "PotrfBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_potrf_batch_type_pair_support_factory.html", null ],
-              [ "PotrfTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_potrf_type_pair_support_factory.html", null ],
-              [ "SyevdTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
-              [ "UngqrBatchTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_ungqr_batch_type_pair_support_factory.html", null ],
-              [ "UngqrTypePairSupportFactory", "structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html", null ]
-            ] ],
-            [ "LinAlgError", "classdpnp_1_1backend_1_1ext_1_1lapack_1_1_lin_alg_error.html", null ]
-          ] ],
           [ "sycl_ext", null, [
             [ "cartesian_product", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product.html", null ],
             [ "cartesian_product< std::tuple< std::tuple< FirstTupleArgs... > > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product_3_01std_1_1tuple_3_01std_1_1tupl8eeb66d10f7723d0fc0b38e3d181763c.html", null ],
@@ -86,6 +61,37 @@ var annotated_dup =
           [ "DotcContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dotc_contig_factory.html", null ],
           [ "DotContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dot_contig_factory.html", null ],
           [ "DotuContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dotu_contig_factory.html", null ]
+        ] ],
+        [ "fft", null, [
+          [ "DescriptorWrapper", "classdpnp_1_1extensions_1_1fft_1_1_descriptor_wrapper.html", null ],
+          [ "ScaleType", "structdpnp_1_1extensions_1_1fft_1_1_scale_type.html", null ],
+          [ "ScaleType< mkl_dft::precision::DOUBLE >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html", null ],
+          [ "ScaleType< mkl_dft::precision::SINGLE >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html", null ]
+        ] ],
+        [ "lapack", null, [
+          [ "helper", null, [
+            [ "value_type_of", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of.html", null ],
+            [ "value_type_of< std::complex< T > >", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ]
+          ] ],
+          [ "types", null, [
+            [ "GeqrfBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_geqrf_batch_type_pair_support_factory.html", null ],
+            [ "GeqrfTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_geqrf_type_pair_support_factory.html", null ],
+            [ "GesvdTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_gesvd_type_pair_support_factory.html", null ],
+            [ "GesvTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_gesv_type_pair_support_factory.html", null ],
+            [ "GetrfBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html", null ],
+            [ "GetrfTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html", null ],
+            [ "GetriBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html", null ],
+            [ "GetrsTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html", null ],
+            [ "HeevdTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
+            [ "OrgqrBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_orgqr_batch_type_pair_support_factory.html", null ],
+            [ "OrgqrTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_orgqr_type_pair_support_factory.html", null ],
+            [ "PotrfBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_batch_type_pair_support_factory.html", null ],
+            [ "PotrfTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_type_pair_support_factory.html", null ],
+            [ "SyevdTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
+            [ "UngqrBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_batch_type_pair_support_factory.html", null ],
+            [ "UngqrTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html", null ]
+          ] ],
+          [ "LinAlgError", "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html", null ]
         ] ]
       ] ],
       [ "kernels", null, [

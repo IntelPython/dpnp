@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FFT Functions &mdash; Data Parallel Extension for NumPy 0.16.0dev0+63.g821a93a799 documentation</title>
+  <title>FFT Functions &mdash; Data Parallel Extension for NumPy 0.16.0dev0+67.g5c2cb6d2a6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -24,9 +24,10 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=6c0b1d64"></script>
+        <script src="../_static/documentation_options.js?v=7b892913"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -46,7 +47,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+63.g821a93a799
+                0.16.0dev0+67.g5c2cb6d2a6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -204,6 +205,128 @@
 </tr>
 </tbody>
 </table>
+<section id="background-information">
+<span id="module-0"></span><h3>Background information<a class="headerlink" href="#background-information" title="Link to this heading"></a></h3>
+<p>Fourier analysis is fundamentally a method for expressing a function as a sum
+of periodic components, and for recovering the function from those components.
+When both the function and its Fourier transform are replaced with discretized
+counterparts, it is called the discrete Fourier transform (DFT). The DFT has
+become a mainstay of numerical computing in part because of a very fast
+algorithm for computing it, called the Fast Fourier Transform (FFT), which was
+known to Gauss (1805) and was brought to light in its current form by Cooley
+and Tukey <a class="reference internal" href="#ct" id="id1"><span>[CT]</span></a>. Press et al. <a class="reference internal" href="#nr" id="id2"><span>[NR]</span></a> provide an accessible introduction to
+Fourier analysis and its applications.</p>
+<p>Because the discrete Fourier transform separates its input into components
+that contribute at discrete frequencies, it has a great number of applications
+in digital signal processing, e.g., for filtering, and in this context the
+discretized input to the transform is customarily referred to as a <em>signal</em>,
+which exists in the <em>time domain</em>. The output is called a <em>spectrum</em> or
+<em>transform</em> and exists in the <em>frequency domain</em>.</p>
+</section>
+<section id="implementation-details">
+<h3>Implementation details<a class="headerlink" href="#implementation-details" title="Link to this heading"></a></h3>
+<p>There are many ways to define the DFT, varying in the sign of the
+exponent, normalization, etc. In this implementation, the DFT is defined
+as</p>
+<div class="math notranslate nohighlight">
+\[A_k = \sum_{m=0}^{n-1} a_m \exp\left\{-2\pi i{mk \over n}\right\}
+\qquad k = 0,\ldots,n-1.\]</div>
+<p>The DFT is in general defined for complex inputs and outputs, and a
+single-frequency component at linear frequency <span class="math notranslate nohighlight">\(f\)</span> is
+represented by a complex exponential
+<span class="math notranslate nohighlight">\(a_m = \exp\{2\pi i\,f m\Delta t\}\)</span>, where <span class="math notranslate nohighlight">\(\Delta t\)</span>
+is the sampling interval.</p>
+<p>The values in the result follow so-called &quot;standard&quot; order: If <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span>
+<span class="pre">fft(a,</span> <span class="pre">n)</span></code>, then <code class="docutils literal notranslate"><span class="pre">A[0]</span></code> contains the zero-frequency term (the sum of
+the signal), which is always purely real for real inputs. Then <code class="docutils literal notranslate"><span class="pre">A[1:n/2]</span></code>
+contains the positive-frequency terms, and <code class="docutils literal notranslate"><span class="pre">A[n/2+1:]</span></code> contains the
+negative-frequency terms, in order of decreasingly negative frequency.
+For an even number of input points, <code class="docutils literal notranslate"><span class="pre">A[n/2]</span></code> represents both positive and
+negative Nyquist frequency, and is also purely real for real input. For
+an odd number of input points, <code class="docutils literal notranslate"><span class="pre">A[(n-1)/2]</span></code> contains the largest positive
+frequency, while <code class="docutils literal notranslate"><span class="pre">A[(n+1)/2]</span></code> contains the largest negative frequency.
+The routine <code class="docutils literal notranslate"><span class="pre">dpnp.fft.fftfreq(n)</span></code> returns an array giving the frequencies
+of corresponding elements in the output. The routine
+<code class="docutils literal notranslate"><span class="pre">dpnp.fft.fftshift(A)</span></code> shifts transforms and their frequencies to put the
+zero-frequency components in the middle, and <code class="docutils literal notranslate"><span class="pre">dpnp.fft.ifftshift(A)</span></code> undoes
+that shift.</p>
+<p>When the input <cite>a</cite> is a time-domain signal and <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">dpnp.fft.fft(a)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">dpnp.abs(A)</span></code> is its amplitude spectrum and <code class="docutils literal notranslate"><span class="pre">dpnp.abs(A)**2</span></code> is its
+power spectrum. The phase spectrum is obtained by <code class="docutils literal notranslate"><span class="pre">dpnp.angle(A)</span></code>.</p>
+<p>The inverse DFT is defined as</p>
+<div class="math notranslate nohighlight">
+\[a_m = \frac{1}{n}\sum_{k=0}^{n-1}A_k\exp\left\{2\pi i{mk\over n}\right\}
+\qquad m = 0,\ldots,n-1.\]</div>
+<p>It differs from the forward transform by the sign of the exponential
+argument and the default normalization by <span class="math notranslate nohighlight">\(1/n\)</span>.</p>
+</section>
+<section id="type-promotion">
+<h3>Type Promotion<a class="headerlink" href="#type-promotion" title="Link to this heading"></a></h3>
+<p><cite>dpnp.fft</cite> promotes <code class="docutils literal notranslate"><span class="pre">float32</span></code> and <code class="docutils literal notranslate"><span class="pre">complex64</span></code> arrays to <code class="docutils literal notranslate"><span class="pre">float64</span></code> and
+<code class="docutils literal notranslate"><span class="pre">complex128</span></code> arrays respectively.</p>
+</section>
+<section id="normalization">
+<h3>Normalization<a class="headerlink" href="#normalization" title="Link to this heading"></a></h3>
+<p>The argument <code class="docutils literal notranslate"><span class="pre">norm</span></code> indicates which direction of the pair of direct/inverse
+transforms is scaled and with what normalization factor.
+The default normalization (<code class="docutils literal notranslate"><span class="pre">&quot;backward&quot;</span></code>) has the direct (forward) transforms
+unscaled and the inverse (backward) transforms scaled by <span class="math notranslate nohighlight">\(1/n\)</span>. It is
+possible to obtain unitary transforms by setting the keyword argument <code class="docutils literal notranslate"><span class="pre">norm</span></code>
+to <code class="docutils literal notranslate"><span class="pre">&quot;ortho&quot;</span></code> so that both direct and inverse transforms are scaled by
+<span class="math notranslate nohighlight">\(1/\sqrt{n}\)</span>. Finally, setting the keyword argument <code class="docutils literal notranslate"><span class="pre">norm</span></code> to
+<code class="docutils literal notranslate"><span class="pre">&quot;forward&quot;</span></code> has the direct transforms scaled by <span class="math notranslate nohighlight">\(1/n\)</span> and the inverse
+transforms unscaled (i.e. exactly opposite to the default <code class="docutils literal notranslate"><span class="pre">&quot;backward&quot;</span></code>).
+<cite>None</cite> is an alias of the default option <code class="docutils literal notranslate"><span class="pre">&quot;backward&quot;</span></code> for backward
+compatibility.</p>
+</section>
+<section id="real-and-hermitian-transforms">
+<h3>Real and Hermitian transforms<a class="headerlink" href="#real-and-hermitian-transforms" title="Link to this heading"></a></h3>
+<p>When the input is purely real, its transform is Hermitian, i.e., the
+component at frequency <span class="math notranslate nohighlight">\(f_k\)</span> is the complex conjugate of the
+component at frequency <span class="math notranslate nohighlight">\(-f_k\)</span>, which means that for real
+inputs there is no information in the negative frequency components that
+is not already available from the positive frequency components.
+The family of <cite>rfft</cite> functions is
+designed to operate on real inputs, and exploits this symmetry by
+computing only the positive frequency components, up to and including the
+Nyquist frequency. Thus, <code class="docutils literal notranslate"><span class="pre">n</span></code> input points produce <code class="docutils literal notranslate"><span class="pre">n/2+1</span></code> complex
+output points. The inverses of this family assumes the same symmetry of
+its input, and for an output of <code class="docutils literal notranslate"><span class="pre">n</span></code> points uses <code class="docutils literal notranslate"><span class="pre">n/2+1</span></code> input points.</p>
+<p>Correspondingly, when the spectrum is purely real, the signal is
+Hermitian. The <cite>hfft</cite> family of functions exploits this symmetry by
+using <code class="docutils literal notranslate"><span class="pre">n/2+1</span></code> complex points in the input (time) domain for <code class="docutils literal notranslate"><span class="pre">n</span></code> real
+points in the frequency domain.</p>
+<p>In higher dimensions, FFTs are used, e.g., for image analysis and
+filtering. The computational efficiency of the FFT means that it can
+also be a faster way to compute large convolutions, using the property
+that a convolution in the time domain is equivalent to a point-by-point
+multiplication in the frequency domain.</p>
+</section>
+<section id="higher-dimensions">
+<h3>Higher dimensions<a class="headerlink" href="#higher-dimensions" title="Link to this heading"></a></h3>
+<p>In two dimensions, the DFT is defined as</p>
+<div class="math notranslate nohighlight">
+\[A_{kl} = \sum_{m=0}^{M-1} \sum_{n=0}^{N-1}
+a_{mn}\exp\left\{-2\pi i \left({mk\over M}+{nl\over N}\right)\right\}
+\qquad k = 0, \ldots, M-1;\quad l = 0, \ldots, N-1,\]</div>
+<p>which extends in the obvious way to higher dimensions, and the inverses
+in higher dimensions also extend in the same way.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="ct" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">CT</a><span class="fn-bracket">]</span></span>
+<p>Cooley, James W., and John W. Tukey, 1965, &quot;An algorithm for the
+machine calculation of complex Fourier series,&quot; <em>Math. Comput.</em>
+19: 297-301.</p>
+</div>
+<div class="citation" id="nr" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">NR</a><span class="fn-bracket">]</span></span>
+<p>Press, W., Teukolsky, S., Vetterline, W.T., and Flannery, B.P.,
+2007, <em>Numerical Recipes: The Art of Scientific Computing</em>, ch.
+12-13. Cambridge Univ. Press, Cambridge, UK.</p>
+</div>
+</div>
+</section>
 </section>
 </section>
 
