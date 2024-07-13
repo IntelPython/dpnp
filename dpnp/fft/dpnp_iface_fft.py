@@ -218,7 +218,7 @@ def fftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
         Window length.
     d : scalar, optional
         Sample spacing (inverse of the sampling rate).
-        Default: ``1``.
+        Default: ``1.0``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -226,6 +226,7 @@ def fftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -260,15 +261,15 @@ def fftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
 
     >>> x = np.fft.fftfreq(n, d=timestep) # default case
     >>> x.shape, x.device, x.usm_type
-    ((8, ), Device(level_zero:gpu:0), 'device')
+    ((8,), Device(level_zero:gpu:0), 'device')
 
     >>> y = np.fft.fftfreq(n, d=timestep, device="cpu")
     >>> y.shape, y.device, y.usm_type
-    ((8, ), Device(opencl:cpu:0), 'device')
+    ((8,), Device(opencl:cpu:0), 'device')
 
     >>> z = np.fft.fftfreq(n, d=timestep, usm_type="host")
     >>> z.shape, z.device, z.usm_type
-    ((8, ), Device(level_zero:gpu:0), 'host')
+    ((8,), Device(level_zero:gpu:0), 'host')
 
     """
 
@@ -989,7 +990,7 @@ def rfftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
         Window length.
     d : scalar, optional
         Sample spacing (inverse of the sampling rate).
-        Default: ``1``.
+        Default: ``1.0``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -997,6 +998,7 @@ def rfftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -1007,7 +1009,7 @@ def rfftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
     Returns
     -------
     f : dpnp.ndarray
-        Array of length `n` containing the sample frequencies.
+        Array of length ``n//2 + 1`` containing the sample frequencies.
 
     See Also
     --------
@@ -1027,22 +1029,22 @@ def rfftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
     array([  0.,  10.,  20.,  30.,  40., -50., -40., -30., -20., -10.])
     >>> freq = np.fft.rfftfreq(n, d=1./sample_rate)
     >>> freq
-    array([  0.,  10.,  20.,  30.,  40.,  50.])
+    array([ 0., 10., 20., 30., 40., 50.])
 
     Creating the output array on a different device or with a
     specified usm_type:
 
     >>> x = np.fft.rfftfreq(n, d=1./sample_rate) # default case
     >>> x.shape, x.device, x.usm_type
-    ((6, ), Device(level_zero:gpu:0), 'device')
+    ((6,), Device(level_zero:gpu:0), 'device')
 
-    >>> y =np.fft.rfftfreq(n, d=1./sample_rate, device="cpu")
+    >>> y = np.fft.rfftfreq(n, d=1./sample_rate, device="cpu")
     >>> y.shape, y.device, y.usm_type
-    ((6, ), Device(opencl:cpu:0), 'device')
+    ((6,), Device(opencl:cpu:0), 'device')
 
     >>> z = np.fft.rfftfreq(n, d=1./sample_rate, usm_type="host")
     >>> z.shape, z.device, z.usm_type
-    ((6, ), Device(level_zero:gpu:0), 'host')
+    ((6,), Device(level_zero:gpu:0), 'host')
 
     """
 
