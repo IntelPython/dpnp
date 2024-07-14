@@ -10,6 +10,14 @@ from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
+@pytest.fixture
+def skip_forward_backward(request):
+    if request.instance.norm in ("backward", "forward"):
+        if not (np.lib.NumpyVersion(np.__version__) >= "1.20.0"):
+            pytest.skip("forward/backward is supported by NumPy 1.20+")
+
+
+@pytest.mark.usefixtures("skip_forward_backward")
 @testing.parameterize(
     *testing.product(
         {
@@ -26,11 +34,15 @@ class TestFft:
         atol=1e-7,
         accept_error=ValueError,
         contiguous_check=False,
-        type_check=False,
+        type_check=has_support_aspect64(),
     )
     def test_fft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.fft(a, n=self.n, norm=self.norm)
+
+        # np.fft.fft always returns np.complex128
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
 
         return out
 
@@ -40,11 +52,17 @@ class TestFft:
         atol=1e-7,
         accept_error=ValueError,
         contiguous_check=False,
-        type_check=False,
+        type_check=has_support_aspect64(),
     )
+    # NumPy 1.17.0 and 1.17.1 raises ZeroDivisonError due to a bug
+    @testing.with_requires("numpy!=1.17.0")
+    @testing.with_requires("numpy!=1.17.1")
     def test_ifft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.ifft(a, n=self.n, norm=self.norm)
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
 
         return out
 
@@ -65,13 +83,17 @@ class TestFftOrder:
         atol=1e-6,
         accept_error=ValueError,
         contiguous_check=False,
-        type_check=False,
+        type_check=has_support_aspect64(),
     )
     def test_fft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         if self.data_order == "F":
             a = xp.asfortranarray(a)
         out = xp.fft.fft(a, axis=self.axis)
+
+        # np.fft.fft always returns np.complex128
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
 
         return out
 
@@ -81,13 +103,16 @@ class TestFftOrder:
         atol=1e-7,
         accept_error=ValueError,
         contiguous_check=False,
-        type_check=False,
+        type_check=has_support_aspect64(),
     )
     def test_ifft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         if self.data_order == "F":
             a = xp.asfortranarray(a)
         out = xp.fft.ifft(a, axis=self.axis)
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
 
         return out
 
@@ -324,26 +349,23 @@ class TestHfft:
     {"n": 10, "d": 0.5},
     {"n": 100, "d": 2},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestFftfreq:
-    @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
         type_check=has_support_aspect64(),
     )
-    def test_fftfreq(self, xp, dtype):
+    def test_fftfreq(self, xp):
         out = xp.fft.fftfreq(self.n, self.d)
 
         return out
 
-    @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
         type_check=has_support_aspect64(),
     )
-    def test_rfftfreq(self, xp, dtype):
+    def test_rfftfreq(self, xp):
         out = xp.fft.rfftfreq(self.n, self.d)
 
         return out

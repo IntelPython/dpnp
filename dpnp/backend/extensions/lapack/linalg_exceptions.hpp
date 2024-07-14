@@ -27,13 +27,7 @@
 #include <cstring>
 #include <stdexcept>
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace lapack
+namespace dpnp::extensions::lapack
 {
 class LinAlgError : public std::exception
 {
@@ -48,7 +42,4 @@ public:
 private:
     std::string msg_;
 };
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::lapack

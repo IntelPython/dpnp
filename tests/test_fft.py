@@ -356,6 +356,24 @@ class TestRfft:
             dpnp_func(a)
 
 
+class TestFftfreq:
+    @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
+    @pytest.mark.parametrize("n", [10, 20])
+    @pytest.mark.parametrize("d", [0.5, 2])
+    def test_fftfreq(self, func, n, d):
+        expected = getattr(dpnp.fft, func)(n, d)
+        result = getattr(numpy.fft, func)(n, d)
+        assert_dtype_allclose(expected, result)
+
+    @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
+    def test_error(self, func):
+        # n should be an integer
+        assert_raises(ValueError, getattr(dpnp.fft, func), 10.0)
+
+        # d should be an scalar
+        assert_raises(ValueError, getattr(dpnp.fft, func), 10, (2,))
+
+
 class TestFftshift:
     @pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
     @pytest.mark.parametrize("axes", [None, 1, (0, 1)])
