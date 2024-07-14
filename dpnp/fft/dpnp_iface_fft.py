@@ -393,7 +393,7 @@ def fftshift(x, axes=None):
     >>> import dpnp as np
     >>> freqs = np.fft.fftfreq(10, 0.1)
     >>> freqs
-    array([ 0.,  1.,  2., ..., -3., -2., -1.])
+    array([ 0.,  1.,  2.,  3.,  4., -5., -4., -3., -2., -1.])
     >>> np.fft.fftshift(freqs)
     array([-5., -4., -3., -2., -1.,  0.,  1.,  2.,  3.,  4.])
 
