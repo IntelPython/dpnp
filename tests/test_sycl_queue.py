@@ -1262,6 +1262,20 @@ def test_fft_rfft(type, shape, device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
+@pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_fftfreq(func, device):
+    result = getattr(dpnp.fft, func)(10, 0.5, device=device)
+    expected = getattr(numpy.fft, func)(10, 0.5)
+
+    assert_dtype_allclose(result, expected)
+    assert result.sycl_device == device
+
+
 @pytest.mark.parametrize(
     "data, is_empty",
     [

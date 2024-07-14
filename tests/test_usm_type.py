@@ -933,6 +933,20 @@ def test_eigenvalue(func, shape, usm_type):
     assert a.usm_type == dp_val.usm_type
 
 
+@pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
+def test_fftfreq(func, usm_type):
+    result = getattr(dp.fft, func)(10, 0.5, usm_type=usm_type)
+    expected = getattr(numpy.fft, func)(10, 0.5)
+
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
+
+    assert_dtype_allclose(result, expected)
+    assert result.usm_type == usm_type
+
+
 @pytest.mark.parametrize("func", ["fft", "ifft"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_fft(func, usm_type):
