@@ -245,7 +245,8 @@ class TestRfft:
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=False,
+        contiguous_check=False,
+        type_check=has_support_aspect64(),
     )
     def test_rfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -261,6 +262,7 @@ class TestRfft:
         rtol=1e-4,
         atol=2e-6,
         accept_error=ValueError,
+        contiguous_check=False,
         type_check=has_support_aspect64(),
     )
     def test_irfft(self, xp, dtype):

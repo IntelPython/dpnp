@@ -462,7 +462,10 @@ class TestRfft:
     def test_fft_error(self, xp):
         a = xp.ones((4, 3), dtype=xp.complex64)
         # invalid dtype of input array for r2c FFT
-        assert_raises(TypeError, xp.fft.rfft, a)
+        if xp == dpnp:
+            # stock NumPy-1.26 ignores imaginary part
+            # Intel® NumPy, dpnp, stock NumPy-2.0 return TypeError
+            assert_raises(TypeError, xp.fft.rfft, a)
 
     def test_fft_validate_out(self):
         # Invalid shape for r2c FFT
