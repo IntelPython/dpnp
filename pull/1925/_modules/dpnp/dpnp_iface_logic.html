@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.16.0dev0+60.gd43592ca80 documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.16.0dev0+63.g4b9297bfb6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=202de61e"></script>
+        <script src="../../_static/documentation_options.js?v=f57fa1d6"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+60.gd43592ca80
+                0.16.0dev0+63.g4b9297bfb6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -153,11 +153,16 @@
     <span class="s2">&quot;greater&quot;</span><span class="p">,</span>
     <span class="s2">&quot;greater_equal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isclose&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;iscomplex&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;iscomplexobj&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isfinite&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isinf&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isnan&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isneginf&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isposinf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isreal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isrealobj&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isscalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;less&quot;</span><span class="p">,</span>
     <span class="s2">&quot;less_equal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;logical_and&quot;</span><span class="p">,</span>
@@ -328,7 +333,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">and</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
         <span class="c1"># at least one of inputs has to be an array</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span>
@@ -339,18 +344,18 @@
     <span class="k">elif</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">rtol</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">rtol</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;An argument `rtol` must be a scalar, but got </span><span class="si">{</span><span class="n">rtol</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">atol</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">atol</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;An argument `atol` must be a scalar, but got </span><span class="si">{</span><span class="n">atol</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
             <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
             <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
             <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span> <span class="n">b</span><span class="o">.</span><span class="n">get_array</span><span class="p">())</span>
@@ -712,6 +717,96 @@
 
 
 
+<div class="viewcode-block" id="iscomplex">
+<a class="viewcode-back" href="../../reference/generated/dpnp.iscomplex.html#dpnp.iscomplex">[docs]</a>
+<span class="k">def</span> <span class="nf">iscomplex</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a bool array, where ``True`` if input element is complex.</span>
+
+<span class="sd">    What is tested is whether the input has a non-zero imaginary part, not if</span>
+<span class="sd">    the input type is complex.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.iscomplex`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Output array.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.isreal` : Returns a bool array, where ``True`` if input element</span>
+<span class="sd">                         is real.</span>
+<span class="sd">    :obj:`dpnp.iscomplexobj` : Return ``True`` if `x` is a complex type or an</span>
+<span class="sd">                               array of complex numbers.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1+1j, 1+0j, 4.5, 3, 2, 2j])</span>
+<span class="sd">    &gt;&gt;&gt; np.iscomplex(a)</span>
+<span class="sd">    array([ True, False, False, False, False,  True])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">imag</span> <span class="o">!=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="iscomplexobj">
+<a class="viewcode-back" href="../../reference/generated/dpnp.iscomplexobj.html#dpnp.iscomplexobj">[docs]</a>
+<span class="k">def</span> <span class="nf">iscomplexobj</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check for a complex type or an array of complex numbers.</span>
+
+<span class="sd">    The type of the input is checked, not the value. Even if the input has an</span>
+<span class="sd">    imaginary part equal to zero, :obj:`dpnp.iscomplexobj` evaluates to</span>
+<span class="sd">    ``True``.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.iscomplexobj`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : array_like</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : bool</span>
+<span class="sd">        The return value, ``True`` if `x` is of a complex type or has at least</span>
+<span class="sd">        one complex element.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.isrealobj` : Return ``True`` if `x` is a not complex type or an</span>
+<span class="sd">                            array of complex numbers.</span>
+<span class="sd">    :obj:`dpnp.iscomplex` : Returns a bool array, where ``True`` if input</span>
+<span class="sd">                            element is complex.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.iscomplexobj(1)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; np.iscomplexobj(1+0j)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.iscomplexobj([3, 1+0j, True])</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+
 <span class="n">_ISFINITE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Test if each element of input array is a finite number.</span>
 
@@ -1028,6 +1123,132 @@
 
     <span class="c1"># TODO: support different out dtype #1717(dpctl)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">is_inf</span><span class="p">,</span> <span class="n">signbit</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="isreal">
+<a class="viewcode-back" href="../../reference/generated/dpnp.isreal.html#dpnp.isreal">[docs]</a>
+<span class="k">def</span> <span class="nf">isreal</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a bool array, where ``True`` if input element is real.</span>
+
+<span class="sd">    If element has complex type with zero imaginary part, the return value</span>
+<span class="sd">    for that element is ``True``.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.isreal`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : : dpnp.ndarray</span>
+<span class="sd">        Boolean array of same shape as `x`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.iscomplex` : Returns a bool array, where ``True`` if input</span>
+<span class="sd">                            element is complex.</span>
+<span class="sd">    :obj:`dpnp.isrealobj` : Return ``True`` if `x` is not a complex type.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1+1j, 1+0j, 4.5, 3, 2, 2j])</span>
+<span class="sd">    &gt;&gt;&gt; np.isreal(a)</span>
+<span class="sd">    array([False,  True,  True,  True,  True, False])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">imag</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="isrealobj">
+<a class="viewcode-back" href="../../reference/generated/dpnp.isrealobj.html#dpnp.isrealobj">[docs]</a>
+<span class="k">def</span> <span class="nf">isrealobj</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return ``True`` if `x` is a not complex type or an array of complex numbers.</span>
+
+<span class="sd">    The type of the input is checked, not the value. So even if the input has</span>
+<span class="sd">    an imaginary part equal to zero, :obj:`dpnp.isrealobj` evaluates to</span>
+<span class="sd">    ``False`` if the data type is complex.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.isrealobj`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : array_like</span>
+<span class="sd">        Input data, in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : bool</span>
+<span class="sd">        The return value, ``False`` if `x` is of a complex type.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.iscomplexobj` : Check for a complex type or an array of complex</span>
+<span class="sd">                               numbers.</span>
+<span class="sd">    :obj:`dpnp.isreal` : Returns a bool array, where ``True`` if input element</span>
+<span class="sd">                         is real.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.isrealobj(False)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.isrealobj(1)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.isrealobj(1+0j)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; np.isrealobj([3, 1+0j, True])</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">iscomplexobj</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="isscalar">
+<a class="viewcode-back" href="../../reference/generated/dpnp.isscalar.html#dpnp.isscalar">[docs]</a>
+<span class="k">def</span> <span class="nf">isscalar</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns ``True`` if the type of `element` is a scalar type.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.isscalar`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    element : any</span>
+<span class="sd">        Input argument, can be of any type and shape.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : bool</span>
+<span class="sd">        ``True`` if `element` is a scalar type, ``False`` if it is not.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.isscalar(3.1)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.isscalar(np.array(3.1))</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; np.isscalar([3.1])</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; np.isscalar(False)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.isscalar(&quot;dpnp&quot;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">element</span><span class="p">)</span></div>
 
 
 
