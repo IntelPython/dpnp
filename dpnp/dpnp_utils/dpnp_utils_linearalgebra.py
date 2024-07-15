@@ -116,15 +116,14 @@ def _copy_array(x, copy_flag=False, dtype=None, order="C"):
 
         exec_q = x_copy.sycl_queue
         _manager = dpu.SequentialOrderManager[exec_q]
-        dep_evs = _manager.submitted_events
 
-        ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=dpnp.get_usm_ndarray(x),
             dst=x_copy.get_array(),
             sycl_queue=exec_q,
-            depends=dep_evs,
+            depends=_manager.submitted_events,
         )
-        _manager.add_event_pair(ht_copy_ev, copy_ev)
+        _manager.add_event_pair(ht_ev, copy_ev)
         return x_copy
     return x
 
@@ -356,14 +355,14 @@ def _gemm_batch_matmul(exec_q, x1, x2, res):
             x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
         res_usm = dpnp.get_usm_ndarray(res[i : i + chunk, ...])
 
-        ht_blas_ev, blas_ev, row_major = bi._gemm_batch(
+        ht_ev, blas_ev, row_major = bi._gemm_batch(
             exec_q,
             x1_usm,
             x2_usm,
             res_usm,
             depends=_manager.submitted_events,
         )
-        _manager.add_event_pair(ht_blas_ev, blas_ev)
+        _manager.add_event_pair(ht_ev, blas_ev)
 
     res_shape = res.shape
     _, res_is_c_contig, res_is_f_contig = _define_contig_flag(res)
@@ -388,14 +387,15 @@ def _gemm_batch_matmul(exec_q, x1, x2, res):
 
 def _gemm_matmul(exec_q, x1, x2, res):
     _manager = dpu.SequentialOrderManager[exec_q]
-    ht_gemm_ev, gemm_ev, row_major = bi._gemm(
+
+    ht_ev, gemm_ev, row_major = bi._gemm(
         exec_q,
         dpnp.get_usm_ndarray(x1),
         dpnp.get_usm_ndarray(x2),
         dpnp.get_usm_ndarray(res),
         depends=_manager.submitted_events,
     )
-    _manager.add_event_pair(ht_gemm_ev, gemm_ev)
+    _manager.add_event_pair(ht_ev, gemm_ev)
 
     if row_major:
         if res.flags.f_contiguous is True:
@@ -635,14 +635,14 @@ def dpnp_dot(a, b, /, out=None, *, conjugate=False):
         else:
             dot_func = "_dot"
 
-        ht_dot_ev, dot_ev = getattr(bi, dot_func)(
+        ht_ev, dot_ev = getattr(bi, dot_func)(
             exec_q,
             dpnp.get_usm_ndarray(a),
             dpnp.get_usm_ndarray(b),
             dpnp.get_usm_ndarray(result),
             depends=_manager.submitted_events,
         )
-        _manager.add_event_pair(ht_dot_ev, dot_ev)
+        _manager.add_event_pair(ht_ev, dot_ev)
     else:
         # oneapi::mkl::blas::dot is slow for integer data type,
         # so using dpctl.tensor.vecdot instead
@@ -866,7 +866,8 @@ def dpnp_matmul(
                     x_usm = dpnp.get_usm_ndarray(x2)
 
                 _manager = dpu.SequentialOrderManager[exec_q]
-                ht_gemv_ev, gemv_ev = bi._gemv(
+
+                ht_ev, gemv_ev = bi._gemv(
                     exec_q,
                     a_usm,
                     x_usm,
@@ -874,7 +875,7 @@ def dpnp_matmul(
                     transpose,
                     depends=_manager.submitted_events,
                 )
-                _manager.add_event_pair(ht_gemv_ev, gemv_ev)
+                _manager.add_event_pair(ht_ev, gemv_ev)
             elif call_flag == "gemm":
                 result = _gemm_matmul(
                     exec_q,
