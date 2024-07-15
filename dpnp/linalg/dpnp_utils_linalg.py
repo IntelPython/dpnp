@@ -578,11 +578,9 @@ def _batched_svd(
                 u_matrices[i],
                 s_matrices[i],
                 vt_matrices[i],
-            ) = dpnp_svd(a[i], full_matrices, compute_uv=True, batch_call=True)
+            ) = dpnp_svd(a[i], full_matrices, compute_uv=True)
         else:
-            s_matrices[i] = dpnp_svd(
-                a[i], full_matrices, compute_uv=False, batch_call=True
-            )
+            s_matrices[i] = dpnp_svd(a[i], full_matrices, compute_uv=False)
 
     # TODO: Need to return C-contiguous array to match the output of
     # numpy.linalg.svd
@@ -2605,7 +2603,6 @@ def dpnp_svd(
     full_matrices=True,
     compute_uv=True,
     hermitian=False,
-    batch_call=False,
     related_arrays=None,
 ):
     """
@@ -2614,7 +2611,6 @@ def dpnp_svd(
         full_matrices=True,
         compute_uv=True,
         hermitian=False,
-        batch_call=False,
         related_arrays=None,
     )
 
@@ -2720,11 +2716,6 @@ def dpnp_svd(
         depends=[copy_ev],
     )
     _manager.add_event_pair(ht_ev, gesvd_ev)
-
-    if batch_call:
-        if compute_uv:
-            return u_h, s_h, vt_h
-        return s_h
 
     # TODO: Need to return C-contiguous array to match the output of
     # numpy.linalg.svd
