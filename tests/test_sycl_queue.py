@@ -427,6 +427,8 @@ def test_meshgrid(device):
         pytest.param(
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
+        pytest.param("iscomplex", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
+        pytest.param("isreal", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
         pytest.param("log", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("log10", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("log1p", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
@@ -1258,6 +1260,20 @@ def test_fft_rfft(type, shape, device):
     result_queue = dpnp_res.get_array().sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_fftfreq(func, device):
+    result = getattr(dpnp.fft, func)(10, 0.5, device=device)
+    expected = getattr(numpy.fft, func)(10, 0.5)
+
+    assert_dtype_allclose(result, expected)
+    assert result.sycl_device == device
 
 
 @pytest.mark.parametrize(
