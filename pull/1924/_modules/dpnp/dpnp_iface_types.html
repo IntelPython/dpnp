@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_types &mdash; Data Parallel Extension for NumPy 0.16.0dev0+60.g812401938e documentation</title>
+  <title>dpnp.dpnp_iface_types &mdash; Data Parallel Extension for NumPy 0.16.0dev0+65.g4f665f9163 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8784ac55"></script>
+        <script src="../../_static/documentation_options.js?v=c67a6647"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+60.g812401938e
+                0.16.0dev0+65.g4f665f9163
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -161,7 +161,6 @@
     <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
     <span class="s2">&quot;intc&quot;</span><span class="p">,</span>
     <span class="s2">&quot;intp&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isscalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;issubdtype&quot;</span><span class="p">,</span>
     <span class="s2">&quot;issubsctype&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_type_supported&quot;</span><span class="p">,</span>
@@ -322,19 +321,6 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">dtype</span>
     <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="isscalar">
-<a class="viewcode-back" href="../../reference/generated/dpnp.isscalar.html#dpnp.isscalar">[docs]</a>
-<span class="k">def</span> <span class="nf">isscalar</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns ``True`` if the type of `obj` is a scalar type.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.isscalar`.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
 
 
 
