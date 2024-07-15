@@ -30,13 +30,7 @@
 
 #include <dpctl4pybind11.hpp>
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace lapack
+namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
     getrf(sycl::queue exec_q,
@@ -58,7 +52,4 @@ extern std::pair<sycl::event, sycl::event>
 
 extern void init_getrf_dispatch_vector(void);
 extern void init_getrf_batch_dispatch_vector(void);
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::lapack

@@ -197,19 +197,114 @@ def fft2(x, s=None, axes=(-2, -1), norm=None):
     return call_origin(numpy.fft.fft2, x, s, axes, norm)
 
 
-def fftfreq(n=None, d=1.0):
+def fftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
     """
-    Compute the one-dimensional discrete Fourier Transform sample frequencies.
+    Return the Discrete Fourier Transform sample frequencies.
+
+    The returned float array `f` contains the frequency bin centers in cycles
+    per unit of the sample spacing (with zero at the start). For instance, if
+    the sample spacing is in seconds, then the frequency unit is cycles/second.
+
+    Given a window length `n` and a sample spacing `d`::
+
+      f = [0, 1, ...,   n/2-1,     -n/2, ..., -1] / (d*n)   if n is even
+      f = [0, 1, ..., (n-1)/2, -(n-1)/2, ..., -1] / (d*n)   if n is odd
 
     For full documentation refer to :obj:`numpy.fft.fftfreq`.
 
-    Limitations
-    -----------
-    Parameter `d` is unsupported.
+    Parameters
+    ----------
+    n : int
+        Window length.
+    d : scalar, optional
+        Sample spacing (inverse of the sampling rate).
+        Default: ``1.0``.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+        Default: ``None``.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+        Default: ``None``.
+
+    Returns
+    -------
+    f : dpnp.ndarray
+        Array of length `n` containing the sample frequencies.
+
+    See Also
+    --------
+    :obj:`dpnp.fft.rfftfreq` : Return the Discrete Fourier Transform sample
+                        frequencies (for usage with :obj:`dpnp.fft.rfft` and
+                        :obj:`dpnp.fft.irfft`).
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> signal = np.array([-2, 8, 6, 4, 1, 0, 3, 5])
+    >>> fourier = np.fft.fft(signal)
+    >>> n = signal.size
+    >>> timestep = 0.1
+    >>> freq = np.fft.fftfreq(n, d=timestep)
+    >>> freq
+    array([ 0.  ,  1.25,  2.5 ,  3.75, -5.  , -3.75, -2.5 , -1.25])
+
+    Creating the output array on a different device or with a
+    specified usm_type:
+
+    >>> x = np.fft.fftfreq(n, d=timestep) # default case
+    >>> x.shape, x.device, x.usm_type
+    ((8,), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.fft.fftfreq(n, d=timestep, device="cpu")
+    >>> y.shape, y.device, y.usm_type
+    ((8,), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.fft.fftfreq(n, d=timestep, usm_type="host")
+    >>> z.shape, z.device, z.usm_type
+    ((8,), Device(level_zero:gpu:0), 'host')
 
     """
 
-    return call_origin(numpy.fft.fftfreq, n, d)
+    if not isinstance(n, int):
+        raise ValueError("`n` should be an integer")
+    if not dpnp.isscalar(d):
+        raise ValueError("`d` should be an scalar")
+    val = 1.0 / (n * d)
+    results = dpnp.empty(
+        n,
+        dtype=dpnp.intp,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
+    N = (n - 1) // 2 + 1
+    p1 = dpnp.arange(
+        0,
+        N,
+        dtype=dpnp.intp,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
+    results[:N] = p1
+    p2 = dpnp.arange(
+        -(n // 2),
+        0,
+        dtype=dpnp.intp,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
+    results[N:] = p2
+    return results * val
 
 
 def fftn(x, s=None, axes=None, norm=None):
@@ -870,19 +965,104 @@ def rfft2(x, s=None, axes=(-2, -1), norm=None):
     return call_origin(numpy.fft.rfft2, x, s, axes, norm)
 
 
-def rfftfreq(n=None, d=1.0):
+def rfftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
     """
-    Compute the one-dimensional discrete Fourier Transform sample frequencies.
+    Return the Discrete Fourier Transform sample frequencies
+    (for usage with :obj:`dpnp.fft.rfft`, :obj:`dpnp.fft.irfft`).
+
+    The returned float array `f` contains the frequency bin centers in cycles
+    per unit of the sample spacing (with zero at the start). For instance, if
+    the sample spacing is in seconds, then the frequency unit is cycles/second.
+
+    Given a window length `n` and a sample spacing `d`::
+
+      f = [0, 1, ...,     n/2-1,     n/2] / (d*n)   if n is even
+      f = [0, 1, ..., (n-1)/2-1, (n-1)/2] / (d*n)   if n is odd
+
+    Unlike :obj:`dpnp.fft.fftfreq` the Nyquist frequency component is
+    considered to be positive.
 
     For full documentation refer to :obj:`numpy.fft.rfftfreq`.
 
-    Limitations
-    -----------
-    Parameter `d` is unsupported.
+    Parameters
+    ----------
+    n : int
+        Window length.
+    d : scalar, optional
+        Sample spacing (inverse of the sampling rate).
+        Default: ``1.0``.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+        Default: ``None``.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying.
+        Default: ``None``.
+
+    Returns
+    -------
+    f : dpnp.ndarray
+        Array of length ``n//2 + 1`` containing the sample frequencies.
+
+    See Also
+    --------
+    :obj:`dpnp.fft.fftfreq` : Return the Discrete Fourier Transform sample
+                        frequencies (for usage with :obj:`dpnp.fft.fft` and
+                        :obj:`dpnp.fft.ifft`).
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> signal = np.array([-2, 8, 6, 4, 1, 0, 3, 5, -3, 4])
+    >>> fourier = np.fft.fft(signal)
+    >>> n = signal.size
+    >>> sample_rate = 100
+    >>> freq = np.fft.fftfreq(n, d=1./sample_rate)
+    >>> freq
+    array([  0.,  10.,  20.,  30.,  40., -50., -40., -30., -20., -10.])
+    >>> freq = np.fft.rfftfreq(n, d=1./sample_rate)
+    >>> freq
+    array([ 0., 10., 20., 30., 40., 50.])
+
+    Creating the output array on a different device or with a
+    specified usm_type:
+
+    >>> x = np.fft.rfftfreq(n, d=1./sample_rate) # default case
+    >>> x.shape, x.device, x.usm_type
+    ((6,), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.fft.rfftfreq(n, d=1./sample_rate, device="cpu")
+    >>> y.shape, y.device, y.usm_type
+    ((6,), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.fft.rfftfreq(n, d=1./sample_rate, usm_type="host")
+    >>> z.shape, z.device, z.usm_type
+    ((6,), Device(level_zero:gpu:0), 'host')
 
     """
 
-    return call_origin(numpy.fft.rfftfreq, n, d)
+    if not isinstance(n, int):
+        raise ValueError("`n` should be an integer")
+    if not dpnp.isscalar(d):
+        raise ValueError("`d` should be an scalar")
+    val = 1.0 / (n * d)
+    N = n // 2 + 1
+    results = dpnp.arange(
+        0,
+        N,
+        dtype=dpnp.intp,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
+    return results * val
 
 
 def rfftn(x, s=None, axes=None, norm=None):

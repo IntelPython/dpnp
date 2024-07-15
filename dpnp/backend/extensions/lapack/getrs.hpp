@@ -30,13 +30,7 @@
 
 #include <dpctl4pybind11.hpp>
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace lapack
+namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
     getrs(sycl::queue exec_q,
@@ -46,7 +40,4 @@ extern std::pair<sycl::event, sycl::event>
           const std::vector<sycl::event> &depends = {});
 
 extern void init_getrs_dispatch_vector(void);
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::lapack

@@ -34,13 +34,7 @@
 
 #include "dpnp_utils.hpp"
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace lapack
+namespace dpnp::extensions::lapack
 {
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
@@ -289,7 +283,4 @@ void init_getrf_batch_dispatch_vector(void)
         contig;
     contig.populate_dispatch_vector(getrf_batch_dispatch_vector);
 }
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::lapack
