@@ -380,7 +380,6 @@ class TestFftfreq:
     {"shape": (10, 10), "axes": 0},
     {"shape": (10, 10), "axes": (0, 1)},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestFftshift:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
