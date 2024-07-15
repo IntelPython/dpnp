@@ -30,13 +30,7 @@
 
 #include <dpctl4pybind11.hpp>
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace lapack
+namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
     gesv(sycl::queue &exec_q,
@@ -61,7 +55,4 @@ extern void common_gesv_checks(sycl::queue &exec_q,
 
 extern void init_gesv_dispatch_vector(void);
 extern void init_gesv_batch_dispatch_vector(void);
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::lapack

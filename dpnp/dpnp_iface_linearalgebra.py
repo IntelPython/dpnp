@@ -43,9 +43,9 @@ from numpy.core.numeric import normalize_axis_tuple
 
 import dpnp
 
+from .dpnp_utils.dpnp_utils_einsum import dpnp_einsum
 from .dpnp_utils.dpnp_utils_linearalgebra import (
     dpnp_dot,
-    dpnp_einsum,
     dpnp_kron,
     dpnp_matmul,
 )

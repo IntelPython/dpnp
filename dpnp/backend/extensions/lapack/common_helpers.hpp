@@ -27,15 +27,7 @@
 #include <cstring>
 #include <stdexcept>
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace lapack
-{
-namespace helper
+namespace dpnp::extensions::lapack::helper
 {
 template <typename T>
 struct value_type_of
@@ -56,8 +48,4 @@ intT round_up_mult(intT value, intT mult)
     intT q = (value + (mult - 1)) / mult;
     return q * mult;
 }
-} // namespace helper
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+} // namespace dpnp::extensions::lapack::helper

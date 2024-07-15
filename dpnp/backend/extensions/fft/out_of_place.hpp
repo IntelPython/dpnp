@@ -25,14 +25,21 @@
 
 #pragma once
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <oneapi/mkl.hpp>
+#include <sycl/sycl.hpp>
 
-#include "evd_common.hpp"
+#include <dpctl4pybind11.hpp>
 
-namespace py = pybind11;
-
-namespace dpnp::extensions::lapack
+namespace dpnp::extensions::fft
 {
-void init_syevd(py::module_ m);
-} // namespace dpnp::extensions::lapack
+namespace mkl_dft = oneapi::mkl::dft;
+
+template <mkl_dft::precision prec, mkl_dft::domain dom>
+std::pair<sycl::event, sycl::event>
+    compute_fft_out_of_place(DescriptorWrapper<prec, dom> &descr,
+                             const dpctl::tensor::usm_ndarray &in,
+                             const dpctl::tensor::usm_ndarray &out,
+                             const bool is_forward,
+                             const std::vector<sycl::event> &depends);
+
+} // namespace dpnp::extensions::fft

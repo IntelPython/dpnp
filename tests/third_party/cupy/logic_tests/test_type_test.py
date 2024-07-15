@@ -1,0 +1,130 @@
+import unittest
+
+import numpy
+import pytest
+
+import dpnp as cupy
+from tests.third_party.cupy import testing
+
+
+class TestIsScalar(testing.NumpyAliasBasicTestBase):
+
+    func = "isscalar"
+
+    @testing.with_requires("numpy>=1.18")
+    def test_argspec(self):
+        super().test_argspec()
+
+
+@testing.parameterize(
+    *testing.product(
+        {
+            "value": [
+                0,
+                0.0,
+                True,
+                numpy.int32(1),
+                numpy.array([1, 2], numpy.int32),
+                numpy.complex128(1),
+                numpy.complex128(1j),
+                numpy.complex128(1 + 1j),
+                None,
+                "abc",
+                "",
+                int,
+                numpy.int32,
+            ]
+        }
+    )
+)
+class TestIsScalarValues(testing.NumpyAliasValuesTestBase):
+
+    func = "isscalar"
+
+    def setUp(self):
+        self.args = (self.value,)
+
+
+class TestIsScalarValues2(testing.NumpyAliasValuesTestBase):
+
+    func = "isscalar"
+
+    def setUp(self):
+        value = object()
+        self.args = (value,)
+
+
+@testing.parameterize(
+    *testing.product(
+        {
+            "value": [
+                # C and F
+                numpy.ones(24, order="C"),
+                # C and not F
+                numpy.ones((4, 6), order="C"),
+                # not C and F
+                numpy.ones((4, 6), order="F"),
+                # not C and not F
+                numpy.ones((4, 6), order="C")[1:3][1:3],
+            ]
+        }
+    )
+)
+class TestIsFortran(unittest.TestCase):
+
+    @pytest.mark.skip("isfortran not implemented")
+    @testing.numpy_cupy_equal()
+    def test(self, xp):
+        return xp.isfortran(xp.asarray(self.value))
+
+
+@testing.parameterize(
+    {"func": "iscomplex"},
+    {"func": "isreal"},
+)
+class TestTypeTestingFunctions(unittest.TestCase):
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test(self, xp, dtype):
+        return getattr(xp, self.func)(xp.ones(5, dtype=dtype))
+
+    @pytest.mark.skip("support for scalar not implemented")
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_equal()
+    def test_scalar(self, xp, dtype):
+        return getattr(xp, self.func)(dtype(3))
+
+    @pytest.mark.skip("support for list not implemented")
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_list(self, xp, dtype):
+        a = testing.shaped_arange((2, 3), xp, dtype)
+        if xp == cupy:
+            a = a.asnumpy()
+        return getattr(xp, self.func)(a.tolist())
+
+
+@testing.parameterize(
+    {"func": "iscomplexobj"},
+    {"func": "isrealobj"},
+)
+class TestTypeTestingObjFunctions(unittest.TestCase):
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_equal()
+    def test(self, xp, dtype):
+        return getattr(xp, self.func)(xp.ones(5, dtype=dtype))
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_equal()
+    def test_scalar(self, xp, dtype):
+        return getattr(xp, self.func)(dtype(3))
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_equal()
+    def test_list(self, xp, dtype):
+        a = testing.shaped_arange((2, 3), xp, dtype)
+        if xp == cupy:
+            a = a.asnumpy()
+        return getattr(xp, self.func)(a.tolist())

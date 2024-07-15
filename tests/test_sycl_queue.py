@@ -427,6 +427,8 @@ def test_meshgrid(device):
         pytest.param(
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
+        pytest.param("iscomplex", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
+        pytest.param("isreal", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
         pytest.param("log", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("log10", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("log1p", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
@@ -1216,21 +1218,21 @@ def test_out_multi_dot(device):
         assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
 
-@pytest.mark.parametrize("type", ["complex128"])
+@pytest.mark.parametrize("func", ["fft", "ifft"])
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_fft(type, device):
-    data = numpy.arange(100, dtype=numpy.dtype(type))
+def test_fft(func, device):
+    data = numpy.arange(100, dtype=numpy.complex128)
 
     dpnp_data = dpnp.array(data, device=device)
 
-    expected = numpy.fft.fft(data)
-    result = dpnp.fft.fft(dpnp_data)
+    expected = getattr(numpy.fft, func)(data)
+    result = getattr(dpnp.fft, func)(dpnp_data)
 
-    assert_allclose(result, expected, rtol=1e-4, atol=1e-7)
+    assert_dtype_allclose(result, expected)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
@@ -1258,6 +1260,20 @@ def test_fft_rfft(type, shape, device):
     result_queue = dpnp_res.get_array().sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_fftfreq(func, device):
+    result = getattr(dpnp.fft, func)(10, 0.5, device=device)
+    expected = getattr(numpy.fft, func)(10, 0.5)
+
+    assert_dtype_allclose(result, expected)
+    assert result.sycl_device == device
 
 
 @pytest.mark.parametrize(

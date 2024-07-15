@@ -63,11 +63,16 @@ __all__ = [
     "greater",
     "greater_equal",
     "isclose",
+    "iscomplex",
+    "iscomplexobj",
     "isfinite",
     "isinf",
     "isnan",
     "isneginf",
     "isposinf",
+    "isreal",
+    "isrealobj",
+    "isscalar",
     "less",
     "less_equal",
     "logical_and",
@@ -233,7 +238,7 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
 
     """
 
-    if dpnp.isscalar(a) and dpnp.isscalar(b):
+    if isscalar(a) and isscalar(b):
         # at least one of inputs has to be an array
         pass
     elif not (
@@ -244,18 +249,18 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, **kwargs):
     elif kwargs:
         pass
     else:
-        if not dpnp.isscalar(rtol):
+        if not isscalar(rtol):
             raise TypeError(
                 f"An argument `rtol` must be a scalar, but got {rtol}"
             )
-        if not dpnp.isscalar(atol):
+        if not isscalar(atol):
             raise TypeError(
                 f"An argument `atol` must be a scalar, but got {atol}"
             )
 
-        if dpnp.isscalar(a):
+        if isscalar(a):
             a = dpnp.full_like(b, fill_value=a)
-        elif dpnp.isscalar(b):
+        elif isscalar(b):
             b = dpnp.full_like(a, fill_value=b)
         elif a.shape != b.shape:
             a, b = dpt.broadcast_arrays(a.get_array(), b.get_array())
@@ -610,6 +615,90 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
     )
 
 
+def iscomplex(x):
+    """
+    Returns a bool array, where ``True`` if input element is complex.
+
+    What is tested is whether the input has a non-zero imaginary part, not if
+    the input type is complex.
+
+    For full documentation refer to :obj:`numpy.iscomplex`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array.
+
+    See Also
+    --------
+    :obj:`dpnp.isreal` : Returns a bool array, where ``True`` if input element
+                         is real.
+    :obj:`dpnp.iscomplexobj` : Return ``True`` if `x` is a complex type or an
+                               array of complex numbers.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1+1j, 1+0j, 4.5, 3, 2, 2j])
+    >>> np.iscomplex(a)
+    array([ True, False, False, False, False,  True])
+
+    """
+    dpnp.check_supported_arrays_type(x)
+    if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
+        return x.imag != 0
+    return dpnp.zeros_like(x, dtype=dpnp.bool)
+
+
+def iscomplexobj(x):
+    """
+    Check for a complex type or an array of complex numbers.
+
+    The type of the input is checked, not the value. Even if the input has an
+    imaginary part equal to zero, :obj:`dpnp.iscomplexobj` evaluates to
+    ``True``.
+
+    For full documentation refer to :obj:`numpy.iscomplexobj`.
+
+    Parameters
+    ----------
+    x : array_like
+        Input data, in any form that can be converted to an array. This
+        includes scalars, lists, lists of tuples, tuples, tuples of tuples,
+        tuples of lists, and ndarrays.
+
+    Returns
+    -------
+    out : bool
+        The return value, ``True`` if `x` is of a complex type or has at least
+        one complex element.
+
+    See Also
+    --------
+    :obj:`dpnp.isrealobj` : Return ``True`` if `x` is a not complex type or an
+                            array of complex numbers.
+    :obj:`dpnp.iscomplex` : Returns a bool array, where ``True`` if input
+                            element is complex.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.iscomplexobj(1)
+    False
+    >>> np.iscomplexobj(1+0j)
+    True
+    >>> np.iscomplexobj([3, 1+0j, True])
+    True
+
+    """
+    return numpy.iscomplexobj(x)
+
+
 _ISFINITE_DOCSTRING = """
 Test if each element of input array is a finite number.
 
@@ -921,6 +1010,123 @@ def isposinf(x, out=None):
 
     # TODO: support different out dtype #1717(dpctl)
     return dpnp.logical_and(is_inf, signbit, out=out)
+
+
+def isreal(x):
+    """
+    Returns a bool array, where ``True`` if input element is real.
+
+    If element has complex type with zero imaginary part, the return value
+    for that element is ``True``.
+
+    For full documentation refer to :obj:`numpy.isreal`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+
+    Returns
+    -------
+    out : : dpnp.ndarray
+        Boolean array of same shape as `x`.
+
+    See Also
+    --------
+    :obj:`dpnp.iscomplex` : Returns a bool array, where ``True`` if input
+                            element is complex.
+    :obj:`dpnp.isrealobj` : Return ``True`` if `x` is not a complex type.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1+1j, 1+0j, 4.5, 3, 2, 2j])
+    >>> np.isreal(a)
+    array([False,  True,  True,  True,  True, False])
+
+    """
+    dpnp.check_supported_arrays_type(x)
+    if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
+        return x.imag == 0
+    return dpnp.ones_like(x, dtype=dpnp.bool)
+
+
+def isrealobj(x):
+    """
+    Return ``True`` if `x` is a not complex type or an array of complex numbers.
+
+    The type of the input is checked, not the value. So even if the input has
+    an imaginary part equal to zero, :obj:`dpnp.isrealobj` evaluates to
+    ``False`` if the data type is complex.
+
+    For full documentation refer to :obj:`numpy.isrealobj`.
+
+    Parameters
+    ----------
+    x : array_like
+        Input data, in any form that can be converted to an array. This
+        includes scalars, lists, lists of tuples, tuples, tuples of tuples,
+        tuples of lists, and ndarrays.
+
+    Returns
+    -------
+    out : bool
+        The return value, ``False`` if `x` is of a complex type.
+
+    See Also
+    --------
+    :obj:`dpnp.iscomplexobj` : Check for a complex type or an array of complex
+                               numbers.
+    :obj:`dpnp.isreal` : Returns a bool array, where ``True`` if input element
+                         is real.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.isrealobj(False)
+    True
+    >>> np.isrealobj(1)
+    True
+    >>> np.isrealobj(1+0j)
+    False
+    >>> np.isrealobj([3, 1+0j, True])
+    False
+
+    """
+    return not iscomplexobj(x)
+
+
+def isscalar(element):
+    """
+    Returns ``True`` if the type of `element` is a scalar type.
+
+    For full documentation refer to :obj:`numpy.isscalar`.
+
+    Parameters
+    ----------
+    element : any
+        Input argument, can be of any type and shape.
+
+    Returns
+    -------
+    out : bool
+        ``True`` if `element` is a scalar type, ``False`` if it is not.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.isscalar(3.1)
+    True
+    >>> np.isscalar(np.array(3.1))
+    False
+    >>> np.isscalar([3.1])
+    False
+    >>> np.isscalar(False)
+    True
+    >>> np.isscalar("dpnp")
+    True
+    """
+    return numpy.isscalar(element)
 
 
 _LESS_DOCSTRING = """

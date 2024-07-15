@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023-2024, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,29 +25,14 @@
 
 #pragma once
 
-#include <oneapi/mkl.hpp>
-#include <sycl/sycl.hpp>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
-#include <dpctl4pybind11.hpp>
+#include "evd_common.hpp"
 
-namespace dpnp
-{
-namespace backend
-{
-namespace ext
-{
-namespace lapack
-{
-extern std::pair<sycl::event, sycl::event>
-    heevd(sycl::queue exec_q,
-          const std::int8_t jobz,
-          const std::int8_t upper_lower,
-          dpctl::tensor::usm_ndarray eig_vecs,
-          dpctl::tensor::usm_ndarray eig_vals,
-          const std::vector<sycl::event> &depends = {});
+namespace py = pybind11;
 
-extern void init_heevd_dispatch_table(void);
-} // namespace lapack
-} // namespace ext
-} // namespace backend
-} // namespace dpnp
+namespace dpnp::extensions::lapack
+{
+void init_heevd(py::module_ m);
+} // namespace dpnp::extensions::lapack

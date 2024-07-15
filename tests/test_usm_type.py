@@ -559,6 +559,8 @@ def test_norm(usm_type, ord, axis):
         pytest.param(
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
+        pytest.param("iscomplex", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
+        pytest.param("isreal", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
         pytest.param("log", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("log10", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("log1p", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
@@ -929,6 +931,30 @@ def test_eigenvalue(func, shape, usm_type):
         dp_val = getattr(dp.linalg, func)(a)
 
     assert a.usm_type == dp_val.usm_type
+
+
+@pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
+def test_fftfreq(func, usm_type):
+    result = getattr(dp.fft, func)(10, 0.5, usm_type=usm_type)
+    expected = getattr(numpy.fft, func)(10, 0.5)
+
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
+
+    assert_dtype_allclose(result, expected)
+    assert result.usm_type == usm_type
+
+
+@pytest.mark.parametrize("func", ["fft", "ifft"])
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_fft(func, usm_type):
+    dpnp_data = dp.arange(100, usm_type=usm_type, dtype=dp.complex64)
+    result = getattr(dp.fft, func)(dpnp_data)
+
+    assert dpnp_data.usm_type == usm_type
+    assert result.usm_type == usm_type
 
 
 @pytest.mark.parametrize(

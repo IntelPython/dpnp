@@ -71,7 +71,6 @@ __all__ = [
     "integer",
     "intc",
     "intp",
-    "isscalar",
     "issubdtype",
     "issubsctype",
     "is_type_supported",
@@ -227,16 +226,6 @@ def iinfo(dtype):
     if isinstance(dtype, dpnp_array):
         dtype = dtype.dtype
     return dpt.iinfo(dtype)
-
-
-def isscalar(obj):
-    """
-    Returns ``True`` if the type of `obj` is a scalar type.
-
-    For full documentation refer to :obj:`numpy.isscalar`.
-
-    """
-    return numpy.isscalar(obj)
 
 
 def issubdtype(arg1, arg2):

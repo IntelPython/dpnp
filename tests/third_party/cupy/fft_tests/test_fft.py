@@ -10,6 +10,14 @@ from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
+@pytest.fixture
+def skip_forward_backward(request):
+    if request.instance.norm in ("backward", "forward"):
+        if not (np.lib.NumpyVersion(np.__version__) >= "1.20.0"):
+            pytest.skip("forward/backward is supported by NumPy 1.20+")
+
+
+@pytest.mark.usefixtures("skip_forward_backward")
 @testing.parameterize(
     *testing.product(
         {
@@ -19,19 +27,22 @@ from tests.third_party.cupy import testing
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestFft(unittest.TestCase):
+class TestFft:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=False,
         contiguous_check=False,
+        type_check=has_support_aspect64(),
     )
     def test_fft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.fft(a, n=self.n, norm=self.norm)
+
+        # np.fft.fft always returns np.complex128
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
 
         return out
 
@@ -40,12 +51,68 @@ class TestFft(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=False,
         contiguous_check=False,
+        type_check=has_support_aspect64(),
     )
+    # NumPy 1.17.0 and 1.17.1 raises ZeroDivisonError due to a bug
+    @testing.with_requires("numpy!=1.17.0")
+    @testing.with_requires("numpy!=1.17.1")
     def test_ifft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.ifft(a, n=self.n, norm=self.norm)
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
+
+        return out
+
+
+@testing.parameterize(
+    *testing.product(
+        {
+            "shape": [(0, 10), (10, 0, 10), (10, 10), (10, 5, 10)],
+            "data_order": ["F", "C"],
+            "axis": [0, 1, -1],
+        }
+    )
+)
+class TestFftOrder:
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4,
+        atol=1e-6,
+        accept_error=ValueError,
+        contiguous_check=False,
+        type_check=has_support_aspect64(),
+    )
+    def test_fft(self, xp, dtype):
+        a = testing.shaped_random(self.shape, xp, dtype)
+        if self.data_order == "F":
+            a = xp.asfortranarray(a)
+        out = xp.fft.fft(a, axis=self.axis)
+
+        # np.fft.fft always returns np.complex128
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
+
+        return out
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4,
+        atol=1e-7,
+        accept_error=ValueError,
+        contiguous_check=False,
+        type_check=has_support_aspect64(),
+    )
+    def test_ifft(self, xp, dtype):
+        a = testing.shaped_random(self.shape, xp, dtype)
+        if self.data_order == "F":
+            a = xp.asfortranarray(a)
+        out = xp.fft.ifft(a, axis=self.axis)
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
 
         return out
 
@@ -82,8 +149,8 @@ class TestFft2(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=has_support_aspect64(),
         contiguous_check=False,
+        type_check=False,
     )
     def test_fft2(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -96,8 +163,8 @@ class TestFft2(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=has_support_aspect64(),
         contiguous_check=False,
+        type_check=False,
     )
     def test_ifft2(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -139,8 +206,8 @@ class TestFftn(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=has_support_aspect64(),
         contiguous_check=False,
+        type_check=False,
     )
     def test_fftn(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -153,8 +220,8 @@ class TestFftn(unittest.TestCase):
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
-        type_check=has_support_aspect64(),
         contiguous_check=False,
+        type_check=False,
     )
     def test_ifftn(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -173,7 +240,7 @@ class TestFftn(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestRfft(unittest.TestCase):
+class TestRfft:
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
@@ -204,7 +271,7 @@ class TestRfft(unittest.TestCase):
     {"shape": (2, 3, 4), "s": None, "axes": (), "norm": None},
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestRfft2EmptyAxes(unittest.TestCase):
+class TestRfft2EmptyAxes:
     @testing.for_all_dtypes(no_complex=True)
     def test_rfft2(self, dtype):
         for xp in (np, cupy):
@@ -225,7 +292,7 @@ class TestRfft2EmptyAxes(unittest.TestCase):
     {"shape": (2, 3, 4), "s": None, "axes": (), "norm": None},
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestRfftnEmptyAxes(unittest.TestCase):
+class TestRfftnEmptyAxes:
     @testing.for_all_dtypes(no_complex=True)
     def test_rfftn(self, dtype):
         for xp in (np, cupy):
@@ -251,7 +318,7 @@ class TestRfftnEmptyAxes(unittest.TestCase):
     )
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestHfft(unittest.TestCase):
+class TestHfft:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
@@ -282,26 +349,23 @@ class TestHfft(unittest.TestCase):
     {"n": 10, "d": 0.5},
     {"n": 100, "d": 2},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestFftfreq(unittest.TestCase):
-    @testing.for_all_dtypes()
+class TestFftfreq:
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
         type_check=has_support_aspect64(),
     )
-    def test_fftfreq(self, xp, dtype):
+    def test_fftfreq(self, xp):
         out = xp.fft.fftfreq(self.n, self.d)
 
         return out
 
-    @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
         type_check=has_support_aspect64(),
     )
-    def test_rfftfreq(self, xp, dtype):
+    def test_rfftfreq(self, xp):
         out = xp.fft.rfftfreq(self.n, self.d)
 
         return out
@@ -317,7 +381,7 @@ class TestFftfreq(unittest.TestCase):
     {"shape": (10, 10), "axes": (0, 1)},
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestFftshift(unittest.TestCase):
+class TestFftshift:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-4,

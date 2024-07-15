@@ -25,14 +25,27 @@
 
 #pragma once
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <oneapi/mkl.hpp>
 
-#include "evd_common.hpp"
-
-namespace py = pybind11;
-
-namespace dpnp::extensions::lapack
+namespace dpnp::extensions::fft
 {
-void init_syevd(py::module_ m);
-} // namespace dpnp::extensions::lapack
+namespace mkl_dft = oneapi::mkl::dft;
+
+template <mkl_dft::precision prec>
+struct ScaleType
+{
+    using value_type = void;
+};
+
+template <>
+struct ScaleType<mkl_dft::precision::SINGLE>
+{
+    using value_type = float;
+};
+
+template <>
+struct ScaleType<mkl_dft::precision::DOUBLE>
+{
+    using value_type = double;
+};
+} // namespace dpnp::extensions::fft
