@@ -52,6 +52,9 @@ bool need_to_call_unary_ufunc(sycl::queue &exec_q,
                               const output_typesT &output_type_vec,
                               const contig_dispatchT &contig_dispatch_vector)
 {
+#if DPNP_TARGET_CUDA
+    return false;
+#else
     // check type_nums
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
@@ -136,6 +139,7 @@ bool need_to_call_unary_ufunc(sycl::queue &exec_q,
         return false;
     }
     return true;
+#endif
 }
 
 template <typename output_typesT, typename contig_dispatchT>
@@ -146,6 +150,9 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
                                const output_typesT &output_type_table,
                                const contig_dispatchT &contig_dispatch_table)
 {
+#if DPNP_TARGET_CUDA
+    return false;
+#else
     // check type_nums
     int src1_typenum = src1.get_typenum();
     int src2_typenum = src2.get_typenum();
@@ -241,6 +248,7 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
         return false;
     }
     return true;
+#endif
 }
 
 /**

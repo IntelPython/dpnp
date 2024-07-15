@@ -48,6 +48,20 @@ set(_module_src
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
 
+if(_dpnp_sycl_targets)
+    # make fat binary
+    target_compile_options(
+        ${python_module_name}
+        PRIVATE
+        -fsycl-targets=${_dpnp_sycl_targets}
+    )
+    target_link_options(
+        ${python_module_name}
+        PRIVATE
+        -fsycl-targets=${_dpnp_sycl_targets}
+    )
+endif()
+
 if (WIN32)
     if (${CMAKE_VERSION} VERSION_LESS "3.27")
         # this is a work-around for target_link_options inserting option after -link option, cause
@@ -82,7 +96,11 @@ if (DPNP_GENERATE_COVERAGE)
     target_link_options(${python_module_name} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 endif()
 
-target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::LAPACK)
+if(_dpnp_use_onemkl)
+    target_link_libraries(${python_module_name} PUBLIC onemkl)
+else()
+    target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::LAPACK)
+endif()
 
 install(TARGETS ${python_module_name}
   DESTINATION "dpnp/backend/extensions/lapack"

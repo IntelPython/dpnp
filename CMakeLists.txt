@@ -67,6 +67,51 @@ find_package(Dpctl REQUIRED)
 message(STATUS "Dpctl_INCLUDE_DIR=" ${Dpctl_INCLUDE_DIR})
 message(STATUS "Dpctl_TENSOR_INCLUDE_DIR=" ${Dpctl_TENSOR_INCLUDE_DIR})
 
+option(DPNP_TARGET_CUDA
+    "Build DPNP to target CUDA devices"
+    OFF
+)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
+set(_dpnp_sycl_targets)
+set(_dpnp_use_onemkl OFF)
+if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
+   if(DPNP_TARGET_CUDA)
+      set(_dpnp_use_onemkl ON)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDPNP_TARGET_CUDA=1")
+      set(_dpnp_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
+   else()
+      if(DEFINED ENV{DPNP_TARGET_CUDA})
+          set(_dpnp_use_onemkl ON)
+          set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDPNP_TARGET_CUDA=1")
+          set(_dpnp_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
+      endif()
+   endif()
+else()
+   set(_dpnp_sycl_targets ${DPNP_SYCL_TARGETS})
+endif()
+
+if(_dpnp_sycl_targets)
+   message(STATUS "Compiling for -fsycl-targets=${_dpnp_sycl_targets}")
+endif()
+
+if(_dpnp_use_onemkl)
+    set(BUILD_FUNCTIONAL_TESTS False)
+    set(BUILD_EXAMPLES False)
+    set(ENABLE_CUBLAS_BACKEND False)
+    set(ENABLE_CUSOLVER_BACKEND True)
+    set(ENABLE_CUFFT_BACKEND False)
+    set(ENABLE_CURAND_BACKEND False)
+    set(ENABLE_MKLGPU_BACKEND False)
+    set(ENABLE_MKLCPU_BACKEND False)
+    FetchContent_Declare(
+            onemkl_interface_library
+            GIT_REPOSITORY https://github.com/oneapi-src/oneMKL.git
+            GIT_TAG develop
+    )
+    FetchContent_MakeAvailable(onemkl_interface_library)
+endif()
+
+
 if(WIN32)
     string(CONCAT WARNING_FLAGS
         "-Wall "
