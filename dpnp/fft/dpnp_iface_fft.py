@@ -386,7 +386,7 @@ def fftshift(x, axes=None):
 
     See Also
     --------
-    :obj:`dpnp.ifftshift` : The inverse of :obj:`dpnp.fftshift`.
+    :obj:`dpnp.fft.ifftshift` : The inverse of :obj:`dpnp.fft.fftshift`.
 
     Examples
     --------
@@ -657,7 +657,7 @@ def ifftshift(x, axes=None):
 
     See Also
     --------
-    :obj:`dpnp.fftshift` : Shift zero-frequency component to the center
+    :obj:`dpnp.fft.fftshift` : Shift zero-frequency component to the center
                 of the spectrum.
 
     Examples
