@@ -372,3 +372,14 @@ class TestFftfreq:
 
         # d should be an scalar
         assert_raises(ValueError, getattr(dpnp.fft, func), 10, (2,))
+
+
+class TestFftshift:
+    @pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
+    @pytest.mark.parametrize("axes", [None, 1, (0, 1)])
+    def test_fftshift(self, func, axes):
+        x = dpnp.arange(12).reshape(3, 4)
+        x_np = x.asnumpy()
+        expected = getattr(dpnp.fft, func)(x, axes=axes)
+        result = getattr(numpy.fft, func)(x_np, axes=axes)
+        assert_dtype_allclose(expected, result)

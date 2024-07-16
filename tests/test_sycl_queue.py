@@ -1276,6 +1276,27 @@ def test_fftfreq(func, device):
     assert result.sycl_device == device
 
 
+@pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_fftshift(func, device):
+    dpnp_data = dpnp.fft.fftfreq(10, 0.5, device=device)
+    data = dpnp_data.asnumpy()
+
+    expected = getattr(numpy.fft, func)(data)
+    result = getattr(dpnp.fft, func)(dpnp_data)
+
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = dpnp_data.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
 @pytest.mark.parametrize(
     "data, is_empty",
     [

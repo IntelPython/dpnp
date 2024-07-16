@@ -933,6 +933,17 @@ def test_eigenvalue(func, shape, usm_type):
     assert a.usm_type == dp_val.usm_type
 
 
+@pytest.mark.parametrize("func", ["fft", "ifft"])
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_fft(func, usm_type):
+
+    dpnp_data = dp.arange(100, usm_type=usm_type, dtype=dp.complex64)
+    result = getattr(dp.fft, func)(dpnp_data)
+
+    assert dpnp_data.usm_type == usm_type
+    assert result.usm_type == usm_type
+
+
 @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
 def test_fftfreq(func, usm_type):
@@ -947,10 +958,10 @@ def test_fftfreq(func, usm_type):
     assert result.usm_type == usm_type
 
 
-@pytest.mark.parametrize("func", ["fft", "ifft"])
+@pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_fft(func, usm_type):
-    dpnp_data = dp.arange(100, usm_type=usm_type, dtype=dp.complex64)
+def test_fftshift(func, usm_type):
+    dpnp_data = dp.fft.fftfreq(10, 0.5, usm_type=usm_type)
     result = getattr(dp.fft, func)(dpnp_data)
 
     assert dpnp_data.usm_type == usm_type
