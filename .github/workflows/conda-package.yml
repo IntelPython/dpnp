@@ -16,6 +16,7 @@ env:
   CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
   CONDA_BUILD_VERSION: '24.5.1'
   CONDA_INDEX_VERSION: '0.5.0'
+  RERUN_TESTS_ON_FAILURE: 'false'
   RUN_TESTS_MAX_ATTEMPTS: 2
   TEST_ENV_NAME: 'test'
   TEST_SCOPE: >-
@@ -255,14 +256,14 @@ jobs:
           python -c "import dpnp, dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
 
-      # TODO: run the whole scope once the issues on CPU are resolved
-      # - name: Run tests
-        # run: |
-        #   python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-        # working-directory: ${{ env.tests-path }}
-
-      # TODO: remove once 2024.2 release is published
       - name: Run tests
+        if: env.RERUN_TESTS_ON_FAILURE != 'true'
+        run: |
+          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+        working-directory: ${{ env.tests-path }}
+
+      - name: Run tests
+        if: env.RERUN_TESTS_ON_FAILURE == 'true'
         id: run_tests_linux
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
@@ -411,14 +412,14 @@ jobs:
           python -c "import dpnp, dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
 
-      # TODO: run the whole scope once the issues on CPU are resolved
-      # - name: Run tests
-      #   run: |
-      #     python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-      #   working-directory: ${{ env.tests-path }}
-
-      # TODO: remove once 2024.2 release is published
       - name: Run tests
+        if: env.RERUN_TESTS_ON_FAILURE != 'true'
+        run: |
+          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+        working-directory: ${{ env.tests-path }}
+
+      - name: Run tests
+        if: env.RERUN_TESTS_ON_FAILURE == 'true'
         id: run_tests_win
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
