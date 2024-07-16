@@ -395,13 +395,6 @@ def where(condition, x=None, y=None, /, *, order="K", out=None):
     usm_y = dpnp.get_usm_ndarray_or_scalar(y)
     usm_condition = dpnp.get_usm_ndarray(condition)
 
-    usm_type, queue = get_usm_allocations([condition, x, y])
-    if dpnp.isscalar(usm_x):
-        usm_x = dpt.asarray(usm_x, usm_type=usm_type, sycl_queue=queue)
-
-    if dpnp.isscalar(usm_y):
-        usm_y = dpt.asarray(usm_y, usm_type=usm_type, sycl_queue=queue)
-
     usm_out = None if out is None else dpnp.get_usm_ndarray(out)
     result = dpnp_array._create_from_usm_ndarray(
         dpt.where(usm_condition, usm_x, usm_y, order=order, out=usm_out)
