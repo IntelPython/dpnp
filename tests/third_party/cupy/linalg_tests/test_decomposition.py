@@ -4,7 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from tests.helper import has_support_aspect64, is_cpu_device
+from tests.helper import has_support_aspect64, is_cpu_device, is_win_platform
 from tests.third_party.cupy import testing
 from tests.third_party.cupy.testing import _condition
 
@@ -279,6 +279,12 @@ class TestSVD(unittest.TestCase):
             array, full_matrices=self.full_matrices, compute_uv=False
         )
 
+    # The issue was expected to be resolved once CMPLRLLVM-53771 is available,
+    # which has to be included in DPC++ 2024.1.0, but problem still exists
+    # on Windows
+    @pytest.mark.skipif(
+        is_cpu_device() and is_win_platform(), reason="SAT-7145"
+    )
     @_condition.repeat(3, 10)
     def test_svd_rank3(self):
         self.check_usv((2, 3, 4))
