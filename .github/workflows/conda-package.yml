@@ -72,7 +72,7 @@ jobs:
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11']
-        os: [ubuntu-20.04, windows-2019]
+        os: [ubuntu-20.04, windows-latest]
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -82,7 +82,7 @@ jobs:
 
     defaults:
       run:
-        shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -l {0}' }}
+        shell: ${{ matrix.os == 'windows-latest' && 'cmd /C CALL {0}' || 'bash -l {0}' }}
 
     continue-on-error: true
 
@@ -277,11 +277,11 @@ jobs:
             python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   test_windows:
-    name: Test ['windows-2019', python='${{ matrix.python }}']
+    name: Test ['windows-latest', python='${{ matrix.python }}']
 
     needs: build
 
-    runs-on: windows-2019
+    runs-on: windows-latest
 
     defaults:
       run:
@@ -439,7 +439,7 @@ jobs:
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11']
-        os: [ubuntu-20.04, windows-2019]
+        os: [ubuntu-20.04, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
