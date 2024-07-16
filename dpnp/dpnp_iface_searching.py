@@ -37,17 +37,12 @@ it contains:
 
 """
 
-# pylint: disable=no-name-in-module
-
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as dti
 
 import dpnp
 
 from .dpnp_array import dpnp_array
-from .dpnp_utils import (
-    get_usm_allocations,
-)
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
 __all__ = ["argmax", "argmin", "searchsorted", "where"]
