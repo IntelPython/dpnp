@@ -134,11 +134,12 @@ def _create_result_array(
     """
     Create the result array.
 
-    If `out` is not ``None`` and its features match the specified `shape`, `dtype,
-    `usm_type`, and `sycl_queue` and it is C-contiguous or F-contiguous and
-    does not have any memory overlap with `x1` and `x2`, `out` itself is returned.
+    If `out` is not ``None`` and its shape and dtype match the desired `shape`
+    and `dtype`, and its 2-D base is contiguous and it does not have any memory
+    overlap with `x1` and `x2`, `out` itself is returned.
     If these conditions are not satisfied, an empty array is returned with the
     specified `shape`, `dtype, `usm_type`, and `sycl_queue`.
+
     """
 
     if out is not None:
@@ -369,21 +370,33 @@ def _gemm_batch_matmul(exec_q, x1, x2, res):
     _, res_is_c_contig, res_is_f_contig = _define_contig_flag(res)
     if row_major:
         if res_is_f_contig:
-            res = dpnp.reshape(
-                dpnp.ravel(res, order="F"),
-                (res_shape[1], res_shape[2], batch_size),
-            ).transpose(2, 0, 1)
+            # Considering the multiplication for one of the batches,
+            # we have result[0, 1] = a[0, :]*b[1, :]. In row_major mode,
+            # it is assumed result array is c-contiguous, i.e. the value of
+            # result[0, 1] is has the second place memory.
+            # however, the result array is batches of 2D f-contiguous array,
+            # i.e. the second place of memory points out to res[1, 0].
+            # So, we need to read data of each 2D array in the batch in
+            # "F" order and write it in "C" order
+            res = (
+                res.ravel(order="F")
+                .reshape(res_shape[1], res_shape[2], batch_size)
+                .transpose(2, 0, 1)
+            )
     else:
         if res_is_c_contig:
-            res = dpnp.reshape(
-                dpnp.ravel(res, order="C"),
-                (batch_size, res_shape[2], res_shape[1]),
-            ).transpose(0, 2, 1)
+            # read data of each 2D array in the batch in "C" order and
+            # write it in "F" order
+            res = (
+                res.ravel(order="C")
+                .reshape(batch_size, res_shape[2], res_shape[1])
+                .transpose(0, 2, 1)
+            )
 
     if res_shape != orig_shape:
         res = res.reshape(orig_shape)
 
-    return dpnp.ascontiguousarray(res)
+    return res
 
 
 def _gemm_matmul(exec_q, x1, x2, res):
@@ -401,13 +414,13 @@ def _gemm_matmul(exec_q, x1, x2, res):
     if row_major:
         if res.flags.f_contiguous is True:
             # read data in "F" order and write it in "C" order
-            res = dpnp.reshape(dpnp.ravel(res, order="F"), res.shape, order="C")
+            res = dpnp.ravel(res, order="F").reshape(res.shape, order="C")
     else:
         if res.flags.c_contiguous is True:
             # read data in "C" order and write it in "F" order
-            res = dpnp.reshape(dpnp.ravel(res, order="C"), res.shape, order="F")
+            res = dpnp.ravel(res, order="C").reshape(res.shape, order="F")
 
-    return dpnp.ascontiguousarray(res)
+    return res
 
 
 def _shape_error(a, b, core_dim, err_msg):
@@ -768,8 +781,9 @@ def dpnp_matmul(
         call_flag = "multiply"
     elif x1_is_1D and x2_is_1D:
         call_flag = "dot"
-        x1 = dpnp.reshape(x1, x1.size)
-        x2 = dpnp.reshape(x2, x2.size)
+        # arrays are inehrently 1D, make them 1D
+        x1 = dpnp.ravel(x1)
+        x2 = dpnp.ravel(x2)
     elif x1_base_is_1D and x2_base_is_1D:
         # TODO: implement a batch version of dot to use it here
         call_flag = "gemm_batch"
@@ -912,7 +926,10 @@ def dpnp_matmul(
         # we need to update it to match the passed `order`.
         if order not in ["k", "K"]:
             return dpnp.array(result, copy=False, order=order)
-        return result
+        # dpnp.ascontiguousarray changes 0-D array to 1-D array
+        if result.ndim == 0:
+            return result
+        return dpnp.ascontiguousarray(result)
 
     result = dpnp.get_result_array(result, out, casting=casting)
     if axes is not None and out is result:
