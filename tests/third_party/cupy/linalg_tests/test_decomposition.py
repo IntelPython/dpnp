@@ -344,6 +344,9 @@ class TestSVD(unittest.TestCase):
             array, full_matrices=self.full_matrices, compute_uv=False
         )
 
+    @pytest.mark.skipif(
+        is_cpu_device() and is_win_platform(), reason="SAT-7145"
+    )
     @_condition.repeat(3, 10)
     def test_svd_rank4(self):
         self.check_usv((2, 2, 3, 4))
