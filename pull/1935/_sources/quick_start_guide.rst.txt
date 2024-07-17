@@ -37,7 +37,7 @@ in the next installation section.
 Installation
 ============
 
-Install Package from Intel(R) conda channel
+Install Package from Intel(R) channel
 -------------------------------------------
 
 You will need one of the commands below:
