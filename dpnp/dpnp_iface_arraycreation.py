@@ -2188,7 +2188,7 @@ def geomspace(
 
     """
 
-    res = dpnp_geomspace(
+    return dpnp_geomspace(
         start,
         stop,
         num,
@@ -2199,9 +2199,6 @@ def geomspace(
         endpoint=endpoint,
         axis=axis,
     )
-
-    dpnp.synchronize_array_data(res)
-    return res
 
 
 def identity(
@@ -2410,7 +2407,7 @@ def linspace(
 
     """
 
-    res = dpnp_linspace(
+    return dpnp_linspace(
         start,
         stop,
         num,
@@ -2422,12 +2419,6 @@ def linspace(
         retstep=retstep,
         axis=axis,
     )
-
-    if isinstance(res, tuple):  # (result, step) is returning
-        dpnp.synchronize_array_data(res[0])
-    else:
-        dpnp.synchronize_array_data(res)
-    return res
 
 
 def loadtxt(
@@ -2643,7 +2634,7 @@ def logspace(
 
     """
 
-    res = dpnp_logspace(
+    return dpnp_logspace(
         start,
         stop,
         num=num,
@@ -2655,9 +2646,6 @@ def logspace(
         dtype=dtype,
         axis=axis,
     )
-
-    dpnp.synchronize_array_data(res)
-    return res
 
 
 # pylint: disable=redefined-outer-name
@@ -2759,9 +2747,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     if copy:
         output = [dpt.copy(x) for x in output]
 
-    dpnp.synchronize_array_data(output[0])
-    output = [dpnp_array._create_from_usm_ndarray(x) for x in output]
-    return output
+    return [dpnp_array._create_from_usm_ndarray(x) for x in output]
 
 
 class MGridClass:
