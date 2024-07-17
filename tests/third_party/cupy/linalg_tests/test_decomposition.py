@@ -356,6 +356,9 @@ class TestSVD(unittest.TestCase):
         self.check_usv((2, 2, 4, 3))
         self.check_usv((2, 2, 32, 32))
 
+    @pytest.mark.skipif(
+        is_cpu_device() and is_win_platform(), reason="SAT-7145"
+    )
     @_condition.repeat(3, 10)
     def test_svd_rank4_loop(self):
         # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
