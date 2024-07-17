@@ -366,45 +366,62 @@ def fftshift(x, axes=None):
     """
     Shift the zero-frequency component to the center of the spectrum.
 
+    This function swaps half-spaces for all axes listed (defaults to all).
+    Note that ``out[0]`` is the Nyquist component only if ``len(x)`` is even.
+
     For full documentation refer to :obj:`numpy.fft.fftshift`.
 
-    Limitations
-    -----------
-    Parameter `x` is supported either as :class:`dpnp.ndarray`.
-    Parameter `axes` is unsupported.
-    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
-    `dpnp.complex128` data types are supported.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axes : {None, int, list or tuple of ints}, optional
+        Axes over which to shift.
+        Default is ``None``, which shifts all axes.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The shifted array.
+
+    See Also
+    --------
+    :obj:`dpnp.fft.ifftshift` : The inverse of :obj:`dpnp.fft.fftshift`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> freqs = np.fft.fftfreq(10, 0.1)
+    >>> freqs
+    array([ 0.,  1.,  2.,  3.,  4., -5., -4., -3., -2., -1.])
+    >>> np.fft.fftshift(freqs)
+    array([-5., -4., -3., -2., -1.,  0.,  1.,  2.,  3.,  4.])
+
+    Shift the zero-frequency component only along the second axis:
+
+    >>> freqs = np.fft.fftfreq(9, d=1./9).reshape(3, 3)
+    >>> freqs
+    array([[ 0.,  1.,  2.],
+           [ 3.,  4., -4.],
+           [-3., -2., -1.]])
+    >>> np.fft.fftshift(freqs, axes=(1,))
+    array([[ 2.,  0.,  1.],
+           [-4.,  3.,  4.],
+           [-1., -3., -2.]])
 
     """
 
-    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
-    # TODO: enable implementation
-    # pylint: disable=condition-evals-to-constant
-    if x_desc and 0:
-        norm_ = Norm.backward
+    dpnp.check_supported_arrays_type(x)
+    if axes is None:
+        axes = tuple(range(x.ndim))
+        shift = [dim // 2 for dim in x.shape]
+    elif isinstance(axes, int):
+        shift = x.shape[axes] // 2
+    else:
+        x_shape = x.shape
+        shift = [x_shape[ax] // 2 for ax in axes]
 
-        if axes is None:
-            axis_param = -1  # the most right dimension (default value)
-        else:
-            axis_param = axes
-
-        if x_desc.size < 1:
-            pass  # let fallback to handle exception
-        else:
-            input_boundarie = x_desc.shape[axis_param]
-            output_boundarie = input_boundarie
-
-            return dpnp_fft_deprecated(
-                x_desc,
-                input_boundarie,
-                output_boundarie,
-                axis_param,
-                False,
-                norm_.value,
-            ).get_pyobj()
-
-    return call_origin(numpy.fft.fftshift, x, axes)
+    return dpnp.roll(x, shift, axes)
 
 
 def hfft(x, n=None, axis=-1, norm=None):
@@ -620,48 +637,55 @@ def ifftshift(x, axes=None):
     """
     Inverse shift the zero-frequency component to the center of the spectrum.
 
+    Although identical for even-length `x`, the functions differ by one sample
+    for odd-length `x`.
+
     For full documentation refer to :obj:`numpy.fft.ifftshift`.
 
-    Limitations
-    -----------
-    Parameter `x` is supported either as :class:`dpnp.ndarray`.
-    Parameter `axes` is unsupported.
-    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
-    `dpnp.complex128` data types are supported.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axes : {None, int, list or tuple of ints}, optional
+        Axes over which to calculate.
+        Defaults to ``None``, which shifts all axes.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The shifted array.
+
+    See Also
+    --------
+    :obj:`dpnp.fft.fftshift` : Shift zero-frequency component to the center
+                of the spectrum.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> freqs = np.fft.fftfreq(9, d=1./9).reshape(3, 3)
+    >>> freqs
+    array([[ 0.,  1.,  2.],
+           [ 3.,  4., -4.],
+           [-3., -2., -1.]])
+    >>> np.fft.ifftshift(np.fft.fftshift(freqs))
+    array([[ 0.,  1.,  2.],
+           [ 3.,  4., -4.],
+           [-3., -2., -1.]])
 
     """
 
-    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
-    # TODO: enable implementation
-    # pylint: disable=condition-evals-to-constant
-    if x_desc and 0:
-        norm_ = Norm.backward
+    dpnp.check_supported_arrays_type(x)
+    if axes is None:
+        axes = tuple(range(x.ndim))
+        shift = [-(dim // 2) for dim in x.shape]
+    elif isinstance(axes, int):
+        shift = -(x.shape[axes] // 2)
+    else:
+        x_shape = x.shape
+        shift = [-(x_shape[ax] // 2) for ax in axes]
 
-        if axes is None:
-            axis_param = -1  # the most right dimension (default value)
-        else:
-            axis_param = axes
-
-        input_boundarie = x_desc.shape[axis_param]
-
-        if x_desc.size < 1:
-            pass  # let fallback to handle exception
-        elif input_boundarie < 1:
-            pass  # let fallback to handle exception
-        else:
-            output_boundarie = input_boundarie
-
-            return dpnp_fft_deprecated(
-                x_desc,
-                input_boundarie,
-                output_boundarie,
-                axis_param,
-                True,
-                norm_.value,
-            ).get_pyobj()
-
-    return call_origin(numpy.fft.ifftshift, x, axes)
+    return dpnp.roll(x, shift, axes)
 
 
 def ihfft(x, n=None, axis=-1, norm=None):
