@@ -4,7 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from tests.helper import has_support_aspect64, is_cpu_device
+from tests.helper import has_support_aspect64, is_cpu_device, is_win_platform
 from tests.third_party.cupy import testing
 from tests.third_party.cupy.testing import _condition
 
@@ -156,14 +156,6 @@ class TestCholeskyInvalid(unittest.TestCase):
 )
 @testing.fix_random()
 class TestSVD(unittest.TestCase):
-    # TODO: New packages that fix issue CMPLRLLVM-53771 are only available in internal CI.
-    # Skip the tests on cpu until these packages are available for the external CI.
-    # Specifically dpcpp_linux-64>=2024.1.0
-    @classmethod
-    def setUpClass(cls):
-        if is_cpu_device():
-            raise unittest.SkipTest("CMPLRLLVM-53771")
-
     def setUp(self):
         self.seed = testing.generate_seed()
 
@@ -287,6 +279,12 @@ class TestSVD(unittest.TestCase):
             array, full_matrices=self.full_matrices, compute_uv=False
         )
 
+    # The issue was expected to be resolved once CMPLRLLVM-53771 is available,
+    # which has to be included in DPC++ 2024.1.0, but problem still exists
+    # on Windows
+    @pytest.mark.skipif(
+        is_cpu_device() and is_win_platform(), reason="SAT-7145"
+    )
     @_condition.repeat(3, 10)
     def test_svd_rank3(self):
         self.check_usv((2, 3, 4))
@@ -296,6 +294,9 @@ class TestSVD(unittest.TestCase):
         self.check_usv((2, 4, 3))
         self.check_usv((2, 32, 32))
 
+    @pytest.mark.skipif(
+        is_cpu_device() and is_win_platform(), reason="SAT-7145"
+    )
     @_condition.repeat(3, 10)
     def test_svd_rank3_loop(self):
         # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
@@ -343,6 +344,9 @@ class TestSVD(unittest.TestCase):
             array, full_matrices=self.full_matrices, compute_uv=False
         )
 
+    @pytest.mark.skipif(
+        is_cpu_device() and is_win_platform(), reason="SAT-7145"
+    )
     @_condition.repeat(3, 10)
     def test_svd_rank4(self):
         self.check_usv((2, 2, 3, 4))
@@ -352,6 +356,9 @@ class TestSVD(unittest.TestCase):
         self.check_usv((2, 2, 4, 3))
         self.check_usv((2, 2, 32, 32))
 
+    @pytest.mark.skipif(
+        is_cpu_device() and is_win_platform(), reason="SAT-7145"
+    )
     @_condition.repeat(3, 10)
     def test_svd_rank4_loop(self):
         # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
@@ -410,10 +417,6 @@ class TestQRDecomposition(unittest.TestCase):
             assert result_cpu.dtype == result_gpu.dtype
             testing.assert_allclose(result_cpu, result_gpu, atol=1e-4)
 
-    # TODO: New packages that fix issue CMPLRLLVM-53771 are only available in internal CI.
-    # Skip the tests on cpu until these packages are available for the external CI.
-    # Specifically dpcpp_linux-64>=2024.1.0
-    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
     @testing.fix_random()
     @_condition.repeat(3, 10)
     def test_mode(self):
@@ -421,7 +424,6 @@ class TestQRDecomposition(unittest.TestCase):
         self.check_mode(numpy.random.randn(3, 3), mode=self.mode)
         self.check_mode(numpy.random.randn(5, 4), mode=self.mode)
 
-    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
     @testing.with_requires("numpy>=1.22")
     @testing.fix_random()
     def test_mode_rank3(self):
@@ -429,7 +431,6 @@ class TestQRDecomposition(unittest.TestCase):
         self.check_mode(numpy.random.randn(4, 3, 3), mode=self.mode)
         self.check_mode(numpy.random.randn(2, 5, 4), mode=self.mode)
 
-    @pytest.mark.skipif(is_cpu_device(), reason="CMPLRLLVM-53771")
     @testing.with_requires("numpy>=1.22")
     @testing.fix_random()
     def test_mode_rank4(self):
