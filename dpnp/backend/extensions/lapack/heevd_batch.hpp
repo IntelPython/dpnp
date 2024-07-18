@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023-2024, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -24,29 +24,15 @@
 //*****************************************************************************
 
 #pragma once
-#include <complex>
-#include <cstring>
-#include <stdexcept>
 
-namespace dpnp::extensions::lapack::helper
-{
-template <typename T>
-struct value_type_of
-{
-    using type = T;
-};
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
-template <typename T>
-struct value_type_of<std::complex<T>>
-{
-    using type = T;
-};
+#include "evd_batch_common.hpp"
 
-// Rounds up the number `value` to the nearest multiple of `mult`.
-template <typename intT>
-intT round_up_mult(intT value, intT mult)
+namespace py = pybind11;
+
+namespace dpnp::extensions::lapack
 {
-    intT q = (value + (mult - 1)) / mult;
-    return q * mult;
-}
-} // namespace dpnp::extensions::lapack::helper
+void init_heevd_batch(py::module_ m);
+} // namespace dpnp::extensions::lapack
