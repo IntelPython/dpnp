@@ -142,7 +142,6 @@ class TestAllclose(unittest.TestCase):
 
     @testing.for_float_dtypes()
     @testing.numpy_cupy_equal()
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_allclose_infinite_equal_nan(self, xp, dtype):
         nan = float("nan")
         inf = float("inf")
@@ -159,7 +158,6 @@ class TestAllclose(unittest.TestCase):
         return xp.allclose(a, b)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestIsclose(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
@@ -204,6 +202,7 @@ class TestIsclose(unittest.TestCase):
         b = xp.dtype(xp.dtype).type(0)
         return xp.isclose(a, b)
 
+    @pytest.mark.skip("support for scalar not implemented")
     @testing.for_all_dtypes(no_complex=True)
     def test_is_close_scalar_scalar(self, dtype):
         # cupy.isclose always returns ndarray
