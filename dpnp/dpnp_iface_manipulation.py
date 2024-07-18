@@ -46,10 +46,6 @@ import dpnp
 
 from .dpnp_array import dpnp_array
 
-# pylint: disable=no-name-in-module
-from .dpnp_utils import (
-    call_origin,
-)
 
 __all__ = [
     "asfarray",
@@ -1945,23 +1941,262 @@ def transpose(a, axes=None):
     return array.transpose(*axes)
 
 
-def unique(ar, **kwargs):
+def _trim_zeros(filt, trim='fb'):
+    first = 0
+    trim = trim.upper()
+    if 'F' in trim:
+        for i in filt:
+            if i != 0.:
+                break
+            else:
+                first = first + 1
+    last = len(filt)
+    if 'B' in trim:
+        for i in filt[::-1]:
+            if i != 0.:
+                break
+            else:
+                last = last - 1
+    return filt[first:last]
+
+
+def unique(ar, return_index=False, return_inverse=False,
+           return_counts=False, axis=None, *, equal_nan=True):
     """
     Find the unique elements of an array.
 
+    Returns the sorted unique elements of an array. There are three optional
+    outputs in addition to the unique elements:
+
+    * the indices of the input array that give the unique values
+    * the indices of the unique array that reconstruct the input array
+    * the number of times each unique value comes up in the input array
+
     For full documentation refer to :obj:`numpy.unique`.
+
+    Parameters
+    ----------
+    ar : {dpnp.ndarray, usm_ndarray}
+        Input array. Unless `axis` is specified, this will be flattened if it
+        is not already 1-D.
+    return_index : bool, optional
+        If ``True``, also return the indices of `ar` (along the specified axis,
+        if provided, or in the flattened array) that result in the unique array.
+        Default: ``False``.
+    return_inverse : bool, optional
+        If ``True``, also return the indices of the unique array (for the
+        specified axis, if provided) that can be used to reconstruct `ar`.
+        Default: ``False``.
+    return_counts : bool, optional
+        If ``True``, also return the number of times each unique item appears
+        in `ar`.
+        Default: ``False``.
+    axis : {int, None}, optional
+        The axis to operate on. If ``None``, `ar` will be flattened. If an
+        integer, the subarrays indexed by the given axis will be flattened and
+        treated as the elements of a 1-D array with the dimension of the given
+        axis, see the notes for more details.
+        Default: ``None``.
+    equal_nan : bool, optional
+        If ``True``, collapses multiple NaN values in the return array into one.
+        Default: ``True``.
+
+    Returns
+    -------
+    unique : dpnp.ndarray
+        The sorted unique values.
+    unique_indices : dpnp.ndarray, optional
+        The indices of the first occurrences of the unique values in the
+        original array. Only provided if `return_index` is ``True``.
+    unique_inverse : dpnp.ndarray, optional
+        The indices to reconstruct the original array from the unique array.
+        Only provided if `return_inverse` is ``True``.
+    unique_counts : dpnp.ndarray, optional
+        The number of times each of the unique values comes up in the original
+        array. Only provided if `return_counts` is ``True``.
+
+    See Also
+    --------
+    :obj:`repeat` : Repeat elements of an array.
+
+    Notes
+    -----
+    When an axis is specified the subarrays indexed by the axis are sorted.
+    This is done by making the specified axis the first dimension of the array
+    (move the axis to the first dimension to keep the order of the other axes)
+    and then flattening the subarrays in C order.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.array([1, 1, 2, 2, 3, 3])
-    >>> res = np.unique(x)
-    >>> print(res)
-    [1, 2, 3]
+    >>> np.unique([1, 1, 2, 2, 3, 3])
+    array([1, 2, 3])
+    >>> a = np.array([[1, 1], [2, 3]])
+    >>> np.unique(a)
+    array([1, 2, 3])
+
+    Return the unique rows of a 2D array
+
+    >>> a = np.array([[1, 0, 0], [1, 0, 0], [2, 3, 4]])
+    >>> np.unique(a, axis=0)
+    array([[1, 0, 0], [2, 3, 4]])
+
+    Return the indices of the original array that give the unique values:
+
+    >>> a = np.array(['a', 'b', 'b', 'c', 'a'])
+    >>> u, indices = np.unique(a, return_index=True)
+    >>> u
+    array(['a', 'b', 'c'], dtype='<U1')
+    >>> indices
+    array([0, 1, 3])
+    >>> a[indices]
+    array(['a', 'b', 'c'], dtype='<U1')
+
+    Reconstruct the input array from the unique values and inverse:
+
+    >>> a = np.array([1, 2, 6, 4, 2, 3, 2])
+    >>> u, indices = np.unique(a, return_inverse=True)
+    >>> u
+    array([1, 2, 3, 4, 6])
+    >>> indices
+    array([0, 1, 4, 3, 1, 2, 1])
+    >>> u[indices]
+    array([1, 2, 6, 4, 2, 3, 2])
+
+    Reconstruct the input values from the unique values and counts:
+
+    >>> a = np.array([1, 2, 6, 4, 2, 3, 2])
+    >>> values, counts = np.unique(a, return_counts=True)
+    >>> values
+    array([1, 2, 3, 4, 6])
+    >>> counts
+    array([1, 3, 1, 1, 1])
+    >>> np.repeat(values, counts)
+    array([1, 2, 2, 2, 3, 4, 6])    # original order not preserved
 
     """
 
-    return call_origin(numpy.unique, ar, **kwargs)
+    if axis is None:
+        num_of_flags = (return_index, return_inverse, return_counts).count(True)
+        if num_of_flags == 0:
+            unique_func = dpt.unique_values
+        elif num_of_flags == 1 and return_inverse:
+            unique_func = dpt.unique_inverse
+        elif num_of_flags == 1 and return_counts:
+            unique_func = dpt.unique_counts
+        else:
+            unique_func = dpt.unique_all
+
+        usm_ar = dpnp.get_usm_ndarray(ar)
+        usm_res = unique_func(usm_ar)
+
+        def _collapse_nans(a):
+            if a.size > 2 and dpnp.issubdtype(a.dtype, dpnp.inexact) and dpnp.isnan(a[-2]):
+                if dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+                    # for complex all NaNs are considered equivalent
+                    first_nan = dpnp.searchsorted(dpnp.isnan(a), True, side='left')
+                else:
+                    first_nan = dpnp.searchsorted(a, dpnp.nan, side='left')
+                return a[:first_nan + 1]
+            return a
+
+        if isinstance(usm_res, tuple):
+            result = tuple(dpnp_array._create_from_usm_ndarray(x) for x in usm_res)
+            if equal_nan:
+                result = (_collapse_nans(result[0]),) + result[1:]
+        else:
+            result = dpnp_array._create_from_usm_ndarray(usm_res)
+            if equal_nan:
+                result = _collapse_nans(result)
+        return result
+
+    ar = dpnp.moveaxis(ar, axis, 0)
+
+    # The array is reshaped into a contiguous 2D array
+    orig_shape = ar.shape
+    idx = numpy.arange(0, orig_shape[0], dtype=numpy.intp)
+    import math
+    ar = ar.reshape(orig_shape[0], math.prod(orig_shape[1:]))
+    ar = dpnp.ascontiguousarray(ar)
+    is_unsigned = dpnp.issubdtype(ar.dtype, numpy.unsignedinteger)
+    is_complex = dpnp.iscomplexobj(ar)
+
+    ar_cmp = ar
+    if is_unsigned:
+        ar_cmp = ar.astype(dpnp.intp)
+
+    def compare_axis_elems(idx1, idx2):
+        left, right = ar_cmp[idx1], ar_cmp[idx2]
+        comp = _trim_zeros(left - right, 'f')
+        if comp.shape[0] > 0:
+            diff = comp[0]
+            if is_complex and dpnp.isnan(diff):
+                return True
+            return diff < 0
+        return False
+
+    # The array is sorted lexicographically using the first item of each
+    # element on the axis
+    sorted_indices = dpnp.empty_like(ar, shape=orig_shape[0], dtype=dpnp.intp)
+    queue = [(idx.tolist(), 0)]
+    while queue != []:
+        current, off = queue.pop(0)
+        if current == []:
+            continue
+
+        mid_elem = current[0]
+        left = []
+        right = []
+        for i in range(1, len(current)):
+            if compare_axis_elems(current[i], mid_elem):
+                left.append(current[i])
+            else:
+                right.append(current[i])
+
+        elem_pos = off + len(left)
+        queue.append((left, off))
+        queue.append((right, elem_pos + 1))
+
+        sorted_indices[elem_pos] = mid_elem
+
+    ar = ar[sorted_indices]
+
+    if ar.size > 0:
+        mask = dpnp.empty_like(ar, dtype=dpnp.bool_)
+        mask[:1] = True
+        mask[1:] = ar[1:] != ar[:-1]
+
+        mask = dpnp.any(mask, axis=1)
+    else:
+        # If empty, then the mask should grab the first empty array as the
+        # unique one
+        mask = dpnp.ones_like(ar, shape=(ar.shape[0]), dtype=dpnp.bool_)
+        mask[1:] = False
+
+    # Index the input array with the unique elements and reshape it into the
+    # original size and dimension order
+    ar = ar[mask]
+    ar = ar.reshape(mask.sum().item(), *orig_shape[1:])
+    ar = dpnp.moveaxis(ar, 0, axis)
+
+    ret = ar,
+    if return_index:
+        ret += sorted_indices[mask],
+    if return_inverse:
+        imask = dpnp.cumsum(mask) - 1
+        inv_idx = dpnp.empty_like(mask, dtype=dpnp.intp)
+        inv_idx[sorted_indices] = imask
+        ret += inv_idx,
+    if return_counts:
+        nonzero = dpnp.nonzero(mask)[0]
+        idx = dpnp.empty_like(nonzero, shape=(nonzero.size + 1,), dtype=nonzero.dtype)
+        idx[:-1] = nonzero
+        idx[-1] = mask.size
+        ret += idx[1:] - idx[:-1],
+
+    if len(ret) == 1:
+        ret = ret[0]
+    return ret
 
 
 def vstack(tup, *, dtype=None, casting="same_kind"):
