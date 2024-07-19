@@ -1,4 +1,5 @@
 import unittest
+import pytest
 
 import numpy
 
@@ -28,6 +29,7 @@ class TestFloating(unittest.TestCase):
         b = xp.array([-xp.inf, -3, -0.0, 0, 3, xp.inf], dtype=dtype)[None, :]
         return xp.copysign(a, b)
 
+    @pytest.mark.skip("ldexp() is not implemented yet")
     @testing.for_float_dtypes(name="ftype")
     @testing.for_dtypes(["i", "l"], name="itype")
     @testing.numpy_cupy_array_equal()
@@ -36,6 +38,7 @@ class TestFloating(unittest.TestCase):
         b = xp.array([-3, -2, -1, 0, 1, 2, 3], dtype=itype)
         return xp.ldexp(a, b)
 
+    @pytest.mark.skip("frexp() is not implemented yet")
     @testing.for_float_dtypes()
     def test_frexp(self, dtype):
         numpy_a = numpy.array(

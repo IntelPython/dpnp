@@ -111,6 +111,7 @@ __all__ = [
     "modf",
     "multiply",
     "negative",
+    "nextafter",
     "positive",
     "power",
     "prod",
@@ -2356,6 +2357,63 @@ negative = DPNPUnaryFunc(
     ti._negative,
     _NEGATIVE_DOCSTRING,
     acceptance_fn=acceptance_fn_negative,
+)
+
+
+_NEXTAFTER_DOCSTRING = """
+Return the next floating-point value after `x1` towards `x2`, element-wise.
+
+For full documentation refer to :obj:`numpy.nextafter`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    Values to find the next representable value of.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    The direction where to look for the next representable value of `x1`.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate. Array must have the correct shape and
+    the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The next representable values of `x1` in the direction of `x2`. The data
+    type of the returned array is determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+Examples
+--------
+>>> import dpnp as np
+>>> eps = np.finfo(np.float64).eps
+>>> np.nextafter(np.array(1), 2) == eps + 1
+array(True)
+
+>>> a = np.array([1, 2])
+>>> b = np.array([2, 1])
+>>> c = np.array([eps + 1, 2 - eps])
+>>> np.nextafter(a, b) == c
+array([ True,  True])
+"""
+
+nextafter = DPNPBinaryFunc(
+    "nextafter",
+    ti._nextafter_result_type,
+    ti._nextafter,
+    _NEXTAFTER_DOCSTRING,
+    # mkl_fn_to_call=vmi._mkl_nextafter_to_call,
+    # mkl_impl_fn=vmi._nextafter,
 )
 
 
