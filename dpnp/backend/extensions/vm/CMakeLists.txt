@@ -52,6 +52,7 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/log1p.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/log2.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/mul.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/nextafter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sin.cpp
