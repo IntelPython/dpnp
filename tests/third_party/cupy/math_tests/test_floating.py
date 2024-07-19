@@ -1,7 +1,7 @@
 import unittest
-import pytest
 
 import numpy
+import pytest
 
 import dpnp as cupy
 from tests.helper import has_support_aspect64

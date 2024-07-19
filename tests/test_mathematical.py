@@ -1113,6 +1113,7 @@ class TestMathematical:
     def test_subtract(self, dtype, lhs, rhs):
         self._test_mathematical("subtract", dtype, lhs, rhs, check_type=False)
 
+
 class TestNextafter:
     @pytest.mark.parametrize("dt", get_float_dtypes())
     @pytest.mark.parametrize(
@@ -1145,7 +1146,7 @@ class TestNextafter:
         expected = numpy.nextafter(a, numpy.nan)
         assert_equal(result, expected)
 
-    @pytest.mark.parametrize("val", [0x7c00, 0x8000], ids=["val1", "val2"])
+    @pytest.mark.parametrize("val", [0x7C00, 0x8000], ids=["val1", "val2"])
     def test_f16_strides(self, val):
         a = numpy.arange(val, dtype=numpy.uint16).astype(numpy.float16)
         hinf = numpy.array((numpy.inf,), dtype=numpy.float16)
@@ -1163,7 +1164,7 @@ class TestNextafter:
         expected = numpy.nextafter(a[1:], -hinf)
         assert_equal(result, expected)
 
-    @pytest.mark.parametrize("val", [0x7c00, 0x8000], ids=["val1", "val2"])
+    @pytest.mark.parametrize("val", [0x7C00, 0x8000], ids=["val1", "val2"])
     def test_f16_array_inf(self, val):
         a = numpy.arange(val, dtype=numpy.uint16).astype(numpy.float16)
         hinf = numpy.array((numpy.inf,), dtype=numpy.float16)
@@ -1195,7 +1196,7 @@ class TestNextafter:
         expected = numpy.nextafter(hinf1, hinf2)
         assert_equal(result, expected)
 
-    @pytest.mark.parametrize("val", [0x7c00, 0x8000], ids=["val1", "val2"])
+    @pytest.mark.parametrize("val", [0x7C00, 0x8000], ids=["val1", "val2"])
     def test_f16_array_nan(self, val):
         a = numpy.arange(val, dtype=numpy.uint16).astype(numpy.float16)
         nan = numpy.array((numpy.nan,), dtype=numpy.float16)
@@ -1220,7 +1221,7 @@ class TestNextafter:
     def test_f16_inf_nan(self, val1, val2):
         v1 = numpy.array((val1,), dtype=numpy.float16)
         v2 = numpy.array((val2,), dtype=numpy.float16)
-        iv1, iv2 =dpnp.array(v1), dpnp.array(v2)
+        iv1, iv2 = dpnp.array(v1), dpnp.array(v2)
 
         result = dpnp.nextafter(iv1, iv2)
         expected = numpy.nextafter(v1, v2)
