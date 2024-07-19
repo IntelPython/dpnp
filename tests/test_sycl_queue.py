@@ -1786,10 +1786,7 @@ def test_array_creation_from_dpctl(copy, device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-# TODO need to delete no_bool=True when use dlpack > 0.7 version
-@pytest.mark.parametrize(
-    "arr_dtype", get_all_dtypes(no_float16=True, no_bool=True)
-)
+@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
 @pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
 def test_from_dlpack(arr_dtype, shape, device):
     X = dpnp.empty(shape=shape, dtype=arr_dtype, device=device)
