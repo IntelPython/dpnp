@@ -1888,7 +1888,7 @@ square = DPNPUnaryFunc(
     ti._square,
     _SQUARE_DOCSTRING,
     mkl_fn_to_call="_mkl_sqr_to_call",
-    mkl_impl_fn="'_sqr'",
+    mkl_impl_fn="_sqr",
 )
 
 

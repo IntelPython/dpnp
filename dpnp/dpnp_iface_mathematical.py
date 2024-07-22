@@ -2815,7 +2815,7 @@ rint = DPNPUnaryFunc(
     ti._round,
     _RINT_DOCSTRING,
     mkl_fn_to_call="_mkl_round_to_call",
-    mkl_impl_fn="'_round'",
+    mkl_impl_fn="_round",
 )
 
 
