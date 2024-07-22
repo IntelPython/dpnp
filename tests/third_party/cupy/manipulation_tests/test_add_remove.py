@@ -178,9 +178,6 @@ class TestUnique:
         res = xp.unique(a, return_inverse=True)[1]
         if xp is numpy and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
             res = res.reshape(a.shape)
-        if xp is cupy:
-            # TODO: remove once dpctl-1738 is resolved
-            res = res.astype(xp.intp)
         return res
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
@@ -209,9 +206,6 @@ class TestUnique:
             a, return_index=True, return_inverse=True, return_counts=True)
         if xp is numpy and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
             res = res[:2] + (res[2].reshape(a.shape),) + res[3:]
-        if xp is cupy:
-            # TODO: remove once dpctl-1738 is resolved
-            res = res[:2] + (res[2].astype(xp.intp),) + res[3:]
         return res
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
@@ -242,9 +236,6 @@ class TestUnique:
             a, return_index=True, return_inverse=True, return_counts=True)
         if xp is numpy and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
             res = res[:2] + (res[2].reshape(a.shape),) + res[3:]
-        if xp is cupy:
-            # TODO: remove once dpctl-1738 is resolved
-            res = res[:2] + (res[2].astype(xp.intp),) + res[3:]
         return res
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
