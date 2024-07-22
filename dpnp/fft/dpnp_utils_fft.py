@@ -106,7 +106,7 @@ def _compute_result(dsc, a, out, forward, c2c, a_strides):
     if dsc.transform_in_place:
         # in-place transform
         # TODO: investigate the performance of in-place implementation
-        # for r2c/c2r
+        # for r2c/c2r, see SAT-7154
         ht_fft_event, fft_event = fi._fft_in_place(
             dsc, a_usm, forward, depends=dep_evs
         )
@@ -128,7 +128,7 @@ def _compute_result(dsc, a, out, forward, c2c, a_strides):
                 out_dtype = a.dtype
             else:
                 if forward:  # r2c FFT
-                    tmp = numpy.floor_divide(a.shape[-1], 2) + 1
+                    tmp = a.shape[-1] // 2 + 1
                     out_shape = a.shape[:-1] + (tmp,)
                     out_dtype = (
                         dpnp.complex64
@@ -178,7 +178,8 @@ def _copy_array(x, complex_input):
         else:
             dtype = map_dtype_to_device(dpnp.complex128, x.sycl_device)
     elif not complex_input and dtype not in [dpnp.float32, dpnp.float64]:
-        # r2c FFT, if input is not float dtype, convert to float
+        # r2c FFT, if input is integer or float16 dtype, convert to
+        # float32 or float64 depending on device capabilities
         copy_flag = True
         dtype = map_dtype_to_device(dpnp.float64, x.sycl_device)
     else:
@@ -198,9 +199,9 @@ def _copy_array(x, complex_input):
             depends=dep_evs,
         )
         _manager.add_event_pair(ht_copy_ev, copy_ev)
+        x = x_copy
 
-        # if copying is done, FFT can be in-place (copy_flag = in_place flag)
-        return x_copy, copy_flag
+    # if copying is done, FFT can be in-place (copy_flag = in_place flag)
     return x, copy_flag
 
 
@@ -306,12 +307,16 @@ def _validate_out_keyword(a, out, axis, c2r, r2c):
             )
 
         # validate out shape
+        expected_shape = a.shape
         if r2c:
-            if out.shape[axis] != (a.shape[axis] // 2 + 1):
-                raise ValueError("output array has incorrect shape.")
-        else:  # c2c/c2r FFT, for c2r input is already zero-padded
-            if out.shape != a.shape:
-                raise ValueError("output array has incorrect shape.")
+            expected_shape = list(a.shape)
+            expected_shape[axis] = a.shape[axis] // 2 + 1
+            expected_shape = tuple(expected_shape)
+        if out.shape != expected_shape:
+            raise ValueError(
+                "output array has incorrect shape, expected "
+                f"{expected_shape}, got {out.shape}."
+            )
 
         # validate out data type
         if c2r:
@@ -324,15 +329,16 @@ def _validate_out_keyword(a, out, axis, c2r, r2c):
                 raise TypeError("output array should have complex data type.")
 
 
-def dpnp_fft(a, forward, c2c, n=None, axis=-1, norm=None, out=None):
+def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
     """Calculates 1-D FFT of the input array along axis"""
 
     a_ndim = a.ndim
     if a_ndim == 0:
         raise ValueError("Input array must be at least 1D")
 
-    r2c = not c2c and forward
-    c2r = not c2c and not forward
+    c2c = not real  # complex-to-complex FFT
+    r2c = real and forward  # real-to-complex FFT
+    c2r = real and not forward  # complex-to-real FFT
     if r2c and dpnp.issubdtype(a.dtype, dpnp.complexfloating):
         raise TypeError("Input array must be real")
 
@@ -367,7 +373,7 @@ def dpnp_fft(a, forward, c2c, n=None, axis=-1, norm=None, out=None):
         norm=norm,
         out=out,
         forward=forward,
-        # TODO: currently in-place is only implemented for c2c
+        # TODO: currently in-place is only implemented for c2c, see SAT-7154
         in_place=in_place and c2c,
         c2c=c2c,
         axes=axis,

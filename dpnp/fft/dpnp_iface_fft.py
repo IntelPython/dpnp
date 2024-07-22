@@ -166,7 +166,7 @@ def fft(a, n=None, axis=-1, norm=None, out=None):
 
     dpnp.check_supported_arrays_type(a)
     return dpnp_fft(
-        a, forward=True, c2c=True, n=n, axis=axis, norm=norm, out=out
+        a, forward=True, real=False, n=n, axis=axis, norm=norm, out=out
     )
 
 
@@ -541,7 +541,7 @@ def ifft(a, n=None, axis=-1, norm=None, out=None):
 
     dpnp.check_supported_arrays_type(a)
     return dpnp_fft(
-        a, forward=False, c2c=True, n=n, axis=axis, norm=norm, out=out
+        a, forward=False, real=False, n=n, axis=axis, norm=norm, out=out
     )
 
 
@@ -848,7 +848,7 @@ def irfft(a, n=None, axis=-1, norm=None, out=None):
 
     dpnp.check_supported_arrays_type(a)
     return dpnp_fft(
-        a, forward=False, c2c=False, n=n, axis=axis, norm=norm, out=out
+        a, forward=False, real=True, n=n, axis=axis, norm=norm, out=out
     )
 
 
@@ -1002,8 +1002,9 @@ def rfft(a, n=None, axis=-1, norm=None, out=None):
     compute the negative frequency terms, and the length of the transformed
     axis of the output is therefore ``n//2 + 1``.
 
-    When ``A = rfft(a)`` and fs is the sampling frequency, ``A[0]`` contains
-    the zero-frequency term 0*fs, which is real due to Hermitian symmetry.
+    When ``A = dpnp.fft.rfft(a)`` and fs is the sampling frequency, ``A[0]``
+    contains the zero-frequency term 0*fs, which is real due to Hermitian
+    symmetry.
 
     If `n` is even, ``A[-1]`` contains the term representing both positive
     and negative Nyquist frequency (+fs/2 and -fs/2), and must also be purely
@@ -1029,7 +1030,7 @@ def rfft(a, n=None, axis=-1, norm=None, out=None):
 
     dpnp.check_supported_arrays_type(a)
     return dpnp_fft(
-        a, forward=True, c2c=False, n=n, axis=axis, norm=norm, out=out
+        a, forward=True, real=True, n=n, axis=axis, norm=norm, out=out
     )
 
 
