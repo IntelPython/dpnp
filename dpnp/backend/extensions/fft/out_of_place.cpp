@@ -23,7 +23,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#if !DPNP_TARGET_CUDA
 #include <oneapi/mkl/dfti.hpp>
+#endif
+
 #include <sycl/sycl.hpp>
 
 #include <dpctl4pybind11.hpp>

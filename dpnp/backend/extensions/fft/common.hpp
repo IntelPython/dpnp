@@ -187,26 +187,32 @@ public:
     // config_param::PLACEMENT
     bool get_in_place()
     {
-        // TODO: replace when MKLD-10506 is implemented
-        // mkl_dft::config_value placement;
-        DFTI_CONFIG_VALUE placement;
-
+#if DPNP_TARGET_CUDA
+        mkl_dft::config_value placement;
         descr_.get_value(mkl_dft::config_param::PLACEMENT, &placement);
+        return (placement == mkl_dft::config_value::INPLACE);
+#else
         // TODO: replace when MKLD-10506 is implemented
-        // return (placement == mkl_dft::config_value::INPLACE);
+        DFTI_CONFIG_VALUE placement;
+        descr_.get_value(mkl_dft::config_param::PLACEMENT, &placement);
         return (placement == DFTI_CONFIG_VALUE::DFTI_INPLACE);
+#endif
     }
 
     void set_in_place(const bool &in_place_request)
     {
+#if DPNP_TARGET_CUDA
+        descr_.set_value(mkl_dft::config_param::PLACEMENT,
+                         (in_place_request)
+                             ? mkl_dft::config_value::INPLACE
+                             : mkl_dft::config_value::NOT_INPLACE);
+#else
         // TODO: replace when MKLD-10506 is implemented
-        // descr_.set_value(mkl_dft::config_param::PLACEMENT, (in_place_request)
-        // ? mkl_dft::config_value::INPLACE :
-        // mkl_dft::config_value::NOT_INPLACE);
         descr_.set_value(mkl_dft::config_param::PLACEMENT,
                          (in_place_request)
                              ? DFTI_CONFIG_VALUE::DFTI_INPLACE
                              : DFTI_CONFIG_VALUE::DFTI_NOT_INPLACE);
+#endif
     }
 
     // config_param::PRECISION
@@ -221,14 +227,16 @@ public:
     // config_param::COMMIT_STATUS
     bool is_committed()
     {
-        // TODO: replace when MKLD-10506 is implemented
-        // mkl_dft::config_value committed;
-        DFTI_CONFIG_VALUE committed;
-
+#if DPNP_TARGET_CUDA
+        mkl_dft::config_value committed;
         descr_.get_value(mkl_dft::config_param::COMMIT_STATUS, &committed);
+        return (committed == mkl_dft::config_value::COMMITTED);
+#else
         // TODO: replace when MKLD-10506 is implemented
-        // return (committed == mkl_dft::config_value::COMMITTED);
+        DFTI_CONFIG_VALUE committed;
+        descr_.get_value(mkl_dft::config_param::COMMIT_STATUS, &committed);
         return (committed == DFTI_CONFIG_VALUE::DFTI_COMMITTED);
+#endif
     }
 
 private:
