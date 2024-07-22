@@ -56,7 +56,6 @@ from numpy.core.numeric import (
 
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
-import dpnp.backend.extensions.vm._vm_impl as vmi
 
 from .backend.extensions.sycl_ext import _sycl_ext_impl
 from .dpnp_algo import (
@@ -385,8 +384,8 @@ absolute = DPNPUnaryFunc(
     ti._abs_result_type,
     ti._abs,
     _ABS_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_abs_to_call,
-    mkl_impl_fn=vmi._abs,
+    mkl_fn_to_call="_mkl_abs_to_call",
+    mkl_impl_fn="_abs",
 )
 
 
@@ -461,8 +460,8 @@ add = DPNPBinaryFunc(
     ti._add_result_type,
     ti._add,
     _ADD_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_add_to_call,
-    mkl_impl_fn=vmi._add,
+    mkl_fn_to_call="_mkl_add_to_call",
+    mkl_impl_fn="_add",
     binary_inplace_fn=ti._add_inplace,
 )
 
@@ -609,8 +608,8 @@ ceil = DPNPUnaryFunc(
     ti._ceil_result_type,
     ti._ceil,
     _CEIL_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_ceil_to_call,
-    mkl_impl_fn=vmi._ceil,
+    mkl_fn_to_call="_mkl_ceil_to_call",
+    mkl_impl_fn="_ceil",
 )
 
 
@@ -735,8 +734,8 @@ conjugate = DPNPUnaryFunc(
     ti._conj_result_type,
     ti._conj,
     _CONJ_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_conj_to_call,
-    mkl_impl_fn=vmi._conj,
+    mkl_fn_to_call="_mkl_conj_to_call",
+    mkl_impl_fn="_conj",
 )
 
 conj = conjugate
@@ -1310,8 +1309,8 @@ divide = DPNPBinaryFunc(
     ti._divide_result_type,
     ti._divide,
     _DIVIDE_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_div_to_call,
-    mkl_impl_fn=vmi._div,
+    mkl_fn_to_call="_mkl_div_to_call",
+    mkl_impl_fn="_div",
     binary_inplace_fn=ti._divide_inplace,
     acceptance_fn=_acceptance_fn_divide,
 )
@@ -1408,8 +1407,8 @@ fabs = DPNPUnaryFunc(
     ufi._fabs_result_type,
     ufi._fabs,
     _FABS_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_abs_to_call,
-    mkl_impl_fn=vmi._abs,
+    mkl_fn_to_call="_mkl_abs_to_call",
+    mkl_impl_fn="_abs",
 )
 
 
@@ -1466,8 +1465,8 @@ floor = DPNPUnaryFunc(
     ti._floor_result_type,
     ti._floor,
     _FLOOR_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_floor_to_call,
-    mkl_impl_fn=vmi._floor,
+    mkl_fn_to_call="_mkl_floor_to_call",
+    mkl_impl_fn="_floor",
 )
 
 
@@ -1620,8 +1619,8 @@ fmax = DPNPBinaryFunc(
     ufi._fmax_result_type,
     ufi._fmax,
     _FMAX_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_fmax_to_call,
-    mkl_impl_fn=vmi._fmax,
+    mkl_fn_to_call="_mkl_fmax_to_call",
+    mkl_impl_fn="_fmax",
 )
 
 
@@ -1705,8 +1704,8 @@ fmin = DPNPBinaryFunc(
     ufi._fmin_result_type,
     ufi._fmin,
     _FMIN_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_fmin_to_call,
-    mkl_impl_fn=vmi._fmin,
+    mkl_fn_to_call="_mkl_fmin_to_call",
+    mkl_impl_fn="_fmin",
 )
 
 
@@ -1779,8 +1778,8 @@ fmod = DPNPBinaryFunc(
     ufi._fmod_result_type,
     ufi._fmod,
     _FMOD_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_fmod_to_call,
-    mkl_impl_fn=vmi._fmod,
+    mkl_fn_to_call="_mkl_fmod_to_call",
+    mkl_impl_fn="_fmod",
 )
 
 
@@ -2297,8 +2296,8 @@ multiply = DPNPBinaryFunc(
     ti._multiply_result_type,
     ti._multiply,
     _MULTIPLY_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_mul_to_call,
-    mkl_impl_fn=vmi._mul,
+    mkl_fn_to_call="_mkl_mul_to_call",
+    mkl_impl_fn="_mul",
     binary_inplace_fn=ti._multiply_inplace,
 )
 
@@ -2500,8 +2499,8 @@ power = DPNPBinaryFunc(
     ti._pow_result_type,
     ti._pow,
     _POWER_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_pow_to_call,
-    mkl_impl_fn=vmi._pow,
+    mkl_fn_to_call="_mkl_pow_to_call",
+    mkl_impl_fn="_pow",
     binary_inplace_fn=ti._pow_inplace,
 )
 
@@ -2815,8 +2814,8 @@ rint = DPNPUnaryFunc(
     ti._round_result_type,
     ti._round,
     _RINT_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_round_to_call,
-    mkl_impl_fn=vmi._round,
+    mkl_fn_to_call="_mkl_round_to_call",
+    mkl_impl_fn="'_round'",
 )
 
 
@@ -2875,8 +2874,8 @@ round = DPNPRound(
     ti._round_result_type,
     ti._round,
     _ROUND_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_round_to_call,
-    mkl_impl_fn=vmi._round,
+    mkl_fn_to_call="_mkl_round_to_call",
+    mkl_impl_fn="_round",
 )
 
 
@@ -3055,8 +3054,8 @@ subtract = DPNPBinaryFunc(
     ti._subtract_result_type,
     ti._subtract,
     _SUBTRACT_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_sub_to_call,
-    mkl_impl_fn=vmi._sub,
+    mkl_fn_to_call="_mkl_sub_to_call",
+    mkl_impl_fn="_sub",
     binary_inplace_fn=ti._subtract_inplace,
     acceptance_fn=acceptance_fn_subtract,
 )
@@ -3299,6 +3298,6 @@ trunc = DPNPUnaryFunc(
     ti._trunc_result_type,
     ti._trunc,
     _TRUNC_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_trunc_to_call,
-    mkl_impl_fn=vmi._trunc,
+    mkl_fn_to_call="_mkl_trunc_to_call",
+    mkl_impl_fn="_trunc",
 )

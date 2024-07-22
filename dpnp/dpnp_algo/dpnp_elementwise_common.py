@@ -32,6 +32,7 @@ from dpctl.tensor._elementwise_common import (
 )
 
 import dpnp
+import dpnp.backend.extensions.vm._vm_impl as vmi
 from dpnp.dpnp_array import dpnp_array
 
 __all__ = [
@@ -111,11 +112,12 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
             if depends is None:
                 depends = []
 
-            if mkl_fn_to_call is not None and mkl_fn_to_call(
-                sycl_queue, src, dst
-            ):
-                # call pybind11 extension for unary function from OneMKL VM
-                return mkl_impl_fn(sycl_queue, src, dst, depends)
+            if vmi.mkl_vm_is_defined() and mkl_fn_to_call is not None:
+                if getattr(vmi, mkl_fn_to_call)(sycl_queue, src, dst):
+                    # call pybind11 extension for unary function from OneMKL VM
+                    return getattr(vmi, mkl_impl_fn)(
+                        sycl_queue, src, dst, depends
+                    )
             return unary_dp_impl_fn(src, dst, sycl_queue, depends)
 
         super().__init__(
@@ -264,11 +266,12 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             if depends is None:
                 depends = []
 
-            if mkl_fn_to_call is not None and mkl_fn_to_call(
-                sycl_queue, src1, src2, dst
-            ):
-                # call pybind11 extension for binary function from OneMKL VM
-                return mkl_impl_fn(sycl_queue, src1, src2, dst, depends)
+            if vmi.mkl_vm_is_defined() and mkl_fn_to_call is not None:
+                if getattr(vmi, mkl_fn_to_call)(sycl_queue, src1, src2, dst):
+                    # call pybind11 extension for binary function from OneMKL VM
+                    return getattr(vmi, mkl_impl_fn)(
+                        sycl_queue, src1, src2, dst, depends
+                    )
             return binary_dp_impl_fn(src1, src2, dst, sycl_queue, depends)
 
         super().__init__(
