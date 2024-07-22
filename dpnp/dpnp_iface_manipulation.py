@@ -675,8 +675,6 @@ def concatenate(
     elif out is not None:
         dpnp.copyto(out, res, casting=casting)
         return out
-
-    dpnp.synchronize_array_data(res)
     return res
 
 
@@ -912,8 +910,6 @@ def expand_dims(a, axis):
 
     usm_a = dpnp.get_usm_ndarray(a)
     usm_res = dpt.expand_dims(usm_a, axis=axis)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1303,8 +1299,6 @@ def repeat(a, repeats, axis=None):
 
     usm_arr = dpnp.get_usm_ndarray(a)
     usm_res = dpt.repeat(usm_arr, repeats, axis=axis)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1382,8 +1376,6 @@ def reshape(a, /, newshape, order="C", copy=None):
 
     usm_a = dpnp.get_usm_ndarray(a)
     usm_res = dpt.reshape(usm_a, shape=newshape, order=order, copy=copy)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1494,8 +1486,6 @@ def roll(x, shift, axis=None):
 
     usm_x = dpnp.get_usm_ndarray(x)
     usm_res = dpt.roll(usm_x, shift=shift, axis=axis)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1645,8 +1635,6 @@ def squeeze(a, /, axis=None):
 
     usm_a = dpnp.get_usm_ndarray(a)
     usm_res = dpt.squeeze(usm_a, axis=axis)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1732,8 +1720,6 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
     elif out is not None:
         dpnp.copyto(out, res, casting=casting)
         return out
-
-    dpnp.synchronize_array_data(res)
     return res
 
 
@@ -1788,8 +1774,6 @@ def swapaxes(a, axis1, axis2):
 
     usm_a = dpnp.get_usm_ndarray(a)
     usm_res = dpt.swapaxes(usm_a, axis1=axis1, axis2=axis2)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1870,8 +1854,6 @@ def tile(A, reps):
 
     usm_a = dpnp.get_usm_ndarray(A)
     usm_res = dpt.tile(usm_a, reps)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
