@@ -31,6 +31,24 @@ namespace dpnp::extensions::fft
 {
 namespace mkl_dft = oneapi::mkl::dft;
 
+// Structure to map MKL precision to float/double types
+template <mkl_dft::precision prec>
+struct PrecisionType;
+
+template <>
+struct PrecisionType<mkl_dft::precision::SINGLE>
+{
+    using type = float;
+};
+
+template <>
+struct PrecisionType<mkl_dft::precision::DOUBLE>
+{
+    using type = double;
+};
+
+// Structure to map combination of precision, domain, and is_forward flag to
+// in/out types
 template <mkl_dft::precision prec, mkl_dft::domain dom, bool is_forward>
 struct ScaleType
 {
@@ -43,8 +61,7 @@ struct ScaleType
 template <mkl_dft::precision prec>
 struct ScaleType<prec, mkl_dft::domain::REAL, true>
 {
-    using prec_type = typename std::
-        conditional<prec == mkl_dft::precision::SINGLE, float, double>::type;
+    using prec_type = typename PrecisionType<prec>::type;
     using type_in = prec_type;
     using type_out = std::complex<prec_type>;
 };
@@ -54,8 +71,7 @@ struct ScaleType<prec, mkl_dft::domain::REAL, true>
 template <mkl_dft::precision prec>
 struct ScaleType<prec, mkl_dft::domain::REAL, false>
 {
-    using prec_type = typename std::
-        conditional<prec == mkl_dft::precision::SINGLE, float, double>::type;
+    using prec_type = typename PrecisionType<prec>::type;
     using type_in = std::complex<prec_type>;
     using type_out = prec_type;
 };
@@ -65,8 +81,7 @@ struct ScaleType<prec, mkl_dft::domain::REAL, false>
 template <mkl_dft::precision prec, bool is_fwd>
 struct ScaleType<prec, mkl_dft::domain::COMPLEX, is_fwd>
 {
-    using prec_type = typename std::
-        conditional<prec == mkl_dft::precision::SINGLE, float, double>::type;
+    using prec_type = typename PrecisionType<prec>::type;
     using type_in = std::complex<prec_type>;
     using type_out = std::complex<prec_type>;
 };
