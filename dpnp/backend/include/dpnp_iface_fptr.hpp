@@ -92,7 +92,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FFT_FFT,     /**< Used in numpy.fft.fft() impl  */
     DPNP_FN_FFT_FFT_EXT, /**< Used in numpy.fft.fft() impl, requires extra
                             parameters */
-    DPNP_FN_FFT_RFFT,    /**< Used in numpy.fft.rfft() impl  */
     DPNP_FN_INITVAL, /**< Used in numpy ones, ones_like, zeros, zeros_like impls
                       */
     DPNP_FN_INITVAL_EXT, /**< Used in numpy ones, ones_like, zeros, zeros_like
