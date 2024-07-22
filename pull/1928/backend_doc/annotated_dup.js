@@ -64,6 +64,9 @@ var annotated_dup =
         ] ],
         [ "fft", null, [
           [ "DescriptorWrapper", "classdpnp_1_1extensions_1_1fft_1_1_descriptor_wrapper.html", null ],
+          [ "PrecisionType", "structdpnp_1_1extensions_1_1fft_1_1_precision_type.html", null ],
+          [ "PrecisionType< mkl_dft::precision::DOUBLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html", null ],
+          [ "PrecisionType< mkl_dft::precision::SINGLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html", null ],
           [ "ScaleType", "structdpnp_1_1extensions_1_1fft_1_1_scale_type.html", null ],
           [ "ScaleType< prec, mkl_dft::domain::COMPLEX, is_fwd >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_c_o_m_p_l_e_x_00_01is__fwd_01_4.html", null ],
           [ "ScaleType< prec, mkl_dft::domain::REAL, false >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01false_01_4.html", null ],

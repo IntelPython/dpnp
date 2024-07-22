@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.16.0dev0+68.g7de8294791 documentation</title>
+  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.16.0dev0+86.g9008d16cc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=bd7539ab"></script>
+        <script src="../../_static/documentation_options.js?v=55e20f4b"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+68.g7de8294791
+                0.16.0dev0+86.g9008d16cc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -130,16 +130,10 @@
 <span class="kn">import</span> <span class="nn">operator</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">dpu</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
-
-<span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_arraycreation</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">dpnp_linspace</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;digitize&quot;</span><span class="p">,</span>
@@ -153,10 +147,14 @@
 
 
 <span class="k">def</span> <span class="nf">_ravel_check_a_and_weights</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check input `a` and `weights` arrays, and ravel both.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check input `a` and `weights` arrays, and ravel both.</span>
+<span class="sd">    The returned array have :class:`dpnp.ndarray` type always.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># ensure that `a` array has supported type</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
 
     <span class="c1"># ensure that the array is a &quot;subtractable&quot; dtype</span>
@@ -167,11 +165,11 @@
             <span class="ne">RuntimeWarning</span><span class="p">,</span>
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># check that `weights` array has supported type</span>
-        <span class="n">weights</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
         <span class="n">usm_type</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">weights</span><span class="o">.</span><span class="n">usm_type</span><span class="p">])</span>
 
         <span class="c1"># check that arrays have the same allocation queue</span>
@@ -182,9 +180,9 @@
 
         <span class="k">if</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;weights should have the same shape as a.&quot;</span><span class="p">)</span>
-        <span class="n">weights</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">usm_type</span>
 
 
@@ -210,7 +208,7 @@
         <span class="n">first_edge</span><span class="p">,</span> <span class="n">last_edge</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">first_edge</span><span class="p">,</span> <span class="n">last_edge</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">dpt</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">first_edge</span><span class="p">,</span> <span class="n">last_edge</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">a</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">first_edge</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">last_edge</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;autodetected range of [</span><span class="si">{</span><span class="n">first_edge</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">last_edge</span><span class="si">}</span><span class="s2">] &quot;</span>
@@ -254,9 +252,11 @@
                     <span class="s2">&quot;a and bins must be allocated on the same SYCL queue&quot;</span>
                 <span class="p">)</span>
 
-        <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
-            <span class="n">bins</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
-        <span class="p">)</span>
+            <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">bins</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">bins</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">bin_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -278,7 +278,7 @@
             <span class="p">)</span>
 
         <span class="c1"># bin edges must be computed</span>
-        <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">dpnp_linspace</span><span class="p">(</span>
+        <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
             <span class="n">first_edge</span><span class="p">,</span>
             <span class="n">last_edge</span><span class="p">,</span>
             <span class="n">n_equal_bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
@@ -286,7 +286,7 @@
             <span class="n">dtype</span><span class="o">=</span><span class="n">bin_type</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
             <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">bin_edges</span><span class="p">,</span> <span class="p">(</span><span class="n">first_edge</span><span class="p">,</span> <span class="n">last_edge</span><span class="p">,</span> <span class="n">n_equal_bins</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">bin_edges</span><span class="p">,</span> <span class="kc">None</span>
 
@@ -299,11 +299,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
-        <span class="p">(</span>
-            <span class="n">dpt</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">),</span>
-            <span class="n">dpt</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:],</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">),</span>
-        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">v</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;left&quot;</span><span class="p">),</span> <span class="n">a</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:],</span> <span class="s2">&quot;right&quot;</span><span class="p">))</span>
     <span class="p">)</span>
 
 
@@ -397,14 +394,8 @@
         <span class="c1"># Use dpnp.searchsorted directly if bins are increasing</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">side</span><span class="p">)</span>
 
-    <span class="n">usm_x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">usm_bins</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
-
     <span class="c1"># Reverse bins and adjust indices if bins are decreasing</span>
-    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">usm_bins</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">dpt</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">usm_bins</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">usm_x</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">side</span><span class="p">)</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">bins</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">bins</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">side</span><span class="p">)</span></div>
 
 
 
@@ -521,36 +512,26 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Compute via cumulative histogram</span>
         <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">sa</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">sa</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
             <span class="n">cum_n</span> <span class="o">=</span> <span class="n">_search_sorted_inclusive</span><span class="p">(</span><span class="n">sa</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">zero</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="n">zero</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
                 <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ntype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
             <span class="p">)</span>
-            <span class="n">sorting_index</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="n">sorting_index</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
             <span class="n">sa</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">sorting_index</span><span class="p">]</span>
             <span class="n">sw</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">sorting_index</span><span class="p">]</span>
-            <span class="n">cw</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">zero</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">cumulative_sum</span><span class="p">(</span><span class="n">sw</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ntype</span><span class="p">)))</span>
+            <span class="n">cw</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">zero</span><span class="p">,</span> <span class="n">sw</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">ntype</span><span class="p">)))</span>
             <span class="n">bin_index</span> <span class="o">=</span> <span class="n">_search_sorted_inclusive</span><span class="p">(</span><span class="n">sa</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">)</span>
             <span class="n">cum_n</span> <span class="o">=</span> <span class="n">cw</span><span class="p">[</span><span class="n">bin_index</span><span class="p">]</span>
 
         <span class="n">n</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">cum_n</span><span class="p">)</span>
 
-    <span class="c1"># convert bin_edges to dpnp.ndarray</span>
-    <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="n">density</span><span class="p">:</span>
         <span class="c1"># pylint: disable=possibly-used-before-assignment</span>
-        <span class="n">db</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span>
-        <span class="n">db</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">())</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">n</span> <span class="o">/</span> <span class="n">db</span> <span class="o">/</span> <span class="n">n</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">bin_edges</span>
 
-        <span class="n">usm_n</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span>
-        <span class="n">hist</span> <span class="o">=</span> <span class="n">usm_n</span> <span class="o">/</span> <span class="n">db</span> <span class="o">/</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">usm_n</span><span class="p">)</span>
-
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">hist</span><span class="p">),</span> <span class="n">bin_edges</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="n">bin_edges</span></div>
 
 
@@ -639,9 +620,7 @@
 
     <span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">_ravel_check_a_and_weights</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
     <span class="n">bin_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_bin_edges</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">)</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">bin_edges</span></div>
 
 </pre></div>
 
