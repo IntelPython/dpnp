@@ -23,10 +23,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 //
-// This file defines functions of dpnp.backend._lapack_impl extensions
+// This file defines functions of dpnp.backend._vm_impl extensions
 //
 //*****************************************************************************
 
+#if !DPNP_TARGET_CUDA
 #include "abs.hpp"
 #include "acos.hpp"
 #include "acosh.hpp"
@@ -67,9 +68,22 @@
 #include "trunc.hpp"
 
 namespace vm_ns = dpnp::extensions::vm;
+#endif
+
+#include <pybind11/pybind11.h>
+
+bool mkl_vm_is_defined()
+{
+#if DPNP_TARGET_CUDA
+    return false;
+#else
+    return true;
+#endif
+}
 
 PYBIND11_MODULE(_vm_impl, m)
 {
+#if !DPNP_TARGET_CUDA
     vm_ns::init_abs(m);
     vm_ns::init_acos(m);
     vm_ns::init_acosh(m);
@@ -108,4 +122,7 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_tan(m);
     vm_ns::init_tanh(m);
     vm_ns::init_trunc(m);
+#endif
+    m.def("mkl_vm_is_defined", mkl_vm_is_defined,
+          "Check if the OneMKL VM library can be used.");
 }
