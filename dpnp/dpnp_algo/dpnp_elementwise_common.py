@@ -179,7 +179,6 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
         out_usm = None if out is None else dpnp.get_usm_ndarray(out)
         res_usm = super().__call__(x_usm, out=out_usm, order=order)
 
-        dpnp.synchronize_array_data(res_usm)
         if out is not None and isinstance(out, dpnp_array):
             return out
         return dpnp_array._create_from_usm_ndarray(res_usm)
@@ -352,7 +351,6 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         out_usm = None if out is None else dpnp.get_usm_ndarray(out)
         res_usm = super().__call__(x1_usm, x2_usm, out=out_usm, order=order)
 
-        dpnp.synchronize_array_data(res_usm)
         if out is not None and isinstance(out, dpnp_array):
             return out
         return dpnp_array._create_from_usm_ndarray(res_usm)
@@ -540,7 +538,6 @@ class DPNPRound(DPNPUnaryFunc):
             if dtype is not None:
                 res_usm = dpt.astype(res_usm, dtype, copy=False)
 
-            dpnp.synchronize_array_data(res_usm)
             if out is not None and isinstance(out, dpnp_array):
                 return out
             return dpnp_array._create_from_usm_ndarray(res_usm)
