@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+85.gf8c7b93813 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+86.g9dba1989c2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=96f489e0"></script>
+        <script src="../../_static/documentation_options.js?v=fcbcf2fa"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+85.gf8c7b93813
+                0.16.0dev0+86.g9dba1989c2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -2498,7 +2498,7 @@
 <span class="s2">    the expected data type.</span>
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
-<span class="s2">    Output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
@@ -2516,12 +2516,13 @@
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
-<span class="s2">&gt;&gt;&gt; eps = np.finfo(np.float64).eps</span>
-<span class="s2">&gt;&gt;&gt; np.nextafter(np.array(1), 2) == eps + 1</span>
+<span class="s2">&gt;&gt;&gt; a = np.array(1, dtype=np.float32)</span>
+<span class="s2">&gt;&gt;&gt; eps = np.finfo(a.dtype).eps</span>
+<span class="s2">&gt;&gt;&gt; np.nextafter(a, 2) == eps + 1</span>
 <span class="s2">array(True)</span>
 
-<span class="s2">&gt;&gt;&gt; a = np.array([1, 2])</span>
-<span class="s2">&gt;&gt;&gt; b = np.array([2, 1])</span>
+<span class="s2">&gt;&gt;&gt; a = np.array([1, 2], dtype=np.float32)</span>
+<span class="s2">&gt;&gt;&gt; b = np.array([2, 1], dtype=np.float32)</span>
 <span class="s2">&gt;&gt;&gt; c = np.array([eps + 1, 2 - eps])</span>
 <span class="s2">&gt;&gt;&gt; np.nextafter(a, b) == c</span>
 <span class="s2">array([ True,  True])</span>
@@ -2616,7 +2617,7 @@
 <span class="s2">    the expected data type.</span>
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
-<span class="s2">    Output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
