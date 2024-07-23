@@ -71,7 +71,7 @@ def _check_norm(norm):
         )
 
 
-def _commit_descriptor(a, in_place, c2c, a_strides, index, axes):
+def _commit_descriptor(a, forward, in_place, c2c, a_strides, index, batch_fft):
     """Commit the FFT descriptor for the input array."""
 
     a_shape = a.shape
@@ -91,16 +91,71 @@ def _commit_descriptor(a, in_place, c2c, a_strides, index, axes):
     dsc.fwd_strides = strides
     dsc.bwd_strides = dsc.fwd_strides
     dsc.transform_in_place = in_place
-    if axes is not None:  # batch_fft
+    out_strides = dsc.bwd_strides[1:]
+    if batch_fft:
         dsc.fwd_distance = a_strides[0]
-        dsc.bwd_distance = dsc.fwd_distance
-        dsc.number_of_transforms = numpy.prod(a_shape[0])
+        if c2c:
+            dsc.bwd_distance = dsc.fwd_distance
+        else:
+            if dsc.fwd_strides[-1] == 1:
+                if forward:
+                    dsc.bwd_distance = shape[-1] // 2 + 1
+                else:
+                    dsc.bwd_distance = dsc.fwd_distance
+            else:
+                dsc.bwd_distance = dsc.fwd_distance
+        dsc.number_of_transforms = numpy.prod(a_shape[0])  # batch_size
+        out_strides.insert(0, dsc.bwd_distance)
+
     dsc.commit(a.sycl_queue)
 
-    return dsc
+    return dsc, out_strides
 
 
-def _compute_result(dsc, a, out, forward, c2c, a_strides):
+def _complex_nd_fft(a, s, norm, out, forward, in_place, c2c, axes, batch_fft):
+    """Computes complex-to-complex FFT of the input N-D array."""
+
+    len_axes = len(axes)
+    # OneMKL supports up to 3-dimensional FFT on GPU
+    # repeated axis in OneMKL FFT is not allowed
+    if len_axes > 3 or len(set(axes)) < len_axes:
+        axes_chunk, shape_chunk = _extract_axes_chunk(axes, s, chunk_size=3)
+        for s_chunk, a_chunk in zip(shape_chunk, axes_chunk):
+            a = _truncate_or_pad(a, shape=s_chunk, axes=a_chunk)
+            if out is not None and out.shape == a.shape:
+                tmp_out = out
+            else:
+                tmp_out = None
+            a = _fft(
+                a,
+                norm=norm,
+                out=tmp_out,
+                forward=forward,
+                # TODO: in-place FFT is only implemented for c2c, see SAT-7154
+                in_place=in_place and c2c,
+                c2c=c2c,
+                axes=a_chunk,
+            )
+        return a
+
+    a = _truncate_or_pad(a, s, axes)
+    if a.size == 0:
+        return dpnp.get_result_array(a, out=out, casting="same_kind")
+
+    return _fft(
+        a,
+        norm=norm,
+        out=out,
+        forward=forward,
+        # TODO: in-place FFT is only implemented for c2c, see SAT-7154
+        in_place=in_place and c2c,
+        c2c=c2c,
+        axes=axes,
+        batch_fft=batch_fft,
+    )
+
+
+def _compute_result(dsc, a, out, forward, c2c, out_strides):
     """Compute the result of the FFT."""
 
     exec_q = a.sycl_queue
@@ -119,7 +174,7 @@ def _compute_result(dsc, a, out, forward, c2c, a_strides):
     else:
         if (
             out is not None
-            and out.strides == a_strides
+            and out.strides == out_strides
             and not ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
         ):
             res_usm = dpnp.get_usm_ndarray(out)
@@ -150,7 +205,7 @@ def _compute_result(dsc, a, out, forward, c2c, a_strides):
             result = dpnp_array(
                 out_shape,
                 dtype=out_dtype,
-                strides=a_strides,
+                strides=out_strides,
                 usm_type=a.usm_type,
                 sycl_queue=exec_q,
             )
@@ -165,7 +220,6 @@ def _compute_result(dsc, a, out, forward, c2c, a_strides):
     return result
 
 
-# TODO: c2r keyword is place holder for irfftn
 def _cook_nd_args(a, s=None, axes=None, c2r=False):
     if s is None:
         shapeless = True
@@ -315,28 +369,39 @@ def _extract_axes_chunk(a, s, chunk_size=3):
     return a_chunks[::-1], s_chunks[::-1]
 
 
-def _fft(a, norm, out, forward, in_place, c2c, axes=None):
+def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
     """Calculates FFT of the input array along the specified axes."""
 
     index = 0
-    if axes is not None:  # batch_fft
-        len_axes = 1 if isinstance(axes, int) else len(axes)
+    fft_1d = isinstance(axes, int)
+    if batch_fft:
+        len_axes = 1 if fft_1d else len(axes)
         local_axes = numpy.arange(-len_axes, 0)
         a = dpnp.moveaxis(a, axes, local_axes)
         a_shape_orig = a.shape
         local_shape = (-1,) + a_shape_orig[-len_axes:]
         a = dpnp.reshape(a, local_shape)
         index = 1
+    else:
+        if not (c2c or fft_1d):
+            # for N-D real FFT, axes[-1] of a should be at the end
+            a = dpnp.moveaxis(a, axes[-1], -1)
 
     a_strides = _standardize_strides_to_nonzero(a.strides, a.shape)
-    dsc = _commit_descriptor(a, in_place, c2c, a_strides, index, axes)
-    res = _compute_result(dsc, a, out, forward, c2c, a_strides)
+    dsc, out_strides = _commit_descriptor(
+        a, forward, in_place, c2c, a_strides, index, batch_fft
+    )
+    res = _compute_result(dsc, a, out, forward, c2c, out_strides)
     res = _scale_result(res, a.shape, norm, forward, index)
 
-    if axes is not None:  # batch_fft
+    if batch_fft:
         tmp_shape = a_shape_orig[:-1] + (res.shape[-1],)
         res = dpnp.reshape(res, tmp_shape)
         res = dpnp.moveaxis(res, local_axes, axes)
+    else:
+        if not (c2c or fft_1d):
+            # N-D real FFT, the last axis should be returned back to axes[-1]
+            res = dpnp.moveaxis(res, -1, axes[-1])
 
     result = dpnp.get_result_array(res, out=out, casting="same_kind")
     if out is None and not (
@@ -345,6 +410,27 @@ def _fft(a, norm, out, forward, in_place, c2c, axes=None):
         result = dpnp.ascontiguousarray(result)
 
     return result
+
+
+def _make_array_hermitian(arr, s, axis):
+    """
+    Transforms each 1D array of the input array along a specified axis into
+    a Hermitian array.
+    To accomplish this, it sets the imaginary part of the first element and
+    the element corresponding to the Nyquist mode along each `axis` to zero.
+
+    """
+
+    index = [slice(None)] * arr.ndim
+    index[axis] = 0  # index first element
+
+    arr.imag[tuple(index)] = 0
+
+    if s % 2 == 0:
+        index[axis] = s // 2  # index Nyquist mode
+        arr.imag[tuple(index)] = 0
+
+    return arr
 
 
 def _scale_result(res, a_shape, norm, forward, index):
@@ -368,9 +454,6 @@ def _scale_result(res, a_shape, norm, forward, index):
 
 def _truncate_or_pad(a, shape, axes):
     """Truncating or zero-padding the input array along the specified axes."""
-
-    shape = (shape,) if isinstance(shape, int) else shape
-    axes = (axes,) if isinstance(axes, int) else axes
 
     for s, axis in zip(shape, axes):
         a_shape = list(a.shape)
@@ -408,7 +491,7 @@ def _truncate_or_pad(a, shape, axes):
     return a
 
 
-def _validate_out_keyword(a, out, s, axes, c2r, r2c):
+def _validate_out_keyword(a, out, s, axes, c2c, c2r, r2c):
     """Validate out keyword argument."""
     if out is not None:
         dpnp.check_supported_arrays_type(out)
@@ -423,10 +506,14 @@ def _validate_out_keyword(a, out, s, axes, c2r, r2c):
         # validate out shape against the final shape,
         # intermediate shapes may vary
         expected_shape = list(a.shape)
-        for s_i, axis in zip(s[::-1], axes[::-1]):
-            expected_shape[axis] = s_i
         if r2c:
-            expected_shape[axes[-1]] = expected_shape[axes[-1]] // 2 + 1
+            expected_shape[axes[-1]] = s[-1] // 2 + 1
+        if c2c:
+            expected_shape[axes[-1]] = s[-1]
+        for s_i, axis in zip(s[-2::-1], axes[-2::-1]):
+            expected_shape[axis] = s_i
+        if c2r:
+            expected_shape[axes[-1]] = s[-1]
 
         if out.shape != tuple(expected_shape):
             raise ValueError(
@@ -494,8 +581,8 @@ def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
         raise ValueError(f"Invalid number of FFT data points ({n}) specified")
 
     _check_norm(norm)
-    a = _truncate_or_pad(a, n, axis)
-    _validate_out_keyword(a, out, (n,), (axis,), c2r, r2c)
+    a = _truncate_or_pad(a, (n,), (axis,))
+    _validate_out_keyword(a, out, (n,), (axis,), c2c, c2r, r2c)
     # if input array is copied, in-place FFT can be used
     a, in_place = _copy_array(a, c2c or c2r)
     if not in_place and out is not None:
@@ -504,9 +591,6 @@ def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
 
     if a.size == 0:
         return dpnp.get_result_array(a, out=out, casting="same_kind")
-
-    # non-batch FFT
-    axis = None if a_ndim == 1 else axis
 
     return _fft(
         a,
@@ -517,16 +601,20 @@ def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
         in_place=in_place and c2c,
         c2c=c2c,
         axes=axis,
+        batch_fft=a_ndim != 1,
     )
 
 
-def dpnp_fftn(a, forward, s=None, axes=None, norm=None, out=None):
+def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
     """Calculates N-D FFT of the input array along axes"""
 
-    _check_norm(norm)
-    if isinstance(axes, (list, tuple)) and len(axes) == 0:
+    if isinstance(axes, Sequence) and len(axes) == 0:
+        if real:
+            raise IndexError("Empty axes.")
+
         return a
 
+    _check_norm(norm)
     if a.ndim == 0:
         if axes is not None:
             raise IndexError(
@@ -535,54 +623,81 @@ def dpnp_fftn(a, forward, s=None, axes=None, norm=None, out=None):
 
         return a
 
+    c2c = not real  # complex-to-complex FFT
+    r2c = real and forward  # real-to-complex FFT
+    c2r = real and not forward  # complex-to-real FFT
+    if r2c and dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        raise TypeError("Input array must be real")
+
     _validate_s_axes(a, s, axes)
-    s, axes = _cook_nd_args(a, s, axes)
-    # TODO: False and False are place holder for future development of
-    # rfft2, irfft2, rfftn, irfftn
-    _validate_out_keyword(a, out, s, axes, False, False)
-    # TODO: True is place holder for future development of
-    # rfft2, irfft2, rfftn, irfftn
-    a, in_place = _copy_array(a, True)
+    s, axes = _cook_nd_args(a, s, axes, c2r)
+    _validate_out_keyword(a, out, s, axes, c2c, c2r, r2c)
+    a, in_place = _copy_array(a, c2c or c2r)
 
     len_axes = len(axes)
-    # OneMKL supports up to 3-dimensional FFT on GPU
-    # repeated axis in OneMKL FFT is not allowed
-    if len_axes > 3 or len(set(axes)) < len_axes:
-        axes_chunk, shape_chunk = _extract_axes_chunk(axes, s, chunk_size=3)
-        for s_chunk, a_chunk in zip(shape_chunk, axes_chunk):
-            a = _truncate_or_pad(a, shape=s_chunk, axes=a_chunk)
-            if out is not None and out.shape == a.shape:
-                tmp_out = out
-            else:
-                tmp_out = None
-            a = _fft(
-                a,
-                norm=norm,
-                out=tmp_out,
-                forward=forward,
-                in_place=in_place,
-                # TODO: c2c=True is place holder for future development of
-                # rfft2, irfft2, rfftn, irfftn
-                c2c=True,
-                axes=a_chunk,
-            )
-        return a
+    if len_axes == 1:
+        a = _truncate_or_pad(a, (s[-1],), (axes[-1],))
+        return _fft(
+            a, norm, out, forward, in_place and c2c, c2c, axes[0], a.ndim != 1
+        )
 
-    a = _truncate_or_pad(a, s, axes)
-    if a.size == 0:
-        return dpnp.get_result_array(a, out=out, casting="same_kind")
-    if a.ndim == len_axes:
-        # non-batch FFT
-        axes = None
+    if r2c:
+        # a 1D real-to-complext FFT is performed on the last axis and then
+        # an N-D complex-to-complex FFT over the remaining axes
+        a = _truncate_or_pad(a, (s[-1],), (axes[-1],))
+        intermediate_shape = list(a.shape)
+        intermediate_shape[axes[-1]] = s[-1] // 2 + 1
+        if out is not None and out.shape == intermediate_shape:
+            tmp_out = out
+        else:
+            tmp_out = None
 
-    return _fft(
-        a,
-        norm=norm,
-        out=out,
-        forward=forward,
-        in_place=in_place,
-        # TODO: c2c=True is place holder for future development of
-        # rfft2, irfft2, rfftn, irfftn
-        c2c=True,
-        axes=axes,
+        a = _fft(
+            a,
+            norm,
+            tmp_out,
+            forward,
+            in_place and c2c,
+            c2c,
+            axes[-1],
+            a.ndim != 1,
+        )
+        return _complex_nd_fft(
+            a,
+            s,
+            norm,
+            out,
+            forward,
+            in_place,
+            True,  # c2c
+            axes[:-1],
+            a.ndim != len_axes - 1,
+        )
+
+    if c2r:
+        # an N-D complex-to-complex FFT is performed on all axes except the
+        # last one then a 1D complex-to-real FFT is performed on the last axis
+        a = _complex_nd_fft(
+            a,
+            s,
+            norm,
+            None,  # out has real dtype and cannot be used in intermediate steps
+            forward,
+            in_place,
+            True,  # c2c
+            axes[:-1],
+            a.ndim != len_axes - 1,
+        )
+        a = _truncate_or_pad(a, (s[-1],), (axes[-1],))
+        # a is a batch of 1D arrays and each of them should be Hermitian
+        # otherwise c2r FFT behavior is undefined
+        a = _make_array_hermitian(a, s[-1], axes[-1])
+        # make sure input to the following function is Hermitian
+        return _fft(
+            a, norm, out, forward, in_place and c2c, c2c, axes[-1], a.ndim != 1
+        )
+
+    # c2c
+    return _complex_nd_fft(
+        a, s, norm, out, forward, in_place, c2c, axes, a.ndim != len_axes
     )

@@ -1288,14 +1288,15 @@ def test_fft(func, device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
-@pytest.mark.parametrize("func", ["fftn", "ifftn"])
+@pytest.mark.parametrize("func", ["fftn", "ifftn", "rfftn", "irfftn"])
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
 def test_fftn(func, device):
-    data = numpy.arange(24, dtype=numpy.complex128).reshape(2, 3, 4)
+    dtype = numpy.float64 if func in ["rfftn"] else numpy.complex128
+    data = numpy.arange(24, dtype=dtype).reshape(2, 3, 4)
     dpnp_data = dpnp.array(data, device=device)
 
     expected = getattr(numpy.fft, func)(data)

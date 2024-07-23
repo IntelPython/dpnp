@@ -981,12 +981,11 @@ def test_fft(func, usm_type):
     assert result.usm_type == usm_type
 
 
-@pytest.mark.parametrize("func", ["fftn", "ifftn"])
+@pytest.mark.parametrize("func", ["fftn", "ifftn", "rfftn", "irfftn"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_fftn(func, usm_type):
-    dpnp_data = dp.arange(24, usm_type=usm_type, dtype=dp.complex64).reshape(
-        2, 3, 4
-    )
+    dtype = dp.float32 if func in ["rfftn"] else dp.complex64
+    dpnp_data = dp.arange(24, usm_type=usm_type, dtype=dtype).reshape(2, 3, 4)
     result = getattr(dp.fft, func)(dpnp_data)
 
     assert dpnp_data.usm_type == usm_type
