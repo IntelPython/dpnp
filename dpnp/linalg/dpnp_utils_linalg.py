@@ -2080,7 +2080,10 @@ def dpnp_inv(a):
         usm_a_f = a_f.T.get_array()
         usm_b_f = b_f.T.get_array()
 
-    ht_ev, gesv_ev = li._gesv(a_sycl_queue, usm_a_f, usm_b_f, depends=[copy_ev])
+    # depends on copy_ev and an event from dpt.eye() call
+    ht_ev, gesv_ev = li._gesv(
+        a_sycl_queue, usm_a_f, usm_b_f, depends=_manager.submitted_events
+    )
     _manager.add_event_pair(ht_ev, gesv_ev)
 
     return b_f
