@@ -29,7 +29,7 @@
 #include "dpctl4pybind11.hpp"
 
 #include "common.hpp"
-#include "hypot.hpp"
+#include "nextafter.hpp"
 
 // include a local copy of elementwise common header from dpctl tensor:
 // dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
@@ -55,7 +55,7 @@ namespace tu_ns = dpctl::tensor::type_utils;
 
 /**
  * @brief A factory to define pairs of supported types for which
- * MKL VM library provides support in oneapi::mkl::vm::hypot<T> function.
+ * MKL VM library provides support in oneapi::mkl::vm::nextafter<T> function.
  *
  * @tparam T Type of input vectors `a` and `b` and of result vector `y`.
  */
@@ -69,15 +69,16 @@ struct OutputType
 };
 
 template <typename T1, typename T2>
-static sycl::event hypot_contig_impl(sycl::queue &exec_q,
-                                     std::size_t in_n,
-                                     const char *in_a,
-                                     py::ssize_t a_offset,
-                                     const char *in_b,
-                                     py::ssize_t b_offset,
-                                     char *out_y,
-                                     py::ssize_t out_offset,
-                                     const std::vector<sycl::event> &depends)
+static sycl::event
+    nextafter_contig_impl(sycl::queue &exec_q,
+                          std::size_t in_n,
+                          const char *in_a,
+                          py::ssize_t a_offset,
+                          const char *in_b,
+                          py::ssize_t b_offset,
+                          char *out_y,
+                          py::ssize_t out_offset,
+                          const std::vector<sycl::event> &depends)
 {
     tu_ns::validate_type_for_device<T1>(exec_q);
     tu_ns::validate_type_for_device<T2>(exec_q);
@@ -93,12 +94,13 @@ static sycl::event hypot_contig_impl(sycl::queue &exec_q,
     using resTy = typename OutputType<T1, T2>::value_type;
     resTy *y = reinterpret_cast<resTy *>(out_y);
 
-    return mkl_vm::hypot(exec_q,
-                         n, // number of elements to be calculated
-                         a, // pointer `a` containing 1st input vector of size n
-                         b, // pointer `b` containing 2nd input vector of size n
-                         y, // pointer `y` to the output vector of size n
-                         depends);
+    return mkl_vm::nextafter(
+        exec_q,
+        n, // number of elements to be calculated
+        a, // pointer `a` containing 1st input vector of size n
+        b, // pointer `b` containing 2nd input vector of size n
+        y, // pointer `y` to the output vector of size n
+        depends);
 }
 
 using ew_cmn_ns::binary_contig_impl_fn_ptr_t;
@@ -110,10 +112,10 @@ static int output_typeid_vector[td_ns::num_types][td_ns::num_types];
 static binary_contig_impl_fn_ptr_t contig_dispatch_vector[td_ns::num_types]
                                                          [td_ns::num_types];
 
-MACRO_POPULATE_DISPATCH_TABLES(hypot);
+MACRO_POPULATE_DISPATCH_TABLES(nextafter);
 } // namespace impl
 
-void init_hypot(py::module_ m)
+void init_nextafter(py::module_ m)
 {
     using arrayT = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
@@ -122,9 +124,9 @@ void init_hypot(py::module_ m)
     using impl::contig_dispatch_vector;
     using impl::output_typeid_vector;
 
-    auto hypot_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,
-                           const arrayT &src2, const arrayT &dst,
-                           const event_vecT &depends = {}) {
+    auto nextafter_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,
+                               const arrayT &src2, const arrayT &dst,
+                               const event_vecT &depends = {}) {
         return py_int::py_binary_ufunc(
             src1, src2, dst, exec_q, depends, output_typeid_vector,
             contig_dispatch_vector,
@@ -138,20 +140,25 @@ void init_hypot(py::module_ m)
                 impl::
                     binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
     };
-    m.def("_hypot", hypot_pyapi,
-          "Call `hypot` function from OneMKL VM library to compute "
-          "the square root of sum of squares elementwisely",
-          py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
-          py::arg("dst"), py::arg("depends") = py::list());
+    m.def(
+        "_nextafter", nextafter_pyapi,
+        "Call `nextafter` function from OneMKL VM library to return `dst` of "
+        "elements containing the next representable floating-point values "
+        "following the values from the elements of `src1` in the direction of "
+        "the corresponding elements of `src2`",
+        py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"), py::arg("dst"),
+        py::arg("depends") = py::list());
 
-    auto hypot_need_to_call_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,
-                                        const arrayT &src2, const arrayT &dst) {
+    auto nextafter_need_to_call_pyapi = [&](sycl::queue &exec_q,
+                                            const arrayT &src1,
+                                            const arrayT &src2,
+                                            const arrayT &dst) {
         return py_internal::need_to_call_binary_ufunc(exec_q, src1, src2, dst,
                                                       output_typeid_vector,
                                                       contig_dispatch_vector);
     };
-    m.def("_mkl_hypot_to_call", hypot_need_to_call_pyapi,
-          "Check input arguments to answer if `hypot` function from "
+    m.def("_mkl_nextafter_to_call", nextafter_need_to_call_pyapi,
+          "Check input arguments to answer if `nextafter` function from "
           "OneMKL VM library can be used",
           py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"),
           py::arg("dst"));

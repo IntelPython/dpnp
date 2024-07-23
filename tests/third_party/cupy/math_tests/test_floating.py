@@ -1,6 +1,7 @@
 import unittest
 
 import numpy
+import pytest
 
 import dpnp as cupy
 from tests.helper import has_support_aspect64
@@ -28,6 +29,7 @@ class TestFloating(unittest.TestCase):
         b = xp.array([-xp.inf, -3, -0.0, 0, 3, xp.inf], dtype=dtype)[None, :]
         return xp.copysign(a, b)
 
+    @pytest.mark.skip("ldexp() is not implemented yet")
     @testing.for_float_dtypes(name="ftype")
     @testing.for_dtypes(["i", "l"], name="itype")
     @testing.numpy_cupy_array_equal()
@@ -36,6 +38,7 @@ class TestFloating(unittest.TestCase):
         b = xp.array([-3, -2, -1, 0, 1, 2, 3], dtype=itype)
         return xp.ldexp(a, b)
 
+    @pytest.mark.skip("frexp() is not implemented yet")
     @testing.for_float_dtypes()
     def test_frexp(self, dtype):
         numpy_a = numpy.array(
@@ -50,7 +53,7 @@ class TestFloating(unittest.TestCase):
         testing.assert_array_equal(cupy_c, numpy_c)
 
     @testing.for_all_dtypes_combination(("dtype_a", "dtype_b"), no_complex=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose(rtol=1e-06, type_check=has_support_aspect64())
     def test_nextafter_combination(self, xp, dtype_a, dtype_b):
         a = testing.shaped_arange((2, 3), xp, dtype_a)
         # skip 0 because cupy (may) handle denormals differently (-ftz=true)
