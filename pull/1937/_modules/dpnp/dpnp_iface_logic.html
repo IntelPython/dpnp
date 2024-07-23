@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.16.0dev0+80.g6c99ebe391 documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.16.0dev0+84.gd5bfa2b0bc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4fb8494f"></script>
+        <script src="../../_static/documentation_options.js?v=3bc48934"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+80.g6c99ebe391
+                0.16.0dev0+84.gd5bfa2b0bc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -280,9 +280,9 @@
 <span class="sd">    are added together to compare against the absolute difference between `a`</span>
 <span class="sd">    and `b`.</span>
 
-<span class="sd">    If either array contains one or more ``NaNs``, ``False`` is returned.</span>
-<span class="sd">    ``Infs`` are treated as equal if they are in the same place and of the same</span>
-<span class="sd">    sign in both arrays.</span>
+<span class="sd">    ``NaNs`` are treated as equal if they are in the same place and if</span>
+<span class="sd">    ``equal_nan=True``. ``Infs`` are treated as equal if they are in the same</span>
+<span class="sd">    place and of the same sign in both arrays.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.allclose`.</span>
 
@@ -301,6 +301,7 @@
 <span class="sd">    equal_nan : bool</span>
 <span class="sd">        Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will</span>
 <span class="sd">        be considered equal to ``NaNs`` in `b` in the output array.</span>
+<span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -322,20 +323,19 @@
 <span class="sd">    &gt;&gt;&gt; a = np.array([1e10, 1e-7])</span>
 <span class="sd">    &gt;&gt;&gt; b = np.array([1.00001e10, 1e-8])</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, b)</span>
-<span class="sd">    array([False])</span>
+<span class="sd">    array(False)</span>
 
 <span class="sd">    &gt;&gt;&gt; a = np.array([1.0, np.nan])</span>
 <span class="sd">    &gt;&gt;&gt; b = np.array([1.0, np.nan])</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, b)</span>
-<span class="sd">    array([False])</span>
+<span class="sd">    array(False)</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, b, equal_nan=True)</span>
-<span class="sd">    array([ True])</span>
-
+<span class="sd">    array(True)</span>
 
 <span class="sd">    &gt;&gt;&gt; a = np.array([1.0, np.inf])</span>
 <span class="sd">    &gt;&gt;&gt; b = np.array([1.0, np.inf])</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, b)</span>
-<span class="sd">    array([ True])</span>
+<span class="sd">    array(True)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -652,6 +652,11 @@
 <span class="sd">    Returns a boolean array where two arrays are element-wise equal within</span>
 <span class="sd">    a tolerance.</span>
 
+<span class="sd">    The tolerance values are positive, typically very small numbers. The</span>
+<span class="sd">    relative difference (`rtol` * abs(`b`)) and the absolute difference `atol`</span>
+<span class="sd">    are added together to compare against the absolute difference between `a`</span>
+<span class="sd">    and `b`.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.isclose`.</span>
 
 <span class="sd">    Parameters</span>
@@ -669,6 +674,7 @@
 <span class="sd">    equal_nan : bool</span>
 <span class="sd">        Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will</span>
 <span class="sd">        be considered equal to ``NaNs`` in `b` in the output array.</span>
+<span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -685,7 +691,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; a = np.array([1e10, 1e-7])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([1.00001e10, 1e-8)</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1.00001e10, 1e-8])</span>
 <span class="sd">    &gt;&gt;&gt; np.isclose(a, b)</span>
 <span class="sd">    array([ True, False])</span>
 
@@ -709,7 +715,7 @@
 <span class="sd">    &gt;&gt;&gt; a = np.array([0.0, 0.0])</span>
 <span class="sd">    &gt;&gt;&gt; b = np.array([1e-8, 1e-7])</span>
 <span class="sd">    &gt;&gt;&gt; np.isclose(a, b)</span>
-<span class="sd">    array([True, False])</span>
+<span class="sd">    array([ True, False])</span>
 <span class="sd">    &gt;&gt;&gt; b = np.array([1e-100, 1e-7])</span>
 <span class="sd">    &gt;&gt;&gt; np.isclose(a, b, atol=0.0)</span>
 <span class="sd">    array([False, False])</span>
@@ -719,7 +725,7 @@
 <span class="sd">    &gt;&gt;&gt; np.isclose(a, b)</span>
 <span class="sd">    array([ True,  True])</span>
 <span class="sd">    &gt;&gt;&gt; b = np.array([1e-20, 0.999999e-10])</span>
-<span class="sd">    &gt;&gt;&gt; np.isclose(a, b atol=0.0)</span>
+<span class="sd">    &gt;&gt;&gt; np.isclose(a, b, atol=0.0)</span>
 <span class="sd">    array([False,  True])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -729,22 +735,22 @@
         <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
 
+    <span class="c1"># make sure b is an inexact type to avoid bad behavior on abs(MIN_INT)</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span>
-            <span class="n">b</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
         <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
             <span class="n">b</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">b</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span>
-            <span class="n">b</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">b</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">less_equal</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">),</span> <span class="n">atol</span> <span class="o">+</span> <span class="n">rtol</span> <span class="o">*</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="o">&amp;</span> <span class="n">isfinite</span><span class="p">(</span>
-        <span class="n">b</span>
-    <span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">_b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">_b</span> <span class="o">*=</span> <span class="n">rtol</span>
+    <span class="n">_b</span> <span class="o">+=</span> <span class="n">atol</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">less_equal</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">),</span> <span class="n">_b</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">&amp;=</span> <span class="n">isfinite</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">|=</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span>
 
     <span class="k">if</span> <span class="n">equal_nan</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">|=</span> <span class="n">isnan</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">isnan</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
