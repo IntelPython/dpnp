@@ -93,8 +93,8 @@ std::pair<sycl::event, sycl::event>
     if (in_nd > 1) {
         for (int i = 0; i < in_nd - 1; ++i) {
             if (in_shape[i] != out_shape[i]) {
-                throw py::value_error("The shape of the input and output "
-                                      "arrays must be the same.");
+                throw py::value_error("The shape of the output array is not "
+                                      "correct for the given input array.");
             }
             in_size *= in_shape[i];
         }
@@ -105,8 +105,9 @@ std::pair<sycl::event, sycl::event>
         // r2c FFT
         N = m / 2 + 1; // integer divide
         if (n != N) {
-            throw py::value_error("The shape of the output array is not "
-                                  "correct for real to complex transform.");
+            throw py::value_error(
+                "The shape of the output array is not correct for the given "
+                "input array in real to complex FFT transform.");
         }
     }
     else {
@@ -114,8 +115,8 @@ std::pair<sycl::event, sycl::event>
         // have the same size as output before calling this function
         N = m;
         if (n != N) {
-            throw py::value_error("The shape of the input array must be "
-                                  "the same as the shape of the output array.");
+            throw py::value_error("The shape of the output array is not "
+                                  "correct for the given input array.");
         }
     }
 

@@ -137,7 +137,6 @@ class TestFftOrder:
                 {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)},
                 {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)},
                 # {"shape": (2, 3, 4), "s": None, "axes": (0, 1)}, # mkl_fft gh-109
-                {"shape": (2, 3, 4), "s": None, "axes": None},
                 # {"shape": (2, 3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
                 # {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2)}, # mkl_fft gh-109
                 {"shape": (2, 3, 4, 5), "s": None, "axes": None},
@@ -227,7 +226,6 @@ class TestFft2:
                 {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)},
                 # {"shape": (2, 3, 4), "s": None, "axes": (-1, -3)}, # mkl_fft gh-109
                 # {"shape": (2, 3, 4), "s": None, "axes": (0, 1)}, # mkl_fft gh-109
-                {"shape": (2, 3, 4), "s": None, "axes": None},
                 # {"shape": (2, 3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
                 # {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2)}, # mkl_fft gh-109
                 {"shape": (2, 3, 4), "s": (4, 3, 2), "axes": (2, 0, 1)},
@@ -338,11 +336,82 @@ class TestRfft:
         return out
 
 
+@pytest.mark.usefixtures("skip_forward_backward")
+@testing.parameterize(
+    *(
+        testing.product_dict(
+            [
+                # some of the following cases are modified, since in NumPy 2.0.0
+                # `s` must contain only integer `s`, not None values, and
+                # If `s` is not None, `axes`` must not be None either.
+                {"shape": (3, 4), "s": None, "axes": None},
+                {"shape": (3, 4), "s": (1, 4), "axes": (0, 1)},
+                {"shape": (3, 4), "s": (1, 5), "axes": (0, 1)},
+                {"shape": (3, 4), "s": None, "axes": (-2, -1)},
+                {"shape": (3, 4), "s": None, "axes": (-1, -2)},
+                {"shape": (3, 4), "s": None, "axes": (0,)},
+                {"shape": (3, 4), "s": None, "axes": None},
+                # {"shape": (2, 3, 4), "s": None, "axes": None}, # mkl_fft gh-116
+                # {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)}, # mkl_fft gh-115
+                # {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)}, # mkl_fft gh-115
+                # {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)}, # mkl_fft gh-116
+                # {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)}, # mkl_fft gh-116
+                {"shape": (2, 3, 4), "s": None, "axes": (0, 1)},
+                {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2)},
+                # {"shape": (2, 3, 4, 5), "s": None, "axes": None}, # mkl_fft gh-109 and gh-116
+            ],
+            testing.product(
+                {"norm": [None, "backward", "ortho", "forward", ""]}
+            ),
+        )
+    )
+)
+class TestRfft2:
+    @testing.for_orders("CF")
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4,
+        atol=1e-7,
+        accept_error=ValueError,
+        contiguous_check=False,
+        type_check=has_support_aspect64(),
+    )
+    def test_rfft2(self, xp, dtype, order):
+        a = testing.shaped_random(self.shape, xp, dtype)
+        if order == "F":
+            a = xp.asfortranarray(a)
+        out = xp.fft.rfft2(a, s=self.s, axes=self.axes, norm=self.norm)
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
+
+        return out
+
+    @testing.for_orders("CF")
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4,
+        atol=1e-7,
+        accept_error=ValueError,
+        contiguous_check=False,
+        type_check=has_support_aspect64(),
+    )
+    def test_irfft2(self, xp, dtype, order):
+        a = testing.shaped_random(self.shape, xp, dtype)
+        if order == "F":
+            a = xp.asfortranarray(a)
+        out = xp.fft.irfft2(a, s=self.s, axes=self.axes, norm=self.norm)
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.float32)
+
+        return out
+
+
 @testing.parameterize(
     {"shape": (3, 4), "s": None, "axes": (), "norm": None},
     {"shape": (2, 3, 4), "s": None, "axes": (), "norm": None},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRfft2EmptyAxes:
     @testing.for_all_dtypes(no_complex=True)
     def test_rfft2(self, dtype):
@@ -359,11 +428,82 @@ class TestRfft2EmptyAxes:
                 xp.fft.irfft2(a, s=self.s, axes=self.axes, norm=self.norm)
 
 
+@pytest.mark.usefixtures("skip_forward_backward")
+@testing.parameterize(
+    *(
+        testing.product_dict(
+            [
+                # some of the following cases are modified, since in NumPy 2.0.0
+                # `s` must contain only integer `s`, not None values, and
+                # If `s` is not None, `axes`` must not be None either.
+                {"shape": (3, 4), "s": None, "axes": None},
+                {"shape": (3, 4), "s": (1, 4), "axes": (0, 1)},
+                {"shape": (3, 4), "s": (1, 5), "axes": (0, 1)},
+                {"shape": (3, 4), "s": None, "axes": (-2, -1)},
+                {"shape": (3, 4), "s": None, "axes": (-1, -2)},
+                {"shape": (3, 4), "s": None, "axes": (0,)},
+                {"shape": (3, 4), "s": None, "axes": None},
+                # {"shape": (2, 3, 4), "s": None, "axes": None}, # mkl_fft gh-116
+                # {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)}, # mkl_fft gh-115
+                # {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)}, # mkl_fft gh-115
+                # {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)}, # mkl_fft gh-116
+                # {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)}, # mkl_fft gh-116
+                {"shape": (2, 3, 4), "s": None, "axes": (0, 1)},
+                {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2)},
+                # {"shape": (2, 3, 4, 5), "s": None, "axes": None}, # mkl_fft gh-109 and gh-116
+            ],
+            testing.product(
+                {"norm": [None, "backward", "ortho", "forward", ""]}
+            ),
+        )
+    )
+)
+class TestRfftn:
+    @testing.for_orders("CF")
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4,
+        atol=1e-7,
+        accept_error=ValueError,
+        contiguous_check=False,
+        type_check=has_support_aspect64(),
+    )
+    def test_rfftn(self, xp, dtype, order):
+        a = testing.shaped_random(self.shape, xp, dtype)
+        if order == "F":
+            a = xp.asfortranarray(a)
+        out = xp.fft.rfftn(a, s=self.s, axes=self.axes, norm=self.norm)
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
+
+        return out
+
+    @testing.for_orders("CF")
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_allclose(
+        rtol=1e-4,
+        atol=1e-7,
+        accept_error=ValueError,
+        contiguous_check=False,
+        type_check=has_support_aspect64(),
+    )
+    def test_irfftn(self, xp, dtype, order):
+        a = testing.shaped_random(self.shape, xp, dtype)
+        if order == "F":
+            a = xp.asfortranarray(a)
+        out = xp.fft.irfftn(a, s=self.s, axes=self.axes, norm=self.norm)
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.float32)
+
+        return out
+
+
 @testing.parameterize(
     {"shape": (3, 4), "s": None, "axes": (), "norm": None},
     {"shape": (2, 3, 4), "s": None, "axes": (), "norm": None},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRfftnEmptyAxes:
     @testing.for_all_dtypes(no_complex=True)
     def test_rfftn(self, dtype):

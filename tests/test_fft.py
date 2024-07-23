@@ -927,3 +927,13 @@ class TestRfft:
         a = dpnp.ones((10,), dtype=dpnp.float32)
         out = dpnp.empty((10,), dtype=dpnp.complex64)
         assert_raises(ValueError, dpnp.fft.rfft, a, out=out)
+
+
+class TestRfft2:
+    def setup_method(self):
+        numpy.random.seed(42)
+
+
+class TestRfftn:
+    def setup_method(self):
+        numpy.random.seed(42)
