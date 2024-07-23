@@ -2378,7 +2378,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     the expected data type.
     Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
-    Output array, if parameter `out` is ``None``.
+    Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
 Returns
@@ -2396,12 +2396,13 @@ Otherwise ``NotImplementedError`` exception will be raised.
 Examples
 --------
 >>> import dpnp as np
->>> eps = np.finfo(np.float64).eps
->>> np.nextafter(np.array(1), 2) == eps + 1
+>>> a = np.array(1, dtype=np.float32)
+>>> eps = np.finfo(a.dtype).eps
+>>> np.nextafter(a, 2) == eps + 1
 array(True)
 
->>> a = np.array([1, 2])
->>> b = np.array([2, 1])
+>>> a = np.array([1, 2], dtype=np.float32)
+>>> b = np.array([2, 1], dtype=np.float32)
 >>> c = np.array([eps + 1, 2 - eps])
 >>> np.nextafter(a, b) == c
 array([ True,  True])
@@ -2496,7 +2497,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     the expected data type.
     Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
-    Output array, if parameter `out` is ``None``.
+    Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
 Returns

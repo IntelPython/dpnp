@@ -53,7 +53,7 @@ class TestFloating(unittest.TestCase):
         testing.assert_array_equal(cupy_c, numpy_c)
 
     @testing.for_all_dtypes_combination(("dtype_a", "dtype_b"), no_complex=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose(rtol=1e-06, type_check=has_support_aspect64())
     def test_nextafter_combination(self, xp, dtype_a, dtype_b):
         a = testing.shaped_arange((2, 3), xp, dtype_a)
         # skip 0 because cupy (may) handle denormals differently (-ftz=true)

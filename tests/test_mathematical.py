@@ -1139,11 +1139,11 @@ class TestNextafter:
         ia = dpnp.array(a)
 
         result = dpnp.nextafter(ia, dpnp.nan)
-        expected = numpy.nextafter(numpy.nan, a)
+        expected = numpy.nextafter(a, numpy.nan)
         assert_equal(result, expected)
 
         result = dpnp.nextafter(dpnp.nan, ia)
-        expected = numpy.nextafter(a, numpy.nan)
+        expected = numpy.nextafter(numpy.nan, a)
         assert_equal(result, expected)
 
     @pytest.mark.parametrize("val", [0x7C00, 0x8000], ids=["val1", "val2"])
