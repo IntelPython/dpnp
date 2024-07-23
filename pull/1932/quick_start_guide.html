@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.16.0dev0+71.g64da8f2de6 documentation</title>
+  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.16.0dev0+81.ge644eaf54a documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=de29c11e"></script>
+        <script src="_static/documentation_options.js?v=da74d916"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+71.g64da8f2de6
+                0.16.0dev0+81.ge644eaf54a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -62,7 +62,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#device-drivers">Device Drivers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#python-interpreter">Python Interpreter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#install-package-from-anaconda">Install Package from Anaconda</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-package-from-intel-r-channel">Install Package from Intel(R) channel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#build-and-install-conda-package">Build and Install Conda Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#build-and-install-with-scikit-build">Build and Install with scikit-build</a></li>
 </ul>
@@ -127,13 +127,12 @@ in the next installation section.</p>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
-<section id="install-package-from-anaconda">
-<h3>Install Package from Anaconda<a class="headerlink" href="#install-package-from-anaconda" title="Link to this heading"></a></h3>
-<p>It is recommended to use conda packages from the <code class="docutils literal notranslate"><span class="pre">anaconda.org/intel</span></code>
-channel. You will need one of the commands below:</p>
+<section id="install-package-from-intel-r-channel">
+<h3>Install Package from Intel(R) channel<a class="headerlink" href="#install-package-from-intel-r-channel" title="Link to this heading"></a></h3>
+<p>You will need one of the commands below:</p>
 <ul class="simple">
-<li><p>Conda: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">dpnp</span> <span class="pre">-c</span> <span class="pre">intel</span> <span class="pre">-c</span> <span class="pre">conda-forge</span></code></p></li>
-<li><p>Pip: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-i</span> <span class="pre">https://pypi.anaconda.org/intel/simple</span> <span class="pre">dpnp</span></code></p></li>
+<li><p>Conda: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">dpnp</span> <span class="pre">-c</span> <span class="pre">https://software.repos.intel.com/python/conda/</span> <span class="pre">-c</span> <span class="pre">conda-forge</span></code></p></li>
+<li><p>Pip: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--index-url</span> <span class="pre">https://pypi.anaconda.org/intel/simple</span> <span class="pre">dpnp</span></code></p></li>
 </ul>
 <p>These commands install dpnp package along with its dependencies, including
 <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> package with <a class="reference external" href="https://intelpython.github.io/dpctl/latest/index.html">Data Parallel Control Library</a> and all required
@@ -151,7 +150,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
 <p>And to build dpnp package from the sources:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>build<span class="w"> </span>conda-recipe<span class="w"> </span>-c<span class="w"> </span>intel<span class="w"> </span>-c<span class="w"> </span>conda-forge
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>build<span class="w"> </span>conda-recipe<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge
 </pre></div>
 </div>
 <p>Finally, to install the result package:</p>
@@ -165,12 +164,12 @@ conda<span class="w"> </span>activate<span class="w"> </span>build-env
 <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> and <code class="docutils literal notranslate"><span class="pre">scikit-build</span></code>. You will need to create a local conda
 build environment by command below depending on hosting OS.</p>
 <p>On Linux:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_linux-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w"> </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>pytest<span class="w"> </span>-c<span class="w"> </span>intel<span class="w"> </span>-c<span class="w"> </span>conda-forge
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_linux-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w"> </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>pytest<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge
 conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
 <p>On Windows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_win-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w"> </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>pytest<span class="w"> </span>-c<span class="w"> </span>intel<span class="w"> </span>-c<span class="w"> </span>conda-forge
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_win-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w"> </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>pytest<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge
 conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
