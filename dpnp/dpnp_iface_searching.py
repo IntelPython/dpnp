@@ -37,17 +37,12 @@ it contains:
 
 """
 
-# pylint: disable=no-name-in-module
-
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as dti
 
 import dpnp
 
 from .dpnp_array import dpnp_array
-from .dpnp_utils import (
-    get_usm_allocations,
-)
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
 __all__ = ["argmax", "argmin", "searchsorted", "where"]
@@ -394,13 +389,6 @@ def where(condition, x=None, y=None, /, *, order="K", out=None):
     usm_x = dpnp.get_usm_ndarray_or_scalar(x)
     usm_y = dpnp.get_usm_ndarray_or_scalar(y)
     usm_condition = dpnp.get_usm_ndarray(condition)
-
-    usm_type, queue = get_usm_allocations([condition, x, y])
-    if dpnp.isscalar(usm_x):
-        usm_x = dpt.asarray(usm_x, usm_type=usm_type, sycl_queue=queue)
-
-    if dpnp.isscalar(usm_y):
-        usm_y = dpt.asarray(usm_y, usm_type=usm_type, sycl_queue=queue)
 
     usm_out = None if out is None else dpnp.get_usm_ndarray(out)
     result = dpnp_array._create_from_usm_ndarray(
