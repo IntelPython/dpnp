@@ -72,7 +72,6 @@ def _check_norm(norm):
         )
 
 
-# TODO: c2r keyword is place holder for irfftn
 def _cook_nd_args(a, s=None, axes=None, c2r=False):
     if s is None:
         shapeless = True
@@ -96,18 +95,23 @@ def _cook_nd_args(a, s=None, axes=None, c2r=False):
         raise ValueError("Shape and axes have different lengths.")
 
     s = list(s)
-    if c2r and shapeless:
-        s[-1] = (a.shape[axes[-1]] - 1) * 2
+    #if c2r and shapeless:
+    #    s[-1] = (a.shape[axes[-1]] - 1) * 2
     # use the whole input array along axis `i` if `s[i] == -1`
     s = [a.shape[_a] if _s == -1 else _s for _s, _a in zip(s, axes)]
     return s, axes
 
 
-def _commit_descriptor(a, in_place, c2c, a_strides, index, axes):
+def _commit_descriptor(a, desc_shape, forward, in_place, c2c, a_strides, index, batch_fft):
     """Commit the FFT descriptor for the input array."""
 
     a_shape = a.shape
-    shape = a_shape[index:]
+    #shape = a_shape[index:]
+    shape = desc_shape[index:]
+    #if not c2c and not forward:
+    #    shape=list(shape)
+    #    shape[-1] = (shape[-1] - 1) * 2
+    # print("Lale", shape)
     strides = (0,) + a_strides[index:]
     if c2c:  # c2c FFT
         if a.dtype == dpnp.complex64:
@@ -120,19 +124,63 @@ def _commit_descriptor(a, in_place, c2c, a_strides, index, axes):
         else:
             dsc = fi.Real64Descriptor(shape)
 
+    #rank = len(shape)
+    print("sahep=", shape)
     dsc.fwd_strides = strides
-    dsc.bwd_strides = dsc.fwd_strides
+    if c2c:
+        dsc.bwd_strides = dsc.fwd_strides
+    else:
+        #if dsc.fwd_strides[-1] == 1:
+        dsc.bwd_strides = dsc.fwd_strides
+        #else:
+        #    dsc.bwd_strides = [0, 4]
+    #    dsc.bwd_strides[-1] = 1
+    #    dsc.bwd_strides[-2] = shape[-1] // 2 + 1
+    #    for i in range(2, rank):
+    #        print("i=", i)
+    #        dsc.bwd_strides[rank - i] = (
+    #            dsc.bwd_strides[rank - i + 1] * shape[rank - i]
+    #        )
+    #    dsc.bwd_strides[0] = 0
     dsc.transform_in_place = in_place
-    if axes is not None:  # batch_fft
-        dsc.fwd_distance = a_strides[0]
-        dsc.bwd_distance = dsc.fwd_distance
-        dsc.number_of_transforms = numpy.prod(a_shape[0])
+    out_strides = dsc.bwd_strides[1:]
+    if batch_fft:
+        dsc.fwd_distance = a_strides[0] # shape[-1]
+        if c2c:
+            dsc.bwd_distance = dsc.fwd_distance
+        else:
+            if dsc.fwd_strides[-1] == 1:
+                if forward:
+                    dsc.bwd_distance = shape[-1] // 2 + 1              
+                else:
+                    dsc.bwd_distance = shape[-1] // 2 + 1  #dsc.fwd_distance             
+            else:
+                dsc.bwd_distance = dsc.fwd_distance        
+        #    tmp_fwd = tmp_bwd = 1
+        #    for i in range(rank - 1):
+        #        print("j=", i)
+        #        tmp_fwd *= shape[i]
+        #        tmp_bwd *= shape[i]
+        #    tmp_fwd *= shape[-1]
+        #    tmp_bwd *= shape[-1] // 2 + 1
+        #    dsc.fwd_distance = tmp_fwd
+        #    dsc.bwd_distance = tmp_bwd
+        dsc.number_of_transforms = numpy.prod(a_shape[0])  # batch_size
+        if forward:
+            out_strides.insert(0, dsc.bwd_distance)
+        else:
+            out_strides.insert(0, dsc.fwd_distance)
+        #print("M=", numpy.prod(a_shape[0]))
+        print("dist=", dsc.fwd_distance, dsc.bwd_distance)
+        # print("dist=", a_strides[0])
+    #print("fwd_strides=", dsc.fwd_strides, dsc.bwd_strides)
+    #print("strides=", strides, out_strides)
     dsc.commit(a.sycl_queue)
 
-    return dsc
+    return dsc, out_strides
 
 
-def _compute_result(dsc, a, out, forward, c2c, a_strides):
+def _compute_result(dsc, desc_shape, a, out, forward, c2c, out_strides):
     """Compute the result of the FFT."""
 
     exec_q = a.sycl_queue
@@ -151,7 +199,7 @@ def _compute_result(dsc, a, out, forward, c2c, a_strides):
     else:
         if (
             out is not None
-            and out.strides == a_strides
+            and out.strides == out_strides
             and not ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
         ):
             res_usm = dpnp.get_usm_ndarray(out)
@@ -173,16 +221,21 @@ def _compute_result(dsc, a, out, forward, c2c, a_strides):
                         else dpnp.complex128
                     )
                 else:  # c2r FFT
-                    out_shape = a.shape  # a is already zero-padded
+                    #tmp = (a.shape[-1]-1) * 2
+                    #out_shape = a.shape[:-1] + (tmp,)
+                    #out_shape = a.shape  # a is already zero-padded
+                    out_shape = desc_shape
                     out_dtype = (
                         dpnp.float32
                         if a.dtype == dpnp.complex64
                         else dpnp.float64
                     )
+            #print("output=", out_shape, out_strides)
             result = dpnp_array(
                 out_shape,
                 dtype=out_dtype,
-                strides=a_strides,
+                strides=out_strides,
+                # strides=dsc.bwd_strides[1:],  #important change
                 usm_type=a.usm_type,
                 sycl_queue=exec_q,
             )
@@ -299,11 +352,11 @@ def _extract_axes_chunk(a, chunk_size=3):
     return chunks[::-1]
 
 
-def _fft(a, norm, out, forward, in_place, c2c, axes=None):
+def _fft(a, desc_shape, norm, out, forward, in_place, c2c, axes, batch_fft=True):
     """Calculates FFT of the input array along the specified axes."""
 
     index = 0
-    if axes is not None:  # batch_fft
+    if batch_fft:
         len_axes = 1 if isinstance(axes, int) else len(axes)
         local_axes = numpy.arange(-len_axes, 0)
         a = dpnp.moveaxis(a, axes, local_axes)
@@ -311,23 +364,37 @@ def _fft(a, norm, out, forward, in_place, c2c, axes=None):
         local_shape = (-1,) + a_shape_orig[-len_axes:]
         a = dpnp.reshape(a, local_shape)
         index = 1
+    else:
+        if not (c2c or isinstance(axes, int)):
+            # for N-D real FFT, axes[-1] of a should be at the end
+            a = dpnp.moveaxis(a, axes[-1], -1)
 
     a_strides = _standardize_strides_to_nonzero(a.strides, a.shape)
-    dsc = _commit_descriptor(a, in_place, c2c, a_strides, index, axes)
-    res = _compute_result(dsc, a, out, forward, c2c, a_strides)
-    res = _scale_result(res, a.shape, norm, forward, index)
+    dsc, out_strides = _commit_descriptor(
+        a, desc_shape, forward, in_place, c2c, a_strides, index, batch_fft
+    )
+    res = _compute_result(dsc, desc_shape, a, out, forward, c2c, out_strides)
+    res = _scale_result(res, desc_shape, norm, forward, index)
 
-    if axes is not None:  # batch_fft
+    if batch_fft:
         tmp_shape = a_shape_orig[:-1] + (res.shape[-1],)
+        # print("res before strides", res.strides, res.shape)
         res = dpnp.reshape(res, tmp_shape)
         res = dpnp.moveaxis(res, local_axes, axes)
+    else:
+        if not (c2c or isinstance(axes, int)):
+            # for N-D real FFT, axes[-1] of a should be at the end
+            res = dpnp.moveaxis(res, -1, axes[-1])
 
     result = dpnp.get_result_array(res, out=out, casting="same_kind")
+    #print("result strides1=", result.strides)
     if out is None and not (
         result.flags.c_contiguous or result.flags.f_contiguous
     ):
+        print("additional copy")
         result = dpnp.ascontiguousarray(result)
 
+    #print("result strides2=", result.strides)
     return result
 
 
@@ -465,11 +532,12 @@ def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
         raise TypeError("Input array must be real")
 
     axis = normalize_axis_index(axis, a_ndim)
+    n_orig = n
     if n is None:
-        if c2r:
-            n = (a.shape[axis] - 1) * 2
-        else:
-            n = a.shape[axis]
+        #if c2r:
+        #    n = (a.shape[axis] - 1) * 2
+        #else:
+        n = a.shape[axis]
     elif not isinstance(n, int):
         raise TypeError("`n` should be None or an integer")
     if n < 1:
@@ -484,14 +552,17 @@ def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
         # if input is also given for out, in-place FFT can be used
         in_place = dpnp.are_same_logical_tensors(a, out)
 
+    desc_shape = list(a.shape)
+    if c2r:
+        if n_orig is None:
+            desc_shape[axis] = (a.shape[axis] - 1) * 2
+
     if a.size == 0:
         return dpnp.get_result_array(a, out=out, casting="same_kind")
 
-    # non-batch FFT
-    axis = None if a_ndim == 1 else axis
-
     return _fft(
         a,
+        desc_shape,
         norm=norm,
         out=out,
         forward=forward,
@@ -499,14 +570,18 @@ def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
         in_place=in_place and c2c,
         c2c=c2c,
         axes=axis,
+        batch_fft=a_ndim != 1,
     )
 
 
-def dpnp_fftn(a, forward, s=None, axes=None, norm=None, out=None):
+def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
     """Calculates N-D FFT of the input array along axes"""
 
     _check_norm(norm)
     if isinstance(axes, (list, tuple)) and len(axes) == 0:
+        if real:
+            raise IndexError("Empty axes.")
+
         return a
 
     if a.ndim == 0:
@@ -517,18 +592,40 @@ def dpnp_fftn(a, forward, s=None, axes=None, norm=None, out=None):
 
         return a
 
+    c2c = not real  # complex-to-complex FFT
+    r2c = real and forward  # real-to-complex FFT
+    c2r = real and not forward  # complex-to-real FFT
+    if r2c and dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        raise TypeError("Input array must be real")
+
     _validate_s_axes(a, s, axes)
-    s, axes = _cook_nd_args(a, s, axes)
+    s, axes = _cook_nd_args(a, s, axes, c2r)
     a = _truncate_or_pad(a, s, axes)
-    # TODO: None, False, False are place holder for future development of
-    # rfft2, irfft2, rfftn, irfftn
-    _validate_out_keyword(a, out, None, False, False)
-    # TODO: True is place holder for future development of
-    # rfft2, irfft2, rfftn, irfftn
-    a, in_place = _copy_array(a, True)
+    _validate_out_keyword(a, out, axes[-1], c2r, r2c)
+    a, in_place = _copy_array(a, c2c or c2r)
 
     if a.size == 0:
         return dpnp.get_result_array(a, out=out, casting="same_kind")
+
+    len_axes = len(axes)
+
+    if len_axes == 1:
+        return _fft(a, norm, out, forward, in_place and c2c, c2c, axes[0], a.ndim != 1)
+        # return dpnp_fft(a, forward, real, n=s, axis=axes[0], norm=norm, out=out)
+    else:
+        if r2c:
+            # a = dpnp_fft(a, forward, real, n=s[-1], axis=axes[-1], norm=norm, out=out)
+            a = _fft(a, norm, out, forward, False, False, axes[-1], a.ndim != 1)
+            return call_complex(a, norm, out, forward, False, True, axes[:-1], a.ndim != len_axes-1)
+        elif c2r:
+            a = call_complex(a, norm, out, forward, False, True, axes[:-1], a.ndim != len_axes-1)
+            # return dpnp_fft(a, forward, real, n=s[-1], axis=axes[-1], norm=norm, out=out)
+            return _fft(a, norm, out, forward, False, False, axes[-1], a.ndim != 1)
+        else:  # c2c
+            return call_complex(a, norm, out, forward, in_place, c2c, axes, a.ndim != len_axes-1)
+
+
+def call_complex(a, norm, out, forward, in_place, c2c, axes, batch_fft):
 
     len_axes = len(axes)
     # OneMKL supports up to 3-dimensional FFT on GPU
@@ -541,26 +638,23 @@ def dpnp_fftn(a, forward, s=None, axes=None, norm=None, out=None):
                 norm=norm,
                 out=out,
                 forward=forward,
+                # TODO: in-place FFT is only implemented for c2c, see SAT-7154
                 in_place=in_place,
-                # TODO: c2c=True is place holder for future development of
-                # rfft2, irfft2, rfftn, irfftn
-                c2c=True,
+                c2c=c2c,
                 axes=chunk,
             )
         return a
-
-    if a.ndim == len_axes:
-        # non-batch FFT
-        axes = None
 
     return _fft(
         a,
         norm=norm,
         out=out,
         forward=forward,
+        # TODO: in-place FFT is only implemented for c2c, see SAT-7154
         in_place=in_place,
-        # TODO: c2c=True is place holder for future development of
-        # rfft2, irfft2, rfftn, irfftn
-        c2c=True,
+        c2c=c2c,
         axes=axes,
+        batch_fft=batch_fft,
     )
+
+

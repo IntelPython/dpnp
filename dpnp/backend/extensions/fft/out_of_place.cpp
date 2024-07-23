@@ -94,7 +94,7 @@ std::pair<sycl::event, sycl::event>
         for (int i = 0; i < in_nd - 1; ++i) {
             if (in_shape[i] != out_shape[i]) {
                 throw py::value_error("The shape of the input and output "
-                                      "arrays must be the same.");
+                                      "arrays does not match.");
             }
             in_size *= in_shape[i];
         }
@@ -114,12 +114,16 @@ std::pair<sycl::event, sycl::event>
         // have the same size as output before calling this function
         N = m;
         if (n != N) {
-            throw py::value_error("The shape of the input array must be "
-                                  "the same as the shape of the output array.");
+        //    throw py::value_error("The shape of the input array must be "
+        //                          "the same as the shape of the output array.");
         }
     }
 
     const std::size_t n_elems = in_size * N;
+    //std::cout << "n_elems=" << n_elems << std::endl;
+    const py::ssize_t x_size = out.get_size();
+    const std::int64_t out_size = x_size;
+    //std::cout << "out_size=" << out_size << std::endl;
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(out);
     dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(out, n_elems);
 
