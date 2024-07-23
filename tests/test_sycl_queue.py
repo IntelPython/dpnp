@@ -743,8 +743,7 @@ def test_2in_1out(func, data1, data2, device):
         "equal",
         "greater",
         "greater_equal",
-        # TODO: unblock when dpnp.isclose() is updated
-        # "isclose",
+        "isclose",
         "less",
         "less_equal",
         "logical_and",

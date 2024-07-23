@@ -185,9 +185,9 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, equal_nan=False):
     are added together to compare against the absolute difference between `a`
     and `b`.
 
-    If either array contains one or more ``NaNs``, ``False`` is returned.
-    ``Infs`` are treated as equal if they are in the same place and of the same
-    sign in both arrays.
+    ``NaNs`` are treated as equal if they are in the same place and if
+    ``equal_nan=True``. ``Infs`` are treated as equal if they are in the same
+    place and of the same sign in both arrays.
 
     For full documentation refer to :obj:`numpy.allclose`.
 
@@ -206,6 +206,7 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, equal_nan=False):
     equal_nan : bool
         Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will
         be considered equal to ``NaNs`` in `b` in the output array.
+        Default: ``False``.
 
     Returns
     -------
@@ -227,20 +228,19 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, equal_nan=False):
     >>> a = np.array([1e10, 1e-7])
     >>> b = np.array([1.00001e10, 1e-8])
     >>> np.allclose(a, b)
-    array([False])
+    array(False)
 
     >>> a = np.array([1.0, np.nan])
     >>> b = np.array([1.0, np.nan])
     >>> np.allclose(a, b)
-    array([False])
+    array(False)
     >>> np.allclose(a, b, equal_nan=True)
-    array([ True])
-
+    array(True)
 
     >>> a = np.array([1.0, np.inf])
     >>> b = np.array([1.0, np.inf])
     >>> np.allclose(a, b)
-    array([ True])
+    array(True)
 
     """
 
@@ -551,6 +551,11 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
     Returns a boolean array where two arrays are element-wise equal within
     a tolerance.
 
+    The tolerance values are positive, typically very small numbers. The
+    relative difference (`rtol` * abs(`b`)) and the absolute difference `atol`
+    are added together to compare against the absolute difference between `a`
+    and `b`.
+
     For full documentation refer to :obj:`numpy.isclose`.
 
     Parameters
@@ -568,6 +573,7 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
     equal_nan : bool
         Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will
         be considered equal to ``NaNs`` in `b` in the output array.
+        Default: ``False``.
 
     Returns
     -------
@@ -584,7 +590,7 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
     --------
     >>> import dpnp as np
     >>> a = np.array([1e10, 1e-7])
-    >>> b = np.array([1.00001e10, 1e-8)
+    >>> b = np.array([1.00001e10, 1e-8])
     >>> np.isclose(a, b)
     array([ True, False])
 
@@ -608,7 +614,7 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
     >>> a = np.array([0.0, 0.0])
     >>> b = np.array([1e-8, 1e-7])
     >>> np.isclose(a, b)
-    array([True, False])
+    array([ True, False])
     >>> b = np.array([1e-100, 1e-7])
     >>> np.isclose(a, b, atol=0.0)
     array([False, False])
@@ -618,7 +624,7 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
     >>> np.isclose(a, b)
     array([ True,  True])
     >>> b = np.array([1e-20, 0.999999e-10])
-    >>> np.isclose(a, b atol=0.0)
+    >>> np.isclose(a, b, atol=0.0)
     array([False,  True])
 
     """
@@ -628,22 +634,22 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
         rtol, atol, scalar_type=True, all_scalars=True
     )
 
+    # make sure b is an inexact type to avoid bad behavior on abs(MIN_INT)
     if dpnp.isscalar(b):
-        dt = dpnp.result_type(
-            b, dpnp.default_float_type(sycl_queue=a.sycl_queue)
-        )
+        dt = dpnp.result_type(a, b, 1.0)
         b = dpnp.asarray(
             b, dtype=dt, sycl_queue=a.sycl_queue, usm_type=a.usm_type
         )
-    elif b.dtype.kind == "i":
-        dt = dpnp.result_type(
-            b, dpnp.default_float_type(sycl_queue=b.sycl_queue)
-        )
-        b = dpnp.asarray(b, dtype=dt)
+    elif dpnp.issubdtype(b, dpnp.integer):
+        dt = dpnp.result_type(b, 1.0)
+        b = dpnp.astype(b, dtype=dt)
 
-    result = less_equal(dpnp.abs(a - b), atol + rtol * dpnp.abs(b)) & isfinite(
-        b
-    ) | (a == b)
+    _b = dpnp.abs(b)
+    _b *= rtol
+    _b += atol
+    result = less_equal(dpnp.abs(a - b), _b)
+    result &= isfinite(b)
+    result |= a == b
 
     if equal_nan:
         result |= isnan(a) & isnan(b)
