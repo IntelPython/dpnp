@@ -29,10 +29,9 @@
 #include <pybind11/pybind11.h>
 
 // dpctl tensor headers
-#include "utils/memory_overlap.hpp"
-#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
+#include "evd_common_utils.hpp"
 #include "types_matrix.hpp"
 
 namespace dpnp::extensions::lapack::evd
@@ -61,25 +60,18 @@ std::pair<sycl::event, sycl::event>
                    const dispatchT &evd_batch_dispatch_table)
 {
     const int eig_vecs_nd = eig_vecs.get_ndim();
-    const int eig_vals_nd = eig_vals.get_ndim();
-
-    if (eig_vecs_nd != 3) {
-        throw py::value_error("Unexpected ndim=" + std::to_string(eig_vecs_nd) +
-                              " of an output array with eigenvectors");
-    }
-    else if (eig_vals_nd != 2) {
-        throw py::value_error("Unexpected ndim=" + std::to_string(eig_vals_nd) +
-                              " of an output array with eigenvalues");
-    }
 
     const py::ssize_t *eig_vecs_shape = eig_vecs.get_shape_raw();
     const py::ssize_t *eig_vals_shape = eig_vals.get_shape_raw();
 
-    if (eig_vecs_shape[0] != eig_vecs_shape[1]) {
-        throw py::value_error("The batch shape of 'eig_vecs' must be square.");
-    }
-    else if (eig_vecs_shape[2] != eig_vals_shape[0] ||
-             eig_vecs_shape[0] != eig_vals_shape[1])
+    const int expected_eig_vecs_nd = 3;
+    const int expected_eig_vals_nd = 2;
+
+    common_evd_checks(exec_q, eig_vecs, eig_vals, eig_vecs_shape,
+                      expected_eig_vecs_nd, expected_eig_vals_nd);
+
+    if (eig_vecs_shape[2] != eig_vals_shape[0] ||
+        eig_vecs_shape[0] != eig_vals_shape[1])
     {
         throw py::value_error(
             "The shape of 'eig_vals' must be (batch_size, n), "
@@ -97,33 +89,6 @@ std::pair<sycl::event, sycl::event>
     if (src_nelems == 0) {
         // nothing to do
         return std::make_pair(sycl::event(), sycl::event());
-    }
-
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(eig_vecs);
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(eig_vals);
-
-    // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(exec_q, {eig_vecs, eig_vals})) {
-        throw py::value_error(
-            "Execution queue is not compatible with allocation queues");
-    }
-
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(eig_vecs, eig_vals)) {
-        throw py::value_error("Arrays with eigenvectors and eigenvalues are "
-                              "overlapping segments of memory");
-    }
-
-    const bool is_eig_vecs_f_contig = eig_vecs.is_f_contiguous();
-    const bool is_eig_vals_c_contig = eig_vals.is_c_contiguous();
-    if (!is_eig_vecs_f_contig) {
-        throw py::value_error(
-            "An array with input matrix / output eigenvectors "
-            "must be F-contiguous");
-    }
-    else if (!is_eig_vals_c_contig) {
-        throw py::value_error(
-            "An array with output eigenvalues must be C-contiguous");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
