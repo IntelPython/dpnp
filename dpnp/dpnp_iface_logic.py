@@ -648,10 +648,15 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
         dt = dpnp.result_type(b, 1.0)
         b = dpnp.astype(b, dtype=dt)
 
+    # Firstly handle finite values:
+    # result = absolute(a - b) <= atol + rtol * absolute(b)
     _b = dpnp.abs(b)
     _b *= rtol
     _b += atol
     result = less_equal(dpnp.abs(a - b), _b)
+
+    # Handle "Inf" values: they are treated as equal if they are in the same place
+    # and of the same sign in both arrays
     result &= isfinite(b)
     result |= a == b
 
