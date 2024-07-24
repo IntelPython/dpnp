@@ -42,7 +42,6 @@ typedef sycl::event (*evd_impl_fn_ptr_t)(sycl::queue &,
                                          const std::int64_t,
                                          char *,
                                          char *,
-                                         std::vector<sycl::event> &,
                                          const std::vector<sycl::event> &);
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
@@ -106,14 +105,13 @@ std::pair<sycl::event, sycl::event>
     const oneapi::mkl::uplo uplo_val =
         static_cast<oneapi::mkl::uplo>(upper_lower);
 
-    std::vector<sycl::event> host_task_events;
     sycl::event evd_ev = evd_fn(exec_q, jobz_val, uplo_val, n, eig_vecs_data,
-                                eig_vals_data, host_task_events, depends);
+                                eig_vals_data, depends);
 
-    sycl::event args_ev = dpctl::utils::keep_args_alive(
-        exec_q, {eig_vecs, eig_vals}, host_task_events);
+    sycl::event ht_ev =
+        dpctl::utils::keep_args_alive(exec_q, {eig_vecs, eig_vals}, {evd_ev});
 
-    return std::make_pair(args_ev, evd_ev);
+    return std::make_pair(ht_ev, evd_ev);
 }
 
 template <typename dispatchT,

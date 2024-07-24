@@ -43,7 +43,6 @@ static sycl::event heevd_impl(sycl::queue &exec_q,
                               const std::int64_t n,
                               char *in_a,
                               char *out_w,
-                              std::vector<sycl::event> &host_task_events,
                               const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
@@ -110,14 +109,13 @@ static sycl::event heevd_impl(sycl::queue &exec_q,
         throw std::runtime_error(error_msg.str());
     }
 
-    sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
+    sycl::event ht_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(heevd_event);
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad]() { sycl::free(scratchpad, ctx); });
     });
-    host_task_events.push_back(clean_up_event);
 
-    return heevd_event;
+    return ht_ev;
 }
 
 template <typename fnT, typename T, typename RealT>
