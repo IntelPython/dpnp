@@ -23,27 +23,33 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
 
-#include "fabs.hpp"
-#include "fmax.hpp"
-#include "fmin.hpp"
-#include "fmod.hpp"
-#include "radians.hpp"
+#include <sycl/sycl.hpp>
 
-namespace py = pybind11;
-
-namespace dpnp::extensions::ufunc
+namespace dpnp::kernels::radians
 {
-/**
- * @brief Add elementwise functions to Python module
- */
-void init_elementwise_functions(py::module_ m)
+template <typename argT, typename resT>
+struct RadiansFunctor
 {
-    init_fabs(m);
-    init_fmax(m);
-    init_fmin(m);
-    init_fmod(m);
-    init_radians(m);
-}
-} // namespace dpnp::extensions::ufunc
+    // is function constant for given argT
+    using is_constant = typename std::false_type;
+    // constant value, if constant
+    // constexpr resT constant_value = resT{};
+    // is function defined for sycl::vec
+    using supports_vec = typename std::true_type;
+    // do both argT and resT support sugroup store/load operation
+    using supports_sg_loadstore = typename std::true_type;
+
+    resT operator()(const argT &x) const
+    {
+        return sycl::radians(x);
+    }
+
+    template <int vec_sz>
+    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &x) const
+    {
+        return sycl::radians(x);
+    }
+};
+} // namespace dpnp::kernels::radians

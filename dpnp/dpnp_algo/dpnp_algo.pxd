@@ -44,7 +44,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MEDIAN_EXT
         DPNP_FN_MODF_EXT
         DPNP_FN_PARTITION_EXT
-        DPNP_FN_RADIANS_EXT
         DPNP_FN_RNG_BETA_EXT
         DPNP_FN_RNG_BINOMIAL_EXT
         DPNP_FN_RNG_CHISQUARE_EXT
@@ -172,4 +171,3 @@ cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input
 Trigonometric functions
 """
 cpdef dpnp_descriptor dpnp_degrees(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_radians(dpnp_descriptor array1)
