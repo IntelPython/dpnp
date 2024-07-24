@@ -53,13 +53,13 @@ static sycl::event heevd_batch_impl(sycl::queue &exec_q,
     T *a = reinterpret_cast<T *>(in_a);
     RealT *w = reinterpret_cast<RealT *>(out_w);
 
-    std::int64_t a_size = n * n;
-    std::int64_t w_size = n;
+    const std::int64_t a_size = n * n;
+    const std::int64_t w_size = n;
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
 
     // Get the number of independent linear streams
-    std::int64_t n_linear_streams =
+    const std::int64_t n_linear_streams =
         (batch_size > 16) ? 4 : ((batch_size > 4 ? 2 : 1));
 
     const std::int64_t scratchpad_size =
@@ -68,12 +68,12 @@ static sycl::event heevd_batch_impl(sycl::queue &exec_q,
 
     // Get padding size to ensure memory allocations are aligned to 256 bytes
     // for better performance
-    std::int64_t padding = 256 / sizeof(T);
+    const std::int64_t padding = 256 / sizeof(T);
 
     if (scratchpad_size > 0) {
         // Calculate the total scratchpad memory size needed for all linear
         // streams with proper alignment
-        size_t alloc_scratch_size =
+        const size_t alloc_scratch_size =
             helper::round_up_mult(n_linear_streams * scratchpad_size, padding);
 
         // Allocate memory for the total scratchpad

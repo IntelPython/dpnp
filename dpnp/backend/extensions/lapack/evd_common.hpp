@@ -108,8 +108,8 @@ std::pair<sycl::event, sycl::event>
                               "overlapping segments of memory");
     }
 
-    bool is_eig_vecs_f_contig = eig_vecs.is_f_contiguous();
-    bool is_eig_vals_c_contig = eig_vals.is_c_contiguous();
+    const bool is_eig_vecs_f_contig = eig_vecs.is_f_contiguous();
+    const bool is_eig_vals_c_contig = eig_vals.is_c_contiguous();
     if (!is_eig_vecs_f_contig) {
         throw py::value_error(
             "An array with input matrix / output eigenvectors "
@@ -121,9 +121,9 @@ std::pair<sycl::event, sycl::event>
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int eig_vecs_type_id =
+    const int eig_vecs_type_id =
         array_types.typenum_to_lookup_id(eig_vecs.get_typenum());
-    int eig_vals_type_id =
+    const int eig_vals_type_id =
         array_types.typenum_to_lookup_id(eig_vals.get_typenum());
 
     evd_impl_fn_ptr_t evd_fn =
