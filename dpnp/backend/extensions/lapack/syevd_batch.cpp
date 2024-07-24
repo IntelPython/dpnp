@@ -78,6 +78,12 @@ static sycl::event syevd_batch_impl(sycl::queue &exec_q,
         if (!scratchpad)
             throw std::runtime_error("Device allocation for scratchpad failed");
     }
+    else {
+        throw std::runtime_error(
+            "Invalid scratchpad size: must be greater than zero."
+            "Calculated scratchpad size: " +
+            std::to_string(scratchpad_size));
+    }
 
     // Computation events to manage dependencies for each linear stream
     std::vector<std::vector<sycl::event>> comp_evs(n_linear_streams, depends);

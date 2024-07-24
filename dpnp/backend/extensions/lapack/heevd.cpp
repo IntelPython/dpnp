@@ -52,8 +52,15 @@ static sycl::event heevd_impl(sycl::queue &exec_q,
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t scratchpad_size =
         mkl_lapack::heevd_scratchpad_size<T>(exec_q, jobz, upper_lower, n, lda);
-    T *scratchpad = nullptr;
 
+    if (scratchpad_size <= 0) {
+        throw std::runtime_error(
+            "Invalid scratchpad size: must be greater than zero."
+            "Calculated scratchpad size: " +
+            std::to_string(scratchpad_size));
+    }
+
+    T *scratchpad = nullptr;
     // Allocate memory for the scratchpad
     scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
     if (!scratchpad)
