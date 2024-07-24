@@ -640,17 +640,17 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
 
     # make sure b is an inexact type to avoid bad behavior on abs(MIN_INT)
     if dpnp.isscalar(b):
-        dt = dpnp.result_type(a, b, 1.0)
+        dt = dpnp.result_type(a, b, 1.0, rtol, atol)
         b = dpnp.asarray(
             b, dtype=dt, sycl_queue=a.sycl_queue, usm_type=a.usm_type
         )
     elif dpnp.issubdtype(b, dpnp.integer):
-        dt = dpnp.result_type(b, 1.0)
+        dt = dpnp.result_type(b, 1.0, rtol, atol)
         b = dpnp.astype(b, dtype=dt)
 
     # Firstly handle finite values:
     # result = absolute(a - b) <= atol + rtol * absolute(b)
-    _b = dpnp.abs(b)
+    _b = dpnp.abs(b).astype(dpnp.result_type(b, rtol, atol), copy=False)
     _b *= rtol
     _b += atol
     result = less_equal(dpnp.abs(a - b), _b)
