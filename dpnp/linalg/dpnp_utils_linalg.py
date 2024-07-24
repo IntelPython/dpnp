@@ -118,6 +118,7 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
     a_orig_order = "C" if a.flags.c_contiguous else "F"
     # get 3d input array by reshape
     a = dpnp.reshape(a, (-1, a_orig_shape[-2], a_orig_shape[-1]))
+    a_new_shape = a.shape
 
     _manager = dpu.SequentialOrderManager[a_sycl_queue]
     dep_evs = _manager.submitted_events
@@ -136,12 +137,9 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
     )
     _manager.add_event_pair(ht_ev, a_copy_ev)
 
-    # allocate a memory for dpnp array of eigenvalues
-    w = dpnp.empty_like(a, shape=a_orig_shape[:-1], dtype=w_type)
-    w_orig_shape = w.shape
-
-    # get 2d dpnp array with eigenvalues by reshape
-    w = w.reshape(-1, w_orig_shape[-1])
+    w_orig_shape = a_orig_shape[:-1]
+    # allocate a memory for 2d dpnp array of eigenvalues
+    w = dpnp.empty_like(a, shape=a_new_shape[:-1], dtype=w_type)
 
     ht_ev, evd_batch_ev = getattr(li, lapack_func)(
         a_sycl_queue,
