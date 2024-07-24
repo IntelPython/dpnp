@@ -54,13 +54,16 @@ static sycl::event syevd_impl(sycl::queue &exec_q,
         mkl_lapack::syevd_scratchpad_size<T>(exec_q, jobz, upper_lower, n, lda);
     T *scratchpad = nullptr;
 
+    // Allocate memory for the scratchpad
+    scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
+    if (!scratchpad)
+        throw std::runtime_error("Device allocation for scratchpad failed");
+
     std::stringstream error_msg;
     std::int64_t info = 0;
 
     sycl::event syevd_event;
     try {
-        scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
-
         syevd_event = mkl_lapack::syevd(
             exec_q,
             jobz, // 'jobz == job::vec' means eigenvalues and eigenvectors are
