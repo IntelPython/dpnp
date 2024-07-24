@@ -556,6 +556,10 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
     are added together to compare against the absolute difference between `a`
     and `b`.
 
+    ``NaNs`` are treated as equal if they are in the same place and if
+    ``equal_nan=True``. ``Infs`` are treated as equal if they are in the same
+    place and of the same sign in both arrays.
+
     For full documentation refer to :obj:`numpy.isclose`.
 
     Parameters
