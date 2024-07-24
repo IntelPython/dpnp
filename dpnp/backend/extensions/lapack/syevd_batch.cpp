@@ -26,6 +26,9 @@
 #include "syevd_batch.hpp"
 #include "common_helpers.hpp"
 
+// dpctl tensor headers
+#include "utils/type_utils.hpp"
+
 namespace dpnp::extensions::lapack
 {
 namespace mkl_lapack = oneapi::mkl::lapack;

@@ -32,7 +32,6 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
-#include "utils/type_utils.hpp"
 
 #include "types_matrix.hpp"
 
