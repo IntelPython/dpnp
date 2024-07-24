@@ -23,8 +23,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include "syevd_batch.hpp"
+#include <pybind11/stl.h>
+
 #include "common_helpers.hpp"
+#include "evd_batch_common.hpp"
+#include "syevd_batch.hpp"
 
 // dpctl tensor headers
 #include "utils/type_utils.hpp"

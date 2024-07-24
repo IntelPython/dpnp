@@ -23,6 +23,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <pybind11/stl.h>
+
+#include "evd_common.hpp"
 #include "syevd.hpp"
 
 // dpctl tensor headers
