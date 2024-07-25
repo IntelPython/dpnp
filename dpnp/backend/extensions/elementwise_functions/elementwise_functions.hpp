@@ -546,7 +546,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     const sycl::event &copy_shape_ev = std::get<2>(ptr_sz_event_triple_);
 
     if (shape_strides == nullptr) {
-        throw std::runtime_error("Unabled to allocate device memory");
+        throw std::runtime_error("Unable to allocate device memory");
     }
 
     sycl::event strided_fn_ev = strided_fn(
@@ -798,7 +798,7 @@ std::pair<sycl::event, sycl::event>
     const sycl::event &copy_shape_ev = std::get<2>(ptr_sz_event_triple_);
 
     if (shape_strides == nullptr) {
-        throw std::runtime_error("Unabled to allocate device memory");
+        throw std::runtime_error("Unable to allocate device memory");
     }
 
     sycl::event strided_fn_ev =
