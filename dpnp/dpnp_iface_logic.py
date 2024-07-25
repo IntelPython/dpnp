@@ -650,7 +650,8 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
 
     # Firstly handle finite values:
     # result = absolute(a - b) <= atol + rtol * absolute(b)
-    _b = dpnp.abs(b).astype(dpnp.result_type(b, rtol, atol), copy=False)
+    dt = dpnp.result_type(b, rtol, atol)
+    _b = dpnp.abs(b, dtype=dt)
     _b *= rtol
     _b += atol
     result = less_equal(dpnp.abs(a - b), _b)
