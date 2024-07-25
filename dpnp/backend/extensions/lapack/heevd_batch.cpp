@@ -27,7 +27,6 @@
 
 #include "common_helpers.hpp"
 #include "evd_batch_common.hpp"
-#include "evd_common.hpp"
 #include "heevd_batch.hpp"
 
 // dpctl tensor headers
