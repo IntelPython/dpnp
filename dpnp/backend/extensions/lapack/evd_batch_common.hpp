@@ -37,8 +37,6 @@
 
 namespace dpnp::extensions::lapack::evd
 {
-using dpnp::extensions::lapack::helper::check_zeros_shape;
-
 typedef sycl::event (*evd_batch_impl_fn_ptr_t)(
     sycl::queue &,
     const oneapi::mkl::job,
@@ -83,7 +81,7 @@ std::pair<sycl::event, sycl::event>
             " and n = " + std::to_string(eig_vecs_shape[1]));
     }
 
-    if (check_zeros_shape(eig_vecs_nd, eig_vecs_shape)) {
+    if (helper::check_zeros_shape(eig_vecs_nd, eig_vecs_shape)) {
         // nothing to do
         return std::make_pair(sycl::event(), sycl::event());
     }
@@ -119,5 +117,35 @@ std::pair<sycl::event, sycl::event>
         exec_q, {eig_vecs, eig_vals}, {evd_batch_ev});
 
     return std::make_pair(ht_ev, evd_batch_ev);
+}
+
+template <typename T>
+T *alloc_scratchpad(std::int64_t scratchpad_size,
+                    std::int64_t n_linear_streams,
+                    sycl::queue &exec_q)
+{
+    // Get padding size to ensure memory allocations are aligned to 256 bytes
+    // for better performance
+    const std::int64_t padding = 256 / sizeof(T);
+
+    if (scratchpad_size <= 0) {
+        throw std::runtime_error(
+            "Invalid scratchpad size: must be greater than zero."
+            " Calculated scratchpad size: " +
+            std::to_string(scratchpad_size));
+    }
+
+    // Calculate the total scratchpad memory size needed for all linear
+    // streams with proper alignment
+    const size_t alloc_scratch_size =
+        helper::round_up_mult(n_linear_streams * scratchpad_size, padding);
+
+    // Allocate memory for the total scratchpad
+    T *scratchpad = sycl::malloc_device<T>(alloc_scratch_size, exec_q);
+    if (!scratchpad) {
+        throw std::runtime_error("Device allocation for scratchpad failed");
+    }
+
+    return scratchpad;
 }
 } // namespace dpnp::extensions::lapack::evd

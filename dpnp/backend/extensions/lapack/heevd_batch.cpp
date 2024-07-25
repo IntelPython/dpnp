@@ -64,29 +64,9 @@ static sycl::event heevd_batch_impl(sycl::queue &exec_q,
 
     const std::int64_t scratchpad_size =
         mkl_lapack::heevd_scratchpad_size<T>(exec_q, jobz, upper_lower, n, lda);
-    T *scratchpad = nullptr;
 
-    // Get padding size to ensure memory allocations are aligned to 256 bytes
-    // for better performance
-    const std::int64_t padding = 256 / sizeof(T);
-
-    if (scratchpad_size > 0) {
-        // Calculate the total scratchpad memory size needed for all linear
-        // streams with proper alignment
-        const size_t alloc_scratch_size =
-            helper::round_up_mult(n_linear_streams * scratchpad_size, padding);
-
-        // Allocate memory for the total scratchpad
-        scratchpad = sycl::malloc_device<T>(alloc_scratch_size, exec_q);
-        if (!scratchpad)
-            throw std::runtime_error("Device allocation for scratchpad failed");
-    }
-    else {
-        throw std::runtime_error(
-            "Invalid scratchpad size: must be greater than zero."
-            "Calculated scratchpad size: " +
-            std::to_string(scratchpad_size));
-    }
+    T *scratchpad =
+        evd::alloc_scratchpad<T>(scratchpad_size, n_linear_streams, exec_q);
 
     // Computation events to manage dependencies for each linear stream
     std::vector<std::vector<sycl::event>> comp_evs(n_linear_streams, depends);
