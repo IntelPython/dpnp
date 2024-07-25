@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.16.0dev0+82.gf2779442b0 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.16.0dev0+86.g5e8d3ba6b3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=0dc0c065"></script>
+        <script src="../../_static/documentation_options.js?v=1176fe68"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+82.gf2779442b0
+                0.16.0dev0+86.g5e8d3ba6b3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1154,20 +1154,20 @@
             <span class="p">)</span>
 
     <span class="c1"># Move the axes to sum over, to the end of &quot;a&quot;</span>
-    <span class="n">notin</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a_ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">axes_a</span><span class="p">)</span>
-    <span class="n">newaxes_a</span> <span class="o">=</span> <span class="n">notin</span> <span class="o">+</span> <span class="n">axes_a</span>
-    <span class="n">n1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">a_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">notin</span><span class="p">]))</span>
+    <span class="n">not_in</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a_ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">axes_a</span><span class="p">)</span>
+    <span class="n">newaxes_a</span> <span class="o">=</span> <span class="n">not_in</span> <span class="o">+</span> <span class="n">axes_a</span>
+    <span class="n">n1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">a_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">not_in</span><span class="p">]))</span>
     <span class="n">n2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">a_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes_a</span><span class="p">]))</span>
     <span class="n">newshape_a</span> <span class="o">=</span> <span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
-    <span class="n">olda</span> <span class="o">=</span> <span class="p">[</span><span class="n">a_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">notin</span><span class="p">]</span>
+    <span class="n">olda</span> <span class="o">=</span> <span class="p">[</span><span class="n">a_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">not_in</span><span class="p">]</span>
 
     <span class="c1"># Move the axes to sum over, to the front of &quot;b&quot;</span>
-    <span class="n">notin</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">b_ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">axes_b</span><span class="p">)</span>
-    <span class="n">newaxes_b</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">axes_b</span> <span class="o">+</span> <span class="n">notin</span><span class="p">)</span>
+    <span class="n">not_in</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">b_ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">axes_b</span><span class="p">)</span>
+    <span class="n">newaxes_b</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">axes_b</span> <span class="o">+</span> <span class="n">not_in</span><span class="p">)</span>
     <span class="n">n1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">b_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes_b</span><span class="p">]))</span>
-    <span class="n">n2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">b_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">notin</span><span class="p">]))</span>
+    <span class="n">n2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">b_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">not_in</span><span class="p">]))</span>
     <span class="n">newshape_b</span> <span class="o">=</span> <span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
-    <span class="n">oldb</span> <span class="o">=</span> <span class="p">[</span><span class="n">b_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">notin</span><span class="p">]</span>
+    <span class="n">oldb</span> <span class="o">=</span> <span class="p">[</span><span class="n">b_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">not_in</span><span class="p">]</span>
 
     <span class="n">at</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">newaxes_a</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">newshape_a</span><span class="p">)</span>
     <span class="n">bt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">newaxes_b</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">newshape_b</span><span class="p">)</span>
