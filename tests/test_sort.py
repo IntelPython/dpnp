@@ -1,5 +1,6 @@
 import numpy
 import pytest
+from dpctl.tensor._numpy_helper import AxisError
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
@@ -73,7 +74,7 @@ class TestArgsort:
         dp_array = dpnp.array(np_array)
 
         # with default axis=-1
-        with pytest.raises(numpy.AxisError):
+        with pytest.raises(AxisError):
             dpnp.argsort(dp_array)
 
         # with axis = None
@@ -322,7 +323,7 @@ class TestSort:
         dp_array = dpnp.array(np_array)
 
         # with default axis=-1
-        with pytest.raises(numpy.AxisError):
+        with pytest.raises(AxisError):
             dpnp.sort(dp_array)
 
         # with axis = None

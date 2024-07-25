@@ -39,7 +39,7 @@ it contains:
 
 
 import numpy
-from numpy.core.numeric import normalize_axis_tuple
+from dpctl.tensor._numpy_helper import normalize_axis_tuple
 
 import dpnp
 

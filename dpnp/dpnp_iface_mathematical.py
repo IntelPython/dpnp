@@ -48,11 +48,11 @@ import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.tensor._type_utils as dtu
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._type_utils import _acceptance_fn_divide
-from numpy.core.numeric import (
+from dpctl.tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
 )
+from dpctl.tensor._type_utils import _acceptance_fn_divide
 
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi

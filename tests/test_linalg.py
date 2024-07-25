@@ -4,6 +4,7 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
+from dpctl.tensor._numpy_helper import AxisError
 from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
@@ -1156,7 +1157,7 @@ class TestNorm:
             with pytest.raises(ValueError):
                 inp.linalg.norm(ia, ord=ord, axis=axis)
         elif axis is not None:
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 inp.linalg.norm(ia, ord=ord, axis=axis)
         else:
             result = inp.linalg.norm(ia, ord=ord, axis=axis)

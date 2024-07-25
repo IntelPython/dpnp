@@ -40,7 +40,7 @@ it contains:
 
 import dpctl.tensor as dpt
 import numpy
-from numpy.core.numeric import normalize_axis_index
+from dpctl.tensor._numpy_helper import normalize_axis_index
 
 import dpnp
 
