@@ -1041,20 +1041,20 @@ def tensordot(a, b, axes=2):
             )
 
     # Move the axes to sum over, to the end of "a"
-    notin = tuple(k for k in range(a_ndim) if k not in axes_a)
-    newaxes_a = notin + axes_a
-    n1 = int(numpy.prod([a_shape[ax] for ax in notin]))
+    not_in = tuple(k for k in range(a_ndim) if k not in axes_a)
+    newaxes_a = not_in + axes_a
+    n1 = int(numpy.prod([a_shape[ax] for ax in not_in]))
     n2 = int(numpy.prod([a_shape[ax] for ax in axes_a]))
     newshape_a = (n1, n2)
-    olda = [a_shape[axis] for axis in notin]
+    olda = [a_shape[axis] for axis in not_in]
 
     # Move the axes to sum over, to the front of "b"
-    notin = tuple(k for k in range(b_ndim) if k not in axes_b)
-    newaxes_b = tuple(axes_b + notin)
+    not_in = tuple(k for k in range(b_ndim) if k not in axes_b)
+    newaxes_b = tuple(axes_b + not_in)
     n1 = int(numpy.prod([b_shape[ax] for ax in axes_b]))
-    n2 = int(numpy.prod([b_shape[ax] for ax in notin]))
+    n2 = int(numpy.prod([b_shape[ax] for ax in not_in]))
     newshape_b = (n1, n2)
-    oldb = [b_shape[axis] for axis in notin]
+    oldb = [b_shape[axis] for axis in not_in]
 
     at = dpnp.transpose(a, newaxes_a).reshape(newshape_a)
     bt = dpnp.transpose(b, newaxes_b).reshape(newshape_b)
