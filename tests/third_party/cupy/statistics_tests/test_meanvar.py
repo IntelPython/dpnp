@@ -1,5 +1,6 @@
 import numpy
 import pytest
+from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
 from tests.helper import has_support_aspect16, has_support_aspect64
@@ -56,16 +57,16 @@ class TestMedian:
     def test_median_invalid_axis(self):
         for xp in [numpy, cupy]:
             a = testing.shaped_random((3, 4, 5), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 return xp.median(a, -a.ndim - 1, keepdims=False)
 
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 return xp.median(a, a.ndim, keepdims=False)
 
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 return xp.median(a, (-a.ndim - 1, 1), keepdims=False)
 
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 return xp.median(
                     a,
                     (

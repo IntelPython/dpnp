@@ -2,6 +2,10 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
+from dpctl.tensor._numpy_helper import (
+    AxisError,
+    normalize_axis_index,
+)
 from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
@@ -244,9 +248,7 @@ class TestCumLogSumExp:
 
         if axis != None:
             if include_initial:
-                norm_axis = numpy.core.numeric.normalize_axis_index(
-                    axis, a.ndim, "axis"
-                )
+                norm_axis = normalize_axis_index(axis, a.ndim, "axis")
                 out_sh = (
                     a.shape[:norm_axis]
                     + (a.shape[norm_axis] + 1,)
@@ -500,7 +502,7 @@ class TestDiff:
     @pytest.mark.parametrize("axis", [-4, 3])
     def test_axis_error(self, xp, axis):
         a = xp.ones((10, 20, 30))
-        assert_raises(numpy.AxisError, xp.diff, a, axis=axis)
+        assert_raises(AxisError, xp.diff, a, axis=axis)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_ndim_error(self, xp):
@@ -609,8 +611,8 @@ class TestDiff:
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_prepend_append_axis_error(self, xp):
         a = xp.arange(4).reshape(2, 2)
-        assert_raises(numpy.AxisError, xp.diff, a, axis=3, prepend=0)
-        assert_raises(numpy.AxisError, xp.diff, a, axis=3, append=0)
+        assert_raises(AxisError, xp.diff, a, axis=3, prepend=0)
+        assert_raises(AxisError, xp.diff, a, axis=3, append=0)
 
 
 class TestGradient:
@@ -861,7 +863,7 @@ class TestGradient:
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_wrong_axis(self, xp):
         x = xp.array([[1, 1], [3, 4]])
-        assert_raises(numpy.AxisError, xp.gradient, x, axis=3)
+        assert_raises(AxisError, xp.gradient, x, axis=3)
 
     @pytest.mark.parametrize(
         "size, edge_order",
@@ -2407,6 +2409,7 @@ class TestLogSumExp:
 
         assert_allclose(res, exp, rtol=1e-06)
 
+    @testing.with_requires("numpy>=1.26.4")
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
     @pytest.mark.parametrize(
         "arr_dt", get_all_dtypes(no_none=True, no_complex=True)
