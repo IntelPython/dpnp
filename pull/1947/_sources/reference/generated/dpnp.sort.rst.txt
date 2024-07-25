@@ -1,6 +1,0 @@
-﻿dpnp.sort
-=========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: sort
