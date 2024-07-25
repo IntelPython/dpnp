@@ -2407,6 +2407,7 @@ class TestLogSumExp:
 
         assert_allclose(res, exp, rtol=1e-06)
 
+    @testing.with_requires("numpy>=1.26.4")
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
     @pytest.mark.parametrize(
         "arr_dt", get_all_dtypes(no_none=True, no_complex=True)
