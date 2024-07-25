@@ -26,10 +26,13 @@
 #pragma once
 #include <complex>
 #include <cstring>
+#include <pybind11/pybind11.h>
 #include <stdexcept>
 
 namespace dpnp::extensions::lapack::helper
 {
+namespace py = pybind11;
+
 template <typename T>
 struct value_type_of
 {
@@ -48,5 +51,16 @@ intT round_up_mult(intT value, intT mult)
 {
     intT q = (value + (mult - 1)) / mult;
     return q * mult;
+}
+
+// Checks if the shape array has any non-zero dimension.
+inline bool check_zeros_shape(int ndim, const py::ssize_t *shape)
+{
+    size_t src_nelems(1);
+
+    for (int i = 0; i < ndim; ++i) {
+        src_nelems *= static_cast<size_t>(shape[i]);
+    }
+    return src_nelems == 0;
 }
 } // namespace dpnp::extensions::lapack::helper

@@ -31,11 +31,14 @@
 // dpctl tensor headers
 #include "utils/type_dispatch.hpp"
 
+#include "common_helpers.hpp"
 #include "evd_common_utils.hpp"
 #include "types_matrix.hpp"
 
 namespace dpnp::extensions::lapack::evd
 {
+using dpnp::extensions::lapack::helper::check_zeros_shape;
+
 typedef sycl::event (*evd_impl_fn_ptr_t)(sycl::queue &,
                                          const oneapi::mkl::job,
                                          const oneapi::mkl::uplo,
@@ -73,13 +76,7 @@ std::pair<sycl::event, sycl::event>
             "Eigenvectors and eigenvalues have different shapes");
     }
 
-    size_t src_nelems(1);
-
-    for (int i = 0; i < eig_vecs_nd; ++i) {
-        src_nelems *= static_cast<size_t>(eig_vecs_shape[i]);
-    }
-
-    if (src_nelems == 0) {
+    if (check_zeros_shape(eig_vecs_nd, eig_vecs_shape)) {
         // nothing to do
         return std::make_pair(sycl::event(), sycl::event());
     }
