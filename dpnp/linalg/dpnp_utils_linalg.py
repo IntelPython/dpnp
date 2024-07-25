@@ -120,13 +120,13 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
     a = dpnp.reshape(a, (-1, a_orig_shape[-2], a_orig_shape[-1]))
     a_new_shape = a.shape
 
-    _manager = dpu.SequentialOrderManager[a_sycl_queue]
-    dep_evs = _manager.submitted_events
-
     # Reorder the elements by moving the last two axes of `a` to the front
     # to match fortran-like array order which is assumed by syevd/heevd.
     a = dpnp.moveaxis(a, (-2, -1), (0, 1))
     a_usm_arr = dpnp.get_usm_ndarray(a)
+
+    _manager = dpu.SequentialOrderManager[a_sycl_queue]
+    dep_evs = _manager.submitted_events
 
     a_copy = dpnp.empty_like(a, dtype=v_type, order="F")
     ht_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(

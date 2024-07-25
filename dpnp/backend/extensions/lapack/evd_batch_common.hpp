@@ -64,8 +64,8 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *eig_vecs_shape = eig_vecs.get_shape_raw();
     const py::ssize_t *eig_vals_shape = eig_vals.get_shape_raw();
 
-    const int expected_eig_vecs_nd = 3;
-    const int expected_eig_vals_nd = 2;
+    constexpr int expected_eig_vecs_nd = 3;
+    constexpr int expected_eig_vals_nd = 2;
 
     common_evd_checks(exec_q, eig_vecs, eig_vals, eig_vecs_shape,
                       expected_eig_vecs_nd, expected_eig_vals_nd);

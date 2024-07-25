@@ -104,10 +104,7 @@ static sycl::event syevd_batch_impl(sycl::queue &exec_q,
 
         std::int64_t stream_id = (batch_id % n_linear_streams);
 
-        T *current_scratch_syevd = nullptr;
-        if (scratchpad != nullptr) {
-            current_scratch_syevd = scratchpad + stream_id * scratchpad_size;
-        }
+        T *current_scratch_syevd = scratchpad + stream_id * scratchpad_size;
 
         // Get the event dependencies for the current stream
         const auto &current_dep = comp_evs[stream_id];
