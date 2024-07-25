@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.swapaxes
+=====================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.swapaxes
