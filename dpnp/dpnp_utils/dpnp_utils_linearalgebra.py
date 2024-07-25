@@ -28,8 +28,8 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
+from dpctl.tensor._numpy_helper import normalize_axis_tuple
 from dpctl.utils import ExecutionPlacementError
-from numpy.core.numeric import normalize_axis_tuple
 
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi

@@ -35,6 +35,7 @@ This module contains different helpers and utilities
 import dpctl
 import dpctl.utils as dpu
 import numpy
+from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp
 import dpnp.config as config
@@ -310,7 +311,7 @@ def map_dtype_to_device(dtype, device):
 cpdef checker_throw_axis_error(function_name, param_name, param, expected):
     err_msg = f"{ERROR_PREFIX} in function {function_name}()"
     err_msg += f" axes '{param_name}' expected `{expected}`, but '{param}' provided"
-    raise numpy.AxisError(err_msg)
+    raise AxisError(err_msg)
 
 
 cpdef checker_throw_index_error(function_name, index, size):

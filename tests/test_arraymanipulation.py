@@ -1,5 +1,6 @@
 import numpy
 import pytest
+from dpctl.tensor._numpy_helper import AxisError
 from numpy.testing import (
     assert_allclose,
     assert_array_equal,
@@ -155,12 +156,8 @@ class TestConcatenate:
         assert_equal(dp_res.asnumpy(), np_res)
 
         for axis in [ndim, -(ndim + 1)]:
-            assert_raises(
-                numpy.AxisError, dpnp.concatenate, (dp_a, dp_a), axis=axis
-            )
-            assert_raises(
-                numpy.AxisError, numpy.concatenate, (np_a, np_a), axis=axis
-            )
+            assert_raises(AxisError, dpnp.concatenate, (dp_a, dp_a), axis=axis)
+            assert_raises(AxisError, numpy.concatenate, (np_a, np_a), axis=axis)
 
     def test_scalar_exceptions(self):
         assert_raises(TypeError, dpnp.concatenate, (0,))
@@ -231,7 +228,7 @@ class TestConcatenate:
         assert_array_equal(dp_res.asnumpy(), np_res)
 
         # numpy doesn't raise an exception here but probably should
-        with pytest.raises(numpy.AxisError):
+        with pytest.raises(AxisError):
             dpnp.concatenate(dp_a, axis=100)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
@@ -662,8 +659,8 @@ class TestStack:
         np_arrays = numpy.array(arrays, dtype=dtype)
         dp_arrays = dpnp.array(arrays, dtype=dtype)
 
-        assert_raises(numpy.AxisError, numpy.stack, np_arrays, axis=axis)
-        assert_raises(numpy.AxisError, dpnp.stack, dp_arrays, axis=axis)
+        assert_raises(AxisError, numpy.stack, np_arrays, axis=axis)
+        assert_raises(AxisError, dpnp.stack, dp_arrays, axis=axis)
 
     @pytest.mark.parametrize("axis", [0, 1, 2, -1, -2, -3])
     @pytest.mark.parametrize(
