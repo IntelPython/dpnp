@@ -123,16 +123,4 @@ std::pair<sycl::event, sycl::event>
 
     return std::make_pair(ht_ev, evd_batch_ev);
 }
-
-template <typename dispatchT,
-          template <typename fnT, typename T, typename RealT>
-          typename factoryT>
-void init_evd_batch_dispatch_table(
-    dispatchT evd_batch_dispatch_table[][dpctl_td_ns::num_types])
-{
-    dpctl_td_ns::DispatchTableBuilder<dispatchT, factoryT,
-                                      dpctl_td_ns::num_types>
-        contig;
-    contig.populate_dispatch_table(evd_batch_dispatch_table);
-}
 } // namespace dpnp::extensions::lapack::evd

@@ -27,6 +27,7 @@
 
 #include "common_helpers.hpp"
 #include "evd_batch_common.hpp"
+#include "evd_common.hpp"
 #include "heevd_batch.hpp"
 
 // dpctl tensor headers
@@ -191,8 +192,8 @@ void init_heevd_batch(py::module_ m)
                                   [dpctl_td_ns::num_types];
 
     {
-        evd::init_evd_batch_dispatch_table<evd_batch_impl_fn_ptr_t,
-                                           HeevdBatchContigFactory>(
+        evd::init_evd_dispatch_table<evd_batch_impl_fn_ptr_t,
+                                     HeevdBatchContigFactory>(
             heevd_batch_dispatch_table);
 
         auto heevd_batch_pyapi =
