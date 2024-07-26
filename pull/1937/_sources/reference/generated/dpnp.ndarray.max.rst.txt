@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.max
-================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.max
