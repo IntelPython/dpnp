@@ -61,10 +61,7 @@ public:
         queue_ptr_ = std::make_unique<sycl::queue>(q);
     }
 
-    descr_type &get_descriptor()
-    {
-        return descr_;
-    }
+    descr_type &get_descriptor() { return descr_; }
 
     const sycl::queue &get_queue() const
     {
@@ -187,32 +184,32 @@ public:
     // config_param::PLACEMENT
     bool get_in_place()
     {
-#if DPNP_TARGET_CUDA
+#if defined(USE_ONEMKL_INTERFACES)
         mkl_dft::config_value placement;
         descr_.get_value(mkl_dft::config_param::PLACEMENT, &placement);
         return (placement == mkl_dft::config_value::INPLACE);
 #else
-        // TODO: replace when MKLD-10506 is implemented
+        // TODO: remove branch when MKLD-10506 is implemented
         DFTI_CONFIG_VALUE placement;
         descr_.get_value(mkl_dft::config_param::PLACEMENT, &placement);
         return (placement == DFTI_CONFIG_VALUE::DFTI_INPLACE);
-#endif
+#endif // USE_ONEMKL_INTERFACES
     }
 
     void set_in_place(const bool &in_place_request)
     {
-#if DPNP_TARGET_CUDA
+#if defined(USE_ONEMKL_INTERFACES)
         descr_.set_value(mkl_dft::config_param::PLACEMENT,
                          (in_place_request)
                              ? mkl_dft::config_value::INPLACE
                              : mkl_dft::config_value::NOT_INPLACE);
 #else
-        // TODO: replace when MKLD-10506 is implemented
+        // TODO: remove branch when MKLD-10506 is implemented
         descr_.set_value(mkl_dft::config_param::PLACEMENT,
                          (in_place_request)
                              ? DFTI_CONFIG_VALUE::DFTI_INPLACE
                              : DFTI_CONFIG_VALUE::DFTI_NOT_INPLACE);
-#endif
+#endif // USE_ONEMKL_INTERFACES
     }
 
     // config_param::PRECISION
@@ -227,16 +224,16 @@ public:
     // config_param::COMMIT_STATUS
     bool is_committed()
     {
-#if DPNP_TARGET_CUDA
+#if defined(USE_ONEMKL_INTERFACES)
         mkl_dft::config_value committed;
         descr_.get_value(mkl_dft::config_param::COMMIT_STATUS, &committed);
         return (committed == mkl_dft::config_value::COMMITTED);
 #else
-        // TODO: replace when MKLD-10506 is implemented
+        // TODO: remove branch when MKLD-10506 is implemented
         DFTI_CONFIG_VALUE committed;
         descr_.get_value(mkl_dft::config_param::COMMIT_STATUS, &committed);
         return (committed == DFTI_CONFIG_VALUE::DFTI_COMMITTED);
-#endif
+#endif // USE_ONEMKL_INTERFACES
     }
 
 private:

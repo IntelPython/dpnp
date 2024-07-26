@@ -65,7 +65,7 @@ static sycl::event gesv_impl(sycl::queue exec_q,
                              std::vector<sycl::event> &host_task_events,
                              const std::vector<sycl::event> &depends)
 {
-#if DPNP_TARGET_CUDA
+#if defined(USE_ONEMKL_INTERFACES)
     // Temporary flag for build only
     // FIXME: Need to implement by using lapack::getrf and lapack::getrs
     std::logic_error("Not Implemented");
@@ -172,7 +172,7 @@ static sycl::event gesv_impl(sycl::queue exec_q,
     host_task_events.push_back(clean_up_event);
 
     return gesv_event;
-#endif
+#endif // USE_ONEMKL_INTERFACES
 }
 
 std::pair<sycl::event, sycl::event>

@@ -23,7 +23,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-if(NOT _dpnp_use_onemkl)
+if(NOT _use_onemkl_interfaces)
     set(_elementwise_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/abs.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/acos.cpp
@@ -113,7 +113,9 @@ if (DPNP_GENERATE_COVERAGE)
     target_link_options(${python_module_name} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 endif()
 
-if(NOT _dpnp_use_onemkl)
+if(_use_onemkl_interfaces)
+    target_compile_options(${python_module_name} PRIVATE -DUSE_ONEMKL_INTERFACES)
+else()
     target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::VM)
 endif()
 

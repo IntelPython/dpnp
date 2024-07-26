@@ -112,7 +112,7 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
             if depends is None:
                 depends = []
 
-            if vmi.mkl_vm_is_defined() and mkl_fn_to_call is not None:
+            if vmi._is_available() and mkl_fn_to_call is not None:
                 if getattr(vmi, mkl_fn_to_call)(sycl_queue, src, dst):
                     # call pybind11 extension for unary function from OneMKL VM
                     return getattr(vmi, mkl_impl_fn)(
@@ -266,7 +266,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             if depends is None:
                 depends = []
 
-            if vmi.mkl_vm_is_defined() and mkl_fn_to_call is not None:
+            if vmi._is_available() and mkl_fn_to_call is not None:
                 if getattr(vmi, mkl_fn_to_call)(sycl_queue, src1, src2, dst):
                     # call pybind11 extension for binary function from OneMKL VM
                     return getattr(vmi, mkl_impl_fn)(

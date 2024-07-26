@@ -23,9 +23,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#if !DPNP_TARGET_CUDA
+#if not defined(USE_ONEMKL_INTERFACES)
 #include <oneapi/mkl/dfti.hpp>
-#endif
+#endif // USE_ONEMKL_INTERFACES
 
 #include <sycl/sycl.hpp>
 

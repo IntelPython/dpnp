@@ -71,19 +71,20 @@ option(DPNP_TARGET_CUDA
     "Build DPNP to target CUDA devices"
     OFF
 )
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
+option(DPNP_USE_ONEMKL_INTERFACES
+    "Build DPNP with oneMKL Interfaces"
+    OFF
+)
 set(_dpnp_sycl_targets)
-set(_dpnp_use_onemkl OFF)
+set(_use_onemkl_interfaces_cuda OFF)
 if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
    if(DPNP_TARGET_CUDA)
-      set(_dpnp_use_onemkl ON)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDPNP_TARGET_CUDA=1")
       set(_dpnp_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
+      set(_use_onemkl_interfaces_cuda ON)
    else()
       if(DEFINED ENV{DPNP_TARGET_CUDA})
-          set(_dpnp_use_onemkl ON)
-          set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDPNP_TARGET_CUDA=1")
           set(_dpnp_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
+          set(_use_onemkl_interfaces_cuda ON)
       endif()
    endif()
 else()
@@ -94,23 +95,33 @@ if(_dpnp_sycl_targets)
    message(STATUS "Compiling for -fsycl-targets=${_dpnp_sycl_targets}")
 endif()
 
-if(_dpnp_use_onemkl)
+set(_use_onemkl_interfaces OFF)
+if(DPNP_USE_ONEMKL_INTERFACES)
+    set(_use_onemkl_interfaces ON)
+else()
+    if(DEFINED ENV{DPNP_USE_ONEMKL_INTERFACES})
+        set(_use_onemkl_interfaces ON)
+    endif()
+endif()
+
+if(_use_onemkl_interfaces OR _use_onemkl_interfaces_cuda)
     set(BUILD_FUNCTIONAL_TESTS False)
     set(BUILD_EXAMPLES False)
-    set(ENABLE_CUBLAS_BACKEND False)
-    set(ENABLE_CUSOLVER_BACKEND True)
-    set(ENABLE_CUFFT_BACKEND True)
-    set(ENABLE_CURAND_BACKEND False)
-    set(ENABLE_MKLGPU_BACKEND False)
-    set(ENABLE_MKLCPU_BACKEND False)
+    if(_use_onemkl_interfaces_cuda)
+        # set(ENABLE_CUBLAS_BACKEND True)
+        set(ENABLE_CUSOLVER_BACKEND True)
+        set(ENABLE_CUFFT_BACKEND True)
+        # set(ENABLE_CURAND_BACKEND True)
+        set(ENABLE_MKLGPU_BACKEND False)
+        set(ENABLE_MKLCPU_BACKEND False)
+    endif()
     FetchContent_Declare(
-            onemkl_interface_library
+            onemkl_interfaces_library
             GIT_REPOSITORY https://github.com/oneapi-src/oneMKL.git
             GIT_TAG develop
     )
-    FetchContent_MakeAvailable(onemkl_interface_library)
+    FetchContent_MakeAvailable(onemkl_interfaces_library)
 endif()
-
 
 if(WIN32)
     string(CONCAT WARNING_FLAGS
