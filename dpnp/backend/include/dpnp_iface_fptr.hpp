@@ -78,9 +78,6 @@ enum class DPNPFuncName : size_t
                               parameters */
     DPNP_FN_COUNT_NONZERO, /**< Used in numpy.count_nonzero() impl  */
     DPNP_FN_COV,           /**< Used in numpy.cov() impl  */
-    DPNP_FN_DEGREES,       /**< Used in numpy.degrees() impl  */
-    DPNP_FN_DEGREES_EXT,   /**< Used in numpy.degrees() impl, requires extra
-                              parameters */
     DPNP_FN_DOT,           /**< Used in numpy.dot() impl  */
     DPNP_FN_DOT_EXT, /**< Used in numpy.dot() impl, requires extra parameters */
     DPNP_FN_EDIFF1D, /**< Used in numpy.ediff1d() impl  */

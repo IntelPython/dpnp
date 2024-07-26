@@ -36,7 +36,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ALLCLOSE_EXT
         DPNP_FN_CHOOSE_EXT
         DPNP_FN_CORRELATE_EXT
-        DPNP_FN_DEGREES_EXT
         DPNP_FN_EDIFF1D_EXT
         DPNP_FN_ERF_EXT
         DPNP_FN_FFT_FFT_EXT
@@ -165,9 +164,3 @@ Logic functions
 """
 cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input2,
                                    double rtol=*, double atol=*, cpp_bool equal_nan=*)
-
-
-"""
-Trigonometric functions
-"""
-cpdef dpnp_descriptor dpnp_degrees(dpnp_descriptor array1)
