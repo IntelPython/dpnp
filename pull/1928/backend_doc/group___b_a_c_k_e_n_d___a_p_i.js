@@ -1,8 +1,5 @@
 var group___b_a_c_k_e_n_d___a_p_i =
 [
-    [ "dpnp_all_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaada414343be2c637611ad7bc65a87871", null ],
-    [ "dpnp_allclose_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga84f52e821dd403abd8f2cf06f3086f2a", null ],
-    [ "dpnp_any_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga829a9f98330c569c4c6a42f2e5aa8642", null ],
     [ "dpnp_argmax_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga0c91dcb81f3a0de00cf1c7326e8feb9c", null ],
     [ "dpnp_argmin_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab9df32dd9f7107c691c5972a86351d35", null ],
     [ "dpnp_argsort_c", "group___b_a_c_k_e_n_d___a_p_i.html#gad7ba17bf5aab9a319b59429718622322", null ],
@@ -11,7 +8,6 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_correlate_c", "group___b_a_c_k_e_n_d___a_p_i.html#gac8a963ba01536cad42b8a42d8250314b", null ],
     [ "dpnp_count_nonzero_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga720e05039ce0f0784c8a2e04f7f1c682", null ],
     [ "dpnp_cov_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga49f8dd90da75b44e6b733e944c6e7b33", null ],
-    [ "dpnp_degrees_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga8ad335322042643d7f7cc865d58958a1", null ],
     [ "dpnp_dot_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaddbabf7c091b81ba8ce90ebc54cdffc8", null ],
     [ "dpnp_ediff1d_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga65cea3f2936cb7bed613b51cebb74526", null ],
     [ "dpnp_initval_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2c1f63f22354673088112c4f248c98a2", null ],
@@ -29,7 +25,6 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_prod_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga6610de7cc5611443e025d9cd7d08b74c", null ],
     [ "dpnp_python_constants_initialize_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga96eabd32a2b65f49e715ccdbc33c45d4", null ],
     [ "dpnp_queue_is_cpu_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2df766b3642aa4e94c8cef7927d6022d", null ],
-    [ "dpnp_radians_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga0dffbc87d5ab5ea413cf631a0d59ba77", null ],
     [ "dpnp_searchsorted_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga066e660d9841964898e1051cdd66f713", null ],
     [ "dpnp_sort_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga26e5f6303907fe4b4496fb2cc0685407", null ],
     [ "dpnp_sqrt_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2e8ccd7745314eb662b47c41324076b0", null ],
