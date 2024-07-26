@@ -116,9 +116,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_PARTITION_EXT, /**< Used in numpy.partition() impl, requires extra
                               parameters */
     DPNP_FN_PROD,          /**< Used in numpy.prod() impl  */
-    DPNP_FN_RADIANS,       /**< Used in numpy.radians() impl  */
-    DPNP_FN_RADIANS_EXT,   /**< Used in numpy.radians() impl, requires extra
-                              parameters */
     DPNP_FN_RNG_BETA,      /**< Used in numpy.random.beta() impl  */
     DPNP_FN_RNG_BETA_EXT,  /**< Used in numpy.random.beta() impl, requires extra
                               parameters */

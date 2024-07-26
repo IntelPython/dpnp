@@ -2,6 +2,7 @@ import functools
 
 import numpy
 import pytest
+from dpctl.tensor._numpy_helper import AxisError
 from numpy.testing import (
     assert_,
     assert_array_equal,
@@ -85,9 +86,9 @@ class TestDiagonal:
         assert_raises(TypeError, dpnp.diagonal, a, offset=[0])
 
         # axes are out of bounds
-        assert_raises(numpy.AxisError, a.diagonal, axis1=0, axis2=5)
-        assert_raises(numpy.AxisError, a.diagonal, axis1=5, axis2=0)
-        assert_raises(numpy.AxisError, a.diagonal, axis1=5, axis2=5)
+        assert_raises(AxisError, a.diagonal, axis1=0, axis2=5)
+        assert_raises(AxisError, a.diagonal, axis1=5, axis2=0)
+        assert_raises(AxisError, a.diagonal, axis1=5, axis2=5)
 
         # same axes
         assert_raises(ValueError, a.diagonal, axis1=1, axis2=1)
@@ -704,7 +705,7 @@ class TestTakeAlongAxis:
         )
 
         # invalid axis
-        assert_raises(numpy.AxisError, xp.take_along_axis, a, ai, axis=10)
+        assert_raises(AxisError, xp.take_along_axis, a, ai, axis=10)
 
     @pytest.mark.parametrize("arr_dt", get_all_dtypes())
     @pytest.mark.parametrize("idx_dt", get_integer_dtypes())

@@ -41,20 +41,17 @@
 #include "kernels/elementwise_functions/minimum.hpp"
 #include "utils/type_dispatch.hpp"
 
-namespace py = pybind11;
-
 namespace dpnp::extensions::ufunc
 {
-namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
-namespace min_ns = dpctl::tensor::kernels::minimum;
+namespace py = pybind11;
 namespace py_int = dpnp::extensions::py_internal;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
-using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
-
 namespace impl
 {
+namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+namespace min_ns = dpctl::tensor::kernels::minimum;
+
 // Supports the same types table as for minimum function in dpctl
 template <typename T1, typename T2>
 using OutputType = min_ns::MinimumOutputType<T1, T2>;
