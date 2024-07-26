@@ -38,7 +38,7 @@ struct RadiansFunctor
     // constexpr resT constant_value = resT{};
     // is function defined for sycl::vec
     using supports_vec = typename std::true_type;
-    // do both argT and resT support sugroup store/load operation
+    // do both argT and resT support subgroup store/load operation
     using supports_sg_loadstore = typename std::true_type;
 
     resT operator()(const argT &x) const
