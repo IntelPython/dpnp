@@ -11,6 +11,7 @@ from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
     get_float_complex_dtypes,
+    get_float_dtypes,
     has_support_aspect16,
     has_support_aspect64,
 )
@@ -283,12 +284,30 @@ class TestDegrees:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
-    def test_degrees(self, dtype):
+    def test_basic(self, dtype):
         a = numpy.array([numpy.pi, -0.5 * numpy.pi], dtype=dtype)
         ia = dpnp.array(a)
 
-        result = dpnp.radians(ia)
-        expected = numpy.radians(a)
+        result = dpnp.degrees(ia)
+        expected = numpy.degrees(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_nan_infs(self, dtype):
+        a = numpy.array([numpy.nan, -numpy.inf, numpy.inf], dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.degrees(ia)
+        expected = numpy.degrees(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_large_values(self, dtype):
+        a = numpy.arange(0, 10**5, 70, dtype=dtype) * numpy.pi
+        ia = dpnp.array(a)
+
+        result = dpnp.degrees(ia)
+        expected = numpy.degrees(a)
         assert_dtype_allclose(result, expected)
 
 
@@ -332,8 +351,26 @@ class TestRadians:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
-    def test_radians(self, dtype):
+    def test_basic(self, dtype):
         a = numpy.array([180.0, -90.0], dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.radians(ia)
+        expected = numpy.radians(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_nan_infs(self, dtype):
+        a = numpy.array([numpy.nan, -numpy.inf, numpy.inf], dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.radians(ia)
+        expected = numpy.radians(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_large_values(self, dtype):
+        a = numpy.arange(0, 10**5, 70, dtype=dtype)
         ia = dpnp.array(a)
 
         result = dpnp.radians(ia)
