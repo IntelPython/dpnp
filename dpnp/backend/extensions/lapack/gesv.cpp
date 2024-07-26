@@ -264,6 +264,7 @@ std::pair<sycl::event, sycl::event>
          dpctl::tensor::usm_ndarray dependent_vals,
          const std::vector<sycl::event> &depends)
 {
+    const int coeff_matrix_nd = coeff_matrix.get_ndim();
     const int dependent_vals_nd = dependent_vals.get_ndim();
 
     const py::ssize_t *coeff_matrix_shape = coeff_matrix.get_shape_raw();
@@ -277,13 +278,11 @@ std::pair<sycl::event, sycl::event>
                        dependent_vals_shape, expected_coeff_matrix_ndim,
                        min_dependent_vals_ndim, max_dependent_vals_ndim);
 
-    size_t src_nelems(1);
-
-    for (int i = 0; i < dependent_vals_nd; ++i) {
-        src_nelems *= static_cast<size_t>(dependent_vals_shape[i]);
-    }
-
-    if (src_nelems == 0) {
+    // Ensure `batch_size`, `n` and 'nrhs' are non-zero, otherwise return empty
+    // events
+    if (helper::check_zeros_shape(coeff_matrix_nd, coeff_matrix_shape) ||
+        helper::check_zeros_shape(dependent_vals_nd, dependent_vals_shape))
+    {
         // nothing to do
         return std::make_pair(sycl::event(), sycl::event());
     }

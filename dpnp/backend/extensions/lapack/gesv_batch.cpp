@@ -241,6 +241,7 @@ std::pair<sycl::event, sycl::event>
                dpctl::tensor::usm_ndarray dependent_vals,
                const std::vector<sycl::event> &depends)
 {
+    const int coeff_matrix_nd = coeff_matrix.get_ndim();
     const int dependent_vals_nd = dependent_vals.get_ndim();
 
     const py::ssize_t *coeff_matrix_shape = coeff_matrix.get_shape_raw();
@@ -253,6 +254,15 @@ std::pair<sycl::event, sycl::event>
     common_gesv_checks(exec_q, coeff_matrix, dependent_vals, coeff_matrix_shape,
                        dependent_vals_shape, expected_coeff_matrix_ndim,
                        min_dependent_vals_ndim, max_dependent_vals_ndim);
+
+    // Ensure `batch_size`, `n` and 'nrhs' are non-zero, otherwise return empty
+    // events
+    if (helper::check_zeros_shape(coeff_matrix_nd, coeff_matrix_shape) ||
+        helper::check_zeros_shape(dependent_vals_nd, dependent_vals_shape))
+    {
+        // nothing to do
+        return std::make_pair(sycl::event(), sycl::event());
+    }
 
     if (dependent_vals_nd == 2) {
         if (coeff_matrix_shape[2] != dependent_vals_shape[1]) {
@@ -273,17 +283,6 @@ std::pair<sycl::event, sycl::event>
                 std::to_string(coeff_matrix_shape[2]) + " and " +
                 std::to_string(dependent_vals_shape[2]) + ".");
         }
-    }
-
-    size_t src_nelems(1);
-
-    for (int i = 0; i < dependent_vals_nd; ++i) {
-        src_nelems *= static_cast<size_t>(dependent_vals_shape[i]);
-    }
-
-    if (src_nelems == 0) {
-        // nothing to do
-        return std::make_pair(sycl::event(), sycl::event());
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
