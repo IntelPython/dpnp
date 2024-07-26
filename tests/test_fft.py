@@ -13,7 +13,13 @@ from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
+    is_cpu_device,
 )
+
+# aspects of default device:
+_def_device = dpctl.SyclQueue().sycl_device
+_def_dev_has_fp64 = _def_device.has_aspect_fp64
+is_gpu_with_fp64 = not is_cpu_device() and _def_dev_has_fp64
 
 
 # TODO: `assert_dtype_allclose` calls in this file have `check_only_type_kind=True`
@@ -492,6 +498,7 @@ class TestIrfft:
         # but dpnp return float32 if input is float32
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
+    @pytest.mark.skipif(is_gpu_with_fp64, reason="MKLD17702")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
@@ -518,6 +525,7 @@ class TestIrfft:
         expected = numpy.fft.irfft(a_np, n=n, axis=axis, norm=norm)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
+    @pytest.mark.skipif(is_gpu_with_fp64, reason="MKLD17702")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 8])
     @pytest.mark.parametrize("axis", [0, 1, 2])
@@ -535,6 +543,7 @@ class TestIrfft:
         expected = numpy.fft.irfft(a_np, n=n, axis=axis, norm=norm)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
+    @pytest.mark.skipif(is_gpu_with_fp64, reason="MKLD17702")
     @pytest.mark.parametrize("n", [None, 5, 20])
     def test_fft_usm_ndarray(self, n):
         x = dpt.linspace(-1, 1, 11)
@@ -549,6 +558,7 @@ class TestIrfft:
         expected = numpy.fft.irfft(a_np, n=n)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
+    @pytest.mark.skipif(is_gpu_with_fp64, reason="MKLD17702")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
