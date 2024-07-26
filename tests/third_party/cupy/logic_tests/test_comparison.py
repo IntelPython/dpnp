@@ -9,6 +9,7 @@ from tests.third_party.cupy import testing
 
 
 class TestComparison(unittest.TestCase):
+
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
     def check_binary(self, name, xp, dtype):
@@ -36,6 +37,7 @@ class TestComparison(unittest.TestCase):
 
 
 class TestComparisonOperator(unittest.TestCase):
+
     operators = [
         operator.lt,
         operator.le,
@@ -75,6 +77,7 @@ class TestComparisonOperator(unittest.TestCase):
 
 
 class TestArrayEqual(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_array_equal_not_equal(self, xp, dtype):
@@ -96,6 +99,29 @@ class TestArrayEqual(unittest.TestCase):
         b = xp.array([1, 2, 3], dtype=dtype)
         return xp.array_equal(a, b)
 
+    @testing.with_requires("numpy>=1.19")
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_equal()
+    @pytest.mark.skip("Not supported yet")
+    def test_array_equal_infinite_equal_nan(self, xp, dtype):
+        nan = float("nan")
+        inf = float("inf")
+        ninf = float("-inf")
+        a = xp.array([0, nan, inf, ninf], dtype=dtype)
+        b = xp.array([0, nan, inf, ninf], dtype=dtype)
+        return xp.array_equal(a, b, equal_nan=True)
+
+    @testing.with_requires("numpy>=1.19")
+    @testing.for_complex_dtypes()
+    @testing.numpy_cupy_equal()
+    @pytest.mark.skip("Not supported yet")
+    def test_array_equal_complex_equal_nan(self, xp, dtype):
+        a = xp.array([1 + 2j], dtype=dtype)
+        b = a.copy()
+        b.imag = xp.nan
+        a.real = xp.nan
+        return xp.array_equal(a, b, equal_nan=True)
+
     @testing.numpy_cupy_equal()
     def test_array_equal_diff_dtypes_not_equal(self, xp):
         a = xp.array([0.9e-5, 1.1e-5, 100.5, 10.5])
@@ -115,7 +141,66 @@ class TestArrayEqual(unittest.TestCase):
         return xp.array_equal(a, b)
 
 
+@pytest.mark.skip("dpnp.array_equiv() is not implemented yet")
+class TestArrayEquiv(unittest.TestCase):
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_equal()
+    def test_array_equiv_equal_not_equal(self, xp, dtype):
+        a = xp.array([0, 4, 1, 1], dtype=dtype)
+        b = xp.array([0, 4, 2, 3], dtype=dtype)
+        return xp.array_equiv(a, b)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_equal()
+    def test_array_equiv_equal_is_equal(self, xp, dtype):
+        a = xp.array([0, 4, 1, 1], dtype=dtype)
+        b = xp.array([0, 4, 1, 1], dtype=dtype)
+        return xp.array_equiv(a, b)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_equal()
+    def test_array_equiv_diff_length(self, xp, dtype):
+        a = xp.array([0, 4, 0, 5], dtype=dtype)
+        b = xp.array([0, 4, 0], dtype=dtype)
+        return xp.array_equiv(a, b)
+
+    @testing.numpy_cupy_equal()
+    def test_array_equiv_diff_dtypes_not_equal(self, xp):
+        a = xp.array([0.9e-5, 1.1e-5, 100.5, 10.5])
+        b = xp.array([0, 0, 1000, 1000])
+        return xp.array_equiv(a, b)
+
+    @testing.numpy_cupy_equal()
+    def test_array_equiv_diff_dtypes_is_equal(self, xp):
+        a = xp.array([0.0, 1.0, 100.0, 10.0])
+        b = xp.array([0, 1, 100, 10])
+        return xp.array_equiv(a, b)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_equal()
+    def test_array_equiv_broadcast1(self, xp, dtype):
+        a = xp.array([0, 4], dtype)
+        b = xp.array([[0, 4], [0, 4]], dtype)
+        return xp.array_equiv(a, b)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_equal()
+    def test_array_equiv_broadcast2(self, xp, dtype):
+        a = xp.array([0, 4], dtype=dtype)
+        b = xp.array([[0, 4], [0, 5]], dtype=dtype)
+        return xp.array_equiv(a, b)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_equal()
+    def test_array_equiv_non_broadcast(self, xp, dtype):
+        a = xp.array([0, 4], dtype=dtype)
+        b = xp.array([[0, 4, 0, 4], [0, 4, 0, 4]], dtype=dtype)
+        return xp.array_equiv(a, b)
+
+
 class TestAllclose(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_allclose_finite(self, xp, dtype):
@@ -142,7 +227,6 @@ class TestAllclose(unittest.TestCase):
 
     @testing.for_float_dtypes()
     @testing.numpy_cupy_equal()
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_allclose_infinite_equal_nan(self, xp, dtype):
         nan = float("nan")
         inf = float("inf")
@@ -159,22 +243,22 @@ class TestAllclose(unittest.TestCase):
         return xp.allclose(a, b)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestIsclose(unittest.TestCase):
+
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_is_close_finite(self, xp, dtype):
         # In numpy<1.10 this test fails when dtype is bool
-        a = xp.array([0.9e-5, 1.1e-5, 1000 + 1e-4, 1000 - 1e-4], dtype=dtype)
-        b = xp.array([0, 0, 1000, 1000], dtype=dtype)
+        a = xp.array([0.9e-5, 1.1e-5, 1000 + 1e-4, 1000 - 1e-4]).astype(dtype)
+        b = xp.array([0, 0, 1000, 1000]).astype(dtype)
         return xp.isclose(a, b)
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_is_close_min_int(self, xp, dtype):
         # In numpy<1.10 this test fails when dtype is bool
-        a = xp.array([0], dtype=dtype)
-        b = xp.array([numpy.iinfo("i").min], dtype=dtype)
+        a = xp.array([0]).astype(dtype)
+        b = xp.array([numpy.iinfo("i").min]).astype(dtype)
         return xp.isclose(a, b)
 
     @testing.for_float_dtypes()
@@ -183,8 +267,8 @@ class TestIsclose(unittest.TestCase):
         nan = float("nan")
         inf = float("inf")
         ninf = float("-inf")
-        a = xp.array([0, nan, nan, 0, inf, ninf], dtype=dtype)
-        b = xp.array([0, nan, 0, nan, inf, ninf], dtype=dtype)
+        a = xp.array([0, nan, nan, 0, inf, ninf]).astype(dtype)
+        b = xp.array([0, nan, 0, nan, inf, ninf]).astype(dtype)
         return xp.isclose(a, b)
 
     @testing.for_float_dtypes()
@@ -193,17 +277,18 @@ class TestIsclose(unittest.TestCase):
         nan = float("nan")
         inf = float("inf")
         ninf = float("-inf")
-        a = xp.array([0, nan, inf, ninf], dtype=dtype)
-        b = xp.array([0, nan, inf, ninf], dtype=dtype)
+        a = xp.array([0, nan, inf, ninf]).astype(dtype)
+        b = xp.array([0, nan, inf, ninf]).astype(dtype)
         return xp.isclose(a, b, equal_nan=True)
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_is_close_array_scalar(self, xp, dtype):
-        a = xp.array([0.9e-5, 1.1e-5], dtype=dtype)
+        a = xp.array([0.9e-5, 1.1e-5]).astype(dtype)
         b = xp.dtype(xp.dtype).type(0)
         return xp.isclose(a, b)
 
+    @pytest.mark.skip(reason="Scalar input is not supported")
     @testing.for_all_dtypes(no_complex=True)
     def test_is_close_scalar_scalar(self, dtype):
         # cupy.isclose always returns ndarray
