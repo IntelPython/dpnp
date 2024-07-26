@@ -141,7 +141,6 @@ typedef sycl::event (*gesv_impl_fn_ptr_t)(sycl::queue &,
                                           std::int64_t,
                                           char *,
                                           std::int64_t,
-                                          std::vector<sycl::event> &,
                                           const std::vector<sycl::event> &);
 
 static gesv_impl_fn_ptr_t gesv_dispatch_vector[dpctl_td_ns::num_types];
@@ -154,7 +153,6 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
                              std::int64_t lda,
                              char *in_b,
                              std::int64_t ldb,
-                             std::vector<sycl::event> &host_task_events,
                              const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
@@ -248,7 +246,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
         throw std::runtime_error(error_msg.str());
     }
 
-    sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
+    sycl::event ht_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(gesv_event);
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad, ipiv]() {
@@ -256,9 +254,8 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
             sycl::free(ipiv, ctx);
         });
     });
-    host_task_events.push_back(clean_up_event);
 
-    return gesv_event;
+    return ht_ev;
 }
 
 std::pair<sycl::event, sycl::event>
@@ -312,15 +309,13 @@ std::pair<sycl::event, sycl::event>
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, n);
 
-    std::vector<sycl::event> host_task_events;
-    sycl::event gesv_ev =
-        gesv_fn(exec_q, n, nrhs, coeff_matrix_data, lda, dependent_vals_data,
-                ldb, host_task_events, depends);
+    sycl::event gesv_ev = gesv_fn(exec_q, n, nrhs, coeff_matrix_data, lda,
+                                  dependent_vals_data, ldb, depends);
 
-    sycl::event args_ev = dpctl::utils::keep_args_alive(
-        exec_q, {coeff_matrix, dependent_vals}, host_task_events);
+    sycl::event ht_ev = dpctl::utils::keep_args_alive(
+        exec_q, {coeff_matrix, dependent_vals}, {gesv_ev});
 
-    return std::make_pair(args_ev, gesv_ev);
+    return std::make_pair(ht_ev, gesv_ev);
 }
 
 template <typename fnT, typename T>
