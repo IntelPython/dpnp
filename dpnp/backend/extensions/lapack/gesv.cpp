@@ -162,9 +162,25 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
 
     const std::int64_t scratchpad_size =
         mkl_lapack::gesv_scratchpad_size<T>(exec_q, n, nrhs, lda, ldb);
+
+    if (scratchpad_size <= 0) {
+        throw std::runtime_error(
+            "Invalid scratchpad size: must be greater than zero."
+            "Calculated scratchpad size: " +
+            std::to_string(scratchpad_size));
+    }
+
     T *scratchpad = nullptr;
+    // Allocate memory for the scratchpad
+    scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
+    if (!scratchpad)
+        throw std::runtime_error("Device allocation for scratchpad failed");
 
     std::int64_t *ipiv = nullptr;
+    // Allocate memory for the ipiv
+    ipiv = sycl::malloc_device<std::int64_t>(n, exec_q);
+    if (!ipiv)
+        throw std::runtime_error("Device allocation for ipiv failed");
 
     std::stringstream error_msg;
     std::int64_t info = 0;
@@ -172,9 +188,6 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
 
     sycl::event gesv_event;
     try {
-        scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
-        ipiv = sycl::malloc_device<std::int64_t>(n, exec_q);
-
         gesv_event = mkl_lapack::gesv(
             exec_q,
             n,    // The order of the square matrix A
