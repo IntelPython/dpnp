@@ -85,6 +85,7 @@ def test_strides(func_name, dtype):
         "tan",
         "tanh",
         "trunc",
+        "unwrap",
     ],
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
