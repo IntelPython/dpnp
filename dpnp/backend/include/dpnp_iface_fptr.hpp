@@ -59,11 +59,6 @@
 enum class DPNPFuncName : size_t
 {
     DPNP_FN_NONE,          /**< Very first element of the enumeration */
-    DPNP_FN_ALL,           /**< Used in numpy.all() impl  */
-    DPNP_FN_ALLCLOSE,      /**< Used in numpy.allclose() impl  */
-    DPNP_FN_ALLCLOSE_EXT,  /**< Used in numpy.allclose() impl, requires extra
-                              parameters */
-    DPNP_FN_ANY,           /**< Used in numpy.any() impl  */
     DPNP_FN_ARGMAX,        /**< Used in numpy.argmax() impl  */
     DPNP_FN_ARGMIN,        /**< Used in numpy.argmin() impl  */
     DPNP_FN_ARGSORT,       /**< Used in numpy.argsort() impl  */

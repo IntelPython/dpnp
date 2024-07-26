@@ -381,8 +381,7 @@ def test_coerced_usm_types_logic_op_1in(op, usm_type_x):
         "equal",
         "greater",
         "greater_equal",
-        # TODO: unblock when dpnp.isclose() is updated
-        # "isclose",
+        "isclose",
         "less",
         "less_equal",
         "logical_and",
