@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.16.0dev0+101.g459d3f0f5a documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.16.0dev0+109.g6f054d24da documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=ff5be6d1"></script>
+        <script src="../../_static/documentation_options.js?v=d7766ec7"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+101.g459d3f0f5a
+                0.16.0dev0+109.g6f054d24da
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -139,11 +139,11 @@
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="kn">import</span> <span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span> <span class="k">as</span> <span class="nn">ufi</span>
 <span class="kn">import</span> <span class="nn">dpnp.backend.extensions.vm._vm_impl</span> <span class="k">as</span> <span class="nn">vmi</span>
 
 <span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_degrees</span><span class="p">,</span>
-    <span class="n">dpnp_radians</span><span class="p">,</span>
     <span class="n">dpnp_unwrap</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
@@ -859,27 +859,59 @@
 
 
 
-<div class="viewcode-block" id="deg2rad">
-<a class="viewcode-back" href="../../reference/generated/dpnp.deg2rad.html#dpnp.deg2rad">[docs]</a>
-<span class="k">def</span> <span class="nf">deg2rad</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert angles from degrees to radians.</span>
+<span class="n">_DEG2RAD_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Convert angles from degrees to radians.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.deg2rad`.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.deg2rad`.</span>
 
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.rad2deg` : Convert angles from radians to degrees.</span>
-<span class="sd">    :obj:`dpnp.unwrap` : Remove large jumps in angle by wrapping.</span>
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Angles in degrees.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This function works exactly the same as :obj:`dpnp.radians`.</span>
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    The corresponding angle in radians. The data type of the returned array is</span>
+<span class="s2">    determined by the Type Promotion Rules.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
-    <span class="k">return</span> <span class="n">radians</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.rad2deg` : Convert angles from radians to degrees.</span>
+<span class="s2">:obj:`dpnp.unwrap` : Remove large jumps in angle by wrapping.</span>
+<span class="s2">:obj:`dpnp.radians` : Equivalent function.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.deg2rad(x)` is ``x * pi / 180``.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array(180)</span>
+<span class="s2">&gt;&gt;&gt; np.deg2rad(x)</span>
+<span class="s2">array(3.14159265)</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">deg2rad</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;deg2rad&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
+    <span class="n">_DEG2RAD_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="degrees">
@@ -1749,41 +1781,63 @@
 
 
 
-<div class="viewcode-block" id="radians">
-<a class="viewcode-back" href="../../reference/generated/dpnp.radians.html#dpnp.radians">[docs]</a>
-<span class="k">def</span> <span class="nf">radians</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert angles from degrees to radians.</span>
+<span class="n">_RADIANS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Convert angles from degrees to radians.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.radians`.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.radians`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array in degrees.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
-<span class="sd">    .. seealso:: :obj:`dpnp.deg2rad` equivalent function.</span>
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    The corresponding radian values. The data type of the returned array is</span>
+<span class="s2">    determined by the Type Promotion Rules.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; deg = np.arange(6.) * 30.</span>
-<span class="sd">    &gt;&gt;&gt; out = np.radians(deg)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [0.0, 0.52359878, 1.04719755, 1.57079633, 2.0943951, 2.61799388]</span>
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.deg2rad` : Equivalent function.</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_radians</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; deg = np.arange(12.) * 30.</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">radians</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+<span class="s2">Convert a degree array to radians:</span>
 
+<span class="s2">&gt;&gt;&gt; np.radians(deg)</span>
+<span class="s2">array([0.        , 0.52359878, 1.04719755, 1.57079633, 2.0943951 ,</span>
+<span class="s2">       2.61799388, 3.14159265, 3.66519143, 4.1887902 , 4.71238898,</span>
+<span class="s2">       5.23598776, 5.75958653])</span>
+
+<span class="s2">&gt;&gt;&gt; out = np.zeros_like(deg)</span>
+<span class="s2">&gt;&gt;&gt; ret = np.radians(deg, out)</span>
+<span class="s2">&gt;&gt;&gt; ret is out</span>
+<span class="s2">True</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">radians</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;radians&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
+    <span class="n">_RADIANS_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="n">_SIN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
