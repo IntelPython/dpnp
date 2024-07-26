@@ -2,6 +2,7 @@ import unittest
 
 import numpy
 import pytest
+from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
 from tests.helper import has_support_aspect64
@@ -24,13 +25,13 @@ class TestSort(unittest.TestCase):
     def test_sort_zero_dim(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 a.sort()
 
     def test_external_sort_zero_dim(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 xp.sort(a)
 
     @testing.numpy_cupy_array_equal()
@@ -127,45 +128,45 @@ class TestSort(unittest.TestCase):
     def test_sort_invalid_axis1(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((2, 3, 3), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 a.sort(axis=3)
 
     def test_sort_invalid_axis2(self):
         a = testing.shaped_random((2, 3, 3), cupy)
-        with self.assertRaises(numpy.AxisError):
+        with self.assertRaises(AxisError):
             a.sort(axis=3)
 
     def test_external_sort_invalid_axis1(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((2, 3, 3), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 xp.sort(a, axis=3)
 
     def test_external_sort_invalid_axis2(self):
         a = testing.shaped_random((2, 3, 3), cupy)
-        with self.assertRaises(numpy.AxisError):
+        with self.assertRaises(AxisError):
             cupy.sort(a, axis=3)
 
     def test_sort_invalid_negative_axis1(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((2, 3, 3), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 a.sort(axis=-4)
 
     def test_sort_invalid_negative_axis2(self):
         a = testing.shaped_random((2, 3, 3), cupy)
-        with self.assertRaises(numpy.AxisError):
+        with self.assertRaises(AxisError):
             a.sort(axis=-4)
 
     def test_external_sort_invalid_negative_axis1(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((2, 3, 3), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 xp.sort(a, axis=-4)
 
     def test_external_sort_invalid_negative_axis2(self):
         a = testing.shaped_random((2, 3, 3), cupy)
-        with self.assertRaises(numpy.AxisError):
+        with self.assertRaises(AxisError):
             cupy.sort(a, axis=-4)
 
     # Test NaN ordering
@@ -220,7 +221,7 @@ class TestLexsort(unittest.TestCase):
     def test_lexsort_zero_dim(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 return xp.lexsort(a)
 
     @testing.numpy_cupy_array_equal()
@@ -351,12 +352,12 @@ class TestArgsort(unittest.TestCase):
     def test_argsort_invalid_axis1(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((2, 3, 3), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 self.argsort(a, axis=3)
 
     def test_argsort_invalid_axis2(self):
         a = testing.shaped_random((2, 3, 3), cupy)
-        with self.assertRaises(numpy.AxisError):
+        with self.assertRaises(AxisError):
             return self.argsort(a, axis=3)
 
     @testing.numpy_cupy_array_equal()
@@ -368,18 +369,18 @@ class TestArgsort(unittest.TestCase):
     def test_argsort_zero_dim_invalid_axis(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 self.argsort(a, axis=1)
 
     def test_argsort_invalid_negative_axis1(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((2, 3, 3), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 self.argsort(a, axis=-4)
 
     def test_argsort_invalid_negative_axis2(self):
         a = testing.shaped_random((2, 3, 3), cupy)
-        with self.assertRaises(numpy.AxisError):
+        with self.assertRaises(AxisError):
             return self.argsort(a, axis=-4)
 
     # Misc tests
@@ -420,7 +421,7 @@ class TestMsort(unittest.TestCase):
     def test_msort_zero_dim(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 xp.msort(a)
 
     @testing.for_all_dtypes()
@@ -440,7 +441,7 @@ class TestSort_complex(unittest.TestCase):
     def test_sort_complex_zero_dim(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 xp.sort_complex(a)
 
     @testing.for_all_dtypes()
@@ -487,7 +488,7 @@ class TestPartition(unittest.TestCase):
         for xp in (numpy, cupy):
             a = testing.shaped_random((), xp)
             kth = 2
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 self.partition(a, kth)
 
     @testing.for_all_dtypes()
@@ -586,12 +587,12 @@ class TestPartition(unittest.TestCase):
             a = testing.shaped_random((2, 2, self.length), xp)
             kth = 2
             axis = 3
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 self.partition(a, kth, axis=axis)
 
     def test_partition_invalid_axis2(self):
         a = testing.shaped_random((2, 2, self.length), cupy)
-        with self.assertRaises(numpy.AxisError):
+        with self.assertRaises(AxisError):
             kth = 2
             axis = 3
             return self.partition(a, kth, axis=axis)
@@ -601,12 +602,12 @@ class TestPartition(unittest.TestCase):
             a = testing.shaped_random((2, 2, self.length), xp)
             kth = 2
             axis = -4
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 self.partition(a, kth, axis=axis)
 
     def test_partition_invalid_negative_axis2(self):
         a = testing.shaped_random((2, 2, self.length), cupy)
-        with self.assertRaises(numpy.AxisError):
+        with self.assertRaises(AxisError):
             kth = 2
             axis = -4
             return self.partition(a, kth, axis=axis)
@@ -792,14 +793,14 @@ class TestArgpartition(unittest.TestCase):
             a = testing.shaped_random((2, 2, 2), xp, scale=100)
             kth = 1
             axis = 3
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 self.argpartition(a, kth, axis=axis)
 
     def test_argpartition_invalid_axis2(self):
         a = testing.shaped_random((2, 2, 2), cupy, scale=100)
         kth = 1
         axis = 3
-        with self.assertRaises(numpy.AxisError):
+        with self.assertRaises(AxisError):
             self.argpartition(a, kth, axis=axis)
 
     def test_argpartition_invalid_negative_axis1(self):
@@ -807,12 +808,12 @@ class TestArgpartition(unittest.TestCase):
             a = testing.shaped_random((2, 2, 2), xp, scale=100)
             kth = 1
             axis = -4
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 self.argpartition(a, kth, axis=axis)
 
     def test_argpartition_invalid_negative_axis2(self):
         a = testing.shaped_random((2, 2, 2), cupy, scale=100)
         kth = 1
         axis = -4
-        with self.assertRaises(numpy.AxisError):
+        with self.assertRaises(AxisError):
             self.argpartition(a, kth, axis=axis)

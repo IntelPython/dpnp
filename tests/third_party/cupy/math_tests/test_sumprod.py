@@ -3,6 +3,7 @@ import warnings
 
 import numpy
 import pytest
+from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
 from tests.helper import (
@@ -440,26 +441,26 @@ class TestCumsum:
     def test_invalid_axis_lower1(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((4, 5), xp, dtype)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 xp.cumsum(a, axis=-a.ndim - 1)
 
     @testing.for_all_dtypes()
     def test_invalid_axis_lower2(self, dtype):
         a = testing.shaped_arange((4, 5), cupy, dtype)
-        with pytest.raises(numpy.AxisError):
+        with pytest.raises(AxisError):
             return cupy.cumsum(a, axis=-a.ndim - 1)
 
     @testing.for_all_dtypes()
     def test_invalid_axis_upper1(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((4, 5), xp, dtype)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 xp.cumsum(a, axis=a.ndim + 1)
 
     @testing.for_all_dtypes()
     def test_invalid_axis_upper2(self, dtype):
         a = testing.shaped_arange((4, 5), cupy, dtype)
-        with pytest.raises(numpy.AxisError):
+        with pytest.raises(AxisError):
             return cupy.cumsum(a, axis=a.ndim + 1)
 
     def test_cumsum_arraylike(self):
@@ -535,27 +536,27 @@ class TestCumprod:
     def test_invalid_axis_lower1(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((4, 5), xp, dtype)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 xp.cumprod(a, axis=-a.ndim - 1)
 
     @testing.for_all_dtypes()
     def test_invalid_axis_lower2(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((4, 5), xp, dtype)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 xp.cumprod(a, axis=-a.ndim - 1)
 
     @testing.for_all_dtypes()
     def test_invalid_axis_upper1(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((4, 5), xp, dtype)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 return xp.cumprod(a, axis=a.ndim)
 
     @testing.for_all_dtypes()
     def test_invalid_axis_upper2(self, dtype):
         a = testing.shaped_arange((4, 5), cupy, dtype)
-        with pytest.raises(numpy.AxisError):
+        with pytest.raises(AxisError):
             return cupy.cumprod(a, axis=a.ndim)
 
     def test_cumprod_arraylike(self):
@@ -692,9 +693,9 @@ class TestDiff:
     def test_diff_invalid_axis(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3, 4), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 xp.diff(a, axis=3)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 xp.diff(a, axis=-4)
 
 
@@ -843,7 +844,7 @@ class TestGradientErrors:
         for xp in [numpy, cupy]:
             x = testing.shaped_random(shape, xp)
             for axis in [-3, 2]:
-                with pytest.raises(numpy.AxisError):
+                with pytest.raises(AxisError):
                     xp.gradient(x, axis=axis)
 
     def test_gradient_bool_input(self):
