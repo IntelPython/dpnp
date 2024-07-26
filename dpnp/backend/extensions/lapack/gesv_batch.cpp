@@ -118,10 +118,7 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
 
         std::int64_t stream_id = (batch_id % n_linear_streams);
 
-        T *current_scratch_gesv = nullptr;
-        if (scratchpad != nullptr) {
-            current_scratch_gesv = scratchpad + stream_id * scratchpad_size;
-        }
+        T *current_scratch_gesv = scratchpad + stream_id * scratchpad_size;
         std::int64_t *current_ipiv = ipiv + stream_id * n;
 
         // Get the event dependencies for the current stream
