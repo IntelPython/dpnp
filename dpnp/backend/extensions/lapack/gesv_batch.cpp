@@ -82,23 +82,13 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
 
     const std::int64_t scratchpad_size =
         mkl_lapack::gesv_scratchpad_size<T>(exec_q, n, nrhs, lda, ldb);
-    T *scratchpad = nullptr;
+
+    T *scratchpad =
+        helper::alloc_scratchpad<T>(scratchpad_size, n_linear_streams, exec_q);
 
     // Get padding size to ensure memory allocations are aligned to 256 bytes
     // for better performance
-    std::int64_t padding = 256 / sizeof(T);
-
-    if (scratchpad_size > 0) {
-        // Calculate the total scratchpad memory size needed for all linear
-        // streams with proper alignment
-        size_t alloc_scratch_size =
-            helper::round_up_mult(n_linear_streams * scratchpad_size, padding);
-
-        // Allocate memory for the total scratchpad
-        scratchpad = sycl::malloc_device<T>(alloc_scratch_size, exec_q);
-        if (!scratchpad)
-            throw std::runtime_error("Device allocation for scratchpad failed");
-    }
+    const std::int64_t padding = 256 / sizeof(T);
 
     // Calculate the total size needed for the pivot indices array for all
     // linear streams with proper alignment
