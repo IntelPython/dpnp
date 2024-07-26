@@ -27,23 +27,29 @@
 
 #include <sycl/sycl.hpp>
 
-namespace dpnp::kernels::fabs
+namespace dpnp::kernels::radians
 {
 template <typename argT, typename resT>
-struct FabsFunctor
+struct RadiansFunctor
 {
     // is function constant for given argT
     using is_constant = typename std::false_type;
     // constant value, if constant
     // constexpr resT constant_value = resT{};
     // is function defined for sycl::vec
-    using supports_vec = typename std::false_type;
+    using supports_vec = typename std::true_type;
     // do both argT and resT support subgroup store/load operation
     using supports_sg_loadstore = typename std::true_type;
 
     resT operator()(const argT &x) const
     {
-        return sycl::fabs(x);
+        return sycl::radians(x);
+    }
+
+    template <int vec_sz>
+    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &x) const
+    {
+        return sycl::radians(x);
     }
 };
-} // namespace dpnp::kernels::fabs
+} // namespace dpnp::kernels::radians

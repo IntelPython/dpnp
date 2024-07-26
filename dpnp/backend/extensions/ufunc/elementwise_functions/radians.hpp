@@ -25,25 +25,11 @@
 
 #pragma once
 
-#include <sycl/sycl.hpp>
+#include <pybind11/pybind11.h>
 
-namespace dpnp::kernels::fabs
-{
-template <typename argT, typename resT>
-struct FabsFunctor
-{
-    // is function constant for given argT
-    using is_constant = typename std::false_type;
-    // constant value, if constant
-    // constexpr resT constant_value = resT{};
-    // is function defined for sycl::vec
-    using supports_vec = typename std::false_type;
-    // do both argT and resT support subgroup store/load operation
-    using supports_sg_loadstore = typename std::true_type;
+namespace py = pybind11;
 
-    resT operator()(const argT &x) const
-    {
-        return sycl::fabs(x);
-    }
-};
-} // namespace dpnp::kernels::fabs
+namespace dpnp::extensions::ufunc
+{
+void init_radians(py::module_ m);
+} // namespace dpnp::extensions::ufunc
