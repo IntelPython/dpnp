@@ -54,6 +54,8 @@ Math operations
 
 Trigonometric functions
 ~~~~~~~~~~~~~~~~~~~~~~~
+All trigonometric functions use radians when an angle is called for.
+The ratio of degrees to radians is :math:`180^{\circ}/\pi.`
 
 .. autosummary::
    :toctree: generated/
@@ -73,6 +75,8 @@ Trigonometric functions
    dpnp.arcsinh
    dpnp.arccosh
    dpnp.arctanh
+   dpnp.degrees
+   dpnp.radians
    dpnp.deg2rad
    dpnp.rad2deg
 
