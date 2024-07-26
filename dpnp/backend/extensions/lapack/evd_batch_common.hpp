@@ -81,6 +81,7 @@ std::pair<sycl::event, sycl::event>
             " and n = " + std::to_string(eig_vecs_shape[1]));
     }
 
+    // Ensure `batch_size` and `n` are non-zero, otherwise return empty events
     if (helper::check_zeros_shape(eig_vecs_nd, eig_vecs_shape)) {
         // nothing to do
         return std::make_pair(sycl::event(), sycl::event());
