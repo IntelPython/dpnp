@@ -802,7 +802,7 @@ See Also
 
 Notes
 -----
-:obj:`dpnp.deg2rad(x)` is ``x * pi / 180``.
+dpnp.deg2rad(x) is ``x * pi / 180``.
 
 Examples
 --------
@@ -1534,7 +1534,7 @@ See Also
 
 Notes
 -----
-:obj:`dpnp.rad2deg(x)` is ``180 * x / pi``.
+dpnp.rad2deg(x) is ``180 * x / pi``.
 
 Examples
 --------
