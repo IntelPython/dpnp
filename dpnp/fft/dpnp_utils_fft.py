@@ -41,8 +41,8 @@ import dpctl
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
+from dpctl.tensor._numpy_helper import normalize_axis_index
 from dpctl.utils import ExecutionPlacementError
-from numpy.core.numeric import normalize_axis_index
 
 import dpnp
 import dpnp.backend.extensions.fft._fft_impl as fi

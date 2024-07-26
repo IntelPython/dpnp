@@ -29,6 +29,7 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmod.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/radians.cpp
 )
 
 set(python_module_name _ufunc_impl)

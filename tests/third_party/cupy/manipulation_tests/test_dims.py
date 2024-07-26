@@ -2,6 +2,7 @@ import unittest
 
 import numpy
 import pytest
+from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
 from tests.third_party.cupy import testing
@@ -130,7 +131,7 @@ class TestDims(unittest.TestCase):
     def test_expand_dims_negative2(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 xp.expand_dims(a, -4)
 
     @testing.with_requires("numpy>=1.18")
@@ -154,7 +155,7 @@ class TestDims(unittest.TestCase):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 2, 2), xp)
             for axis in [(1, -6), (1, 5)]:
-                with pytest.raises(numpy.AxisError):
+                with pytest.raises(AxisError):
                     xp.expand_dims(a, axis)
 
     @testing.with_requires("numpy>=1.18")
@@ -193,7 +194,7 @@ class TestDims(unittest.TestCase):
     def test_squeeze_int_axis_failure2(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((1, 2, 1, 3, 1, 1, 4, 1), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 a.squeeze(axis=-9)
 
     @testing.numpy_cupy_array_equal()
@@ -231,7 +232,7 @@ class TestDims(unittest.TestCase):
     def test_squeeze_tuple_axis_failure3(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((1, 2, 1, 3, 1, 1, 4, 1), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 a.squeeze(axis=(-9,))
 
     @testing.numpy_cupy_array_equal()
@@ -259,13 +260,13 @@ class TestDims(unittest.TestCase):
     def test_squeeze_scalar_failure3(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((), xp)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 a.squeeze(axis=-2)
 
     def test_squeeze_scalar_failure4(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((), cupy)
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 a.squeeze(axis=1)
 
     def test_squeeze_failure(self):

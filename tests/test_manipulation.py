@@ -378,3 +378,74 @@ class TestTranspose:
         expected = na.transpose(1, 0, 2)
         result = da.transpose(1, 0, 2)
         assert_array_equal(expected, result)
+
+
+class TestTrimZeros:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_basic(self, dtype):
+        a = numpy.array([0, 0, 1, 0, 2, 3, 4, 0], dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.trim_zeros(ia)
+        expected = numpy.trim_zeros(a)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("trim", ["F", "B"])
+    def test_trim(self, dtype, trim):
+        a = numpy.array([0, 0, 1, 0, 2, 3, 4, 0], dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.trim_zeros(ia, trim)
+        expected = numpy.trim_zeros(a, trim)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("trim", ["F", "B"])
+    def test_all_zero(self, dtype, trim):
+        a = numpy.zeros((8,), dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.trim_zeros(ia, trim)
+        expected = numpy.trim_zeros(a, trim)
+        assert_array_equal(expected, result)
+
+    def test_size_zero(self):
+        a = numpy.zeros(0)
+        ia = dpnp.array(a)
+
+        result = dpnp.trim_zeros(ia)
+        expected = numpy.trim_zeros(a)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "a", [numpy.array([0, 2**62, 0]), numpy.array([0, 2**63, 0])]
+    )
+    def test_overflow(self, a):
+        ia = dpnp.array(a)
+
+        result = dpnp.trim_zeros(ia)
+        expected = numpy.trim_zeros(a)
+        assert_array_equal(expected, result)
+
+    def test_trim_no_rule(self):
+        a = numpy.array([0, 0, 1, 0, 2, 3, 4, 0])
+        ia = dpnp.array(a)
+        trim = "ADE"  # no "F" or "B" in trim string
+
+        result = dpnp.trim_zeros(ia, trim)
+        expected = numpy.trim_zeros(a, trim)
+        assert_array_equal(expected, result)
+
+    def test_list_array(self):
+        assert_raises(TypeError, dpnp.trim_zeros, [0, 0, 1, 0, 2, 3, 4, 0])
+
+    @pytest.mark.parametrize(
+        "trim", [1, ["F"], numpy.array("B")], ids=["int", "list", "array"]
+    )
+    def test_unsupported_trim(self, trim):
+        a = numpy.array([0, 0, 1, 0, 2, 3, 4, 0])
+        ia = dpnp.array(a)
+
+        assert_raises(TypeError, dpnp.trim_zeros, ia, trim)
+        assert_raises(AttributeError, numpy.trim_zeros, a, trim)

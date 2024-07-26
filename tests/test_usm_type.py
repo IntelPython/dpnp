@@ -585,6 +585,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("prod", [1.0, 2.0]),
         pytest.param("proj", [complex(1.0, 2.0), complex(dp.inf, -1.0)]),
         pytest.param("ptp", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("radians", [180, 90, 45, 0]),
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
@@ -610,6 +611,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param(
             "trace", [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         ),
+        pytest.param("trim_zeros", [0, 0, 0, 1, 2, 3, 0, 2, 1, 0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
     ],
@@ -655,6 +657,7 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param("maximum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
         pytest.param("minimum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
+        pytest.param("nextafter", [1, 2], [2, 1]),
         pytest.param("searchsorted", [11, 12, 13, 14, 15], [-10, 20, 12, 13]),
         pytest.param(
             "tensordot",

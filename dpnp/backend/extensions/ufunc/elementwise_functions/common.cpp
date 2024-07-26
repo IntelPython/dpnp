@@ -29,6 +29,7 @@
 #include "fmax.hpp"
 #include "fmin.hpp"
 #include "fmod.hpp"
+#include "radians.hpp"
 
 namespace py = pybind11;
 
@@ -43,5 +44,6 @@ void init_elementwise_functions(py::module_ m)
     init_fmax(m);
     init_fmin(m);
     init_fmod(m);
+    init_radians(m);
 }
 } // namespace dpnp::extensions::ufunc

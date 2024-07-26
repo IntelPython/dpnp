@@ -36,7 +36,6 @@ tests/third_party/cupy/fft_tests/test_fft.py::TestFftn_param_23_{axes=None, norm
 tests/third_party/intel/test_zero_copy_test1.py::test_dpnp_interaction_with_dpctl_memory
 
 tests/test_strides.py::test_strides_1arg[(10,)-None-degrees]
-tests/test_strides.py::test_strides_1arg[(10,)-None-radians]
 
 tests/test_umath.py::test_umaths[('divmod', 'ii')]
 tests/test_umath.py::test_umaths[('divmod', 'll')]
@@ -57,8 +56,6 @@ tests/test_umath.py::test_umaths[('ldexp', 'di')]
 tests/test_umath.py::test_umaths[('ldexp', 'dl')]
 tests/test_umath.py::test_umaths[('logaddexp2', 'ff')]
 tests/test_umath.py::test_umaths[('logaddexp2', 'dd')]
-tests/test_umath.py::test_umaths[('nextafter', 'ff')]
-tests/test_umath.py::test_umaths[('nextafter', 'dd')]
 tests/test_umath.py::test_umaths[('spacing', 'f')]
 tests/test_umath.py::test_umaths[('spacing', 'd')]
 
@@ -216,11 +213,6 @@ tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_par
 
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2_infinities
-
-tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_frexp
-tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_ldexp
-tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_combination
-tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_float
 
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_negative

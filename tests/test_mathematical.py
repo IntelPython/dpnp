@@ -2,6 +2,10 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
+from dpctl.tensor._numpy_helper import (
+    AxisError,
+    normalize_axis_index,
+)
 from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
@@ -244,9 +248,7 @@ class TestCumLogSumExp:
 
         if axis != None:
             if include_initial:
-                norm_axis = numpy.core.numeric.normalize_axis_index(
-                    axis, a.ndim, "axis"
-                )
+                norm_axis = normalize_axis_index(axis, a.ndim, "axis")
                 out_sh = (
                     a.shape[:norm_axis]
                     + (a.shape[norm_axis] + 1,)
@@ -500,7 +502,7 @@ class TestDiff:
     @pytest.mark.parametrize("axis", [-4, 3])
     def test_axis_error(self, xp, axis):
         a = xp.ones((10, 20, 30))
-        assert_raises(numpy.AxisError, xp.diff, a, axis=axis)
+        assert_raises(AxisError, xp.diff, a, axis=axis)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_ndim_error(self, xp):
@@ -609,8 +611,8 @@ class TestDiff:
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_prepend_append_axis_error(self, xp):
         a = xp.arange(4).reshape(2, 2)
-        assert_raises(numpy.AxisError, xp.diff, a, axis=3, prepend=0)
-        assert_raises(numpy.AxisError, xp.diff, a, axis=3, append=0)
+        assert_raises(AxisError, xp.diff, a, axis=3, prepend=0)
+        assert_raises(AxisError, xp.diff, a, axis=3, append=0)
 
 
 class TestGradient:
@@ -861,7 +863,7 @@ class TestGradient:
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_wrong_axis(self, xp):
         x = xp.array([[1, 1], [3, 4]])
-        assert_raises(numpy.AxisError, xp.gradient, x, axis=3)
+        assert_raises(AxisError, xp.gradient, x, axis=3)
 
     @pytest.mark.parametrize(
         "size, edge_order",
@@ -1112,6 +1114,140 @@ class TestMathematical:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_subtract(self, dtype, lhs, rhs):
         self._test_mathematical("subtract", dtype, lhs, rhs, check_type=False)
+
+
+class TestNextafter:
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    @pytest.mark.parametrize(
+        "val1, val2",
+        [
+            pytest.param(1, 2),
+            pytest.param(1, 0),
+            pytest.param(1, 1),
+        ],
+    )
+    def test_float(self, val1, val2, dt):
+        v1 = numpy.array(val1, dtype=dt)
+        v2 = numpy.array(val2, dtype=dt)
+        iv1, iv2 = dpnp.array(v1), dpnp.array(v2)
+
+        result = dpnp.nextafter(iv1, iv2)
+        expected = numpy.nextafter(v1, v2)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_float_nan(self, dt):
+        a = numpy.array(1, dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.nextafter(ia, dpnp.nan)
+        expected = numpy.nextafter(a, numpy.nan)
+        assert_equal(result, expected)
+
+        result = dpnp.nextafter(dpnp.nan, ia)
+        expected = numpy.nextafter(numpy.nan, a)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("val", [0x7C00, 0x8000], ids=["val1", "val2"])
+    def test_f16_strides(self, val):
+        a = numpy.arange(val, dtype=numpy.uint16).astype(numpy.float16)
+        hinf = numpy.array((numpy.inf,), dtype=numpy.float16)
+        ia, ihinf = dpnp.array(a), dpnp.array(hinf)
+
+        result = dpnp.nextafter(ia[:-1], ihinf)
+        expected = numpy.nextafter(a[:-1], hinf)
+        assert_equal(result, expected)
+
+        result = dpnp.nextafter(ia[0], -ihinf)
+        expected = numpy.nextafter(a[0], -hinf)
+        assert_equal(result, expected)
+
+        result = dpnp.nextafter(ia[1:], -ihinf)
+        expected = numpy.nextafter(a[1:], -hinf)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("val", [0x7C00, 0x8000], ids=["val1", "val2"])
+    def test_f16_array_inf(self, val):
+        a = numpy.arange(val, dtype=numpy.uint16).astype(numpy.float16)
+        hinf = numpy.array((numpy.inf,), dtype=numpy.float16)
+        ia, ihinf = dpnp.array(a), dpnp.array(hinf)
+
+        result = dpnp.nextafter(ihinf, ia)
+        expected = numpy.nextafter(hinf, a)
+        assert_equal(result, expected)
+
+        result = dpnp.nextafter(-ihinf, ia)
+        expected = numpy.nextafter(-hinf, a)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "sign1, sign2",
+        [
+            pytest.param(1, 1),
+            pytest.param(1, -1),
+            pytest.param(-1, 1),
+            pytest.param(-1, -1),
+        ],
+    )
+    def test_f16_inf(self, sign1, sign2):
+        hinf1 = numpy.array((sign1 * numpy.inf,), dtype=numpy.float16)
+        hinf2 = numpy.array((sign2 * numpy.inf,), dtype=numpy.float16)
+        ihinf1, ihinf2 = dpnp.array(hinf1), dpnp.array(hinf2)
+
+        result = dpnp.nextafter(ihinf1, ihinf2)
+        expected = numpy.nextafter(hinf1, hinf2)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("val", [0x7C00, 0x8000], ids=["val1", "val2"])
+    def test_f16_array_nan(self, val):
+        a = numpy.arange(val, dtype=numpy.uint16).astype(numpy.float16)
+        nan = numpy.array((numpy.nan,), dtype=numpy.float16)
+        ia, inan = dpnp.array(a), dpnp.array(nan)
+
+        result = dpnp.nextafter(ia, inan)
+        expected = numpy.nextafter(a, nan)
+        assert_equal(result, expected)
+
+        result = dpnp.nextafter(inan, ia)
+        expected = numpy.nextafter(nan, a)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "val1, val2",
+        [
+            pytest.param(numpy.nan, numpy.nan),
+            pytest.param(numpy.inf, numpy.nan),
+            pytest.param(numpy.nan, numpy.inf),
+        ],
+    )
+    def test_f16_inf_nan(self, val1, val2):
+        v1 = numpy.array((val1,), dtype=numpy.float16)
+        v2 = numpy.array((val2,), dtype=numpy.float16)
+        iv1, iv2 = dpnp.array(v1), dpnp.array(v2)
+
+        result = dpnp.nextafter(iv1, iv2)
+        expected = numpy.nextafter(v1, v2)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "val, scalar",
+        [
+            pytest.param(65504, -numpy.inf),
+            pytest.param(-65504, numpy.inf),
+            pytest.param(numpy.inf, 0),
+            pytest.param(-numpy.inf, 0),
+            pytest.param(0, numpy.nan),
+            pytest.param(numpy.nan, 0),
+        ],
+    )
+    def test_f16_corner_values_with_scalar(self, val, scalar):
+        a = numpy.array(val, dtype=numpy.float16)
+        ia = dpnp.array(a)
+        scalar = numpy.float16(scalar)
+
+        result = dpnp.nextafter(ia, scalar)
+        expected = numpy.nextafter(a, scalar)
+        assert_equal(result, expected)
 
 
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
@@ -2273,6 +2409,7 @@ class TestLogSumExp:
 
         assert_allclose(res, exp, rtol=1e-06)
 
+    @testing.with_requires("numpy>=1.26.4")
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
     @pytest.mark.parametrize(
         "arr_dt", get_all_dtypes(no_none=True, no_complex=True)
