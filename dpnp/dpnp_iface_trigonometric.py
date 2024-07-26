@@ -38,6 +38,7 @@ it contains:
 """
 
 # pylint: disable=protected-access
+# pylint: disable=no-name-in-module
 
 
 import dpctl.tensor as dpt
