@@ -106,6 +106,9 @@ var annotated_dup =
         ] ],
         [ "fmod", null, [
           [ "FmodFunctor", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ]
+        ] ],
+        [ "radians", null, [
+          [ "RadiansFunctor", "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html", null ]
         ] ]
       ] ]
     ] ],

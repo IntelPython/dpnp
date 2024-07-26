@@ -82,6 +82,7 @@ var hierarchy =
     [ "dpnp::extensions::lapack::types::PotrfBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::PotrfTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_type_pair_support_factory.html", null ],
     [ "python_constants", "structpython__constants.html", null ],
+    [ "dpnp::kernels::radians::RadiansFunctor< argT, resT >", "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html", null ],
     [ "dpnp::backend::ext::sycl_ext::resolve_type< C, Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1resolve__type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::resolve_type< C, std::tuple< Args... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1resolve__type_3_01_c_00_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html", null ],
     [ "dpnp::extensions::fft::ScaleType< prec >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type.html", null ],

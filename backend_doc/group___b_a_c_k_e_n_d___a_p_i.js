@@ -29,7 +29,6 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_prod_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga6610de7cc5611443e025d9cd7d08b74c", null ],
     [ "dpnp_python_constants_initialize_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga96eabd32a2b65f49e715ccdbc33c45d4", null ],
     [ "dpnp_queue_is_cpu_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2df766b3642aa4e94c8cef7927d6022d", null ],
-    [ "dpnp_radians_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga0dffbc87d5ab5ea413cf631a0d59ba77", null ],
     [ "dpnp_searchsorted_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga066e660d9841964898e1051cdd66f713", null ],
     [ "dpnp_sort_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga26e5f6303907fe4b4496fb2cc0685407", null ],
     [ "dpnp_sqrt_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2e8ccd7745314eb662b47c41324076b0", null ],
