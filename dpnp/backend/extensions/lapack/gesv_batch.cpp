@@ -233,9 +233,9 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *coeff_matrix_shape = coeff_matrix.get_shape_raw();
     const py::ssize_t *dependent_vals_shape = dependent_vals.get_shape_raw();
 
-    const int expected_coeff_matrix_ndim = 3;
-    const int min_dependent_vals_ndim = 2;
-    const int max_dependent_vals_ndim = 3;
+    constexpr int expected_coeff_matrix_ndim = 3;
+    constexpr int min_dependent_vals_ndim = 2;
+    constexpr int max_dependent_vals_ndim = 3;
 
     common_gesv_checks(exec_q, coeff_matrix, dependent_vals, coeff_matrix_shape,
                        dependent_vals_shape, expected_coeff_matrix_ndim,
@@ -272,7 +272,7 @@ std::pair<sycl::event, sycl::event>
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int coeff_matrix_type_id =
+    const int coeff_matrix_type_id =
         array_types.typenum_to_lookup_id(coeff_matrix.get_typenum());
 
     gesv_batch_impl_fn_ptr_t gesv_batch_fn =
