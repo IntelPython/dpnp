@@ -121,9 +121,9 @@ std::pair<sycl::event, sycl::event>
 }
 
 template <typename T>
-T *alloc_scratchpad(std::int64_t scratchpad_size,
-                    std::int64_t n_linear_streams,
-                    sycl::queue &exec_q)
+inline T *alloc_scratchpad(std::int64_t scratchpad_size,
+                           std::int64_t n_linear_streams,
+                           sycl::queue &exec_q)
 {
     // Get padding size to ensure memory allocations are aligned to 256 bytes
     // for better performance
