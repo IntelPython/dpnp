@@ -53,7 +53,6 @@ import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 import dpnp.backend.extensions.vm._vm_impl as vmi
 
 from .dpnp_algo import (
-    dpnp_degrees,
     dpnp_unwrap,
 )
 from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
@@ -821,38 +820,62 @@ deg2rad = DPNPUnaryFunc(
 )
 
 
-def degrees(x1, **kwargs):
-    """
-    Convert angles from radians to degrees.
+_DEGREES_DOCSTRING = """
+Convert angles from radians to degrees.
 
-    For full documentation refer to :obj:`numpy.degrees`.
+For full documentation refer to :obj:`numpy.degrees`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array in radians.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
 
-    .. seealso:: :obj:`dpnp.rad2deg` convert angles from radians to degrees.
+Returns
+-------
+out : dpnp.ndarray
+    The corresponding degree values. The data type of the returned array is
+    determined by the Type Promotion Rules.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> rad = np.arange(6.) * np.pi/6
-    >>> out = np.degrees(rad)
-    >>> [i for i in out]
-    [0.0, 30.0, 60.0, 90.0, 120.0, 150.0]
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    """
+See Also
+--------
+:obj:`dpnp.rad2deg` : Equivalent function.
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    if kwargs:
-        pass
-    elif x1_desc:
-        return dpnp_degrees(x1_desc).get_pyobj()
+Examples
+--------
+>>> import dpnp as np
+>>> rad = np.arange(12.) * np.pi/6
 
-    return call_origin(numpy.degrees, x1, **kwargs)
+Convert a radian array to degrees:
+
+>>> np.degrees(rad)
+array([  0.,  30.,  60.,  90., 120., 150., 180., 210., 240., 270., 300.,
+       330.])
+
+>>> out = np.zeros_like(rad)
+>>> r = np.degrees(rad, out)
+>>> np.all(r == out)
+array(True)
+"""
+
+degrees = DPNPUnaryFunc(
+    "degrees",
+    ufi._degrees_result_type,
+    ufi._degrees,
+    _DEGREES_DOCSTRING,
+)
 
 
 _EXP_DOCSTRING = """
@@ -1474,6 +1497,120 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     )
 
 
+_RAD2DEG_DOCSTRING = """
+Convert angles from radians to degrees.
+
+For full documentation refer to :obj:`numpy.rad2deg`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Angle in radians.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The corresponding angle in degrees. The data type of the returned array is
+    determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.deg2rad` : Convert angles from degrees to radians.
+:obj:`dpnp.unwrap` : Remove large jumps in angle by wrapping.
+:obj:`dpnp.degrees` : Equivalent function.
+
+Notes
+-----
+:obj:`dpnp.rad2deg(x)` is ``180 * x / pi``.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.array(np.pi / 2)
+>>> np.rad2deg(x)
+array(90.)
+"""
+
+rad2deg = DPNPUnaryFunc(
+    "rad2deg",
+    ufi._degrees_result_type,
+    ufi._degrees,
+    _RAD2DEG_DOCSTRING,
+)
+
+
+_RADIANS_DOCSTRING = """
+Convert angles from degrees to radians.
+
+For full documentation refer to :obj:`numpy.radians`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array in degrees.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The corresponding radian values. The data type of the returned array is
+    determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.deg2rad` : Equivalent function.
+
+Examples
+--------
+>>> import dpnp as np
+>>> deg = np.arange(12.) * 30.
+
+Convert a degree array to radians:
+
+>>> np.radians(deg)
+array([0.        , 0.52359878, 1.04719755, 1.57079633, 2.0943951 ,
+       2.61799388, 3.14159265, 3.66519143, 4.1887902 , 4.71238898,
+       5.23598776, 5.75958653])
+
+>>> out = np.zeros_like(deg)
+>>> ret = np.radians(deg, out)
+>>> ret is out
+True
+"""
+
+radians = DPNPUnaryFunc(
+    "radians",
+    ufi._radians_result_type,
+    ufi._radians,
+    _RADIANS_DOCSTRING,
+)
+
+
 _RECIPROCAL_DOCSTRING = """
 Computes the reciprocal square-root for each element `x_i` for input array `x`.
 
@@ -1653,85 +1790,6 @@ rsqrt = DPNPUnaryFunc(
     ti._rsqrt_result_type,
     ti._rsqrt,
     _RSQRT_DOCSTRING,
-)
-
-
-def rad2deg(x1):
-    """
-    Convert angles from radians to degrees.
-
-    For full documentation refer to :obj:`numpy.rad2deg`.
-
-    See Also
-    --------
-    :obj:`dpnp.deg2rad` : Convert angles from degrees to radians.
-    :obj:`dpnp.unwrap` : Remove large jumps in angle by wrapping.
-
-    Notes
-    -----
-    This function works exactly the same as :obj:`dpnp.degrees`.
-
-    """
-
-    return degrees(x1)
-
-
-_RADIANS_DOCSTRING = """
-Convert angles from degrees to radians.
-
-For full documentation refer to :obj:`numpy.radians`.
-
-Parameters
-----------
-x : {dpnp.ndarray, usm_ndarray}
-    Input array in degrees.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
-    Output array to populate.
-    Array must have the correct shape and the expected data type.
-    Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
-    Memory layout of the newly output array, if parameter `out` is ``None``.
-    Default: ``"K"``.
-
-Returns
--------
-out : dpnp.ndarray
-    The corresponding radian values. The data type of the returned array is
-    determined by the Type Promotion Rules.
-
-Limitations
------------
-Parameters `where` and `subok` are supported with their default values.
-Keyword argument `kwargs` is currently unsupported.
-Otherwise ``NotImplementedError`` exception will be raised.
-
-See Also
---------
-:obj:`dpnp.deg2rad` : Equivalent function.
-
-Examples
---------
->>> import dpnp as np
->>> deg = np.arange(12.) * 30.
-
-Convert a degree array to radians:
-
->>> np.radians(deg)
-array([0.        , 0.52359878, 1.04719755, 1.57079633, 2.0943951 ,
-       2.61799388, 3.14159265, 3.66519143, 4.1887902 , 4.71238898,
-       5.23598776, 5.75958653])
-
->>> out = np.zeros_like(deg)
->>> ret = np.radians(deg, out)
->>> ret is out
-True
-"""
-
-radians = DPNPUnaryFunc(
-    "radians",
-    ufi._radians_result_type,
-    ufi._radians,
-    _RADIANS_DOCSTRING,
 )
 
 

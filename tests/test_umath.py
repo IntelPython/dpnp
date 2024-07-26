@@ -279,6 +279,19 @@ class TestCopySign:
             dpnp.copysign(dp_array, dp_array, out=dp_out)
 
 
+class TestDegrees:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_degrees(self, dtype):
+        a = numpy.array([numpy.pi, -0.5 * numpy.pi], dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.radians(ia)
+        expected = numpy.radians(a)
+        assert_dtype_allclose(result, expected)
+
+
 class TestLogaddexp:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_logaddexp(self, dtype):
