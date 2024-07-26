@@ -31,5 +31,5 @@ namespace py = pybind11;
 
 namespace dpnp::extensions::lapack
 {
-void init_heevd(py::module_ m);
+void init_heevd_batch(py::module_ m);
 } // namespace dpnp::extensions::lapack
