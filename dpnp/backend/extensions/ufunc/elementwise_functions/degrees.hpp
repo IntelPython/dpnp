@@ -29,7 +29,7 @@
 
 namespace py = pybind11;
 
-namespace dpnp::extensions::lapack
+namespace dpnp::extensions::ufunc
 {
-void init_heevd(py::module_ m);
-} // namespace dpnp::extensions::lapack
+void init_degrees(py::module_ m);
+} // namespace dpnp::extensions::ufunc

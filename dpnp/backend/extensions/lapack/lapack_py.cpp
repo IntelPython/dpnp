@@ -37,10 +37,12 @@
 #include "getri.hpp"
 #include "getrs.hpp"
 #include "heevd.hpp"
+#include "heevd_batch.hpp"
 #include "linalg_exceptions.hpp"
 #include "orgqr.hpp"
 #include "potrf.hpp"
 #include "syevd.hpp"
+#include "syevd_batch.hpp"
 #include "ungqr.hpp"
 
 namespace lapack_ext = dpnp::extensions::lapack;
@@ -82,6 +84,9 @@ PYBIND11_MODULE(_lapack_impl, m)
 
     lapack_ext::init_heevd(m);
     lapack_ext::init_syevd(m);
+
+    lapack_ext::init_heevd_batch(m);
+    lapack_ext::init_syevd_batch(m);
 
     m.def("_geqrf_batch", &lapack_ext::geqrf_batch,
           "Call `geqrf_batch` from OneMKL LAPACK library to return "

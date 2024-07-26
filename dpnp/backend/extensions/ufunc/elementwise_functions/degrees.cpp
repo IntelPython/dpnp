@@ -27,8 +27,8 @@
 
 #include "dpctl4pybind11.hpp"
 
-#include "fabs.hpp"
-#include "kernels/elementwise_functions/fabs.hpp"
+#include "degrees.hpp"
+#include "kernels/elementwise_functions/degrees.hpp"
 #include "populate.hpp"
 
 // include a local copy of elementwise common header from dpctl tensor:
@@ -52,7 +52,7 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 
 /**
  * @brief A factory to define pairs of supported types for which
- * sycl::fabs<T> function is available.
+ * sycl::degrees<T> function is available.
  *
  * @tparam T Type of input vector `a` and of result vector `y`.
  */
@@ -66,7 +66,7 @@ struct OutputType
                                   td_ns::DefaultResultEntry<void>>::result_type;
 };
 
-using dpnp::kernels::fabs::FabsFunctor;
+using dpnp::kernels::degrees::DegreesFunctor;
 
 template <typename argT,
           typename resT = argT,
@@ -75,51 +75,53 @@ template <typename argT,
           bool enable_sg_loadstore = true>
 using ContigFunctor = ew_cmn_ns::UnaryContigFunctor<argT,
                                                     resT,
-                                                    FabsFunctor<argT, resT>,
+                                                    DegreesFunctor<argT, resT>,
                                                     vec_sz,
                                                     n_vecs,
                                                     enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
 using StridedFunctor = ew_cmn_ns::
-    UnaryStridedFunctor<argTy, resTy, IndexerT, FabsFunctor<argTy, resTy>>;
+    UnaryStridedFunctor<argTy, resTy, IndexerT, DegreesFunctor<argTy, resTy>>;
 
 using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
-static unary_contig_impl_fn_ptr_t fabs_contig_dispatch_vector[td_ns::num_types];
-static int fabs_output_typeid_vector[td_ns::num_types];
+static unary_contig_impl_fn_ptr_t
+    degrees_contig_dispatch_vector[td_ns::num_types];
+static int degrees_output_typeid_vector[td_ns::num_types];
 static unary_strided_impl_fn_ptr_t
-    fabs_strided_dispatch_vector[td_ns::num_types];
+    degrees_strided_dispatch_vector[td_ns::num_types];
 
-MACRO_POPULATE_DISPATCH_VECTORS(fabs);
+MACRO_POPULATE_DISPATCH_VECTORS(degrees);
 } // namespace impl
 
-void init_fabs(py::module_ m)
+void init_degrees(py::module_ m)
 {
     using arrayT = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
     {
-        impl::populate_fabs_dispatch_vectors();
-        using impl::fabs_contig_dispatch_vector;
-        using impl::fabs_output_typeid_vector;
-        using impl::fabs_strided_dispatch_vector;
+        impl::populate_degrees_dispatch_vectors();
+        using impl::degrees_contig_dispatch_vector;
+        using impl::degrees_output_typeid_vector;
+        using impl::degrees_strided_dispatch_vector;
 
-        auto fabs_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue &exec_q,
-                              const event_vecT &depends = {}) {
-            return py_int::py_unary_ufunc(
-                src, dst, exec_q, depends, fabs_output_typeid_vector,
-                fabs_contig_dispatch_vector, fabs_strided_dispatch_vector);
+        auto degrees_pyapi = [&](const arrayT &src, const arrayT &dst,
+                                 sycl::queue &exec_q,
+                                 const event_vecT &depends = {}) {
+            return py_int::py_unary_ufunc(src, dst, exec_q, depends,
+                                          degrees_output_typeid_vector,
+                                          degrees_contig_dispatch_vector,
+                                          degrees_strided_dispatch_vector);
         };
-        m.def("_fabs", fabs_pyapi, "", py::arg("src"), py::arg("dst"),
+        m.def("_degrees", degrees_pyapi, "", py::arg("src"), py::arg("dst"),
               py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-        auto fabs_result_type_pyapi = [&](const py::dtype &dtype) {
+        auto degrees_result_type_pyapi = [&](const py::dtype &dtype) {
             return py_int::py_unary_ufunc_result_type(
-                dtype, fabs_output_typeid_vector);
+                dtype, degrees_output_typeid_vector);
         };
-        m.def("_fabs_result_type", fabs_result_type_pyapi);
+        m.def("_degrees_result_type", degrees_result_type_pyapi);
     }
 }
 } // namespace dpnp::extensions::ufunc

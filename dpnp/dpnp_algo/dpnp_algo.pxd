@@ -35,7 +35,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_CHOOSE_EXT
         DPNP_FN_CORRELATE_EXT
-        DPNP_FN_DEGREES_EXT
         DPNP_FN_EDIFF1D_EXT
         DPNP_FN_ERF_EXT
         DPNP_FN_FFT_FFT_EXT
@@ -43,7 +42,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MEDIAN_EXT
         DPNP_FN_MODF_EXT
         DPNP_FN_PARTITION_EXT
-        DPNP_FN_RADIANS_EXT
         DPNP_FN_RNG_BETA_EXT
         DPNP_FN_RNG_BINOMIAL_EXT
         DPNP_FN_RNG_CHISQUARE_EXT
@@ -158,10 +156,3 @@ Internal functions
 """
 cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype)
 cdef dpnp_DPNPFuncType_to_dtype(size_t type)
-
-
-"""
-Trigonometric functions
-"""
-cpdef dpnp_descriptor dpnp_degrees(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_radians(dpnp_descriptor array1)
