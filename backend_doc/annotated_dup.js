@@ -95,6 +95,9 @@ var annotated_dup =
         ] ]
       ] ],
       [ "kernels", null, [
+        [ "degrees", null, [
+          [ "DegreesFunctor", "structdpnp_1_1kernels_1_1degrees_1_1_degrees_functor.html", null ]
+        ] ],
         [ "fabs", null, [
           [ "FabsFunctor", "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html", null ]
         ] ],

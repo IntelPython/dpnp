@@ -24,8 +24,6 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNPFuncName::DPNP_FN_CORRELATE_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a9bc9a51cda7b0d6ddb0ce5412c747a1e", null ],
       [ "DPNPFuncName::DPNP_FN_COUNT_NONZERO", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a4a4d73cc14f7681dd49a449c3bd10144", null ],
       [ "DPNPFuncName::DPNP_FN_COV", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a4e3c9946978c0627bf39906da7804b3b", null ],
-      [ "DPNPFuncName::DPNP_FN_DEGREES", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558accd4f4f5361af9a38bca158550c4499a", null ],
-      [ "DPNPFuncName::DPNP_FN_DEGREES_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a8016179517e2ca1d7fa0b95b49a9130a", null ],
       [ "DPNPFuncName::DPNP_FN_DOT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a5333d3eb859da5bba7770ae8194ca5d2", null ],
       [ "DPNPFuncName::DPNP_FN_DOT_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a62f2665bbd701478639f3701b16a6cf1", null ],
       [ "DPNPFuncName::DPNP_FN_EDIFF1D", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a22087fff882a91b3eea483db4557066d", null ],
