@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+90.g5c5810ebe2 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+123.g95590f3e86 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=1bcc8dd7"></script>
+        <script src="../../_static/documentation_options.js?v=8ab3cb2a"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+90.g5c5810ebe2
+                0.16.0dev0+123.g95590f3e86
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -2337,7 +2337,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp_geomspace</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">dpnp_geomspace</span><span class="p">(</span>
         <span class="n">start</span><span class="p">,</span>
         <span class="n">stop</span><span class="p">,</span>
         <span class="n">num</span><span class="p">,</span>
@@ -2347,10 +2347,7 @@
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">res</span></div>
+    <span class="p">)</span></div>
 
 
 
@@ -2565,7 +2562,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp_linspace</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">dpnp_linspace</span><span class="p">(</span>
         <span class="n">start</span><span class="p">,</span>
         <span class="n">stop</span><span class="p">,</span>
         <span class="n">num</span><span class="p">,</span>
@@ -2576,13 +2573,7 @@
         <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
         <span class="n">retstep</span><span class="o">=</span><span class="n">retstep</span><span class="p">,</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>  <span class="c1"># (result, step) is returning</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">res</span></div>
+    <span class="p">)</span></div>
 
 
 
@@ -2804,7 +2795,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp_logspace</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">dpnp_logspace</span><span class="p">(</span>
         <span class="n">start</span><span class="p">,</span>
         <span class="n">stop</span><span class="p">,</span>
         <span class="n">num</span><span class="o">=</span><span class="n">num</span><span class="p">,</span>
@@ -2815,10 +2806,7 @@
         <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">res</span></div>
+    <span class="p">)</span></div>
 
 
 
@@ -2923,9 +2911,7 @@
     <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">output</span><span class="p">]</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">output</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">output</span></div>
+    <span class="k">return</span> <span class="p">[</span><span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">output</span><span class="p">]</span></div>
 
 
 

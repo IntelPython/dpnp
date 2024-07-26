@@ -131,6 +131,7 @@ Adding and removing elements
    dpnp.resize
    dpnp.unique
    dpnp.trim_zeros
+   dpnp.pad
 
 
 Rearranging elements
