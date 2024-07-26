@@ -38,25 +38,17 @@ it contains:
 """
 
 # pylint: disable=protected-access
-# pylint: disable=c-extension-no-member
-# pylint: disable=duplicate-code
-# pylint: disable=no-name-in-module
 
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.tensor._type_utils as dtu
-import numpy
 
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 import dpnp.backend.extensions.vm._vm_impl as vmi
 
-from .dpnp_algo import (
-    dpnp_unwrap,
-)
 from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
-from .dpnp_utils import call_origin
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
 __all__ = [
@@ -2119,38 +2111,120 @@ tanh = DPNPUnaryFunc(
 )
 
 
-def unwrap(x1, **kwargs):
-    """
-    Unwrap by changing deltas between values to 2*pi complement.
+def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
+    r"""
+    Unwrap by taking the complement of large deltas with respect to the period.
+
+    This unwraps a signal `p` by changing elements which have an absolute
+    difference from their predecessor of more than ``max(discont, period / 2)``
+    to their `period`-complementary values.
+
+    For the default case where `period` is :math:`2\pi` and `discont` is
+    :math:`\pi`, this unwraps a radian phase `p` such that adjacent differences
+    are never greater than :math:`\pi` by adding :math:`2k\pi` for some integer
+    :math:`k`.
 
     For full documentation refer to :obj:`numpy.unwrap`.
 
-    Limitations
-    -----------
-    Input array is supported as :class:`dpnp.ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    p : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    discont : {float, None}, optional
+        Maximum discontinuity between values, default is ``period / 2``. Values
+        below ``period / 2`` are treated as if they were ``period / 2``. To
+        have an effect different from the default, `discont` should be larger
+        than ``period / 2``.
+        Default: ``None``.
+    axis : int, optional
+        Axis along which unwrap will operate, default is the last axis.
+        Default: ``-1``.
+    period : float, optional
+        Size of the range over which the input wraps.
+        Default: ``2 * pi``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array.
 
     See Also
     --------
     :obj:`dpnp.rad2deg` : Convert angles from radians to degrees.
     :obj:`dpnp.deg2rad` : Convert angles from degrees to radians.
 
+    Notes
+    -----
+    If the discontinuity in `p` is smaller than ``period / 2``, but larger than
+    `discont`, no unwrapping is done because taking the complement would only
+    make the discontinuity larger.
+
     Examples
     --------
     >>> import dpnp as np
     >>> phase = np.linspace(0, np.pi, num=5)
-    >>> for i in range(3, 5):
-    >>>     phase[i] += np.pi
-    >>> out = np.unwrap(phase)
-    >>> [i for i in out]
-    [0.0, 0.78539816, 1.57079633, 5.49778714, 6.28318531]
+    >>> phase[3:] += np.pi
+    >>> phase
+    array([0.        , 0.78539816, 1.57079633, 5.49778714, 6.28318531])
+    >>> np.unwrap(phase)
+    array([ 0.        ,  0.78539816,  1.57079633, -0.78539816,  0.        ])
+
+    >>> phase = np.array([0, 1, 2, -1, 0])
+    >>> np.unwrap(phase, period=4)
+    array([0, 1, 2, 3, 4])
+
+    >>> phase = np.array([1, 2, 3, 4, 5, 6, 1, 2, 3])
+    >>> np.unwrap(phase, period=6)
+    array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+    >>> phase = np.array([2, 3, 4, 5, 2, 3, 4, 5])
+    >>> np.unwrap(phase, period=4)
+    array([2, 3, 4, 5, 6, 7, 8, 9])
+
+    >>> phase_deg = np.mod(np.linspace(0 ,720, 19), 360) - 180
+    >>> np.unwrap(phase_deg, period=360)
+    array([-180., -140., -100.,  -60.,  -20.,   20.,   60.,  100.,  140.,
+            180.,  220.,  260.,  300.,  340.,  380.,  420.,  460.,  500.,
+            540.])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if kwargs:
-        pass
-    elif x1_desc:
-        return dpnp_unwrap(x1_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(p)
 
-    return call_origin(numpy.unwrap, x1, **kwargs)
+    p_nd = p.ndim
+    p_diff = dpnp.diff(p, axis=axis)
+
+    if discont is None:
+        discont = period / 2
+
+    # full slices
+    slice1 = [slice(None, None)] * p_nd
+    slice1[axis] = slice(1, None)
+    slice1 = tuple(slice1)
+
+    dt = dpnp.result_type(p_diff, period)
+    if dpnp.issubdtype(dt, dpnp.integer):
+        interval_high, rem = divmod(period, 2)
+        boundary_ambiguous = rem == 0
+    else:
+        interval_high = period / 2
+        boundary_ambiguous = True
+    interval_low = -interval_high
+
+    ddmod = p_diff - interval_low
+    ddmod = dpnp.remainder(ddmod, period, out=ddmod)
+    ddmod += interval_low
+
+    if boundary_ambiguous:
+        mask = ddmod == interval_low
+        mask &= p_diff > 0
+        dpnp.copyto(ddmod, interval_high, where=mask)
+
+    ph_correct = dpnp.subtract(ddmod, p_diff, out=ddmod)
+    abs_p_diff = dpnp.abs(p_diff, out=p_diff)
+    dpnp.copyto(ph_correct, 0, where=abs_p_diff < discont)
+
+    up = dpnp.astype(p, dtype=dt, copy=True)
+    up[slice1] = p[slice1]
+    up[slice1] += ph_correct.cumsum(axis=axis)
+    return up

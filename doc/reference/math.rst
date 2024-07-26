@@ -199,7 +199,7 @@ Extrema finding
    dpnp.amax
    dpnp.fmax
    dpnp.nanmax
-   
+
    dpnp.minimum
    dpnp.min
    dpnp.amin
@@ -227,7 +227,7 @@ Miscellaneous
    dpnp.fabs
    dpnp.sign
    dpnp.heaviside
-   
+
    dpnp.nan_to_num
    dpnp.real_if_close
 
