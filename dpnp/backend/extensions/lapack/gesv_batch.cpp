@@ -49,9 +49,7 @@ typedef sycl::event (*gesv_batch_impl_fn_ptr_t)(
     const std::int64_t,
     const std::int64_t,
     char *,
-    std::int64_t,
     char *,
-    std::int64_t,
     const std::vector<sycl::event> &);
 
 static gesv_batch_impl_fn_ptr_t
@@ -63,9 +61,7 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
                                    const std::int64_t nrhs,
                                    const std::int64_t batch_size,
                                    char *in_a,
-                                   std::int64_t lda,
                                    char *in_b,
-                                   std::int64_t ldb,
                                    const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
@@ -75,6 +71,9 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
 
     std::int64_t a_size = n * n;
     std::int64_t b_size = n * nrhs;
+
+    const std::int64_t lda = std::max<size_t>(1UL, n);
+    const std::int64_t ldb = std::max<size_t>(1UL, n);
 
     // Get the number of independent linear streams
     std::int64_t n_linear_streams =
@@ -292,12 +291,9 @@ std::pair<sycl::event, sycl::event>
     const std::int64_t nrhs =
         (dependent_vals_nd > 2) ? dependent_vals_shape[1] : 1;
 
-    const std::int64_t lda = std::max<size_t>(1UL, n);
-    const std::int64_t ldb = std::max<size_t>(1UL, n);
-
     sycl::event gesv_ev =
-        gesv_batch_fn(exec_q, n, nrhs, batch_size, coeff_matrix_data, lda,
-                      dependent_vals_data, ldb, depends);
+        gesv_batch_fn(exec_q, n, nrhs, batch_size, coeff_matrix_data,
+                      dependent_vals_data, depends);
 
     sycl::event ht_ev = dpctl::utils::keep_args_alive(
         exec_q, {coeff_matrix, dependent_vals}, {gesv_ev});

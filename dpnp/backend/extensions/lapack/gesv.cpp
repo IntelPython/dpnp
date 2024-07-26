@@ -138,9 +138,7 @@ typedef sycl::event (*gesv_impl_fn_ptr_t)(sycl::queue &,
                                           const std::int64_t,
                                           const std::int64_t,
                                           char *,
-                                          std::int64_t,
                                           char *,
-                                          std::int64_t,
                                           const std::vector<sycl::event> &);
 
 static gesv_impl_fn_ptr_t gesv_dispatch_vector[dpctl_td_ns::num_types];
@@ -150,15 +148,16 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
                              const std::int64_t n,
                              const std::int64_t nrhs,
                              char *in_a,
-                             std::int64_t lda,
                              char *in_b,
-                             std::int64_t ldb,
                              const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
 
     T *a = reinterpret_cast<T *>(in_a);
     T *b = reinterpret_cast<T *>(in_b);
+
+    const std::int64_t lda = std::max<size_t>(1UL, n);
+    const std::int64_t ldb = std::max<size_t>(1UL, n);
 
     const std::int64_t scratchpad_size =
         mkl_lapack::gesv_scratchpad_size<T>(exec_q, n, nrhs, lda, ldb);
@@ -318,11 +317,8 @@ std::pair<sycl::event, sycl::event>
     const std::int64_t nrhs =
         (dependent_vals_nd > 1) ? dependent_vals_shape[1] : 1;
 
-    const std::int64_t lda = std::max<size_t>(1UL, n);
-    const std::int64_t ldb = std::max<size_t>(1UL, n);
-
-    sycl::event gesv_ev = gesv_fn(exec_q, n, nrhs, coeff_matrix_data, lda,
-                                  dependent_vals_data, ldb, depends);
+    sycl::event gesv_ev = gesv_fn(exec_q, n, nrhs, coeff_matrix_data,
+                                  dependent_vals_data, depends);
 
     sycl::event ht_ev = dpctl::utils::keep_args_alive(
         exec_q, {coeff_matrix, dependent_vals}, {gesv_ev});
