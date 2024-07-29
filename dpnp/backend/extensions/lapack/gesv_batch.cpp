@@ -69,14 +69,14 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
     T *a = reinterpret_cast<T *>(in_a);
     T *b = reinterpret_cast<T *>(in_b);
 
-    std::int64_t a_size = n * n;
-    std::int64_t b_size = n * nrhs;
+    const std::int64_t a_size = n * n;
+    const std::int64_t b_size = n * nrhs;
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, n);
 
     // Get the number of independent linear streams
-    std::int64_t n_linear_streams =
+    const std::int64_t n_linear_streams =
         (batch_size > 16) ? 4 : ((batch_size > 4 ? 2 : 1));
 
     const std::int64_t scratchpad_size =

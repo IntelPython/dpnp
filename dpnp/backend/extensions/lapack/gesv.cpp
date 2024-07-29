@@ -75,10 +75,10 @@ void common_gesv_checks(sycl::queue &exec_q,
 
     // The coeff_matrix and dependent_vals arrays must be F-contiguous arrays
     // for gesv
-    // with the shapes (n,n) and (n,nrhs) or (n,) respectively;
+    // with the shapes (n, n) and (n, nrhs) or (n, ) respectively;
     // for gesv_batch
-    // with the shapes (n,n,batch_size) and (n,nrhs,batch_size) or
-    // (n,batch_size) respectively
+    // with the shapes (n, n, batch_size) and (n, nrhs, batch_size) or
+    // (n, batch_size) respectively
     if (coeff_matrix_shape[0] != coeff_matrix_shape[1]) {
         throw py::value_error("The coefficient matrix must be square,"
                               " but got a shape of (" +
