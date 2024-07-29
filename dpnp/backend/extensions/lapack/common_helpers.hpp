@@ -66,6 +66,30 @@ inline bool check_zeros_shape(int ndim, const py::ssize_t *shape)
     return src_nelems == 0;
 }
 
+// Allocate the total memory for the total pivot indices with proper alignment
+// for batch implementations
+template <typename T>
+inline std::int64_t *alloc_ipiv(const std::int64_t n,
+                                std::int64_t n_linear_streams,
+                                sycl::queue &exec_q)
+{
+    // Get padding size to ensure memory allocations are aligned to 256 bytes
+    // for better performance
+    const std::int64_t padding = 256 / sizeof(T);
+
+    // Calculate the total size needed for the pivot indices array for all
+    // linear streams with proper alignment
+    size_t alloc_ipiv_size = round_up_mult(n_linear_streams * n, padding);
+
+    // Allocate memory for the total pivot indices array
+    std::int64_t *ipiv =
+        sycl::malloc_device<std::int64_t>(alloc_ipiv_size, exec_q);
+    if (!ipiv)
+        throw std::runtime_error("Device allocation for ipiv failed");
+
+    return ipiv;
+}
+
 // Allocate the total scratchpad memory with proper alignment for batch
 // implementations
 template <typename T>

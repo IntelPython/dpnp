@@ -85,20 +85,7 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
     T *scratchpad =
         helper::alloc_scratchpad<T>(scratchpad_size, n_linear_streams, exec_q);
 
-    // Get padding size to ensure memory allocations are aligned to 256 bytes
-    // for better performance
-    const std::int64_t padding = 256 / sizeof(T);
-
-    // Calculate the total size needed for the pivot indices array for all
-    // linear streams with proper alignment
-    size_t alloc_ipiv_size =
-        helper::round_up_mult(n_linear_streams * n, padding);
-
-    // Allocate memory for the total pivot indices array
-    std::int64_t *ipiv =
-        sycl::malloc_device<std::int64_t>(alloc_ipiv_size, exec_q);
-    if (!ipiv)
-        throw std::runtime_error("Device allocation for ipiv failed");
+    std::int64_t *ipiv = helper::alloc_ipiv<T>(n, n_linear_streams, exec_q);
 
     // Computation events to manage dependencies for each linear stream
     std::vector<std::vector<sycl::event>> comp_evs(n_linear_streams, depends);
