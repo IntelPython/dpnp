@@ -82,10 +82,17 @@ inline std::int64_t *alloc_ipiv(const std::int64_t n,
     size_t alloc_ipiv_size = round_up_mult(n_linear_streams * n, padding);
 
     // Allocate memory for the total pivot indices array
-    std::int64_t *ipiv =
-        sycl::malloc_device<std::int64_t>(alloc_ipiv_size, exec_q);
-    if (!ipiv)
-        throw std::runtime_error("Device allocation for ipiv failed");
+    try {
+        std::int64_t *ipiv =
+            sycl::malloc_device<std::int64_t>(alloc_ipiv_size, exec_q);
+        if (!ipiv)
+            throw std::runtime_error("Device allocation for ipiv failed");
+    } catch (sycl::exception const &e) {
+        throw std::runtime_error(
+            std::string(
+                "Unexpected SYCL exception caught during ipiv allocation: ") +
+            e.what());
+    }
 
     return ipiv;
 }
@@ -114,9 +121,14 @@ inline T *alloc_scratchpad(std::int64_t scratchpad_size,
         round_up_mult(n_linear_streams * scratchpad_size, padding);
 
     // Allocate memory for the total scratchpad
-    T *scratchpad = sycl::malloc_device<T>(alloc_scratch_size, exec_q);
-    if (!scratchpad) {
-        throw std::runtime_error("Device allocation for scratchpad failed");
+    try {
+        T *scratchpad = sycl::malloc_device<T>(alloc_scratch_size, exec_q);
+        if (!scratchpad)
+            throw std::runtime_error("Device allocation for scratchpad failed");
+    } catch (sycl::exception const &e) {
+        throw std::runtime_error(std::string("Unexpected SYCL exception caught "
+                                             "during scratchpad allocation: ") +
+                                 e.what());
     }
 
     return scratchpad;
