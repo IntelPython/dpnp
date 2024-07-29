@@ -170,38 +170,62 @@ $(document).ready(function(){initNavTree('common__helpers_8hpp_source.html','');
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">return</span> src_nelems == 0;</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>}</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="comment">// Allocate the total scratchpad memory with proper alignment for batch</span></div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="comment">// implementations</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="comment">// Allocate the total memory for the total pivot indices with proper alignment</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="comment">// for batch implementations</span></div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="keyword">inline</span> T *alloc_scratchpad(std::int64_t scratchpad_size,</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                           std::int64_t n_linear_streams,</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                           sycl::queue &amp;exec_q)</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="keyword">inline</span> std::int64_t *alloc_ipiv(<span class="keyword">const</span> std::int64_t n,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                                std::int64_t n_linear_streams,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                                sycl::queue &amp;exec_q)</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>{</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="comment">// Get padding size to ensure memory allocations are aligned to 256 bytes</span></div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="comment">// for better performance</span></div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">const</span> std::int64_t padding = 256 / <span class="keyword">sizeof</span>(T);</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">if</span> (scratchpad_size &lt;= 0) {</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="stringliteral">&quot;Invalid scratchpad size: must be greater than zero.&quot;</span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="stringliteral">&quot; Calculated scratchpad size: &quot;</span> +</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            std::to_string(scratchpad_size));</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="comment">// Calculate the total scratchpad memory size needed for all linear</span></div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="comment">// streams with proper alignment</span></div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> alloc_scratch_size =</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        round_up_mult(n_linear_streams * scratchpad_size, padding);</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="comment">// Allocate memory for the total scratchpad</span></div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    T *scratchpad = sycl::malloc_device&lt;T&gt;(alloc_scratch_size, exec_q);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (!scratchpad) {</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Device allocation for scratchpad failed&quot;</span>);</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    }</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">return</span> scratchpad;</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>} <span class="comment">// namespace dpnp::extensions::lapack::helper</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="comment">// Calculate the total size needed for the pivot indices array for all</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="comment">// linear streams with proper alignment</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">size_t</span> alloc_ipiv_size = round_up_mult(n_linear_streams * n, padding);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="comment">// Allocate memory for the total pivot indices array</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    std::int64_t *ipiv =</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        sycl::malloc_device&lt;std::int64_t&gt;(alloc_ipiv_size, exec_q);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">if</span> (!ipiv)</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Device allocation for ipiv failed&quot;</span>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">return</span> ipiv;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="comment">// Allocate the total scratchpad memory with proper alignment for batch</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="comment">// implementations</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="keyword">inline</span> T *alloc_scratchpad(std::int64_t scratchpad_size,</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                           std::int64_t n_linear_streams,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                           sycl::queue &amp;exec_q)</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>{</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="comment">// Get padding size to ensure memory allocations are aligned to 256 bytes</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="comment">// for better performance</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keyword">const</span> std::int64_t padding = 256 / <span class="keyword">sizeof</span>(T);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">if</span> (scratchpad_size &lt;= 0) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            <span class="stringliteral">&quot;Invalid scratchpad size: must be greater than zero.&quot;</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            <span class="stringliteral">&quot; Calculated scratchpad size: &quot;</span> +</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            std::to_string(scratchpad_size));</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="comment">// Calculate the total scratchpad memory size needed for all linear</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="comment">// streams with proper alignment</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> alloc_scratch_size =</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        round_up_mult(n_linear_streams * scratchpad_size, padding);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="comment">// Allocate memory for the total scratchpad</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    T *scratchpad = sycl::malloc_device&lt;T&gt;(alloc_scratch_size, exec_q);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">if</span> (!scratchpad) {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Device allocation for scratchpad failed&quot;</span>);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">return</span> scratchpad;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>} <span class="comment">// namespace dpnp::extensions::lapack::helper</span></div>
 <div class="ttc" id="astructdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of_html"><div class="ttname"><a href="structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of.html">dpnp::extensions::lapack::helper::value_type_of</a></div><div class="ttdef"><b>Definition</b> <a href="common__helpers_8hpp_source.html#l00039">common_helpers.hpp:40</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
