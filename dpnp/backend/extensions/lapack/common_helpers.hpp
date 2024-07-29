@@ -81,10 +81,11 @@ inline std::int64_t *alloc_ipiv(const std::int64_t n,
     // linear streams with proper alignment
     size_t alloc_ipiv_size = round_up_mult(n_linear_streams * n, padding);
 
+    std::int64_t *ipiv = nullptr;
+
     // Allocate memory for the total pivot indices array
     try {
-        std::int64_t *ipiv =
-            sycl::malloc_device<std::int64_t>(alloc_ipiv_size, exec_q);
+        ipiv = sycl::malloc_device<std::int64_t>(alloc_ipiv_size, exec_q);
         if (!ipiv)
             throw std::runtime_error("Device allocation for ipiv failed");
     } catch (sycl::exception const &e) {
@@ -120,9 +121,11 @@ inline T *alloc_scratchpad(std::int64_t scratchpad_size,
     const size_t alloc_scratch_size =
         round_up_mult(n_linear_streams * scratchpad_size, padding);
 
+    T *scratchpad = nullptr;
+
     // Allocate memory for the total scratchpad
     try {
-        T *scratchpad = sycl::malloc_device<T>(alloc_scratch_size, exec_q);
+        scratchpad = sycl::malloc_device<T>(alloc_scratch_size, exec_q);
         if (!scratchpad)
             throw std::runtime_error("Device allocation for scratchpad failed");
     } catch (sycl::exception const &e) {
