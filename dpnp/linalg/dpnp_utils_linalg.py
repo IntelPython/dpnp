@@ -266,11 +266,11 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
     # gesv_batch expects `a` to be a 3D array and
     # `b` to be either a 2D or 3D array.
     if a.ndim == b.ndim:
-        b = b.reshape(-1, b_shape[-2], b_shape[-1])
+        b = dpnp.reshape(b, (-1, b_shape[-2], b_shape[-1]))
     else:
-        b = b.reshape(-1, b_shape[-1])
+        b = dpnp.reshape(b, (-1, b_shape[-1]))
 
-    a = a.reshape(-1, a_shape[-2], a_shape[-1])
+    a = dpnp.reshape(a, (-1, a_shape[-2], a_shape[-1]))
 
     # Reorder the elements by moving the last two axes of `a` to the front
     # to match fortran-like array order which is assumed by gesv.
