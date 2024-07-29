@@ -31,7 +31,6 @@
 #include "common_helpers.hpp"
 #include "gesv.hpp"
 #include "gesv_common_utils.hpp"
-#include "linalg_exceptions.hpp"
 #include "types_matrix.hpp"
 
 namespace dpnp::extensions::lapack
@@ -88,7 +87,6 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
         throw std::runtime_error("Device allocation for ipiv failed");
 
     std::stringstream error_msg;
-    std::int64_t info = 0;
     bool is_exception_caught = false;
 
     sycl::event gesv_event;
@@ -112,41 +110,8 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
             scratchpad_size, depends);
     } catch (mkl_lapack::exception const &e) {
         is_exception_caught = true;
-        info = e.info();
-
-        if (info < 0) {
-            error_msg << "Parameter number " << -info
-                      << " had an illegal value.";
-        }
-        else if (info == scratchpad_size && e.detail() != 0) {
-            error_msg
-                << "Insufficient scratchpad size. Required size is at least "
-                << e.detail();
-        }
-        else if (info > 0) {
-            T host_U;
-            exec_q.memcpy(&host_U, &a[(info - 1) * lda + info - 1], sizeof(T))
-                .wait();
-
-            using ThresholdType = typename helper::value_type_of<T>::type;
-
-            const auto threshold =
-                std::numeric_limits<ThresholdType>::epsilon() * 100;
-            if (std::abs(host_U) < threshold) {
-                sycl::free(scratchpad, exec_q);
-                throw LinAlgError("The input coefficient matrix is singular.");
-            }
-            else {
-                error_msg << "Unexpected MKL exception caught during gesv() "
-                             "call:\nreason: "
-                          << e.what() << "\ninfo: " << e.info();
-            }
-        }
-        else {
-            error_msg << "Unexpected MKL exception caught during gesv() "
-                         "call:\nreason: "
-                      << e.what() << "\ninfo: " << e.info();
-        }
+        gesv_utils::handle_lapack_exc(exec_q, lda, a, scratchpad_size,
+                                      scratchpad, ipiv, e, error_msg);
     } catch (sycl::exception const &e) {
         is_exception_caught = true;
         error_msg << "Unexpected SYCL exception caught during gesv() call:\n"
@@ -155,12 +120,10 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
 
     if (is_exception_caught) // an unexpected error occurs
     {
-        if (scratchpad != nullptr) {
+        if (scratchpad != nullptr)
             sycl::free(scratchpad, exec_q);
-        }
-        if (ipiv != nullptr) {
+        if (ipiv != nullptr)
             sycl::free(ipiv, exec_q);
-        }
         throw std::runtime_error(error_msg.str());
     }
 

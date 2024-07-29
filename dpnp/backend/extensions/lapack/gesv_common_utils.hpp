@@ -32,6 +32,9 @@
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
+#include "common_helpers.hpp"
+#include "linalg_exceptions.hpp"
+
 namespace dpnp::extensions::lapack::gesv_utils
 {
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
@@ -125,6 +128,53 @@ inline void common_gesv_checks(sycl::queue &exec_q,
     if (coeff_matrix_type_id != dependent_vals_type_id) {
         throw py::value_error("The types of the coefficient matrix and "
                               "dependent variables are mismatched.");
+    }
+}
+
+template <typename T>
+inline void handle_lapack_exc(sycl::queue &exec_q,
+                              const std::int64_t lda,
+                              T *a,
+                              std::int64_t scratchpad_size,
+                              T *scratchpad,
+                              std::int64_t *ipiv,
+                              const oneapi::mkl::lapack::exception &e,
+                              std::stringstream &error_msg)
+{
+    std::int64_t info = e.info();
+    if (info < 0) {
+        error_msg << "Parameter number " << -info << " had an illegal value.";
+    }
+    else if (info == scratchpad_size && e.detail() != 0) {
+        error_msg << "Insufficient scratchpad size. Required size is at least "
+                  << e.detail();
+    }
+    else if (info > 0) {
+        T host_U;
+        exec_q.memcpy(&host_U, &a[(info - 1) * lda + info - 1], sizeof(T))
+            .wait();
+
+        using ThresholdType = typename helper::value_type_of<T>::type;
+
+        const auto threshold =
+            std::numeric_limits<ThresholdType>::epsilon() * 100;
+        if (std::abs(host_U) < threshold) {
+            if (scratchpad != nullptr)
+                sycl::free(scratchpad, exec_q);
+            if (ipiv != nullptr)
+                sycl::free(ipiv, exec_q);
+            throw LinAlgError("The input coefficient matrix is singular.");
+        }
+        else {
+            error_msg << "Unexpected MKL exception caught during gesv() "
+                         "call:\nreason: "
+                      << e.what() << "\ninfo: " << e.info();
+        }
+    }
+    else {
+        error_msg
+            << "Unexpected MKL exception caught during gesv() call:\nreason: "
+            << e.what() << "\ninfo: " << e.info();
     }
 }
 } // namespace dpnp::extensions::lapack::gesv_utils
