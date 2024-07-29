@@ -26,16 +26,13 @@
 #include <pybind11/pybind11.h>
 
 // dpctl tensor headers
-#include "utils/memory_overlap.hpp"
-#include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
 
 #include "common_helpers.hpp"
 #include "gesv.hpp"
+#include "gesv_common_utils.hpp"
 #include "linalg_exceptions.hpp"
 #include "types_matrix.hpp"
-
-#include "dpnp_utils.hpp"
 
 namespace dpnp::extensions::lapack
 {
@@ -224,9 +221,10 @@ std::pair<sycl::event, sycl::event>
     constexpr int min_dependent_vals_ndim = 2;
     constexpr int max_dependent_vals_ndim = 3;
 
-    common_gesv_checks(exec_q, coeff_matrix, dependent_vals, coeff_matrix_shape,
-                       dependent_vals_shape, expected_coeff_matrix_ndim,
-                       min_dependent_vals_ndim, max_dependent_vals_ndim);
+    gesv_utils::common_gesv_checks(
+        exec_q, coeff_matrix, dependent_vals, coeff_matrix_shape,
+        dependent_vals_shape, expected_coeff_matrix_ndim,
+        min_dependent_vals_ndim, max_dependent_vals_ndim);
 
     // Ensure `batch_size`, `n` and 'nrhs' are non-zero, otherwise return empty
     // events
