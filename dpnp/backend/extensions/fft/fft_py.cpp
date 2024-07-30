@@ -68,39 +68,57 @@ void register_descriptor(py::module &m, const char *name)
 PYBIND11_MODULE(_fft_impl, m)
 {
     constexpr mkl_dft::domain complex_dom = mkl_dft::domain::COMPLEX;
+    constexpr mkl_dft::domain real_dom = mkl_dft::domain::REAL;
 
     constexpr mkl_dft::precision single_prec = mkl_dft::precision::SINGLE;
     constexpr mkl_dft::precision double_prec = mkl_dft::precision::DOUBLE;
 
     register_descriptor<single_prec, complex_dom>(m, "Complex64Descriptor");
     register_descriptor<double_prec, complex_dom>(m, "Complex128Descriptor");
+    register_descriptor<single_prec, real_dom>(m, "Real32Descriptor");
+    register_descriptor<double_prec, real_dom>(m, "Real64Descriptor");
 
-    // out-of-place c2c FFT, both SINGLE and DOUBLE precisions are supported
-    // with overloading of "_fft_out_of_place" function on python side
-    m.def("_fft_out_of_place",
+    // out-of-place FFT, all possible combination (single/double precisions and
+    // real/complex domains) are supported with overloading of
+    // "_fft_out_of_place" function on python side
+    m.def("_fft_out_of_place", // single precision c2c out-of-place FFT
           &fft_ns::compute_fft_out_of_place<single_prec, complex_dom>,
           "Compute out-of-place complex-to-complex fft using OneMKL DFT "
           "library for complex64 data types.",
           py::arg("descriptor"), py::arg("input"), py::arg("output"),
           py::arg("is_forward"), py::arg("depends") = py::list());
 
-    m.def("_fft_out_of_place",
+    m.def("_fft_out_of_place", // double precision c2c out-of-place FFT
           &fft_ns::compute_fft_out_of_place<double_prec, complex_dom>,
           "Compute out-of-place complex-to-complex fft using OneMKL DFT "
           "library for complex128 data types.",
           py::arg("descriptor"), py::arg("input"), py::arg("output"),
           py::arg("is_forward"), py::arg("depends") = py::list());
 
-    // in-place c2c FFT, both SINGLE and DOUBLE precisions are supported with
+    m.def("_fft_out_of_place", // single precision r2c/c2r out-of-place FFT
+          &fft_ns::compute_fft_out_of_place<single_prec, real_dom>,
+          "Compute out-of-place real-to-complex fft using OneMKL DFT library "
+          "for float32 data types.",
+          py::arg("descriptor"), py::arg("input"), py::arg("output"),
+          py::arg("is_forward"), py::arg("depends") = py::list());
+
+    m.def("_fft_out_of_place", // double precision r2c/c2r out-of-place FFT
+          &fft_ns::compute_fft_out_of_place<double_prec, real_dom>,
+          "Compute out-of-place real-to-complex fft using OneMKL DFT library "
+          "for float64 data types.",
+          py::arg("descriptor"), py::arg("input"), py::arg("output"),
+          py::arg("is_forward"), py::arg("depends") = py::list());
+
+    // in-place c2c FFT, both single and double precisions are supported with
     // overloading of "_fft_in_place" function on python side
-    m.def("_fft_in_place",
+    m.def("_fft_in_place", // single precision c2c in-place FFT
           &fft_ns::compute_fft_in_place<single_prec, complex_dom>,
           "Compute in-place complex-to-complex fft using OneMKL DFT library "
           "for complex64 data types.",
           py::arg("descriptor"), py::arg("input-output"), py::arg("is_forward"),
           py::arg("depends") = py::list());
 
-    m.def("_fft_in_place",
+    m.def("_fft_in_place", // double precision c2c in-place FFT
           &fft_ns::compute_fft_in_place<double_prec, complex_dom>,
           "Compute in-place complex-to-complex fft using OneMKL DFT library "
           "for complex128 data types.",
