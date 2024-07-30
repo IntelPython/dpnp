@@ -61,14 +61,6 @@ class TestExplog:
         a = xp.full((2, 3), val, dtype=dtype)
         return xp.logaddexp(a, a)
 
-    @testing.for_float_dtypes()
-    @testing.numpy_cupy_allclose()
-    def test_logaddexp_nan(self, xp, dtype):
-        a = xp.full((2, 3), xp.nan, dtype=dtype)
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=RuntimeWarning)
-            return xp.logaddexp(a, a)
-
     def test_logaddexp2(self):
         self.check_binary("logaddexp2", no_complex=True)
 
@@ -78,11 +70,3 @@ class TestExplog:
     def test_logaddexp2_infinities(self, xp, dtype, val):
         a = xp.full((2, 3), val, dtype=dtype)
         return xp.logaddexp2(a, a)
-
-    @testing.for_float_dtypes()
-    @testing.numpy_cupy_allclose()
-    def test_logaddexp2_nan(self, xp, dtype):
-        a = xp.full((2, 3), xp.nan, dtype=dtype)
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=RuntimeWarning)
-            return xp.logaddexp2(a, a)

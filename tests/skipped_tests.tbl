@@ -52,8 +52,6 @@ tests/test_umath.py::test_umaths[('ldexp', 'fi')]
 tests/test_umath.py::test_umaths[('ldexp', 'fl')]
 tests/test_umath.py::test_umaths[('ldexp', 'di')]
 tests/test_umath.py::test_umaths[('ldexp', 'dl')]
-tests/test_umath.py::test_umaths[('logaddexp2', 'ff')]
-tests/test_umath.py::test_umaths[('logaddexp2', 'dd')]
 tests/test_umath.py::test_umaths[('spacing', 'f')]
 tests/test_umath.py::test_umaths[('spacing', 'd')]
 
