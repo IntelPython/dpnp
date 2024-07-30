@@ -64,45 +64,18 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, n);
 
-    // gesv scratchpad_size can be 0 on CPU
     const std::int64_t scratchpad_size =
         mkl_lapack::gesv_scratchpad_size<T>(exec_q, n, nrhs, lda, ldb);
 
-    T *scratchpad = nullptr;
-    // Allocate memory for the scratchpad
-    try {
-        if (scratchpad_size > 0) {
-            scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
-            if (!scratchpad)
-                throw std::runtime_error(
-                    "Device allocation for scratchpad failed");
-        }
-    } catch (sycl::exception const &e) {
-        if (scratchpad != nullptr)
-            sycl::free(scratchpad, exec_q);
-        throw std::runtime_error(std::string("Unexpected SYCL exception caught "
-                                             "during scratchpad allocation: ") +
-                                 e.what());
-    }
+    T *scratchpad = helper::alloc_scratchpad<T>(scratchpad_size, exec_q);
 
     std::int64_t *ipiv = nullptr;
-    // Allocate memory for the ipiv
     try {
-        ipiv = sycl::malloc_device<std::int64_t>(n, exec_q);
-        if (!ipiv) {
-            if (scratchpad != nullptr)
-                sycl::free(scratchpad, exec_q);
-            throw std::runtime_error("Device allocation for ipiv failed");
-        }
-    } catch (sycl::exception const &e) {
+        ipiv = helper::alloc_ipiv(n, exec_q);
+    } catch (const std::exception &e) {
         if (scratchpad != nullptr)
             sycl::free(scratchpad, exec_q);
-        if (ipiv != nullptr)
-            sycl::free(ipiv, exec_q);
-        throw std::runtime_error(
-            std::string(
-                "Unexpected SYCL exception caught during ipiv allocation: ") +
-            e.what());
+        throw;
     }
 
     std::stringstream error_msg;

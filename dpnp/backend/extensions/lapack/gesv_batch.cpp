@@ -78,10 +78,17 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
     const std::int64_t scratchpad_size =
         mkl_lapack::gesv_scratchpad_size<T>(exec_q, n, nrhs, lda, ldb);
 
-    T *scratchpad =
-        helper::alloc_scratchpad<T>(scratchpad_size, n_linear_streams, exec_q);
+    T *scratchpad = helper::alloc_scratchpad_batch<T>(scratchpad_size,
+                                                      n_linear_streams, exec_q);
 
-    std::int64_t *ipiv = helper::alloc_ipiv<T>(n, n_linear_streams, exec_q);
+    std::int64_t *ipiv = nullptr;
+    try {
+        ipiv = helper::alloc_ipiv_batch<T>(n, n_linear_streams, exec_q);
+    } catch (const std::exception &e) {
+        if (scratchpad != nullptr)
+            sycl::free(scratchpad, exec_q);
+        throw;
+    }
 
     // Computation events to manage dependencies for each linear stream
     std::vector<std::vector<sycl::event>> comp_evs(n_linear_streams, depends);

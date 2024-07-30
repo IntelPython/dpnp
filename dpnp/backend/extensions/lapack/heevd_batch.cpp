@@ -65,8 +65,8 @@ static sycl::event heevd_batch_impl(sycl::queue &exec_q,
     const std::int64_t scratchpad_size =
         mkl_lapack::heevd_scratchpad_size<T>(exec_q, jobz, upper_lower, n, lda);
 
-    T *scratchpad =
-        helper::alloc_scratchpad<T>(scratchpad_size, n_linear_streams, exec_q);
+    T *scratchpad = helper::alloc_scratchpad_batch<T>(scratchpad_size,
+                                                      n_linear_streams, exec_q);
 
     // Computation events to manage dependencies for each linear stream
     std::vector<std::vector<sycl::event>> comp_evs(n_linear_streams, depends);
