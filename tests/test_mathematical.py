@@ -1256,7 +1256,7 @@ class TestUnwrap:
         a = numpy.array([1, 1 + 2 * numpy.pi], dtype=dt)
         ia = dpnp.array(a)
 
-        # unwrap removes jumps greater that 2*pi
+        # unwrap removes jumps greater than 2*pi
         result = dpnp.unwrap(ia)
         expected = numpy.unwrap(a)
         assert_array_equal(result, expected)
@@ -1280,7 +1280,7 @@ class TestUnwrap:
         a = numpy.array([1, 1 + 256], dtype=dt)
         ia = dpnp.array(a)
 
-        # unwrap removes jumps greater that 255
+        # unwrap removes jumps greater than 255
         result = dpnp.unwrap(ia, period=255)
         expected = numpy.unwrap(a, period=255)
         assert_array_equal(result, expected)
