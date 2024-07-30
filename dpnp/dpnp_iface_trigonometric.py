@@ -82,6 +82,7 @@ __all__ = [
     "log1p",
     "log2",
     "logaddexp",
+    "logaddexp2",
     "logsumexp",
     "rad2deg",
     "radians",
@@ -1409,6 +1410,83 @@ logaddexp = DPNPBinaryFunc(
     ti._logaddexp_result_type,
     ti._logaddexp,
     _LOGADDEXP_DOCSTRING,
+)
+
+
+_LOGADDEXP2_DOCSTRING = """
+Calculates the logarithm of the sum of exponents for each element `x1_i`
+of the input array `x1` with the respective element `x2_i` of the input
+array `x2`.
+
+    Logarithm of the sum of exponentiations of the inputs in base-2.
+
+    Calculates ``log2(2**x1 + 2**x2)``. This function is useful in machine
+    learning when the calculated probabilities of events may be so small as
+    to exceed the range of normal floating point numbers.  In such cases
+    the base-2 logarithm of the calculated probability can be used instead.
+    This function allows adding probabilities stored in such a fashion.
+
+This function calculates `log2(2**x1 + 2**x2)`. It is useful in machine
+learning when the calculated probabilities of events may be so small as
+to exceed the range of normal floating point numbers.  In such cases the base-2
+logarithm of the calculated probability can be used instead. This function
+allows adding probabilities stored in such a fashion.
+
+For full documentation refer to :obj:`numpy.logaddexp2`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    First input array, expected to have a real-valued floating-point
+    data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Second input array, also expected to have a real-valued
+    floating-point data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise results. The data type
+    of the returned array is determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword arguments `kwargs` are currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.log` : Natural logarithm, element-wise.
+:obj:`dpnp.exp` : Exponential, element-wise.
+:obj:`dpnp.logsumdexp` : Logarithm of the sum of exponents of elements in the input array.
+
+Examples
+--------
+>>> import dpnp as np
+>>> prob1 = np.log2(np.array(1e-50))
+>>> prob2 = np.log2(np.array(2.5e-50))
+>>> prob12 = np.logaddexp2(prob1, prob2)
+>>> prob1, prob2, prob12
+(array(-166.09640474), array(-164.77447665), array(-164.28904982))
+>>> 2**prob12
+array(3.5e-50)
+"""
+
+logaddexp2 = DPNPBinaryFunc(
+    "logaddexp2",
+    ufi._logaddexp2_result_type,
+    ufi._logaddexp2,
+    _LOGADDEXP2_DOCSTRING,
 )
 
 
