@@ -64,22 +64,19 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, n);
 
+    // gesv scratchpad_size can be 0 on CPU
     const std::int64_t scratchpad_size =
         mkl_lapack::gesv_scratchpad_size<T>(exec_q, n, nrhs, lda, ldb);
-
-    if (scratchpad_size <= 0) {
-        throw std::runtime_error(
-            "Invalid scratchpad size: must be greater than zero."
-            "Calculated scratchpad size: " +
-            std::to_string(scratchpad_size));
-    }
 
     T *scratchpad = nullptr;
     // Allocate memory for the scratchpad
     try {
-        scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
-        if (!scratchpad)
-            throw std::runtime_error("Device allocation for scratchpad failed");
+        if (scratchpad_size > 0) {
+            scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
+            if (!scratchpad)
+                throw std::runtime_error(
+                    "Device allocation for scratchpad failed");
+        }
     } catch (sycl::exception const &e) {
         if (scratchpad != nullptr)
             sycl::free(scratchpad, exec_q);
