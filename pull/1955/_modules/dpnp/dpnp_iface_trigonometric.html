@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.16.0dev0+97.g561f3054c6 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.16.0dev0+99.g2bbe26f87b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=0cef7742"></script>
+        <script src="../../_static/documentation_options.js?v=6ceb3f95"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+97.g561f3054c6
+                0.16.0dev0+99.g2bbe26f87b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1295,7 +1295,7 @@
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.log` : Natural logarithm, element-wise.</span>
-<span class="s2">:obj:`dpnp.log2` : Return the base 2 logarithm of the input array, element-wise.</span>
+<span class="s2">:obj:`dpnp.log2` : Return the base-2 logarithm of the input array, element-wise.</span>
 <span class="s2">:obj:`dpnp.log1p` : Return the natural logarithm of one plus the input array, element-wise.</span>
 
 <span class="s2">Examples</span>
@@ -1356,7 +1356,7 @@
 <span class="s2">:obj:`dpnp.expm1` : ``exp(x) - 1``, the inverse of :obj:`dpnp.log1p`.</span>
 <span class="s2">:obj:`dpnp.log` : Natural logarithm, element-wise.</span>
 <span class="s2">:obj:`dpnp.log10` : Return the base 10 logarithm of the input array, element-wise.</span>
-<span class="s2">:obj:`dpnp.log2` : Return the base 2 logarithm of the input array, element-wise.</span>
+<span class="s2">:obj:`dpnp.log2` : Return the base-2 logarithm of the input array, element-wise.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -1484,7 +1484,10 @@
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.log` : Natural logarithm, element-wise.</span>
 <span class="s2">:obj:`dpnp.exp` : Exponential, element-wise.</span>
-<span class="s2">:obj:`dpnp.logsumdexp` : Logarithm of the sum of exponents of elements in the input array.</span>
+<span class="s2">:obj:`dpnp.logaddexp2`: Logarithm of the sum of exponentiations of inputs in</span>
+<span class="s2">                        base-2, element-wise.</span>
+<span class="s2">:obj:`dpnp.logsumexp` : Logarithm of the sum of exponents of elements in the</span>
+<span class="s2">                        input array.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -1507,21 +1510,13 @@
 
 
 <span class="n">_LOGADDEXP2_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the logarithm of the sum of exponents for each element `x1_i`</span>
-<span class="s2">of the input array `x1` with the respective element `x2_i` of the input</span>
+<span class="s2">Calculates the logarithm of the sum of exponents in base-2 for each element</span>
+<span class="s2">`x1_i` of the input array `x1` with the respective element `x2_i` of the input</span>
 <span class="s2">array `x2`.</span>
-
-<span class="s2">    Logarithm of the sum of exponentiations of the inputs in base-2.</span>
-
-<span class="s2">    Calculates ``log2(2**x1 + 2**x2)``. This function is useful in machine</span>
-<span class="s2">    learning when the calculated probabilities of events may be so small as</span>
-<span class="s2">    to exceed the range of normal floating point numbers.  In such cases</span>
-<span class="s2">    the base-2 logarithm of the calculated probability can be used instead.</span>
-<span class="s2">    This function allows adding probabilities stored in such a fashion.</span>
 
 <span class="s2">This function calculates `log2(2**x1 + 2**x2)`. It is useful in machine</span>
 <span class="s2">learning when the calculated probabilities of events may be so small as</span>
-<span class="s2">to exceed the range of normal floating point numbers.  In such cases the base-2</span>
+<span class="s2">to exceed the range of normal floating point numbers. In such cases the base-2</span>
 <span class="s2">logarithm of the calculated probability can be used instead. This function</span>
 <span class="s2">allows adding probabilities stored in such a fashion.</span>
 
@@ -1559,9 +1554,9 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.log` : Natural logarithm, element-wise.</span>
-<span class="s2">:obj:`dpnp.exp` : Exponential, element-wise.</span>
-<span class="s2">:obj:`dpnp.logsumdexp` : Logarithm of the sum of exponents of elements in the input array.</span>
+<span class="s2">:obj:`dpnp.logaddexp`: Natural logarithm of the sum of exponentiations of</span>
+<span class="s2">                       inputs, element-wise.</span>
+<span class="s2">:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentiations of the inputs.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -1645,6 +1640,8 @@
 <span class="sd">    :obj:`dpnp.exp` : Exponential, element-wise.</span>
 <span class="sd">    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponents of</span>
 <span class="sd">                            the inputs, element-wise.</span>
+<span class="sd">    :obj:`dpnp.logaddexp2` : Logarithm of the sum of exponents of</span>
+<span class="sd">                             the inputs in base-2, element-wise.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
