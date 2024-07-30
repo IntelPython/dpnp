@@ -1546,7 +1546,7 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     :obj:`dpnp.logaddexp` : Logarithm of the sum of exponents of
                             the inputs, element-wise.
     :obj:`dpnp.logaddexp2` : Logarithm of the sum of exponents of
-                            the inputs in base-2, element-wise.
+                             the inputs in base-2, element-wise.
 
     Examples
     --------
