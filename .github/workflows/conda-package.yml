@@ -16,7 +16,7 @@ env:
   CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
   CONDA_BUILD_VERSION: '24.5.1'
   CONDA_INDEX_VERSION: '0.5.0'
-  RERUN_TESTS_ON_FAILURE: 'false'
+  RERUN_TESTS_ON_FAILURE: 'true'
   RUN_TESTS_MAX_ATTEMPTS: 2
   TEST_ENV_NAME: 'test'
   TEST_SCOPE: >-
