@@ -1202,7 +1202,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.log` : Natural logarithm, element-wise.
-:obj:`dpnp.log2` : Return the base 2 logarithm of the input array, element-wise.
+:obj:`dpnp.log2` : Return the base-2 logarithm of the input array, element-wise.
 :obj:`dpnp.log1p` : Return the natural logarithm of one plus the input array, element-wise.
 
 Examples
@@ -1263,7 +1263,7 @@ See Also
 :obj:`dpnp.expm1` : ``exp(x) - 1``, the inverse of :obj:`dpnp.log1p`.
 :obj:`dpnp.log` : Natural logarithm, element-wise.
 :obj:`dpnp.log10` : Return the base 10 logarithm of the input array, element-wise.
-:obj:`dpnp.log2` : Return the base 2 logarithm of the input array, element-wise.
+:obj:`dpnp.log2` : Return the base-2 logarithm of the input array, element-wise.
 
 Examples
 --------
@@ -1391,7 +1391,10 @@ See Also
 --------
 :obj:`dpnp.log` : Natural logarithm, element-wise.
 :obj:`dpnp.exp` : Exponential, element-wise.
-:obj:`dpnp.logsumdexp` : Logarithm of the sum of exponents of elements in the input array.
+:obj:`dpnp.logaddexp2`: Logarithm of the sum of exponentiations of inputs in
+                        base-2, element-wise.
+:obj:`dpnp.logsumexp` : Logarithm of the sum of exponents of elements in the
+                        input array.
 
 Examples
 --------
@@ -1414,21 +1417,13 @@ logaddexp = DPNPBinaryFunc(
 
 
 _LOGADDEXP2_DOCSTRING = """
-Calculates the logarithm of the sum of exponents for each element `x1_i`
-of the input array `x1` with the respective element `x2_i` of the input
+Calculates the logarithm of the sum of exponents in base-2 for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the input
 array `x2`.
-
-    Logarithm of the sum of exponentiations of the inputs in base-2.
-
-    Calculates ``log2(2**x1 + 2**x2)``. This function is useful in machine
-    learning when the calculated probabilities of events may be so small as
-    to exceed the range of normal floating point numbers.  In such cases
-    the base-2 logarithm of the calculated probability can be used instead.
-    This function allows adding probabilities stored in such a fashion.
 
 This function calculates `log2(2**x1 + 2**x2)`. It is useful in machine
 learning when the calculated probabilities of events may be so small as
-to exceed the range of normal floating point numbers.  In such cases the base-2
+to exceed the range of normal floating point numbers. In such cases the base-2
 logarithm of the calculated probability can be used instead. This function
 allows adding probabilities stored in such a fashion.
 
@@ -1466,9 +1461,9 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.log` : Natural logarithm, element-wise.
-:obj:`dpnp.exp` : Exponential, element-wise.
-:obj:`dpnp.logsumdexp` : Logarithm of the sum of exponents of elements in the input array.
+:obj:`dpnp.logaddexp`: Natural logarithm of the sum of exponentiations of
+                       inputs, element-wise.
+:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentiations of the inputs.
 
 Examples
 --------
@@ -1550,6 +1545,8 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     :obj:`dpnp.exp` : Exponential, element-wise.
     :obj:`dpnp.logaddexp` : Logarithm of the sum of exponents of
                             the inputs, element-wise.
+    :obj:`dpnp.logaddexp2` : Logarithm of the sum of exponents of
+                            the inputs in base-2, element-wise.
 
     Examples
     --------
