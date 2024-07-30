@@ -67,8 +67,10 @@ std::pair<sycl::event, sycl::event>
 
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(in_out);
 
-    using ScaleT = typename ScaleType<prec>::value_type;
-    std::complex<ScaleT> *in_out_ptr = in_out.get_data<std::complex<ScaleT>>();
+    // in-place is only used for c2c FFT at this time, passing true or false is
+    // indifferent
+    using ScaleT = typename ScaleType<prec, dom, true>::type_in;
+    ScaleT *in_out_ptr = in_out.get_data<ScaleT>();
 
     sycl::event fft_event = {};
     std::stringstream error_msg;
@@ -104,6 +106,7 @@ std::pair<sycl::event, sycl::event>
 }
 
 // Explicit instantiations
+// single precision c2c FFT
 template std::pair<sycl::event, sycl::event> compute_fft_in_place(
     DescriptorWrapper<mkl_dft::precision::SINGLE, mkl_dft::domain::COMPLEX>
         &descr,
@@ -111,6 +114,7 @@ template std::pair<sycl::event, sycl::event> compute_fft_in_place(
     const bool is_forward,
     const std::vector<sycl::event> &depends);
 
+// double precision c2c FFT
 template std::pair<sycl::event, sycl::event> compute_fft_in_place(
     DescriptorWrapper<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX>
         &descr,

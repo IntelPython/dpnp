@@ -1221,47 +1221,23 @@ def test_out_multi_dot(device):
         assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
 
-@pytest.mark.parametrize("func", ["fft", "ifft"])
+@pytest.mark.parametrize("func", ["fft", "ifft", "rfft", "irfft"])
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
 def test_fft(func, device):
-    data = numpy.arange(100, dtype=numpy.complex128)
-
+    dtype = numpy.float64 if func == "rfft" else numpy.complex128
+    data = numpy.arange(100, dtype=dtype)
     dpnp_data = dpnp.array(data, device=device)
 
     expected = getattr(numpy.fft, func)(data)
     result = getattr(dpnp.fft, func)(dpnp_data)
-
     assert_dtype_allclose(result, expected)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
-
-    assert_sycl_queue_equal(result_queue, expected_queue)
-
-
-@pytest.mark.parametrize("type", ["float32"])
-@pytest.mark.parametrize("shape", [(8, 8)])
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_fft_rfft(type, shape, device):
-    np_data = numpy.arange(64, dtype=numpy.dtype(type)).reshape(shape)
-    dpnp_data = dpnp.array(np_data, device=device)
-
-    np_res = numpy.fft.rfft(np_data)
-    dpnp_res = dpnp.fft.rfft(dpnp_data)
-
-    assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
-
-    expected_queue = dpnp_data.get_array().sycl_queue
-    result_queue = dpnp_res.get_array().sycl_queue
-
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
