@@ -422,6 +422,7 @@ def test_meshgrid(device):
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
+        pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1.0, 2.0, 4.0, 7.0, 11.0, 16.0]),
         pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
@@ -679,6 +680,7 @@ def test_reduce_hypot(device):
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
+        pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param(
             "matmul", [[1.0, 0.0], [0.0, 1.0]], [[4.0, 1.0], [1.0, 2.0]]
         ),

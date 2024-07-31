@@ -221,6 +221,7 @@ def test_angle(dtype):
         "fmin",
         "hypot",
         "logaddexp",
+        "logaddexp2",
         "maximum",
         "minimum",
         "multiply",
