@@ -1424,7 +1424,7 @@ promoted to floats with a minimum precision of float32 so that the result is
 always inexact. The intent is that the function will return a usable result for
 negative powers and seldom overflow for positive powers.
 
-Negative values raised to a non-integral value will return ``nan``. To get
+Negative values raised to a non-integral value will return ``NaN``. To get
 complex results, cast the input to complex, or specify the ``dtype`` to be one
 of complex dtype.
 
@@ -1490,7 +1490,7 @@ array([[1, 2, 3, 3, 2, 1],
 array([[ 0.,  1.,  8., 27., 16.,  5.],
        [ 0.,  1.,  8., 27., 16.,  5.]])
 
-Negative values raised to a non-integral value will result in ``nan``:
+Negative values raised to a non-integral value will result in ``NaN``:
 
 >>> x3 = np.array([-1, -4])
 >>> np.float_power(x3, 1.5)
