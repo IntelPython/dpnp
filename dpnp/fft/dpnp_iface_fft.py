@@ -87,8 +87,8 @@ def _swap_direction(norm):
         return _SWAP_DIRECTION_MAP[norm]
     except KeyError:
         raise ValueError(
-            f'Invalid norm value {norm}; should be "backward", "ortho" '
-            'or "forward".'
+            f'Invalid norm value {norm}; should be None, "backward", '
+            '"ortho" or "forward".'
         ) from None
 
 
@@ -430,9 +430,9 @@ def hfft(a, n=None, axis=-1, norm=None, out=None):
         Input array.
     n : {None, int}, optional
         Length of the transformed axis of the output.
-        For `n` output points, ``n//2+1`` input points are necessary.  If the
+        For `n` output points, ``n//2+1`` input points are necessary. If the
         input is longer than this, it is cropped. If it is shorter than this,
-        it is padded with zeros.  If `n` is not given, it is taken to be
+        it is padded with zeros. If `n` is not given, it is taken to be
         ``2*(m-1)`` where ``m`` is the length of the input along the axis
         specified by `axis`. Default: ``None``.
     axis : int, optional
@@ -477,7 +477,7 @@ def hfft(a, n=None, axis=-1, norm=None, out=None):
     * even: ``ihfft(hfft(a, 2*len(a) - 2)) == a``, within roundoff error,
     * odd: ``ihfft(hfft(a, 2*len(a) - 1)) == a``, within roundoff error.
 
-    The correct interpretation of the hermitian input depends on the length of
+    The correct interpretation of the Hermitian input depends on the length of
     the original data, as given by `n`. This is because each input shape could
     correspond to either an odd or even length signal. By default,
     :obj:`dpnp.fft.hfft` assumes an even output length which puts the last
@@ -736,7 +736,7 @@ def ihfft(a, n=None, axis=-1, norm=None, out=None):
     n : {None, int}, optional
         Length of the inverse FFT, the number of points along
         transformation axis in the input to use. If `n` is smaller than
-        the length of the input, the input is cropped.  If it is larger,
+        the length of the input, the input is cropped. If it is larger,
         the input is padded with zeros. If `n` is not given, the length of
         the input along the axis specified by `axis` is used.
         Default: ``None``.
@@ -819,9 +819,9 @@ def irfft(a, n=None, axis=-1, norm=None, out=None):
         Input array.
     n : {None, int}, optional
         Length of the transformed axis of the output.
-        For `n` output points, ``n//2+1`` input points are necessary.  If the
+        For `n` output points, ``n//2+1`` input points are necessary. If the
         input is longer than this, it is cropped. If it is shorter than this,
-        it is padded with zeros.  If `n` is not given, it is taken to be
+        it is padded with zeros. If `n` is not given, it is taken to be
         ``2*(m-1)`` where ``m`` is the length of the input along the axis
         specified by `axis`. Default: ``None``.
     axis : int, optional
@@ -870,7 +870,7 @@ def irfft(a, n=None, axis=-1, norm=None, out=None):
     thus resample a series to `m` points via Fourier interpolation by:
     ``a_resamp = irfft(rfft(a), m)``.
 
-    The correct interpretation of the hermitian input depends on the length of
+    The correct interpretation of the Hermitian input depends on the length of
     the original data, as given by `n`. This is because each input shape could
     correspond to either an odd or even length signal. By default,
     :obj:`dpnp.fft.irfft` assumes an even output length which puts the last
