@@ -383,7 +383,6 @@ class TestNonzeroZeroDimension:
     {"array": numpy.empty((0, 2, 0))},
     _ids=False,  # Do not generate ids from randomly generated params
 )
-@pytest.mark.skip("flatnonzero isn't implemented yet")
 class TestFlatNonzero:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
