@@ -107,9 +107,14 @@ static sycl::event gemm_batch_impl(sycl::queue &exec_q,
                 const std::int64_t batch_size,
                 const std::vector<sycl::event> &deps) -> sycl::event {
             if (is_row_major) {
+#if defined(USE_ONEMKL_CUBLAS)
+                throw py::value_error(
+                    "last 2-dimensions of input matrices are not f-contiguous");
+#else
                 return mkl_blas::row_major::gemm_batch(
                     q, transA, transB, m, n, k, alpha, a, lda, stridea, b, ldb,
                     strideb, beta, c, ldc, stridec, batch_size, deps);
+#endif // USE_ONEMKL_CUBLAS
             }
             else {
                 return mkl_blas::column_major::gemm_batch(
@@ -271,6 +276,15 @@ std::tuple<sycl::event, sycl::event, bool>
 
     standardize_strides_to_nonzero(a_stride, a_shape);
     standardize_strides_to_nonzero(b_stride, b_shape);
+
+    oneapi::mkl::transpose transA;
+    oneapi::mkl::transpose transB;
+
+#if defined(USE_ONEMKL_CUBLAS)
+    bool is_row_major = false;
+    transA = oneapi::mkl::transpose::N;
+    transB = oneapi::mkl::transpose::N;
+#else
     const bool A_base_is_f_contig =
         a_stride[1] == 1 && a_stride[2] == a_shape[1];
     const bool B_base_is_f_contig =
@@ -281,8 +295,6 @@ std::tuple<sycl::event, sycl::event, bool>
         is_row_major = false;
     }
 
-    oneapi::mkl::transpose transA;
-    oneapi::mkl::transpose transB;
     if (is_row_major) {
         transA = A_base_is_f_contig ? oneapi::mkl::transpose::T
                                     : oneapi::mkl::transpose::N;
@@ -293,6 +305,7 @@ std::tuple<sycl::event, sycl::event, bool>
         transA = oneapi::mkl::transpose::N;
         transB = oneapi::mkl::transpose::N;
     }
+#endif // USE_ONEMKL_CUBLAS
 
     std::int64_t lda;
     std::int64_t ldb;
@@ -358,7 +371,8 @@ struct GemmBatchContigFactory
     fnT get()
     {
         if constexpr (types::GemmBatchTypePairSupportFactory<Tab,
-                                                             Tc>::is_defined) {
+                                                             Tc>::is_defined)
+        {
             return gemm_batch_impl<Tab, Tc>;
         }
         else {

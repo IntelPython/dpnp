@@ -324,15 +324,27 @@ def _get_result_shape(x1, x2, out, np_flag):
 
 
 def _gemm_batch_matmul(exec_q, x1, x2, res):
-    # arrays here are already at least 3D, make them 3D
-    x1 = dpnp.reshape(x1, (-1, x1.shape[-2], x1.shape[-1]))
-    x2 = dpnp.reshape(x2, (-1, x2.shape[-2], x2.shape[-1]))
     orig_shape = res.shape
-    res = dpnp.reshape(res, (-1, res.shape[-2], res.shape[-1]))
 
-    # gemm_batch does not handle negative strides, make a copy if needed
-    x1 = _copy_array(x1, copy_flag=x1.strides[0] < 0)
-    x2 = _copy_array(x2, copy_flag=x2.strides[0] < 0)
+    if bi._row_major_is_available():
+        # arrays here are already at least 3D, make them 3D
+        x1 = dpnp.reshape(x1, (-1, x1.shape[-2], x1.shape[-1]))
+        x2 = dpnp.reshape(x2, (-1, x2.shape[-2], x2.shape[-1]))
+        res = dpnp.reshape(res, (-1, res.shape[-2], res.shape[-1]))
+        # # gemm_batch does not handle negative strides, make a copy if needed
+        x1 = _copy_array(x1, copy_flag=x1.strides[0] < 0)
+        x2 = _copy_array(x2, copy_flag=x2.strides[0] < 0)
+    else:
+        x1 = dpnp.reshape(x1, (-1, x1.shape[-1], x1.shape[-2]))
+        x2 = dpnp.reshape(x2, (-1, x2.shape[-1], x2.shape[-2]))
+        # Swapping matrices: column_major call implemented for C=B@A case
+        tmp = x1
+        x1 = x2
+        x2 = tmp
+        res = dpnp.reshape(res, (-1, res.shape[-1], res.shape[-2]))
+        x1 = _copy_array(x1, copy_flag=True)
+        x2 = _copy_array(x2, copy_flag=True)
+
     res = _copy_array(res, copy_flag=res.strides[0] < 0)
 
     _manager = dpu.SequentialOrderManager[exec_q]
@@ -372,7 +384,7 @@ def _gemm_batch_matmul(exec_q, x1, x2, res):
                 dpnp.ravel(res, order="F"),
                 (res_shape[1], res_shape[2], batch_size),
             ).transpose(2, 0, 1)
-    else:
+    elif bi._row_major_is_available():
         if res_is_c_contig:
             res = dpnp.reshape(
                 dpnp.ravel(res, order="C"),
@@ -780,16 +792,25 @@ def dpnp_matmul(
         x1 = dpnp.reshape(x1, x1.size)
         x2 = dpnp.reshape(x2, x2_shape[-2:])
         res_shape = (x2_shape[-1],)
+        if not bi._row_major_is_available() and x2.flags.c_contiguous:
+            x2 = dpnp.asarray(x2, order="F")
     elif x1_is_2D and x2_is_1D:
         call_flag = "gemv"
         x1 = dpnp.reshape(x1, x1_shape[-2:])
         x2 = dpnp.reshape(x2, x2.size)
         res_shape = (x1_shape[-2],)
+        if not bi._row_major_is_available() and x1.flags.c_contiguous:
+            x1 = dpnp.asarray(x1, order="F")
     elif x1_is_2D and x2_is_2D:
         call_flag = "gemm"
         x1 = dpnp.reshape(x1, x1_shape[-2:])
         x2 = dpnp.reshape(x2, x2_shape[-2:])
         res_shape = (x1_shape[-2], x2_shape[-1])
+        if not bi._row_major_is_available():
+            if x1.flags.c_contiguous:
+                x1 = dpnp.asarray(x1, order="F")
+            if x2.flags.c_contiguous:
+                x2 = dpnp.asarray(x2, order="F")
     elif x1_base_is_1D:
         # TODO: implement gemv_batch to use it here with transpose
         call_flag = "gemm_batch"
@@ -825,6 +846,14 @@ def dpnp_matmul(
         x2_contig_flag, _, x2_f = _define_contig_flag(x2)
 
         res_order = "F" if (x1_f and x2_f and call_flag == "gemm") else "C"
+
+        if bi._row_major_is_available():
+            array_order = res_order
+        elif (call_flag == "gemm") or (call_flag == "gemv"):
+            array_order = "F"
+        else:
+            array_order = "C"
+
         result = _create_result_array(
             x1,
             x2,
@@ -848,13 +877,13 @@ def dpnp_matmul(
                 x1,
                 copy_flag=not x1_contig_flag,
                 dtype=compute_dtype,
-                order=res_order,
+                order=array_order,
             )
             x2 = _copy_array(
                 x2,
                 copy_flag=not x2_contig_flag,
                 dtype=compute_dtype,
-                order=res_order,
+                order=array_order,
             )
 
             if call_flag == "gemv":
