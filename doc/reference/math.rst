@@ -144,15 +144,17 @@ Arithmetic operations
 
    dpnp.add
    dpnp.reciprocal
-   dpnp.negative
    dpnp.positive
+   dpnp.negative
    dpnp.multiply
    dpnp.divide
    dpnp.power
+   dpnp.pow
    dpnp.subtract
    dpnp.true_divide
    dpnp.floor_divide
-   dpnp.floor_power
+   dpnp.float_power
+
    dpnp.fmod
    dpnp.mod
    dpnp.modf
