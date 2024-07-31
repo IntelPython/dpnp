@@ -643,6 +643,11 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
         # TODO: uncomment once resolved in gh-1723 by dpctl
         # pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
+        pytest.param(
+            "float_power",
+            [0, 1, 2, 3, 4, 5],
+            [1.0, 2.0, 3.0, 3.0, 2.0, 1.0],
+        ),
         pytest.param("fmax", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
         pytest.param("fmin", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
         pytest.param("fmod", [5, 3], [2, 2.0]),

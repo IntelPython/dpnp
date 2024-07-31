@@ -313,6 +313,43 @@ class TestDegrees:
         assert_dtype_allclose(result, expected)
 
 
+class TestFloatPower:
+    @pytest.mark.parametrize("dt1", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dt2", get_all_dtypes(no_none=True))
+    def test_type_conversion(self, dt1, dt2):
+        a = numpy.array([0, 1, 2, 3, 4, 5], dtype=dt1)
+        b = numpy.array([1.0, 2.0, 3.0, 3.0, 2.0, 1.0], dtype=dt2)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = dpnp.float_power(ia, ib)
+        expected = numpy.float_power(a, b)
+        assert_allclose(result, expected)
+        assert result.dtype.kind == expected.dtype.kind
+
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_negative_base_value(self, dt):
+        a = numpy.array([-1, -4], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.float_power(ia, 1.5)
+        expected = numpy.float_power(a, 1.5)
+        assert_allclose(result, expected)
+
+    # @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_negative_base_value_complex_dtype(self, dt):
+        a = numpy.array([-1, -4], dtype=dt)
+        ia = dpnp.array(a)
+
+        dt = dpnp.complex128 if has_support_aspect64() else dpnp.complex64
+        result = dpnp.float_power(ia, 1.5, dtype=dt)
+
+        # numpy.float_power does not have a loop for complex64
+        expected = numpy.float_power(a, 1.5, dtype=numpy.complex128)
+        assert_allclose(result, expected)
+
+
 class TestLogaddexp:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_logaddexp(self, dtype):
