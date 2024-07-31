@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+95.g221d481a23 documentation</title>
+  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+99.g6dfac04ce documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=2c83be3b"></script>
+        <script src="../../../_static/documentation_options.js?v=427a51d0"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+95.g221d481a23
+                0.16.0dev0+99.g6dfac04ce
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -177,8 +177,8 @@
         <span class="k">return</span> <span class="n">_SWAP_DIRECTION_MAP</span><span class="p">[</span><span class="n">norm</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Invalid norm value </span><span class="si">{</span><span class="n">norm</span><span class="si">}</span><span class="s1">; should be &quot;backward&quot;, &quot;ortho&quot; &#39;</span>
-            <span class="s1">&#39;or &quot;forward&quot;.&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;Invalid norm value </span><span class="si">{</span><span class="n">norm</span><span class="si">}</span><span class="s1">; should be None, &quot;backward&quot;, &#39;</span>
+            <span class="s1">&#39;&quot;ortho&quot; or &quot;forward&quot;.&#39;</span>
         <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
 
 
@@ -537,9 +537,9 @@
 <span class="sd">        Input array.</span>
 <span class="sd">    n : {None, int}, optional</span>
 <span class="sd">        Length of the transformed axis of the output.</span>
-<span class="sd">        For `n` output points, ``n//2+1`` input points are necessary.  If the</span>
+<span class="sd">        For `n` output points, ``n//2+1`` input points are necessary. If the</span>
 <span class="sd">        input is longer than this, it is cropped. If it is shorter than this,</span>
-<span class="sd">        it is padded with zeros.  If `n` is not given, it is taken to be</span>
+<span class="sd">        it is padded with zeros. If `n` is not given, it is taken to be</span>
 <span class="sd">        ``2*(m-1)`` where ``m`` is the length of the input along the axis</span>
 <span class="sd">        specified by `axis`. Default: ``None``.</span>
 <span class="sd">    axis : int, optional</span>
@@ -584,7 +584,7 @@
 <span class="sd">    * even: ``ihfft(hfft(a, 2*len(a) - 2)) == a``, within roundoff error,</span>
 <span class="sd">    * odd: ``ihfft(hfft(a, 2*len(a) - 1)) == a``, within roundoff error.</span>
 
-<span class="sd">    The correct interpretation of the hermitian input depends on the length of</span>
+<span class="sd">    The correct interpretation of the Hermitian input depends on the length of</span>
 <span class="sd">    the original data, as given by `n`. This is because each input shape could</span>
 <span class="sd">    correspond to either an odd or even length signal. By default,</span>
 <span class="sd">    :obj:`dpnp.fft.hfft` assumes an even output length which puts the last</span>
@@ -858,7 +858,7 @@
 <span class="sd">    n : {None, int}, optional</span>
 <span class="sd">        Length of the inverse FFT, the number of points along</span>
 <span class="sd">        transformation axis in the input to use. If `n` is smaller than</span>
-<span class="sd">        the length of the input, the input is cropped.  If it is larger,</span>
+<span class="sd">        the length of the input, the input is cropped. If it is larger,</span>
 <span class="sd">        the input is padded with zeros. If `n` is not given, the length of</span>
 <span class="sd">        the input along the axis specified by `axis` is used.</span>
 <span class="sd">        Default: ``None``.</span>
@@ -944,9 +944,9 @@
 <span class="sd">        Input array.</span>
 <span class="sd">    n : {None, int}, optional</span>
 <span class="sd">        Length of the transformed axis of the output.</span>
-<span class="sd">        For `n` output points, ``n//2+1`` input points are necessary.  If the</span>
+<span class="sd">        For `n` output points, ``n//2+1`` input points are necessary. If the</span>
 <span class="sd">        input is longer than this, it is cropped. If it is shorter than this,</span>
-<span class="sd">        it is padded with zeros.  If `n` is not given, it is taken to be</span>
+<span class="sd">        it is padded with zeros. If `n` is not given, it is taken to be</span>
 <span class="sd">        ``2*(m-1)`` where ``m`` is the length of the input along the axis</span>
 <span class="sd">        specified by `axis`. Default: ``None``.</span>
 <span class="sd">    axis : int, optional</span>
@@ -995,7 +995,7 @@
 <span class="sd">    thus resample a series to `m` points via Fourier interpolation by:</span>
 <span class="sd">    ``a_resamp = irfft(rfft(a), m)``.</span>
 
-<span class="sd">    The correct interpretation of the hermitian input depends on the length of</span>
+<span class="sd">    The correct interpretation of the Hermitian input depends on the length of</span>
 <span class="sd">    the original data, as given by `n`. This is because each input shape could</span>
 <span class="sd">    correspond to either an odd or even length signal. By default,</span>
 <span class="sd">    :obj:`dpnp.fft.irfft` assumes an even output length which puts the last</span>
