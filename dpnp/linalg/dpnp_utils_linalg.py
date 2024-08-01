@@ -528,7 +528,7 @@ def _batched_svd(
         a_shape = a.shape
         batch_shape_orig = a_shape[:-2]
 
-        a = dpnp.reshape(a, (-1, a_shape[-2], a_shape[-1]))
+        a = dpnp.reshape(a, (prod(a_shape[:-2]), a_shape[-2], a_shape[-1]))
 
         batch_size = a.shape[0]
         if batch_size == 0:
@@ -564,10 +564,8 @@ def _batched_svd(
                 jobu = ord("A")
                 jobvt = ord("A")
             else:
-                u_shape = (batch_size,) + (m, k)
-                vt_shape = (batch_size,) + (k, n)
-                # u_shape = (batch_size,) + (5, 5)
-                # vt_shape = (batch_size,) + (5, 5)
+                u_shape = (batch_size,) + (k, m)
+                vt_shape = (batch_size,) + (n, k)
                 jobu = ord("S")
                 jobvt = ord("S")
         else:
@@ -627,11 +625,8 @@ def _batched_svd(
         # numpy.linalg.svd
         s = s_h.reshape(batch_shape_orig + s_h.shape[-1:])
         if compute_uv:
-            u = dpnp.moveaxis(u_h,(-2,-1),(-1,-2)).reshape(batch_shape_orig + u_h.shape[-2:])
-            # u = u_h.reshape(batch_shape_orig + u_h.shape[-2:])
-            vt = dpnp.moveaxis(vt_h,(-2,-1),(-1,-2)).reshape(batch_shape_orig + vt_h.shape[-2:])
-            # vt = vt_h.reshape(batch_shape_orig + vt_h.shape[-2:])
-            # vt = vt_h
+            u = dpnp.moveaxis(u_h,(-2,-1),(-1,-2)).reshape(batch_shape_orig + u_shape[-2:][::-1])
+            vt = dpnp.moveaxis(vt_h,(-2,-1),(-1,-2)).reshape(batch_shape_orig + vt_shape[-2:][::-1])
             return u, s, vt
         return s
 

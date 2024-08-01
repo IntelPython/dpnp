@@ -102,10 +102,39 @@ static sycl::event gesvd_batch_impl(sycl::queue exec_q,
     T *u = reinterpret_cast<T *>(out_u);
     T *vt = reinterpret_cast<T *>(out_vt);
 
+    const std::int64_t k = std::min(m, n);
+
+    // const std::int64_t a_size = m * n;
+    // const std::int64_t u_size = m * m;
+    // const std::int64_t s_size = k;
+    // const std::int64_t vt_size = n * n;
+
+    // const std::int64_t a_size = m * n;
+    // const std::int64_t u_size = m * k;
+    // const std::int64_t s_size = k;
+    // const std::int64_t vt_size = k * n;
+
+    // const std::int64_t a_size = m * n;
+    // const std::int64_t s_size = k;
+    // const std::int64_t u_size = (jobu == oneapi::mkl::jobsvd::somevec) ? m * k : m * m;
+    // const std::int64_t vt_size = (jobu == oneapi::mkl::jobsvd::somevec) ? k * n : n * n;
+
     const std::int64_t a_size = m * n;
-    const std::int64_t u_size = m * m;
-    const std::int64_t s_size = std::min(m, n);
-    const std::int64_t vt_size = n * n;
+    const std::int64_t s_size = k;
+
+    std::int64_t u_size = 0;
+    std::int64_t vt_size = 0;
+
+    if (jobu == oneapi::mkl::jobsvd::somevec || jobu == oneapi::mkl::jobsvd::vectorsina) {
+        u_size = m * k;
+        vt_size = k * n;
+    } else if (jobu == oneapi::mkl::jobsvd::vectors) {
+        u_size = m * m;
+        vt_size = n * n;
+    } else if (jobu == oneapi::mkl::jobsvd::novec) {
+        u_size = 0;
+        vt_size = 0;
+    }
 
     // Get the number of independent linear streams
     const std::int64_t n_linear_streams =
