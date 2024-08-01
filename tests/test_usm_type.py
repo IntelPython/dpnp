@@ -553,6 +553,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
+        pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1, 2, 4, 7, 11, 16]),
         pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
@@ -656,6 +657,7 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
+        pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param("maximum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
         pytest.param("minimum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
         pytest.param("nextafter", [1, 2], [2, 1]),
@@ -937,10 +939,12 @@ def test_eigenvalue(func, shape, usm_type):
     assert a.usm_type == dp_val.usm_type
 
 
-@pytest.mark.parametrize("func", ["fft", "ifft", "rfft", "irfft"])
+@pytest.mark.parametrize(
+    "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
+)
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_fft(func, usm_type):
-    dtype = dp.float32 if func == "rfft" else dp.complex64
+    dtype = dp.float32 if func in ["rfft", "ihfft"] else dp.complex64
     dpnp_data = dp.arange(100, usm_type=usm_type, dtype=dtype)
     result = getattr(dp.fft, func)(dpnp_data)
 
