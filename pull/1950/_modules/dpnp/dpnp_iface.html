@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.16.0dev0+102.ge6b764300a documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.16.0dev0+108.gc3871b8257 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=010d5c7e"></script>
+        <script src="../../_static/documentation_options.js?v=c8a14fe3"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+102.ge6b764300a
+                0.16.0dev0+108.gc3871b8257
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -228,9 +228,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ar1 : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    ar1 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        First input array.</span>
-<span class="sd">    ar2 : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    ar2 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Second input array.</span>
 
 <span class="sd">    Returns</span>
@@ -498,7 +498,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    arrays : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    arrays : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input arrays to check for supported types.</span>
 <span class="sd">    scalar_type : {bool}, optional</span>
 <span class="sd">        A scalar type is also considered as supported if flag is ``True``.</span>
@@ -761,7 +761,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp_array}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    out : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    out : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        If provided, value of `a` array will be copied into it</span>
 <span class="sd">        according to ``safe`` casting rule.</span>
 <span class="sd">        It should be of the appropriate shape.</span>
@@ -799,7 +799,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array of supported type :class:`dpnp.ndarray`</span>
 <span class="sd">        or :class:`dpctl.tensor.usm_ndarray`.</span>
 
@@ -879,7 +879,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        An input array to check the type.</span>
 
 <span class="sd">    Returns</span>

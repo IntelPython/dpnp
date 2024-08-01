@@ -68,6 +68,7 @@ var hierarchy =
     [ "std::integral_constant", null, [
       [ "is_complex< _Tp >", "structis__complex.html", null ]
     ] ],
+    [ "dpnp::kernels::logaddexp2::Logaddexp2Functor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ],
     [ "dpnp::backend::ext::sycl_ext::merge_two_inner_tuple_types< FirstTuple, SecondTuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__inner__tuple__types.html", null ],
     [ "dpnp::backend::ext::sycl_ext::merge_two_inner_tuple_types< std::tuple< FirstTupleArgs... >, std::tuple< SecondTupleArgs... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__inner__tuple__types_3_01std_1_1tuple_3_0138ac4b60360159f3bcb33d2fa44168.html", null ],
     [ "dpnp::backend::ext::sycl_ext::merge_two_inner_tuple_types< std::tuple< std::tuple< FirstTupleArgs... > >, std::tuple< std::tuple< SecondTupleArgs... > > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__inner__tuple__types_3_01std_1_1tuple_3_61a32514aa73a4b8a3b7c6a5b4f77028.html", null ],
