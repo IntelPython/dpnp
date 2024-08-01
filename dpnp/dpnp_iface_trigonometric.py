@@ -2219,11 +2219,11 @@ def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
     if boundary_ambiguous:
         mask = ddmod == interval_low
         mask &= p_diff > 0
-        dpnp.copyto(ddmod, interval_high, where=mask)
+        ddmod = dpnp.where(mask, interval_high, ddmod, out=ddmod)
 
     ph_correct = dpnp.subtract(ddmod, p_diff, out=ddmod)
     abs_p_diff = dpnp.abs(p_diff, out=p_diff)
-    dpnp.copyto(ph_correct, 0, where=abs_p_diff < discont)
+    ph_correct = dpnp.where(abs_p_diff < discont, 0, ph_correct, out=ph_correct)
 
     up = dpnp.astype(p, dtype=dt, copy=True)
     up[slice1] = p[slice1]
