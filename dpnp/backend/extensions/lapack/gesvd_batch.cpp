@@ -191,6 +191,9 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
 
         T *current_scratch_gesvd = scratchpad + stream_id * scratchpad_size;
 
+        // Get the event dependencies for the current stream
+        const auto &current_dep = comp_evs[stream_id];
+
         sycl::event gesvd_event;
 
         try {
@@ -221,7 +224,7 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
                 current_scratch_gesvd, // Pointer to scratchpad memory to be
                                        // used by MKL routine for storing
                                        // intermediate results.
-                scratchpad_size, depends);
+                scratchpad_size, current_dep);
         } catch (mkl_lapack::exception const &e) {
             is_exception_caught = true;
             info = e.info();

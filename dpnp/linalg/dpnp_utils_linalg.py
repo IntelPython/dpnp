@@ -573,22 +573,6 @@ def _batched_svd(
             jobu = ord("N")
             jobvt = ord("N")
 
-        u_h = dpnp.empty(
-            u_shape,
-            order="C",
-            dtype=uv_type,
-            usm_type=usm_type,
-            sycl_queue=exec_q
-        )
-        vt_h = dpnp.empty(
-            vt_shape,
-            order="C",
-            dtype=uv_type,
-            usm_type=usm_type,
-            sycl_queue=exec_q
-        )
-        s_h = dpnp.empty((batch_size,) + (k,), dtype=s_type, order='C', usm_type=usm_type, sycl_queue=exec_q)
-
         _manager = dpu.SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
 
@@ -607,6 +591,22 @@ def _batched_svd(
             depends=dep_evs,
         )
         _manager.add_event_pair(ht_ev, a_copy_ev)
+
+        u_h = dpnp.empty(
+            u_shape,
+            order="C",
+            dtype=uv_type,
+            usm_type=usm_type,
+            sycl_queue=exec_q
+        )
+        vt_h = dpnp.empty(
+            vt_shape,
+            order="C",
+            dtype=uv_type,
+            usm_type=usm_type,
+            sycl_queue=exec_q
+        )
+        s_h = dpnp.empty((batch_size,) + (k,), dtype=s_type, order='C', usm_type=usm_type, sycl_queue=exec_q)
 
         ht_ev, gesvd_batch_ev = li._gesvd_batch(
             exec_q,
@@ -629,11 +629,6 @@ def _batched_svd(
             vt = dpnp.moveaxis(vt_h,(-2,-1),(-1,-2)).reshape(batch_shape_orig + vt_shape[-2:][::-1])
             return u, s, vt
         return s
-
-
-
-
-
 
     else:
         reshape = False
