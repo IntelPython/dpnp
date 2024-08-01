@@ -42,7 +42,7 @@ namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
 typedef sycl::event (*gesvd_batch_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     const oneapi::mkl::jobsvd,
     const oneapi::mkl::jobsvd,
     const std::int64_t,
@@ -79,7 +79,7 @@ static oneapi::mkl::jobsvd process_job(std::int8_t job_val)
 }
 
 template <typename T, typename RealT>
-static sycl::event gesvd_batch_impl(sycl::queue exec_q,
+static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
                                     const oneapi::mkl::jobsvd jobu,
                                     const oneapi::mkl::jobsvd jobvt,
                                     const std::int64_t m,
@@ -116,8 +116,9 @@ static sycl::event gesvd_batch_impl(sycl::queue exec_q,
 
     // const std::int64_t a_size = m * n;
     // const std::int64_t s_size = k;
-    // const std::int64_t u_size = (jobu == oneapi::mkl::jobsvd::somevec) ? m * k : m * m;
-    // const std::int64_t vt_size = (jobu == oneapi::mkl::jobsvd::somevec) ? k * n : n * n;
+    // const std::int64_t u_size = (jobu == oneapi::mkl::jobsvd::somevec) ? m *
+    // k : m * m; const std::int64_t vt_size = (jobu ==
+    // oneapi::mkl::jobsvd::somevec) ? k * n : n * n;
 
     const std::int64_t a_size = m * n;
     const std::int64_t s_size = k;
@@ -125,13 +126,17 @@ static sycl::event gesvd_batch_impl(sycl::queue exec_q,
     std::int64_t u_size = 0;
     std::int64_t vt_size = 0;
 
-    if (jobu == oneapi::mkl::jobsvd::somevec || jobu == oneapi::mkl::jobsvd::vectorsina) {
+    if (jobu == oneapi::mkl::jobsvd::somevec ||
+        jobu == oneapi::mkl::jobsvd::vectorsina)
+    {
         u_size = m * k;
         vt_size = k * n;
-    } else if (jobu == oneapi::mkl::jobsvd::vectors) {
+    }
+    else if (jobu == oneapi::mkl::jobsvd::vectors) {
         u_size = m * m;
         vt_size = n * n;
-    } else if (jobu == oneapi::mkl::jobsvd::novec) {
+    }
+    else if (jobu == oneapi::mkl::jobsvd::novec) {
         u_size = 0;
         vt_size = 0;
     }
@@ -191,18 +196,18 @@ static sycl::event gesvd_batch_impl(sycl::queue exec_q,
         try {
             gesvd_event = mkl_lapack::gesvd(
                 exec_q,
-                jobu, // Character specifying how to compute the matrix U:
-                      // 'A' computes all columns of U,
-                      // 'S' computes the first min(m,n) columns of U,
-                      // 'O' overwrites A with the columns of U,
-                      // 'N' does not compute U.
+                jobu,  // Character specifying how to compute the matrix U:
+                       // 'A' computes all columns of U,
+                       // 'S' computes the first min(m,n) columns of U,
+                       // 'O' overwrites A with the columns of U,
+                       // 'N' does not compute U.
                 jobvt, // Character specifying how to compute the matrix VT:
                        // 'A' computes all rows of VT,
                        // 'S' computes the first min(m,n) rows of VT,
                        // 'O' overwrites A with the rows of VT,
                        // 'N' does not compute VT.
-                m, // The number of rows in the input matrix A (0 <= m).
-                n, // The number of columns in the input matrix A (0 <= n).
+                m,     // The number of rows in the input matrix A (0 <= m).
+                n,     // The number of columns in the input matrix A (0 <= n).
                 a_batch, // Pointer to the input matrix A of size (m x n).
                 lda, // The leading dimension of A, must be at least max(1, m).
                 s_batch, // Pointer to the array containing the singular values.
@@ -271,7 +276,7 @@ static sycl::event gesvd_batch_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    gesvd_batch(sycl::queue exec_q,
+    gesvd_batch(sycl::queue &exec_q,
                 const std::int8_t jobu_val,
                 const std::int8_t jobvt_val,
                 dpctl::tensor::usm_ndarray a_array,

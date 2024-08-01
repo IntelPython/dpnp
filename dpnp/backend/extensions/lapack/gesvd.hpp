@@ -33,7 +33,7 @@
 namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
-    gesvd(sycl::queue exec_q,
+    gesvd(sycl::queue &exec_q,
           const std::int8_t jobu_val,
           const std::int8_t jobvt_val,
           dpctl::tensor::usm_ndarray a_array,
@@ -43,7 +43,7 @@ extern std::pair<sycl::event, sycl::event>
           const std::vector<sycl::event> &depends);
 
 extern std::pair<sycl::event, sycl::event>
-    gesvd_batch(sycl::queue exec_q,
+    gesvd_batch(sycl::queue &exec_q,
                 const std::int8_t jobu_val,
                 const std::int8_t jobvt_val,
                 dpctl::tensor::usm_ndarray a_array,

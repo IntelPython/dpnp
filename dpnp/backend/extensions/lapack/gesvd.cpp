@@ -40,7 +40,7 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
-typedef sycl::event (*gesvd_impl_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*gesvd_impl_fn_ptr_t)(sycl::queue &,
                                            const oneapi::mkl::jobsvd,
                                            const oneapi::mkl::jobsvd,
                                            const std::int64_t,
@@ -77,7 +77,7 @@ static oneapi::mkl::jobsvd process_job(std::int8_t job_val)
 }
 
 template <typename T, typename RealT>
-static sycl::event gesvd_impl(sycl::queue exec_q,
+static sycl::event gesvd_impl(sycl::queue &exec_q,
                               const oneapi::mkl::jobsvd jobu,
                               const oneapi::mkl::jobsvd jobvt,
                               const std::int64_t m,
@@ -182,7 +182,7 @@ static sycl::event gesvd_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    gesvd(sycl::queue exec_q,
+    gesvd(sycl::queue &exec_q,
           const std::int8_t jobu_val,
           const std::int8_t jobvt_val,
           dpctl::tensor::usm_ndarray a_array,
