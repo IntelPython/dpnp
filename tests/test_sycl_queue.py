@@ -1223,15 +1223,17 @@ def test_out_multi_dot(device):
         assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
 
-@pytest.mark.parametrize("func", ["fft", "ifft", "rfft", "irfft"])
+@pytest.mark.parametrize(
+    "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
+)
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
 def test_fft(func, device):
-    dtype = numpy.float64 if func == "rfft" else numpy.complex128
-    data = numpy.arange(100, dtype=dtype)
+    dtype = numpy.float64 if func in ["rfft", "ihfft"] else numpy.complex128
+    data = numpy.arange(20, dtype=dtype)
     dpnp_data = dpnp.array(data, device=device)
 
     expected = getattr(numpy.fft, func)(data)
