@@ -8,7 +8,13 @@
 
 from sphinx.ext.autodoc import FunctionDocumenter
 
-from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
+from dpnp.dpnp_algo.dpnp_elementwise_common import (
+    DPNPBinaryFunc,
+    DPNPUnaryFunc,
+    binary_ufunc,
+    ufunc,
+    unary_ufunc,
+)
 
 try:
     import comparison_generator
@@ -202,7 +208,10 @@ texinfo_documents = [
 
 # -- Options for todo extension ----------------------------------------------
 def _can_document_member(member, *args, **kwargs):
-    if isinstance(member, (DPNPBinaryFunc, DPNPUnaryFunc)):
+    if isinstance(
+        member,
+        (DPNPBinaryFunc, DPNPUnaryFunc, ufunc, unary_ufunc, binary_ufunc),
+    ):
         return True
     return orig(member, *args, **kwargs)
 

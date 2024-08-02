@@ -46,11 +46,10 @@ it contains:
 
 
 import dpctl.tensor as dpt
-import dpctl.tensor._tensor_elementwise_impl as tei
 import numpy
 
 import dpnp
-from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
+from dpnp.dpnp_algo.dpnp_elementwise_common import binary_ufunc, unary_ufunc
 from dpnp.dpnp_array import dpnp_array
 
 __all__ = [
@@ -405,12 +404,7 @@ The ``==`` operator can be used as a shorthand for ``equal`` on
 array([ True,  True, False])
 """
 
-equal = DPNPBinaryFunc(
-    "equal",
-    tei._equal_result_type,
-    tei._equal,
-    _EQUAL_DOCSTRING,
-)
+equal = binary_ufunc("equal", _EQUAL_DOCSTRING)
 
 
 _GREATER_DOCSTRING = """
@@ -471,12 +465,7 @@ The ``>`` operator can be used as a shorthand for ``greater`` on
 array([ True, False])
 """
 
-greater = DPNPBinaryFunc(
-    "greater",
-    tei._greater_result_type,
-    tei._greater,
-    _GREATER_DOCSTRING,
-)
+greater = binary_ufunc("greater", _GREATER_DOCSTRING)
 
 
 _GREATER_EQUAL_DOCSTRING = """
@@ -538,12 +527,7 @@ The ``>=`` operator can be used as a shorthand for ``greater_equal`` on
 array([ True,  True, False])
 """
 
-greater_equal = DPNPBinaryFunc(
-    "greater",
-    tei._greater_equal_result_type,
-    tei._greater_equal,
-    _GREATER_EQUAL_DOCSTRING,
-)
+greater_equal = binary_ufunc("greater_equal", _GREATER_EQUAL_DOCSTRING)
 
 
 def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
@@ -802,12 +786,7 @@ Examples
 array([False,  True, False])
 """
 
-isfinite = DPNPUnaryFunc(
-    "isfinite",
-    tei._isfinite_result_type,
-    tei._isfinite,
-    _ISFINITE_DOCSTRING,
-)
+isfinite = unary_ufunc("isfinite", _ISFINITE_DOCSTRING)
 
 
 _ISINF_DOCSTRING = """
@@ -856,12 +835,7 @@ Examples
 array([ True, False,  True])
 """
 
-isinf = DPNPUnaryFunc(
-    "isinf",
-    tei._isinf_result_type,
-    tei._isinf,
-    _ISINF_DOCSTRING,
-)
+isinf = unary_ufunc("isinf", _ISINF_DOCSTRING)
 
 
 _ISNAN_DOCSTRING = """
@@ -911,12 +885,7 @@ Examples
 array([False, False,  True])
 """
 
-isnan = DPNPUnaryFunc(
-    "isnan",
-    tei._isnan_result_type,
-    tei._isnan,
-    _ISNAN_DOCSTRING,
-)
+isnan = unary_ufunc("isnan", _ISNAN_DOCSTRING)
 
 
 def isneginf(x, out=None):
@@ -1238,12 +1207,7 @@ The ``<`` operator can be used as a shorthand for ``less`` on
 array([ True, False])
 """
 
-less = DPNPBinaryFunc(
-    "less",
-    tei._less_result_type,
-    tei._less,
-    _LESS_DOCSTRING,
-)
+less = binary_ufunc("less", _LESS_DOCSTRING)
 
 
 _LESS_EQUAL_DOCSTRING = """
@@ -1304,12 +1268,7 @@ The ``<=`` operator can be used as a shorthand for ``less_equal`` on
 array([False,  True,  True])
 """
 
-less_equal = DPNPBinaryFunc(
-    "less_equal",
-    tei._less_equal_result_type,
-    tei._less_equal,
-    _LESS_EQUAL_DOCSTRING,
-)
+less_equal = binary_ufunc("less_equal", _LESS_EQUAL_DOCSTRING)
 
 
 _LOGICAL_AND_DOCSTRING = """
@@ -1372,12 +1331,7 @@ boolean :class:`dpnp.ndarray`.
 array([False, False])
 """
 
-logical_and = DPNPBinaryFunc(
-    "logical_and",
-    tei._logical_and_result_type,
-    tei._logical_and,
-    _LOGICAL_AND_DOCSTRING,
-)
+logical_and = binary_ufunc("logical_and", _LOGICAL_AND_DOCSTRING)
 
 
 _LOGICAL_NOT_DOCSTRING = """
@@ -1425,12 +1379,7 @@ array([False,  True,  True, False])
 array([False, False, False,  True,  True])
 """
 
-logical_not = DPNPUnaryFunc(
-    "logical_not",
-    tei._logical_not_result_type,
-    tei._logical_not,
-    _LOGICAL_NOT_DOCSTRING,
-)
+logical_not = unary_ufunc("logical_not", _LOGICAL_NOT_DOCSTRING)
 
 
 _LOGICAL_OR_DOCSTRING = """
@@ -1493,12 +1442,7 @@ boolean :class:`dpnp.ndarray`.
 array([ True, False])
 """
 
-logical_or = DPNPBinaryFunc(
-    "logical_or",
-    tei._logical_or_result_type,
-    tei._logical_or,
-    _LOGICAL_OR_DOCSTRING,
-)
+logical_or = binary_ufunc("logical_or", _LOGICAL_OR_DOCSTRING)
 
 
 _LOGICAL_XOR_DOCSTRING = """
@@ -1559,12 +1503,7 @@ array([[ True, False],
        [False,  True]])
 """
 
-logical_xor = DPNPBinaryFunc(
-    "logical_xor",
-    tei._logical_xor_result_type,
-    tei._logical_xor,
-    _LOGICAL_XOR_DOCSTRING,
-)
+logical_xor = binary_ufunc("logical_xor", _LOGICAL_XOR_DOCSTRING)
 
 
 _NOT_EQUAL_DOCSTRING = """
@@ -1625,9 +1564,4 @@ The ``!=`` operator can be used as a shorthand for ``not_equal`` on
 array([False,  True])
 """
 
-not_equal = DPNPBinaryFunc(
-    "not_equal",
-    tei._not_equal_result_type,
-    tei._not_equal,
-    _NOT_EQUAL_DOCSTRING,
-)
+not_equal = binary_ufunc("not_equal", _NOT_EQUAL_DOCSTRING)
