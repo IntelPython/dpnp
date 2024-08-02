@@ -104,22 +104,6 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
 
     const std::int64_t k = std::min(m, n);
 
-    // const std::int64_t a_size = m * n;
-    // const std::int64_t u_size = m * m;
-    // const std::int64_t s_size = k;
-    // const std::int64_t vt_size = n * n;
-
-    // const std::int64_t a_size = m * n;
-    // const std::int64_t u_size = m * k;
-    // const std::int64_t s_size = k;
-    // const std::int64_t vt_size = k * n;
-
-    // const std::int64_t a_size = m * n;
-    // const std::int64_t s_size = k;
-    // const std::int64_t u_size = (jobu == oneapi::mkl::jobsvd::somevec) ? m *
-    // k : m * m; const std::int64_t vt_size = (jobu ==
-    // oneapi::mkl::jobsvd::somevec) ? k * n : n * n;
-
     const std::int64_t a_size = m * n;
     const std::int64_t s_size = k;
 
@@ -195,7 +179,6 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
         const auto &current_dep = comp_evs[stream_id];
 
         sycl::event gesvd_event;
-
         try {
             gesvd_event = mkl_lapack::gesvd(
                 exec_q,
@@ -209,16 +192,19 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
                        // 'S' computes the first min(m,n) rows of VT,
                        // 'O' overwrites A with the rows of VT,
                        // 'N' does not compute VT.
-                m,     // The number of rows in the input matrix A (0 <= m).
-                n,     // The number of columns in the input matrix A (0 <= n).
-                a_batch, // Pointer to the input matrix A of size (m x n).
+                m, // The number of rows in the input batch matrix A (0 <= m).
+                n, // The number of columns in the input batch matrix A (0 <=
+                   // n).
+                a_batch, // Pointer to the input batch matrix A of size (m x n)
+                         // for the current batch.
                 lda, // The leading dimension of A, must be at least max(1, m).
-                s_batch, // Pointer to the array containing the singular values.
+                s_batch, // Pointer to the array containing the singular values
+                         // for the current batch.
                 u_batch, // Pointer to the matrix U in the singular value
-                         // decomposition.
+                         // decomposition for the current batch.
                 ldu, // The leading dimension of U, must be at least max(1, m).
                 vt_batch, // Pointer to the matrix VT in the singular value
-                          // decomposition.
+                          // decomposition for the current batch.
                 ldvt, // The leading dimension of VT, must be at least max(1,
                       // n).
                 current_scratch_gesvd, // Pointer to scratchpad memory to be
@@ -351,26 +337,26 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Arrays have overlapping segments of memory");
     }
 
-    // bool is_a_array_f_contig = a_array.is_f_contiguous();
-    // if (!is_a_array_f_contig) {
-    //     throw py::value_error("The input array must be F-contiguous");
-    // }
+    bool is_a_array_f_contig = a_array.is_f_contiguous();
+    if (!is_a_array_f_contig) {
+        throw py::value_error("The input array must be F-contiguous");
+    }
 
-    // bool is_out_u_array_f_contig = out_u.is_f_contiguous();
-    // bool is_out_vt_array_f_contig = out_vt.is_f_contiguous();
+    bool is_out_u_array_c_contig = out_u.is_c_contiguous();
+    bool is_out_vt_array_c_contig = out_vt.is_c_contiguous();
 
-    // if (!is_out_u_array_f_contig || !is_out_vt_array_f_contig) {
-    //     throw py::value_error("The output arrays of the left and right "
-    //                           "singular vectors must be F-contiguous");
-    // }
+    if (!is_out_u_array_c_contig || !is_out_vt_array_c_contig) {
+        throw py::value_error("The output arrays of the left and right "
+                              "singular vectors must be C-contiguous");
+    }
 
-    // bool is_out_s_array_c_contig = out_s.is_c_contiguous();
-    // bool is_out_s_array_f_contig = out_s.is_f_contiguous();
+    bool is_out_s_array_c_contig = out_s.is_c_contiguous();
+    bool is_out_s_array_f_contig = out_s.is_f_contiguous();
 
-    // if (!is_out_s_array_c_contig || !is_out_s_array_f_contig) {
-    //     throw py::value_error("The output array of singular values "
-    //                           "must be contiguous");
-    // }
+    if (!is_out_s_array_c_contig || !is_out_s_array_f_contig) {
+        throw py::value_error("The output array of singular values "
+                              "must be contiguous");
+    }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
@@ -400,10 +386,8 @@ std::pair<sycl::event, sycl::event>
     char *out_vt_data = out_vt.get_data();
 
     const py::ssize_t *a_array_shape = a_array.get_shape_raw();
-    // const std::int64_t batch_size = a_array_shape[0];
-    // const std::int64_t m = a_array_shape[1];
-    // const std::int64_t n = a_array_shape[2];
 
+    // Input array have (m, n, batch_size) shape
     const std::int64_t batch_size = a_array_shape[2];
     const std::int64_t m = a_array_shape[0];
     const std::int64_t n = a_array_shape[1];
@@ -412,13 +396,6 @@ std::pair<sycl::event, sycl::event>
     const std::int64_t ldu = std::max<size_t>(1UL, m);
     const std::int64_t ldvt =
         std::max<std::size_t>(1UL, jobvt_val == 'S' ? (m > n ? n : m) : n);
-
-    std::cout << "batch_size: " << batch_size << std::endl;
-    std::cout << "m: " << m << std::endl;
-    std::cout << "n: " << n << std::endl;
-    std::cout << "lda: " << lda << std::endl;
-    std::cout << "ldu: " << lda << std::endl;
-    std::cout << "ldvt: " << lda << std::endl;
 
     const oneapi::mkl::jobsvd jobu = process_job(jobu_val);
     const oneapi::mkl::jobsvd jobvt = process_job(jobvt_val);

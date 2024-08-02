@@ -155,7 +155,7 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
     w = w.reshape(w_orig_shape)
 
     if eigen_mode == "V":
-        # syevd/heevd call overwtires `a` in Fortran order, reorder the axes
+        # syevd/heevd call overwrites `a` in Fortran order, reorder the axes
         # to match C order by moving the last axis to the front and
         # reshape it back to the original shape of `a`.
         v = dpnp.moveaxis(a_copy, -1, 0).reshape(a_orig_shape)
@@ -526,6 +526,7 @@ def _batched_svd(
 
     if new:
         a_shape = a.shape
+        a_ndim = a.ndim
         batch_shape_orig = a_shape[:-2]
 
         a = dpnp.reshape(a, (prod(a_shape[:-2]), a_shape[-2], a_shape[-1]))
@@ -576,11 +577,13 @@ def _batched_svd(
         _manager = dpu.SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
 
+        # Reorder the elements by moving the last two axes of `a` to the front
+        # to match fortran-like array order which is assumed by gesvd.
         a = dpnp.moveaxis(a, (-2, -1), (0, 1))
 
         a_usm_arr = dpnp.get_usm_ndarray(a)
 
-        # oneMKL LAPACK gesv destroys `a` and assumes fortran-like array
+        # oneMKL LAPACK gesvd destroys `a` and assumes fortran-like array
         # as input.
         a_f = dpnp.empty_like(a, dtype=uv_type, order="F", usm_type=usm_type)
 
@@ -597,16 +600,22 @@ def _batched_svd(
             order="C",
             dtype=uv_type,
             usm_type=usm_type,
-            sycl_queue=exec_q
+            sycl_queue=exec_q,
         )
         vt_h = dpnp.empty(
             vt_shape,
             order="C",
             dtype=uv_type,
             usm_type=usm_type,
-            sycl_queue=exec_q
+            sycl_queue=exec_q,
         )
-        s_h = dpnp.empty((batch_size,) + (k,), dtype=s_type, order='C', usm_type=usm_type, sycl_queue=exec_q)
+        s_h = dpnp.empty(
+            (batch_size,) + (k,),
+            dtype=s_type,
+            order="C",
+            usm_type=usm_type,
+            sycl_queue=exec_q,
+        )
 
         ht_ev, gesvd_batch_ev = li._gesvd_batch(
             exec_q,
@@ -618,15 +627,18 @@ def _batched_svd(
             vt_h.get_array(),
             depends=[a_copy_ev],
         )
-
         _manager.add_event_pair(ht_ev, gesvd_batch_ev)
 
-        # TODO: Need to return C-contiguous array to match the output of
-        # numpy.linalg.svd
         s = s_h.reshape(batch_shape_orig + s_h.shape[-1:])
         if compute_uv:
-            u = dpnp.moveaxis(u_h,(-2,-1),(-1,-2)).reshape(batch_shape_orig + u_shape[-2:][::-1])
-            vt = dpnp.moveaxis(vt_h,(-2,-1),(-1,-2)).reshape(batch_shape_orig + vt_shape[-2:][::-1])
+            # gesvd call writes `u_h` and `vt_h` in Fortran order;
+            # reorder the axes to match C order by moving the last axis
+            # to the front
+            u = dpnp.moveaxis(u_h, (-2, -1), (-1, -2))
+            vt = dpnp.moveaxis(vt_h, (-2, -1), (-1, -2))
+            if a_ndim > 3:
+                u = u.reshape(batch_shape_orig + u.shape[-2:])
+                vt = vt.reshape(batch_shape_orig + vt.shape[-2:])
             return u, s, vt
         return s
 
