@@ -33,13 +33,10 @@ This module is a face or public interface file for the library
 it contains:
  - Interface functions
  - documentation for the functions
- - The functions parameters check
 
 """
 
 # pylint: disable=invalid-name
-
-from enum import Enum
 
 import numpy
 
@@ -49,9 +46,6 @@ import dpnp
 from dpnp.dpnp_utils import (
     call_origin,
     checker_throw_axis_error,
-)
-from dpnp.fft.dpnp_algo_fft import (
-    dpnp_fft_deprecated,
 )
 
 from .dpnp_utils_fft import (
@@ -80,24 +74,22 @@ __all__ = [
 ]
 
 
-# TODO: remove pylint disable, once new implementation is ready
-# pylint: disable=missing-class-docstring
-class Norm(Enum):
-    backward = 0
-    forward = 1
-    ortho = 2
+_SWAP_DIRECTION_MAP = {
+    "backward": "forward",
+    None: "forward",
+    "ortho": "ortho",
+    "forward": "backward",
+}
 
 
-# TODO: remove pylint disable, once new implementation is ready
-# pylint: disable=missing-function-docstring
-def get_validated_norm(norm):
-    if norm is None or norm == "backward":
-        return Norm.backward
-    if norm == "forward":
-        return Norm.forward
-    if norm == "ortho":
-        return Norm.ortho
-    raise ValueError("Unknown norm value.")
+def _swap_direction(norm):
+    try:
+        return _SWAP_DIRECTION_MAP[norm]
+    except KeyError:
+        raise ValueError(
+            f'Invalid norm value {norm}; should be None, "backward", '
+            '"ortho" or "forward".'
+        ) from None
 
 
 def fft(a, n=None, axis=-1, norm=None, out=None):
@@ -425,58 +417,98 @@ def fftshift(x, axes=None):
     return dpnp.roll(x, shift, axes)
 
 
-def hfft(x, n=None, axis=-1, norm=None):
+def hfft(a, n=None, axis=-1, norm=None, out=None):
     """
-    Compute the one-dimensional discrete Fourier Transform of a signal that has
-    Hermitian symmetry.
+    Compute the FFT of a signal that has Hermitian symmetry, i.e.,
+    a real spectrum.
 
     For full documentation refer to :obj:`numpy.fft.hfft`.
 
-    Limitations
-    -----------
-    Parameter `x` is supported either as :class:`dpnp.ndarray`.
-    Parameter `norm` is unsupported.
-    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
-    `dpnp.complex128` data types are supported.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    n : {None, int}, optional
+        Length of the transformed axis of the output.
+        For `n` output points, ``n//2+1`` input points are necessary. If the
+        input is longer than this, it is cropped. If it is shorter than this,
+        it is padded with zeros. If `n` is not given, it is taken to be
+        ``2*(m-1)`` where ``m`` is the length of the input along the axis
+        specified by `axis`. Default: ``None``.
+    axis : int, optional
+        Axis over which to compute the FFT. If not given, the last axis is
+        used. Default: ``-1``.
+    norm : {None, "backward", "ortho", "forward"}, optional
+        Normalization mode (see :obj:`dpnp.fft`).
+        Indicates which direction of the forward/backward pair of transforms
+        is scaled and with what normalization factor. ``None`` is an alias of
+        the default option ``"backward"``.
+        Default: ``"backward"``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        If provided, the result will be placed in this array. It should be
+        of the appropriate shape and dtype.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The truncated or zero-padded input, transformed along the axis
+        indicated by `axis`, or the last one if `axis` is not specified.
+        The length of the transformed axis is `n`, or, if `n` is not given,
+        ``2*(m-1)`` where ``m`` is the length of the transformed axis of the
+        input. To get an odd number of output points, `n` must be specified,
+        for instance as ``2*m - 1`` in the typical case.
+
+    See Also
+    --------
+    :obj:`dpnp.fft` : For definition of the DFT and conventions used.
+    :obj:`dpnp.fft.rfft` : The one-dimensional FFT of real input.
+    :obj:`dpnp.fft.ihfft` :The inverse of :obj:`dpnp.fft.hfft`.
+
+
+    Notes
+    -----
+    :obj:`dpnp.fft.hfft`/:obj:`dpnp.fft.ihfft` are a pair analogous to
+    :obj:`dpnp.fft.rfft`/:obj:`dpnp.fft.irfft`, but for the opposite case:
+    here the signal has Hermitian symmetry in the time domain and is real in
+    the frequency domain. So here it's :obj:`dpnp.fft.hfft` for which you must
+    supply the length of the result if it is to be odd.
+
+    * even: ``ihfft(hfft(a, 2*len(a) - 2)) == a``, within roundoff error,
+    * odd: ``ihfft(hfft(a, 2*len(a) - 1)) == a``, within roundoff error.
+
+    The correct interpretation of the Hermitian input depends on the length of
+    the original data, as given by `n`. This is because each input shape could
+    correspond to either an odd or even length signal. By default,
+    :obj:`dpnp.fft.hfft` assumes an even output length which puts the last
+    entry at the Nyquist frequency; aliasing with its symmetric counterpart.
+    By Hermitian symmetry, the value is thus treated as purely real. To avoid
+    losing information, the correct length of the real input **must** be given.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> signal = np.array([1, 2, 3, 4, 3, 2])
+    >>> np.fft.fft(signal)
+    array([15.+0.j, -4.+0.j,  0.+0.j, -1.-0.j,  0.+0.j, -4.+0.j])
+    >>> np.fft.hfft(signal[:4]) # Input first half of signal
+    array([15., -4.,  0., -1.,  0., -4.])
+    >>> np.fft.hfft(signal, 6)  # Input entire signal and truncate
+    array([15., -4.,  0., -1.,  0., -4.])
+
+    >>> signal = np.array([[1, 1.j], [-1.j, 2]])
+    >>> np.conj(signal.T) - signal   # check Hermitian symmetry
+    array([[ 0.-0.j, -0.+0.j], # may vary
+           [ 0.+0.j,  0.-0.j]])
+    >>> freq_spectrum = np.fft.hfft(signal)
+    >>> freq_spectrum
+    array([[ 1.,  1.],
+           [ 2., -2.]])
 
     """
 
-    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
-    # TODO: enable implementation
-    # pylint: disable=condition-evals-to-constant
-    if x_desc and 0:
-        norm_ = get_validated_norm(norm)
-
-        if axis is None:
-            axis_param = -1  # the most right dimension (default value)
-        else:
-            axis_param = axis
-
-        if n is None:
-            input_boundarie = x_desc.shape[axis_param]
-        else:
-            input_boundarie = n
-
-        if x.size < 1:
-            pass  # let fallback to handle exception
-        elif input_boundarie < 1:
-            pass  # let fallback to handle exception
-        elif norm is not None:
-            pass
-        else:
-            output_boundarie = input_boundarie
-
-            return dpnp_fft_deprecated(
-                x_desc,
-                input_boundarie,
-                output_boundarie,
-                axis_param,
-                False,
-                norm_.value,
-            ).get_pyobj()
-
-    return call_origin(numpy.fft.hfft, x, n, axis, norm)
+    new_norm = _swap_direction(norm)
+    return irfft(dpnp.conjugate(a), n=n, axis=axis, norm=new_norm, out=out)
 
 
 def ifft(a, n=None, axis=-1, norm=None, out=None):
@@ -691,60 +723,76 @@ def ifftshift(x, axes=None):
     return dpnp.roll(x, shift, axes)
 
 
-def ihfft(x, n=None, axis=-1, norm=None):
+def ihfft(a, n=None, axis=-1, norm=None, out=None):
     """
-    Compute inverse one-dimensional discrete Fourier Transform of a signal that
-    has Hermitian symmetry.
+    Compute the inverse FFT of a signal that has Hermitian symmetry.
 
     For full documentation refer to :obj:`numpy.fft.ihfft`.
 
-    Limitations
-    -----------
-    Parameter `x` is supported either as :class:`dpnp.ndarray`.
-    Parameter `norm` is unsupported.
-    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,
-    `dpnp.complex128` data types are supported.
-    Otherwise the function will be executed sequentially on CPU.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    n : {None, int}, optional
+        Length of the inverse FFT, the number of points along
+        transformation axis in the input to use. If `n` is smaller than
+        the length of the input, the input is cropped. If it is larger,
+        the input is padded with zeros. If `n` is not given, the length of
+        the input along the axis specified by `axis` is used.
+        Default: ``None``.
+    axis : int, optional
+        Axis over which to compute the FFT. If not given, the last axis is
+        used. Default: ``-1``.
+    norm : {None, "backward", "ortho", "forward"}, optional
+        Normalization mode (see :obj:`dpnp.fft`).
+        Indicates which direction of the forward/backward pair of transforms
+        is scaled and with what normalization factor. ``None`` is an alias of
+        the default option ``"backward"``.
+        Default: ``"backward"``.
+    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
+        If provided, the result will be placed in this array. It should be
+        of the appropriate shape and dtype.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray of complex dtype
+        The truncated or zero-padded input, transformed along the axis
+        indicated by `axis`, or the last one if `axis` is not specified.
+        The length of the transformed axis is ``n//2 + 1``.
+
+    See Also
+    --------
+    :obj:`dpnp.fft` : For definition of the DFT and conventions used.
+    :obj:`dpnp.fft.hfft` : Compute the FFT of a signal that has
+                Hermitian symmetry.
+    :obj:`dpnp.fft.irfft` : The inverse of :obj:`dpnp.fft.rfft`.
+
+    Notes
+    -----
+    :obj:`dpnp.fft.hfft`/:obj:`dpnp.fft.ihfft` are a pair analogous to
+    :obj:`dpnp.fft.rfft`/:obj:`dpnp.fft.irfft`, but for the opposite case:
+    here the signal has Hermitian symmetry in the time domain and is real in
+    the frequency domain. So here it's :obj:`dpnp.fft.hfft` for which you must
+    supply the length of the result if it is to be odd.
+
+    * even: ``ihfft(hfft(a, 2*len(a) - 2)) == a``, within roundoff error,
+    * odd: ``ihfft(hfft(a, 2*len(a) - 1)) == a``, within roundoff error.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> spectrum = np.array([ 15, -4, 0, -1, 0, -4])
+    >>> np.fft.ifft(spectrum)
+    array([1.+0.j, 2.+0.j, 3.+0.j, 4.+0.j, 3.+0.j, 2.+0.j]) # may vary
+    >>> np.fft.ihfft(spectrum)
+    array([1.-0.j, 2.-0.j, 3.-0.j, 4.-0.j]) # may vary
 
     """
 
-    x_desc = dpnp.get_dpnp_descriptor(x, copy_when_nondefault_queue=False)
-    # TODO: enable implementation
-    # pylint: disable=condition-evals-to-constant
-    if x_desc and 0:
-        norm_ = get_validated_norm(norm)
-
-        if axis is None:
-            axis_param = -1  # the most right dimension (default value)
-        else:
-            axis_param = axis
-
-        if n is None:
-            input_boundarie = x_desc.shape[axis_param]
-        else:
-            input_boundarie = n
-
-        if x_desc.size < 1:
-            pass  # let fallback to handle exception
-        elif input_boundarie < 1:
-            pass  # let fallback to handle exception
-        elif norm is not None:
-            pass
-        elif n is not None:
-            pass
-        else:
-            output_boundarie = input_boundarie
-
-            return dpnp_fft_deprecated(
-                x_desc,
-                input_boundarie,
-                output_boundarie,
-                axis_param,
-                True,
-                norm_.value,
-            ).get_pyobj()
-
-    return call_origin(numpy.fft.ihfft, x, n, axis, norm)
+    new_norm = _swap_direction(norm)
+    res = rfft(a, n=n, axis=axis, norm=new_norm, out=out)
+    return dpnp.conjugate(res, out=out)
 
 
 def irfft(a, n=None, axis=-1, norm=None, out=None):
@@ -771,9 +819,9 @@ def irfft(a, n=None, axis=-1, norm=None, out=None):
         Input array.
     n : {None, int}, optional
         Length of the transformed axis of the output.
-        For `n` output points, ``n//2+1`` input points are necessary.  If the
+        For `n` output points, ``n//2+1`` input points are necessary. If the
         input is longer than this, it is cropped. If it is shorter than this,
-        it is padded with zeros.  If `n` is not given, it is taken to be
+        it is padded with zeros. If `n` is not given, it is taken to be
         ``2*(m-1)`` where ``m`` is the length of the input along the axis
         specified by `axis`. Default: ``None``.
     axis : int, optional
@@ -822,7 +870,7 @@ def irfft(a, n=None, axis=-1, norm=None, out=None):
     thus resample a series to `m` points via Fourier interpolation by:
     ``a_resamp = irfft(rfft(a), m)``.
 
-    The correct interpretation of the hermitian input depends on the length of
+    The correct interpretation of the Hermitian input depends on the length of
     the original data, as given by `n`. This is because each input shape could
     correspond to either an odd or even length signal. By default,
     :obj:`dpnp.fft.irfft` assumes an even output length which puts the last

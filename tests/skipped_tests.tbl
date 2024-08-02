@@ -52,8 +52,6 @@ tests/test_umath.py::test_umaths[('ldexp', 'fi')]
 tests/test_umath.py::test_umaths[('ldexp', 'fl')]
 tests/test_umath.py::test_umaths[('ldexp', 'di')]
 tests/test_umath.py::test_umaths[('ldexp', 'dl')]
-tests/test_umath.py::test_umaths[('logaddexp2', 'ff')]
-tests/test_umath.py::test_umaths[('logaddexp2', 'dd')]
 tests/test_umath.py::test_umaths[('spacing', 'f')]
 tests/test_umath.py::test_umaths[('spacing', 'd')]
 
@@ -208,9 +206,6 @@ tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_par
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_1_{shapes=[(3, 2), (2, 3)]}::test_invalid_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_2_{shapes=[(3, 2), (3, 4)]}::test_invalid_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_3_{shapes=[(0,), (2,)]}::test_invalid_broadcast
-
-tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2
-tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2_infinities
 
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_negative

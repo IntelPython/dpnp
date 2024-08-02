@@ -23,31 +23,48 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
 
-#include "degrees.hpp"
-#include "fabs.hpp"
-#include "fmax.hpp"
-#include "fmin.hpp"
-#include "fmod.hpp"
-#include "logaddexp2.hpp"
-#include "radians.hpp"
+#include <cmath>
+#include <sycl/sycl.hpp>
 
-namespace py = pybind11;
-
-namespace dpnp::extensions::ufunc
+namespace dpnp::kernels::logaddexp2
 {
-/**
- * @brief Add elementwise functions to Python module
- */
-void init_elementwise_functions(py::module_ m)
+constexpr double log2e = 1.442695040888963407359924681001892137;
+
+template <typename T>
+inline T log2_1p(T x)
 {
-    init_degrees(m);
-    init_fabs(m);
-    init_fmax(m);
-    init_fmin(m);
-    init_fmod(m);
-    init_logaddexp2(m);
-    init_radians(m);
+    return T(log2e) * sycl::log1p(x);
 }
-} // namespace dpnp::extensions::ufunc
+
+template <typename T>
+inline T logaddexp2(T x, T y)
+{
+    if (x == y) {
+        // handles infinities of the same sign
+        return x + 1;
+    }
+
+    const T tmp = x - y;
+    if (tmp > 0) {
+        return x + log2_1p(sycl::exp2(-tmp));
+    }
+    else if (tmp <= 0) {
+        return y + log2_1p(sycl::exp2(tmp));
+    }
+    return std::numeric_limits<T>::quiet_NaN();
+}
+
+template <typename argT1, typename argT2, typename resT>
+struct Logaddexp2Functor
+{
+    using supports_sg_loadstore = std::true_type;
+    using supports_vec = std::false_type;
+
+    resT operator()(const argT1 &in1, const argT2 &in2) const
+    {
+        return logaddexp2<resT>(in1, in2);
+    }
+};
+} // namespace dpnp::kernels::logaddexp2

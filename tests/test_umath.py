@@ -2,6 +2,8 @@ import numpy
 import pytest
 from numpy.testing import (
     assert_allclose,
+    assert_almost_equal,
+    assert_equal,
     assert_raises,
 )
 
@@ -345,6 +347,83 @@ class TestLogaddexp:
         dp_out = dpnp.empty(shape)
         with pytest.raises(ValueError):
             dpnp.logaddexp(dp_array, dp_array, out=dp_out)
+
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize(
+        "val1, val2",
+        [
+            pytest.param(numpy.nan, numpy.inf),
+            pytest.param(numpy.inf, numpy.nan),
+            pytest.param(numpy.nan, 0),
+            pytest.param(0, numpy.nan),
+            pytest.param(numpy.nan, numpy.nan),
+        ],
+    )
+    def test_nan(self, val1, val2):
+        a = numpy.array(val1)
+        b = numpy.array(val2)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = dpnp.logaddexp(ia, ib)
+        expected = numpy.logaddexp(a, b)
+        assert_equal(result, expected)
+
+
+class TestLogAddExp2:
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_values(self, dt):
+        a = numpy.log2(numpy.array([1, 2, 3, 4, 5], dtype=dt))
+        b = numpy.log2(numpy.array([5, 4, 3, 2, 1], dtype=dt))
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = dpnp.logaddexp2(ia, ib)
+        expected = numpy.logaddexp2(a, b)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_range(self, dt):
+        a = numpy.array([1000000, -1000000, 1000200, -1000200], dtype=dt)
+        b = numpy.array([1000200, -1000200, 1000000, -1000000], dtype=dt)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = dpnp.logaddexp2(ia, ib)
+        expected = numpy.logaddexp2(a, b)
+        assert_almost_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_inf(self, dt):
+        inf = numpy.inf
+        a = numpy.array([inf, -inf, inf, -inf, inf, 1, -inf, 1], dtype=dt)
+        b = numpy.array([inf, inf, -inf, -inf, 1, inf, 1, -inf], dtype=dt)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = dpnp.logaddexp2(ia, ib)
+        expected = numpy.logaddexp2(a, b)
+        assert_equal(result, expected)
+
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize(
+        "val1, val2",
+        [
+            pytest.param(numpy.nan, numpy.inf),
+            pytest.param(numpy.inf, numpy.nan),
+            pytest.param(numpy.nan, 0),
+            pytest.param(0, numpy.nan),
+            pytest.param(numpy.nan, numpy.nan),
+        ],
+    )
+    def test_nan(self, val1, val2):
+        a = numpy.array(val1)
+        b = numpy.array(val2)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = dpnp.logaddexp2(ia, ib)
+        expected = numpy.logaddexp2(a, b)
+        assert_equal(result, expected)
 
 
 class TestRadians:
