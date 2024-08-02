@@ -1250,6 +1250,81 @@ class TestNextafter:
         assert_equal(result, expected)
 
 
+class TestUnwrap:
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_basic(self, dt):
+        a = numpy.array([1, 1 + 2 * numpy.pi], dtype=dt)
+        ia = dpnp.array(a)
+
+        # unwrap removes jumps greater than 2*pi
+        result = dpnp.unwrap(ia)
+        expected = numpy.unwrap(a)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_rand(self, dt):
+        a = numpy.random.rand(10) * 100
+        a = a.astype(dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.unwrap(ia)
+        expected = numpy.unwrap(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+    )
+    def test_period(self, dt):
+        a = numpy.array([1, 1 + 256], dtype=dt)
+        ia = dpnp.array(a)
+
+        # unwrap removes jumps greater than 255
+        result = dpnp.unwrap(ia, period=255)
+        expected = numpy.unwrap(a, period=255)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+    )
+    def test_rand_period(self, dt):
+        a = numpy.random.rand(10) * 1000
+        a = a.astype(dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.unwrap(ia, period=255)
+        expected = numpy.unwrap(a, period=255)
+        assert_dtype_allclose(result, expected)
+
+    def test_simple_seq(self):
+        simple_seq = numpy.array([0, 75, 150, 225, 300])
+        wrap_seq = numpy.mod(simple_seq, 255)
+        isimple_seq, iwrap_seq = dpnp.array(simple_seq), dpnp.array(wrap_seq)
+
+        result = dpnp.unwrap(iwrap_seq, period=255)
+        expected = numpy.unwrap(wrap_seq, period=255)
+        assert_array_equal(result, expected)
+        assert_array_equal(result, isimple_seq)
+
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_discont(self, dt):
+        a = numpy.array([0, 75, 150, 225, 300, 430], dtype=dt)
+        a = numpy.mod(a, 250)
+        ia = dpnp.array(a)
+
+        result = dpnp.unwrap(ia, period=250)
+        expected = numpy.unwrap(a, period=250)
+        assert_array_equal(result, expected)
+
+        result = dpnp.unwrap(ia, period=250, discont=140)
+        expected = numpy.unwrap(a, period=250, discont=140)
+        assert_array_equal(result, expected)
+        assert result.dtype == ia.dtype == a.dtype
+
+
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
 @pytest.mark.parametrize(
     "val_type", [bool, int, float], ids=["bool", "int", "float"]
