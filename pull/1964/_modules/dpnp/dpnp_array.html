@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.16.0dev0+102.gb16f753039 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.16.0dev0+103.g008e625808 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=a161a10d"></script>
+        <script src="../../_static/documentation_options.js?v=bf6eefcf"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+102.gb16f753039
+                0.16.0dev0+103.g008e625808
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -162,32 +162,6 @@
         <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="c1"># if buffer is not None:</span>
-        <span class="c1">#     if not isinstance(buffer, dpt.usm_ndarray):</span>
-        <span class="c1">#         raise TypeError(</span>
-        <span class="c1">#             &quot;Expected dpctl.tensor.usm_ndarray, got {}&quot;</span>
-        <span class="c1">#             &quot;&quot;.format(type(buffer))</span>
-        <span class="c1">#         )</span>
-        <span class="c1">#     if buffer.shape != shape:</span>
-        <span class="c1">#         raise ValueError(</span>
-        <span class="c1">#             &quot;Expected buffer.shape={}, got {}&quot;</span>
-        <span class="c1">#             &quot;&quot;.format(shape, buffer.shape)</span>
-        <span class="c1">#         )</span>
-        <span class="c1">#     self._array_obj = dpt.asarray(buffer, copy=False, order=order)</span>
-        <span class="c1"># else:</span>
-        <span class="c1">#     sycl_queue_normalized = dpnp.get_normalized_queue_device(</span>
-        <span class="c1">#         device=device, sycl_queue=sycl_queue</span>
-        <span class="c1">#     )</span>
-        <span class="c1">#     self._array_obj = dpt.usm_ndarray(</span>
-        <span class="c1">#         shape,</span>
-        <span class="c1">#         dtype=dtype,</span>
-        <span class="c1">#         strides=strides,</span>
-        <span class="c1">#         buffer=usm_type,</span>
-        <span class="c1">#         offset=offset,</span>
-        <span class="c1">#         order=order,</span>
-        <span class="c1">#         buffer_ctor_kwargs={&quot;queue&quot;: sycl_queue_normalized},</span>
-        <span class="c1">#     )</span>
-
         <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
 
