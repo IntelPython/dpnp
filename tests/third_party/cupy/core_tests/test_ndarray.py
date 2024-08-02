@@ -58,7 +58,9 @@ class TestNdarrayInit(unittest.TestCase):
         b += 1
         testing.assert_array_equal(a, b)
 
-    @pytest.mark.skip("dpctl-1765: might lead to race condition (no plan to support that)")
+    @pytest.mark.skip(
+        "dpctl-1765: might lead to race condition (no plan to support that)"
+    )
     def test_memptr_with_strides(self):
         buf = cupy.ndarray(20, numpy.uint8)
         memptr = buf
@@ -71,7 +73,9 @@ class TestNdarrayInit(unittest.TestCase):
         a[0, 2] = 4
         assert float(a[1, 0]) == 4
 
-    @pytest.mark.skip("dpctl-1766: no exception raised by dpctl (no plan to support that)")
+    @pytest.mark.skip(
+        "dpctl-1766: no exception raised by dpctl (no plan to support that)"
+    )
     def test_strides_without_memptr(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
