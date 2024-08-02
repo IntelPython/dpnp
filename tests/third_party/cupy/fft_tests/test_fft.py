@@ -121,7 +121,7 @@ class TestFftOrder:
         testing.product_dict(
             [
                 {"shape": (3, 4), "s": None, "axes": None},
-                {"shape": (3, 4), "s": (1, None), "axes": None},
+                # {"shape": (3, 4), "s": (1, None), "axes": None}, # s is not int
                 {"shape": (3, 4), "s": (1, 5), "axes": None},
                 {"shape": (3, 4), "s": None, "axes": (-2, -1)},
                 {"shape": (3, 4), "s": None, "axes": (-1, -2)},
@@ -129,7 +129,7 @@ class TestFftOrder:
                 {"shape": (3, 4), "s": None, "axes": None},
                 # {"shape": (3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
                 {"shape": (2, 3, 4), "s": None, "axes": None},
-                {"shape": (2, 3, 4), "s": (1, 4, None), "axes": None},
+                # {"shape": (2, 3, 4), "s": (1, 4, None), "axes": None}, # s is not int
                 {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": None},
                 {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)},
                 {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)},
@@ -206,7 +206,7 @@ class TestFft2:
         testing.product_dict(
             [
                 {"shape": (3, 4), "s": None, "axes": None},
-                {"shape": (3, 4), "s": (1, None), "axes": None},
+                # {"shape": (3, 4), "s": (1, None), "axes": None}, # s is not int
                 {"shape": (3, 4), "s": (1, 5), "axes": None},
                 {"shape": (3, 4), "s": None, "axes": (-2, -1)},
                 {"shape": (3, 4), "s": None, "axes": (-1, -2)},
@@ -215,7 +215,7 @@ class TestFft2:
                 # {"shape": (3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
                 {"shape": (3, 4), "s": None, "axes": None},
                 {"shape": (2, 3, 4), "s": None, "axes": None},
-                {"shape": (2, 3, 4), "s": (1, 4, None), "axes": None},
+                # {"shape": (2, 3, 4), "s": (1, 4, None), "axes": None}, # s is not int
                 {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": None},
                 {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)},
                 {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)},

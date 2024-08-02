@@ -508,20 +508,35 @@ class TestFftn:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_fftn_0D(self, dtype):
-        # 0-D input
-        a = dpnp.array(3, dtype=dtype)
-        a_np = a.asnumpy()
+        a = dpnp.array(3, dtype=dtype)  # 0-D input
+
+        # axes is None
+        # For 0-D array, stock Numpy and dpnp return input array
+        # while Intel® NumPy return a complex zero
         result = dpnp.fft.fftn(a)
-        expected = numpy.fft.fftn(a_np, axes=())
+        expected = a.asnumpy()
         assert_dtype_allclose(result, expected)
+
+        # axes=()
+        # For 0-D array with axes=(), stock Numpy and dpnp return input array
+        # Intel® NumPy does not support empty axes and raises an Error
+        result = dpnp.fft.fftn(a, axes=())
+        expected = a.asnumpy()
+        assert_dtype_allclose(result, expected)
+
+        # axes=(0,)
+        # For 0-D array with non-empty axes, stock Numpy and dpnp raise
+        # IndexError, while Intel® NumPy raises ZeroDivisionError
+        assert_raises(IndexError, dpnp.fft.fftn, a, axes=(0,))
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_fftn_empty_axes(self, dtype):
         a = dpnp.ones((2, 3, 4), dtype=dtype)
-        a_np = a.asnumpy()
 
+        # For axes=(), stock Numpy and dpnp return input array
+        # Intel® NumPy does not support empty axes and raises an Error
         result = dpnp.fft.fftn(a, axes=())
-        expected = numpy.fft.fftn(a_np, axes=())
+        expected = a.asnumpy()
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
