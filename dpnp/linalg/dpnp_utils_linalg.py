@@ -639,6 +639,10 @@ def _batched_svd(
             if a_ndim > 3:
                 u = u.reshape(batch_shape_orig + u.shape[-2:])
                 vt = vt.reshape(batch_shape_orig + vt.shape[-2:])
+            # dpnp.moveaxis can make the array non-contiguous if it is not 2D
+            # Convert to contiguous to align with NumPy
+            u = dpnp.ascontiguousarray(u)
+            vt = dpnp.ascontiguousarray(vt)
             return u, s, vt
         return s
 
