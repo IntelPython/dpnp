@@ -57,6 +57,8 @@ __all__ = [
     "all",
     "allclose",
     "any",
+    "array_equal",
+    "array_equiv",
     "equal",
     "greater",
     "greater_equal",
@@ -340,6 +342,158 @@ def any(a, /, axis=None, out=None, keepdims=False, *, where=True):
     # TODO: temporary solution until dpt.any supports out parameter
     result = dpnp.get_result_array(result, out)
     return result
+
+
+def array_equal(a1, a2, equal_nan=False):
+    """
+    ``True`` if two arrays have the same shape and elements, ``False``
+    otherwise.
+
+    Parameters
+    ----------
+    a1 : {dpnp.ndarray, usm_ndarray, scalar}
+        First input array, expected to have numeric data type.
+        Both inputs `x1` and `x2` can not be scalars at the same time.
+    a2 : {dpnp.ndarray, usm_ndarray, scalar}
+        Second input array, also expected to have numeric data type.
+        Both inputs `x1` and `x2` can not be scalars at the same time.
+    equal_nan : bool
+        Whether to compare ``NaNs`` as equal. If the dtype of `a1` and `a2` is
+        complex, values will be considered equal if either the real or the
+        imaginary component of a given value is ``NaNs``.
+
+    Returns
+    -------
+    b : dpnp.ndarray
+        An array with a data type of `bool`
+        Returns ``True`` if the arrays are equal.
+
+    See Also
+    --------
+    :obj:`dpnp.allclose`: Returns ``True`` if two arrays are element-wise equal
+                          within a tolerance.
+    :obj:`dpnp.array_equiv`: Returns ``True`` if input arrays are shape
+                             consistent and all elements equal.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2])
+    >>> b = np.array([1, 2])
+    >>> np.array_equal(a, b)
+    array(True)
+
+    >>> a = np.array([1, 2])
+    >>> b = np.array([1, 2, 3])
+    >>> np.array_equal(a, b)
+    array(False)
+
+    >>> a = np.array([1, 2])
+    >>> b = np.array([1, 4])
+    >>> np.array_equal(a, b)
+    array(False)
+
+    >>> a = np.array([1, np.nan])
+    >>> np.array_equal(a, a)
+    array(False)
+
+    >>> np.array_equal(a, a, equal_nan=True)
+    array(True)
+
+    When ``equal_nan`` is ``True``, complex values with nan components are
+    considered equal if either the real *or* the imaginary components are nan.
+
+    >>> a = np.array([1 + 1j])
+    >>> b = a.copy()
+    >>> a.real = np.nan
+    >>> b.imag = np.nan
+    >>> np.array_equal(a, b, equal_nan=True)
+    array(True)
+
+    """
+    dpnp.check_supported_arrays_type(a1, a2, scalar_type=True)
+
+    if a1.shape != a2.shape:
+        return dpnp.array(False)
+
+    if not equal_nan:
+        return (a1 == a2).all()
+
+    if a1 is a2:
+        return dpnp.array(True)
+
+    cannot_have_nan = (
+        dpnp.issubdtype(a1, dpnp.bool) or dpnp.issubdtype(a1, dpnp.integer)
+    ) and (dpnp.issubdtype(a2, dpnp.bool) or dpnp.issubdtype(a2, dpnp.integer))
+
+    if cannot_have_nan:
+        return (a1 == a2).all()
+
+    # Handling NaN values if equal_nan is True
+    a1nan, a2nan = isnan(a1), isnan(a2)
+    # NaNs occur at different locations
+    if not (a1nan == a2nan).all():
+        return dpnp.array(False)
+    # Shapes of a1, a2 and masks are guaranteed to be consistent by this point
+    return (a1[~a1nan] == a2[~a1nan]).all()
+
+
+def array_equiv(a1, a2):
+    """
+    Returns ``True`` if input arrays are shape consistent and all elements
+    equal.
+
+    Shape consistent means they are either the same shape, or one input array
+    can be broadcasted to create the same shape as the other one.
+
+    Parameters
+    ----------
+    a1 : {dpnp.ndarray, usm_ndarray, scalar}
+        First input array, expected to have numeric data type.
+        Both inputs `x1` and `x2` can not be scalars at the same time.
+    a2 : {dpnp.ndarray, usm_ndarray, scalar}
+        Second input array, also expected to have numeric data type.
+        Both inputs `x1` and `x2` can not be scalars at the same time.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array with a data type of `bool`
+        ``True`` if equivalent, ``False`` otherwise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2])
+    >>> b = np.array([1, 2])
+    >>> c = np.array([1, 3])
+    >>> np.array_equiv(a, b)
+    array(True)
+    >>> np.array_equiv(a, c)
+    array(False)
+
+    Showing the shape equivalence:
+
+    >>> a = np.array([1, 2])
+    >>> b = np.array([[1, 2], [1, 2]])
+    >>> c = np.array([[1, 2, 1, 2], [1, 2, 1, 2]])
+    >>> np.array_equiv(a, b)
+    array(True)
+    >>> np.array_equiv(a, c)
+    array(False)
+
+    >>> a = np.array([1, 2])
+    >>> b = np.array([[1, 2], [1, 3]])
+    >>> np.array_equiv(a, b)
+    array(False)
+
+    """
+    dpnp.check_supported_arrays_type(a1, a2, scalar_type=True)
+    try:
+        dpnp.broadcast_arrays(a1, a2)
+    except ValueError:
+        return dpnp.array(False)
+    return (a1 == a2).all()
 
 
 _EQUAL_DOCSTRING = """
