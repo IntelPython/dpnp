@@ -270,7 +270,6 @@ class TestNdarrayShape(unittest.TestCase):
         arr.shape = (3, -1)
         return xp.array(arr.shape)
 
-    @pytest.mark.skip("dpctl-1769: shape setter does not work with int scalar")
     @testing.numpy_cupy_array_equal()
     def test_shape_set_int(self, xp):
         arr = xp.ndarray((2, 3))

@@ -1302,6 +1302,9 @@ class dpnp_array:
 
         """
 
+        if not isinstance(newshape, (list, tuple)):
+            newshape = (newshape,)
+
         self._array_obj.shape = newshape
 
     @property
