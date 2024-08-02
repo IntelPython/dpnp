@@ -28,6 +28,25 @@
 
 namespace dpnp::extensions::lapack::gesvd_utils
 {
+
+// Converts a given character code (ord) to the corresponding
+// oneapi::mkl::jobsvd enumeration value
+inline oneapi::mkl::jobsvd process_job(std::int8_t job_val)
+{
+    switch (job_val) {
+    case 'A':
+        return oneapi::mkl::jobsvd::vectors;
+    case 'S':
+        return oneapi::mkl::jobsvd::somevec;
+    case 'O':
+        return oneapi::mkl::jobsvd::vectorsina;
+    case 'N':
+        return oneapi::mkl::jobsvd::novec;
+    default:
+        throw std::invalid_argument("Unknown value for job");
+    }
+}
+
 inline void handle_lapack_exc(std::int64_t scratchpad_size,
                               const oneapi::mkl::lapack::exception &e,
                               std::stringstream &error_msg)

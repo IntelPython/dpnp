@@ -60,24 +60,6 @@ typedef sycl::event (*gesvd_impl_fn_ptr_t)(sycl::queue &,
 static gesvd_impl_fn_ptr_t gesvd_dispatch_table[dpctl_td_ns::num_types]
                                                [dpctl_td_ns::num_types];
 
-// Converts a given character code (ord) to the corresponding
-// oneapi::mkl::jobsvd enumeration value
-static oneapi::mkl::jobsvd process_job(std::int8_t job_val)
-{
-    switch (job_val) {
-    case 'A':
-        return oneapi::mkl::jobsvd::vectors;
-    case 'S':
-        return oneapi::mkl::jobsvd::somevec;
-    case 'O':
-        return oneapi::mkl::jobsvd::vectorsina;
-    case 'N':
-        return oneapi::mkl::jobsvd::novec;
-    default:
-        throw std::invalid_argument("Unknown value for job");
-    }
-}
-
 template <typename T, typename RealT>
 static sycl::event gesvd_impl(sycl::queue &exec_q,
                               const oneapi::mkl::jobsvd jobu,
@@ -292,8 +274,8 @@ std::pair<sycl::event, sycl::event>
     const std::int64_t ldvt =
         std::max<std::size_t>(1UL, jobvt_val == 'S' ? (m > n ? n : m) : n);
 
-    const oneapi::mkl::jobsvd jobu = process_job(jobu_val);
-    const oneapi::mkl::jobsvd jobvt = process_job(jobvt_val);
+    const oneapi::mkl::jobsvd jobu = gesvd_utils::process_job(jobu_val);
+    const oneapi::mkl::jobsvd jobvt = gesvd_utils::process_job(jobvt_val);
 
     std::vector<sycl::event> host_task_events;
     sycl::event gesvd_ev =
