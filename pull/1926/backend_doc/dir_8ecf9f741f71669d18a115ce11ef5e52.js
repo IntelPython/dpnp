@@ -29,6 +29,7 @@ var dir_8ecf9f741f71669d18a115ce11ef5e52 =
     [ "log1p.hpp", "log1p_8hpp_source.html", null ],
     [ "log2.hpp", "log2_8hpp_source.html", null ],
     [ "mul.hpp", "mul_8hpp_source.html", null ],
+    [ "nextafter.hpp", "nextafter_8hpp_source.html", null ],
     [ "pow.hpp", "pow_8hpp_source.html", null ],
     [ "rint.hpp", "rint_8hpp_source.html", null ],
     [ "sin.hpp", "sin_8hpp_source.html", null ],

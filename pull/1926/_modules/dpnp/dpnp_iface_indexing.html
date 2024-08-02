@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+83.ged95144633 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+109.gb4519755a7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=c2f7c36d"></script>
+        <script src="../../_static/documentation_options.js?v=89825c26"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+83.ged95144633
+                0.16.0dev0+109.gb4519755a7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -131,7 +131,7 @@
 
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._numpy_helper</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
@@ -154,6 +154,7 @@
     <span class="s2">&quot;diagonal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;extract&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fill_diagonal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;flatnonzero&quot;</span><span class="p">,</span>
     <span class="s2">&quot;indices&quot;</span><span class="p">,</span>
     <span class="s2">&quot;mask_indices&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nonzero&quot;</span><span class="p">,</span>
@@ -613,7 +614,7 @@
 <span class="sd">    condition : {array_like, scalar}</span>
 <span class="sd">        An array whose non-zero or ``True`` entries indicate the element of `a`</span>
 <span class="sd">        to extract.</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array of the same size as `condition`.</span>
 
 <span class="sd">    Returns</span>
@@ -692,7 +693,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Array whose diagonal is to be filled in-place. It must be at least 2-D.</span>
 <span class="sd">    val : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        Value(s) to write on the diagonal. If `val` is scalar, the value is</span>
@@ -821,6 +822,55 @@
 
     <span class="n">tmp_a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">tmp_a</span><span class="p">,</span> <span class="n">a_sh</span><span class="p">)</span>
     <span class="n">usm_a</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">tmp_a</span></div>
+
+
+
+<div class="viewcode-block" id="flatnonzero">
+<a class="viewcode-back" href="../../reference/generated/dpnp.flatnonzero.html#dpnp.flatnonzero">[docs]</a>
+<span class="k">def</span> <span class="nf">flatnonzero</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return indices that are non-zero in the flattened version of `a`.</span>
+
+<span class="sd">    This is equivalent to ``dpnp.nonzero(dpnp.ravel(a))[0]``.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.flatnonzero`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input data.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Output array, containing the indices of the elements of ``a.ravel()``</span>
+<span class="sd">        that are non-zero.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.nonzero` : Return the indices of the non-zero elements of</span>
+<span class="sd">                          the input array.</span>
+<span class="sd">    :obj:`dpnp.ravel` : Return a 1-D array containing the elements of</span>
+<span class="sd">                        the input array.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.arange(-2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; x</span>
+<span class="sd">    array([-2, -1,  0,  1,  2])</span>
+<span class="sd">    &gt;&gt;&gt; np.flatnonzero(x)</span>
+<span class="sd">    array([0, 1, 3, 4])</span>
+
+<span class="sd">    Use the indices of the non-zero elements as an index array to extract</span>
+<span class="sd">    these elements:</span>
+
+<span class="sd">    &gt;&gt;&gt; x.ravel()[np.flatnonzero(x)]</span>
+<span class="sd">    array([-2, -1,  1,  2])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
 

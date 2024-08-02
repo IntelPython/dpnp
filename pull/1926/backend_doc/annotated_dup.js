@@ -64,9 +64,13 @@ var annotated_dup =
         ] ],
         [ "fft", null, [
           [ "DescriptorWrapper", "classdpnp_1_1extensions_1_1fft_1_1_descriptor_wrapper.html", null ],
+          [ "PrecisionType", "structdpnp_1_1extensions_1_1fft_1_1_precision_type.html", null ],
+          [ "PrecisionType< mkl_dft::precision::DOUBLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html", null ],
+          [ "PrecisionType< mkl_dft::precision::SINGLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html", null ],
           [ "ScaleType", "structdpnp_1_1extensions_1_1fft_1_1_scale_type.html", null ],
-          [ "ScaleType< mkl_dft::precision::DOUBLE >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html", null ],
-          [ "ScaleType< mkl_dft::precision::SINGLE >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html", null ]
+          [ "ScaleType< prec, mkl_dft::domain::COMPLEX, is_fwd >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_c_o_m_p_l_e_x_00_01is__fwd_01_4.html", null ],
+          [ "ScaleType< prec, mkl_dft::domain::REAL, false >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01false_01_4.html", null ],
+          [ "ScaleType< prec, mkl_dft::domain::REAL, true >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01true_01_4.html", null ]
         ] ],
         [ "lapack", null, [
           [ "helper", null, [
@@ -95,6 +99,9 @@ var annotated_dup =
         ] ]
       ] ],
       [ "kernels", null, [
+        [ "degrees", null, [
+          [ "DegreesFunctor", "structdpnp_1_1kernels_1_1degrees_1_1_degrees_functor.html", null ]
+        ] ],
         [ "fabs", null, [
           [ "FabsFunctor", "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html", null ]
         ] ],
@@ -106,6 +113,12 @@ var annotated_dup =
         ] ],
         [ "fmod", null, [
           [ "FmodFunctor", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ]
+        ] ],
+        [ "logaddexp2", null, [
+          [ "Logaddexp2Functor", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ]
+        ] ],
+        [ "radians", null, [
+          [ "RadiansFunctor", "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html", null ]
         ] ]
       ] ]
     ] ],

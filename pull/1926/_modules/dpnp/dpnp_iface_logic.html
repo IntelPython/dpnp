@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.16.0dev0+83.ged95144633 documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.16.0dev0+109.gb4519755a7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=c2f7c36d"></script>
+        <script src="../../_static/documentation_options.js?v=89825c26"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+83.ged95144633
+                0.16.0dev0+109.gb4519755a7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -140,10 +140,8 @@
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="n">dpnp_allclose</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="n">call_origin</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;all&quot;</span><span class="p">,</span>
@@ -273,7 +271,7 @@
 
 <div class="viewcode-block" id="allclose">
 <a class="viewcode-back" href="../../reference/generated/dpnp.allclose.html#dpnp.allclose">[docs]</a>
-<span class="k">def</span> <span class="nf">allclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-5</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">allclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-5</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns ``True`` if two arrays are element-wise equal within a tolerance.</span>
 
@@ -282,11 +280,28 @@
 <span class="sd">    are added together to compare against the absolute difference between `a`</span>
 <span class="sd">    and `b`.</span>
 
-<span class="sd">    If either array contains one or more ``NaNs``, ``False`` is returned.</span>
-<span class="sd">    ``Infs`` are treated as equal if they are in the same place and of the same</span>
-<span class="sd">    sign in both arrays.</span>
+<span class="sd">    ``NaNs`` are treated as equal if they are in the same place and if</span>
+<span class="sd">    ``equal_nan=True``. ``Infs`` are treated as equal if they are in the same</span>
+<span class="sd">    place and of the same sign in both arrays.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.allclose`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        First input array, expected to have numeric data type.</span>
+<span class="sd">        Both inputs `a` and `b` can not be scalars at the same time.</span>
+<span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        Second input array, also expected to have numeric data type.</span>
+<span class="sd">        Both inputs `a` and `b` can not be scalars at the same time.</span>
+<span class="sd">    rtol : {dpnp.ndarray, usm_ndarray, scalar}, optional</span>
+<span class="sd">        The relative tolerance parameter. Default: ``1e-05``.</span>
+<span class="sd">    atol : {dpnp.ndarray, usm_ndarray, scalar}, optional</span>
+<span class="sd">        The absolute tolerance parameter. Default: ``1e-08``.</span>
+<span class="sd">    equal_nan : bool</span>
+<span class="sd">        Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will</span>
+<span class="sd">        be considered equal to ``NaNs`` in `b` in the output array.</span>
+<span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -294,17 +309,6 @@
 <span class="sd">        A 0-dim array with ``True`` value if the two arrays are equal within</span>
 <span class="sd">        the given tolerance; with ``False`` otherwise.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `a` and `b` are supported either as :class:`dpnp.ndarray`,</span>
-<span class="sd">    :class:`dpctl.tensor.usm_ndarray` or scalars, but both `a` and `b`</span>
-<span class="sd">    can not be scalars at the same time.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the functions will be executed sequentially on CPU.</span>
-<span class="sd">    Parameters `rtol` and `atol` are supported as scalars. Otherwise</span>
-<span class="sd">    ``TypeError`` exception will be raised.</span>
-<span class="sd">    Input array data types are limited by supported integer and</span>
-<span class="sd">    floating DPNP :ref:`Data types`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -319,53 +323,23 @@
 <span class="sd">    &gt;&gt;&gt; a = np.array([1e10, 1e-7])</span>
 <span class="sd">    &gt;&gt;&gt; b = np.array([1.00001e10, 1e-8])</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, b)</span>
-<span class="sd">    array([False])</span>
+<span class="sd">    array(False)</span>
 
 <span class="sd">    &gt;&gt;&gt; a = np.array([1.0, np.nan])</span>
 <span class="sd">    &gt;&gt;&gt; b = np.array([1.0, np.nan])</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, b)</span>
-<span class="sd">    array([False])</span>
+<span class="sd">    array(False)</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(a, b, equal_nan=True)</span>
+<span class="sd">    array(True)</span>
 
 <span class="sd">    &gt;&gt;&gt; a = np.array([1.0, np.inf])</span>
 <span class="sd">    &gt;&gt;&gt; b = np.array([1.0, np.inf])</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, b)</span>
-<span class="sd">    array([ True])</span>
+<span class="sd">    array(True)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">and</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
-        <span class="c1"># at least one of inputs has to be an array</span>
-        <span class="k">pass</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-    <span class="p">):</span>
-        <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">rtol</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;An argument `rtol` must be a scalar, but got </span><span class="si">{</span><span class="n">rtol</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">atol</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;An argument `atol` must be a scalar, but got </span><span class="si">{</span><span class="n">atol</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-            <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
-            <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
-            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span> <span class="n">b</span><span class="o">.</span><span class="n">get_array</span><span class="p">())</span>
-
-        <span class="n">a_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">b_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">a_desc</span> <span class="ow">and</span> <span class="n">b_desc</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_allclose</span><span class="p">(</span><span class="n">a_desc</span><span class="p">,</span> <span class="n">b_desc</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">allclose</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">isclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="n">equal_nan</span><span class="p">))</span></div>
 
 
 
@@ -673,47 +647,124 @@
 
 <div class="viewcode-block" id="isclose">
 <a class="viewcode-back" href="../../reference/generated/dpnp.isclose.html#dpnp.isclose">[docs]</a>
-<span class="k">def</span> <span class="nf">isclose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">isclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a boolean array where two arrays are element-wise equal within</span>
 <span class="sd">    a tolerance.</span>
 
+<span class="sd">    The tolerance values are positive, typically very small numbers. The</span>
+<span class="sd">    relative difference (`rtol` * abs(`b`)) and the absolute difference `atol`</span>
+<span class="sd">    are added together to compare against the absolute difference between `a`</span>
+<span class="sd">    and `b`.</span>
+
+<span class="sd">    ``NaNs`` are treated as equal if they are in the same place and if</span>
+<span class="sd">    ``equal_nan=True``. ``Infs`` are treated as equal if they are in the same</span>
+<span class="sd">    place and of the same sign in both arrays.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.isclose`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    `x2` is supported to be integer if `x1` is :class:`dpnp.ndarray` or</span>
-<span class="sd">    at least either `x1` or `x2` should be as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        First input array, expected to have numeric data type.</span>
+<span class="sd">        Both inputs `a` and `b` can not be scalars at the same time.</span>
+<span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        Second input array, also expected to have numeric data type.</span>
+<span class="sd">        Both inputs `a` and `b` can not be scalars at the same time.</span>
+<span class="sd">    rtol : {dpnp.ndarray, usm_ndarray, scalar}, optional</span>
+<span class="sd">        The relative tolerance parameter. Default: ``1e-05``.</span>
+<span class="sd">    atol : {dpnp.ndarray, usm_ndarray, scalar}, optional</span>
+<span class="sd">        The absolute tolerance parameter. Default: ``1e-08``.</span>
+<span class="sd">    equal_nan : bool</span>
+<span class="sd">        Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will</span>
+<span class="sd">        be considered equal to ``NaNs`` in `b` in the output array.</span>
+<span class="sd">        Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Returns a boolean array of where `a` and `b` are equal within the given</span>
+<span class="sd">        tolerance.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.allclose` : Returns True if two arrays are element-wise equal</span>
-<span class="sd">                           within a tolerance.</span>
+<span class="sd">    :obj:`dpnp.allclose` : Returns ``True`` if two arrays are element-wise</span>
+<span class="sd">                           equal within a tolerance.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([1e10,1e-7])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([1.00001e10,1e-8])</span>
-<span class="sd">    &gt;&gt;&gt; out = np.isclose(x1, x2)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [True, False]</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1e10, 1e-7])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1.00001e10, 1e-8])</span>
+<span class="sd">    &gt;&gt;&gt; np.isclose(a, b)</span>
+<span class="sd">    array([ True, False])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([1e10, 1e-8])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1.00001e10, 1e-9])</span>
+<span class="sd">    &gt;&gt;&gt; np.isclose(a, b)</span>
+<span class="sd">    array([ True,  True])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([1e10, 1e-8])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1.0001e10, 1e-9])</span>
+<span class="sd">    &gt;&gt;&gt; np.isclose(a, b)</span>
+<span class="sd">    array([False,  True])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([1.0, np.nan])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1.0, np.nan])</span>
+<span class="sd">    &gt;&gt;&gt; np.isclose(a, b)</span>
+<span class="sd">    array([ True, False])</span>
+<span class="sd">    &gt;&gt;&gt; np.isclose(a, b, equal_nan=True)</span>
+<span class="sd">    array([ True,  True])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([0.0, 0.0])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1e-8, 1e-7])</span>
+<span class="sd">    &gt;&gt;&gt; np.isclose(a, b)</span>
+<span class="sd">    array([ True, False])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1e-100, 1e-7])</span>
+<span class="sd">    &gt;&gt;&gt; np.isclose(a, b, atol=0.0)</span>
+<span class="sd">    array([False, False])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([1e-10, 1e-10])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1e-20, 0.0])</span>
+<span class="sd">    &gt;&gt;&gt; np.isclose(a, b)</span>
+<span class="sd">    array([ True,  True])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1e-20, 0.999999e-10])</span>
+<span class="sd">    &gt;&gt;&gt; np.isclose(a, b, atol=0.0)</span>
+<span class="sd">    array([False,  True])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># x1_desc = dpnp.get_dpnp_descriptor(x1)</span>
-    <span class="c1"># x2_desc = dpnp.get_dpnp_descriptor(x2)</span>
-    <span class="c1"># if x1_desc and x2_desc:</span>
-    <span class="c1">#     result_obj = dpnp_isclose(</span>
-    <span class="c1">#         x1_desc, x2_desc, rtol, atol, equal_nan</span>
-    <span class="c1">#     ).get_pyobj()</span>
-    <span class="c1">#     return result_obj</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span>
+        <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">isclose</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="n">equal_nan</span>
-    <span class="p">)</span></div>
+    <span class="c1"># make sure b is an inexact type to avoid bad behavior on abs(MIN_INT)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="n">b</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+    <span class="c1"># Firstly handle finite values:</span>
+    <span class="c1"># result = absolute(a - b) &lt;= atol + rtol * absolute(b)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">)</span>
+    <span class="n">_b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+    <span class="n">_b</span> <span class="o">*=</span> <span class="n">rtol</span>
+    <span class="n">_b</span> <span class="o">+=</span> <span class="n">atol</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">less_equal</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">),</span> <span class="n">_b</span><span class="p">)</span>
+
+    <span class="c1"># Handle &quot;Inf&quot; values: they are treated as equal if they are in the same</span>
+    <span class="c1"># place and of the same sign in both arrays</span>
+    <span class="n">result</span> <span class="o">&amp;=</span> <span class="n">isfinite</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">|=</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span>
+
+    <span class="k">if</span> <span class="n">equal_nan</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">|=</span> <span class="n">isnan</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">isnan</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
 
 
 

@@ -14,6 +14,7 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::coord_in_space< DispatchT, Matcher, AxisData >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space.html", null ],
     [ "dpnp::backend::ext::sycl_ext::coord_in_space< DispatchT, Matcher, std::tuple< Axes... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_05165243a6f8dde008b6a09f3e23101f7.html", null ],
     [ "dpnp::backend::ext::sycl_ext::coord_in_space< DispatchT, Matcher, std::tuple< CurrentAxis > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_09145d8edb59d4cea6805114cb85ebe7b.html", null ],
+    [ "dpnp::kernels::degrees::DegreesFunctor< argT, resT >", "structdpnp_1_1kernels_1_1degrees_1_1_degrees_functor.html", null ],
     [ "dpnp::extensions::fft::DescriptorWrapper< prec, dom >", "classdpnp_1_1extensions_1_1fft_1_1_descriptor_wrapper.html", null ],
     [ "std::disjunction", null, [
       [ "is_any< T, Ts >", "structis__any.html", null ]
@@ -67,6 +68,7 @@ var hierarchy =
     [ "std::integral_constant", null, [
       [ "is_complex< _Tp >", "structis__complex.html", null ]
     ] ],
+    [ "dpnp::kernels::logaddexp2::Logaddexp2Functor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ],
     [ "dpnp::backend::ext::sycl_ext::merge_two_inner_tuple_types< FirstTuple, SecondTuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__inner__tuple__types.html", null ],
     [ "dpnp::backend::ext::sycl_ext::merge_two_inner_tuple_types< std::tuple< FirstTupleArgs... >, std::tuple< SecondTupleArgs... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__inner__tuple__types_3_01std_1_1tuple_3_0138ac4b60360159f3bcb33d2fa44168.html", null ],
     [ "dpnp::backend::ext::sycl_ext::merge_two_inner_tuple_types< std::tuple< std::tuple< FirstTupleArgs... > >, std::tuple< std::tuple< SecondTupleArgs... > > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__inner__tuple__types_3_01std_1_1tuple_3_61a32514aa73a4b8a3b7c6a5b4f77028.html", null ],
@@ -81,12 +83,17 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::populate_table< C, FnT, std::tuple< std::tuple< Args... > > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1populate__table_3_01_c_00_01_fn_t_00_01std_1_1tuple0f7ffe7646d3c8f7f12eca20777caefd.html", null ],
     [ "dpnp::extensions::lapack::types::PotrfBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::PotrfTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_type_pair_support_factory.html", null ],
+    [ "dpnp::extensions::fft::PrecisionType< prec >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type.html", null ],
+    [ "dpnp::extensions::fft::PrecisionType< mkl_dft::precision::DOUBLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html", null ],
+    [ "dpnp::extensions::fft::PrecisionType< mkl_dft::precision::SINGLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html", null ],
     [ "python_constants", "structpython__constants.html", null ],
+    [ "dpnp::kernels::radians::RadiansFunctor< argT, resT >", "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html", null ],
     [ "dpnp::backend::ext::sycl_ext::resolve_type< C, Tuple >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1resolve__type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::resolve_type< C, std::tuple< Args... > >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1resolve__type_3_01_c_00_01std_1_1tuple_3_01_args_8_8_8_01_4_01_4.html", null ],
-    [ "dpnp::extensions::fft::ScaleType< prec >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type.html", null ],
-    [ "dpnp::extensions::fft::ScaleType< mkl_dft::precision::DOUBLE >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html", null ],
-    [ "dpnp::extensions::fft::ScaleType< mkl_dft::precision::SINGLE >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html", null ],
+    [ "dpnp::extensions::fft::ScaleType< prec, dom, is_forward >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type.html", null ],
+    [ "dpnp::extensions::fft::ScaleType< prec, mkl_dft::domain::COMPLEX, is_fwd >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_c_o_m_p_l_e_x_00_01is__fwd_01_4.html", null ],
+    [ "dpnp::extensions::fft::ScaleType< prec, mkl_dft::domain::REAL, false >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01false_01_4.html", null ],
+    [ "dpnp::extensions::fft::ScaleType< prec, mkl_dft::domain::REAL, true >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01true_01_4.html", null ],
     [ "dpnp::backend::ext::sycl_ext::sum_mean< InT, OutT, Mean >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1sum__mean.html", null ],
     [ "dpnp::extensions::lapack::types::SyevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
     [ "dpnp::backend::ext::sycl_ext::tuple_of_n_elements< T, N >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1tuple__of__n__elements.html", null ],
