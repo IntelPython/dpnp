@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.16.0dev0+97.gb8bf7602b1 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.16.0dev0+100.g4e9a37c92a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7b5665c6"></script>
+        <script src="../../_static/documentation_options.js?v=c9afd960"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+97.gb8bf7602b1
+                0.16.0dev0+100.g4e9a37c92a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -128,25 +128,18 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># pylint: disable=protected-access</span>
-<span class="c1"># pylint: disable=c-extension-no-member</span>
-<span class="c1"># pylint: disable=duplicate-code</span>
 <span class="c1"># pylint: disable=no-name-in-module</span>
 
 
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_elementwise_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="k">as</span> <span class="nn">dtu</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">import</span> <span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span> <span class="k">as</span> <span class="nn">ufi</span>
 <span class="kn">import</span> <span class="nn">dpnp.backend.extensions.vm._vm_impl</span> <span class="k">as</span> <span class="nn">vmi</span>
 
-<span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">dpnp_unwrap</span><span class="p">,</span>
-<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="n">call_origin</span>
 <span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_reduction</span> <span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -2295,41 +2288,125 @@
 
 <div class="viewcode-block" id="unwrap">
 <a class="viewcode-back" href="../../reference/generated/dpnp.unwrap.html#dpnp.unwrap">[docs]</a>
-<span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Unwrap by changing deltas between values to 2*pi complement.</span>
+<span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">discont</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">pi</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Unwrap by taking the complement of large deltas with respect to the period.</span>
+
+<span class="sd">    This unwraps a signal `p` by changing elements which have an absolute</span>
+<span class="sd">    difference from their predecessor of more than ``max(discont, period / 2)``</span>
+<span class="sd">    to their `period`-complementary values.</span>
+
+<span class="sd">    For the default case where `period` is :math:`2\pi` and `discont` is</span>
+<span class="sd">    :math:`\pi`, this unwraps a radian phase `p` such that adjacent differences</span>
+<span class="sd">    are never greater than :math:`\pi` by adding :math:`2k\pi` for some integer</span>
+<span class="sd">    :math:`k`.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.unwrap`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    p : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    discont : {float, None}, optional</span>
+<span class="sd">        Maximum discontinuity between values, default is ``period / 2``. Values</span>
+<span class="sd">        below ``period / 2`` are treated as if they were ``period / 2``. To</span>
+<span class="sd">        have an effect different from the default, `discont` should be larger</span>
+<span class="sd">        than ``period / 2``.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        Axis along which unwrap will operate, default is the last axis.</span>
+<span class="sd">        Default: ``-1``.</span>
+<span class="sd">    period : float, optional</span>
+<span class="sd">        Size of the range over which the input wraps.</span>
+<span class="sd">        Default: ``2 * pi``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Output array.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.rad2deg` : Convert angles from radians to degrees.</span>
 <span class="sd">    :obj:`dpnp.deg2rad` : Convert angles from degrees to radians.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If the discontinuity in `p` is smaller than ``period / 2``, but larger than</span>
+<span class="sd">    `discont`, no unwrapping is done because taking the complement would only</span>
+<span class="sd">    make the discontinuity larger.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; phase = np.linspace(0, np.pi, num=5)</span>
-<span class="sd">    &gt;&gt;&gt; for i in range(3, 5):</span>
-<span class="sd">    &gt;&gt;&gt;     phase[i] += np.pi</span>
-<span class="sd">    &gt;&gt;&gt; out = np.unwrap(phase)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
-<span class="sd">    [0.0, 0.78539816, 1.57079633, 5.49778714, 6.28318531]</span>
+<span class="sd">    &gt;&gt;&gt; phase[3:] += np.pi</span>
+<span class="sd">    &gt;&gt;&gt; phase</span>
+<span class="sd">    array([0.        , 0.78539816, 1.57079633, 5.49778714, 6.28318531])</span>
+<span class="sd">    &gt;&gt;&gt; np.unwrap(phase)</span>
+<span class="sd">    array([ 0.        ,  0.78539816,  1.57079633, -0.78539816,  0.        ])</span>
+
+<span class="sd">    &gt;&gt;&gt; phase = np.array([0, 1, 2, -1, 0])</span>
+<span class="sd">    &gt;&gt;&gt; np.unwrap(phase, period=4)</span>
+<span class="sd">    array([0, 1, 2, 3, 4])</span>
+
+<span class="sd">    &gt;&gt;&gt; phase = np.array([1, 2, 3, 4, 5, 6, 1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.unwrap(phase, period=6)</span>
+<span class="sd">    array([1, 2, 3, 4, 5, 6, 7, 8, 9])</span>
+
+<span class="sd">    &gt;&gt;&gt; phase = np.array([2, 3, 4, 5, 2, 3, 4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; np.unwrap(phase, period=4)</span>
+<span class="sd">    array([2, 3, 4, 5, 6, 7, 8, 9])</span>
+
+<span class="sd">    &gt;&gt;&gt; phase_deg = np.mod(np.linspace(0 ,720, 19), 360) - 180</span>
+<span class="sd">    &gt;&gt;&gt; np.unwrap(phase_deg, period=360)</span>
+<span class="sd">    array([-180., -140., -100.,  -60.,  -20.,   20.,   60.,  100.,  140.,</span>
+<span class="sd">            180.,  220.,  260.,  300.,  340.,  380.,  420.,  460.,  500.,</span>
+<span class="sd">            540.])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_unwrap</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">unwrap</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="n">p_nd</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">p_diff</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">discont</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">discont</span> <span class="o">=</span> <span class="n">period</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="c1"># full slices</span>
+    <span class="n">slice1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">p_nd</span>
+    <span class="n">slice1</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">slice1</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">p_diff</span><span class="p">,</span> <span class="n">period</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+        <span class="n">interval_high</span><span class="p">,</span> <span class="n">rem</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">boundary_ambiguous</span> <span class="o">=</span> <span class="n">rem</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">interval_high</span> <span class="o">=</span> <span class="n">period</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">boundary_ambiguous</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">interval_low</span> <span class="o">=</span> <span class="o">-</span><span class="n">interval_high</span>
+
+    <span class="n">ddmod</span> <span class="o">=</span> <span class="n">p_diff</span> <span class="o">-</span> <span class="n">interval_low</span>
+    <span class="n">ddmod</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">ddmod</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">ddmod</span><span class="p">)</span>
+    <span class="n">ddmod</span> <span class="o">+=</span> <span class="n">interval_low</span>
+
+    <span class="k">if</span> <span class="n">boundary_ambiguous</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">ddmod</span> <span class="o">==</span> <span class="n">interval_low</span>
+        <span class="n">mask</span> <span class="o">&amp;=</span> <span class="n">p_diff</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="n">ddmod</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">interval_high</span><span class="p">,</span> <span class="n">ddmod</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">ddmod</span><span class="p">)</span>
+
+    <span class="n">ph_correct</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">ddmod</span><span class="p">,</span> <span class="n">p_diff</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">ddmod</span><span class="p">)</span>
+    <span class="n">abs_p_diff</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">p_diff</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">p_diff</span><span class="p">)</span>
+    <span class="n">ph_correct</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">abs_p_diff</span> <span class="o">&lt;</span> <span class="n">discont</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ph_correct</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">ph_correct</span><span class="p">)</span>
+
+    <span class="n">up</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">up</span><span class="p">[</span><span class="n">slice1</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="n">slice1</span><span class="p">]</span>
+    <span class="c1"># TODO: replace, once dpctl-1757 resolved</span>
+    <span class="c1"># up[slice1] += ph_correct.cumsum(axis=axis)</span>
+    <span class="n">up</span><span class="p">[</span><span class="n">slice1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">ph_correct</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">up</span></div>
 
 </pre></div>
 

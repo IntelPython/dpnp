@@ -4,7 +4,6 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_argmin_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab9df32dd9f7107c691c5972a86351d35", null ],
     [ "dpnp_argsort_c", "group___b_a_c_k_e_n_d___a_p_i.html#gad7ba17bf5aab9a319b59429718622322", null ],
     [ "dpnp_choose_c", "group___b_a_c_k_e_n_d___a_p_i.html#gade43dedf9297ae8a75c812cf1e59d2c1", null ],
-    [ "dpnp_copyto_c", "group___b_a_c_k_e_n_d___a_p_i.html#gabceea33ca918db1ba95b692dd0cf78a8", null ],
     [ "dpnp_correlate_c", "group___b_a_c_k_e_n_d___a_p_i.html#gac8a963ba01536cad42b8a42d8250314b", null ],
     [ "dpnp_count_nonzero_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga720e05039ce0f0784c8a2e04f7f1c682", null ],
     [ "dpnp_cov_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga49f8dd90da75b44e6b733e944c6e7b33", null ],
