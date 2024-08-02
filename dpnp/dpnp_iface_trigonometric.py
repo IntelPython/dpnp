@@ -38,25 +38,16 @@ it contains:
 """
 
 # pylint: disable=protected-access
-# pylint: disable=c-extension-no-member
-# pylint: disable=duplicate-code
 # pylint: disable=no-name-in-module
 
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.tensor._type_utils as dtu
-import numpy
 
 import dpnp
 
-from .dpnp_algo import (
-    dpnp_degrees,
-    dpnp_radians,
-    dpnp_unwrap,
-)
 from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
-from .dpnp_utils import call_origin
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
 __all__ = [
@@ -82,6 +73,7 @@ __all__ = [
     "log1p",
     "log2",
     "logaddexp",
+    "logaddexp2",
     "logsumexp",
     "rad2deg",
     "radians",
@@ -765,58 +757,117 @@ def cumlogsumexp(
     )
 
 
-def deg2rad(x1):
-    """
-    Convert angles from degrees to radians.
+_DEG2RAD_DOCSTRING = """
+Convert angles from degrees to radians.
 
-    For full documentation refer to :obj:`numpy.deg2rad`.
+For full documentation refer to :obj:`numpy.deg2rad`.
 
-    See Also
-    --------
-    :obj:`dpnp.rad2deg` : Convert angles from radians to degrees.
-    :obj:`dpnp.unwrap` : Remove large jumps in angle by wrapping.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Angles in degrees.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
 
-    Notes
-    -----
-    This function works exactly the same as :obj:`dpnp.radians`.
+Returns
+-------
+out : dpnp.ndarray
+    The corresponding angle in radians. The data type of the returned array is
+    determined by the Type Promotion Rules.
 
-    """
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    return radians(x1)
+See Also
+--------
+:obj:`dpnp.rad2deg` : Convert angles from radians to degrees.
+:obj:`dpnp.unwrap` : Remove large jumps in angle by wrapping.
+:obj:`dpnp.radians` : Equivalent function.
+
+Notes
+-----
+dpnp.deg2rad(x) is ``x * pi / 180``.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.array(180)
+>>> np.deg2rad(x)
+array(3.14159265)
+"""
+
+deg2rad = DPNPUnaryFunc(
+    "deg2rad",
+    ufi._radians_result_type,
+    ufi._radians,
+    _DEG2RAD_DOCSTRING,
+)
 
 
-def degrees(x1, **kwargs):
-    """
-    Convert angles from radians to degrees.
+_DEGREES_DOCSTRING = """
+Convert angles from radians to degrees.
 
-    For full documentation refer to :obj:`numpy.degrees`.
+For full documentation refer to :obj:`numpy.degrees`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array in radians.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
 
-    .. seealso:: :obj:`dpnp.rad2deg` convert angles from radians to degrees.
+Returns
+-------
+out : dpnp.ndarray
+    The corresponding degree values. The data type of the returned array is
+    determined by the Type Promotion Rules.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> rad = np.arange(6.) * np.pi/6
-    >>> out = np.degrees(rad)
-    >>> [i for i in out]
-    [0.0, 30.0, 60.0, 90.0, 120.0, 150.0]
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
-    """
+See Also
+--------
+:obj:`dpnp.rad2deg` : Equivalent function.
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    if kwargs:
-        pass
-    elif x1_desc:
-        return dpnp_degrees(x1_desc).get_pyobj()
+Examples
+--------
+>>> import dpnp as np
+>>> rad = np.arange(12.) * np.pi/6
 
-    return call_origin(numpy.degrees, x1, **kwargs)
+Convert a radian array to degrees:
+
+>>> np.degrees(rad)
+array([  0.,  30.,  60.,  90., 120., 150., 180., 210., 240., 270., 300.,
+       330.])
+
+>>> out = np.zeros_like(rad)
+>>> r = np.degrees(rad, out)
+>>> np.all(r == out)
+array(True)
+"""
+
+degrees = DPNPUnaryFunc(
+    "degrees",
+    ufi._degrees_result_type,
+    ufi._degrees,
+    _DEGREES_DOCSTRING,
+)
 
 
 _EXP_DOCSTRING = """
@@ -1142,7 +1193,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.log` : Natural logarithm, element-wise.
-:obj:`dpnp.log2` : Return the base 2 logarithm of the input array, element-wise.
+:obj:`dpnp.log2` : Return the base-2 logarithm of the input array, element-wise.
 :obj:`dpnp.log1p` : Return the natural logarithm of one plus the input array, element-wise.
 
 Examples
@@ -1203,7 +1254,7 @@ See Also
 :obj:`dpnp.expm1` : ``exp(x) - 1``, the inverse of :obj:`dpnp.log1p`.
 :obj:`dpnp.log` : Natural logarithm, element-wise.
 :obj:`dpnp.log10` : Return the base 10 logarithm of the input array, element-wise.
-:obj:`dpnp.log2` : Return the base 2 logarithm of the input array, element-wise.
+:obj:`dpnp.log2` : Return the base-2 logarithm of the input array, element-wise.
 
 Examples
 --------
@@ -1331,7 +1382,10 @@ See Also
 --------
 :obj:`dpnp.log` : Natural logarithm, element-wise.
 :obj:`dpnp.exp` : Exponential, element-wise.
-:obj:`dpnp.logsumdexp` : Logarithm of the sum of exponents of elements in the input array.
+:obj:`dpnp.logaddexp2`: Logarithm of the sum of exponentiations of inputs in
+                        base-2, element-wise.
+:obj:`dpnp.logsumexp` : Logarithm of the sum of exponents of elements in the
+                        input array.
 
 Examples
 --------
@@ -1350,6 +1404,75 @@ logaddexp = DPNPBinaryFunc(
     ti._logaddexp_result_type,
     ti._logaddexp,
     _LOGADDEXP_DOCSTRING,
+)
+
+
+_LOGADDEXP2_DOCSTRING = """
+Calculates the logarithm of the sum of exponents in base-2 for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the input
+array `x2`.
+
+This function calculates `log2(2**x1 + 2**x2)`. It is useful in machine
+learning when the calculated probabilities of events may be so small as
+to exceed the range of normal floating point numbers. In such cases the base-2
+logarithm of the calculated probability can be used instead. This function
+allows adding probabilities stored in such a fashion.
+
+For full documentation refer to :obj:`numpy.logaddexp2`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    First input array, expected to have a real-valued floating-point
+    data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Second input array, also expected to have a real-valued
+    floating-point data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise results. The data type
+    of the returned array is determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword arguments `kwargs` are currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.logaddexp`: Natural logarithm of the sum of exponentiations of
+                       inputs, element-wise.
+:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentiations of the inputs.
+
+Examples
+--------
+>>> import dpnp as np
+>>> prob1 = np.log2(np.array(1e-50))
+>>> prob2 = np.log2(np.array(2.5e-50))
+>>> prob12 = np.logaddexp2(prob1, prob2)
+>>> prob1, prob2, prob12
+(array(-166.09640474), array(-164.77447665), array(-164.28904982))
+>>> 2**prob12
+array(3.5e-50)
+"""
+
+logaddexp2 = DPNPBinaryFunc(
+    "logaddexp2",
+    ufi._logaddexp2_result_type,
+    ufi._logaddexp2,
+    _LOGADDEXP2_DOCSTRING,
 )
 
 
@@ -1413,6 +1536,8 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     :obj:`dpnp.exp` : Exponential, element-wise.
     :obj:`dpnp.logaddexp` : Logarithm of the sum of exponents of
                             the inputs, element-wise.
+    :obj:`dpnp.logaddexp2` : Logarithm of the sum of exponents of
+                             the inputs in base-2, element-wise.
 
     Examples
     --------
@@ -1436,6 +1561,120 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         dtype=dtype,
         keepdims=keepdims,
     )
+
+
+_RAD2DEG_DOCSTRING = """
+Convert angles from radians to degrees.
+
+For full documentation refer to :obj:`numpy.rad2deg`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Angle in radians.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The corresponding angle in degrees. The data type of the returned array is
+    determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.deg2rad` : Convert angles from degrees to radians.
+:obj:`dpnp.unwrap` : Remove large jumps in angle by wrapping.
+:obj:`dpnp.degrees` : Equivalent function.
+
+Notes
+-----
+dpnp.rad2deg(x) is ``180 * x / pi``.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.array(np.pi / 2)
+>>> np.rad2deg(x)
+array(90.)
+"""
+
+rad2deg = DPNPUnaryFunc(
+    "rad2deg",
+    ufi._degrees_result_type,
+    ufi._degrees,
+    _RAD2DEG_DOCSTRING,
+)
+
+
+_RADIANS_DOCSTRING = """
+Convert angles from degrees to radians.
+
+For full documentation refer to :obj:`numpy.radians`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array in degrees.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The corresponding radian values. The data type of the returned array is
+    determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.deg2rad` : Equivalent function.
+
+Examples
+--------
+>>> import dpnp as np
+>>> deg = np.arange(12.) * 30.
+
+Convert a degree array to radians:
+
+>>> np.radians(deg)
+array([0.        , 0.52359878, 1.04719755, 1.57079633, 2.0943951 ,
+       2.61799388, 3.14159265, 3.66519143, 4.1887902 , 4.71238898,
+       5.23598776, 5.75958653])
+
+>>> out = np.zeros_like(deg)
+>>> ret = np.radians(deg, out)
+>>> ret is out
+True
+"""
+
+radians = DPNPUnaryFunc(
+    "radians",
+    ufi._radians_result_type,
+    ufi._radians,
+    _RADIANS_DOCSTRING,
+)
 
 
 _RECIPROCAL_DOCSTRING = """
@@ -1618,60 +1857,6 @@ rsqrt = DPNPUnaryFunc(
     ti._rsqrt,
     _RSQRT_DOCSTRING,
 )
-
-
-def rad2deg(x1):
-    """
-    Convert angles from radians to degrees.
-
-    For full documentation refer to :obj:`numpy.rad2deg`.
-
-    See Also
-    --------
-    :obj:`dpnp.deg2rad` : Convert angles from degrees to radians.
-    :obj:`dpnp.unwrap` : Remove large jumps in angle by wrapping.
-
-    Notes
-    -----
-    This function works exactly the same as :obj:`dpnp.degrees`.
-
-    """
-
-    return degrees(x1)
-
-
-def radians(x1, **kwargs):
-    """
-    Convert angles from degrees to radians.
-
-    For full documentation refer to :obj:`numpy.radians`.
-
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    .. seealso:: :obj:`dpnp.deg2rad` equivalent function.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> deg = np.arange(6.) * 30.
-    >>> out = np.radians(deg)
-    >>> [i for i in out]
-    [0.0, 0.52359878, 1.04719755, 1.57079633, 2.0943951, 2.61799388]
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    if kwargs:
-        pass
-    elif x1_desc:
-        return dpnp_radians(x1_desc).get_pyobj()
-
-    return call_origin(numpy.radians, x1, **kwargs)
 
 
 _SIN_DOCSTRING = """
@@ -2000,38 +2185,122 @@ tanh = DPNPUnaryFunc(
 )
 
 
-def unwrap(x1, **kwargs):
-    """
-    Unwrap by changing deltas between values to 2*pi complement.
+def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
+    r"""
+    Unwrap by taking the complement of large deltas with respect to the period.
+
+    This unwraps a signal `p` by changing elements which have an absolute
+    difference from their predecessor of more than ``max(discont, period / 2)``
+    to their `period`-complementary values.
+
+    For the default case where `period` is :math:`2\pi` and `discont` is
+    :math:`\pi`, this unwraps a radian phase `p` such that adjacent differences
+    are never greater than :math:`\pi` by adding :math:`2k\pi` for some integer
+    :math:`k`.
 
     For full documentation refer to :obj:`numpy.unwrap`.
 
-    Limitations
-    -----------
-    Input array is supported as :class:`dpnp.ndarray`.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    p : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    discont : {float, None}, optional
+        Maximum discontinuity between values, default is ``period / 2``. Values
+        below ``period / 2`` are treated as if they were ``period / 2``. To
+        have an effect different from the default, `discont` should be larger
+        than ``period / 2``.
+        Default: ``None``.
+    axis : int, optional
+        Axis along which unwrap will operate, default is the last axis.
+        Default: ``-1``.
+    period : float, optional
+        Size of the range over which the input wraps.
+        Default: ``2 * pi``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array.
 
     See Also
     --------
     :obj:`dpnp.rad2deg` : Convert angles from radians to degrees.
     :obj:`dpnp.deg2rad` : Convert angles from degrees to radians.
 
+    Notes
+    -----
+    If the discontinuity in `p` is smaller than ``period / 2``, but larger than
+    `discont`, no unwrapping is done because taking the complement would only
+    make the discontinuity larger.
+
     Examples
     --------
     >>> import dpnp as np
     >>> phase = np.linspace(0, np.pi, num=5)
-    >>> for i in range(3, 5):
-    >>>     phase[i] += np.pi
-    >>> out = np.unwrap(phase)
-    >>> [i for i in out]
-    [0.0, 0.78539816, 1.57079633, 5.49778714, 6.28318531]
+    >>> phase[3:] += np.pi
+    >>> phase
+    array([0.        , 0.78539816, 1.57079633, 5.49778714, 6.28318531])
+    >>> np.unwrap(phase)
+    array([ 0.        ,  0.78539816,  1.57079633, -0.78539816,  0.        ])
+
+    >>> phase = np.array([0, 1, 2, -1, 0])
+    >>> np.unwrap(phase, period=4)
+    array([0, 1, 2, 3, 4])
+
+    >>> phase = np.array([1, 2, 3, 4, 5, 6, 1, 2, 3])
+    >>> np.unwrap(phase, period=6)
+    array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+    >>> phase = np.array([2, 3, 4, 5, 2, 3, 4, 5])
+    >>> np.unwrap(phase, period=4)
+    array([2, 3, 4, 5, 6, 7, 8, 9])
+
+    >>> phase_deg = np.mod(np.linspace(0 ,720, 19), 360) - 180
+    >>> np.unwrap(phase_deg, period=360)
+    array([-180., -140., -100.,  -60.,  -20.,   20.,   60.,  100.,  140.,
+            180.,  220.,  260.,  300.,  340.,  380.,  420.,  460.,  500.,
+            540.])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if kwargs:
-        pass
-    elif x1_desc:
-        return dpnp_unwrap(x1_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(p)
 
-    return call_origin(numpy.unwrap, x1, **kwargs)
+    p_nd = p.ndim
+    p_diff = dpnp.diff(p, axis=axis)
+
+    if discont is None:
+        discont = period / 2
+
+    # full slices
+    slice1 = [slice(None, None)] * p_nd
+    slice1[axis] = slice(1, None)
+    slice1 = tuple(slice1)
+
+    dt = dpnp.result_type(p_diff, period)
+    if dpnp.issubdtype(dt, dpnp.integer):
+        interval_high, rem = divmod(period, 2)
+        boundary_ambiguous = rem == 0
+    else:
+        interval_high = period / 2
+        boundary_ambiguous = True
+    interval_low = -interval_high
+
+    ddmod = p_diff - interval_low
+    ddmod = dpnp.remainder(ddmod, period, out=ddmod)
+    ddmod += interval_low
+
+    if boundary_ambiguous:
+        mask = ddmod == interval_low
+        mask &= p_diff > 0
+        ddmod = dpnp.where(mask, interval_high, ddmod, out=ddmod)
+
+    ph_correct = dpnp.subtract(ddmod, p_diff, out=ddmod)
+    abs_p_diff = dpnp.abs(p_diff, out=p_diff)
+    ph_correct = dpnp.where(abs_p_diff < discont, 0, ph_correct, out=ph_correct)
+
+    up = dpnp.astype(p, dtype=dt, copy=True)
+    up[slice1] = p[slice1]
+    # TODO: replace, once dpctl-1757 resolved
+    # up[slice1] += ph_correct.cumsum(axis=axis)
+    up[slice1] += ph_correct.cumsum(axis=axis, dtype=dt)
+    return up

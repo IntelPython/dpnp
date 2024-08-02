@@ -1,4 +1,3 @@
-import unittest
 import warnings
 
 import numpy
@@ -8,7 +7,7 @@ from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
-class TestExplog(unittest.TestCase):
+class TestExplog:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def check_unary(self, name, xp, dtype, no_complex=False):
@@ -55,30 +54,19 @@ class TestExplog(unittest.TestCase):
     def test_logaddexp(self):
         self.check_binary("logaddexp", no_complex=True)
 
+    @pytest.mark.parametrize("val", [numpy.inf, -numpy.inf])
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
+    def test_logaddexp_infinities(self, xp, dtype, val):
+        a = xp.full((2, 3), val, dtype=dtype)
+        return xp.logaddexp(a, a)
+
     def test_logaddexp2(self):
         self.check_binary("logaddexp2", no_complex=True)
 
     @pytest.mark.parametrize("val", [numpy.inf, -numpy.inf])
     @testing.for_float_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_logaddexp2_infinities(self, xp, dtype, val):
         a = xp.full((2, 3), val, dtype=dtype)
         return xp.logaddexp2(a, a)
-
-
-@pytest.mark.parametrize("val", [numpy.inf, -numpy.inf])
-@testing.for_float_dtypes()
-@testing.numpy_cupy_allclose()
-def test_logaddexp_infinities(xp, dtype, val):
-    a = xp.full((2, 3), val, dtype=dtype)
-    return xp.logaddexp(a, a)
-
-
-@testing.for_float_dtypes()
-@testing.numpy_cupy_allclose()
-def test_logaddexp_nan(xp, dtype):
-    a = xp.full((2, 3), xp.nan, dtype=dtype)
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=RuntimeWarning)
-        result = xp.logaddexp(a, a)
-    return result

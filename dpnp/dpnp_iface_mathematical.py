@@ -48,11 +48,11 @@ import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.tensor._type_utils as dtu
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._type_utils import _acceptance_fn_divide
-from numpy.core.numeric import (
+from dpctl.tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
 )
+from dpctl.tensor._type_utils import _acceptance_fn_divide
 
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
@@ -110,6 +110,7 @@ __all__ = [
     "modf",
     "multiply",
     "negative",
+    "nextafter",
     "positive",
     "power",
     "prod",
@@ -2358,6 +2359,64 @@ negative = DPNPUnaryFunc(
 )
 
 
+_NEXTAFTER_DOCSTRING = """
+Return the next floating-point value after `x1` towards `x2`, element-wise.
+
+For full documentation refer to :obj:`numpy.nextafter`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    Values to find the next representable value of.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    The direction where to look for the next representable value of `x1`.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate. Array must have the correct shape and
+    the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The next representable values of `x1` in the direction of `x2`. The data
+    type of the returned array is determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array(1, dtype=np.float32)
+>>> eps = np.finfo(a.dtype).eps
+>>> np.nextafter(a, 2) == eps + 1
+array(True)
+
+>>> a = np.array([1, 2], dtype=np.float32)
+>>> b = np.array([2, 1], dtype=np.float32)
+>>> c = np.array([eps + 1, 2 - eps])
+>>> np.nextafter(a, b) == c
+array([ True,  True])
+"""
+
+nextafter = DPNPBinaryFunc(
+    "nextafter",
+    ti._nextafter_result_type,
+    ti._nextafter,
+    _NEXTAFTER_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_nextafter_to_call,
+    mkl_impl_fn=vmi._nextafter,
+)
+
+
 _POSITIVE_DOCSTRING = """
 Computes the numerical positive for each element `x_i` of input array `x`.
 
@@ -2437,7 +2496,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     the expected data type.
     Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
-    Output array, if parameter `out` is ``None``.
+    Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
 Returns

@@ -2,6 +2,7 @@ from math import prod
 
 import numpy
 import pytest
+from dpctl.tensor._numpy_helper import AxisError
 from numpy.testing import (
     assert_equal,
 )
@@ -89,7 +90,7 @@ class TestFlip:
         ],
     )
     def test_axes(self, x, axis):
-        with pytest.raises(numpy.AxisError):
+        with pytest.raises(AxisError):
             dpnp.flip(x, axis=axis)
 
 

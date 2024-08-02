@@ -23,7 +23,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <pybind11/stl.h>
+
+#include "evd_common.hpp"
 #include "heevd.hpp"
+
+// dpctl tensor headers
+#include "utils/type_utils.hpp"
 
 namespace dpnp::extensions::lapack
 {
@@ -37,7 +43,6 @@ static sycl::event heevd_impl(sycl::queue &exec_q,
                               const std::int64_t n,
                               char *in_a,
                               char *out_w,
-                              std::vector<sycl::event> &host_task_events,
                               const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
@@ -49,15 +54,25 @@ static sycl::event heevd_impl(sycl::queue &exec_q,
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t scratchpad_size =
         mkl_lapack::heevd_scratchpad_size<T>(exec_q, jobz, upper_lower, n, lda);
+
+    if (scratchpad_size <= 0) {
+        throw std::runtime_error(
+            "Invalid scratchpad size: must be greater than zero."
+            "Calculated scratchpad size: " +
+            std::to_string(scratchpad_size));
+    }
+
     T *scratchpad = nullptr;
+    // Allocate memory for the scratchpad
+    scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
+    if (!scratchpad)
+        throw std::runtime_error("Device allocation for scratchpad failed");
 
     std::stringstream error_msg;
     std::int64_t info = 0;
 
     sycl::event heevd_event;
     try {
-        scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
-
         heevd_event = mkl_lapack::heevd(
             exec_q,
             jobz, // 'jobz == job::vec' means eigenvalues and eigenvectors are
@@ -94,14 +109,13 @@ static sycl::event heevd_impl(sycl::queue &exec_q,
         throw std::runtime_error(error_msg.str());
     }
 
-    sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
+    sycl::event ht_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(heevd_event);
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad]() { sycl::free(scratchpad, ctx); });
     });
-    host_task_events.push_back(clean_up_event);
 
-    return heevd_event;
+    return ht_ev;
 }
 
 template <typename fnT, typename T, typename RealT>
