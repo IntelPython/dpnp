@@ -904,11 +904,9 @@ def std(
         )
         dpnp.sqrt(result, out=result)
     else:
-        dpt_array = dpnp.get_usm_ndarray(a)
-        result = dpnp_array._create_from_usm_ndarray(
-            dpt.std(dpt_array, axis=axis, correction=ddof, keepdims=keepdims)
-        )
-        result = dpnp.get_result_array(result, out)
+        usm_a = dpnp.get_usm_ndarray(a)
+        usm_res = dpt.std(usm_a, axis=axis, correction=ddof, keepdims=keepdims)
+        result = dpnp.get_result_array(usm_res, out)
 
     if dtype is not None and out is None:
         result = result.astype(dtype, casting="same_kind")
@@ -1028,11 +1026,9 @@ def var(
 
         dpnp.divide(result, cnt, out=result)
     else:
-        dpt_array = dpnp.get_usm_ndarray(a)
-        result = dpnp_array._create_from_usm_ndarray(
-            dpt.var(dpt_array, axis=axis, correction=ddof, keepdims=keepdims)
-        )
-        result = dpnp.get_result_array(result, out)
+        usm_a = dpnp.get_usm_ndarray(a)
+        usm_res = dpt.var(usm_a, axis=axis, correction=ddof, keepdims=keepdims)
+        result = dpnp.get_result_array(usm_res, out)
 
     if out is None and dtype is not None:
         result = result.astype(dtype, casting="same_kind")
