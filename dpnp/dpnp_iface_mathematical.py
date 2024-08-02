@@ -2412,8 +2412,8 @@ nextafter = DPNPBinaryFunc(
     ti._nextafter_result_type,
     ti._nextafter,
     _NEXTAFTER_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_nextafter_to_call,
-    mkl_impl_fn=vmi._nextafter,
+    mkl_fn_to_call="_mkl_nextafter_to_call",
+    mkl_impl_fn="_nextafter",
 )
 
 
