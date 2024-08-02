@@ -31,6 +31,7 @@
 
 #include "common_helpers.hpp"
 #include "gesvd.hpp"
+#include "gesvd_common_utils.hpp"
 #include "types_matrix.hpp"
 
 #include "dpnp_utils.hpp"
@@ -107,7 +108,6 @@ static sycl::event gesvd_impl(sycl::queue &exec_q,
     T *scratchpad = helper::alloc_scratchpad<T>(scratchpad_size, exec_q);
 
     std::stringstream error_msg;
-    std::int64_t info = 0;
     bool is_exception_caught = false;
 
     sycl::event gesvd_event;
@@ -138,26 +138,7 @@ static sycl::event gesvd_impl(sycl::queue &exec_q,
             scratchpad_size, depends);
     } catch (mkl_lapack::exception const &e) {
         is_exception_caught = true;
-        info = e.info();
-        if (info < 0) {
-            error_msg << "Parameter number " << -info
-                      << " had an illegal value.";
-        }
-        else if (info == scratchpad_size && e.detail() != 0) {
-            error_msg
-                << "Insufficient scratchpad size. Required size is at least "
-                << e.detail();
-        }
-        else if (info > 0) {
-            error_msg << "The algorithm computing SVD failed to converge; "
-                      << info << " off-diagonal elements of an intermediate "
-                      << "bidiagonal form did not converge to zero.\n";
-        }
-        else {
-            error_msg << "Unexpected MKL exception caught during gesvd() "
-                         "call:\nreason: "
-                      << e.what() << "\ninfo: " << e.info();
-        }
+        gesvd_utils::handle_lapack_exc(scratchpad_size, e, error_msg);
     } catch (sycl::exception const &e) {
         is_exception_caught = true;
         error_msg << "Unexpected SYCL exception caught during gesvd() call:\n"
