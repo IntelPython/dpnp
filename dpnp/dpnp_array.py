@@ -102,10 +102,6 @@ class dpnp_array:
         if buffer is not None:
             buffer = dpnp.get_usm_ndarray(buffer)
 
-            if order == "K":
-                buffer = dpt.asarray(buffer, order=order)
-                order = "C"
-
             if dtype is None:
                 dtype = buffer.dtype
         else:

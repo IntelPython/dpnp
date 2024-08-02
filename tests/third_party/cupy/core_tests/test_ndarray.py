@@ -42,7 +42,6 @@ class TestNdarrayInit(unittest.TestCase):
             with pytest.raises(TypeError):
                 xp.ndarray((1.0,))
 
-    @pytest.mark.skip("dpctl-1764: dpt.usm_ndarray does not support order 'K'")
     def test_shape_int_with_strides(self):
         dummy = cupy.ndarray(3)
         a = cupy.ndarray(3, strides=(0,), buffer=dummy)
@@ -59,7 +58,7 @@ class TestNdarrayInit(unittest.TestCase):
         b += 1
         testing.assert_array_equal(a, b)
 
-    @pytest.mark.skip("dpctl-1765: failed to use slice indexing")
+    @pytest.mark.skip("dpctl-1765: might lead to race condition (no plan to support that)")
     def test_memptr_with_strides(self):
         buf = cupy.ndarray(20, numpy.uint8)
         memptr = buf
@@ -72,7 +71,7 @@ class TestNdarrayInit(unittest.TestCase):
         a[0, 2] = 4
         assert float(a[1, 0]) == 4
 
-    @pytest.mark.skip("dpctl-1766: no exception raised by dpctl")
+    @pytest.mark.skip("dpctl-1766: no exception raised by dpctl (no plan to support that)")
     def test_strides_without_memptr(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
