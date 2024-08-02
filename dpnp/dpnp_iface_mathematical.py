@@ -110,6 +110,7 @@ __all__ = [
     "mod",
     "modf",
     "multiply",
+    "nan_to_num",
     "negative",
     "nextafter",
     "positive",
@@ -153,6 +154,13 @@ def _append_to_diff_array(a, axis, combined, values):
         shape[axis] = 1
         values = dpnp.broadcast_to(values, tuple(shape))
     combined.append(values)
+
+
+def _get_max_min(dtype):
+    """Get the maximum and minimum representable values for an inexact dtype."""
+
+    f = dpnp.finfo(dtype)
+    return f.max, f.min
 
 
 def _get_reduction_res_dt(a, dtype, _out):
@@ -2302,6 +2310,119 @@ multiply = DPNPBinaryFunc(
     mkl_impl_fn=vmi._mul,
     binary_inplace_fn=ti._multiply_inplace,
 )
+
+
+def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
+    """
+    Replace NaN with zero and infinity with large finite numbers (default
+    behaviour) or with the numbers defined by the user using the `nan`,
+    `posinf` and/or `neginf` keywords.
+
+    If `x` is inexact, NaN is replaced by zero or by the user defined value in
+    `nan` keyword, infinity is replaced by the largest finite floating point
+    values representable by ``x.dtype`` or by the user defined value in
+    `posinf` keyword and -infinity is replaced by the most negative finite
+    floating point values representable by ``x.dtype`` or by the user defined
+    value in `neginf` keyword.
+
+    For complex dtypes, the above is applied to each of the real and
+    imaginary components of `x` separately.
+
+    If `x` is not inexact, then no replacements are made.
+
+    For full documentation refer to :obj:`numpy.nan_to_num`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input data.
+    copy : bool, optional
+        Whether to create a copy of `x` (True) or to replace values
+        in-place (False). The in-place operation only occurs if
+        casting to an array does not require a copy.
+        Default: ``True``.
+    nan : {int, float}, optional
+        Value to be used to fill NaN values.
+        Default: ``0.0``.
+    posinf : {int, float, None}, optional
+        Value to be used to fill positive infinity values. If no value is
+        passed then positive infinity values will be replaced with a very
+        large number.
+        Default: ``None``.
+    neginf : {int, float, None} optional
+        Value to be used to fill negative infinity values. If no value is
+        passed then negative infinity values will be replaced with a very
+        small (or negative) number.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        `x`, with the non-finite values replaced. If `copy` is False, this may
+        be `x` itself.
+
+    See Also
+    --------
+    :obj:`dpnp.isinf` : Shows which elements are positive or negative infinity.
+    :obj:`dpnp.isneginf` : Shows which elements are negative infinity.
+    :obj:`dpnp.isposinf` : Shows which elements are positive infinity.
+    :obj:`dpnp.isnan` : Shows which elements are Not a Number (NaN).
+    :obj:`dpnp.isfinite` : Shows which elements are finite
+                           (not NaN, not infinity)
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.nan_to_num(np.array(np.inf))
+    array(1.79769313e+308)
+    >>> np.nan_to_num(np.array(-np.inf))
+    array(-1.79769313e+308)
+    >>> np.nan_to_num(np.array(np.nan))
+    array(0.)
+    >>> x = np.array([np.inf, -np.inf, np.nan, -128, 128])
+    >>> np.nan_to_num(x)
+    array([ 1.79769313e+308, -1.79769313e+308,  0.00000000e+000,
+           -1.28000000e+002,  1.28000000e+002])
+    >>> np.nan_to_num(x, nan=-9999, posinf=33333333, neginf=33333333)
+    array([ 3.3333333e+07,  3.3333333e+07, -9.9990000e+03, -1.2800000e+02,
+            1.2800000e+02])
+    >>> y = np.array([complex(np.inf, np.nan), np.nan, complex(np.nan, np.inf)])
+    >>> np.nan_to_num(y)
+    array([1.79769313e+308 +0.00000000e+000j, # may vary
+           0.00000000e+000 +0.00000000e+000j,
+           0.00000000e+000 +1.79769313e+308j])
+    >>> np.nan_to_num(y, nan=111111, posinf=222222)
+    array([222222.+111111.j, 111111.     +0.j, 111111.+222222.j])
+
+    """
+
+    dpnp.check_supported_arrays_type(x)
+
+    x = dpnp.array(x, copy=copy)
+    x_type = x.dtype.type
+
+    if not issubclass(x_type, dpnp.inexact):
+        return x
+
+    parts = (
+        (x.real, x.imag) if issubclass(x_type, dpnp.complexfloating) else (x,)
+    )
+    max_f, min_f = _get_max_min(x.real.dtype)
+    if posinf is not None:
+        max_f = posinf
+    if neginf is not None:
+        min_f = neginf
+
+    for part in parts:
+        nan_mask = dpnp.isnan(part)
+        posinf_mask = dpnp.isposinf(part)
+        neginf_mask = dpnp.isneginf(part)
+
+        part = dpnp.where(nan_mask, nan, part, out=part)
+        part = dpnp.where(posinf_mask, max_f, part, out=part)
+        part = dpnp.where(neginf_mask, min_f, part, out=part)
+
+    return x
 
 
 _NEGATIVE_DOCSTRING = """
