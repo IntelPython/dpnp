@@ -660,7 +660,7 @@ class TestRfft:
         x = dpt.linspace(-1, 1, 11)
         a_usm = dpt.asarray(dpt.sin(x))
         a_np = dpt.asnumpy(a_usm)
-        out_shape = a_usm.shape[0] // 2 + 1 if n is None else n // 2
+        out_shape = a_usm.shape[0] // 2 + 1 if n is None else n // 2 + 1
         out_dtype = map_dtype_to_device(dpnp.complex128, a_usm.sycl_device)
         out = dpt.empty(out_shape, dtype=out_dtype)
 
@@ -678,7 +678,7 @@ class TestRfft:
         a = dpnp.asarray(a, dtype=dtype)
         a_np = dpnp.asnumpy(a)
 
-        out_shape = a.shape[0] // 2 + 1 if n is None else n // 2
+        out_shape = a.shape[0] // 2 + 1 if n is None else n // 2 + 1
         out_dtype = dpnp.complex64 if dtype == dpnp.float32 else dpnp.complex128
         out = dpnp.empty(out_shape, dtype=out_dtype)
 
@@ -697,7 +697,7 @@ class TestRfft:
         a = dpnp.asarray(a_np)
 
         out_shape = list(a.shape)
-        out_shape[axis] = a.shape[axis] // 2 + 1 if n is None else n // 2
+        out_shape[axis] = a.shape[axis] // 2 + 1 if n is None else n // 2 + 1
         out_shape = tuple(out_shape)
         out_dtype = dpnp.complex64 if dtype == dpnp.float32 else dpnp.complex128
         out = dpnp.empty(out_shape, dtype=out_dtype)
