@@ -29,6 +29,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/type_utils.hpp"
 
+#include "common_helpers.hpp"
 #include "gesvd.hpp"
 #include "types_matrix.hpp"
 
@@ -102,7 +103,8 @@ static sycl::event gesvd_impl(sycl::queue &exec_q,
 
     const std::int64_t scratchpad_size = mkl_lapack::gesvd_scratchpad_size<T>(
         exec_q, jobu, jobvt, m, n, lda, ldu, ldvt);
-    T *scratchpad = nullptr;
+
+    T *scratchpad = helper::alloc_scratchpad<T>(scratchpad_size, exec_q);
 
     std::stringstream error_msg;
     std::int64_t info = 0;
@@ -110,8 +112,6 @@ static sycl::event gesvd_impl(sycl::queue &exec_q,
 
     sycl::event gesvd_event;
     try {
-        scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
-
         gesvd_event = mkl_lapack::gesvd(
             exec_q,
             jobu,  // Character specifying how to compute the matrix U:

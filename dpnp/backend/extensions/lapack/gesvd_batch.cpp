@@ -132,30 +132,8 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
     const std::int64_t scratchpad_size = mkl_lapack::gesvd_scratchpad_size<T>(
         exec_q, jobu, jobvt, m, n, lda, ldu, ldvt);
 
-    // Get padding size to ensure memory allocations are aligned to 256 bytes
-    // for better performance
-    const std::int64_t padding = 256 / sizeof(T);
-
-    // Calculate the total scratchpad memory size needed for all linear
-    // streams with proper alignment
-    const size_t alloc_scratch_size =
-        helper::round_up_mult(n_linear_streams * scratchpad_size, padding);
-
-    T *scratchpad = nullptr;
-
-    // Allocate memory for the total scratchpad
-    try {
-        if (alloc_scratch_size > 0) {
-            scratchpad = sycl::malloc_device<T>(alloc_scratch_size, exec_q);
-            if (!scratchpad)
-                throw std::runtime_error(
-                    "Device allocation for scratchpad failed");
-        }
-    } catch (sycl::exception const &e) {
-        throw std::runtime_error(std::string("Unexpected SYCL exception caught "
-                                             "during scratchpad allocation: ") +
-                                 e.what());
-    }
+    T *scratchpad = helper::alloc_scratchpad_batch<T>(scratchpad_size,
+                                                      n_linear_streams, exec_q);
 
     // Computation events to manage dependencies for each linear stream
     std::vector<std::vector<sycl::event>> comp_evs(n_linear_streams, depends);
