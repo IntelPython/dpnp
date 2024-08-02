@@ -422,6 +422,7 @@ def test_meshgrid(device):
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
+        pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1.0, 2.0, 4.0, 7.0, 11.0, 16.0]),
         pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
@@ -1222,15 +1223,17 @@ def test_out_multi_dot(device):
         assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
 
-@pytest.mark.parametrize("func", ["fft", "ifft", "rfft", "irfft"])
+@pytest.mark.parametrize(
+    "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
+)
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
 def test_fft(func, device):
-    dtype = numpy.float64 if func == "rfft" else numpy.complex128
-    data = numpy.arange(100, dtype=dtype)
+    dtype = numpy.float64 if func in ["rfft", "ihfft"] else numpy.complex128
+    data = numpy.arange(20, dtype=dtype)
     dpnp_data = dpnp.array(data, device=device)
 
     expected = getattr(numpy.fft, func)(data)

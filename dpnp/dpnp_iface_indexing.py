@@ -64,6 +64,7 @@ __all__ = [
     "diagonal",
     "extract",
     "fill_diagonal",
+    "flatnonzero",
     "indices",
     "mask_indices",
     "nonzero",
@@ -509,7 +510,7 @@ def extract(condition, a):
     condition : {array_like, scalar}
         An array whose non-zero or ``True`` entries indicate the element of `a`
         to extract.
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array of the same size as `condition`.
 
     Returns
@@ -585,7 +586,7 @@ def fill_diagonal(a, val, wrap=False):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Array whose diagonal is to be filled in-place. It must be at least 2-D.
     val : {dpnp.ndarray, usm_ndarray, scalar}
         Value(s) to write on the diagonal. If `val` is scalar, the value is
@@ -714,6 +715,52 @@ def fill_diagonal(a, val, wrap=False):
 
     tmp_a = dpt.reshape(tmp_a, a_sh)
     usm_a[:] = tmp_a
+
+
+def flatnonzero(a):
+    """
+    Return indices that are non-zero in the flattened version of `a`.
+
+    This is equivalent to ``dpnp.nonzero(dpnp.ravel(a))[0]``.
+
+    For full documentation refer to :obj:`numpy.flatnonzero`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input data.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Output array, containing the indices of the elements of ``a.ravel()``
+        that are non-zero.
+
+    See Also
+    --------
+    :obj:`dpnp.nonzero` : Return the indices of the non-zero elements of
+                          the input array.
+    :obj:`dpnp.ravel` : Return a 1-D array containing the elements of
+                        the input array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(-2, 3)
+    >>> x
+    array([-2, -1,  0,  1,  2])
+    >>> np.flatnonzero(x)
+    array([0, 1, 3, 4])
+
+    Use the indices of the non-zero elements as an index array to extract
+    these elements:
+
+    >>> x.ravel()[np.flatnonzero(x)]
+    array([-2, -1,  1,  2])
+
+    """
+
+    return dpnp.nonzero(dpnp.ravel(a))[0]
 
 
 def indices(

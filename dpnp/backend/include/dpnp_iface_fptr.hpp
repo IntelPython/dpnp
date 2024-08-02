@@ -65,9 +65,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CHOOSE,        /**< Used in numpy.choose() impl  */
     DPNP_FN_CHOOSE_EXT,    /**< Used in numpy.choose() impl, requires extra
                               parameters */
-    DPNP_FN_COPYTO,        /**< Used in numpy.copyto() impl  */
-    DPNP_FN_COPYTO_EXT,    /**< Used in numpy.copyto() impl, requires extra
-                              parameters */
     DPNP_FN_CORRELATE,     /**< Used in numpy.correlate() impl  */
     DPNP_FN_CORRELATE_EXT, /**< Used in numpy.correlate() impl, requires extra
                               parameters */
@@ -80,9 +77,6 @@ enum class DPNPFuncName : size_t
                             parameters */
     DPNP_FN_ERF,         /**< Used in scipy.special.erf impl  */
     DPNP_FN_ERF_EXT,     /**< Used in scipy.special.erf impl, requires extra
-                            parameters */
-    DPNP_FN_FFT_FFT,     /**< Used in numpy.fft.fft() impl  */
-    DPNP_FN_FFT_FFT_EXT, /**< Used in numpy.fft.fft() impl, requires extra
                             parameters */
     DPNP_FN_INITVAL, /**< Used in numpy ones, ones_like, zeros, zeros_like impls
                       */

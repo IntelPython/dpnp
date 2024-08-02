@@ -85,7 +85,6 @@
 
 #endif
 
-MACRO_1ARG_2TYPES_OP(dpnp_copyto_c, input_elem, q.submit(kernel_func))
 MACRO_1ARG_2TYPES_OP(dpnp_sqrt_c,
                      sycl::sqrt(input_elem),
                      oneapi::mkl::vm::sqrt(q, input1_size, input1_data, result))

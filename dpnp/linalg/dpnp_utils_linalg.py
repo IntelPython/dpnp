@@ -729,7 +729,7 @@ def _calculate_determinant_sign(ipiv, diag, res_type, n):
 
     Returns
     -------
-    sign : {dpnp_array, usm_ndarray}
+    sign : {dpnp.ndarray, usm_ndarray}
         The sign of the determinant.
 
     """
