@@ -58,55 +58,59 @@ class TestTrigonometric(unittest.TestCase):
 @testing.with_requires("numpy>=1.21.0")
 class TestUnwrap(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_unwrap_1dim(self, xp, dtype):
         a = testing.shaped_random((5,), xp, dtype)
         return xp.unwrap(a)
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_unwrap_1dim_with_discont(self, xp, dtype):
         a = testing.shaped_random((5,), xp, dtype)
         return xp.unwrap(a, discont=1.0)
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_unwrap_1dim_with_period(self, xp, dtype):
         a = testing.shaped_random((5,), xp, dtype)
         return xp.unwrap(a, period=1.2)
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_unwrap_1dim_with_discont_and_period(self, xp, dtype):
         a = testing.shaped_random((5,), xp, dtype)
         return xp.unwrap(a, discont=1.0, period=1.2)
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(
+        rtol=1e-06, atol=1e-06, type_check=has_support_aspect64()
+    )
     def test_unwrap_2dim_without_axis(self, xp, dtype):
         a = testing.shaped_random((4, 5), xp, dtype)
         return xp.unwrap(a)
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(
+        rtol=1e-06, atol=1e-06, type_check=has_support_aspect64()
+    )
     def test_unwrap_2dim_with_axis(self, xp, dtype):
         a = testing.shaped_random((4, 5), xp, dtype)
         return xp.unwrap(a, axis=1)
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(rtol=1e-06, type_check=has_support_aspect64())
     def test_unwrap_2dim_with_discont(self, xp, dtype):
         a = testing.shaped_random((4, 5), xp, dtype)
         return xp.unwrap(a, discont=5.0, axis=1)
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_unwrap_2dim_with_period(self, xp, dtype):
         a = testing.shaped_random((4, 5), xp, dtype)
         return xp.unwrap(a, axis=1, period=4.5)
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_unwrap_2dim_with_discont_and_period(self, xp, dtype):
         a = testing.shaped_random((4, 5), xp, dtype)
         return xp.unwrap(a, discont=5.0, axis=1, period=4.5)
