@@ -1187,10 +1187,6 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
     )
     usm_app = None if append is None else dpnp.get_usm_ndarray_or_scalar(append)
 
-    if n < 0:
-        # TODO: remove once dpctl-1779 is resolved
-        raise ValueError(f"order must be non-negative but got {n}")
-
     usm_res = dpt.diff(usm_a, axis=axis, n=n, prepend=usm_pre, append=usm_app)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
