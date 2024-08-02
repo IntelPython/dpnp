@@ -70,32 +70,6 @@ class dpnp_array:
         usm_type="device",
         sycl_queue=None,
     ):
-        # if buffer is not None:
-        #     if not isinstance(buffer, dpt.usm_ndarray):
-        #         raise TypeError(
-        #             "Expected dpctl.tensor.usm_ndarray, got {}"
-        #             "".format(type(buffer))
-        #         )
-        #     if buffer.shape != shape:
-        #         raise ValueError(
-        #             "Expected buffer.shape={}, got {}"
-        #             "".format(shape, buffer.shape)
-        #         )
-        #     self._array_obj = dpt.asarray(buffer, copy=False, order=order)
-        # else:
-        #     sycl_queue_normalized = dpnp.get_normalized_queue_device(
-        #         device=device, sycl_queue=sycl_queue
-        #     )
-        #     self._array_obj = dpt.usm_ndarray(
-        #         shape,
-        #         dtype=dtype,
-        #         strides=strides,
-        #         buffer=usm_type,
-        #         offset=offset,
-        #         order=order,
-        #         buffer_ctor_kwargs={"queue": sycl_queue_normalized},
-        #     )
-
         if order is None:
             order = "C"
 
