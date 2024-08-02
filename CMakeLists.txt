@@ -104,7 +104,7 @@ else()
     endif()
 endif()
 
-if(_use_onemkl_interfaces OR _use_onemkl_interfaces_cuda)
+if(_use_onemkl_interfaces)
     set(BUILD_FUNCTIONAL_TESTS False)
     set(BUILD_EXAMPLES False)
     if(_use_onemkl_interfaces_cuda)

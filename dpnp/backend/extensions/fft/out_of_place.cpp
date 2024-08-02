@@ -23,10 +23,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#if not defined(USE_ONEMKL_INTERFACES)
-#include <oneapi/mkl/dfti.hpp>
-#endif // USE_ONEMKL_INTERFACES
-
+#include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
 #include <dpctl4pybind11.hpp>

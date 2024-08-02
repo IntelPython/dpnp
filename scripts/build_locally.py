@@ -40,6 +40,7 @@ def run(
     cmake_opts="",
     target="intel",
     onemkl_interfaces=False,
+    no_onemkl_interfaces=False,
 ):
     build_system = None
 
@@ -97,10 +98,16 @@ def run(
             os.environ["DPL_ROOT_HINT"] = os.environ["DPL_ROOT"]
 
     if target == "cuda":
-        os.environ["DPNP_TARGET_CUDA"] = "ON"
+        cmake_args += [
+            "-DDPNP_TARGET_CUDA=ON",
+        ]
+        if not no_onemkl_interfaces:
+            onemkl_interfaces = True
 
     if onemkl_interfaces:
-        os.environ["DPNP_USE_ONEMKL_INTERFACES"] = "ON"
+        cmake_args += [
+            "-DDPNP_USE_ONEMKL_INTERFACES=ON",
+        ]
 
     subprocess.check_call(
         cmake_args, shell=False, cwd=setup_dir, env=os.environ
@@ -169,6 +176,12 @@ if __name__ == "__main__":
         dest="onemkl_interfaces",
         action="store_true",
     )
+    driver.add_argument(
+        "--no-onemkl_interfaces",
+        help="Build without using oneMKL Interface",
+        dest="no_onemkl_interfaces",
+        action="store_true",
+    )
     args = parser.parse_args()
 
     args_to_validate = [
@@ -224,4 +237,5 @@ if __name__ == "__main__":
         cmake_opts=args.cmake_opts,
         target=args.target,
         onemkl_interfaces=args.onemkl_interfaces,
+        no_onemkl_interfaces=args.no_onemkl_interfaces,
     )
