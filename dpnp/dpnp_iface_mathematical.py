@@ -130,31 +130,6 @@ __all__ = [
 ]
 
 
-def _append_to_diff_array(a, axis, combined, values):
-    """
-    Append `values` to `combined` list based on data of array `a`.
-
-    Scalar value (including case with 0d array) is expanded to an array
-    with length=1 in the direction of axis and the shape of the input array `a`
-    along all other axes.
-    Note, if `values` is a scalar, then it is converted to 0d array allocating
-    on the same SYCL queue as the input array `a` and with the same USM type.
-
-    """
-
-    dpnp.check_supported_arrays_type(values, scalar_type=True, all_scalars=True)
-    if dpnp.isscalar(values):
-        values = dpnp.asarray(
-            values, sycl_queue=a.sycl_queue, usm_type=a.usm_type
-        )
-
-    if values.ndim == 0:
-        shape = list(a.shape)
-        shape[axis] = 1
-        values = dpnp.broadcast_to(values, tuple(shape))
-    combined.append(values)
-
-
 def _get_reduction_res_dt(a, dtype, _out):
     """Get a data type used by dpctl for result array in reduction function."""
 
@@ -1206,39 +1181,18 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
 
     """
 
-    dpnp.check_supported_arrays_type(a)
-    if n == 0:
-        return a
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_pre = (
+        None if prepend is None else dpnp.get_usm_ndarray_or_scalar(prepend)
+    )
+    usm_app = None if append is None else dpnp.get_usm_ndarray_or_scalar(append)
+
     if n < 0:
+        # TODO: remove once dpctl-1779 is resolved
         raise ValueError(f"order must be non-negative but got {n}")
 
-    nd = a.ndim
-    if nd == 0:
-        raise ValueError("diff requires input that is at least one dimensional")
-    axis = normalize_axis_index(axis, nd)
-
-    combined = []
-    if prepend is not None:
-        _append_to_diff_array(a, axis, combined, prepend)
-
-    combined.append(a)
-    if append is not None:
-        _append_to_diff_array(a, axis, combined, append)
-
-    if len(combined) > 1:
-        a = dpnp.concatenate(combined, axis=axis)
-
-    slice1 = [slice(None)] * nd
-    slice2 = [slice(None)] * nd
-    slice1[axis] = slice(1, None)
-    slice2[axis] = slice(None, -1)
-    slice1 = tuple(slice1)
-    slice2 = tuple(slice2)
-
-    op = dpnp.not_equal if a.dtype == numpy.bool_ else dpnp.subtract
-    for _ in range(n):
-        a = op(a[slice1], a[slice2])
-    return a
+    usm_res = dpt.diff(usm_a, axis=axis, n=n, prepend=usm_pre, append=usm_app)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 _DIVIDE_DOCSTRING = """
