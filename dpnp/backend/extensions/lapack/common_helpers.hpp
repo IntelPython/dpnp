@@ -24,8 +24,8 @@
 //*****************************************************************************
 
 #pragma once
-#include <oneapi/mkl.hpp>
 #include <pybind11/pybind11.h>
+#include <sycl/sycl.hpp>
 
 #include <complex>
 #include <cstring>
@@ -103,21 +103,7 @@ inline std::int64_t *alloc_ipiv_batch(const std::int64_t n,
     // linear streams with proper alignment
     size_t alloc_ipiv_size = round_up_mult(n_linear_streams * n, padding);
 
-    std::int64_t *ipiv = nullptr;
-
-    // Allocate memory for the total pivot indices array
-    try {
-        ipiv = sycl::malloc_device<std::int64_t>(alloc_ipiv_size, exec_q);
-        if (!ipiv)
-            throw std::runtime_error("Device allocation for ipiv failed");
-    } catch (sycl::exception const &e) {
-        throw std::runtime_error(
-            std::string(
-                "Unexpected SYCL exception caught during ipiv allocation: ") +
-            e.what());
-    }
-
-    return ipiv;
+    return alloc_ipiv(alloc_ipiv_size, exec_q);
 }
 
 // Allocate the memory for the scratchpad
@@ -162,22 +148,6 @@ inline T *alloc_scratchpad_batch(std::int64_t scratchpad_size,
     const size_t alloc_scratch_size =
         round_up_mult(n_linear_streams * scratchpad_size, padding);
 
-    T *scratchpad = nullptr;
-
-    // Allocate memory for the total scratchpad
-    try {
-        if (alloc_scratch_size > 0) {
-            scratchpad = sycl::malloc_device<T>(alloc_scratch_size, exec_q);
-            if (!scratchpad)
-                throw std::runtime_error(
-                    "Device allocation for scratchpad failed");
-        }
-    } catch (sycl::exception const &e) {
-        throw std::runtime_error(std::string("Unexpected SYCL exception caught "
-                                             "during scratchpad allocation: ") +
-                                 e.what());
-    }
-
-    return scratchpad;
+    return alloc_scratchpad<T>(alloc_scratch_size, exec_q);
 }
 } // namespace dpnp::extensions::lapack::helper
