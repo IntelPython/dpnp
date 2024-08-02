@@ -746,6 +746,8 @@ def test_2in_1out(func, data1, data2, device):
 @pytest.mark.parametrize(
     "op",
     [
+        "array_equal",
+        "array_equiv",
         "equal",
         "greater",
         "greater_equal",

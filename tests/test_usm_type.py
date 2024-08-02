@@ -378,6 +378,8 @@ def test_coerced_usm_types_logic_op_1in(op, usm_type_x):
 @pytest.mark.parametrize(
     "op",
     [
+        "array_equal",
+        "array_equiv",
         "equal",
         "greater",
         "greater_equal",

@@ -50,6 +50,7 @@ import dpctl.tensor._tensor_elementwise_impl as tei
 import numpy
 
 import dpnp
+import dpnp.dpnp_utils as utils
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 from dpnp.dpnp_array import dpnp_array
 
@@ -412,15 +413,39 @@ def array_equal(a1, a2, equal_nan=False):
 
     """
     dpnp.check_supported_arrays_type(a1, a2, scalar_type=True)
+    if dpnp.isscalar(a1):
+        usm_type_alloc = a2.usm_type
+        sycl_queue_alloc = a2.sycl_queue
+        a1 = dpnp.array(
+            a1,
+            dtype=dpnp.result_type(a1, a2),
+            usm_type=usm_type_alloc,
+            sycl_queue=sycl_queue_alloc,
+        )
+    elif dpnp.isscalar(a2):
+        usm_type_alloc = a1.usm_type
+        sycl_queue_alloc = a1.sycl_queue
+        a2 = dpnp.array(
+            a2,
+            dtype=dpnp.result_type(a1, a2),
+            usm_type=usm_type_alloc,
+            sycl_queue=sycl_queue_alloc,
+        )
+    else:
+        usm_type_alloc, sycl_queue_alloc = utils.get_usm_allocations([a1, a2])
 
     if a1.shape != a2.shape:
-        return dpnp.array(False)
+        return dpnp.array(
+            False, usm_type=usm_type_alloc, sycl_queue=sycl_queue_alloc
+        )
 
     if not equal_nan:
         return (a1 == a2).all()
 
     if a1 is a2:
-        return dpnp.array(True)
+        return dpnp.array(
+            True, usm_type=usm_type_alloc, sycl_queue=sycl_queue_alloc
+        )
 
     cannot_have_nan = (
         dpnp.issubdtype(a1, dpnp.bool) or dpnp.issubdtype(a1, dpnp.integer)
@@ -433,7 +458,9 @@ def array_equal(a1, a2, equal_nan=False):
     a1nan, a2nan = isnan(a1), isnan(a2)
     # NaNs occur at different locations
     if not (a1nan == a2nan).all():
-        return dpnp.array(False)
+        return dpnp.array(
+            False, usm_type=usm_type_alloc, sycl_queue=sycl_queue_alloc
+        )
     # Shapes of a1, a2 and masks are guaranteed to be consistent by this point
     return (a1[~a1nan] == a2[~a1nan]).all()
 
@@ -489,10 +516,33 @@ def array_equiv(a1, a2):
 
     """
     dpnp.check_supported_arrays_type(a1, a2, scalar_type=True)
+    if dpnp.isscalar(a1):
+        usm_type_alloc = a2.usm_type
+        sycl_queue_alloc = a2.sycl_queue
+        a1 = dpnp.array(
+            a1,
+            dtype=dpnp.result_type(a1, a2),
+            usm_type=usm_type_alloc,
+            sycl_queue=sycl_queue_alloc,
+        )
+    elif dpnp.isscalar(a2):
+        usm_type_alloc = a1.usm_type
+        sycl_queue_alloc = a1.sycl_queue
+        a2 = dpnp.array(
+            a2,
+            dtype=dpnp.result_type(a1, a2),
+            usm_type=usm_type_alloc,
+            sycl_queue=sycl_queue_alloc,
+        )
+    else:
+        usm_type_alloc, sycl_queue_alloc = utils.get_usm_allocations([a1, a2])
+
     try:
         dpnp.broadcast_arrays(a1, a2)
     except ValueError:
-        return dpnp.array(False)
+        return dpnp.array(
+            False, usm_type=usm_type_alloc, sycl_queue=sycl_queue_alloc
+        )
     return (a1 == a2).all()
 
 
