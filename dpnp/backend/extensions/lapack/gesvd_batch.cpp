@@ -351,11 +351,10 @@ std::pair<sycl::event, sycl::event>
     }
 
     bool is_out_s_array_c_contig = out_s.is_c_contiguous();
-    bool is_out_s_array_f_contig = out_s.is_f_contiguous();
 
-    if (!is_out_s_array_c_contig || !is_out_s_array_f_contig) {
+    if (!is_out_s_array_c_contig) {
         throw py::value_error("The output array of singular values "
-                              "must be contiguous");
+                              "must be C-contiguous");
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
