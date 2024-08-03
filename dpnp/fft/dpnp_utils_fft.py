@@ -69,6 +69,7 @@ def _check_norm(norm):
         )
 
 
+# TODO: c2r keyword is place holder for irfftn
 def _cook_nd_args(a, s=None, axes=None, c2r=False):
     if axes is not None:
         # validate axes is a sequence and
@@ -316,7 +317,9 @@ def _extract_axes_chunk(a, chunk_size=3):
             seen_elements = set()
 
     # Add the last chunk if it's not empty
+    print("SAEED", current_chunk)
     if current_chunk:
+        print("VAHID")
         chunks.append(current_chunk)
 
     return chunks[::-1]

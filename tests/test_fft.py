@@ -449,7 +449,9 @@ class TestFftn:
         iexpected = numpy.fft.ifftn(expected, axes=axes, norm=norm)
         assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
-    @pytest.mark.parametrize("axes", [(2, 0, 2, 0), (0, 1, 1)])
+    @pytest.mark.parametrize(
+        "axes", [(2, 0, 2, 0), (0, 1, 1), (2, 0, 1, 3, 2, 1)]
+    )
     def test_fftn_repeated_axes(self, axes):
         x1 = numpy.random.uniform(-10, 10, 120)
         x2 = numpy.random.uniform(-10, 10, 120)
