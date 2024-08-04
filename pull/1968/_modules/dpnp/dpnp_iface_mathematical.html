@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+100.g45268ffcba documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+103.g59f79a18d7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=90d8640d"></script>
+        <script src="../../_static/documentation_options.js?v=4b37e5b0"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+100.g45268ffcba
+                0.16.0dev0+103.g59f79a18d7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -218,31 +218,6 @@
     <span class="s2">&quot;true_divide&quot;</span><span class="p">,</span>
     <span class="s2">&quot;trunc&quot;</span><span class="p">,</span>
 <span class="p">]</span>
-
-
-<span class="k">def</span> <span class="nf">_append_to_diff_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">combined</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Append `values` to `combined` list based on data of array `a`.</span>
-
-<span class="sd">    Scalar value (including case with 0d array) is expanded to an array</span>
-<span class="sd">    with length=1 in the direction of axis and the shape of the input array `a`</span>
-<span class="sd">    along all other axes.</span>
-<span class="sd">    Note, if `values` is a scalar, then it is converted to 0d array allocating</span>
-<span class="sd">    on the same SYCL queue as the input array `a` and with the same USM type.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-            <span class="n">values</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
-        <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span>
-    <span class="n">combined</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_get_reduction_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">_out</span><span class="p">):</span>
@@ -1316,39 +1291,14 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">a</span>
-    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;order must be non-negative but got </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">usm_pre</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="kc">None</span> <span class="k">if</span> <span class="n">prepend</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">prepend</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">usm_app</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">append</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">append</span><span class="p">)</span>
 
-    <span class="n">nd</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
-    <span class="k">if</span> <span class="n">nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;diff requires input that is at least one dimensional&quot;</span><span class="p">)</span>
-    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">nd</span><span class="p">)</span>
-
-    <span class="n">combined</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="n">prepend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">_append_to_diff_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">combined</span><span class="p">,</span> <span class="n">prepend</span><span class="p">)</span>
-
-    <span class="n">combined</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">append</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">_append_to_diff_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">combined</span><span class="p">,</span> <span class="n">append</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">combined</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">combined</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
-
-    <span class="n">slice1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">nd</span>
-    <span class="n">slice2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">nd</span>
-    <span class="n">slice1</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">slice2</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">slice1</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)</span>
-    <span class="n">slice2</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)</span>
-
-    <span class="n">op</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">not_equal</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool_</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">op</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">slice1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="n">slice2</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">a</span></div>
+    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="n">usm_pre</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="n">usm_app</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span></div>
 
 
 
