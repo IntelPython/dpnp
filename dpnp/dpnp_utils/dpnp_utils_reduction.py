@@ -25,7 +25,6 @@
 
 
 import dpnp
-from dpnp.dpnp_array import dpnp_array
 
 __all__ = ["dpnp_wrap_reduction_call"]
 
@@ -53,5 +52,4 @@ def dpnp_wrap_reduction_call(
 
     kwargs["out"] = usm_out
     res_usm = _reduction_fn(*args, **kwargs)
-    res = dpnp_array._create_from_usm_ndarray(res_usm)
-    return dpnp.get_result_array(res, input_out, casting="unsafe")
+    return dpnp.get_result_array(res_usm, input_out, casting="unsafe")
