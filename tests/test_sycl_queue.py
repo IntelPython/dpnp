@@ -2329,3 +2329,20 @@ def test_astype(device_x, device_y):
     sycl_queue = dpctl.SyclQueue(device_y)
     y = dpnp.astype(x, dtype="f4", device=sycl_queue)
     assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize("copy", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_nan_to_num(copy, device):
+    a = dpnp.array([-dpnp.nan, -1, 0, 1, dpnp.nan], device=device)
+    result = dpnp.nan_to_num(a, copy=copy)
+
+    assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
+    if copy:
+        assert result is not a
+    else:
+        assert result is a
