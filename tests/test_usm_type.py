@@ -549,6 +549,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("degrees", [numpy.pi, numpy.pi / 2, 0]),
         pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
+        pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
@@ -1354,3 +1355,30 @@ def test_histogram_bin_edges(usm_type_v, usm_type_w):
     assert v.usm_type == usm_type_v
     assert w.usm_type == usm_type_w
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "usm_type_args", list_of_usm_types, ids=list_of_usm_types
+)
+@pytest.mark.parametrize(
+    ["to_end", "to_begin"],
+    [
+        (10, None),
+        (None, -10),
+        (10, -10),
+    ],
+)
+def test_ediff1d(usm_type_x, usm_type_args, to_end, to_begin):
+    data = [1, 3, 5, 7]
+
+    x = dp.array(data, usm_type=usm_type_x)
+    if to_end:
+        to_end = dp.array(to_end, usm_type=usm_type_args)
+
+    if to_begin:
+        to_begin = dp.array(to_begin, usm_type=usm_type_args)
+
+    res = dp.ediff1d(x, to_end=to_end, to_begin=to_begin)
+
+    assert res.usm_type == x.usm_type
