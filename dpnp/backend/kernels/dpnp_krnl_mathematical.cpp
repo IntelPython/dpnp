@@ -152,22 +152,6 @@ void (*dpnp_ediff1d_default_c)(void *,
                                const size_t *) =
     dpnp_ediff1d_c<_DataType_input, _DataType_output>;
 
-template <typename _DataType_input, typename _DataType_output>
-DPCTLSyclEventRef (*dpnp_ediff1d_ext_c)(DPCTLSyclQueueRef,
-                                        void *,
-                                        const size_t,
-                                        const size_t,
-                                        const shape_elem_type *,
-                                        const shape_elem_type *,
-                                        const void *,
-                                        const size_t,
-                                        const size_t,
-                                        const shape_elem_type *,
-                                        const shape_elem_type *,
-                                        const size_t *,
-                                        const DPCTLEventVectorRef) =
-    dpnp_ediff1d_c<_DataType_input, _DataType_output>;
-
 template <typename _KernelNameSpecialization1,
           typename _KernelNameSpecialization2>
 class dpnp_modf_c_kernel;
@@ -268,15 +252,6 @@ void func_map_init_mathematical(func_map_t &fmap)
         eft_FLT, (void *)dpnp_ediff1d_default_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_EDIFF1D][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_ediff1d_default_c<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_EDIFF1D_EXT][eft_INT][eft_INT] = {
-        eft_LNG, (void *)dpnp_ediff1d_ext_c<int32_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_EDIFF1D_EXT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_ediff1d_ext_c<int64_t, int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_EDIFF1D_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_ediff1d_ext_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_EDIFF1D_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_ediff1d_ext_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_MODF][eft_INT][eft_INT] = {
         eft_DBL, (void *)dpnp_modf_default_c<int32_t, double>};
