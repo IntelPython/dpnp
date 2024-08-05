@@ -16,6 +16,24 @@ from .helper import (
 )
 
 
+def _make_array_Hermitian(a, n):
+    """
+    This function makes necessary changes of the input array of
+    `dpnp.fft.irfft` and `dpnp.fft.hfft` functions to make sure the
+    given array is Hermitian.
+
+    """
+
+    a[0].imag = 0
+    if n in [None, 18]:
+        # f_ny is Nyquist mode (n//2+1 mode) which is n//2 element
+        f_ny = -1 if n is None else n // 2
+        a[f_ny].imag = 0
+        a[f_ny:] = 0  # no data needed after Nyquist mode
+
+    return a
+
+
 # TODO: `assert_dtype_allclose` calls in this file have `check_only_type_kind=True`
 # since stock NumPy is currently used in public CI for code coverege which
 # always returns complex128/float64 for FFT functions, but Intel® NumPy and
@@ -390,12 +408,7 @@ class TestHfft:
     def test_hfft_1D_complex(self, dtype, n, norm):
         x = dpnp.linspace(-1, 1, 11)
         a = dpnp.sin(x) + 1j * dpnp.cos(x)
-        # input should be Hermitian
-        a[0].imag = 0
-        if n in [None, 18]:
-            f_ny = -1 if n is None else n // 2  # Nyquist mode
-            a[f_ny].imag = 0
-            a[f_ny:] = 0  # no data needed after Nyquist mode
+        a = _make_array_Hermitian(a, n)
         a = dpnp.asarray(a, dtype=dtype)
         a_np = dpnp.asnumpy(a)
 
@@ -452,12 +465,7 @@ class TestIrfft:
     def test_fft_1D_complex(self, dtype, n, norm):
         x = dpnp.linspace(-1, 1, 11)
         a = dpnp.sin(x) + 1j * dpnp.cos(x)
-        # input should be Hermitian
-        a[0].imag = 0
-        if n in [None, 18]:
-            f_ny = -1 if n is None else n // 2  # Nyquist mode
-            a[f_ny].imag = 0
-            a[f_ny:] = 0  # no data needed after Nyquist mode
+        a = _make_array_Hermitian(a, n)
         a = dpnp.asarray(a, dtype=dtype)
         a_np = dpnp.asnumpy(a)
 
@@ -519,14 +527,9 @@ class TestIrfft:
 
     @pytest.mark.parametrize("n", [None, 5, 18])
     def test_fft_usm_ndarray(self, n):
-        x = dpt.linspace(-1, 1, 11)
-        a = dpt.sin(x) + 1j * dpt.cos(x)
-        # input should be Hermitian
-        a[0] = dpt.sin(x[0])
-        if n in [None, 18]:
-            f_ny = -1 if n is None else n // 2  # Nyquist mode
-            a[f_ny] = dpt.sin(x[f_ny])
-            a[f_ny:] = 0  # no data needed after Nyquist mode
+        x = dpnp.linspace(-1, 1, 11)
+        a = dpnp.sin(x) + 1j * dpnp.cos(x)
+        a = _make_array_Hermitian(a, n)
         a_usm = dpt.asarray(a, dtype=dpt.complex64)
         a_np = dpt.asnumpy(a_usm)
         out_shape = n if n is not None else 2 * (a_usm.shape[0] - 1)
@@ -543,12 +546,7 @@ class TestIrfft:
     def test_fft_1D_out(self, dtype, n, norm):
         x = dpnp.linspace(-1, 1, 11)
         a = dpnp.sin(x) + 1j * dpnp.cos(x)
-        # input should be Hermitian
-        a[0].imag = 0
-        if n in [None, 18]:
-            f_ny = -1 if n is None else n // 2  # Nyquist mode
-            a[f_ny].imag = 0
-            a[f_ny:] = 0  # no data needed after Nyquist mode
+        a = _make_array_Hermitian(a, n)
         a = dpnp.asarray(a, dtype=dtype)
         a_np = dpnp.asnumpy(a)
 
