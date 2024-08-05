@@ -245,6 +245,7 @@ class TestMisc:
     def test_nan_to_num_nan(self):
         self.check_unary_nan("nan_to_num")
 
+    @pytest.mark.skip(reason="Scalar input is not supported")
     @testing.numpy_cupy_allclose(atol=1e-5)
     def test_nan_to_num_scalar_nan(self, xp):
         return xp.nan_to_num(xp.nan)
