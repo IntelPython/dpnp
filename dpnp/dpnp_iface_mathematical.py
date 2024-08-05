@@ -2264,12 +2264,12 @@ multiply = DPNPBinaryFunc(
 
 def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     """
-    Replace NaN with zero and infinity with large finite numbers (default
+    Replace ``NaN`` with zero and infinity with large finite numbers (default
     behaviour) or with the numbers defined by the user using the `nan`,
     `posinf` and/or `neginf` keywords.
 
-    If `x` is inexact, NaN is replaced by zero or by the user defined value in
-    `nan` keyword, infinity is replaced by the largest finite floating point
+    If `x` is inexact, ``NaN`` is replaced by zero or by the user defined value
+    in `nan` keyword, infinity is replaced by the largest finite floating point
     values representable by ``x.dtype`` or by the user defined value in
     `posinf` keyword and -infinity is replaced by the most negative finite
     floating point values representable by ``x.dtype`` or by the user defined
@@ -2287,12 +2287,11 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     x : {dpnp.ndarray, usm_ndarray}
         Input data.
     copy : bool, optional
-        Whether to create a copy of `x` (True) or to replace values
-        in-place (False). The in-place operation only occurs if
-        casting to an array does not require a copy.
-        Default: ``True``.
+        Whether to create a copy of `x` (``True``) or to replace values
+        in-place (``False``). The in-place operation only occurs if casting to
+        an array does not require a copy.
     nan : {int, float}, optional
-        Value to be used to fill NaN values.
+        Value to be used to fill ``NaN`` values.
         Default: ``0.0``.
     posinf : {int, float, None}, optional
         Value to be used to fill positive infinity values. If no value is
@@ -2308,8 +2307,8 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     Returns
     -------
     out : dpnp.ndarray
-        `x`, with the non-finite values replaced. If `copy` is False, this may
-        be `x` itself.
+        `x`, with the non-finite values replaced. If `copy` is ``False``, this
+        may be `x` itself.
 
     See Also
     --------

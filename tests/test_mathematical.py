@@ -1116,6 +1116,40 @@ class TestMathematical:
         self._test_mathematical("subtract", dtype, lhs, rhs, check_type=False)
 
 
+class TestNanToNum:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("shape", [(3,), (2, 3), (3, 2, 2)])
+    def test_nan_to_num(self, dtype, shape):
+        a = numpy.random.randn(*shape).astype(dtype)
+        if not dpnp.issubdtype(dtype, dpnp.integer):
+            a.flat[1] = numpy.nan
+        a_dp = dpnp.array(a)
+
+        result = dpnp.nan_to_num(a_dp)
+        expected = numpy.nan_to_num(a)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "data", [[], [numpy.nan], [numpy.inf], [-numpy.inf]]
+    )
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_empty_and_single_value_arrays(self, data, dtype):
+        a = numpy.array(data, dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.nan_to_num(ia)
+        expected = numpy.nan_to_num(a)
+        assert_allclose(result, expected)
+
+    def test_boolean_array(self):
+        a = numpy.array([True, False, numpy.nan], dtype=bool)
+        ia = dpnp.array(a)
+
+        result = dpnp.nan_to_num(ia)
+        expected = numpy.nan_to_num(a)
+        assert_allclose(result, expected)
+
+
 class TestNextafter:
     @pytest.mark.parametrize("dt", get_float_dtypes())
     @pytest.mark.parametrize(
@@ -1443,40 +1477,6 @@ def test_power_scalar(shape, dtype):
     result **= dpnp_a
     expected **= np_a
     assert_allclose(result, expected, rtol=1e-6)
-
-
-class TestNanToNum:
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
-    @pytest.mark.parametrize("shape", [(3,), (2, 3), (3, 2, 2)])
-    def test_nan_to_num(self, dtype, shape):
-        a = numpy.random.randn(*shape).astype(dtype)
-        if not dpnp.issubdtype(dtype, dpnp.integer):
-            a.flat[1] = numpy.nan
-        a_dp = dpnp.array(a)
-
-        result = dpnp.nan_to_num(a_dp)
-        expected = numpy.nan_to_num(a)
-        assert_allclose(result, expected)
-
-    @pytest.mark.parametrize(
-        "data", [[], [numpy.nan], [numpy.inf], [-numpy.inf]]
-    )
-    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
-    def test_empty_and_single_value_arrays(self, data, dtype):
-        a = numpy.array(data, dtype)
-        ia = dpnp.array(a)
-
-        result = dpnp.nan_to_num(ia)
-        expected = numpy.nan_to_num(a)
-        assert_allclose(result, expected)
-
-    def test_boolean_array(self):
-        a = numpy.array([True, False, numpy.nan], dtype=bool)
-        ia = dpnp.array(a)
-
-        result = dpnp.nan_to_num(ia)
-        expected = numpy.nan_to_num(a)
-        assert_allclose(result, expected)
 
 
 @pytest.mark.parametrize(
