@@ -52,7 +52,6 @@ import numpy
 import dpnp
 import dpnp.dpnp_utils as utils
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
-from dpnp.dpnp_array import dpnp_array
 
 __all__ = [
     "all",
@@ -170,13 +169,11 @@ def all(a, /, axis=None, out=None, keepdims=False, *, where=True):
 
     dpnp.check_limitations(where=where)
 
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.all(dpt_array, axis=axis, keepdims=keepdims)
-    )
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_res = dpt.all(usm_a, axis=axis, keepdims=keepdims)
+
     # TODO: temporary solution until dpt.all supports out parameter
-    result = dpnp.get_result_array(result, out)
-    return result
+    return dpnp.get_result_array(usm_res, out)
 
 
 def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, equal_nan=False):
@@ -336,13 +333,11 @@ def any(a, /, axis=None, out=None, keepdims=False, *, where=True):
 
     dpnp.check_limitations(where=where)
 
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.any(dpt_array, axis=axis, keepdims=keepdims)
-    )
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_res = dpt.any(usm_a, axis=axis, keepdims=keepdims)
+
     # TODO: temporary solution until dpt.any supports out parameter
-    result = dpnp.get_result_array(result, out)
-    return result
+    return dpnp.get_result_array(usm_res, out)
 
 
 def array_equal(a1, a2, equal_nan=False):
