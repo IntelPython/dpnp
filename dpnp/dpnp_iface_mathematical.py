@@ -59,10 +59,7 @@ import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 import dpnp.backend.extensions.vm._vm_impl as vmi
 
 from .backend.extensions.sycl_ext import _sycl_ext_impl
-from .dpnp_algo import (
-    dpnp_ediff1d,
-    dpnp_modf,
-)
+from .dpnp_algo import dpnp_modf
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPAngle,
     DPNPBinaryFunc,
@@ -1268,49 +1265,113 @@ divide = DPNPBinaryFunc(
 )
 
 
-def ediff1d(x1, to_end=None, to_begin=None):
+def ediff1d(ary, to_end=None, to_begin=None):
     """
     The differences between consecutive elements of an array.
 
     For full documentation refer to :obj:`numpy.ediff1d`.
 
-    Limitations
-    -----------
-    Parameter `x1`is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `to_end` and `to_begin` are currently supported only
-    with default values `None`.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        If necessary, will be flattened before the differences are taken.
+    to_end : {array_like}, optional
+        Number(s) to append at the end of the returned differences.
+        Default: ``None``.
+    to_begin : {array_like}, optional
+        Number(s) to prepend at the beginning of the returned differences.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The differences. Loosely, this is ``ary.flat[1:] - ary.flat[:-1]``.
 
     See Also
     --------
     :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given
                        axis.
+    :obj:`dpnp.gradient` : Return the gradient of an N-dimensional array.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([1, 2, 4, 7, 0])
-    >>> result = np.ediff1d(a)
-    >>> [x for x in result]
-    [1, 2, 3, -7]
-    >>> b = np.array([[1, 2, 4], [1, 6, 24]])
-    >>> result = np.ediff1d(b)
-    >>> [x for x in result]
-    [1, 2, -3, 5, 18]
+    >>> x = np.array([1, 2, 4, 7, 0])
+    >>> np.ediff1d(x)
+    array([ 1,  2,  3, -7])
+
+    >>> np.ediff1d(x, to_begin=-99, to_end=np.array([88, 99]))
+    array([-99,   1,   2,   3,  -7,  88,  99])
+
+    The returned array is always 1D.
+
+    >>> y = np.array([[1, 2, 4], [1, 6, 24]])
+    >>> np.ediff1d(y)
+    array([ 1,  2, -3,  5, 18])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if to_begin is not None:
-            pass
-        elif to_end is not None:
-            pass
-        else:
-            return dpnp_ediff1d(x1_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(ary)
+    if ary.ndim > 1:
+        ary = ary.ravel()
 
-    return call_origin(numpy.ediff1d, x1, to_end=to_end, to_begin=to_begin)
+    ary_dtype = ary.dtype
+    ary_usm_type = ary.usm_type
+    ary_sycl_queue = ary.sycl_queue
+
+    # fast track default case
+    if to_begin is None and to_end is None:
+        return ary[1:] - ary[:-1]
+
+    if to_begin is None:
+        l_begin = 0
+    else:
+        to_begin = dpnp.asarray(
+            to_begin, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
+        )
+        if not dpnp.can_cast(to_begin, ary_dtype, casting="same_kind"):
+            raise TypeError(
+                "dtype of `to_begin` must be compatible "
+                "with input `ary` under the `same_kind` rule."
+            )
+
+        to_begin_ndim = to_begin.ndim
+
+        if to_begin_ndim > 1:
+            to_begin = to_begin.ravel()
+
+        l_begin = len(to_begin) if to_begin_ndim != 0 else 1
+
+    if to_end is None:
+        l_end = 0
+    else:
+        to_end = dpnp.asarray(
+            to_end, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
+        )
+        if not dpnp.can_cast(to_end, ary_dtype, casting="same_kind"):
+            raise TypeError(
+                "dtype of `to_end` must be compatible "
+                "with input `ary` under the `same_kind` rule."
+            )
+
+        to_end_ndim = to_end.ndim
+
+        if to_end_ndim > 1:
+            to_end = to_end.ravel()
+
+        l_end = len(to_end) if to_end_ndim != 0 else 1
+
+    # calculating using in place operation
+    l_diff = max(len(ary) - 1, 0)
+    result = dpnp.empty_like(ary, shape=l_diff + l_begin + l_end)
+
+    if l_begin > 0:
+        result[:l_begin] = to_begin
+    if l_end > 0:
+        result[l_begin + l_diff :] = to_end
+    dpnp.subtract(ary[1:], ary[:-1], out=result[l_begin : l_begin + l_diff])
+
+    return result
 
 
 _FABS_DOCSTRING = """
