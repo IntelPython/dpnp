@@ -391,7 +391,5 @@ def where(condition, x=None, y=None, /, *, order="K", out=None):
     usm_condition = dpnp.get_usm_ndarray(condition)
 
     usm_out = None if out is None else dpnp.get_usm_ndarray(out)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.where(usm_condition, usm_x, usm_y, order=order, out=usm_out)
-    )
-    return dpnp.get_result_array(result, out)
+    usm_res = dpt.where(usm_condition, usm_x, usm_y, order=order, out=usm_out)
+    return dpnp.get_result_array(usm_res, out)
