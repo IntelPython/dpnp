@@ -44,25 +44,38 @@ import dpnp
 __all__ = ["count_nonzero"]
 
 
-def count_nonzero(a, axis=None, *, keepdims=False):
+def count_nonzero(a, axis=None, *, keepdims=False, out=None):
     """
     Counts the number of non-zero values in the array `a`.
 
     For full documentation refer to :obj:`numpy.count_nonzero`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        The array for which to count non-zeros.
+    axis : {None, int, tuple}, optional
+        Axis or tuple of axes along which to count non-zeros.
+        Default value means that non-zeros will be counted along a flattened
+        version of `a`.
+        Default: ``None``.
+    keepdims : bool, optional
+        If this is set to ``True``, the axes that are counted are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the input array.
+        Default: ``False``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        The array into which the result is written. The data type of `out` must
+        match the expected shape and the expected data type of the result.
+        If ``None`` then a new array is returned.
+        Default: ``None``.
+
     Returns
     -------
     out : dpnp.ndarray
         Number of non-zero values in the array along a given axis.
-        Otherwise, a zero-dimensional array with the total number of
-        non-zero values in the array is returned.
-
-    Limitations
-    -----------
-    Parameters `a` is supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
-    Otherwise ``TypeError`` exception will be raised.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+        Otherwise, a zero-dimensional array with the total number of non-zero
+        values in the array is returned.
 
     See Also
     --------
@@ -87,8 +100,10 @@ def count_nonzero(a, axis=None, *, keepdims=False):
 
     """
 
-    # TODO: might be improved by implementing an extension
-    # with `count_nonzero` kernel
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_a = dpt.astype(usm_a, dpnp.bool, copy=False)
-    return dpnp.sum(usm_a, axis=axis, dtype=dpnp.intp, keepdims=keepdims)
+    usm_out = None if out is None else dpnp.get_usm_ndarray(out)
+
+    usm_res = dpt.count_nonzero(
+        usm_a, axis=axis, keepdims=keepdims, out=usm_out
+    )
+    return dpnp.get_result_array(usm_res, out)
