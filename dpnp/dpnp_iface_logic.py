@@ -50,8 +50,9 @@ import dpctl.tensor._tensor_elementwise_impl as tei
 import numpy
 
 import dpnp
-import dpnp.dpnp_utils as utils
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
+
+from .dpnp_utils import get_usm_allocations
 
 __all__ = [
     "all",
@@ -115,7 +116,7 @@ def all(a, /, axis=None, out=None, keepdims=False, *, where=True):
     Returns
     -------
     out : dpnp.ndarray
-        An array with a data type of `bool`
+        An array with a data type of `bool`.
         containing the results of the logical AND reduction is returned
         unless `out` is specified. Otherwise, a reference to `out` is returned.
         The result has the same shape as `a` if `axis` is not ``None``
@@ -279,7 +280,7 @@ def any(a, /, axis=None, out=None, keepdims=False, *, where=True):
     Returns
     -------
     out : dpnp.ndarray
-        An array with a data type of `bool`
+        An array with a data type of `bool`.
         containing the results of the logical OR reduction is returned
         unless `out` is specified. Otherwise, a reference to `out` is returned.
         The result has the same shape as `a` if `axis` is not ``None``
@@ -345,23 +346,26 @@ def array_equal(a1, a2, equal_nan=False):
     ``True`` if two arrays have the same shape and elements, ``False``
     otherwise.
 
+    For full documentation refer to :obj:`numpy.array_equal`.
+
     Parameters
     ----------
     a1 : {dpnp.ndarray, usm_ndarray, scalar}
-        First input array, expected to have numeric data type.
+        First input array.
         Both inputs `x1` and `x2` can not be scalars at the same time.
     a2 : {dpnp.ndarray, usm_ndarray, scalar}
-        Second input array, also expected to have numeric data type.
+        Second input array.
         Both inputs `x1` and `x2` can not be scalars at the same time.
-    equal_nan : bool
+    equal_nan : bool, optional
         Whether to compare ``NaNs`` as equal. If the dtype of `a1` and `a2` is
         complex, values will be considered equal if either the real or the
-        imaginary component of a given value is ``NaNs``.
+        imaginary component of a given value is ``NaN``.
+        Default: ``False``.
 
     Returns
     -------
     b : dpnp.ndarray
-        An array with a data type of `bool`
+        An array with a data type of `bool`.
         Returns ``True`` if the arrays are equal.
 
     See Also
@@ -379,12 +383,10 @@ def array_equal(a1, a2, equal_nan=False):
     >>> np.array_equal(a, b)
     array(True)
 
-    >>> a = np.array([1, 2])
     >>> b = np.array([1, 2, 3])
     >>> np.array_equal(a, b)
     array(False)
 
-    >>> a = np.array([1, 2])
     >>> b = np.array([1, 4])
     >>> np.array_equal(a, b)
     array(False)
@@ -397,7 +399,8 @@ def array_equal(a1, a2, equal_nan=False):
     array(True)
 
     When ``equal_nan`` is ``True``, complex values with nan components are
-    considered equal if either the real *or* the imaginary components are nan.
+    considered equal if either the real *or* the imaginary components are
+    ``NaNs``.
 
     >>> a = np.array([1 + 1j])
     >>> b = a.copy()
@@ -407,6 +410,7 @@ def array_equal(a1, a2, equal_nan=False):
     array(True)
 
     """
+
     dpnp.check_supported_arrays_type(a1, a2, scalar_type=True)
     if dpnp.isscalar(a1):
         usm_type_alloc = a2.usm_type
@@ -427,7 +431,7 @@ def array_equal(a1, a2, equal_nan=False):
             sycl_queue=sycl_queue_alloc,
         )
     else:
-        usm_type_alloc, sycl_queue_alloc = utils.get_usm_allocations([a1, a2])
+        usm_type_alloc, sycl_queue_alloc = get_usm_allocations([a1, a2])
 
     if a1.shape != a2.shape:
         return dpnp.array(
@@ -438,15 +442,14 @@ def array_equal(a1, a2, equal_nan=False):
         return (a1 == a2).all()
 
     if a1 is a2:
+        # NaN will compare equal so an array will compare equal to itself
         return dpnp.array(
             True, usm_type=usm_type_alloc, sycl_queue=sycl_queue_alloc
         )
 
-    cannot_have_nan = (
-        dpnp.issubdtype(a1, dpnp.bool) or dpnp.issubdtype(a1, dpnp.integer)
-    ) and (dpnp.issubdtype(a2, dpnp.bool) or dpnp.issubdtype(a2, dpnp.integer))
-
-    if cannot_have_nan:
+    if not (
+        dpnp.issubdtype(a1, dpnp.inexact) or dpnp.issubdtype(a2, dpnp.inexact)
+    ):
         return (a1 == a2).all()
 
     # Handling NaN values if equal_nan is True
@@ -468,19 +471,21 @@ def array_equiv(a1, a2):
     Shape consistent means they are either the same shape, or one input array
     can be broadcasted to create the same shape as the other one.
 
+    For full documentation refer to :obj:`numpy.array_equiv`.
+
     Parameters
     ----------
     a1 : {dpnp.ndarray, usm_ndarray, scalar}
-        First input array, expected to have numeric data type.
+        First input array.
         Both inputs `x1` and `x2` can not be scalars at the same time.
     a2 : {dpnp.ndarray, usm_ndarray, scalar}
-        Second input array, also expected to have numeric data type.
+        Second input array.
         Both inputs `x1` and `x2` can not be scalars at the same time.
 
     Returns
     -------
     out : dpnp.ndarray
-        An array with a data type of `bool`
+        An array with a data type of `bool`.
         ``True`` if equivalent, ``False`` otherwise.
 
     Examples
@@ -496,7 +501,6 @@ def array_equiv(a1, a2):
 
     Showing the shape equivalence:
 
-    >>> a = np.array([1, 2])
     >>> b = np.array([[1, 2], [1, 2]])
     >>> c = np.array([[1, 2, 1, 2], [1, 2, 1, 2]])
     >>> np.array_equiv(a, b)
@@ -504,40 +508,21 @@ def array_equiv(a1, a2):
     >>> np.array_equiv(a, c)
     array(False)
 
-    >>> a = np.array([1, 2])
     >>> b = np.array([[1, 2], [1, 3]])
     >>> np.array_equiv(a, b)
     array(False)
 
     """
-    dpnp.check_supported_arrays_type(a1, a2, scalar_type=True)
-    if dpnp.isscalar(a1):
-        usm_type_alloc = a2.usm_type
-        sycl_queue_alloc = a2.sycl_queue
-        a1 = dpnp.array(
-            a1,
-            dtype=dpnp.result_type(a1, a2),
-            usm_type=usm_type_alloc,
-            sycl_queue=sycl_queue_alloc,
-        )
-    elif dpnp.isscalar(a2):
-        usm_type_alloc = a1.usm_type
-        sycl_queue_alloc = a1.sycl_queue
-        a2 = dpnp.array(
-            a2,
-            dtype=dpnp.result_type(a1, a2),
-            usm_type=usm_type_alloc,
-            sycl_queue=sycl_queue_alloc,
-        )
-    else:
-        usm_type_alloc, sycl_queue_alloc = utils.get_usm_allocations([a1, a2])
 
-    try:
-        dpnp.broadcast_arrays(a1, a2)
-    except ValueError:
-        return dpnp.array(
-            False, usm_type=usm_type_alloc, sycl_queue=sycl_queue_alloc
-        )
+    dpnp.check_supported_arrays_type(a1, a2, scalar_type=True)
+    if not dpnp.isscalar(a1) and not dpnp.isscalar(a2):
+        usm_type_alloc, sycl_queue_alloc = get_usm_allocations([a1, a2])
+        try:
+            dpnp.broadcast_arrays(a1, a2)
+        except ValueError:
+            return dpnp.array(
+                False, usm_type=usm_type_alloc, sycl_queue=sycl_queue_alloc
+            )
     return (a1 == a2).all()
 
 
