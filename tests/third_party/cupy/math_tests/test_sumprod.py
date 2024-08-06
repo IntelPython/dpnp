@@ -687,7 +687,11 @@ class TestDiff:
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_diff_2dim_with_scalar_append(self, xp, dtype):
         a = testing.shaped_arange((4, 5), xp, dtype)
-        return xp.diff(a, prepend=1, append=0)
+        res = xp.diff(a, prepend=1, append=0)
+        if xp is numpy and a.dtype != res.dtype:
+            # res.dtype must follow a.dtype
+            res = res.astype(a.dtype)
+        return res
 
     @testing.with_requires("numpy>=1.16")
     def test_diff_invalid_axis(self):
