@@ -544,6 +544,13 @@ class TestPutAlongAxis:
             dpnp.put_along_axis(dp_a, dp_ai, values, axis)
             assert_array_equal(np_a, dp_a)
 
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("dt", [bool, numpy.float32])
+    def test_invalid_indices_dtype(self, xp, dt):
+        a = xp.ones((10, 10))
+        ind = xp.ones(10, dtype=dt)
+        assert_raises(IndexError, xp.put_along_axis, a, ind, 7, axis=1)
+
     @pytest.mark.parametrize("arr_dt", get_all_dtypes())
     @pytest.mark.parametrize("idx_dt", get_integer_dtypes())
     def test_broadcast(self, arr_dt, idx_dt):
