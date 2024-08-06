@@ -2156,7 +2156,7 @@ def unique(ar, return_index=False, return_inverse=False,
 
     def compare_axis_elems(idx1, idx2):
         left, right = ar_cmp[idx1], ar_cmp[idx2]
-        comp = _trim_zeros(left - right, 'f')
+        comp = dpnp.trim_zeros(left - right, 'f')
         if comp.shape[0] > 0:
             diff = comp[0]
             if is_complex and dpnp.isnan(diff):
