@@ -1979,6 +1979,36 @@ class TestEdiff1d:
         expected = numpy.ediff1d(np_a, to_end=np_to_end, to_begin=np_to_begin)
         assert_array_equal(expected, result)
 
+    @pytest.mark.parametrize(
+        "to_begin, to_end",
+        [
+            (-20, 20),
+            (dpt.asarray([-20, -30]), dpt.asarray([20, 15])),
+            (dpt.asarray([[-20, -30]]), dpt.asarray([[20, 15]])),
+            ([1, 2], [3, 4]),
+            ((1, 2), (3, 4)),
+        ],
+    )
+    def test_ediff1d_usm_ndarray(self, to_begin, to_end):
+        np_a = numpy.array([[1, 2, 0]])
+        dpt_a = dpt.asarray(np_a)
+
+        if isinstance(to_begin, dpt.usm_ndarray):
+            np_to_begin = dpt.asnumpy(to_begin)
+        else:
+            np_to_begin = to_begin
+
+        if isinstance(to_end, dpt.usm_ndarray):
+            np_to_end = dpt.asnumpy(to_end)
+        else:
+            np_to_end = to_end
+
+        result = dpnp.ediff1d(dpt_a, to_end=to_end, to_begin=to_begin)
+        expected = numpy.ediff1d(np_a, to_end=np_to_end, to_begin=np_to_begin)
+
+        assert_array_equal(expected, result)
+        assert isinstance(result, dpnp.ndarray)
+
     def test_ediff1d_errors(self):
         a_dp = dpnp.array([[1, 2], [2, 5]])
 

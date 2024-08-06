@@ -1314,7 +1314,7 @@ def ediff1d(ary, to_end=None, to_begin=None):
 
     dpnp.check_supported_arrays_type(ary)
     if ary.ndim > 1:
-        ary = ary.ravel()
+        ary = dpnp.ravel(ary)
 
     # fast track default case
     if to_begin is None and to_end is None:
@@ -1339,7 +1339,7 @@ def ediff1d(ary, to_end=None, to_begin=None):
         to_begin_ndim = to_begin.ndim
 
         if to_begin_ndim > 1:
-            to_begin = to_begin.ravel()
+            to_begin = dpnp.ravel(to_begin)
 
         l_begin = len(to_begin) if to_begin_ndim != 0 else 1
 
@@ -1358,7 +1358,7 @@ def ediff1d(ary, to_end=None, to_begin=None):
         to_end_ndim = to_end.ndim
 
         if to_end_ndim > 1:
-            to_end = to_end.ravel()
+            to_end = dpnp.ravel(to_end)
 
         l_end = len(to_end) if to_end_ndim != 0 else 1
 
