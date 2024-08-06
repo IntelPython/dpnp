@@ -1363,7 +1363,4 @@ def test_nan_to_num(copy, usm_type_a):
     result = dp.nan_to_num(a, copy=copy)
 
     assert result.usm_type == usm_type_a
-    if copy:
-        assert result is not a
-    else:
-        assert result is a
+    assert copy == (result is not a)

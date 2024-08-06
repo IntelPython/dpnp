@@ -281,11 +281,8 @@ class TestMisc:
             y = xp.zeros((2, 4), dtype=cupy.default_float_type())
             with pytest.raises(TypeError):
                 xp.nan_to_num(x, **{kwarg: y})
-            # dpnp.nan_to_num() doesn`t support a scalar as an input
-            # convert 0.0 to 0-ndim array
             with pytest.raises(TypeError):
-                x_ndim_0 = xp.array(0.0)
-                xp.nan_to_num(x_ndim_0, **{kwarg: y})
+                xp.nan_to_num(0.0, **{kwarg: y})
 
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()

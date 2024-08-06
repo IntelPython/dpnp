@@ -2342,7 +2342,4 @@ def test_nan_to_num(copy, device):
     result = dpnp.nan_to_num(a, copy=copy)
 
     assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
-    if copy:
-        assert result is not a
-    else:
-        assert result is a
+    assert copy == (result is not a)
