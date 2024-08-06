@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+108.g906db4d137 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+114.g2554ea0a6b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=0290e3f5"></script>
+        <script src="../../_static/documentation_options.js?v=619840b1"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+108.g906db4d137
+                0.16.0dev0+114.g2554ea0a6b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -2386,12 +2386,12 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.nan_to_num.html#dpnp.nan_to_num">[docs]</a>
 <span class="k">def</span> <span class="nf">nan_to_num</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Replace NaN with zero and infinity with large finite numbers (default</span>
+<span class="sd">    Replace ``NaN`` with zero and infinity with large finite numbers (default</span>
 <span class="sd">    behaviour) or with the numbers defined by the user using the `nan`,</span>
 <span class="sd">    `posinf` and/or `neginf` keywords.</span>
 
-<span class="sd">    If `x` is inexact, NaN is replaced by zero or by the user defined value in</span>
-<span class="sd">    `nan` keyword, infinity is replaced by the largest finite floating point</span>
+<span class="sd">    If `x` is inexact, ``NaN`` is replaced by zero or by the user defined value</span>
+<span class="sd">    in `nan` keyword, infinity is replaced by the largest finite floating point</span>
 <span class="sd">    values representable by ``x.dtype`` or by the user defined value in</span>
 <span class="sd">    `posinf` keyword and -infinity is replaced by the most negative finite</span>
 <span class="sd">    floating point values representable by ``x.dtype`` or by the user defined</span>
@@ -2409,12 +2409,11 @@
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input data.</span>
 <span class="sd">    copy : bool, optional</span>
-<span class="sd">        Whether to create a copy of `x` (True) or to replace values</span>
-<span class="sd">        in-place (False). The in-place operation only occurs if</span>
-<span class="sd">        casting to an array does not require a copy.</span>
-<span class="sd">        Default: ``True``.</span>
+<span class="sd">        Whether to create a copy of `x` (``True``) or to replace values</span>
+<span class="sd">        in-place (``False``). The in-place operation only occurs if casting to</span>
+<span class="sd">        an array does not require a copy.</span>
 <span class="sd">    nan : {int, float}, optional</span>
-<span class="sd">        Value to be used to fill NaN values.</span>
+<span class="sd">        Value to be used to fill ``NaN`` values.</span>
 <span class="sd">        Default: ``0.0``.</span>
 <span class="sd">    posinf : {int, float, None}, optional</span>
 <span class="sd">        Value to be used to fill positive infinity values. If no value is</span>
@@ -2430,8 +2429,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        `x`, with the non-finite values replaced. If `copy` is False, this may</span>
-<span class="sd">        be `x` itself.</span>
+<span class="sd">        `x`, with the non-finite values replaced. If `copy` is ``False``, this</span>
+<span class="sd">        may be `x` itself.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -2470,7 +2469,10 @@
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-    <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">nan</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;nan must be a scalar, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">nan</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="n">x</span>
     <span class="n">x_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">x_type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
@@ -2479,22 +2481,35 @@
     <span class="n">parts</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span> <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">x_type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">x</span><span class="p">,)</span>
     <span class="p">)</span>
+    <span class="n">parts_out</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">x_type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">(</span><span class="n">out</span><span class="p">,)</span>
+    <span class="p">)</span>
     <span class="n">max_f</span><span class="p">,</span> <span class="n">min_f</span> <span class="o">=</span> <span class="n">_get_max_min</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">posinf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">posinf</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;posinf must be a scalar or None, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">posinf</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="n">max_f</span> <span class="o">=</span> <span class="n">posinf</span>
     <span class="k">if</span> <span class="n">neginf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">neginf</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;neginf must be a scalar or None, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">neginf</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="n">min_f</span> <span class="o">=</span> <span class="n">neginf</span>
 
-    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">part_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parts</span><span class="p">,</span> <span class="n">parts_out</span><span class="p">):</span>
         <span class="n">nan_mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
         <span class="n">posinf_mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isposinf</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
         <span class="n">neginf_mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isneginf</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
 
-        <span class="n">part</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">nan_mask</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">part</span><span class="p">)</span>
-        <span class="n">part</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">posinf_mask</span><span class="p">,</span> <span class="n">max_f</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">part</span><span class="p">)</span>
-        <span class="n">part</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">neginf_mask</span><span class="p">,</span> <span class="n">min_f</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">part</span><span class="p">)</span>
+        <span class="n">part</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">nan_mask</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">part_out</span><span class="p">)</span>
+        <span class="n">part</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">posinf_mask</span><span class="p">,</span> <span class="n">max_f</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">part_out</span><span class="p">)</span>
+        <span class="n">part</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">neginf_mask</span><span class="p">,</span> <span class="n">min_f</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">part_out</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">x</span></div>
+    <span class="k">return</span> <span class="n">out</span></div>
 
 
 
