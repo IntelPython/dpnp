@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mathematical Functions &mdash; Data Parallel Extension for NumPy 0.16.0dev0+146.g37d8d33fa6 documentation</title>
+  <title>Mathematical functions &mdash; Data Parallel Extension for NumPy 0.16.0dev0+152.g3e41d402b0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -24,9 +24,10 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=fe10fc64"></script>
+        <script src="../_static/documentation_options.js?v=62db056b"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -46,7 +47,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+146.g37d8d33fa6
+                0.16.0dev0+152.g3e41d402b0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -71,7 +72,7 @@
 <li class="toctree-l3"><a class="reference internal" href="fft.html">FFT Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="logic.html">Logic Functions</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Mathematical Functions</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Mathematical functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#trigonometric-functions">Trigonometric functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#hyperbolic-functions">Hyperbolic functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rounding">Rounding</a></li>
@@ -82,7 +83,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#rational-routines">Rational routines</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#arithmetic-operations">Arithmetic operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#handling-complex-numbers">Handling complex numbers</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#extrema-finding">Extrema Finding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#extrema-finding">Extrema finding</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
@@ -119,7 +120,7 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="routines.html">Routines</a></li>
-      <li class="breadcrumb-item active">Mathematical Functions</li>
+      <li class="breadcrumb-item active">Mathematical functions</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/reference/math.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -130,7 +131,7 @@
            <div itemprop="articleBody">
              
   <section id="mathematical-functions">
-<h1>Mathematical Functions<a class="headerlink" href="#mathematical-functions" title="Link to this heading"></a></h1>
+<h1>Mathematical functions<a class="headerlink" href="#mathematical-functions" title="Link to this heading"></a></h1>
 <section id="trigonometric-functions">
 <h2>Trigonometric functions<a class="headerlink" href="#trigonometric-functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
@@ -166,7 +167,7 @@
 <td><p>Convert angles from degrees to radians.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.unwrap.html#dpnp.unwrap" title="dpnp.unwrap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.unwrap</span></code></a></p></td>
-<td><p>Unwrap by changing deltas between values to 2*pi complement.</p></td>
+<td><p>Unwrap by taking the complement of large deltas with respect to the period.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.deg2rad.html#dpnp.deg2rad" title="dpnp.deg2rad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.deg2rad</span></code></a></p></td>
 <td><p>Convert angles from degrees to radians.</p></td>
@@ -209,11 +210,11 @@
 <h2>Rounding<a class="headerlink" href="#rounding" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.around.html#dpnp.around" title="dpnp.around"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.around</span></code></a></p></td>
-<td><p>Round an array to the given number of decimals.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.round.html#dpnp.round" title="dpnp.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.round</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.round.html#dpnp.round" title="dpnp.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.round</span></code></a></p></td>
 <td><p>Rounds each element <cite>x_i</cite> of the input array <cite>x</cite> to the nearest integer-valued number.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.around.html#dpnp.around" title="dpnp.around"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.around</span></code></a></p></td>
+<td><p>Round an array to the given number of decimals.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.rint.html#dpnp.rint" title="dpnp.rint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.rint</span></code></a></p></td>
 <td><p>Rounds each element <cite>x_i</cite> of the input array <cite>x</cite> to the nearest integer-valued number.</p></td>
@@ -267,10 +268,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.gradient.html#dpnp.gradient" title="dpnp.gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.gradient</span></code></a></p></td>
 <td><p>Return the gradient of an N-dimensional array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.trapz.html#dpnp.trapz" title="dpnp.trapz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.trapz</span></code></a></p></td>
-<td><p>Integrate along the given axis using the composite trapezoidal rule.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.cross.html#dpnp.cross" title="dpnp.cross"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.cross</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.cross.html#dpnp.cross" title="dpnp.cross"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.cross</span></code></a></p></td>
 <td><p>Return the cross product of two (arrays of) vectors.</p></td>
 </tr>
 </tbody>
@@ -356,11 +354,11 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.reciprocal.html#dpnp.reciprocal" title="dpnp.reciprocal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reciprocal</span></code></a></p></td>
 <td><p>Computes the reciprocal square-root for each element <cite>x_i</cite> for input array <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.negative.html#dpnp.negative" title="dpnp.negative"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.negative</span></code></a></p></td>
-<td><p>Computes the numerical negative for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.positive.html#dpnp.positive" title="dpnp.positive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.positive</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.positive.html#dpnp.positive" title="dpnp.positive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.positive</span></code></a></p></td>
 <td><p>Computes the numerical positive for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.negative.html#dpnp.negative" title="dpnp.negative"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.negative</span></code></a></p></td>
+<td><p>Computes the numerical negative for each element <cite>x_i</cite> of input array <cite>x</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.multiply.html#dpnp.multiply" title="dpnp.multiply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.multiply</span></code></a></p></td>
 <td><p>Calculates the product for each element <cite>x1_i</cite> of the input array <cite>x1</cite> with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p></td>
@@ -421,7 +419,7 @@
 </table>
 </section>
 <section id="extrema-finding">
-<h2>Extrema Finding<a class="headerlink" href="#extrema-finding" title="Link to this heading"></a></h2>
+<h2>Extrema finding<a class="headerlink" href="#extrema-finding" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.maximum.html#dpnp.maximum" title="dpnp.maximum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.maximum</span></code></a></p></td>
