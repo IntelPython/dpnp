@@ -1316,13 +1316,13 @@ def ediff1d(ary, to_end=None, to_begin=None):
     if ary.ndim > 1:
         ary = ary.ravel()
 
-    ary_dtype = ary.dtype
-    ary_usm_type = ary.usm_type
-    ary_sycl_queue = ary.sycl_queue
-
     # fast track default case
     if to_begin is None and to_end is None:
         return ary[1:] - ary[:-1]
+
+    ary_dtype = ary.dtype
+    ary_usm_type = ary.usm_type
+    ary_sycl_queue = ary.sycl_queue
 
     if to_begin is None:
         l_begin = 0
