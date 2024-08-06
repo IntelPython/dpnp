@@ -2347,8 +2347,10 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
 
     dpnp.check_supported_arrays_type(x)
 
-    if not dpnp.isscalar(nan):
-        raise TypeError(f"nan must be a scalar, but got {type(nan)}")
+    if isinstance(nan, bool) or not isinstance(nan, (int, float)):
+        raise TypeError(
+            f"nan must be a scalar of an integer or float, but got {type(nan)}"
+        )
 
     out = dpnp.empty_like(x) if copy else x
     x_type = x.dtype.type
@@ -2366,15 +2368,17 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     )
     max_f, min_f = _get_max_min(x.real.dtype)
     if posinf is not None:
-        if not dpnp.isscalar(posinf):
+        if isinstance(posinf, bool) or not isinstance(posinf, (int, float)):
             raise TypeError(
-                f"posinf must be a scalar or None, but got {type(posinf)}"
+                "posinf must be a scalar of an integer or float, or None, "
+                f"but got {type(posinf)}"
             )
         max_f = posinf
     if neginf is not None:
-        if not dpnp.isscalar(neginf):
+        if isinstance(neginf, bool) or not isinstance(neginf, (int, float)):
             raise TypeError(
-                f"neginf must be a scalar or None, but got {type(neginf)}"
+                "neginf must be a scalar of an integer or float, or None, "
+                f"but got {type(neginf)}"
             )
         min_f = neginf
 
