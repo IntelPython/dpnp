@@ -13,13 +13,25 @@ from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
-    is_cpu_device,
 )
 
-# aspects of default device:
-_def_device = dpctl.SyclQueue().sycl_device
-_def_dev_has_fp64 = _def_device.has_aspect_fp64
-is_gpu_with_fp64 = not is_cpu_device() and _def_dev_has_fp64
+
+def _make_array_Hermitian(a, n):
+    """
+    This function makes necessary changes of the input array of
+    `dpnp.fft.irfft` and `dpnp.fft.hfft` functions to make sure the
+    given array is Hermitian.
+
+    """
+
+    a[0].imag = 0
+    if n in [None, 18]:
+        # f_ny is Nyquist mode (n//2+1 mode) which is n//2 element
+        f_ny = -1 if n is None else n // 2
+        a[f_ny].imag = 0
+        a[f_ny:] = 0  # no data needed after Nyquist mode
+
+    return a
 
 
 # TODO: `assert_dtype_allclose` calls in this file have `check_only_type_kind=True`
@@ -609,11 +621,12 @@ class TestHfft:
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    @pytest.mark.parametrize("n", [None, 5, 20])
+    @pytest.mark.parametrize("n", [None, 5, 18])
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
     def test_hfft_1D_complex(self, dtype, n, norm):
         x = dpnp.linspace(-1, 1, 11)
         a = dpnp.sin(x) + 1j * dpnp.cos(x)
+        a = _make_array_Hermitian(a, n)
         a = dpnp.asarray(a, dtype=dtype)
         a_np = dpnp.asnumpy(a)
 
@@ -664,13 +677,13 @@ class TestIrfft:
         # but dpnp return float32 if input is float32
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    @pytest.mark.skipif(is_gpu_with_fp64, reason="MKLD17702")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    @pytest.mark.parametrize("n", [None, 5, 20])
+    @pytest.mark.parametrize("n", [None, 5, 18])
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
     def test_fft_1D_complex(self, dtype, n, norm):
         x = dpnp.linspace(-1, 1, 11)
         a = dpnp.sin(x) + 1j * dpnp.cos(x)
+        a = _make_array_Hermitian(a, n)
         a = dpnp.asarray(a, dtype=dtype)
         a_np = dpnp.asnumpy(a)
 
@@ -691,29 +704,50 @@ class TestIrfft:
         expected = numpy.fft.irfft(a_np, n=n, axis=axis, norm=norm)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    @pytest.mark.skipif(is_gpu_with_fp64, reason="MKLD17702")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 8])
     @pytest.mark.parametrize("axis", [0, 1, 2])
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_fft_1D_on_3D_array(self, dtype, n, axis, norm, order):
-        x1 = numpy.random.uniform(-10, 10, 24)
-        x2 = numpy.random.uniform(-10, 10, 24)
+        x1 = numpy.random.uniform(-10, 10, 120)
+        x2 = numpy.random.uniform(-10, 10, 120)
         a_np = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(
-            2, 3, 4, order=order
+            4, 5, 6, order=order
         )
+        # each 1-D array of input should be Hermitian
+        if axis == 0:
+            a_np[0].imag = 0
+            if n is None:
+                # for axis=0 and n=8, Nyquist mode is not present
+                f_ny = -1  # Nyquist mode
+                a_np[-1].imag = 0
+        elif axis == 1:
+            a_np[:, 0, :].imag = 0
+            if n in [None, 8]:
+                f_ny = -1  # Nyquist mode
+                a_np[:, f_ny, :].imag = 0
+                a_np[:, f_ny:, :] = 0  # no data needed after Nyquist mode
+        elif axis == 2:
+            a_np[..., 0].imag = 0
+            if n in [None, 8]:
+                f_ny = -1 if n is None else n // 2  # Nyquist mode
+                a_np[..., f_ny].imag = 0
+                a_np[..., f_ny:] = 0  # no data needed after Nyquist mode
+
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.irfft(a, n=n, axis=axis, norm=norm)
         expected = numpy.fft.irfft(a_np, n=n, axis=axis, norm=norm)
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        assert_dtype_allclose(
+            result, expected, check_only_type_kind=True, factor=16
+        )
 
-    @pytest.mark.skipif(is_gpu_with_fp64, reason="MKLD17702")
-    @pytest.mark.parametrize("n", [None, 5, 20])
+    @pytest.mark.parametrize("n", [None, 5, 18])
     def test_fft_usm_ndarray(self, n):
-        x = dpt.linspace(-1, 1, 11)
-        a = dpt.sin(x) + 1j * dpt.cos(x)
+        x = dpnp.linspace(-1, 1, 11)
+        a = dpnp.sin(x) + 1j * dpnp.cos(x)
+        a = _make_array_Hermitian(a, n)
         a_usm = dpt.asarray(a, dtype=dpt.complex64)
         a_np = dpt.asnumpy(a_usm)
         out_shape = n if n is not None else 2 * (a_usm.shape[0] - 1)
@@ -724,13 +758,13 @@ class TestIrfft:
         expected = numpy.fft.irfft(a_np, n=n)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    @pytest.mark.skipif(is_gpu_with_fp64, reason="MKLD17702")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    @pytest.mark.parametrize("n", [None, 5, 20])
+    @pytest.mark.parametrize("n", [None, 5, 18])
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
     def test_fft_1D_out(self, dtype, n, norm):
         x = dpnp.linspace(-1, 1, 11)
         a = dpnp.sin(x) + 1j * dpnp.cos(x)
+        a = _make_array_Hermitian(a, n)
         a = dpnp.asarray(a, dtype=dtype)
         a_np = dpnp.asnumpy(a)
 

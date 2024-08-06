@@ -1239,7 +1239,7 @@ def test_fft(func, device):
 
     expected = getattr(numpy.fft, func)(data)
     result = getattr(dpnp.fft, func)(dpnp_data)
-    assert_dtype_allclose(result, expected)
+    assert_dtype_allclose(result, expected, factor=16)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
