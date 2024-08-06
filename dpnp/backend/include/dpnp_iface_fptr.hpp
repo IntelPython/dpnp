@@ -72,7 +72,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_COV,           /**< Used in numpy.cov() impl  */
     DPNP_FN_DOT,           /**< Used in numpy.dot() impl  */
     DPNP_FN_DOT_EXT, /**< Used in numpy.dot() impl, requires extra parameters */
-    DPNP_FN_EDIFF1D, /**< Used in numpy.ediff1d() impl  */
     DPNP_FN_ERF,     /**< Used in scipy.special.erf impl  */
     DPNP_FN_ERF_EXT, /**< Used in scipy.special.erf impl, requires extra
                         parameters */
