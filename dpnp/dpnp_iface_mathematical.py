@@ -2347,7 +2347,7 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
 
     dpnp.check_supported_arrays_type(x)
 
-    x = dpnp.array(x, copy=copy)
+    out = dpnp.empty_like(x) if copy else x
     x_type = x.dtype.type
 
     if not issubclass(x_type, dpnp.inexact):
@@ -2356,22 +2356,27 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     parts = (
         (x.real, x.imag) if issubclass(x_type, dpnp.complexfloating) else (x,)
     )
+    parts_out = (
+        (out.real, out.imag)
+        if issubclass(x_type, dpnp.complexfloating)
+        else (out,)
+    )
     max_f, min_f = _get_max_min(x.real.dtype)
     if posinf is not None:
         max_f = posinf
     if neginf is not None:
         min_f = neginf
 
-    for part in parts:
+    for part, part_out in zip(parts, parts_out):
         nan_mask = dpnp.isnan(part)
         posinf_mask = dpnp.isposinf(part)
         neginf_mask = dpnp.isneginf(part)
 
-        part = dpnp.where(nan_mask, nan, part, out=part)
-        part = dpnp.where(posinf_mask, max_f, part, out=part)
-        part = dpnp.where(neginf_mask, min_f, part, out=part)
+        part = dpnp.where(nan_mask, nan, part, out=part_out)
+        part = dpnp.where(posinf_mask, max_f, part, out=part_out)
+        part = dpnp.where(neginf_mask, min_f, part, out=part_out)
 
-    return x
+    return out
 
 
 _NEGATIVE_DOCSTRING = """
