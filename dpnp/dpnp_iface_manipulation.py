@@ -38,6 +38,8 @@ it contains:
 """
 
 
+import math
+
 import dpctl.tensor as dpt
 import numpy
 from dpctl.tensor._numpy_helper import normalize_axis_index
@@ -45,7 +47,6 @@ from dpctl.tensor._numpy_helper import normalize_axis_index
 import dpnp
 
 from .dpnp_array import dpnp_array
-
 
 __all__ = [
     "asfarray",
@@ -1989,8 +1990,15 @@ def trim_zeros(filt, trim="fb"):
     return filt[first:last]
 
 
-def unique(ar, return_index=False, return_inverse=False,
-           return_counts=False, axis=None, *, equal_nan=True):
+def unique(
+    ar,
+    return_index=False,
+    return_inverse=False,
+    return_counts=False,
+    axis=None,
+    *,
+    equal_nan=True,
+):
     """
     Find the unique elements of an array.
 
@@ -2120,17 +2128,25 @@ def unique(ar, return_index=False, return_inverse=False,
         usm_res = unique_func(usm_ar)
 
         def _collapse_nans(a):
-            if a.size > 2 and dpnp.issubdtype(a.dtype, dpnp.inexact) and dpnp.isnan(a[-2]):
+            if (
+                a.size > 2
+                and dpnp.issubdtype(a.dtype, dpnp.inexact)
+                and dpnp.isnan(a[-2])
+            ):
                 if dpnp.issubdtype(a.dtype, dpnp.complexfloating):
                     # for complex all NaNs are considered equivalent
-                    first_nan = dpnp.searchsorted(dpnp.isnan(a), True, side='left')
+                    first_nan = dpnp.searchsorted(
+                        dpnp.isnan(a), True, side="left"
+                    )
                 else:
-                    first_nan = dpnp.searchsorted(a, dpnp.nan, side='left')
-                return a[:first_nan + 1]
+                    first_nan = dpnp.searchsorted(a, dpnp.nan, side="left")
+                return a[: first_nan + 1]
             return a
 
         if isinstance(usm_res, tuple):
-            result = tuple(dpnp_array._create_from_usm_ndarray(x) for x in usm_res)
+            result = tuple(
+                dpnp_array._create_from_usm_ndarray(x) for x in usm_res
+            )
             if equal_nan:
                 result = (_collapse_nans(result[0]),) + result[1:]
         else:
@@ -2144,7 +2160,7 @@ def unique(ar, return_index=False, return_inverse=False,
     # The array is reshaped into a contiguous 2D array
     orig_shape = ar.shape
     idx = numpy.arange(0, orig_shape[0], dtype=numpy.intp)
-    import math
+
     ar = ar.reshape(orig_shape[0], math.prod(orig_shape[1:]))
     ar = dpnp.ascontiguousarray(ar)
     is_unsigned = dpnp.issubdtype(ar.dtype, numpy.unsignedinteger)
@@ -2156,7 +2172,7 @@ def unique(ar, return_index=False, return_inverse=False,
 
     def compare_axis_elems(idx1, idx2):
         left, right = ar_cmp[idx1], ar_cmp[idx2]
-        comp = dpnp.trim_zeros(left - right, 'f')
+        comp = dpnp.trim_zeros(left - right, "f")
         if comp.shape[0] > 0:
             diff = comp[0]
             if is_complex and dpnp.isnan(diff):
@@ -2208,20 +2224,22 @@ def unique(ar, return_index=False, return_inverse=False,
     ar = ar.reshape(mask.sum().item(), *orig_shape[1:])
     ar = dpnp.moveaxis(ar, 0, axis)
 
-    ret = ar,
+    ret = (ar,)
     if return_index:
-        ret += sorted_indices[mask],
+        ret += (sorted_indices[mask],)
     if return_inverse:
         imask = dpnp.cumsum(mask) - 1
         inv_idx = dpnp.empty_like(mask, dtype=dpnp.intp)
         inv_idx[sorted_indices] = imask
-        ret += inv_idx,
+        ret += (inv_idx,)
     if return_counts:
         nonzero = dpnp.nonzero(mask)[0]
-        idx = dpnp.empty_like(nonzero, shape=(nonzero.size + 1,), dtype=nonzero.dtype)
+        idx = dpnp.empty_like(
+            nonzero, shape=(nonzero.size + 1,), dtype=nonzero.dtype
+        )
         idx[:-1] = nonzero
         idx[-1] = mask.size
-        ret += idx[1:] - idx[:-1],
+        ret += (idx[1:] - idx[:-1],)
 
     if len(ret) == 1:
         ret = ret[0]
