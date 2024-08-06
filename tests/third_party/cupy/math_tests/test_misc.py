@@ -273,16 +273,17 @@ class TestMisc:
         assert x is y
         return y
 
+    @pytest.mark.skip(reason="nan, posinf, neginf as array are not supported")
     @pytest.mark.parametrize("kwarg", ["nan", "posinf", "neginf"])
     def test_nan_to_num_broadcast(self, kwarg):
         for xp in (numpy, cupy):
             x = xp.asarray([0, 1, xp.nan, 4], dtype=cupy.default_float_type())
             y = xp.zeros((2, 4), dtype=cupy.default_float_type())
-            with pytest.raises(ValueError):
+            with pytest.raises(TypeError):
                 xp.nan_to_num(x, **{kwarg: y})
             # dpnp.nan_to_num() doesn`t support a scalar as an input
             # convert 0.0 to 0-ndim array
-            with pytest.raises(ValueError):
+            with pytest.raises(TypeError):
                 x_ndim_0 = xp.array(0.0)
                 xp.nan_to_num(x_ndim_0, **{kwarg: y})
 

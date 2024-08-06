@@ -1149,6 +1149,25 @@ class TestNanToNum:
         expected = numpy.nan_to_num(a)
         assert_allclose(result, expected)
 
+    def test_errors(self):
+        ia = dpnp.array([0, 1, dpnp.nan, dpnp.inf, -dpnp.inf])
+
+        # unsupported type `a`
+        a_np = dpnp.asnumpy(ia)
+        assert_raises(TypeError, dpnp.nan_to_num, a_np)
+
+        # unsupported type `nan`
+        i_nan = dpnp.array(1)
+        assert_raises(TypeError, dpnp.nan_to_num, ia, nan=i_nan)
+
+        # unsupported type `posinf`
+        i_posinf = dpnp.array(1)
+        assert_raises(TypeError, dpnp.nan_to_num, ia, posinf=i_posinf)
+
+        # unsupported type `neginf`
+        i_neginf = dpnp.array(1)
+        assert_raises(TypeError, dpnp.nan_to_num, ia, neginf=i_neginf)
+
 
 class TestNextafter:
     @pytest.mark.parametrize("dt", get_float_dtypes())
