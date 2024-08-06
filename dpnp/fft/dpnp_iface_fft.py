@@ -97,7 +97,7 @@ def fft(a, n=None, axis=-1, norm=None, out=None):
     """
     Compute the one-dimensional discrete Fourier Transform.
 
-    This function computes the one-dimensional `n`-point discrete Fourier
+    This function computes the one-dimensional *n*-point discrete Fourier
     Transform (DFT) with the efficient Fast Fourier Transform (FFT) algorithm.
 
     For full documentation refer to :obj:`numpy.fft.fft`.
@@ -137,8 +137,8 @@ def fft(a, n=None, axis=-1, norm=None, out=None):
     :obj:`dpnp.fft` : For definition of the DFT and conventions used.
     :obj:`dpnp.fft.ifft` : The inverse of :obj:`dpnp.fft.fft`.
     :obj:`dpnp.fft.fft2` : The two-dimensional FFT.
-    :obj:`dpnp.fft.fftn` : The `n`-dimensional FFT.
-    :obj:`dpnp.fft.rfftn` : The `n`-dimensional FFT of real input.
+    :obj:`dpnp.fft.fftn` : The *N*-dimensional FFT.
+    :obj:`dpnp.fft.rfftn` : The *N*-dimensional FFT of real input.
     :obj:`dpnp.fft.fftfreq` : Frequency bins for given FFT parameters.
 
     Notes
@@ -173,8 +173,8 @@ def fft2(a, s=None, axes=(-2, -1), norm=None, out=None):
     """
     Compute the 2-dimensional discrete Fourier Transform.
 
-    This function computes the `N`-dimensional discrete Fourier Transform over
-    any axes in an `M`-dimensional array by means of the Fast Fourier
+    This function computes the *N*-dimensional discrete Fourier Transform over
+    any axes in an *M*-dimensional array by means of the Fast Fourier
     Transform (FFT). By default, the transform is computed over the last two
     axes of the input array, i.e., a 2-dimensional FFT.
 
@@ -210,7 +210,8 @@ def fft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype.
+        of the appropriate shape and dtype (and hence is incompatible with
+        passing in all but the trivial `s`).
         Default: ``None``.
 
     Returns
@@ -225,7 +226,7 @@ def fft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         definitions and conventions used.
     :obj:`dpnp.fft.ifft2` : The inverse two-dimensional FFT.
     :obj:`dpnp.fft.fft` : The one-dimensional FFT.
-    :obj:`dpnp.fft.fftn` : The `n`-dimensional FFT.
+    :obj:`dpnp.fft.fftn` : The *N*-dimensional FFT.
     :obj:`dpnp.fft.fftshift` : Shifts zero-frequency terms to the center of
         the array. For two-dimensional input, swaps first and third quadrants,
         and second and fourth quadrants.
@@ -377,10 +378,10 @@ def fftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
 
 def fftn(a, s=None, axes=None, norm=None, out=None):
     """
-    Compute the `N`-dimensional discrete Fourier Transform.
+    Compute the *N*-dimensional discrete Fourier Transform.
 
-    This function computes the `N`-dimensional discrete Fourier Transform over
-    any number of axes in an `M`-dimensional array by means of the
+    This function computes the *N*-dimensional discrete Fourier Transform over
+    any number of axes in an *M*-dimensional array by means of the
     Fast Fourier Transform (FFT).
 
     For full documentation refer to :obj:`numpy.fft.fftn`.
@@ -416,7 +417,8 @@ def fftn(a, s=None, axes=None, norm=None, out=None):
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype.
+        of the appropriate shape and dtype (and hence is incompatible with
+        passing in all but the trivial `s`).
         Default: ``None``.
 
     Returns
@@ -430,9 +432,10 @@ def fftn(a, s=None, axes=None, norm=None, out=None):
     --------
     :obj:`dpnp.fft` : Overall view of discrete Fourier transforms, with
         definitions and conventions used.
-    :obj:`dpnp.fft.ifftn` : The inverse `n`-dimensional FFT.
+    :obj:`dpnp.fft.ifftn` : The inverse *N*-dimensional FFT.
     :obj:`dpnp.fft.fft` : The one-dimensional FFT.
-    :obj:`dpnp.fft.rfftn` : The `n`-dimensional FFT of real input.
+    :obj:`dpnp.fft.rfftn` : The *N*-dimensional FFT of real input.
+    :obj:`dpnp.fft.fft2` : The two-dimensional FFT.
     :obj:`dpnp.fft.fftshift` : Shifts zero-frequency terms to the center of
         the array.
 
@@ -551,7 +554,7 @@ def hfft(a, n=None, axis=-1, norm=None, out=None):
         For `n` output points, ``n//2+1`` input points are necessary. If the
         input is longer than this, it is cropped. If it is shorter than this,
         it is padded with zeros. If `n` is not given, it is taken to be
-        ``2*(m-1)`` where ``m`` is the length of the input along the axis
+        ``2*(m-1)`` where `m` is the length of the input along the axis
         specified by `axis`. Default: ``None``.
     axis : int, optional
         Axis over which to compute the FFT. If not given, the last axis is
@@ -573,7 +576,7 @@ def hfft(a, n=None, axis=-1, norm=None, out=None):
         The truncated or zero-padded input, transformed along the axis
         indicated by `axis`, or the last one if `axis` is not specified.
         The length of the transformed axis is `n`, or, if `n` is not given,
-        ``2*(m-1)`` where ``m`` is the length of the transformed axis of the
+        ``2*(m-1)`` where `m` is the length of the transformed axis of the
         input. To get an odd number of output points, `n` must be specified,
         for instance as ``2*m - 1`` in the typical case.
 
@@ -633,7 +636,7 @@ def ifft(a, n=None, axis=-1, norm=None, out=None):
     """
     Compute the one-dimensional inverse discrete Fourier Transform.
 
-    This function computes the inverse of the one-dimensional `n`-point
+    This function computes the inverse of the one-dimensional *n*-point
     discrete Fourier transform computed by :obj:`dpnp.fft.fft`. In other words,
     ``ifft(fft(a)) == a`` to within numerical accuracy.
     For a general description of the algorithm and definitions,
@@ -689,7 +692,7 @@ def ifft(a, n=None, axis=-1, norm=None, out=None):
     :obj:`dpnp.fft.fft` : The one-dimensional (forward) FFT,
                           of which :obj:`dpnp.fft.ifft` is the inverse.
     :obj:`dpnp.fft.ifft2` : The two-dimensional inverse FFT.
-    :obj:`dpnp.fft.ifftn` : The `n`-dimensional inverse FFT.
+    :obj:`dpnp.fft.ifftn` : The *N*-dimensional inverse FFT.
 
     Notes
     -----
@@ -718,7 +721,7 @@ def ifft2(a, s=None, axes=(-2, -1), norm=None, out=None):
     Compute the 2-dimensional inverse discrete Fourier Transform.
 
     This function computes the inverse of the 2-dimensional discrete Fourier
-    Transform over any number of axes in an `M`-dimensional array by means of
+    Transform over any number of axes in an *M*-dimensional array by means of
     the Fast Fourier Transform (FFT). In other words, ``ifft2(fft2(a)) == a``
     to within numerical accuracy. By default, the inverse transform is
     computed over the last two axes of the input array.
@@ -746,7 +749,7 @@ def ifft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         If it is ``-1``, the whole input is used (no padding/trimming).
         If `s` is not given, the shape of the input along the axes specified
         by `axes` is used. See notes for issue on :obj:`dpnp.fft.ifft`
-        zero padding.  If `s` is not ``None``, `axes` must not be ``None``
+        zero padding. If `s` is not ``None``, `axes` must not be ``None``
         either. Default: ``None``.
     axes : {None, sequence of ints}, optional
         Axes over which to compute the inverse FFT. If not given, the last two
@@ -764,7 +767,8 @@ def ifft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype.
+        of the appropriate shape and dtype (and hence is incompatible with
+        passing in all but the trivial `s`).
         Default: ``None``.
 
     Returns
@@ -779,7 +783,7 @@ def ifft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         definitions and conventions used.
     :obj:`dpnp.fft.fft2` : The forward two-dimensional FFT, of which
         :obj:`dpnp.fft.ifft2` is the inverse.
-    :obj:`dpnp.fft.ifftn` : The inverse of `n`-dimensional FFT.
+    :obj:`dpnp.fft.ifftn` : The inverse of *N*-dimensional FFT.
     :obj:`dpnp.fft.fft` : The one-dimensional FFT.
     :obj:`dpnp.fft.ifft` : The one-dimensional inverse FFT.
 
@@ -813,10 +817,10 @@ def ifft2(a, s=None, axes=(-2, -1), norm=None, out=None):
 
 def ifftn(a, s=None, axes=None, norm=None, out=None):
     """
-    Compute the `N`-dimensional inverse discrete Fourier Transform.
+    Compute the *N*-dimensional inverse discrete Fourier Transform.
 
-    This function computes the inverse of the `N`-dimensional discrete
-    Fourier Transform over any number of axes in an `M`-dimensional array by
+    This function computes the inverse of the *N*-dimensional discrete
+    Fourier Transform over any number of axes in an *M*-dimensional array by
     means of the Fast Fourier Transform (FFT). In other words,
     ``ifftn(fftn(a)) == a`` to within numerical accuracy. For a description
     of the definitions and conventions used, see :obj:`dpnp.fft`.
@@ -861,7 +865,8 @@ def ifftn(a, s=None, axes=None, norm=None, out=None):
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype.
+        of the appropriate shape and dtype (and hence is incompatible with
+        passing in all but the trivial `s`).
         Default: ``None``.
 
     Returns
@@ -875,7 +880,7 @@ def ifftn(a, s=None, axes=None, norm=None, out=None):
     --------
     :obj:`dpnp.fft` : Overall view of discrete Fourier transforms, with
         definitions and conventions used.
-    :obj:`dpnp.fft.fftn` : The `n`-dimensional FFT.
+    :obj:`dpnp.fft.fftn` : The *N*-dimensional FFT.
     :obj:`dpnp.fft.ifft` : The one-dimensional inverse FFT.
     :obj:`dpnp.fft.ifft2` : The two-dimensional inverse FFT.
     :obj:`dpnp.fft.ifftshift` : Undoes :obj:`dpnp.fft.fftshift`, shifts
@@ -1038,7 +1043,7 @@ def irfft(a, n=None, axis=-1, norm=None, out=None):
     """
     Computes the inverse of :obj:`dpnp.fft.rfft`.
 
-    This function computes the inverse of the one-dimensional `n`-point
+    This function computes the inverse of the one-dimensional *n*-point
     discrete Fourier Transform of real input computed by :obj:`dpnp.fft.rfft`.
     In other words, ``irfft(rfft(a), len(a)) == a`` to within numerical
     accuracy. (See Notes below for why ``len(a)`` is necessary here.)
@@ -1061,7 +1066,7 @@ def irfft(a, n=None, axis=-1, norm=None, out=None):
         For `n` output points, ``n//2+1`` input points are necessary. If the
         input is longer than this, it is cropped. If it is shorter than this,
         it is padded with zeros. If `n` is not given, it is taken to be
-        ``2*(m-1)`` where ``m`` is the length of the input along the axis
+        ``2*(m-1)`` where `m` is the length of the input along the axis
         specified by `axis`. Default: ``None``.
     axis : int, optional
         Axis over which to compute the FFT. If not given, the last axis is
@@ -1083,7 +1088,7 @@ def irfft(a, n=None, axis=-1, norm=None, out=None):
         The truncated or zero-padded input, transformed along the axis
         indicated by `axis`, or the last one if `axis` is not specified.
         The length of the transformed axis is `n`, or, if `n` is not given,
-        ``2*(m-1)`` where ``m`` is the length of the transformed axis of the
+        ``2*(m-1)`` where `m` is the length of the transformed axis of the
         input. To get an odd number of output points, `n` must be specified.
 
     See Also
@@ -1094,12 +1099,12 @@ def irfft(a, n=None, axis=-1, norm=None, out=None):
     :obj:`dpnp.fft.fft` : The one-dimensional FFT of general (complex) input.
     :obj:`dpnp.fft.irfft2` :The inverse of the two-dimensional FFT of
                         real input.
-    :obj:`dpnp.fft.irfftn` : The inverse of the `n`-dimensional FFT of
+    :obj:`dpnp.fft.irfftn` : The inverse of the *N*-dimensional FFT of
                         real input.
 
     Notes
     -----
-    Returns the real valued `n`-point inverse discrete Fourier transform
+    Returns the real valued *n*-point inverse discrete Fourier transform
     of `a`, where `a` contains the non-negative frequency terms of a
     Hermitian-symmetric sequence. `n` is the length of the result, not the
     input.
@@ -1234,7 +1239,7 @@ def rfft(a, n=None, axis=-1, norm=None, out=None):
     """
     Compute the one-dimensional discrete Fourier Transform for real input.
 
-    This function computes the one-dimensional `n`-point discrete Fourier
+    This function computes the one-dimensional *n*-point discrete Fourier
     Transform (DFT) of a real-valued array by means of an efficient algorithm
     called the Fast Fourier Transform (FFT).
 
@@ -1277,8 +1282,8 @@ def rfft(a, n=None, axis=-1, norm=None, out=None):
     :obj:`dpnp.fft` : For definition of the DFT and conventions used.
     :obj:`dpnp.fft.irfft` : The inverse of :obj:`dpnp.fft.rfft`.
     :obj:`dpnp.fft.fft` : The one-dimensional FFT of general (complex) input.
-    :obj:`dpnp.fft.fftn` : The `n`-dimensional FFT.
-    :obj:`dpnp.fft.rfftn` : The `n`-dimensional FFT of real input.
+    :obj:`dpnp.fft.fftn` : The *N*-dimensional FFT.
+    :obj:`dpnp.fft.rfftn` : The *N*-dimensional FFT of real input.
 
     Notes
     -----

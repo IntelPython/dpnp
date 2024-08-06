@@ -37,6 +37,8 @@ available as a pybind11 extension.
 # pylint: disable=c-extension-no-member
 # pylint: disable=no-name-in-module
 
+from collections.abc import Sequence
+
 import dpctl
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
@@ -58,6 +60,7 @@ from ..dpnp_utils.dpnp_utils_linearalgebra import (
 
 __all__ = [
     "dpnp_fft",
+    "dpnp_fftn",
 ]
 
 
@@ -71,11 +74,6 @@ def _check_norm(norm):
 
 # TODO: c2r keyword is place holder for irfftn
 def _cook_nd_args(a, s=None, axes=None, c2r=False):
-    if axes is not None:
-        # validate axes is a sequence and
-        # each axis is an integer within the range
-        normalize_axis_tuple(list(set(axes)), a.ndim, "axes")
-
     if s is None:
         shapeless = True
         if axes is None:
@@ -84,16 +82,6 @@ def _cook_nd_args(a, s=None, axes=None, c2r=False):
             s = numpy.take(a.shape, axes)
     else:
         shapeless = False
-        try:
-            iter(s)
-        except Exception as e:
-            raise TypeError(
-                "`s` must be `None` or a sequence of integers."
-            ) from e
-
-        for s_i in s:
-            if s_i is not None and not isinstance(s_i, int):
-                raise TypeError("`s` must be `None` or a sequence of integers.")
 
     for s_i in s:
         if s_i is not None and s_i < 1 and s_i != -1:
@@ -113,11 +101,11 @@ def _cook_nd_args(a, s=None, axes=None, c2r=False):
     if len(s) != len(axes):
         raise ValueError("Shape and axes have different lengths.")
 
+    s = list(s)
     # TODO: remove this for loop
     # support of `i`` being `None`` is deprecated and will raise
     # a TypeError in future versions of NumPy
     for i, s_i in enumerate(s):
-        s = list(s)
         s[i] = a.shape[axes[i]] if s_i is None else s_i
 
     if c2r and shapeless:
@@ -317,9 +305,7 @@ def _extract_axes_chunk(a, chunk_size=3):
             seen_elements = set()
 
     # Add the last chunk if it's not empty
-    print("SAEED", current_chunk)
     if current_chunk:
-        print("VAHID")
         chunks.append(current_chunk)
 
     return chunks[::-1]
@@ -453,6 +439,27 @@ def _validate_out_keyword(a, out, axis, c2r, r2c):
                 raise TypeError("output array should have complex data type.")
 
 
+def _validate_s_axes(a, s, axes):
+    if axes is not None:
+        # validate axes is a sequence and
+        # each axis is an integer within the range
+        normalize_axis_tuple(list(set(axes)), a.ndim, "axes")
+
+    if s is not None:
+        raise_error = False
+        if isinstance(s, Sequence):
+            if any(s_i is not None and not isinstance(s_i, int) for s_i in s):
+                raise_error = True
+        elif dpnp.is_supported_array_type(s):
+            if s.ndim != 1 or not dpnp.issubdtype(s, dpnp.integer):
+                raise_error = True
+        else:
+            raise_error = True
+
+        if raise_error:
+            raise TypeError("`s` must be `None` or a sequence of integers.")
+
+
 def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
     """Calculates 1-D FFT of the input array along axis"""
 
@@ -520,6 +527,7 @@ def dpnp_fftn(a, forward, s=None, axes=None, norm=None, out=None):
 
         return a
 
+    _validate_s_axes(a, s, axes)
     s, axes = _cook_nd_args(a, s, axes)
     a = _truncate_or_pad(a, s, axes)
     # TODO: None, False, False are place holder for future development of
