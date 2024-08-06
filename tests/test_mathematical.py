@@ -1908,6 +1908,7 @@ class TestEdiff1d:
             -20,
             numpy.array([-20, -30]),
             dpnp.array([-20, -30]),
+            dpnp.array([[-20], [-30]]),
             [1, 2],
             (1, 2),
         ],
@@ -1931,6 +1932,7 @@ class TestEdiff1d:
             20,
             numpy.array([20, 15]),
             dpnp.array([20, 15]),
+            dpnp.array([[-20], [-30]]),
             [3, 4],
             (3, 4),
         ],
@@ -1954,6 +1956,7 @@ class TestEdiff1d:
             (-20, 20),
             (numpy.array([-20, -30]), numpy.array([20, 15])),
             (dpnp.array([-20, -30]), dpnp.array([20, 15])),
+            (dpnp.array([[-20], [-30]]), dpnp.array([[20], [15]])),
             ([1, 2], [3, 4]),
             ((1, 2), (3, 4)),
         ],
@@ -1985,11 +1988,11 @@ class TestEdiff1d:
 
         # unsupported `to_begin` type according to the `same_kind` rules
         to_begin = dpnp.array([-5], dtype="f4")
-        assert_raises(TypeError, dpnp.ediff1d, a_np, to_begin=to_begin)
+        assert_raises(TypeError, dpnp.ediff1d, a_dp, to_begin=to_begin)
 
         # unsupported `to_end` type according to the `same_kind` rules
         to_end = dpnp.array([5], dtype="f4")
-        assert_raises(TypeError, dpnp.ediff1d, a_np, to_end=to_end)
+        assert_raises(TypeError, dpnp.ediff1d, a_dp, to_end=to_end)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
