@@ -42,7 +42,7 @@ import math
 
 import dpctl.tensor as dpt
 import numpy
-from dpctl.tensor._numpy_helper import normalize_axis_index
+from dpctl.tensor._numpy_helper import AxisError, normalize_axis_index
 
 import dpnp
 
@@ -93,6 +93,103 @@ def _check_stack_arrays(arrays):
             'arrays to stack must be passed as a "sequence" type '
             "such as list or tuple."
         )
+
+
+def _unique_1d(
+    ar,
+    return_index=False,
+    return_inverse=False,
+    return_counts=False,
+    equal_nan=True,
+):
+    """Find the unique elements of a 1D array."""
+
+    num_of_flags = (return_index, return_inverse, return_counts).count(True)
+    if num_of_flags == 0:
+        unique_func = dpt.unique_values
+    elif num_of_flags == 1 and return_inverse:
+        unique_func = dpt.unique_inverse
+    elif num_of_flags == 1 and return_counts:
+        unique_func = dpt.unique_counts
+    else:
+        unique_func = dpt.unique_all
+
+    usm_ar = dpnp.get_usm_ndarray(ar)
+    usm_res = unique_func(usm_ar)
+
+    def _collapse_nans(a):
+        """Collapse multiple NaN values in an array into one NaN value."""
+
+        if (
+            a.size > 2
+            and dpnp.issubdtype(a.dtype, dpnp.inexact)
+            and dpnp.isnan(a[-2])
+        ):
+            if dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+                # for complex all NaNs are considered equivalent
+                first_nan = dpnp.searchsorted(dpnp.isnan(a), True, side="left")
+            else:
+                first_nan = dpnp.searchsorted(a, dpnp.nan, side="left")
+            return a[: first_nan + 1]
+        return a
+
+    if isinstance(usm_res, tuple):
+        result = tuple(dpnp_array._create_from_usm_ndarray(x) for x in usm_res)
+        if equal_nan:
+            result = (_collapse_nans(result[0]),) + result[1:]
+    else:
+        result = dpnp_array._create_from_usm_ndarray(usm_res)
+        if equal_nan:
+            result = _collapse_nans(result)
+    return result
+
+
+def _unique_build_sort_indices(a, index_sh):
+    """
+    Build the indices of an input array (when axis are provided) which result
+    in the unique array.
+
+    """
+
+    is_complex = dpnp.iscomplexobj(a)
+    if dpnp.issubdtype(a.dtype, numpy.unsignedinteger):
+        ar_cmp = a.astype(dpnp.intp)
+    else:
+        ar_cmp = a
+
+    def compare_axis_elems(idx1, idx2):
+        comp = dpnp.trim_zeros(ar_cmp[idx1] - ar_cmp[idx2], "f")
+        if comp.shape[0] > 0:
+            diff = comp[0]
+            if is_complex and dpnp.isnan(diff):
+                return True
+            return diff < 0
+        return False
+
+    # sort the array `a` lexicographically using the first item
+    # of each element on the axis
+    sorted_indices = dpnp.empty_like(a, shape=index_sh, dtype=dpnp.intp)
+    queue = [(numpy.arange(0, index_sh, dtype=numpy.intp).tolist(), 0)]
+    while len(queue) != 0:
+        current, off = queue.pop(0)
+        if len(current) == 0:
+            continue
+
+        mid_elem = current[0]
+        left = []
+        right = []
+        for i in range(1, len(current)):
+            if compare_axis_elems(current[i], mid_elem):
+                left.append(current[i])
+            else:
+                right.append(current[i])
+
+        elem_pos = off + len(left)
+        queue.append((left, off))
+        queue.append((right, elem_pos + 1))
+
+        sorted_indices[elem_pos] = mid_elem
+    return sorted_indices
 
 
 def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
@@ -2114,114 +2211,43 @@ def unique(
     """
 
     if axis is None:
-        num_of_flags = (return_index, return_inverse, return_counts).count(True)
-        if num_of_flags == 0:
-            unique_func = dpt.unique_values
-        elif num_of_flags == 1 and return_inverse:
-            unique_func = dpt.unique_inverse
-        elif num_of_flags == 1 and return_counts:
-            unique_func = dpt.unique_counts
-        else:
-            unique_func = dpt.unique_all
+        ar = dpnp.ravel(ar)
+        return _unique_1d(
+            ar, return_index, return_inverse, return_counts, equal_nan
+        )
 
-        usm_ar = dpnp.get_usm_ndarray(ar)
-        usm_res = unique_func(usm_ar)
+    # axis was specified and not None
+    try:
+        ar = dpnp.moveaxis(ar, axis, 0)
+    except AxisError:
+        # this removes the "axis1" or "axis2" prefix from the error message
+        raise AxisError(axis, ar.ndim) from None
 
-        def _collapse_nans(a):
-            if (
-                a.size > 2
-                and dpnp.issubdtype(a.dtype, dpnp.inexact)
-                and dpnp.isnan(a[-2])
-            ):
-                if dpnp.issubdtype(a.dtype, dpnp.complexfloating):
-                    # for complex all NaNs are considered equivalent
-                    first_nan = dpnp.searchsorted(
-                        dpnp.isnan(a), True, side="left"
-                    )
-                else:
-                    first_nan = dpnp.searchsorted(a, dpnp.nan, side="left")
-                return a[: first_nan + 1]
-            return a
-
-        if isinstance(usm_res, tuple):
-            result = tuple(
-                dpnp_array._create_from_usm_ndarray(x) for x in usm_res
-            )
-            if equal_nan:
-                result = (_collapse_nans(result[0]),) + result[1:]
-        else:
-            result = dpnp_array._create_from_usm_ndarray(usm_res)
-            if equal_nan:
-                result = _collapse_nans(result)
-        return result
-
-    ar = dpnp.moveaxis(ar, axis, 0)
-
-    # The array is reshaped into a contiguous 2D array
-    orig_shape = ar.shape
-    idx = numpy.arange(0, orig_shape[0], dtype=numpy.intp)
-
-    ar = ar.reshape(orig_shape[0], math.prod(orig_shape[1:]))
+    # reshape input array into a contiguous 2D array
+    orig_sh = ar.shape
+    ar = ar.reshape(orig_sh[0], math.prod(orig_sh[1:]))
     ar = dpnp.ascontiguousarray(ar)
-    is_unsigned = dpnp.issubdtype(ar.dtype, numpy.unsignedinteger)
-    is_complex = dpnp.iscomplexobj(ar)
 
-    ar_cmp = ar
-    if is_unsigned:
-        ar_cmp = ar.astype(dpnp.intp)
-
-    def compare_axis_elems(idx1, idx2):
-        left, right = ar_cmp[idx1], ar_cmp[idx2]
-        comp = dpnp.trim_zeros(left - right, "f")
-        if comp.shape[0] > 0:
-            diff = comp[0]
-            if is_complex and dpnp.isnan(diff):
-                return True
-            return diff < 0
-        return False
-
-    # The array is sorted lexicographically using the first item of each
-    # element on the axis
-    sorted_indices = dpnp.empty_like(ar, shape=orig_shape[0], dtype=dpnp.intp)
-    queue = [(idx.tolist(), 0)]
-    while queue != []:
-        current, off = queue.pop(0)
-        if current == []:
-            continue
-
-        mid_elem = current[0]
-        left = []
-        right = []
-        for i in range(1, len(current)):
-            if compare_axis_elems(current[i], mid_elem):
-                left.append(current[i])
-            else:
-                right.append(current[i])
-
-        elem_pos = off + len(left)
-        queue.append((left, off))
-        queue.append((right, elem_pos + 1))
-
-        sorted_indices[elem_pos] = mid_elem
-
+    # build the indices for result array with unique values
+    sorted_indices = _unique_build_sort_indices(ar, orig_sh[0])
     ar = ar[sorted_indices]
 
     if ar.size > 0:
-        mask = dpnp.empty_like(ar, dtype=dpnp.bool_)
+        mask = dpnp.empty_like(ar, dtype=dpnp.bool)
         mask[:1] = True
         mask[1:] = ar[1:] != ar[:-1]
 
-        mask = dpnp.any(mask, axis=1)
+        mask = mask.any(axis=1)
     else:
-        # If empty, then the mask should grab the first empty array as the
-        # unique one
-        mask = dpnp.ones_like(ar, shape=(ar.shape[0]), dtype=dpnp.bool_)
+        # if the array is empty, then the mask should grab the first empty
+        # array as the unique one
+        mask = dpnp.ones_like(ar, shape=(ar.shape[0]), dtype=dpnp.bool)
         mask[1:] = False
 
-    # Index the input array with the unique elements and reshape it into the
+    # index the input array with the unique elements and reshape it into the
     # original size and dimension order
     ar = ar[mask]
-    ar = ar.reshape(mask.sum().item(), *orig_shape[1:])
+    ar = ar.reshape(mask.sum().asnumpy(), *orig_sh[1:])
     ar = dpnp.moveaxis(ar, 0, axis)
 
     ret = (ar,)
