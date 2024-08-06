@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.ifftn &mdash; Data Parallel Extension for NumPy 0.16.0dev0+105.g623d676cf7 documentation</title>
+  <title>dpnp.fft.ifftn &mdash; Data Parallel Extension for NumPy 0.16.0dev0+111.g7891616ab8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=b1b21a0c"></script>
+        <script src="../../_static/documentation_options.js?v=cd53ed5d"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+105.g623d676cf7
+                0.16.0dev0+111.g7891616ab8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -127,9 +127,9 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.fft.ifftn">
 <span class="sig-prename descclassname"><span class="pre">dpnp.fft.</span></span><span class="sig-name descname"><span class="pre">ifftn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/fft/dpnp_iface_fft.html#ifftn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.fft.ifftn" title="Link to this definition"></a></dt>
-<dd><p>Compute the <cite>N</cite>-dimensional inverse discrete Fourier Transform.</p>
-<p>This function computes the inverse of the <cite>N</cite>-dimensional discrete
-Fourier Transform over any number of axes in an <cite>M</cite>-dimensional array by
+<dd><p>Compute the <em>N</em>-dimensional inverse discrete Fourier Transform.</p>
+<p>This function computes the inverse of the <em>N</em>-dimensional discrete
+Fourier Transform over any number of axes in an <em>M</em>-dimensional array by
 means of the Fast Fourier Transform (FFT). In other words,
 <code class="docutils literal notranslate"><span class="pre">ifftn(fftn(a))</span> <span class="pre">==</span> <span class="pre">a</span></code> to within numerical accuracy. For a description
 of the definitions and conventions used, see <a class="reference internal" href="../fft.html#module-0" title="dpnp.fft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft</span></code></a>.</p>
@@ -167,7 +167,8 @@ is scaled and with what normalization factor. <code class="docutils literal notr
 the default option <code class="docutils literal notranslate"><span class="pre">&quot;backward&quot;</span></code>.
 Default: <code class="docutils literal notranslate"><span class="pre">&quot;backward&quot;</span></code>.</p></li>
 <li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em> or </em><em>usm_ndarray</em><em> of </em><em>complex dtype}</em><em>, </em><em>optional</em>) -- If provided, the result will be placed in this array. It should be
-of the appropriate shape and dtype.
+of the appropriate shape and dtype (and hence is incompatible with
+passing in all but the trivial <cite>s</cite>).
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 </ul>
 </dd>
@@ -185,7 +186,7 @@ as explained in the parameters section above.</p>
 <dl class="simple">
 <dt><a class="reference internal" href="../fft.html#module-0" title="dpnp.fft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft</span></code></a></dt><dd><p>Overall view of discrete Fourier transforms, with definitions and conventions used.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.fft.fftn.html#dpnp.fft.fftn" title="dpnp.fft.fftn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.fftn</span></code></a></dt><dd><p>The <cite>n</cite>-dimensional FFT.</p>
+<dt><a class="reference internal" href="dpnp.fft.fftn.html#dpnp.fft.fftn" title="dpnp.fft.fftn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.fftn</span></code></a></dt><dd><p>The <em>N</em>-dimensional FFT.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.fft.ifft.html#dpnp.fft.ifft" title="dpnp.fft.ifft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.ifft</span></code></a></dt><dd><p>The one-dimensional inverse FFT.</p>
 </dd>
