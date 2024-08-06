@@ -1327,8 +1327,12 @@ def ediff1d(ary, to_end=None, to_begin=None):
     if to_begin is None:
         l_begin = 0
     else:
-        to_begin = dpnp.asarray(
-            to_begin, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
+        to_begin = (
+            dpnp.asarray(
+                to_begin, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
+            )
+            if not dpnp.is_supported_array_type(to_begin)
+            else to_begin
         )
         if not dpnp.can_cast(to_begin, ary_dtype, casting="same_kind"):
             raise TypeError(
@@ -1346,8 +1350,12 @@ def ediff1d(ary, to_end=None, to_begin=None):
     if to_end is None:
         l_end = 0
     else:
-        to_end = dpnp.asarray(
-            to_end, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
+        to_end = (
+            dpnp.asarray(
+                to_end, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
+            )
+            if not dpnp.is_supported_array_type(to_end)
+            else to_end
         )
         if not dpnp.can_cast(to_end, ary_dtype, casting="same_kind"):
             raise TypeError(
