@@ -1275,17 +1275,18 @@ def ediff1d(ary, to_end=None, to_begin=None):
     ----------
     ary : {dpnp.ndarray, usm_ndarray}
         If necessary, will be flattened before the differences are taken.
-    to_end : {array_like}, optional
+    to_end : array_like, optional
         Number(s) to append at the end of the returned differences.
         Default: ``None``.
-    to_begin : {array_like}, optional
+    to_begin : array_like, optional
         Number(s) to prepend at the beginning of the returned differences.
         Default: ``None``.
 
     Returns
     -------
     out : dpnp.ndarray
-        The differences. Loosely, this is ``ary.flat[1:] - ary.flat[:-1]``.
+        New array consisting differences among succeeding elements.
+        Loosely, this is ``ary.flat[1:] - ary.flat[:-1]``.
 
     See Also
     --------
