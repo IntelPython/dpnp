@@ -414,6 +414,7 @@ def test_meshgrid(device):
         pytest.param("count_nonzero", [3, 0, 2, -1.2]),
         pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
+        pytest.param("degrees", [numpy.pi, numpy.pi / 2, 0]),
         pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
@@ -421,6 +422,7 @@ def test_meshgrid(device):
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
+        pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1.0, 2.0, 4.0, 7.0, 11.0, 16.0]),
         pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
@@ -451,6 +453,7 @@ def test_meshgrid(device):
         pytest.param("positive", [1.0, 0.0, -1.0]),
         pytest.param("prod", [1.0, 2.0]),
         pytest.param("ptp", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("radians", [180, 90, 45, 0]),
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
@@ -475,7 +478,9 @@ def test_meshgrid(device):
             "trace", [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         ),
         pytest.param("trapz", [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]),
+        pytest.param("trim_zeros", [0, 0, 0, 1, 2, 3, 0, 2, 1, 0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("unwrap", [[0, 1, 2, -1, 0]]),
         pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
     ],
 )
@@ -676,6 +681,7 @@ def test_reduce_hypot(device):
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
+        pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param(
             "matmul", [[1.0, 0.0], [0.0, 1.0]], [[4.0, 1.0], [1.0, 2.0]]
         ),
@@ -686,6 +692,7 @@ def test_reduce_hypot(device):
             [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
             [0.0, 1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 2.0],
         ),
+        pytest.param("nextafter", [1, 2], [2, 1]),
         pytest.param(
             "outer", [0.0, 1.0, 2.0, 3.0, 4.0, 5.0], [0.0, 1.0, 2.0, 0.0]
         ),
@@ -743,8 +750,7 @@ def test_2in_1out(func, data1, data2, device):
         "equal",
         "greater",
         "greater_equal",
-        # TODO: unblock when dpnp.isclose() is updated
-        # "isclose",
+        "isclose",
         "less",
         "less_equal",
         "logical_and",
@@ -1218,47 +1224,25 @@ def test_out_multi_dot(device):
         assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
 
-@pytest.mark.parametrize("func", ["fft", "ifft"])
+@pytest.mark.parametrize(
+    "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
+)
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
 def test_fft(func, device):
-    data = numpy.arange(100, dtype=numpy.complex128)
-
+    dtype = numpy.float64 if func in ["rfft", "ihfft"] else numpy.complex128
+    data = numpy.arange(20, dtype=dtype)
     dpnp_data = dpnp.array(data, device=device)
 
     expected = getattr(numpy.fft, func)(data)
     result = getattr(dpnp.fft, func)(dpnp_data)
-
-    assert_dtype_allclose(result, expected)
+    assert_dtype_allclose(result, expected, factor=16)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
-
-    assert_sycl_queue_equal(result_queue, expected_queue)
-
-
-@pytest.mark.parametrize("type", ["float32"])
-@pytest.mark.parametrize("shape", [(8, 8)])
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_fft_rfft(type, shape, device):
-    np_data = numpy.arange(64, dtype=numpy.dtype(type)).reshape(shape)
-    dpnp_data = dpnp.array(np_data, device=device)
-
-    np_res = numpy.fft.rfft(np_data)
-    dpnp_res = dpnp.fft.rfft(dpnp_data)
-
-    assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
-
-    expected_queue = dpnp_data.get_array().sycl_queue
-    result_queue = dpnp_res.get_array().sycl_queue
-
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
@@ -1786,10 +1770,7 @@ def test_array_creation_from_dpctl(copy, device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-# TODO need to delete no_bool=True when use dlpack > 0.7 version
-@pytest.mark.parametrize(
-    "arr_dtype", get_all_dtypes(no_float16=True, no_bool=True)
-)
+@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
 @pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
 def test_from_dlpack(arr_dtype, shape, device):
     X = dpnp.empty(shape=shape, dtype=arr_dtype, device=device)

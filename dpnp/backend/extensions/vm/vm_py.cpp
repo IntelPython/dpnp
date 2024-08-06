@@ -55,6 +55,7 @@
 #include "log1p.hpp"
 #include "log2.hpp"
 #include "mul.hpp"
+#include "nextafter.hpp"
 #include "pow.hpp"
 #include "rint.hpp"
 #include "sin.hpp"
@@ -98,6 +99,7 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_log1p(m);
     vm_ns::init_log2(m);
     vm_ns::init_mul(m);
+    vm_ns::init_nextafter(m);
     vm_ns::init_pow(m);
     vm_ns::init_rint(m);
     vm_ns::init_sin(m);

@@ -138,9 +138,9 @@ def are_same_logical_tensors(ar1, ar2):
 
     Parameters
     ----------
-    ar1 : {dpnp_array, usm_ndarray}
+    ar1 : {dpnp.ndarray, usm_ndarray}
         First input array.
-    ar2 : {dpnp_array, usm_ndarray}
+    ar2 : {dpnp.ndarray, usm_ndarray}
         Second input array.
 
     Returns
@@ -284,7 +284,6 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True, device=None):
         x1_obj, dtype, order=order, casting=casting, copy=copy, device=device
     )
 
-    dpnp.synchronize_array_data(x1)
     if array_obj is x1_obj and isinstance(x1, dpnp_array):
         # return x1 if dpctl returns a zero copy of x1_obj
         return x1
@@ -400,7 +399,7 @@ def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
 
     Parameters
     ----------
-    arrays : {dpnp_array, usm_ndarray}
+    arrays : {dpnp.ndarray, usm_ndarray}
         Input arrays to check for supported types.
     scalar_type : {bool}, optional
         A scalar type is also considered as supported if flag is ``True``.
@@ -655,9 +654,9 @@ def get_result_array(a, out=None, casting="safe"):
 
     Parameters
     ----------
-    a : {dpnp_array}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    out : {dpnp_array, usm_ndarray}
+    out : {dpnp.ndarray, usm_ndarray}
         If provided, value of `a` array will be copied into it
         according to ``safe`` casting rule.
         It should be of the appropriate shape.
@@ -672,6 +671,8 @@ def get_result_array(a, out=None, casting="safe"):
     """
 
     if out is None:
+        if isinstance(a, dpt.usm_ndarray):
+            return dpnp_array._create_from_usm_ndarray(a)
         return a
 
     if isinstance(out, dpt.usm_ndarray):
@@ -695,7 +696,7 @@ def get_usm_ndarray(a):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array of supported type :class:`dpnp.ndarray`
         or :class:`dpctl.tensor.usm_ndarray`.
 
@@ -775,7 +776,7 @@ def is_supported_array_type(a):
 
     Parameters
     ----------
-    a : {dpnp_array, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         An input array to check the type.
 
     Returns
@@ -797,6 +798,5 @@ def synchronize_array_data(a):
 
     """
 
-    if hasattr(dpu, "SequentialOrderManager"):
-        check_supported_arrays_type(a)
-        dpu.SequentialOrderManager[a.sycl_queue].wait()
+    check_supported_arrays_type(a)
+    dpu.SequentialOrderManager[a.sycl_queue].wait()

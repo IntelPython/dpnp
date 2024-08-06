@@ -1,11 +1,14 @@
 import unittest
 
+import numpy
 import pytest
 
-import numpy
 import dpnp as cupy
 from tests.third_party.cupy import testing
-from tests.third_party.cupy.testing._loops import _complex_dtypes, _regular_float_dtypes
+from tests.third_party.cupy.testing._loops import (
+    _complex_dtypes,
+    _regular_float_dtypes,
+)
 
 
 @pytest.mark.skip("delete() is not implemented yet")
@@ -34,8 +37,9 @@ class TestDelete(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_delete_with_indices_as_bool_array(self, xp):
         arr = xp.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-        indices = xp.array([True, False, True, False, True,
-                            False, True, False, True, False])
+        indices = xp.array(
+            [True, False, True, False, True, False, True, False, True, False]
+        )
 
         return xp.delete(arr, indices)
 
@@ -50,14 +54,15 @@ class TestDelete(unittest.TestCase):
         arr = xp.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
         indices = 5
         if cupy.cuda.runtime.is_hip:
-            pytest.xfail('HIP may have a bug')
+            pytest.xfail("HIP may have a bug")
         return xp.delete(arr, indices)
 
 
 @pytest.mark.skip("append() is not implemented yet")
 class TestAppend(unittest.TestCase):
     @testing.for_all_dtypes_combination(
-        names=['dtype1', 'dtype2'], no_bool=True)
+        names=["dtype1", "dtype2"], no_bool=True
+    )
     @testing.numpy_cupy_array_equal()
     def test(self, xp, dtype1, dtype2):
         a = testing.shaped_random((3, 4, 5), xp, dtype1)
@@ -65,28 +70,32 @@ class TestAppend(unittest.TestCase):
         return xp.append(a, b)
 
     @testing.for_all_dtypes_combination(
-        names=['dtype1', 'dtype2'], no_bool=True)
+        names=["dtype1", "dtype2"], no_bool=True
+    )
     @testing.numpy_cupy_array_equal()
     def test_scalar_lhs(self, xp, dtype1, dtype2):
         scalar = xp.dtype(dtype1).type(10).item()
         return xp.append(scalar, xp.arange(20, dtype=dtype2))
 
     @testing.for_all_dtypes_combination(
-        names=['dtype1', 'dtype2'], no_bool=True)
+        names=["dtype1", "dtype2"], no_bool=True
+    )
     @testing.numpy_cupy_array_equal()
     def test_scalar_rhs(self, xp, dtype1, dtype2):
         scalar = xp.dtype(dtype2).type(10).item()
         return xp.append(xp.arange(20, dtype=dtype1), scalar)
 
     @testing.for_all_dtypes_combination(
-        names=['dtype1', 'dtype2'], no_bool=True)
+        names=["dtype1", "dtype2"], no_bool=True
+    )
     @testing.numpy_cupy_array_equal()
     def test_numpy_scalar_lhs(self, xp, dtype1, dtype2):
         scalar = xp.dtype(dtype1).type(10)
         return xp.append(scalar, xp.arange(20, dtype=dtype2))
 
     @testing.for_all_dtypes_combination(
-        names=['dtype1', 'dtype2'], no_bool=True)
+        names=["dtype1", "dtype2"], no_bool=True
+    )
     @testing.numpy_cupy_array_equal()
     def test_numpy_scalar_rhs(self, xp, dtype1, dtype2):
         scalar = xp.dtype(dtype2).type(10)
@@ -203,7 +212,8 @@ class TestUnique:
     def test_unique_return_all_no_axis(self, xp, dtype):
         a = testing.shaped_random((100, 100), xp, dtype)
         res = xp.unique(
-            a, return_index=True, return_inverse=True, return_counts=True)
+            a, return_index=True, return_inverse=True, return_counts=True
+        )
         if xp is numpy and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
             res = res[:2] + (res[2].reshape(a.shape),) + res[3:]
         return res
@@ -213,8 +223,12 @@ class TestUnique:
     def test_unique_return_all(self, xp, dtype):
         a = testing.shaped_random((100, 100), xp, dtype)
         return xp.unique(
-            a, return_index=True, return_inverse=True, return_counts=True,
-            axis=1)
+            a,
+            return_index=True,
+            return_inverse=True,
+            return_counts=True,
+            axis=1,
+        )
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
@@ -233,7 +247,8 @@ class TestUnique:
     def test_unique_empty_return_all_no_axis(self, xp, dtype):
         a = xp.empty((3, 0, 2), dtype=dtype)
         res = xp.unique(
-            a, return_index=True, return_inverse=True, return_counts=True)
+            a, return_index=True, return_inverse=True, return_counts=True
+        )
         if xp is numpy and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
             res = res[:2] + (res[2].reshape(a.shape),) + res[3:]
         return res
@@ -243,49 +258,61 @@ class TestUnique:
     def test_unique_empty_return_all(self, xp, dtype):
         a = xp.empty((3, 0, 2), dtype=dtype)
         return xp.unique(
-            a, return_index=True, return_inverse=True, return_counts=True,
-            axis=2)
+            a,
+            return_index=True,
+            return_inverse=True,
+            return_counts=True,
+            axis=2,
+        )
 
-    @pytest.mark.parametrize('equal_nan', [True, False])
+    @pytest.mark.parametrize("equal_nan", [True, False])
     @testing.for_dtypes_combination(_regular_float_dtypes + _complex_dtypes)
     @testing.numpy_cupy_array_equal()
-    @testing.with_requires('numpy>=1.23.1')
+    @testing.with_requires("numpy>=1.23.1")
     def test_unique_equal_nan_no_axis(self, xp, dtype, equal_nan):
-        if xp.dtype(dtype).kind == 'c':
+        if xp.dtype(dtype).kind == "c":
             # Nan and Nan+Nan*1j are collapsed when equal_nan=True
-            a = xp.array([
-                complex(xp.nan, 3), 2, complex(7, xp.nan), xp.nan,
-                complex(xp.nan, xp.nan), 2, xp.nan, 1
-            ], dtype=dtype)
+            a = xp.array(
+                [
+                    complex(xp.nan, 3),
+                    2,
+                    complex(7, xp.nan),
+                    xp.nan,
+                    complex(xp.nan, xp.nan),
+                    2,
+                    xp.nan,
+                    1,
+                ],
+                dtype=dtype,
+            )
         else:
             a = xp.array([2, xp.nan, 2, xp.nan, 1], dtype=dtype)
         return xp.unique(a, equal_nan=equal_nan)
 
-    @pytest.mark.parametrize('equal_nan', [True, False])
+    @pytest.mark.parametrize("equal_nan", [True, False])
     @testing.for_dtypes_combination(_regular_float_dtypes + _complex_dtypes)
     @testing.numpy_cupy_array_equal()
-    @testing.with_requires('numpy>=1.23.1')
+    @testing.with_requires("numpy>=1.23.1")
     def test_unique_equal_nan(self, xp, dtype, equal_nan):
-        if xp.dtype(dtype).kind == 'c':
+        if xp.dtype(dtype).kind == "c":
             # Nan and Nan+Nan*1j are collapsed when equal_nan=True
-            a = xp.array([
-                [complex(xp.nan, 3), 2, complex(7, xp.nan)],
-                [xp.nan, complex(xp.nan, xp.nan), 2],
-                [xp.nan, 1, complex(xp.nan, -1)]
-            ], dtype=dtype)
+            a = xp.array(
+                [
+                    [complex(xp.nan, 3), 2, complex(7, xp.nan)],
+                    [xp.nan, complex(xp.nan, xp.nan), 2],
+                    [xp.nan, 1, complex(xp.nan, -1)],
+                ],
+                dtype=dtype,
+            )
         else:
-            a = xp.array([
-                [2, xp.nan, 2],
-                [xp.nan, 1, xp.nan],
-                [xp.nan, 1, xp.nan]
-            ], dtype=dtype)
+            a = xp.array(
+                [[2, xp.nan, 2], [xp.nan, 1, xp.nan], [xp.nan, 1, xp.nan]],
+                dtype=dtype,
+            )
         return xp.unique(a, axis=0, equal_nan=equal_nan)
 
 
-@testing.parameterize(*testing.product({
-    'trim': ['fb', 'f', 'b']
-}))
-@pytest.mark.skip("trim_zeros() is not implemented yet")
+@testing.parameterize(*testing.product({"trim": ["fb", "f", "b"]}))
 class TestTrim_zeros(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()

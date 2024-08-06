@@ -48,11 +48,11 @@ import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.tensor._type_utils as dtu
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._type_utils import _acceptance_fn_divide
-from numpy.core.numeric import (
+from dpctl.tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
 )
+from dpctl.tensor._type_utils import _acceptance_fn_divide
 
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
@@ -111,6 +111,7 @@ __all__ = [
     "modf",
     "multiply",
     "negative",
+    "nextafter",
     "positive",
     "power",
     "prod",
@@ -127,31 +128,6 @@ __all__ = [
     "true_divide",
     "trunc",
 ]
-
-
-def _append_to_diff_array(a, axis, combined, values):
-    """
-    Append `values` to `combined` list based on data of array `a`.
-
-    Scalar value (including case with 0d array) is expanded to an array
-    with length=1 in the direction of axis and the shape of the input array `a`
-    along all other axes.
-    Note, if `values` is a scalar, then it is converted to 0d array allocating
-    on the same SYCL queue as the input array `a` and with the same USM type.
-
-    """
-
-    dpnp.check_supported_arrays_type(values, scalar_type=True, all_scalars=True)
-    if dpnp.isscalar(values):
-        values = dpnp.asarray(
-            values, sycl_queue=a.sycl_queue, usm_type=a.usm_type
-        )
-
-    if values.ndim == 0:
-        shape = list(a.shape)
-        shape[axis] = 1
-        values = dpnp.broadcast_to(values, tuple(shape))
-    combined.append(values)
 
 
 def _get_reduction_res_dt(a, dtype, _out):
@@ -1205,39 +1181,14 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
 
     """
 
-    dpnp.check_supported_arrays_type(a)
-    if n == 0:
-        return a
-    if n < 0:
-        raise ValueError(f"order must be non-negative but got {n}")
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_pre = (
+        None if prepend is None else dpnp.get_usm_ndarray_or_scalar(prepend)
+    )
+    usm_app = None if append is None else dpnp.get_usm_ndarray_or_scalar(append)
 
-    nd = a.ndim
-    if nd == 0:
-        raise ValueError("diff requires input that is at least one dimensional")
-    axis = normalize_axis_index(axis, nd)
-
-    combined = []
-    if prepend is not None:
-        _append_to_diff_array(a, axis, combined, prepend)
-
-    combined.append(a)
-    if append is not None:
-        _append_to_diff_array(a, axis, combined, append)
-
-    if len(combined) > 1:
-        a = dpnp.concatenate(combined, axis=axis)
-
-    slice1 = [slice(None)] * nd
-    slice2 = [slice(None)] * nd
-    slice1[axis] = slice(1, None)
-    slice2[axis] = slice(None, -1)
-    slice1 = tuple(slice1)
-    slice2 = tuple(slice2)
-
-    op = dpnp.not_equal if a.dtype == numpy.bool_ else dpnp.subtract
-    for _ in range(n):
-        a = op(a[slice1], a[slice2])
-    return a
+    usm_res = dpt.diff(usm_a, axis=axis, n=n, prepend=usm_pre, append=usm_app)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 _DIVIDE_DOCSTRING = """
@@ -2359,6 +2310,64 @@ negative = DPNPUnaryFunc(
 )
 
 
+_NEXTAFTER_DOCSTRING = """
+Return the next floating-point value after `x1` towards `x2`, element-wise.
+
+For full documentation refer to :obj:`numpy.nextafter`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    Values to find the next representable value of.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    The direction where to look for the next representable value of `x1`.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate. Array must have the correct shape and
+    the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The next representable values of `x1` in the direction of `x2`. The data
+    type of the returned array is determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array(1, dtype=np.float32)
+>>> eps = np.finfo(a.dtype).eps
+>>> np.nextafter(a, 2) == eps + 1
+array(True)
+
+>>> a = np.array([1, 2], dtype=np.float32)
+>>> b = np.array([2, 1], dtype=np.float32)
+>>> c = np.array([eps + 1, 2 - eps])
+>>> np.nextafter(a, b) == c
+array([ True,  True])
+"""
+
+nextafter = DPNPBinaryFunc(
+    "nextafter",
+    ti._nextafter_result_type,
+    ti._nextafter,
+    _NEXTAFTER_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_nextafter_to_call,
+    mkl_impl_fn=vmi._nextafter,
+)
+
+
 _POSITIVE_DOCSTRING = """
 Computes the numerical positive for each element `x_i` of input array `x`.
 
@@ -2438,7 +2447,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     the expected data type.
     Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
-    Output array, if parameter `out` is ``None``.
+    Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
 Returns

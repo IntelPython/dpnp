@@ -2,6 +2,7 @@ import unittest
 
 import numpy
 import pytest
+from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
 from tests.third_party.cupy import testing
@@ -104,7 +105,7 @@ def test_apply_along_axis_invalid_axis():
     for xp in [numpy, cupy]:
         a = xp.ones((8, 4))
         for axis in [-3, 2]:
-            with pytest.raises(numpy.AxisError):
+            with pytest.raises(AxisError):
                 xp.apply_along_axis(xp.sum, axis, a)
 
 

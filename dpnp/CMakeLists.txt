@@ -62,5 +62,4 @@ add_subdirectory(backend/extensions/ufunc)
 
 add_subdirectory(dpnp_algo)
 add_subdirectory(dpnp_utils)
-add_subdirectory(fft)
 add_subdirectory(random)

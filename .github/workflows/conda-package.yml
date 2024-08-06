@@ -14,8 +14,9 @@ env:
   # Follow oneAPI installation instruction for conda, since intel channel is not longer available
   # CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
-  CONDA_BUILD_VERSION: '24.5.1'
+  CONDA_BUILD_VERSION: '24.7.1'
   CONDA_INDEX_VERSION: '0.5.0'
+  RERUN_TESTS_ON_FAILURE: 'true'
   RUN_TESTS_MAX_ATTEMPTS: 2
   TEST_ENV_NAME: 'test'
   TEST_SCOPE: >-
@@ -143,13 +144,13 @@ jobs:
         run: conda build --no-test --python ${{ matrix.python }} --numpy 1.24 ${{ env.CHANNELS }} conda-recipe
 
       - name: Upload artifact
-        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
+        uses: actions/upload-artifact@89ef406dd8d7e03cfd12d9e0a4a378f454709029 # v4.3.5
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
       - name: Upload wheels artifact
-        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
+        uses: actions/upload-artifact@89ef406dd8d7e03cfd12d9e0a4a378f454709029 # v4.3.5
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
@@ -255,14 +256,14 @@ jobs:
           python -c "import dpnp, dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
 
-      # TODO: run the whole scope once the issues on CPU are resolved
-      # - name: Run tests
-        # run: |
-        #   python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-        # working-directory: ${{ env.tests-path }}
-
-      # TODO: remove once 2024.2 release is published
       - name: Run tests
+        if: env.RERUN_TESTS_ON_FAILURE != 'true'
+        run: |
+          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+        working-directory: ${{ env.tests-path }}
+
+      - name: Run tests
+        if: env.RERUN_TESTS_ON_FAILURE == 'true'
         id: run_tests_linux
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
@@ -411,14 +412,14 @@ jobs:
           python -c "import dpnp, dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
 
-      # TODO: run the whole scope once the issues on CPU are resolved
-      # - name: Run tests
-      #   run: |
-      #     python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-      #   working-directory: ${{ env.tests-path }}
-
-      # TODO: remove once 2024.2 release is published
       - name: Run tests
+        if: env.RERUN_TESTS_ON_FAILURE != 'true'
+        run: |
+          python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+        working-directory: ${{ env.tests-path }}
+
+      - name: Run tests
+        if: env.RERUN_TESTS_ON_FAILURE == 'true'
         id: run_tests_win
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:

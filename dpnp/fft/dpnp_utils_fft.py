@@ -41,8 +41,8 @@ import dpctl
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
+from dpctl.tensor._numpy_helper import normalize_axis_index
 from dpctl.utils import ExecutionPlacementError
-from numpy.core.numeric import normalize_axis_index
 
 import dpnp
 import dpnp.backend.extensions.fft._fft_impl as fi
@@ -66,16 +66,22 @@ def _check_norm(norm):
         )
 
 
-def _commit_descriptor(a, in_place, a_strides, index, axes):
+def _commit_descriptor(a, in_place, c2c, a_strides, index, axes):
     """Commit the FFT descriptor for the input array."""
 
     a_shape = a.shape
     shape = a_shape[index:]
     strides = (0,) + a_strides[index:]
-    if a.dtype == dpnp.complex64:
-        dsc = fi.Complex64Descriptor(shape)
-    else:
-        dsc = fi.Complex128Descriptor(shape)
+    if c2c:  # c2c FFT
+        if a.dtype == dpnp.complex64:
+            dsc = fi.Complex64Descriptor(shape)
+        else:
+            dsc = fi.Complex128Descriptor(shape)
+    else:  # r2c/c2r FFT
+        if a.dtype in [dpnp.float32, dpnp.complex64]:
+            dsc = fi.Real32Descriptor(shape)
+        else:
+            dsc = fi.Real64Descriptor(shape)
 
     dsc.fwd_strides = strides
     dsc.bwd_strides = dsc.fwd_strides
@@ -89,7 +95,7 @@ def _commit_descriptor(a, in_place, a_strides, index, axes):
     return dsc
 
 
-def _compute_result(dsc, a, out, forward, a_strides):
+def _compute_result(dsc, a, out, forward, c2c, a_strides):
     """Compute the result of the FFT."""
 
     exec_q = a.sycl_queue
@@ -99,6 +105,8 @@ def _compute_result(dsc, a, out, forward, a_strides):
     a_usm = dpnp.get_usm_ndarray(a)
     if dsc.transform_in_place:
         # in-place transform
+        # TODO: investigate the performance of in-place implementation
+        # for r2c/c2r, see SAT-7154
         ht_fft_event, fft_event = fi._fft_in_place(
             dsc, a_usm, forward, depends=dep_evs
         )
@@ -114,9 +122,29 @@ def _compute_result(dsc, a, out, forward, a_strides):
         else:
             # Result array that is used in OneMKL must have the exact same
             # stride as input array
+
+            if c2c:  # c2c FFT
+                out_shape = a.shape
+                out_dtype = a.dtype
+            else:
+                if forward:  # r2c FFT
+                    tmp = a.shape[-1] // 2 + 1
+                    out_shape = a.shape[:-1] + (tmp,)
+                    out_dtype = (
+                        dpnp.complex64
+                        if a.dtype == dpnp.float32
+                        else dpnp.complex128
+                    )
+                else:  # c2r FFT
+                    out_shape = a.shape  # a is already zero-padded
+                    out_dtype = (
+                        dpnp.float32
+                        if a.dtype == dpnp.complex64
+                        else dpnp.float64
+                    )
             result = dpnp_array(
-                a.shape,
-                dtype=a.dtype,
+                out_shape,
+                dtype=out_dtype,
                 strides=a_strides,
                 usm_type=a.usm_type,
                 sycl_queue=exec_q,
@@ -132,24 +160,30 @@ def _compute_result(dsc, a, out, forward, a_strides):
     return result
 
 
-def _copy_array(x):
+def _copy_array(x, complex_input):
     """
     Creating a C-contiguous copy of input array if input array has a negative
     stride or it does not have a complex data types. In this situation, an
     in-place FFT can be performed.
     """
     dtype = x.dtype
-    copy_flag = False
     if numpy.min(x.strides) < 0:
         # negative stride is not allowed in OneMKL FFT
         copy_flag = True
-    elif not dpnp.issubdtype(dtype, dpnp.complexfloating):
-        # if input is not complex, convert to complex
+    elif complex_input and not dpnp.issubdtype(dtype, dpnp.complexfloating):
+        # c2c/c2r FFT, if input is not complex, convert to complex
         copy_flag = True
         if dtype == dpnp.float32:
             dtype = dpnp.complex64
         else:
             dtype = map_dtype_to_device(dpnp.complex128, x.sycl_device)
+    elif not complex_input and dtype not in [dpnp.float32, dpnp.float64]:
+        # r2c FFT, if input is integer or float16 dtype, convert to
+        # float32 or float64 depending on device capabilities
+        copy_flag = True
+        dtype = map_dtype_to_device(dpnp.float64, x.sycl_device)
+    else:
+        copy_flag = False
 
     if copy_flag:
         x_copy = dpnp.empty_like(x, dtype=dtype, order="C")
@@ -165,18 +199,16 @@ def _copy_array(x):
             depends=dep_evs,
         )
         _manager.add_event_pair(ht_copy_ev, copy_ev)
+        x = x_copy
 
-        # if copying is done, FFT can be in-place (copy_flag = in_place flag)
-        return x_copy, copy_flag
+    # if copying is done, FFT can be in-place (copy_flag = in_place flag)
     return x, copy_flag
 
 
-def _fft(a, norm, out, forward, in_place, axes=None):
+def _fft(a, norm, out, forward, in_place, c2c, axes=None):
     """Calculates FFT of the input array along the specified axes."""
 
     index = 0
-    if not in_place and out is not None:
-        in_place = dpnp.are_same_logical_tensors(a, out)
     if axes is not None:  # batch_fft
         len_axes = 1 if isinstance(axes, int) else len(axes)
         local_axes = numpy.arange(-len_axes, 0)
@@ -187,12 +219,13 @@ def _fft(a, norm, out, forward, in_place, axes=None):
         index = 1
 
     a_strides = _standardize_strides_to_nonzero(a.strides, a.shape)
-    dsc = _commit_descriptor(a, in_place, a_strides, index, axes)
-    res = _compute_result(dsc, a, out, forward, a_strides)
-    res = _scale_result(res, norm, forward, index)
+    dsc = _commit_descriptor(a, in_place, c2c, a_strides, index, axes)
+    res = _compute_result(dsc, a, out, forward, c2c, a_strides)
+    res = _scale_result(res, a.shape, norm, forward, index)
 
     if axes is not None:  # batch_fft
-        res = dpnp.reshape(res, a_shape_orig)
+        tmp_shape = a_shape_orig[:-1] + (res.shape[-1],)
+        res = dpnp.reshape(res, tmp_shape)
         res = dpnp.moveaxis(res, local_axes, axes)
 
     result = dpnp.get_result_array(res, out=out, casting="same_kind")
@@ -204,9 +237,9 @@ def _fft(a, norm, out, forward, in_place, axes=None):
     return result
 
 
-def _scale_result(res, norm, forward, index):
+def _scale_result(res, a_shape, norm, forward, index):
     """Scale the result of the FFT according to `norm`."""
-    scale = numpy.prod(res.shape[index:], dtype=res.real.dtype)
+    scale = numpy.prod(a_shape[index:], dtype=res.real.dtype)
     norm_factor = 1
     if norm == "ortho":
         norm_factor = numpy.sqrt(scale)
@@ -261,7 +294,7 @@ def _truncate_or_pad(a, shape, axes):
     return a
 
 
-def _validate_out_keyword(a, out):
+def _validate_out_keyword(a, out, axis, c2r, r2c):
     """Validate out keyword argument."""
     if out is not None:
         dpnp.check_supported_arrays_type(out)
@@ -273,31 +306,61 @@ def _validate_out_keyword(a, out):
                 "Input and output allocation queues are not compatible"
             )
 
-        if out.shape != a.shape:
-            raise ValueError("output array has incorrect shape.")
+        # validate out shape
+        expected_shape = a.shape
+        if r2c:
+            expected_shape = list(a.shape)
+            expected_shape[axis] = a.shape[axis] // 2 + 1
+            expected_shape = tuple(expected_shape)
+        if out.shape != expected_shape:
+            raise ValueError(
+                "output array has incorrect shape, expected "
+                f"{expected_shape}, got {out.shape}."
+            )
 
-        if not dpnp.issubdtype(out.dtype, dpnp.complexfloating):
-            raise TypeError("output array has incorrect data type.")
+        # validate out data type
+        if c2r:
+            if not dpnp.issubdtype(out.dtype, dpnp.floating):
+                raise TypeError(
+                    "output array should have real floating data type."
+                )
+        else:  # c2c/r2c FFT
+            if not dpnp.issubdtype(out.dtype, dpnp.complexfloating):
+                raise TypeError("output array should have complex data type.")
 
 
-def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
+def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
     """Calculates 1-D FFT of the input array along axis"""
 
     a_ndim = a.ndim
     if a_ndim == 0:
         raise ValueError("Input array must be at least 1D")
 
+    c2c = not real  # complex-to-complex FFT
+    r2c = real and forward  # real-to-complex FFT
+    c2r = real and not forward  # complex-to-real FFT
+    if r2c and dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        raise TypeError("Input array must be real")
+
     axis = normalize_axis_index(axis, a_ndim)
     if n is None:
-        n = a.shape[axis]
+        if c2r:
+            n = (a.shape[axis] - 1) * 2
+        else:
+            n = a.shape[axis]
     elif not isinstance(n, int):
         raise TypeError("`n` should be None or an integer")
     if n < 1:
         raise ValueError(f"Invalid number of FFT data points ({n}) specified")
 
+    _check_norm(norm)
     a = _truncate_or_pad(a, n, axis)
-    _validate_out_keyword(a, out)
-    a, in_place = _copy_array(a)
+    _validate_out_keyword(a, out, axis, c2r, r2c)
+    # if input array is copied, in-place FFT can be used
+    a, in_place = _copy_array(a, c2c or c2r)
+    if not in_place and out is not None:
+        # if input is also given for out, in-place FFT can be used
+        in_place = dpnp.are_same_logical_tensors(a, out)
 
     if a.size == 0:
         return dpnp.get_result_array(a, out=out, casting="same_kind")
@@ -305,12 +368,13 @@ def dpnp_fft(a, forward, n=None, axis=-1, norm=None, out=None):
     # non-batch FFT
     axis = None if a_ndim == 1 else axis
 
-    _check_norm(norm)
     return _fft(
         a,
         norm=norm,
         out=out,
         forward=forward,
-        in_place=in_place,
+        # TODO: currently in-place is only implemented for c2c, see SAT-7154
+        in_place=in_place and c2c,
+        c2c=c2c,
         axes=axis,
     )

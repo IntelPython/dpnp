@@ -37,15 +37,14 @@ in the next installation section.
 Installation
 ============
 
-Install Package from Anaconda
------------------------------
+Install Package from Intel(R) channel
+-------------------------------------------
 
-It is recommended to use conda packages from the ``anaconda.org/intel``
-channel. You will need one of the commands below:
+You will need one of the commands below:
 
-* Conda: ``conda install dpnp -c intel -c conda-forge``
+* Conda: ``conda install dpnp -c https://software.repos.intel.com/python/conda/ -c conda-forge``
 
-* Pip: ``pip install -i https://pypi.anaconda.org/intel/simple dpnp``
+* Pip: ``python -m pip install --index-url https://pypi.anaconda.org/intel/simple dpnp``
 
 These commands install dpnp package along with its dependencies, including
 ``dpctl`` package with `Data Parallel Control Library`_ and all required
@@ -69,7 +68,7 @@ And to build dpnp package from the sources:
 
 .. code-block:: bash
 
-    conda build conda-recipe -c intel -c conda-forge
+    conda build conda-recipe -c https://software.repos.intel.com/python/conda/ -c conda-forge
 
 Finally, to install the result package:
 
@@ -89,14 +88,14 @@ On Linux:
 
 .. code-block:: bash
 
-    conda create -n build-env dpctl cython dpcpp_linux-64 mkl-devel-dpcpp tbb-devel onedpl-devel cmake scikit-build ninja pytest -c intel -c conda-forge
+    conda create -n build-env dpctl cython dpcpp_linux-64 mkl-devel-dpcpp tbb-devel onedpl-devel cmake scikit-build ninja pytest -c https://software.repos.intel.com/python/conda/ -c conda-forge
     conda activate build-env
 
 On Windows:
 
 .. code-block:: bash
 
-    conda create -n build-env dpctl cython dpcpp_win-64 mkl-devel-dpcpp tbb-devel onedpl-devel cmake scikit-build ninja pytest -c intel -c conda-forge
+    conda create -n build-env dpctl cython dpcpp_win-64 mkl-devel-dpcpp tbb-devel onedpl-devel cmake scikit-build ninja pytest -c https://software.repos.intel.com/python/conda/ -c conda-forge
     conda activate build-env
 
 To build and install the package on Linux OS, run:
