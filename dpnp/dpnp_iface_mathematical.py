@@ -1457,8 +1457,8 @@ float_power = DPNPBinaryFunc(
     ufi._float_power_result_type,
     ti._pow,
     _FLOAT_POWER_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_pow_to_call,
-    mkl_impl_fn=vmi._pow,
+    mkl_fn_to_call="_mkl_pow_to_call",
+    mkl_impl_fn="_pow",
     binary_inplace_fn=ti._pow_inplace,
 )
 
