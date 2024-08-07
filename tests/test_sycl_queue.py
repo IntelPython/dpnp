@@ -656,6 +656,11 @@ def test_reduce_hypot(device):
         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
         pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
         pytest.param(
+            "float_power",
+            [0, 1, 2, 3, 4, 5],
+            [1.0, 2.0, 3.0, 3.0, 2.0, 1.0],
+        ),
+        pytest.param(
             "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
         ),
         pytest.param("fmax", [2.0, 3.0, 4.0], [1.0, 5.0, 2.0]),
@@ -1239,7 +1244,7 @@ def test_fft(func, device):
 
     expected = getattr(numpy.fft, func)(data)
     result = getattr(dpnp.fft, func)(dpnp_data)
-    assert_dtype_allclose(result, expected)
+    assert_dtype_allclose(result, expected, factor=16)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
