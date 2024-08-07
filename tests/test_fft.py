@@ -318,15 +318,15 @@ class TestFft:
     def test_fft_error(self, xp):
         # 0-D input
         a = xp.array(3)
-        # dpnp and Intel® NumPy return ValueError
-        # stock NumPy returns IndexError
+        # dpnp and Intel® NumPy raise ValueError
+        # stock NumPy raises IndexError
         assert_raises((ValueError, IndexError), xp.fft.fft, a)
 
         # n is not int
         a = xp.ones((4, 3))
         if xp == dpnp:
-            # dpnp and stock NumPy return TypeError
-            # Intel® NumPy returns SystemError for Python 3.10 and 3.11
+            # dpnp and stock NumPy raise TypeError
+            # Intel® NumPy raises SystemError for Python 3.10 and 3.11
             # and no error for Python 3.9
             assert_raises(TypeError, xp.fft.fft, a, n=5.0)
 
@@ -557,8 +557,8 @@ class TestFftn:
     def test_fft_error(self, xp):
         # s is not int
         a = xp.ones((4, 3))
-        # dpnp and stock NumPy return TypeError
-        # Intel® NumPy returns ValueError
+        # dpnp and stock NumPy raise TypeError
+        # Intel® NumPy raises ValueError
         assert_raises(
             (TypeError, ValueError), xp.fft.fftn, a, s=(5.0,), axes=(0,)
         )
@@ -567,8 +567,8 @@ class TestFftn:
         assert_raises(TypeError, xp.fft.fftn, a, s=5, axes=(0,))
 
         # s is not a sequence of ints
-        # dpnp and stock NumPy return TypeError
-        # Intel® NumPy returns ValueError
+        # dpnp and stock NumPy raise TypeError
+        # Intel® NumPy raises ValueError
         assert_raises(
             (TypeError, ValueError),
             xp.fft.fftn,
@@ -580,12 +580,13 @@ class TestFftn:
         # Invalid number of FFT point, invalid s value
         assert_raises(ValueError, xp.fft.fftn, a, s=(-5,), axes=(0,))
 
-        # TODO: should be added in future versions
         # axes should be given if s is not None
-        # dpnp and stock NumPy will returns TypeError in future versions
-        # Intel® NumPy returns TypeError for a different reason:
+        # dpnp raises ValueError
+        # stock NumPy will raise an Error in future versions
+        # Intel® NumPy raises TypeError for a different reason:
         # when given, axes and shape arguments have to be of the same length
-        # assert_raises(ValueError, xp.fft.fftn, a, s=(5,))
+        if xp == dpnp:
+            assert_raises(ValueError, xp.fft.fftn, a, s=(5,))
 
         # axes and s should have the same length
         assert_raises(ValueError, xp.fft.fftn, a, s=(5, 5), axes=(0,))
@@ -929,7 +930,7 @@ class TestRfft:
         # invalid dtype of input array for r2c FFT
         if xp == dpnp:
             # stock NumPy-1.26 ignores imaginary part
-            # Intel® NumPy, dpnp, stock NumPy-2.0 return TypeError
+            # Intel® NumPy, dpnp, stock NumPy-2.0 raise TypeError
             assert_raises(TypeError, xp.fft.rfft, a)
 
     def test_fft_validate_out(self):

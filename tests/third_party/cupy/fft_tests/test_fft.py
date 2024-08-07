@@ -120,17 +120,20 @@ class TestFftOrder:
     *(
         testing.product_dict(
             [
+                # some of the following cases are modified, since in NumPy 2.0.0
+                # `s` must contain only integer `s`, not None values, and
+                # If `s` is not None, `axes`` must not be None either.
                 {"shape": (3, 4), "s": None, "axes": None},
-                # {"shape": (3, 4), "s": (1, None), "axes": None}, # s is not int
-                {"shape": (3, 4), "s": (1, 5), "axes": None},
+                {"shape": (3, 4), "s": (1, 4), "axes": (0, 1)},
+                {"shape": (3, 4), "s": (1, 5), "axes": (0, 1)},
                 {"shape": (3, 4), "s": None, "axes": (-2, -1)},
                 {"shape": (3, 4), "s": None, "axes": (-1, -2)},
                 # {"shape": (3, 4), "s": None, "axes": (0,)}, # mkl_fft gh-109
                 {"shape": (3, 4), "s": None, "axes": None},
                 # {"shape": (3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
                 {"shape": (2, 3, 4), "s": None, "axes": None},
-                # {"shape": (2, 3, 4), "s": (1, 4, None), "axes": None}, # s is not int
-                {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": None},
+                {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)},
+                {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)},
                 {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)},
                 {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)},
                 # {"shape": (2, 3, 4), "s": None, "axes": (0, 1)}, # mkl_fft gh-109
@@ -205,9 +208,12 @@ class TestFft2:
     *(
         testing.product_dict(
             [
+                # some of the following cases are modified, since in NumPy 2.0.0
+                # `s` must contain only integer `s`, not None values, and
+                # If `s` is not None, `axes`` must not be None either.
                 {"shape": (3, 4), "s": None, "axes": None},
-                # {"shape": (3, 4), "s": (1, None), "axes": None}, # s is not int
-                {"shape": (3, 4), "s": (1, 5), "axes": None},
+                {"shape": (3, 4), "s": (1, 4), "axes": (0, 1)},
+                {"shape": (3, 4), "s": (1, 5), "axes": (0, 1)},
                 {"shape": (3, 4), "s": None, "axes": (-2, -1)},
                 {"shape": (3, 4), "s": None, "axes": (-1, -2)},
                 {"shape": (3, 4), "s": None, "axes": [-1, -2]},
@@ -215,8 +221,8 @@ class TestFft2:
                 # {"shape": (3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
                 {"shape": (3, 4), "s": None, "axes": None},
                 {"shape": (2, 3, 4), "s": None, "axes": None},
-                # {"shape": (2, 3, 4), "s": (1, 4, None), "axes": None}, # s is not int
-                {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": None},
+                {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)},
+                {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)},
                 {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)},
                 {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)},
                 # {"shape": (2, 3, 4), "s": None, "axes": (-1, -3)}, # mkl_fft gh-109

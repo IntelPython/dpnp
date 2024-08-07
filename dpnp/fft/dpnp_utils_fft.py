@@ -90,24 +90,12 @@ def _cook_nd_args(a, s=None, axes=None, c2r=False):
             )
 
     if axes is None:
-        # TODO: uncomment the checkpoint
-        # both `s` and `axes` being `None` is currently deprecated
-        # and will raise an error in future versions of NumPy
-        # if not shapeless:
-        #    raise ValueError(
-        #        "`axes` should not be `None` if `s` is not `None`."
-        #    )
         axes = list(range(-len(s), 0))
+
     if len(s) != len(axes):
         raise ValueError("Shape and axes have different lengths.")
 
     s = list(s)
-    # TODO: remove this for loop
-    # support of `i`` being `None`` is deprecated and will raise
-    # a TypeError in future versions of NumPy
-    for i, s_i in enumerate(s):
-        s[i] = a.shape[axes[i]] if s_i is None else s_i
-
     if c2r and shapeless:
         s[-1] = (a.shape[axes[-1]] - 1) * 2
     # use the whole input array along axis `i` if `s[i] == -1`
@@ -448,7 +436,7 @@ def _validate_s_axes(a, s, axes):
     if s is not None:
         raise_error = False
         if isinstance(s, Sequence):
-            if any(s_i is not None and not isinstance(s_i, int) for s_i in s):
+            if any(not isinstance(s_i, int) for s_i in s):
                 raise_error = True
         elif dpnp.is_supported_array_type(s):
             if s.ndim != 1 or not dpnp.issubdtype(s, dpnp.integer):
@@ -458,6 +446,11 @@ def _validate_s_axes(a, s, axes):
 
         if raise_error:
             raise TypeError("`s` must be `None` or a sequence of integers.")
+
+        if axes is None:
+            raise ValueError(
+                "`axes` should not be `None` if `s` is not `None`."
+            )
 
 
 def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
