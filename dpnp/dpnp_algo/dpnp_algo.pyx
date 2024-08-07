@@ -63,7 +63,6 @@ include "dpnp_algo_mathematical.pxi"
 include "dpnp_algo_sorting.pxi"
 include "dpnp_algo_special.pxi"
 include "dpnp_algo_statistics.pxi"
-include "dpnp_algo_trigonometric.pxi"
 
 
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_flatten_t)(c_dpctl.DPCTLSyclQueueRef,
