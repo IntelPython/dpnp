@@ -566,17 +566,6 @@ class TestFftn:
         # s is not a sequence
         assert_raises(TypeError, xp.fft.fftn, a, s=5, axes=(0,))
 
-        # s is not a sequence of ints
-        # dpnp and stock NumPy raise TypeError
-        # Intel® NumPy raises ValueError
-        assert_raises(
-            (TypeError, ValueError),
-            xp.fft.fftn,
-            a,
-            s=xp.array([5.0]),
-            axes=(0,),
-        )
-
         # Invalid number of FFT point, invalid s value
         assert_raises(ValueError, xp.fft.fftn, a, s=(-5,), axes=(0,))
 

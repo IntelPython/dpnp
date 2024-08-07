@@ -438,9 +438,6 @@ def _validate_s_axes(a, s, axes):
         if isinstance(s, Sequence):
             if any(not isinstance(s_i, int) for s_i in s):
                 raise_error = True
-        elif dpnp.is_supported_array_type(s):
-            if s.ndim != 1 or not dpnp.issubdtype(s, dpnp.integer):
-                raise_error = True
         else:
             raise_error = True
 
