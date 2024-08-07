@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.fill
-=================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.fill
