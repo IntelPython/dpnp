@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+114.g6f9be3f6f9 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+115.g79d2fd942b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=ab480767"></script>
+        <script src="../../_static/documentation_options.js?v=8e70e022"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+114.g6f9be3f6f9
+                0.16.0dev0+115.g79d2fd942b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1440,13 +1440,10 @@
     <span class="k">if</span> <span class="n">to_begin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">l_begin</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">to_begin</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">to_begin</span><span class="p">):</span>
+            <span class="n">to_begin</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
                 <span class="n">to_begin</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">ary_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ary_sycl_queue</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">to_begin</span><span class="p">)</span>
-            <span class="k">else</span> <span class="n">to_begin</span>
-        <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">to_begin</span><span class="p">,</span> <span class="n">ary_dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">&quot;dtype of `to_begin` must be compatible &quot;</span>
@@ -1458,18 +1455,15 @@
         <span class="k">if</span> <span class="n">to_begin_ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">to_begin</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">to_begin</span><span class="p">)</span>
 
-        <span class="n">l_begin</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">to_begin</span><span class="p">)</span> <span class="k">if</span> <span class="n">to_begin_ndim</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="n">l_begin</span> <span class="o">=</span> <span class="n">to_begin</span><span class="o">.</span><span class="n">size</span>
 
     <span class="k">if</span> <span class="n">to_end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">l_end</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">to_end</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">to_end</span><span class="p">):</span>
+            <span class="n">to_end</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
                 <span class="n">to_end</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">ary_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ary_sycl_queue</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">to_end</span><span class="p">)</span>
-            <span class="k">else</span> <span class="n">to_end</span>
-        <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">to_end</span><span class="p">,</span> <span class="n">ary_dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">&quot;dtype of `to_end` must be compatible &quot;</span>
@@ -1481,7 +1475,7 @@
         <span class="k">if</span> <span class="n">to_end_ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">to_end</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">to_end</span><span class="p">)</span>
 
-        <span class="n">l_end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">to_end</span><span class="p">)</span> <span class="k">if</span> <span class="n">to_end_ndim</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="n">l_end</span> <span class="o">=</span> <span class="n">to_end</span><span class="o">.</span><span class="n">size</span>
 
     <span class="c1"># calculating using in place operation</span>
     <span class="n">l_diff</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
