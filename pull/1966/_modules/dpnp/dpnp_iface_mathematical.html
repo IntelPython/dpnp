@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+116.ge597255d0 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+117.g6c371e544b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=974f6a3c"></script>
+        <script src="../../_static/documentation_options.js?v=66f9846c"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+116.ge597255d0
+                0.16.0dev0+117.g6c371e544b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -2412,15 +2412,15 @@
 <span class="sd">        Whether to create a copy of `x` (``True``) or to replace values</span>
 <span class="sd">        in-place (``False``). The in-place operation only occurs if casting to</span>
 <span class="sd">        an array does not require a copy.</span>
-<span class="sd">    nan : {int, float}, optional</span>
+<span class="sd">    nan : {int, float, bool}, optional</span>
 <span class="sd">        Value to be used to fill ``NaN`` values.</span>
 <span class="sd">        Default: ``0.0``.</span>
-<span class="sd">    posinf : {int, float, None}, optional</span>
+<span class="sd">    posinf : {int, float, bool, None}, optional</span>
 <span class="sd">        Value to be used to fill positive infinity values. If no value is</span>
 <span class="sd">        passed then positive infinity values will be replaced with a very</span>
 <span class="sd">        large number.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    neginf : {int, float, None} optional</span>
+<span class="sd">    neginf : {int, float, bool, None} optional</span>
 <span class="sd">        Value to be used to fill negative infinity values. If no value is</span>
 <span class="sd">        passed then negative infinity values will be replaced with a very</span>
 <span class="sd">        small (or negative) number.</span>
@@ -2469,9 +2469,12 @@
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nan</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nan</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+    <span class="c1"># Python boolean is a subtype of an integer</span>
+    <span class="c1"># so additional check for bool is not needed.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nan</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;nan must be a scalar of an integer or float, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">nan</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;nan must be a scalar of an integer, float, bool, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">nan</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
     <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="n">x</span>
@@ -2490,17 +2493,17 @@
     <span class="p">)</span>
     <span class="n">max_f</span><span class="p">,</span> <span class="n">min_f</span> <span class="o">=</span> <span class="n">_get_max_min</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">posinf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">posinf</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">posinf</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">posinf</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;posinf must be a scalar of an integer or float, or None, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">posinf</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;posinf must be a scalar of an integer, float, bool, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;or be None, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">posinf</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="n">max_f</span> <span class="o">=</span> <span class="n">posinf</span>
     <span class="k">if</span> <span class="n">neginf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">neginf</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">neginf</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">neginf</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;neginf must be a scalar of an integer or float, or None, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">neginf</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;neginf must be a scalar of an integer, float, bool, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;or be None, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">neginf</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="n">min_f</span> <span class="o">=</span> <span class="n">neginf</span>
 
